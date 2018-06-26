@@ -103,18 +103,22 @@
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
         <img
+          v-if="toAuthorize.idCardFront"
           :src="toAuthorize.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.idCardFront, 'id')"
           alt="身份证正面照">
         <img
+          v-if="toAuthorize.idCardBack"
           :src="toAuthorize.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.idCardBack, 'id')"
           alt="身份证背面照">
         <img
+          v-if="toAuthorize.avatarUrl"
           :src="toAuthorize.avatarUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.avatarUrl)"
           alt="头像">
         <img
+          v-if="toAuthorize.relationalProofUrl"
           :src="toAuthorize.relationalProofUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.relationalProofUrl)"
           alt="关系证明图">
