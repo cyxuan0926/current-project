@@ -20,14 +20,16 @@
 import prisonBase from './components/prison-base'
 import prisonConfig from './components/prison-config'
 import prisonRemote from './components/prison-remote'
+import test from './components/test'
 
 export default {
-  components: { prisonBase, prisonConfig, prisonRemote },
+  components: { prisonBase, prisonConfig, prisonRemote, test },
   data() {
     return {
       activeName: 'prisonBase',
       placeHolder: 0,
       tabMapOptions: [
+        { label: '测试', key: 'test' },
         { label: '基本信息', key: 'prisonBase' },
         { label: '配置信息', key: 'prisonConfig' },
         { label: '远程会见', key: 'prisonRemote' }
@@ -43,6 +45,8 @@ export default {
           return 1
         case 'prisonRemote':
           return 2
+        case 'test':
+          return 3
         default:
           return 0
       }
@@ -57,7 +61,7 @@ export default {
   methods: {
     render() {
       this.removeSession()
-      this.$router.push({ query: Object.assign({}, { tag: 'prisonBase' }) })
+      this.$router.push({ query: Object.assign({}, { tag: 'test' }) })
     },
     removeSession() {
       sessionStorage.removeItem('base')
