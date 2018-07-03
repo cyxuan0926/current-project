@@ -42,7 +42,7 @@
         <el-table-column
           label="发送日期">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{scope.row.createdAt}}
           </template>
         </el-table-column>
       </el-table>

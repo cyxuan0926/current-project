@@ -1,8 +1,8 @@
 <template>
+  <!-- { 'error-tip': errorMessage }, -->
   <div
     class="m-range-picker"
     :class="[
-      { 'error-tip': errorMessage },
       { 'm-disabled-range': next.length }]"
     @click="onClick">
     <el-time-picker
@@ -12,6 +12,7 @@
       :clearable="false"
       :format="format"
       :value-format="format"
+      :disabled="next.length > 0"
       :picker-options="startPickerOptions"
       placeholder="开始时间"
       @blur="onStartBlur"
@@ -21,7 +22,7 @@
       v-model="endTime"
       ref="end"
       class="endClass"
-      :disabled="!startTime"
+      :disabled="!startTime || next.length > 0"
       :clearable="false"
       :format="format"
       :value-format="format"
@@ -61,21 +62,35 @@ export default {
         selectableRange: '00:00:00 - 23:58:59'
       },
       endPickerOptions: {},
-      errorMessage: '',
+      // errorMessage: '',
       value: ''
     }
   },
   watch: {
     endTime(val) {
       if (!val) this.startTime = null
+    },
+    val(value) {
+      if (!value) {
+        this.startTime = null
+        this.endTime = null
+      }
+      else {
+        this.startTime = this.val[0]
+        this.endTime = this.val[1]
+      }
     }
   },
   mounted() {
     if (this.val && this.val.length) {
       this.startTime = this.val[0]
       this.endTime = this.val[1]
+      let start = Moment(new Date(2000, 0, 1, this.val[0].split(':')[0], this.val[0].split(':')[1])).add(1, 'm').format('HH:mm')
+      this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
     }
-    console.log(this.prev, this.type, this.val, this.next)
+    if (this.prev.length) {
+      this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
+    }
   },
   methods: {
     onStartChange(e) {
@@ -83,11 +98,12 @@ export default {
         this.endPickerOptions = {}
       }
       else {
-        let start = Moment(`1990-01-01 ${ e }`).add(1, 'm').format('HH:mm')
+        let start = Moment(new Date(2000, 0, 1, e.split(':')[0], e.split(':')[1])).add(1, 'm').format('HH:mm')
         this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
         if (start > this.endTime) {
           this.endTime = start
         }
+        // if (this.type === 'special') console.log(start)
       }
     },
     onClick() {
@@ -99,10 +115,10 @@ export default {
       this.$refs.end.focus()
     },
     onEndBlur(e) {
-      if (this.startTime === this.endTime) {
-        this.errorMessage = '间隔时间太短'
-        return false
-      }
+      // if (this.startTime === this.endTime) {
+      //   this.errorMessage = '间隔时间太短'
+      //   return false
+      // }
       this.$emit('handleBlur', [this.startTime, this.endTime], this.type)
     }
   }

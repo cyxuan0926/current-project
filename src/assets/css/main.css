@@ -224,7 +224,7 @@ img{
   background: transparent;
   cursor: text;
 }
-.m-range-picker.m-disabled-range .el-input__inner{
+.m-range-picker.m-disabled-range .el-input__inner, .m-range-picker.m-disabled-range .endClass.is-disabled .el-input__inner{
   background-color: #f5f7fa;
   color: #c0c4cc;
   cursor: not-allowed;

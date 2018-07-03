@@ -240,7 +240,7 @@ export default {
       withdrawRule: {
         withdrawReason: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
       },
-      remarks: '您的身份信息错误',
+      remarks: '身份信息错误',
       imgSrc: '',
       isIdcard: false,
       btnDisable: false, // 按钮禁用与启用
@@ -283,7 +283,7 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = false
-      this.remarks = '您的身份信息错误'
+      this.remarks = '身份信息错误'
       this.show.authorize = true
     },
     onAuthorization(e) {

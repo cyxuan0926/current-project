@@ -18,6 +18,11 @@ let superAdmin = [{
     meta: { role: '0' },
     component: resolve => require(['@/views/info-visit/visit-config'], resolve)
   }, {
+    path: '/prison/remote/:id',
+    name: '监狱远程会见配置',
+    meta: { permission: 'edit', role: '0' },
+    component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
+  }, {
     path: '/prison/edit/:id',
     name: '编辑监狱',
     meta: {
