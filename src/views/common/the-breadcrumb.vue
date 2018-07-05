@@ -37,12 +37,13 @@ export default {
   methods: {
     ...mapActions(['updateBreadcrumbs']),
     update(e) {
-      let breadcrumbs = ['主页']
-      e.map(item => {
-        if (item.name.match(/[1-9]/g)) return
-        breadcrumbs.push({ name: item.name, path: item.path })
-      })
-      console.log(breadcrumbs)
+      // let breadcrumbs = ['主页']
+      // e.map(item => {
+      //   if (item.name.match(/[1-9]/g)) return
+      //   breadcrumbs.push({ name: item.name, path: item.path })
+      // })
+      // this.updateBreadcrumbs(breadcrumbs)
+      // console.log(breadcrumbs)
     }
   }
 }
