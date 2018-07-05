@@ -255,6 +255,12 @@ export default {
         else {
           params.weekendChanged = 1
         }
+        if ((!params.specialQueue && !this.prison.specialQueue) || (params.specialQueue && this.prison.specialQueue && (params.specialQueue.toString() === this.prison.specialQueue.toString()))) {
+          params.specialChanged = 0
+        }
+        else {
+          params.specialChanged = 1
+        }
         this.updatePrison(params).then(res => {
           if (!res) return
           if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
