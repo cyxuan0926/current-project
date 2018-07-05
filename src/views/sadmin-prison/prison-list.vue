@@ -30,7 +30,7 @@
           <template slot-scope="scope">
             <img
               v-if="scope.row.imageUrl"
-              :src="scope.row.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" 
+              :src="scope.row.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
               alt="">
           </template>
         </el-table-column>
@@ -50,10 +50,19 @@
               v-if="scope.row.street">{{scope.row.street}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="170px">
+        <el-table-column label="操作" width="170px" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row.id)">编辑</el-button>
-            <el-button type="text" size="mini" @click="onVisit(scope.row.id)">实地会见配置</el-button>
+            <el-button type="primary" size="mini" @click="onEdit(scope.row.id)">编辑</el-button><br>
+            <el-button
+              type="text"
+              size="mini"
+              style="margin-top: 7px;"
+              @click="onVisit(scope.row.id, 'remote')">远程会见配置</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              style="margin-left: 0;"
+              @click="onVisit(scope.row.id, 'visit')">实地会见配置</el-button><br>
           </template>
         </el-table-column>
       </el-table>
@@ -100,12 +109,20 @@ export default {
     onEdit(e) {
       this.$router.push(`/prison/edit/${ e }`)
     },
-    onVisit(e) {
-      this.$router.push(`/prison/visit/${ e }`)
+    onVisit(e, type) {
+      if (type === 'visit') {
+        this.$router.push(`/prison/visit/${ e }`)
+      }
+      else {
+        this.$router.push(`/prison/remote/${ e }`)
+      }
     }
   }
 }
 </script>
 
 <style type="text/stylus" lang="stylus" scoped>
+.row-container .cell img
+  width: 91px;
+  height: 91px;
 </style>

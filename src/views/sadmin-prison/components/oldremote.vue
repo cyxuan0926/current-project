@@ -10,22 +10,31 @@
         <div class="el-form-item" :class="{ 'is-required': type.name==='usual' }" style="float: left;">
            <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">{{ type.label }}</label>
         </div>
-        <div style="float: left; width: calc(100% - 150px);">
+        <div class="time-queue" style="float: left; width: calc(100% - 150px);">
           <template v-for="(item, index) in meeting[type.name]">
             <el-form-item
               :key="index"
               :prop="type.name + '.' + index"
-              :rules="[{ required: type.name === 'usual', message: '请选择会见时间段' }]"
-              style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;">
-              <m-time-range-picker
-                :val="meeting[type.name][index]"
-                :prev="meeting[type.name][index - 1]"
-                :next="meeting[type.name][index + 1]"
-                :type="type.name"
-                @handleBlur="handleBlur" />
+              :rules="[{ required: type.name === 'usual', message: '请选择会见时间段' }, { validator: validator.timeRange, prev: meeting[type.name][index - 1], prop: 'canAdd' + type.upperName, flag: flag }]">
+              <el-time-picker
+                is-range
+                arrow-control
+                v-model="meeting[type.name][index]"
+                value-format="H:mm"
+                format="H:mm"
+                :disabled="Boolean(meeting[type.name][index + 1])"
+                :editable="false"
+                :clearable="false"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                :picker-options="index === 0 ? {} : { start: meeting[type.name][index - 1][1], end: '23:59:59', minTime: meeting[type.name][index - 1][1], selectableRange: meeting[type.name][index - 1][1] + ' - 23:59:59' }"
+                @change="getNextTime(type.name)">
+              </el-time-picker>
             </el-form-item>
           </template>
           <el-button
+            v-if="meeting[type.name][meeting[type.name].length - 1] !== null"
             :disabled="!flag['canAdd' + type.upperName]"
             type="primary"
             style="margin-right: 10px; margin-bottom: 22px;"
@@ -64,11 +73,28 @@
             <el-button
               v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
               type="text"
-              @click="onAddRange('specialDate')">新增特殊日期</el-button>
+              @click="addSpecialQueue">新增特殊日期</el-button>
           </div>
         </div>
       </div>
     </el-form>
+    <div class="button-box">
+      <el-button
+        v-if="permission !== 'edit'"
+        size="small"
+        type="primary"
+        @click="onPrevClick">上一步</el-button>
+      <el-button
+        v-if="permission !== 'edit'"
+        size="small"
+        type="primary"
+        @click="onSubmit">新增</el-button>
+      <el-button
+        v-if="permission === 'edit'"
+        size="small"
+        type="primary"
+        @click="onSubmit">更新</el-button>
+    </div>
     <el-dialog
       :visible.sync="flag.dialog"
       class="authorize-dialog"
@@ -78,19 +104,28 @@
         :model="meeting.special[specialIndex]"
         inline
         :rules="rules">
-        <div>
+        <div class="time-queue">
           <el-form-item
             v-for="(q, order) in meeting.special[specialIndex].queue"
             :key="order"
             :prop="'queue.' + order"
             style="width: calc(30% - 10px); margin-right: 10px;"
-            :rules="[{ required: true, message: '请选择会见时间段' }]">
-            <m-time-range-picker
-              :val="q"
-              :prev="meeting.special[specialIndex].queue[order - 1]"
-              :next="meeting.special[specialIndex].queue[order + 1]"
-              type="special"
-              @handleBlur="handleBlur" />
+            :rules="[{ required: true, message: '请选择会见时间段' }, { validator: validator.timeRange, prev: meeting.special[specialIndex][order - 1], prop: 'canAddSpecial', flag: flag }]">
+            <el-time-picker
+              is-range
+              arrow-control
+              v-model="meeting.special[specialIndex].queue[order]"
+              value-format="H:mm"
+              format="H:mm"
+              :disabled="Boolean(meeting.special[specialIndex].queue[order + 1])"
+              :editable="false"
+              :clearable="false"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              :picker-options="order === 0 ? {} : { start: meeting.special[specialIndex].queue[order - 1][1], end: '23:59:59', minTime: meeting.special[specialIndex].queue[order - 1][1], selectableRange: meeting.special[specialIndex].queue[order - 1][1] + ' - 23:59:59' }"
+              @change="getNextTime('special')">
+            </el-time-picker>
           </el-form-item>
           <el-button
             :disabled="!flag.canAddSpecial"
@@ -110,29 +145,16 @@
           @click="onCloseDialog">确定</el-button>
       </template>
     </el-dialog>
-    <div class="button-box">
-      <el-button
-        v-if="permission !== 'edit'"
-        size="small"
-        type="primary"
-        @click="onPrevClick">上一步</el-button>
-      <el-button
-        v-if="permission !== 'edit'"
-        size="small"
-        type="primary"
-        @click="onSubmit">新增</el-button>
-      <el-button
-        v-if="permission === 'edit'"
-        size="small"
-        type="primary"
-        @click="onSubmit">更新</el-button>
-    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import Moment from 'moment'
+import validator from '@/utils'
+
+const fillPre = (val) => {
+  return `00${ val }`.slice(-2)
+}
 
 export default {
   data() {
@@ -146,7 +168,7 @@ export default {
         { name: 'weekend', label: '周末配置', upperName: 'Weekend' }
       ],
       meetingAdd: {
-        usual: [['09:00', '09:30'], ['09:30', '10:00'], ['10:00', '10:30'], ['10:30', '11:00'], ['11:00', '11:30'], ['11:30', '12:00'], ['14:00', '14:30'], ['14:30', '15:00'], ['15:00', '15:30'], ['15:30', '16:00'], ['16:00', '16:30'], ['16:30', '17:00']],
+        usual: [['9:00', '9:30'], ['9:30', '10:00'], ['10:00', '10:30'], ['10:30', '11:00'], ['11:00', '11:30'], ['11:30', '12:00'], ['14:00', '14:30'], ['14:30', '15:00'], ['15:00', '15:30'], ['15:30', '16:00'], ['16:00', '16:30'], ['16:30', '17:00']],
         weekend: [['9:00', '9:30'], ['9:30', '10:00'], ['10:00', '10:30'], ['10:30', '11:00'], ['11:00', '11:30'], ['11:30', '12:00'], ['14:00', '14:30'], ['14:30', '15:00'], ['15:00', '15:30'], ['15:30', '16:00'], ['16:00', '16:30'], ['16:30', '17:00']],
         special: [
           { date: '', queue: [null] }
@@ -160,14 +182,47 @@ export default {
         canAddSpecial: false,
         dialog: false
       },
+      specialIndex: 0,
+      usualToAdd: [],
+      weekendToAdd: [],
+      specialToAdd: [],
       pickerOptions: {
         disabledDate: (time) => {
-          let t = Moment(new Date(time)).format('YYYY-MM-DD')
-          return (time.getTime() < Date.now()) || (this.meeting.special.find(item => item.date === t))
+          let yyyy = time.getFullYear(), MM = fillPre(time.getMonth() + 1), dd = fillPre(time.getDate())
+          return (time.getTime() < Date.now()) || (this.meeting.special.find(item => item.date === `${ yyyy }-${ MM }-${ dd }`))
         }
       },
-      specialIndex: 0,
+      validator,
       permission
+    }
+  },
+  watch: {
+    'meeting.usual': function(val) {
+      if (val[val.length - 1] === null) return
+      if (val[val.length - 1][1] === '23:59') {
+        this.flag.canAddUsual = false
+      }
+      else {
+        this.flag.canAddUsual = true
+      }
+    },
+    'meeting.weekend': function(val) {
+      if (val[val.length - 1] === null) return
+      if (val[val.length - 1][1] === '23:59') {
+        this.flag.canAddWeekend = false
+      }
+      else {
+        this.flag.canAddWeekend = true
+      }
+    },
+    'meeting.special': {
+      handler: function(val) {
+        this.canChangeSpecial()
+      },
+      deep: true
+    },
+    specialIndex(val) {
+      this.canChangeSpecial()
     }
   },
   computed: {
@@ -178,9 +233,6 @@ export default {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
         this.meeting = Object.assign({}, this.prison)
-        this.types.forEach(type => {
-          this.getNextTime(type.name, this.meeting[type.name][this.meeting[type.name].length - 1])
-        })
       })
     }
   },
@@ -194,7 +246,7 @@ export default {
       this.$router.push({ query: Object.assign({}, { tag: 'prisonConfig' }) })
     }
     this.types.forEach(type => {
-      this.getNextTime(type.name, this.meeting[type.name][this.meeting[type.name].length - 1])
+      this.getNextTime(type.name)
     })
   },
   methods: {
@@ -211,19 +263,6 @@ export default {
           }
         }
       })
-    },
-    handleBlur(e, type) {
-      if (type !== 'special') {
-        this.meeting[type][this.meeting[type].length - 1] = e
-        if (type === 'usual') this.$refs.form.validateField('usual.0')
-        this.getNextTime(type, e)
-      }
-      else {
-        let queue = this.meeting.special[this.specialIndex].queue
-        this.meeting.special[this.specialIndex].queue[queue.length - 1] = e
-        this.$refs.special.validateField('queue.0')
-        this.getNextTime(type, e)
-      }
     },
     handleSubmit() {
       if (this.permission !== 'edit') {
@@ -257,7 +296,7 @@ export default {
         }
         this.updatePrison(params).then(res => {
           if (!res) return
-          if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
           // else this.$router.push('/jails/detail')
         })
       }
@@ -286,57 +325,46 @@ export default {
         })
       }
     },
-    onAddRange(type) {
-      if (type === 'specialDate') {
-        this.meeting.special.push({ date: '', queue: [null] })
-      }
-      else if (type === 'special') {
-        this.meeting.special[this.specialIndex].queue.push(this[`${ type }ToAdd`])
-        let queue = this.meeting.special[this.specialIndex].queue
-        this.getNextTime(type, queue[queue.length - 1])
+    onAddRange(e) {
+      let last = e === 'special' ? this.meeting[e][this.specialIndex].queue[this.meeting[e][this.specialIndex].queue.length - 1] : this.meeting[e][this.meeting[e].length - 1]
+      if (last === null) return false
+      this.getNextTime(e)
+      if (e !== 'special') this.meeting[e].push(this[`${ e }ToAdd`])
+      else this.meeting[e][this.specialIndex].queue.push(this[`${ e }ToAdd`])
+    },
+    onRestRange(e) {
+      if (e !== 'special') this.meeting[e] = [null]
+      else this.meeting.special[this.specialIndex].queue = [null]
+    },
+    getNextTime(e) {
+      let last = e === 'special' ? this.meeting[e][this.specialIndex].queue[this.meeting[e][this.specialIndex].queue.length - 1] : this.meeting[e][this.meeting[e].length - 1],
+        start = last[0].split(':'),
+        end = last[1].split(':'),
+        duration = (parseInt(end[0]) - parseInt(start[0])) * 60 + parseInt(end[1]) - parseInt(start[1]),
+        toEnd = new Date(1970, 0, 1, end[0], parseInt(end[1]) + duration)
+      if (toEnd.getDate() !== 1) {
+        this[`${ e }ToAdd`] = [last[1], '23:59']
       }
       else {
-        this.meeting[type].push(this[`${ type }ToAdd`])
-        this.getNextTime(type, this.meeting[type][this.meeting[type].length - 1])
+        var minute = `00${ toEnd.getMinutes() }`.slice(-2)
+        this[`${ e }ToAdd`] = [last[1], `${ toEnd.getHours() }:${ minute }`]
       }
-    },
-    onRestRange(type) {
-      if (type === 'special') {
-        this.meeting.special[this.specialIndex].queue = [null]
-      }
-      else {
-        this.meeting[type] = [null]
-      }
-      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
-    },
-    getNextTime(type, last = null) {
-      if (!this.handleCanAdd(type, last) || !last) return
-      let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
-        end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
-        duration = end.diff(start, 'minutes'),
-        toEnd = end.add(duration, 'minutes')
-      if (toEnd.date() !== 1) {
-        this[`${ type }ToAdd`] = [last[1], '23:59']
-      }
-      else {
-        this[`${ type }ToAdd`] = [last[1], `${ toEnd.format('HH:mm') }`]
-      }
-    },
-    handleCanAdd(type, last) {
-      let flag = true
-      if (last === null) {
-        flag = false
-      }
-      else if (last[1] === '23:59') {
-        flag = false
-      }
-      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
-      return flag
     },
     getSpecialQueue(index) {
       this.specialIndex = index
-      this.getNextTime('special', this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1])
       this.flag.dialog = true
+    },
+    deleteSpecialQueue(index) {
+      if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
+      else {
+        this.meeting.special.splice(index, 1)
+      }
+    },
+    addSpecialQueue() {
+      this.meeting.special.push({ date: '', queue: [null] })
+    },
+    onPrevClick(e) {
+      this.$router.back()
     },
     onCloseDialog() {
       this.$refs.special.validate(valid => {
@@ -346,14 +374,17 @@ export default {
         }
       })
     },
-    deleteSpecialQueue(index) {
-      if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
-      else {
-        this.meeting.special.splice(index, 1)
+    canChangeSpecial() {
+      if (this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1] === null) {
+        this.flag.canAddSpecial = false
+        return
       }
-    },
-    onPrevClick(e) {
-      this.$router.back()
+      if (this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1][1] === '23:59') {
+        this.flag.canAddSpecial = false
+      }
+      else {
+        this.flag.canAddSpecial = true
+      }
     }
   }
 }

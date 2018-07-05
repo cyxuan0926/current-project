@@ -306,7 +306,6 @@ export default {
       this.show.withdraw = true
     },
     onDetail(e) {
-      console.log(e)
       this.toShow = Object.assign({}, e)
     },
     onCloseShow() {

@@ -196,3 +196,36 @@ img{
  .el-form--inline .special-config .el-form-item__content{
   display: block;
 }
+.m-range-picker{
+  border-radius: 4px;
+}
+.m-range-picker .startClass .el-input__inner{
+  padding-left: 25px;
+  padding-right: 0;
+  border: 0;
+  text-align: center;
+}
+.m-range-picker .startClass .el-input__prefix{
+  left: 0;
+}
+.m-range-picker .endClass .el-input__inner{
+  border: 0;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 25px;
+}
+.m-range-picker .endClass .el-input__prefix{
+  display: none;
+}
+.m-range-picker .endClass .el-input__suffix{
+  right: 0;
+}
+.m-range-picker .endClass.is-disabled .el-input__inner{
+  background: transparent;
+  cursor: text;
+}
+.m-range-picker.m-disabled-range .el-input__inner, .m-range-picker.m-disabled-range .endClass.is-disabled .el-input__inner{
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}

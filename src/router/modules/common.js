@@ -1,6 +1,16 @@
 import frame from '@/views/common/the-frame'
 
 let common = [{
+  path: '/test',
+  name: '测试',
+  component: frame,
+  meta: { hidden: true },
+  children: [{
+    path: '/test/test',
+    name: '测试表单',
+    component: resolve => require(['@/views/test/test'], resolve)
+  }]
+}, {
   path: '/login',
   name: '登录',
   meta: { notLogin: true },

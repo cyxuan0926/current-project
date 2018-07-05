@@ -113,16 +113,16 @@ export default {
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
-          if (this.routeRole === '0') {
-            let params = Object.assign({}, this.prisonVisitConfigDetail, { jailId: this.jailId })
-            this.handleQueue(params)
-            delete params.usual
-            delete params.canNotChange
-            this.updatePrisonVisitConfig(params).then(res => {
-              if (!res) return
-              this.render()
-            })
-          }
+          // if (this.routeRole === '0') {
+          let params = Object.assign({}, this.prisonVisitConfigDetail, { jailId: this.jailId })
+          this.handleQueue(params)
+          delete params.usual
+          delete params.canNotChange
+          this.updatePrisonVisitConfig(params).then(res => {
+            if (!res) return
+            this.render()
+          })
+          // }
         }
       })
     },

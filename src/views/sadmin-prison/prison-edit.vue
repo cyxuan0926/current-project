@@ -56,7 +56,9 @@ export default {
         { label: '配置信息', key: 'prisonConfig' }
       ]
       if (this.$route.path === '/remote/config') tabs = [{ label: '远程会见', key: 'prisonRemote' }]
-      if (this.$route.meta.role === '0') tabs.push({ label: '远程会见', key: 'prisonRemote' })
+      else if (this.$route.meta.role === '0' && this.$route.path.search(/\/prison\/remote\/\d+/) > -1) {
+        tabs = [{ label: '远程会见', key: 'prisonRemote' }]
+      }
       this.tabMapOptions = tabs
       this.show = true
     }

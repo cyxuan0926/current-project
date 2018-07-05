@@ -3,11 +3,13 @@ import Search from './modules/search'
 import QuillEditor from './modules/quill-editor'
 import UploadImg from './modules/upload-img'
 import Form from './modules/form'
+import timeRangePicker from './modules/time-range-picker'
 
 export default {
   Pagination,
   Search,
   QuillEditor,
   UploadImg,
-  Form
+  Form,
+  timeRangePicker
 }
