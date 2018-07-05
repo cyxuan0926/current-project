@@ -103,18 +103,22 @@
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
         <img
+          v-if="toAuthorize.idCardFront"
           :src="toAuthorize.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.idCardFront, 'id')"
           alt="身份证正面照">
         <img
+          v-if="toAuthorize.idCardBack"
           :src="toAuthorize.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.idCardBack, 'id')"
           alt="身份证背面照">
         <img
+          v-if="toAuthorize.avatarUrl"
           :src="toAuthorize.avatarUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.avatarUrl)"
           alt="头像">
         <img
+          v-if="toAuthorize.relationalProofUrl"
           :src="toAuthorize.relationalProofUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
           @click="amplifyImage(toAuthorize.relationalProofUrl)"
           alt="关系证明图">
@@ -133,6 +137,7 @@
           plain
           @click="show.authorize = false">关闭</el-button>
       </div>
+      <!-- 同意 -->
       <div
         v-if="show.agree"
         class="button-box">
@@ -148,6 +153,7 @@
           plain
           @click="show.authorize = false">关闭</el-button>
       </div>
+      <!-- 不同意 -->
       <div
         v-if="show.disagree"
         class="button-box">
@@ -160,6 +166,11 @@
             :key="index">
           </el-option>
         </el-select>
+        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="withdrawRule" ref="refuseForm" class="withdraw-box">
+          <el-form-item prop="anotherRemarks">
+            <el-input type="textarea" placeholder="请输入驳回原因..." v-model="refuseForm.anotherRemarks"></el-input>
+          </el-form-item>
+        </el-form>
         <el-button
           plain
           :disabled="btnDisable"
@@ -170,8 +181,9 @@
         <el-button
           type="danger"
           plain
-          @click="show.authorize = false">关闭</el-button>
+          @click="closeWithdraw('refuseForm')">关闭</el-button>
       </div>
+      <!-- 撤回 -->
       <div
         v-if="show.callback"
         class="button-box">
@@ -184,6 +196,11 @@
             :key="index">
           </el-option>
         </el-select>
+        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="withdrawRule" ref="refuseForm" class="withdraw-box">
+          <el-form-item prop="anotherRemarks">
+            <el-input type="textarea" placeholder="请输入驳回原因..." v-model="refuseForm.anotherRemarks"></el-input>
+          </el-form-item>
+        </el-form>
         <el-form :model="withdrawForm" :rules="withdrawRule" ref="withdrawForm" class="withdraw-box">
           <el-form-item prop="withdrawReason">
             <el-input type="textarea" placeholder="请输入撤回理由..." v-model="withdrawForm.withdrawReason"></el-input>
@@ -191,12 +208,13 @@
         </el-form>
         <el-button
           plain
+          :disabled="btnDisable"
           @click="onAuthorization('WITHDRAW')"
           >提交</el-button>
         <el-button
           type="danger"
           plain
-          @click="closeWithdraw">关闭</el-button>
+          @click="closeWithdraw('withdrawForm')">关闭</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -233,10 +251,14 @@ export default {
       withdrawForm: {
         withdrawReason: ''
       },
+      refuseForm: {
+        anotherRemarks: ''
+      },
       withdrawRule: {
+        anotherRemarks: [{ required: true, message: '请填写驳回原因' }],
         withdrawReason: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
       },
-      remarks: '您的身份信息错误',
+      remarks: '身份信息错误',
       imgSrc: '',
       isIdcard: false,
       btnDisable: false, // 按钮禁用与启用
@@ -279,39 +301,51 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = false
-      this.remarks = '您的身份信息错误'
+      this.remarks = '身份信息错误'
       this.show.authorize = true
     },
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
-      if (e === 'DENIED' || e === 'PASSED') {
-        e === 'DENIED' && (params.remarks = this.remarks)
-        this.authorizeRegistrations(params).then(res => {
-          if (res) {
-            this.show.authorize = false
-            this.btnDisable = false
-            this.toAuthorize = {}
-            this.getDatas()
-          }
-        })
+      if ((e === 'DENIED' || e === 'WITHDRAW')) {
+        if (this.remarks === '其他') {
+          this.$refs.refuseForm.validate(valid => {
+            if (valid) {
+              params.remarks = this.refuseForm.anotherRemarks
+            }
+            else {
+              this.btnDisable = false
+            }
+          })
+        }
+        else {
+          params.remarks = this.remarks
+        }
+        if (e === 'WITHDRAW') {
+          this.$refs.withdrawForm.validate(valid => {
+            if (valid) {
+              params.withdrawReason = this.withdrawForm.withdrawReason
+            }
+            else {
+              this.btnDisable = false
+            }
+          })
+        }
+        if (this.btnDisable) this.handleSubmit(params)
       }
-      else if (e === 'WITHDRAW') {
-        this.$refs.withdrawForm.validate(valid => {
-          if (valid) {
-            params.remarks = this.remarks
-            params.withdrawReason = this.withdrawForm.withdrawReason
-            this.authorizeRegistrations(params).then(res => {
-              if (res) {
-                this.show.authorize = false
-                this.btnDisable = false
-                this.toAuthorize = {}
-                this.getDatas()
-              }
-            })
-          }
-        })
+      else {
+        this.handleSubmit(params)
       }
+    },
+    handleSubmit(params) {
+      this.authorizeRegistrations(params).then(res => {
+        this.btnDisable = false
+        if (res) {
+          this.closeWithdraw()
+          this.toAuthorize = {}
+          this.getDatas()
+        }
+      })
     },
     handleCallback(e) {
       this.toAuthorize = e
@@ -328,8 +362,11 @@ export default {
     },
     closeWithdraw() {
       this.show.authorize = false
+      this.remarks = '身份信息错误'
       this.withdrawForm.withdrawReason = ''
-      this.$refs.withdrawForm.clearValidate()
+      this.refuseForm.anotherRemarks = ''
+      if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+      if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     }
   }
 }

@@ -1,15 +1,6 @@
 import frame from '@/views/common/the-frame'
 
 let superAdmin = [{
-  path: '/test',
-  name: '测试',
-  meta: { hidden: true },
-  children: [{
-    path: '/test/test',
-    name: '测试表单',
-    component: resolve => require(['@/views/test/test'], resolve)
-  }]
-}, {
   path: '/prison',
   name: '监狱管理',
   meta: { hidden: true },
@@ -26,6 +17,11 @@ let superAdmin = [{
     name: '监狱实地会见配置',
     meta: { role: '0' },
     component: resolve => require(['@/views/info-visit/visit-config'], resolve)
+  }, {
+    path: '/prison/remote/:id',
+    name: '监狱远程会见配置',
+    meta: { permission: 'edit', role: '0' },
+    component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }, {
     path: '/prison/edit/:id',
     name: '编辑监狱',

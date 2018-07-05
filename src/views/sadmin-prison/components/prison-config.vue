@@ -59,7 +59,7 @@ export default {
         this.$router.push({ query: Object.assign({}, { tag: 'prisonRemote' }) })
       }
       else if (this.permission === 'edit') {
-        let params = Object.assign({}, e, { changed: 0, weekendChanged: 0 })
+        let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
         this.updatePrison(params).then(res => {
           if (!res) return
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')

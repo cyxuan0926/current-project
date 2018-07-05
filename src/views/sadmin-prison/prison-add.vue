@@ -43,6 +43,8 @@ export default {
           return 1
         case 'prisonRemote':
           return 2
+        case 'test':
+          return 3
         default:
           return 0
       }
