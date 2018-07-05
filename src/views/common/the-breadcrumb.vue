@@ -16,6 +16,7 @@ export default {
   },
   watch: {
     $route(to) { // 监听路由变化
+      this.update(to.matched)
       let breadcrumbs = ['主页']
       to.matched.map(item => {
         if (item.name.match(/[1-9]/g)) return
@@ -25,6 +26,7 @@ export default {
     }
   },
   mounted() {
+    this.update(this.$route.matched)
     let breadcrumbs = ['主页']
     this.$route.matched.map(item => {
       if (item.name.match(/[1-9]/g)) return
@@ -33,7 +35,15 @@ export default {
     this.updateBreadcrumbs(breadcrumbs)
   },
   methods: {
-    ...mapActions(['updateBreadcrumbs'])
+    ...mapActions(['updateBreadcrumbs']),
+    update(e) {
+      let breadcrumbs = ['主页']
+      e.map(item => {
+        if (item.name.match(/[1-9]/g)) return
+        breadcrumbs.push({ name: item.name, path: item.path })
+      })
+      console.log(breadcrumbs)
+    }
   }
 }
 </script>

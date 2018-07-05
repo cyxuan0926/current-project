@@ -239,7 +239,9 @@ export default {
       }
       else if (this.permission === 'edit') {
         let params = Object.assign({}, this.meeting)
+        delete params.meetingQueue
         delete params.weekendQueue
+        delete params.specialQueue
         this.handleQueue(params)
         if (params.meetingQueue.toString() !== this.prison.meetingQueue.toString()) {
           params.changed = 1
