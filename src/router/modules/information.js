@@ -63,10 +63,10 @@ let infomation = [{
   name: '远程会见信息',
   meta: { hidden: true },
   children: [{
-    path: '/remote/config',
+    path: '/remote/edit',
     name: '远程会见配置',
-    meta: { permission: 'edit', role: '3' },
-    component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
+    meta: { role: '3' },
+    component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
   }]
 }, {
   path: '/visit',

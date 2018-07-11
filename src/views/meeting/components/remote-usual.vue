@@ -3,22 +3,23 @@
     <el-form
       ref="form"
       label-width="140px"
-      :model="remoteSpecialConfig"
+      :model="remoteUsualConfig"
       inline>
       <div style="clear: both;">
-        <div class="el-form-item" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">特殊日期配置</label>
+        <div class="el-form-item is-required" style="float: left;">
+           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">常规配置</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
-          <template v-for="(item, index) in remoteSpecialConfig.queue">
+          <template v-for="(item, index) in remoteUsualConfig.queue">
             <el-form-item
               :key="index"
               :prop="'queue.' + index"
+              :rules="[{ required: true, message: '请选择会见时间段' }]"
               style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;">
               <m-time-range-picker
-                :val="remoteSpecialConfig.queue[index]"
-                :prev="remoteSpecialConfig.queue[index - 1]"
-                :next="remoteSpecialConfig.queue[index + 1]"
+                :val="remoteUsualConfig.queue[index]"
+                :prev="remoteUsualConfig.queue[index - 1]"
+                :next="remoteUsualConfig.queue[index + 1]"
                 type="queue"
                 @handleBlur="handleBlur" />
             </el-form-item>
@@ -29,7 +30,7 @@
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange">新增会见时间段</el-button>
           <el-button
-            v-if="remoteSpecialConfig.queue.length > 1"
+            v-if="remoteUsualConfig.queue.length > 1"
             style="margin-left: 0; margin-bottom: 22px;"
             @click="onRestRange">重置</el-button>
         </div>
@@ -60,30 +61,27 @@ export default {
     }
   },
   computed: {
-    ...mapState(['remoteSpecialConfig'])
+    ...mapState(['remoteUsualConfig'])
   },
   activated() {
-    this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
+    this.getRemoteUsualConfig({ jailId: this.jailId }).then(res => {
       if (!res) return
-      this.getNextTime(this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1])
+      this.getNextTime(this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1])
     })
   },
   mounted() {
-    console.log('************************************************************mounted weekend')
+    console.log('************************************************************mounted usual')
   },
   methods: {
-    ...mapActions(['getRemoteSpecialConfig', 'updateRemoteSpecialConfig']),
+    ...mapActions(['getRemoteUsualConfig', 'updateRemoteUsualConfig']),
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
-          let params = Object.assign({}, this.remoteSpecialConfig, { jailId: this.jailId })
+          let params = Object.assign({}, this.remoteUsualConfig, { jailId: this.jailId })
           this.handleQueue(params)
-          if ((!params.settings && !this.remoteSpecialConfig.settings) || (params.settings && this.remoteSpecialConfig.settings && params.settings.toString() === this.remoteSpecialConfig.settings.toString())) {
-            return
-          }
-          else {
+          if (params.settings.toString() !== this.remoteUsualConfig.settings.toString()) {
             this.loading = true
-            this.updateRemoteSpecialConfig(params).then(res => {
+            this.updateRemoteUsualConfig(params).then(res => {
               this.loading = false
               if (!res) return
               if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
@@ -93,26 +91,23 @@ export default {
       })
     },
     handleBlur(e) {
-      this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1] = e
+      this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1] = e
       this.$refs.form.validateField('queue.0')
       this.getNextTime(e)
     },
     handleQueue(params) {
-      params.settings = null
-      if (params.queue[0] !== null) {
-        params.settings = []
-        params.queue.forEach(queue => {
-          params.settings.push(`${ queue[0] }-${ queue[1] }`)
-        })
-      }
+      params.settings = []
+      params.queue.forEach(queue => {
+        params.settings.push(`${ queue[0] }-${ queue[1] }`)
+      })
       delete params.queue
     },
     onAddRange() {
-      this.remoteSpecialConfig.queue.push(this.queueToAdd)
-      this.getNextTime(this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1])
+      this.remoteUsualConfig.queue.push(this.queueToAdd)
+      this.getNextTime(this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1])
     },
     onRestRange() {
-      this.remoteSpecialConfig.queue = [null]
+      this.remoteUsualConfig.queue = [null]
       this.flag.canAddQueue = false
     },
     getNextTime(last = null) {

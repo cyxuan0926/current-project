@@ -1,6 +1,5 @@
 <template>
   <el-row id="quill-editor">
-    <!-- bidirectional data binding（双向数据绑定） -->
     <quill-editor :content="contents"
                   ref="myQuillEditor"
                   :options="editorOption"
@@ -8,11 +7,12 @@
     </quill-editor>
     <el-upload
       v-show="false"
-      class="upload-demo"
       :action="_$agency + '/avatars'"
       name="avatar"
       :headers="authorization"
+      :before-upload="beforUpload"
       :on-success="handleSuccess"
+      :on-error="handleError"
       :file-list="fileListForEditor"
       accept="image/jpeg,image/jpg">
       <el-button class="custom-input" size="normal" type="primary" plain>添加富文本图片</el-button>
@@ -22,7 +22,6 @@
 
 <script>
   import { quillEditor } from 'vue-quill-editor'
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
   export default {
     components: { quillEditor },
     props: {
@@ -35,6 +34,7 @@
     data() {
       const _this = this
       return {
+        authorization: { 'Authorization': '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' },
         fileListForEditor: [], // 富文本上传图片列表
         editorOption: {
           placeholder: '请输入内容',
@@ -68,30 +68,44 @@
       }
     },
     computed: {
-      ...mapGetters({
-        // uploadImgResult: 'uploadImgResult', // 获取富文本上传如片的结果
-        authorization: 'authorization' // 上传图片的头部设置
-      }),
       editor() {
         return this.$refs.myQuillEditor.quill
       }
     },
     methods: {
-      ...mapActions({
-        // uploadFile: 'uploadFile' // 富文本上传图片执行的方法
-      }),
-      ...mapMutations({
-        uploadImg: 'uploadImg' // 上传成功将结果进行处理
-      }),
       // 当富文本的内容发生改变的时候传给父组件
       editorChange({ editor, html, text }) {
         this.$emit('editorChange', html, text.substr(0, 100))
       },
       // 上传图片成功执行的方法
       handleSuccess(res) {
-        // 将图片的地址插入到富文本编辑框当中
-        res.code === 200 && this.editor.insertEmbed(this.editor.getSelection().index, 'image', `${ res.url }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`)
-        this.uploadImg(res)
+        switch (res.code) {
+          case 200:
+            this.$message.success('图片上传成功')
+            this.editor.insertEmbed(this.editor.getSelection().index, 'image', `${ res.url }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`)
+            break
+          default:
+            this.$message.error(`上传图片失败:${ res.message }`)
+        }
+      },
+      handleError(err, file) {
+        console.log('富文本图片上传失败', err)
+      },
+      beforUpload(file) {
+        let fileType = 'image/jpeg,image/jpg'.split(',')
+        const isAccept = fileType.indexOf(file.type) > -1
+        const isSize = file.size / 1024 / 1024 < 1
+        if (!isAccept) {
+          let accept = []
+          fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
+          this.$message.error(`请上传${ accept.join('或') }格式的文件`)
+          return false
+        }
+        if (!isSize) {
+          this.$message.error('文件大小不能超过1MB!')
+          return false
+        }
+        return true
       }
     }
   }
