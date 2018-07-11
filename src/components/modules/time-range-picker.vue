@@ -3,7 +3,7 @@
   <div
     class="m-range-picker"
     :class="[
-      { 'm-disabled-range': next.length }]"
+      { 'm-disabled-range': next.length > 0 || disabled }]"
     @click="onClick">
     <el-time-picker
       v-model="startTime"
@@ -12,7 +12,7 @@
       :clearable="false"
       :format="format"
       :value-format="format"
-      :disabled="next.length > 0"
+      :disabled="next.length > 0 || disabled"
       :picker-options="startPickerOptions"
       placeholder="开始时间"
       @blur="onStartBlur"
@@ -22,7 +22,7 @@
       v-model="endTime"
       ref="end"
       class="endClass"
-      :disabled="!startTime || next.length > 0"
+      :disabled="!startTime || next.length > 0 || disabled"
       :clearable="false"
       :format="format"
       :value-format="format"
@@ -51,6 +51,10 @@ export default {
     type: {
       type: String,
       default: 'usu'
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
