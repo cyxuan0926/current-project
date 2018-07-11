@@ -76,7 +76,7 @@ let infomation = [{
     path: '/visit/config',
     name: '实地探监配置',
     meta: { role: '3' },
-    component: resolve => require(['@/views/info-visit/visit-config'], resolve)
+    component: resolve => require(['@/views/meeting/visit-config'], resolve)
   }]
 }]
 
