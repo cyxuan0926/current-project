@@ -145,6 +145,9 @@ export default {
           config.deleting = false
           if (!res) return
           this.remoteSpecialConfig.splice(index, 1)
+          if (!this.remoteSpecialConfig.length) {
+            this.onAddDate()
+          }
         })
       }).catch(() => {})
     },
