@@ -30,7 +30,7 @@
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange">新增会见时间段</el-button>
           <el-button
-            v-if="remoteUsualConfig.queue.length > 1"
+            v-if="remoteUsualConfig.queue[0]"
             style="margin-left: 0; margin-bottom: 22px;"
             @click="onRestRange">重置</el-button>
         </div>
@@ -70,7 +70,6 @@ export default {
     })
   },
   mounted() {
-    console.log('************************************************************mounted usual')
   },
   methods: {
     ...mapActions(['getRemoteUsualConfig', 'updateRemoteUsualConfig']),

@@ -23,7 +23,7 @@ export default {
   components: { usual, weekend, special },
   data() {
     return {
-      activeName: '',
+      activeName: 'usual',
       tabMapOptions: [
         { label: '常规配置', key: 'usual' },
         { label: '周末配置', key: 'weekend' },
@@ -39,18 +39,18 @@ export default {
   },
   methods: {
     handleClick() {
-      this.$router.push({ query: { tag: this.activeName } })
+      this.$router.replace({ query: { tag: this.activeName } })
     },
     render() {
       if (!this.$route.query.tag) {
-        this.$router.push({ query: { tag: this.tabMapOptions[2].key } })
+        this.$router.replace({ query: { tag: this.activeName } })
       }
       else if (this.$route.query.tag !== this.activeName) {
         if (this.tabMapOptions.find(item => item.key === this.$route.query.tag)) {
           this.activeName = this.$route.query.tag
         }
         else {
-          this.activeName = this.tabMapOptions[2].key
+          this.activeName = this.tabMapOptions[0].key
           this.handleClick()
         }
       }

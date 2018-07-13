@@ -104,10 +104,9 @@ export default {
       else {
         let start = Moment(new Date(2000, 0, 1, e.split(':')[0], e.split(':')[1])).add(1, 'm').format('HH:mm')
         this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
-        if (start > this.endTime) {
+        if (start > this.endTime || !this.endTime) {
           this.endTime = start
         }
-        // if (this.type === 'special') console.log(start)
       }
     },
     onClick() {
@@ -131,9 +130,6 @@ export default {
 
 <style type="text/stylus" lang="stylus" scoped>
 .m-range-picker
-  width: 100%;
-  min-width: 140px;
-  max-width: 350px;
   display: flex;
   justify-content: space-between;
   align-items: center;

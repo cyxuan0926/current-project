@@ -5,9 +5,9 @@
         <el-step v-for="(tag, index) in tabMapOptions" :key="index" :title="tag.label" ></el-step>
       </el-steps>
 
-      <template v-for="(item, index) in tabMapOptions">
-        <keep-alive :key="index">
-          <component v-if='status == index' :is="item.key"></component>
+      <template v-for="(item, idx) in tabMapOptions">
+        <keep-alive :key="idx">
+          <component v-if='status == idx' :is="item.key"></component>
         </keep-alive>
       </template>
 
@@ -43,8 +43,6 @@ export default {
           return 1
         case 'prisonRemote':
           return 2
-        case 'test':
-          return 3
         default:
           return 0
       }

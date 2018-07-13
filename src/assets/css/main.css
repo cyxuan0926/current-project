@@ -196,6 +196,33 @@ img{
  .el-form--inline .special-config .el-form-item__content{
   display: block;
 }
+.m-date-form{
+  margin-bottom: 10px;
+}
+.m-date-form, .m-picker{
+  width: calc(25% - 10px);
+  min-width: 140px;
+  max-width: 350px;
+  float: left;
+  height: 40px;
+}
+.m-date-form > .el-form-item__content{
+  width: 100%;
+}
+
+/* .m-picker{
+  width: calc(25% - 35px);
+  min-width: 140px;
+  max-width: 350px;
+}
+.m-picker-0{
+  margin-left: 140px;
+} */
+.m-range-picker, .m-date-picker.el-date-editor{
+  width: 100%;
+  min-width: 140px;
+  max-width: 350px;
+}
 .m-range-picker{
   border-radius: 4px;
 }

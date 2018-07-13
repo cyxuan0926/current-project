@@ -21,8 +21,16 @@ export default {
   getRemoteSpecialConfig: params => {
     return service.get('/jails/special_configs/list', params).then(res => res && res.data)
   },
+  // 远程会见-特殊配置-新增
+  addRemoteSpecialConfig: params => {
+    return service.postObj('/jails/special_configs/add', params).then(res => res && res.data)
+  },
   // 远程会见-特殊配置-编辑
   updateRemoteSpecialConfig: params => {
     return service.postObj('/jails/special_configs/update', params).then(res => res && res.code === 200)
+  },
+  // 远程会见-特殊配置-删除
+  deleteRemoteSpecialConfig: params => {
+    return service.post('/jails/special_configs/delete', params).then(res => res && res.code === 200)
   }
 }

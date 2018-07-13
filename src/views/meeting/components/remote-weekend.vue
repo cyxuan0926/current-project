@@ -29,7 +29,7 @@
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange">新增会见时间段</el-button>
           <el-button
-            v-if="remoteWeekendConfig.queue.length > 1"
+            v-if="remoteWeekendConfig.queue[0]"
             style="margin-left: 0; margin-bottom: 22px;"
             @click="onRestRange">重置</el-button>
         </div>
@@ -69,7 +69,6 @@ export default {
     })
   },
   mounted() {
-    console.log('************************************************************mounted weekend')
   },
   methods: {
     ...mapActions(['getRemoteWeekendConfig', 'updateRemoteWeekendConfig']),

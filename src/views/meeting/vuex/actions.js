@@ -35,20 +35,33 @@ export default {
   getRemoteSpecialConfig({ commit }, params) {
     return http.getRemoteSpecialConfig(params).then(res => {
       if (!res) return
-      console.log(Object.assign({}, res))
-      res.queue = [null]
-      if (res.settings) {
-        res.queue = []
-        res.settings.forEach(queue => {
-          res.queue.push(queue.split('-'))
+      if (res.specialConfigs) {
+        res.specialConfigs.forEach(config => {
+          let queue = []
+          config.settings.forEach(setting => {
+            queue.push(setting.split('-'))
+          })
+          config.canAddQueue = true
+          config.loading = false
+          config.update = false
+          config.deleting = false
+          config.queue = queue
+          config.originQueue = queue.toString()
+          config.originDate = config.effectDate
         })
       }
-      commit('getRemoteSpecialConfig', res)
+      commit('getRemoteSpecialConfig', res.specialConfigs)
       return true
     })
   },
+  addRemoteSpecialConfig: ({ commit }, params) => {
+    return http.addRemoteSpecialConfig(params).then(res => res)
+  },
   updateRemoteSpecialConfig: ({ commit }, params) => {
     return http.updateRemoteSpecialConfig(params).then(res => res)
+  },
+  deleteRemoteSpecialConfig: ({ commit }, params) => {
+    return http.deleteRemoteSpecialConfig(params).then(res => res)
   },
   getPrisonVisitConfigDetail({ commit }, params) {
     return http.getPrisonVisitConfigDetail(params).then(res => {

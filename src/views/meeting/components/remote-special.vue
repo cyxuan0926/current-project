@@ -1,47 +1,78 @@
 <template>
   <div class="yt-form">
     <el-form
-      ref="form"
+      v-for="(special, index) in remoteSpecialConfig"
+      :key="index"
+      :ref="'form' + index"
       label-width="140px"
-      :model="remoteSpecialConfig"
+      :model="special"
+      style="overflow: hidden;"
       inline>
-      <div style="clear: both;">
-        <div class="el-form-item" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">特殊日期配置</label>
+      <div style="overflow: hidden;">
+        <div class="el-form-item" style="float: left; margin-bottom: 10px;">
+           <label class="el-form-item__label" style="width: 140px; padding-right: 0;">请选择日期</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
-          <template v-for="(item, index) in remoteSpecialConfig.queue">
-            <el-form-item
-              :key="index"
-              :prop="'queue.' + index"
-              style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;">
-              <m-time-range-picker
-                :val="remoteSpecialConfig.queue[index]"
-                :prev="remoteSpecialConfig.queue[index - 1]"
-                :next="remoteSpecialConfig.queue[index + 1]"
-                type="queue"
-                @handleBlur="handleBlur" />
-            </el-form-item>
-          </template>
+          <el-form-item
+            class="m-date-form">
+            <el-date-picker
+              v-model="special.effectDate"
+              :clearable="false"
+              :editable="false"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择日期"
+              class="m-date-picker"
+              :picker-options="pickerOptions" />
+          </el-form-item>
           <el-button
-            :disabled="!flag.canAddQueue"
-            type="primary"
-            style="margin-right: 10px; margin-bottom: 22px;"
-            @click="onAddRange">新增会见时间段</el-button>
+            v-if="special.id && special.queue[0] !== null && ((special.effectDate !== special.originDate) || special.update)"
+            type="text"
+            :loading="special.loading"
+            @click="onUpdate(special, index)">更新</el-button>
           <el-button
-            v-if="remoteSpecialConfig.queue.length > 1"
-            style="margin-left: 0; margin-bottom: 22px;"
-            @click="onRestRange">重置</el-button>
+            v-if="special.id"
+            :loading="special.deleting"
+            type="text"
+            style="color: #F56C6C;"
+            @click="handleDelete(special, index)">删除</el-button>
+          <el-button
+            v-if="!special.id && special.queue[0] !== null"
+            type="text"
+            :loading="special.loading"
+            style="color: #F56C6C;"
+            @click="onAdd(special, index)">新增</el-button>
+          <el-button
+            v-if="index === (remoteSpecialConfig.length - 1)"
+            type="text"
+            @click="onAddDate">新增特殊日期</el-button>
         </div>
       </div>
+      <div v-if="special.effectDate" style="float: left; width: calc(100% - 150px); margin-left: 150px;">
+        <template v-for="(item, idx) in special.queue">
+          <el-form-item
+            :key="idx"
+            :prop="'queue.' + idx"
+            class="m-picker">
+            <m-time-range-picker
+              :val="special.queue[idx]"
+              :prev="special.queue[idx - 1]"
+              :next="special.queue[idx + 1]"
+              type="queue"
+              @handleBlur="handleBlur($event, special)" />
+          </el-form-item>
+        </template>
+        <el-button
+          :disabled="!special.canAddQueue"
+          type="primary"
+          style="margin-right: 10px; margin-bottom: 22px; float: left;"
+          @click="onAddRange(special)">新增会见时间段</el-button>
+        <el-button
+          v-if="special.queue[0]"
+          style="margin-left: 0; margin-bottom: 22px;; float: left;"
+          @click="onRestRange(special)">重置</el-button>
+      </div>
     </el-form>
-    <div class="button-box">
-      <el-button
-        size="small"
-        type="primary"
-        :loading="loading"
-        @click="onSubmit">更新</el-button>
-    </div>
   </div>
 </template>
 
@@ -55,8 +86,15 @@ export default {
       flag: {
         canAddQueue: true
       },
+      visible2: false,
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
-      loading: false
+      loading: false,
+      pickerOptions: {
+        disabledDate: (time) => {
+          let t = Moment(new Date(time)).format('YYYY-MM-DD')
+          return (time.getTime() < Date.now()) || (this.remoteSpecialConfig.find(item => item.effectDate === t))
+        }
+      }
     }
   },
   computed: {
@@ -65,78 +103,119 @@ export default {
   activated() {
     this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
       if (!res) return
-      this.getNextTime(this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1])
+      this.remoteSpecialConfig.forEach(config => {
+        this.getNextTime(config.queue[config.queue.length - 1], config)
+      })
     })
   },
   mounted() {
-    console.log('************************************************************mounted weekend')
   },
   methods: {
-    ...mapActions(['getRemoteSpecialConfig', 'updateRemoteSpecialConfig']),
-    onSubmit(e) {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          let params = Object.assign({}, this.remoteSpecialConfig, { jailId: this.jailId })
-          this.handleQueue(params)
-          if ((!params.settings && !this.remoteSpecialConfig.settings) || (params.settings && this.remoteSpecialConfig.settings && params.settings.toString() === this.remoteSpecialConfig.settings.toString())) {
-            return
-          }
-          else {
-            this.loading = true
-            this.updateRemoteSpecialConfig(params).then(res => {
-              this.loading = false
-              if (!res) return
-              if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-            })
-          }
-        }
+    ...mapActions(['getRemoteSpecialConfig', 'addRemoteSpecialConfig', 'updateRemoteSpecialConfig', 'deleteRemoteSpecialConfig']),
+    onAdd(config, index) {
+      let params = this.handleQueue(config)
+      config.loading = true
+      this.addRemoteSpecialConfig(params).then(res => {
+        config.loading = false
+        if (!res) return
+        this.remoteSpecialConfig[index].originDate = config.effectDate
+        this.remoteSpecialConfig[index].originQueue = config.queue.toString()
+        this.remoteSpecialConfig[index].id = res.id
       })
     },
-    handleBlur(e) {
-      this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1] = e
-      this.$refs.form.validateField('queue.0')
-      this.getNextTime(e)
+    onUpdate(config, index) {
+      let params = this.handleQueue(config)
+      config.loading = true
+      this.updateRemoteSpecialConfig(params).then(res => {
+        config.loading = false
+        if (!res) return
+        this.remoteSpecialConfig[index].originDate = config.effectDate
+        this.remoteSpecialConfig[index].originQueue = config.queue.toString()
+        this.remoteSpecialConfig[index].update = false
+      })
     },
-    handleQueue(params) {
-      params.settings = null
-      if (params.queue[0] !== null) {
+    handleDelete(config, index) {
+      this.$confirm(`是否确认删除？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        config.deleting = true
+        this.deleteRemoteSpecialConfig({ id: config.id }).then(res => {
+          config.deleting = false
+          if (!res) return
+          this.remoteSpecialConfig.splice(index, 1)
+        })
+      }).catch(() => {})
+    },
+    handleBlur(e, config) {
+      config.queue[config.queue.length - 1] = e
+      this.getNextTime(e, config)
+      if (!config.id) {
+        config.update = false
+      }
+      else if (config.queue.toString() !== config.originQueue) {
+        config.update = true
+      }
+      else {
+        config.update = false
+      }
+    },
+    handleQueue(config) {
+      let params = {
+        effectDate: config.effectDate,
+        settings: null,
+        jailId: this.jailId
+      }
+      config.id && (params.id = config.id)
+      if (config.queue[0] !== null) {
         params.settings = []
-        params.queue.forEach(queue => {
+        config.queue.forEach(queue => {
           params.settings.push(`${ queue[0] }-${ queue[1] }`)
         })
       }
-      delete params.queue
+      return params
     },
-    onAddRange() {
-      this.remoteSpecialConfig.queue.push(this.queueToAdd)
-      this.getNextTime(this.remoteSpecialConfig.queue[this.remoteSpecialConfig.queue.length - 1])
+    onAddDate() {
+      this.remoteSpecialConfig.push({ id: '', effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false })
     },
-    onRestRange() {
-      this.remoteSpecialConfig.queue = [null]
-      this.flag.canAddQueue = false
+    onAddRange(config) {
+      config.queue.push(config.queueToAdd)
+      this.getNextTime(config.queueToAdd, config)
+      if (!config.id) {
+        config.update = false
+      }
+      else if (config.queue.toString() !== config.originQueue) {
+        config.update = true
+      }
+      else {
+        config.update = false
+      }
     },
-    getNextTime(last = null) {
-      if (!this.handleCanAdd(last) || !last) return
+    onRestRange(config) {
+      config.queue = [null]
+      config.canAddQueue = false
+      config.update = false
+    },
+    getNextTime(last, config) {
+      if (!last || !this.handleCanAdd(last, config)) return
       let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
         end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
         duration = end.diff(start, 'minutes'),
         toEnd = end.add(duration, 'minutes')
       if (toEnd.date() !== 1) {
-        this.queueToAdd = [last[1], '23:59']
+        config.queueToAdd = [last[1], '23:59']
       }
       else {
-        this.queueToAdd = [last[1], `${ toEnd.format('HH:mm') }`]
+        config.queueToAdd = [last[1], `${ toEnd.format('HH:mm') }`]
       }
     },
-    handleCanAdd(last) {
+    handleCanAdd(last, config) {
       let flag = true
-      if (last === null) {
+      if (last[1] === '23:59') {
         flag = false
       }
-      else if (last[1] === '23:59') {
-        flag = false
-      }
-      this.flag.canAddQueue = flag
+      config.canAddQueue = flag
       return flag
     }
   }
