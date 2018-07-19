@@ -29,7 +29,7 @@
             v-if="special.id && special.queue[0] !== null && ((special.effectDate !== special.originDate) || special.update)"
             type="text"
             :loading="special.loading"
-            @click="onUpdate(special, index)">更新</el-button>
+            @click="onUpdate(special, index)">保存修改</el-button>
           <el-button
             v-if="special.id"
             :loading="special.deleting"
@@ -41,7 +41,7 @@
             type="text"
             :loading="special.loading"
             style="color: #F56C6C;"
-            @click="onAdd(special, index)">新增</el-button>
+            @click="onAdd(special, index)">保存</el-button>
           <el-button
             v-if="index === (remoteSpecialConfig.length - 1)"
             type="text"
