@@ -151,7 +151,7 @@ let superAdminMenu = [{
       }
     ]
   }, {
-    path: '/remote/config',
+    path: '/remote/edit',
     title: '远程会见配置',
     icon: 'iconfont icon-yuanchenghuijian'
   }, {

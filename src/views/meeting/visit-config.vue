@@ -22,32 +22,25 @@
         <div class="el-form-item is-required" style="float: left;">
            <label class="el-form-item__label" style="width: 130px; padding-right: 2px;">配置</label>
         </div>
-        <div class="time-queue" style="float: left; width: calc(100% - 140px);">
+        <div style="float: left; width: calc(100% - 140px);">
           <template v-for="(item, index) in prisonVisitConfigDetail.usual">
             <el-form-item
               :key="index"
               :prop="'usual.' + index"
-              :rules="[{ required: true, message: '请选择实地会见批次' }, { validator: validator.timeRange, prev: prisonVisitConfigDetail.usual[index - 1], prop: 'canAddUsual', flag: flag }]">
-              <el-time-picker
-                is-range
-                arrow-control
-                v-model="prisonVisitConfigDetail.usual[index]"
-                value-format="H:mm"
-                format="H:mm"
-                :disabled="Boolean(prisonVisitConfigDetail.usual[index + 1]) || prisonVisitConfigDetail.canNotChange"
-                :editable="false"
-                :clearable="false"
-                range-separator="至"
-                start-placeholder="开始时间"
-                end-placeholder="结束时间"
-                :picker-options="index === 0 ? {} : { start: prisonVisitConfigDetail.usual[index - 1][1], end: '23:59:59', minTime: prisonVisitConfigDetail.usual[index - 1][1], selectableRange: prisonVisitConfigDetail.usual[index - 1][1] + ' - 23:59:59' }"
-                @change="getNextTime('usual')">
-              </el-time-picker>
+              :rules="[{ required: true, message: '请选择实地会见批次' }]"
+              style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;">
+              <m-time-range-picker
+                :val="prisonVisitConfigDetail.usual[index]"
+                :prev="prisonVisitConfigDetail.usual[index - 1]"
+                :next="prisonVisitConfigDetail.usual[index + 1]"
+                :disabled="prisonVisitConfigDetail.canNotChange"
+                type="usual"
+                @handleBlur="handleBlur" />
             </el-form-item>
           </template>
           <el-button
-            v-if="!prisonVisitConfigDetail.canNotChange && prisonVisitConfigDetail.usual[prisonVisitConfigDetail.usual.length - 1] !== null"
-            :disabled="!flag['canAddUsual']"
+            v-if="!prisonVisitConfigDetail.canNotChange"
+            :disabled="!flag.canAddUsual"
             type="primary"
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange('usual')">新增实地会见批次</el-button>
@@ -70,6 +63,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import Moment from 'moment'
 import validator from '@/utils'
 
 export default {
@@ -87,25 +81,13 @@ export default {
       usualToAdd: [],
       routeRole: this.$route.meta.role,
       show: false,
-      jailId,
-      validator
-    }
-  },
-  watch: {
-    'prisonVisitConfigDetail.usual': function(val) {
-      if (val[val.length - 1] === null) return
-      if (val[val.length - 1][1] === '23:59') {
-        this.flag.canAddUsual = false
-      }
-      else {
-        this.flag.canAddUsual = true
-      }
+      jailId
     }
   },
   computed: {
     ...mapState(['prisonVisitConfigDetail'])
   },
-  created() {
+  mounted() {
     this.render()
   },
   methods: {
@@ -113,7 +95,6 @@ export default {
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
-          // if (this.routeRole === '0') {
           let params = Object.assign({}, this.prisonVisitConfigDetail, { jailId: this.jailId })
           this.handleQueue(params)
           delete params.usual
@@ -122,7 +103,6 @@ export default {
             if (!res) return
             this.render()
           })
-          // }
         }
       })
     },
@@ -130,7 +110,15 @@ export default {
       this.getPrisonVisitConfigDetail({ jailId: this.jailId }).then(res => {
         this.show = true
         if (!res) return
+        if (!this.prisonVisitConfigDetail.canNotChange) this.getNextTime('usual', this.prisonVisitConfigDetail.usual[this.prisonVisitConfigDetail.usual.length - 1])
       })
+    },
+    handleBlur(e, type) {
+      if (type !== 'special') {
+        this.prisonVisitConfigDetail[type][this.prisonVisitConfigDetail[type].length - 1] = e
+        if (type === 'usual') this.$refs.form.validateField('usual.0')
+        this.getNextTime(type, e)
+      }
     },
     handleQueue(params) {
       params.batchQueue = []
@@ -138,28 +126,37 @@ export default {
         params.batchQueue.push(`${ queue[0] }-${ queue[1] }`)
       })
     },
-    onAddRange(e) {
-      let last = this.prisonVisitConfigDetail[e][this.prisonVisitConfigDetail[e].length - 1]
-      if (last === null) return false
-      this.getNextTime(e)
-      this.prisonVisitConfigDetail[e].push(this[`${ e }ToAdd`])
+    onAddRange(type) {
+      this.prisonVisitConfigDetail[type].push(this[`${ type }ToAdd`])
+      this.getNextTime(type, this.prisonVisitConfigDetail[type][this.prisonVisitConfigDetail[type].length - 1])
     },
-    onRestRange(e) {
-      this.prisonVisitConfigDetail[e] = [null]
+    onRestRange(type) {
+      this.prisonVisitConfigDetail[type] = [null]
+      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
     },
-    getNextTime(e) {
-      let last = this.prisonVisitConfigDetail[e][this.prisonVisitConfigDetail[e].length - 1],
-        start = last[0].split(':'),
-        end = last[1].split(':'),
-        duration = (parseInt(end[0]) - parseInt(start[0])) * 60 + parseInt(end[1]) - parseInt(start[1]),
-        toEnd = new Date(1970, 0, 1, end[0], parseInt(end[1]) + duration)
-      if (toEnd.getDate() !== 1) {
-        this[`${ e }ToAdd`] = [last[1], '23:59']
+    getNextTime(type, last = null) {
+      if (!this.handleCanAdd(type, last) || !last) return
+      let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
+        end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
+        duration = end.diff(start, 'minutes'),
+        toEnd = end.add(duration, 'minutes')
+      if (toEnd.date() !== 1) {
+        this[`${ type }ToAdd`] = [last[1], '23:59']
       }
       else {
-        var minute = `00${ toEnd.getMinutes() }`.slice(-2)
-        this[`${ e }ToAdd`] = [last[1], `${ toEnd.getHours() }:${ minute }`]
+        this[`${ type }ToAdd`] = [last[1], `${ toEnd.format('HH:mm') }`]
       }
+    },
+    handleCanAdd(type, last) {
+      let flag = true
+      if (last === null) {
+        flag = false
+      }
+      else if (last[1] === '23:59') {
+        flag = false
+      }
+      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
+      return flag
     }
   }
 }
