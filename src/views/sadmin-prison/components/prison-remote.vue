@@ -31,7 +31,7 @@
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange(type.name)">新增会见时间段</el-button>
           <el-button
-            v-if="meeting[type.name].length > 1"
+            v-if="meeting[type.name][0]"
             style="margin-left: 0; margin-bottom: 22px;"
             @click="onRestRange(type.name)">重置{{ type.label }}</el-button>
         </div>
@@ -98,6 +98,7 @@
             style="margin-right: 10px; margin-bottom: 22px;"
             @click="onAddRange('special')">新增会见时间段</el-button>
           <el-button
+            v-if="meeting.special[specialIndex].queue[0]"
             style="margin-left: 0; margin-bottom: 22px;"
             @click="onRestRange('special')">重置</el-button>
         </div>
@@ -147,7 +148,7 @@ export default {
       ],
       meetingAdd: {
         usual: [['09:00', '09:30'], ['09:30', '10:00'], ['10:00', '10:30'], ['10:30', '11:00'], ['11:00', '11:30'], ['11:30', '12:00'], ['14:00', '14:30'], ['14:30', '15:00'], ['15:00', '15:30'], ['15:30', '16:00'], ['16:00', '16:30'], ['16:30', '17:00']],
-        weekend: [['9:00', '9:30'], ['9:30', '10:00'], ['10:00', '10:30'], ['10:30', '11:00'], ['11:00', '11:30'], ['11:30', '12:00'], ['14:00', '14:30'], ['14:30', '15:00'], ['15:00', '15:30'], ['15:30', '16:00'], ['16:00', '16:30'], ['16:30', '17:00']],
+        weekend: [null],
         special: [
           { date: '', queue: [null] }
         ]

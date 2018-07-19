@@ -6,7 +6,6 @@ import passwordModification from './modules/password-modification'
 import quillEditor from './modules/quill-editor'
 import downloadFile from './modules/download-file'
 import uploadFile from './modules/upload-file'
-import uploadImg from './modules/upload-img'
 import breadCrumbs from './modules/breadcrumb'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
@@ -26,7 +25,7 @@ import checkPrisonDataManagement from '@/views/check-prisoner-data/vuex'
 import checkRegistration from '@/views/check-registration/vuex'
 import checkVisit from '@/views/check-visit/vuex'
 import infoPrisonAffairsPublic from '@/views/info-prison-affairs-public/vuex'
-import infoVisit from '@/views/info-visit/vuex'
+import meeting from '@/views/meeting/vuex'
 import noPage from './modules/no-page'
 import websocket from './modules/websocket'
 import login from '@/views/login/vuex'
@@ -53,13 +52,12 @@ merge(
   quillEditor,
   downloadFile,
   uploadFile,
-  uploadImg,
   adminLog,
   breadCrumbs,
   adminFeedback,
   adminPrisonUser,
   infoPrisonAffairsPublic,
-  infoVisit,
+  meeting,
   filter,
   adminAdvertisement,
   adminPrison,

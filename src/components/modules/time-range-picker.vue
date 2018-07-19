@@ -3,7 +3,7 @@
   <div
     class="m-range-picker"
     :class="[
-      { 'm-disabled-range': next.length }]"
+      { 'm-disabled-range': next.length > 0 || disabled }]"
     @click="onClick">
     <el-time-picker
       v-model="startTime"
@@ -12,7 +12,7 @@
       :clearable="false"
       :format="format"
       :value-format="format"
-      :disabled="next.length > 0"
+      :disabled="next.length > 0 || disabled"
       :picker-options="startPickerOptions"
       placeholder="开始时间"
       @blur="onStartBlur"
@@ -22,7 +22,7 @@
       v-model="endTime"
       ref="end"
       class="endClass"
-      :disabled="!startTime || next.length > 0"
+      :disabled="!startTime || next.length > 0 || disabled"
       :clearable="false"
       :format="format"
       :value-format="format"
@@ -51,6 +51,10 @@ export default {
     type: {
       type: String,
       default: 'usu'
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -100,10 +104,9 @@ export default {
       else {
         let start = Moment(new Date(2000, 0, 1, e.split(':')[0], e.split(':')[1])).add(1, 'm').format('HH:mm')
         this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
-        if (start > this.endTime) {
+        if (start > this.endTime || !this.endTime) {
           this.endTime = start
         }
-        // if (this.type === 'special') console.log(start)
       }
     },
     onClick() {
@@ -127,9 +130,6 @@ export default {
 
 <style type="text/stylus" lang="stylus" scoped>
 .m-range-picker
-  width: 100%;
-  min-width: 140px;
-  max-width: 350px;
   display: flex;
   justify-content: space-between;
   align-items: center;
