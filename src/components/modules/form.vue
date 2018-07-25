@@ -142,7 +142,7 @@ export default {
         if (range[1] !== '') validate.max = parseInt(range[1])
         return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
       }
-      let plea = ['input', 'editor'].indexOf(type) > -1 ? '请输入' : '请选择'
+      let plea = ['input', 'editor', 'jaileditor'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
         case 'required':
           return { message: `${ plea }${ label }`, required: true, validator: validator.required }

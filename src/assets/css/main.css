@@ -5,6 +5,9 @@ img{
   vertical-align: middle;
   border: 0;
 }
+p{
+  margin: 0;
+}
 .el-submenu__icon-arrow{
   margin-top: -5px;
 }
@@ -256,7 +259,21 @@ img{
   color: #c0c4cc;
   cursor: not-allowed;
 }
-.mce-notification.mce-notification-warning{
-  visibility: hidden;
-  z-index: -2;
+.mce-tinymce.mce-container{
+  box-shadow: none;
+  box-sizing: border-box;
+  border-color: #dcdfe6;
+  border-radius: 4px;
+}
+.mce-container .mce-panel{
+  border-color: #dcdfe6;
+}
+.mce-container .mce-top-part::before{
+  box-shadow: none;
+}
+.mce-container .mce-menubar{
+  display: none;
+}
+.mce-btn-group .mce-listbox{
+  border-color: #e2e4e7;
 }

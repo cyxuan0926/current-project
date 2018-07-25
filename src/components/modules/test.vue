@@ -1,42 +1,74 @@
 <template>
     <div>
-        <editor
-          :id="tinymceId"
-          :init="init" />
-        <!-- <textarea :id="tinymceId"></textarea> -->
+        <div :id="tinymceId"></div>
+        <tinymce-img
+          ref="upload1"
+          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+          @success="handleSuccess" />
     </div>
 </template>
 
 <script>
-// import tinymce from '@tinymce/tinymce-vue'
-import Editor from '@tinymce/tinymce-vue'
+import tinymceImg from './tinymceImage'
 
 export default {
-  components: { Editor },
+  components: { tinymceImg },
+  props: {
+    value: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
+      hasChanged: false,
+      hasInit: false,
       tinymceId: this.id || `vue-tinymce-${ +new Date() }`
     }
   },
-  computed: {
-    init() {
-      return {
-        plugins: 'advlist autolink link image lists charmap print preview',
-        language: 'zh-CN'
+  watch: {
+    value(val) {
+      if (!this.hasChange && this.hasInit) {
+        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(val))
       }
     }
   },
-  watch: {
-  },
   mounted() {
-    console.log(this.init)
-    // console.log(`#${ this.tinymceId }`, Object.assign({}, tinymce.props))
-    // tinymce.props.init({
-    //   selector: `#${ this.tinymceId }`,
-    //   plugins: 'advlist autolink link image lists charmap print preview'
-    // })
+    window.tinymce.init({
+      selector: `#${ this.tinymceId }`,
+      language: 'zh_CN',
+      menubar: '',
+      height: 300,
+      resize: false,
+      branding: false,
+      content_style: 'blockquote{padding: 10px 20px; margin: 0 0 20px; font-size: initial; border-left: 5px solid #eee;} p{ margin: 0; line-height: 1.42857143; }.mce-panel{ box-sizing: border-box; }',
+      plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table',
+      toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload | removeformat searchreplace undo redo | preview',
+      init_instance_callback: editor => { //  media
+        this.hasInit = true
+        if (this.value) {
+          editor.setContent(this.value)
+        }
+        editor.on('NodeChange Change KeyUp', () => {
+          this.hasChange = true
+          this.$emit('editorChange', editor.getContent({ format: 'raw' }))
+        })
+      },
+      setup: editor => {
+        editor.addButton('imageUpload', {
+          icon: 'image',
+          tooltip: '选择图片',
+          onclick: (data) => {
+            this.$refs.upload1.$refs.uploadImg.$refs['upload-inner'].$refs.input.click()
+          }
+        })
+      }
+    })
   },
   methods: {
+    handleSuccess(e) {
+      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.upload1.headers.Authorization }' >`)
+    }
   }
 }
 </script>
