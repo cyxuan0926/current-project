@@ -18,7 +18,7 @@ export default {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '140px' },
         title: { type: 'input', label: '监狱名称', rules: ['required'] },
-        description: { type: 'editor', label: '监狱简介', rules: ['required'] },
+        description: { type: 'jaileditor', label: '监狱简介', rules: ['required'] },
         provincesId: { type: 'select', label: '所在省', rely: 'citysId', func: this.onProvinceChange, loading: true, rules: ['required'], action: 'getProvincesAll' },
         citysId: { type: 'select', label: '所在市', rules: ['required'], defer: true, disabled: true, loading: true },
         street: { type: 'input', label: '街道' },

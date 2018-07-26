@@ -69,6 +69,10 @@ export default {
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)
   },
+  // 家属信息管理-详情
+  getFamilyDetail: params => {
+    return service.get('/families/basicInfo', params).then(res => res && res.data)
+  },
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {
     return service.get('/prisoners/processing', params).then(res => res && res.data)
@@ -80,6 +84,14 @@ export default {
   // 数据管理-罪犯奖惩数据导入-上传到服务器
   importPrisonerRewardPunishment: params => {
     return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
+  },
+  // 数据管理-零花钱数据导入-上传并解析
+  uploadPocketMoneyExcel: params => {
+    return service.postFile('/pocket_money/examine', params).then(res => res && res.data)
+  },
+  // 数据管理-零花钱数据导入-导入解析成功的数据
+  importPocketMoney: params => {
+    return service.post('/pocket_money/upload', params).then(res => res && res.data)
   },
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)

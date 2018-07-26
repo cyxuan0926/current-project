@@ -26,5 +26,11 @@ export default {
   // 罪犯奖惩模板上传成功后将罪犯奖惩模板导入到服务端
   importPrisonerRewardPunishment: (state, prisonerRewardPunishmentResult) => {
     state.prisonerRewardPunishmentResult = prisonerRewardPunishmentResult
+  },
+  uploadPocketMoneyExcel: (state, params) => {
+    state.uploadPocketMoneyExcelResult = params
+  },
+  importPocketMoney: (state, params) => {
+    state.importPocketMoneyResult = params
   }
 }

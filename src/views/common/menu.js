@@ -102,6 +102,10 @@ let superAdminMenu = [{
         path: '/prisoner-data/reward-punishment',
         title: '罪犯奖惩数据导入',
         icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/prisoner-data/pocket-money',
+        title: '零花钱数据导入',
+        icon: 'iconfont icon-circle-o'
       }
     ]
   }, {
