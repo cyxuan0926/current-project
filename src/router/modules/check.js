@@ -88,6 +88,10 @@ let check = [{
     path: '/prisoner-data/reward-punishment',
     name: '罪犯奖惩数据导入',
     component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve)
+  }, {
+    path: '/prisoner-data/pocket-money',
+    name: '零花钱数据导入',
+    component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve)
   }]
 }]
 

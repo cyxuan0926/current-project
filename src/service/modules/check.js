@@ -85,6 +85,14 @@ export default {
   importPrisonerRewardPunishment: params => {
     return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
   },
+  // 数据管理-零花钱数据导入-上传并解析
+  uploadPocketMoneyExcel: params => {
+    return service.postFile('/pocket_money/examine', params).then(res => res && res.data)
+  },
+  // 数据管理-零花钱数据导入-导入解析成功的数据
+  importPocketMoney: params => {
+    return service.post('/pocket_money/upload', params).then(res => res && res.data)
+  },
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
   }
