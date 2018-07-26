@@ -108,7 +108,12 @@ let superAdminMenu = [{
         icon: 'iconfont icon-circle-o'
       }
     ]
-  }],
+  }, {
+    path: '/prisoner-pocket-money/list',
+    title: '服刑人员零花钱管理',
+    icon: 'iconfont icon-linghuaqianguanli'
+  }
+  ],
   shopMenu = [{
     path: '/goods_management',
     title: '商品管理',

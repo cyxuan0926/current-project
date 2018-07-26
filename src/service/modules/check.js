@@ -95,5 +95,9 @@ export default {
   },
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
+  },
+  // 服刑人员零花钱管理-列表
+  getPrisonersPocketMoney: params => {
+    return service.get('/pocket_money/page', params).then(res => res && res.data)
   }
 }

@@ -14,6 +14,7 @@ Object.keys(filterObj).forEach(k => {
     return res.label
   }
 })
+
 export default {
   ...filters,
   ...date,
