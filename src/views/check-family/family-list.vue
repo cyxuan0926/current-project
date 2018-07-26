@@ -127,6 +127,7 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      console.log({ ...this.filter, ...this.pagination })
       this.getFamilies({ ...this.filter, ...this.pagination })
     },
     onSearch() {

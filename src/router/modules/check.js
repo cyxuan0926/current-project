@@ -84,6 +84,15 @@ let check = [{
     name: '罪犯奖惩数据导入',
     component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve)
   }]
+}, {
+  path: '/prisoner-pocket-money',
+  name: '服刑人员零花钱管理',
+  meta: { hidden: true },
+  children: [{
+    path: '/prisoner-pocket-money/list',
+    name: '服刑人员零花钱列表',
+    component: resolve => require(['@/views/check-prisoner-pocket-money/prisoner-pocket-money-list'], resolve)
+  }]
 }]
 
 check.forEach(item => {

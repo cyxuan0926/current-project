@@ -14,6 +14,7 @@
     <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
+          :disabled="item.disabled"
           v-if="item.type === 'input'"
           v-model="item.value"
           :placeholder="'请输入' + item.label" />
@@ -55,6 +56,16 @@
           format="yyyy-MM-dd HH:mm:ss"
           value-format="yyyy-MM-dd HH:mm:ss"
           :default-time="['00:00:00', '23:59:59']">
+        </el-date-picker>
+        <el-date-picker
+          v-if="item.type === 'daterange'"
+          v-model="item.value"
+          unlink-panels
+          type="daterange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM"
+          value-format="yyyy-MM">
         </el-date-picker>
       </template>
       <template>
@@ -116,7 +127,7 @@ export default {
         let params = {}
         Object.keys(this.items).forEach(key => {
           if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-          if (this.items[key].type === 'datetimerange') {
+          if (this.items[key].type === 'datetimerange' || this.items[key].type === 'daterange') {
             params[this.items[key].start] = this.items[key].value[0]
             params[this.items[key].end] = this.items[key].value[1]
           }
@@ -165,4 +176,7 @@ export default {
   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
     width: 320px;
     max-width: 320px;
+  .el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner
+    width 230px
+    max-width  230px
 </style>

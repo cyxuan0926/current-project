@@ -1,6 +1,7 @@
 export default {
   // 罪犯数据模板上传成功后将罪犯数据模板导入到服务端
   importPrisoner: (state, prisonerDataResult) => {
+    console.log(prisonerDataResult)
     state.prisonerDataResult = prisonerDataResult
   },
 
