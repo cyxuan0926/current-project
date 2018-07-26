@@ -17,7 +17,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="0">
-      <el-col :span="6"
+      <el-col :span="22"
         :offset="2">
         <el-upload class="upload-demo"
           ref="upload"
