@@ -66,6 +66,11 @@ let check = [{
     path: '/family/list',
     name: '家属列表',
     component: resolve => require(['@/views/check-family/family-list'], resolve)
+  },
+  {
+    path: '/family/detail/:id',
+    name: '家属账户详情',
+    component: resolve => require(['@/views/check-family/family-detail'], resolve)
   }]
 }, {
   path: '/prisoner-data',

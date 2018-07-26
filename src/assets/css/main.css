@@ -182,7 +182,7 @@ p{
   min-width: 140px;
   max-width: 350px;
 }
-.yt-form .button-box{
+.yt-form .button-box, .detail-container .button-box{
   padding-bottom: 20px;
   display: flex;
   justify-content: flex-end;

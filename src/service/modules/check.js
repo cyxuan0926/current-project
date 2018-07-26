@@ -69,6 +69,10 @@ export default {
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)
   },
+  // 家属信息管理-详情
+  getFamilyDetail: params => {
+    return service.get('/families/basicInfo', params).then(res => res && res.data)
+  },
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {
     return service.get('/prisoners/processing', params).then(res => res && res.data)
