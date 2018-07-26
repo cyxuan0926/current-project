@@ -7,7 +7,7 @@
         </el-form-item>
         <el-form-item class="is-required" label="新闻内容" prop="contents">
           <!-- <m-quill-editor @editorChange="editorChange"></m-quill-editor> -->
-          <m-test @editorChange="editorChange"></m-test>
+          <m-tinymce @editorChange="editorChange"></m-tinymce>
         </el-form-item>
         <el-form-item label="新闻图片">
           <m-upload-img v-model="news.imageUrl" @success="onSuccess"></m-upload-img>

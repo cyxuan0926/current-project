@@ -43,7 +43,7 @@
       v-if="item.type === 'editor'"
       :contents="fields[prop]"
       @editorChange="editorChange" />
-    <m-test
+    <m-tinymce
       v-if="item.type === 'jaileditor'"
       :value="fields[prop]"
       @editorChange="editorChange" />

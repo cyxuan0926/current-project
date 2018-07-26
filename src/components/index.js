@@ -4,7 +4,7 @@ import QuillEditor from './modules/quill-editor'
 import UploadImg from './modules/upload-img'
 import Form from './modules/form'
 import timeRangePicker from './modules/time-range-picker'
-import test from './modules/test'
+import tinymce from './modules/tinymce'
 
 export default {
   Pagination,
@@ -13,5 +13,5 @@ export default {
   UploadImg,
   Form,
   timeRangePicker,
-  test
+  tinymce
 }
