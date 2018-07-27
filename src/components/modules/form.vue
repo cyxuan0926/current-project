@@ -82,12 +82,16 @@ export default {
       dismiss: ['buttons', 'formConfigs'],
       fields: {},
       rules: {},
-      flag: false
+      flag: false,
+      destroyed: false
     }
   },
   mounted() {
     // console.log(8888, this.values)
     this.render()
+  },
+  beforeDestroy() {
+    this.destroyed = true
   },
   methods: {
     onPrevClick(e) {
@@ -114,6 +118,7 @@ export default {
       this.flag = true
     },
     validateField(e) {
+      if (this.destroyed) return
       this.$refs.form.validateField(e)
     },
     initSelect(item, key) {

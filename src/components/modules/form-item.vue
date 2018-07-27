@@ -46,6 +46,7 @@
     <m-tinymce
       v-if="item.type === 'jaileditor'"
       :value="fields[prop]"
+      tools="allTools"
       @editorChange="tinymceChange" />
   </el-form-item>
 </template>
