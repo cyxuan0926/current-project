@@ -51,7 +51,7 @@ export default {
         }
         editor.on('NodeChange Change KeyUp', () => {
           this.hasChange = true
-          this.$emit('editorChange', editor.getContent({ format: 'raw' }))
+          this.$emit('editorChange', editor.getContent({ format: 'raw' }), editor.getContent({ format: 'text' }), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
         })
       },
       setup: editor => {
@@ -64,6 +64,9 @@ export default {
         })
       }
     })
+  },
+  destroyed() {
+    window.tinymce.get(this.tinymceId).destroy()
   },
   methods: {
     handleSuccess(e) {

@@ -46,7 +46,7 @@
     <m-tinymce
       v-if="item.type === 'jaileditor'"
       :value="fields[prop]"
-      @editorChange="editorChange" />
+      @editorChange="tinymceChange" />
   </el-form-item>
 </template>
 
@@ -76,6 +76,11 @@ export default {
     },
     editorChange(contents, text) {
       this.fields[this.prop] = contents
+      this.$emit('validateField', this.prop)
+    },
+    tinymceChange(contents, text, content) {
+      if (!content) this.fields[this.prop] = ''
+      else this.fields[this.prop] = contents
       this.$emit('validateField', this.prop)
     },
     onSuccess(e) {
