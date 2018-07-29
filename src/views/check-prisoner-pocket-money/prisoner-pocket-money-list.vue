@@ -36,7 +36,7 @@
         searchItems: {
           name: { type: 'input', label: '姓名' },
           prisonerNumber: { type: 'input', label: '囚号' },
-          time: { type: 'daterange', start: 'start', end: 'end' },
+          time: { type: 'monthrange', start: 'start', end: 'end' },
           prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
         }
       }

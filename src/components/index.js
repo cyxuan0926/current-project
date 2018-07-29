@@ -5,7 +5,7 @@ import UploadImg from './modules/upload-img'
 import Form from './modules/form'
 import timeRangePicker from './modules/time-range-picker'
 import tinymce from './modules/tinymce'
-
+import monthRangePicker from './modules/month-range-picker'
 export default {
   Pagination,
   Search,
@@ -13,5 +13,6 @@ export default {
   UploadImg,
   Form,
   timeRangePicker,
-  tinymce
+  tinymce,
+  monthRangePicker
 }
