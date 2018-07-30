@@ -63,6 +63,7 @@ export default {
         this.$message.error(`请上传${ accept.join('或') }格式的文件`)
         return false
       }
+      this.$message.warning('正在上传，请耐心等待')
       return true
     },
     handleExceed() {

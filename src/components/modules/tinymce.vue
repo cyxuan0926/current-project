@@ -4,12 +4,12 @@
         <tinymce-image
           ref="uploadImage"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="handleSuccess" />
+          @success="handleImageSuccess" />
         <tinymce-video
           ref="uploadVideo"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
           @success="handleVideoSuccess" />
-        <tinymce-Audio
+        <tinymce-audio
           ref="uploadAudio"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
           @success="handleAudioSuccess" />
@@ -98,10 +98,12 @@ export default {
     window.tinymce.get(this.tinymceId).destroy()
   },
   methods: {
-    handleSuccess(e) {
+    handleImageSuccess(e) {
+      if (!e) return
       window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' >`)
     },
     handleVideoSuccess(e) {
+      if (!e) return
       let htmlString = `<video controls poster=""">
         <source
           src='${ e }'
@@ -113,10 +115,10 @@ export default {
           src='${ e }'
           type='video/ogg'>您的浏览器不支持Video标签。
       </video>`
-      console.log(htmlString)
       window.tinymce.get(this.tinymceId).insertContent(htmlString)
     },
     handleAudioSuccess(e) {
+      if (!e) return
       let htmlString = `<audio controls">
         <source
           src='${ e }'
@@ -125,7 +127,6 @@ export default {
           src='${ e }'
           type='audio/ogg'>您的浏览器不支持Video标签。
       </audio>`
-      console.log(htmlString)
       window.tinymce.get(this.tinymceId).insertContent(htmlString)
     }
   }

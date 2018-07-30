@@ -55,14 +55,11 @@ export default {
       }
     },
     beforUpload(file) {
-      // let fileType = this.accept.split(',')
-      // const isAccept = fileType.indexOf(file.type) > -1
-      // if (!isAccept) {
-      //   let accept = []
-      //   fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
-      //   this.$message.error(`请上传${ accept.join('或') }格式的文件`)
-      //   return false
-      // }
+      if (file.type.indexOf('audio/') !== 0) {
+        this.$message.error(`请上传音频文件`)
+        return false
+      }
+      this.$message.warning('正在上传，请耐心等待')
       return true
     },
     handleExceed() {
