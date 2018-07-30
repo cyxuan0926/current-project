@@ -9,5 +9,8 @@ export default {
   // },
   // withdrawMeeting({ commit }, params) {
   //   return http.withdrawMeeting(params).then(res => res)
+  },
+  deletePrisonArea({ commit }, params) {
+    return http.deletePrisonArea(params).then(res => res)
   }
 }

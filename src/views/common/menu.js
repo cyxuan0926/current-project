@@ -171,8 +171,7 @@ let superAdminMenu = [{
     path: '/account/list',
     title: '账户管理',
     icon: 'iconfont icon-zhanghuguanli'
-  },
-  {
+  }, {
     path: '/prison-area/list',
     title: '监区管理',
     icon: 'iconfont icon-jianquxinxi'

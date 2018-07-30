@@ -25,11 +25,15 @@
         <el-table-column
           prop="jailName"
           label="所属监狱" />
-        <el-table-column prop="createAt" label="创建时间">
-          <template slot-scope="scope"></template>
+        <el-table-column prop="createdAt" label="创建时间">
+          <template slot-scope="scope">
+            {{scope.row.createdAt | Date}}
+          </template>
         </el-table-column>
-        <el-table-column prop="createAt" label="更新时间">
-          <template slot-scope="scope"></template>
+        <el-table-column prop="updatedAt" label="更新时间">
+          <template slot-scope="scope">
+            {{scope.row.updatedAt | Date}}
+          </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -39,7 +43,7 @@
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
             <el-button
               size="mini"
-              type="danger">删除</el-button>
+              type="danger"  @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,7 +51,6 @@
     <m-pagination
       ref="pagination"
       :total="prisonAreas.total"
-      :showTotal="showTotal"
       @onPageChange="getDatas" />
     <el-dialog
       :visible.sync="dialogVisible"
@@ -85,8 +88,7 @@ export default {
       },
       dialogVisible: false,
       prisonArea: {},
-      index: '',
-      showTotal: true
+      index: ''
     }
   },
   computed: {
@@ -97,19 +99,22 @@ export default {
   },
   mounted() {
     this.getDatas()
-    this.getPrisonAll().then(() => {
-      this.searchItems.jailId.options = this.prisonAll
-      this.searchItems.jailId.getting = false
-    })
+    if (this.roleType !== '4') {
+      this.getPrisonAll().then(() => {
+        this.searchItems.jailId.options = this.prisonAll
+        this.searchItems.jailId.getting = false
+      })
+    }
   },
   methods: {
-    ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea']),
+    ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea', 'deletePrisonArea']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getPrisonAreas({ ...this.filter, ...this.pagination })
+      if (this.roleType !== '4') this.getPrisonAreas({ ...this.filter, ...this.pagination })
+      else this.getPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -124,6 +129,19 @@ export default {
         if (!res) return
         this.prisonAreas.contents[this.index].name = this.prisonArea.name
         this.dialogVisible = false
+        this.getDatas()
+      })
+    },
+    handleDelete(id) {
+      this.$confirm('是否确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deletePrisonArea({ id: id }).then(res => {
+          if (!res) return
+          this.getDatas()
+        })
       })
     }
   }
