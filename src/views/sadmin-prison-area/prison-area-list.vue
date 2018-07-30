@@ -126,10 +126,10 @@ export default {
     },
     onEdit() {
       this.updatePrisonArea(this.prisonArea).then(res => {
-        if (!res) return
+        if (res.code !== 200) return
         this.prisonAreas.contents[this.index].name = this.prisonArea.name
+        this.prisonAreas.contents[this.index].updatedAt = res.data.prisonConfig.updatedAt
         this.dialogVisible = false
-        this.getDatas()
       })
     },
     handleDelete(id) {
@@ -141,6 +141,12 @@ export default {
         this.deletePrisonArea({ id: id }).then(res => {
           if (!res) return
           this.getDatas()
+        })
+      }).catch(() => {
+        this.$message({
+          showClose: true,
+          type: 'info',
+          message: '已取消删除'
         })
       })
     }

@@ -126,7 +126,7 @@ export default {
   },
   // 监区管理-编辑
   updatePrisonArea: params => {
-    return service.post('/prison_config/update', params).then(res => res && res.code === 200)
+    return service.post('/prison_config/update', params).then(res => res)
   },
   // 监区管理-删除
   deletePrisonArea: params => {
