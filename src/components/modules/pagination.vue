@@ -1,6 +1,6 @@
 <template>
-  <el-col :span="24" :class="showTotal?'showTotal-pagination':''" class="m-pagination">
-      <span v-if="showTotal">共{{total}}条记录</span>
+  <el-col :span="24" class="m-pagination showTotal-pagination">
+      <span>共{{ total }}条记录</span>
       <el-pagination
         background
         layout="prev, pager, next"
@@ -21,10 +21,6 @@ export default {
     total: {
       type: Number,
       default: 0
-    },
-    showTotal: {
-      type: Boolean,
-      default: false
     }
   },
   data() {

@@ -11,7 +11,7 @@
       </el-select>
       条记录
     </div>
-    <div class="filter-right" v-if="items">
+    <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
           clearable
