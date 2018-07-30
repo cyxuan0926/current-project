@@ -13,7 +13,7 @@
       @change="onChange"
       :picker-options="startObj"
     />
-    <span>~</span>
+    <span>-</span>
     <el-date-picker
       v-model="endDate"
       ref="end"
@@ -98,6 +98,8 @@ export default {
   position relative
   border 1px solid #dcdfe6
   box-sizing border-box
+  &:hover
+    border-color #c0c4cc
   /*& > div:nth-child(2)*/
     /*width 48%*/
   & > span:first-child

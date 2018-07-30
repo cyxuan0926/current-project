@@ -297,3 +297,8 @@ p{
 .m-range-picker .startMonthClass .el-input__prefix{
   left: 0;
 }
+.showTotal-pagination{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
