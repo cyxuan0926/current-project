@@ -277,3 +277,10 @@ p{
 .mce-btn-group .mce-listbox{
   border-color: #e2e4e7;
 }
+.iconfont.icon-yinpin{
+  font-weight: bold;
+  font-size: 22px;
+}
+.iconfont.icon-yinpin:before{
+  margin-left: -3px;
+}
