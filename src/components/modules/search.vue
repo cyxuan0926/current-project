@@ -11,7 +11,7 @@
       </el-select>
       条记录
     </div>
-    <div class="filter-right">
+    <div class="filter-right" v-if="items">
       <template v-for="(item, index) in items">
         <el-input
           clearable
@@ -127,8 +127,6 @@ export default {
       this.$emit('sizeChange', this.pageSize)
     },
     onSearch() {
-      console.log(this.monthValue)
-      console.log(this.items)
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {

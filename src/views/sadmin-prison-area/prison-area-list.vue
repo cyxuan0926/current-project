@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
-      :items="searchItems"
+      :items="roleType !== '4' ? searchItems: null "
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -11,7 +11,7 @@
         value="first"
         type="card">
         <el-tab-pane
-          label="监区说明管理"
+          label="监区管理"
           name="first" />
       </el-tabs>
       <el-table
@@ -25,12 +25,21 @@
         <el-table-column
           prop="jailName"
           label="所属监狱" />
+        <el-table-column prop="createAt" label="创建时间">
+          <template slot-scope="scope"></template>
+        </el-table-column>
+        <el-table-column prop="createAt" label="更新时间">
+          <template slot-scope="scope"></template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               size="mini"
               type="primary"
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
+            <el-button
+              size="mini"
+              type="danger">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -38,6 +47,7 @@
     <m-pagination
       ref="pagination"
       :total="prisonAreas.total"
+      :showTotal="showTotal"
       @onPageChange="getDatas" />
     <el-dialog
       :visible.sync="dialogVisible"
@@ -75,11 +85,15 @@ export default {
       },
       dialogVisible: false,
       prisonArea: {},
-      index: ''
+      index: '',
+      showTotal: true
     }
   },
   computed: {
-    ...mapState(['prisonAreas', 'prisonAll'])
+    ...mapState(['prisonAreas', 'prisonAll']),
+    roleType() {
+      if (localStorage['user']) return JSON.parse(localStorage['user']).role
+    }
   },
   mounted() {
     this.getDatas()

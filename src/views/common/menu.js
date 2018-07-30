@@ -8,7 +8,7 @@ let superAdminMenu = [{
     icon: 'iconfont icon-jianyuguanli'
   }, {
     path: '/prison-area/list',
-    title: '监区说明管理',
+    title: '监区管理',
     icon: 'iconfont icon-jianquxinxi'
   }, {
     path: '/prison-user/list',
@@ -171,6 +171,11 @@ let superAdminMenu = [{
     path: '/account/list',
     title: '账户管理',
     icon: 'iconfont icon-zhanghuguanli'
+  },
+  {
+    path: '/prison-area/list',
+    title: '监区管理',
+    icon: 'iconfont icon-jianquxinxi'
   }]
 
 export default [superAdminMenu, checkMenu, shopMenu, infoMenu, adminMenu]
