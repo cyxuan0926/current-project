@@ -21,11 +21,11 @@ let admin = [{
     component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
   }]
 }, {
-  path: '/prison-area',
+  path: '/adminPrison-area',
   name: '监狱监区管理',
   meta: { hidden: true },
   children: [{
-    path: '/prison-area/list',
+    path: '/adminPrison-area/list',
     name: '监狱监区列表',
     props: { role: '4' },
     component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
