@@ -43,7 +43,7 @@
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
             <el-button
               size="mini"
-              type="danger"  @click="handleDelete(scope.row.id)">删除</el-button>
+              type="danger"  @click="onDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -132,7 +132,7 @@ export default {
         this.dialogVisible = false
       })
     },
-    handleDelete(id) {
+    onDelete(id) {
       this.$confirm('是否确认删除？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -142,13 +142,7 @@ export default {
           if (!res) return
           this.getDatas()
         })
-      }).catch(() => {
-        this.$message({
-          showClose: true,
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
+      }).catch(() => {})
     }
   }
 }
