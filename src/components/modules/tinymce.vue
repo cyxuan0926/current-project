@@ -4,15 +4,15 @@
         <tinymce-image
           ref="uploadImage"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="handleImageSuccess" />
+          @success="onImageSuccess" />
         <tinymce-video
           ref="uploadVideo"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="handleVideoSuccess" />
+          @success="onVideoSuccess" />
         <tinymce-audio
           ref="uploadAudio"
           style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="handleAudioSuccess" />
+          @success="onAudioSuccess" />
     </div>
 </template>
 
@@ -98,13 +98,13 @@ export default {
     window.tinymce.get(this.tinymceId).destroy()
   },
   methods: {
-    handleImageSuccess(e) {
+    onImageSuccess(e) {
       if (!e) return
-      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' >`)
+      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' style="max-width: 100%;">`)
     },
-    handleVideoSuccess(e) {
+    onVideoSuccess(e) {
       if (!e) return
-      let htmlString = `<video controls poster=""">
+      let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
         <source
           src='${ e }'
           type='video/mp4'>
@@ -117,7 +117,7 @@ export default {
       </video>`
       window.tinymce.get(this.tinymceId).insertContent(htmlString)
     },
-    handleAudioSuccess(e) {
+    onAudioSuccess(e) {
       if (!e) return
       let htmlString = `<audio controls">
         <source
