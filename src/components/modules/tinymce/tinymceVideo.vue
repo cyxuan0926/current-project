@@ -69,7 +69,6 @@ export default {
         this.$message.error(`请上传${ accept.join('或') }格式的文件`)
         return false
       }
-      this.$message.warning('正在上传，请耐心等待')
       this.notification = this.$notify({
         title: '提示',
         message: '正在上传视频文件，请耐心等待',
