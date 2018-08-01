@@ -30,8 +30,8 @@ instance.interceptors.response.use(
     return handleResponse(response)
   },
   error => {
+    store.commit('hideLoading')
     if (error.response) {
-      store.commit('hideLoading')
       if (state && history.state.key !== state.key) return
       return handleResponse(error.response)
     }

@@ -50,6 +50,16 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              @click="getFamilyDetail(scope.row.id)">
+              账号信息
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-col>
     <m-pagination
@@ -127,10 +137,15 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      console.log({ ...this.filter, ...this.pagination })
       this.getFamilies({ ...this.filter, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
+    },
+    getFamilyDetail(e) {
+      console.log(e)
+      this.$router.push({ path: `/family/detail/${ e }` })
     },
     showPrisonerDetail(prisoner) {
       this.prisoner = prisoner

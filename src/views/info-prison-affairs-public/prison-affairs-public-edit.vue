@@ -6,7 +6,8 @@
           <el-input v-model="news.title" placeholder="请填写新闻标题"></el-input>
         </el-form-item>
         <el-form-item class="is-required" label="新闻内容" prop="contents">
-          <m-quill-editor :contents="news.contents" @editorChange="editorChange"></m-quill-editor>
+          <!-- <m-quill-editor :contents="news.contents" @editorChange="editorChange"></m-quill-editor> -->
+          <m-tinymce :value="news.contents" @editorChange="editorChange"></m-tinymce>
         </el-form-item>
         <el-form-item label="新闻图片">
           <m-upload-img v-model="news.imageUrl" @success="onSuccess"></m-upload-img>

@@ -5,6 +5,9 @@ img{
   vertical-align: middle;
   border: 0;
 }
+p{
+  margin: 0;
+}
 .el-submenu__icon-arrow{
   margin-top: -5px;
 }
@@ -179,7 +182,7 @@ img{
   min-width: 140px;
   max-width: 350px;
 }
-.yt-form .button-box{
+.yt-form .button-box, .detail-container .button-box{
   padding-bottom: 20px;
   display: flex;
   justify-content: flex-end;
@@ -255,4 +258,54 @@ img{
   background-color: #f5f7fa;
   color: #c0c4cc;
   cursor: not-allowed;
+}
+.mce-tinymce.mce-container{
+  box-shadow: none;
+  box-sizing: border-box;
+  border-color: #dcdfe6;
+  border-radius: 4px;
+}
+.mce-container .mce-panel{
+  border-color: #dcdfe6;
+}
+.mce-container .mce-top-part::before{
+  box-shadow: none;
+}
+.mce-container .mce-menubar{
+  display: none;
+}
+.mce-btn-group .mce-listbox{
+  border-color: #e2e4e7;
+}
+.iconfont.icon-yinpin{
+  font-weight: bold;
+  font-size: 22px;
+}
+.iconfont.icon-yinpin:before{
+  margin-left: -3px;
+}
+.m-range-picker .startMonthClass .el-input__inner{
+  padding-left: 2px;
+  padding-right: 0;
+  border: 0;
+  text-align: center;
+}
+.m-range-picker .endMonthClass .el-input__inner{
+  padding-right: 16px;
+  border: 0;
+  text-align: center;
+}
+.m-range-picker .endMonthClass .el-input__prefix{
+  display: none;
+}
+.m-range-picker .endMonthClass .el-input__suffix{
+  right: 0;
+}
+.m-range-picker .startMonthClass .el-input__prefix{
+  left: 0;
+}
+.showTotal-pagination{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

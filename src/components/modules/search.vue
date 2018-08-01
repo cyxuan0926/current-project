@@ -14,6 +14,8 @@
     <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
+          clearable
+          :disabled="item.disabled"
           v-if="item.type === 'input'"
           v-model="item.value"
           :placeholder="'请输入' + item.label" />
@@ -56,6 +58,17 @@
           value-format="yyyy-MM-dd HH:mm:ss"
           :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
+        <el-date-picker
+          v-if="item.type === 'daterange'"
+          v-model="item.value"
+          unlink-panels
+          type="daterange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM"
+          value-format="yyyy-MM">
+        </el-date-picker>
+        <m-month-range-picker v-if="item.type=== 'monthrange'" class="monthrange" :startDateValue.sync="startValue" :endDateValue.sync="endValue"></m-month-range-picker>
       </template>
       <template>
         <el-button v-if="buttonText" @click="onSearch">{{ buttonText }}</el-button>
@@ -80,6 +93,8 @@ export default {
     return {
       selectItem: [1, 10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
       pageSize: 10,
+      startValue: null,
+      endValue: null,
       pickerOptions: {
         shortcuts: [{
           text: '今天',
@@ -115,8 +130,12 @@ export default {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
+          if (this.items[key].type === 'monthrange') {
+            params[this.items[key].start] = this.startValue
+            params[this.items[key].end] = this.endValue
+          }
           if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-          if (this.items[key].type === 'datetimerange') {
+          if (this.items[key].type === 'datetimerange' || this.items[key].type === 'daterange') {
             params[this.items[key].start] = this.items[key].value[0]
             params[this.items[key].end] = this.items[key].value[1]
           }
@@ -165,4 +184,7 @@ export default {
   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
     width: 320px;
     max-width: 320px;
+  .monthrange
+    width 230px
+    max-width  230px
 </style>

@@ -142,7 +142,7 @@ export default {
         this.deletePrisonUser({ id: e }).then(() => {
           this.getDatas()
         })
-      })
+      }).catch(() => {})
     },
     onChangeStatus(row, sysFlag) {
       this.enableOrDisablePrisonUser({ id: row.id, status: sysFlag }).then(res => {

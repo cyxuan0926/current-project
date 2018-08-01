@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
-      :items="searchItems"
+      :items="roleType !== '4' ? searchItems: null "
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -11,7 +11,7 @@
         value="first"
         type="card">
         <el-tab-pane
-          label="监区说明管理"
+          label="监区管理"
           name="first" />
       </el-tabs>
       <el-table
@@ -25,12 +25,25 @@
         <el-table-column
           prop="jailName"
           label="所属监狱" />
+        <el-table-column prop="createdAt" label="创建时间">
+          <template slot-scope="scope">
+            {{scope.row.createdAt | Date}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="updatedAt" label="更新时间">
+          <template slot-scope="scope">
+            {{scope.row.updatedAt | Date}}
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               size="mini"
               type="primary"
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
+            <el-button
+              size="mini"
+              type="danger"  @click="onDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,23 +92,29 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonAreas', 'prisonAll'])
+    ...mapState(['prisonAreas', 'prisonAll']),
+    roleType() {
+      if (localStorage['user']) return JSON.parse(localStorage['user']).role
+    }
   },
   mounted() {
     this.getDatas()
-    this.getPrisonAll().then(() => {
-      this.searchItems.jailId.options = this.prisonAll
-      this.searchItems.jailId.getting = false
-    })
+    if (this.roleType !== '4') {
+      this.getPrisonAll().then(() => {
+        this.searchItems.jailId.options = this.prisonAll
+        this.searchItems.jailId.getting = false
+      })
+    }
   },
   methods: {
-    ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea']),
+    ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea', 'deletePrisonArea']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getPrisonAreas({ ...this.filter, ...this.pagination })
+      if (this.roleType !== '4') this.getPrisonAreas({ ...this.filter, ...this.pagination })
+      else this.getPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -107,10 +126,23 @@ export default {
     },
     onEdit() {
       this.updatePrisonArea(this.prisonArea).then(res => {
-        if (!res) return
+        if (res.code !== 200) return
         this.prisonAreas.contents[this.index].name = this.prisonArea.name
+        this.prisonAreas.contents[this.index].updatedAt = res.data.prisonConfig.updatedAt
         this.dialogVisible = false
       })
+    },
+    onDelete(id) {
+      this.$confirm('是否确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deletePrisonArea({ id: id }).then(res => {
+          if (!res) return
+          this.getDatas()
+        })
+      }).catch(() => {})
     }
   }
 }

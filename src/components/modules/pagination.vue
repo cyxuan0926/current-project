@@ -1,5 +1,6 @@
 <template>
-  <el-col :span="24" class="m-pagination">
+  <el-col :span="24" class="m-pagination showTotal-pagination">
+      <span>共{{ total }}条记录</span>
       <el-pagination
         background
         layout="prev, pager, next"

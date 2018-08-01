@@ -24,5 +24,34 @@ export default {
       commit('importPrisonerRewardPunishment', res)
       return true
     })
+  },
+  uploadPocketMoneyExcel: ({ commit }, params) => {
+    let formData = new FormData()
+    params && formData.append('file', params)
+    return http.uploadPocketMoneyExcel(formData).then(res => {
+      if (!res) return
+      if (res.error_arrays && res.error_arrays.length) {
+        res.error_arrays.forEach(error => {
+          if (error.errors.length === 1) error.err = error.errors[0]
+          else {
+            error.err = `1. ${ error.errors[0] }`
+            error.errors.forEach((msg, index) => {
+              if (index === 0) return
+              error.err = `${ error.err }</br>${ index + 1 }. ${ msg }`
+            })
+          }
+          console.log(error.err)
+        })
+      }
+      commit('uploadPocketMoneyExcel', res)
+      return true
+    })
+  },
+  importPocketMoney: ({ commit }, params) => {
+    return http.importPocketMoney(params).then(res => {
+      if (!res) return
+      commit('importPocketMoney', res)
+      return true
+    })
   }
 }
