@@ -40,8 +40,13 @@ export default {
       fileList: [],
       headers: {
         Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
-      }
+      },
+      notification: null
     }
+  },
+  destroyed() {
+    if (this.notification) this.notification.close()
+    this.notification = null
   },
   methods: {
     handleSuccess(res, file, fileList) {
@@ -49,6 +54,7 @@ export default {
         case 200:
           this.$message.success('音频上传成功')
           this.$emit('success', `${ res.url }?token=${ this.headers.Authorization }`)
+          this.notification.close()
           break
         default:
           this.$message.error(`上传音频失败:${ res.message }`)
@@ -59,7 +65,13 @@ export default {
         this.$message.error(`请上传音频文件`)
         return false
       }
-      this.$message.warning('正在上传，请耐心等待')
+      this.notification = this.$notify({
+        title: '提示',
+        message: '正在上传音频文件，请耐心等待',
+        type: 'warning',
+        duration: 0,
+        showClose: false
+      })
       return true
     },
     handleExceed() {

@@ -125,7 +125,7 @@ export default {
           type='audio/mpeg'>
         <source
           src='${ e }'
-          type='audio/ogg'>您的浏览器不支持Video标签。
+          type='audio/ogg'>您的浏览器不支持Audio标签。
       </audio>`
       window.tinymce.get(this.tinymceId).insertContent(htmlString)
     }
