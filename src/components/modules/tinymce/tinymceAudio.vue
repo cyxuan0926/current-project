@@ -79,6 +79,7 @@ export default {
     },
     handleError(e) {
       this.$message.error(`上传音频失败`)
+      this.notification.close()
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
