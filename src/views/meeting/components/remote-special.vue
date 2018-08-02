@@ -35,7 +35,7 @@
             :loading="special.deleting"
             type="text"
             style="color: #F56C6C;"
-            @click="handleDelete(special, index)">删除</el-button>
+            @click="onDelete(special, index)">删除</el-button>
           <el-button
             v-if="!special.id && special.queue[0] !== null"
             type="text"
@@ -134,7 +134,7 @@ export default {
         this.remoteSpecialConfig[index].update = false
       })
     },
-    handleDelete(config, index) {
+    onDelete(config, index) {
       this.$confirm(`是否确认删除？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

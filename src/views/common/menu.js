@@ -8,7 +8,7 @@ let superAdminMenu = [{
     icon: 'iconfont icon-jianyuguanli'
   }, {
     path: '/prison-area/list',
-    title: '监区说明管理',
+    title: '监区管理',
     icon: 'iconfont icon-jianquxinxi'
   }, {
     path: '/prison-user/list',
@@ -77,6 +77,10 @@ let superAdminMenu = [{
     title: '服刑人员信息管理',
     icon: 'iconfont icon-fuxingrenyuan'
   }, {
+    path: '/prisoner-pocket-money/list',
+    title: '服刑人员零花钱管理',
+    icon: 'iconfont icon-linghuaqianguanli'
+  }, {
     path: '/family/list',
     title: '家属信息管理',
     icon: 'iconfont icon-jiashu'
@@ -101,6 +105,10 @@ let superAdminMenu = [{
       }, {
         path: '/prisoner-data/reward-punishment',
         title: '罪犯奖惩数据导入',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/prisoner-data/pocket-money',
+        title: '零花钱数据导入',
         icon: 'iconfont icon-circle-o'
       }
     ]
@@ -163,6 +171,10 @@ let superAdminMenu = [{
     path: '/account/list',
     title: '账户管理',
     icon: 'iconfont icon-zhanghuguanli'
+  }, {
+    path: '/adminPrison-area/list',
+    title: '监区管理',
+    icon: 'iconfont icon-jianquxinxi'
   }]
 
 export default [superAdminMenu, checkMenu, shopMenu, infoMenu, adminMenu]

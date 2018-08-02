@@ -47,6 +47,9 @@
         <el-col :span="24" class="line"></el-col>
         <el-col :span="24" class="description">
           <p>监狱简介</p>
+        </el-col>
+        <div style="height: 10px; width: 100%; clear: both;"></div>
+        <el-col :span="24">
           <p v-html="jailInformation.description"></p>
         </el-col>
         <el-col :span="24">

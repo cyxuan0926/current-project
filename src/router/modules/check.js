@@ -66,6 +66,11 @@ let check = [{
     path: '/family/list',
     name: '家属列表',
     component: resolve => require(['@/views/check-family/family-list'], resolve)
+  },
+  {
+    path: '/family/detail/:id',
+    name: '家属账户详情',
+    component: resolve => require(['@/views/check-family/family-detail'], resolve)
   }]
 }, {
   path: '/prisoner-data',
@@ -83,6 +88,19 @@ let check = [{
     path: '/prisoner-data/reward-punishment',
     name: '罪犯奖惩数据导入',
     component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve)
+  }, {
+    path: '/prisoner-data/pocket-money',
+    name: '零花钱数据导入',
+    component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve)
+  }]
+}, {
+  path: '/prisoner-pocket-money',
+  name: '服刑人员零花钱管理',
+  meta: { hidden: true },
+  children: [{
+    path: '/prisoner-pocket-money/list',
+    name: '服刑人员零花钱列表',
+    component: resolve => require(['@/views/check-prisoner-pocket-money/prisoner-pocket-money-list'], resolve)
   }]
 }]
 

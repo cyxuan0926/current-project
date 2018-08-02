@@ -33,7 +33,7 @@ let superAdmin = [{
   }]
 }, {
   path: '/prison-area',
-  name: '监区说明管理',
+  name: '监区管理',
   meta: { hidden: true },
   children: [{
     path: '/prison-area/list',

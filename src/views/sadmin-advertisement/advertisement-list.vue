@@ -136,7 +136,7 @@ export default {
           if (!res) return
           this.getDatas()
         })
-      })
+      }).catch(() => {})
     }
   }
 }
