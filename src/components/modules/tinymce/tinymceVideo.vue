@@ -83,6 +83,7 @@ export default {
     },
     handleError(e) {
       this.$message.error(`上传视频失败`)
+      this.notification.close()
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
