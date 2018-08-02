@@ -23,8 +23,8 @@ export default {
     action: {
       type: String,
       // default: 'http://39.108.185.51:1339/avatars'
-      // default: `https://www.yuwugongkai.com/image-server/avatars`
-      default: `http://123.57.7.159:1339/image-server/avatars` // 测试和演示
+      default: `https://www.yuwugongkai.com/image-server/avatars`
+      // default: `http://123.57.7.159:1339/image-server/avatars` // 测试和演示
     },
     name: {
       type: String,
