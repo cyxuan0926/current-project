@@ -66,7 +66,7 @@
           label="申请状态"
           min-width="74px"
           class-name="orange">
-          <template slot-scope="scope"> {{scope.row.status | applyStatus}} </template>
+          <template slot-scope="scope"> {{scope.row.status | registStatus}} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
