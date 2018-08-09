@@ -309,3 +309,6 @@ p{
   align-items: center;
   justify-content: space-between;
 }
+.rememberPSW, .rememberPSW .el-checkbox__input.is-checked+.el-checkbox__label{
+  color: #fff;
+}

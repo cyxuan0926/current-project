@@ -21,8 +21,14 @@
                                 <el-form-item prop="password">
                                     <el-input v-model="loginForm.password" type="password" placeholder="请输入用户密码"></el-input>
                                 </el-form-item>
+                                <el-form-item style="margin: -10px 0 0">
+                                  <el-checkbox class="rememberPSW" v-model="rememberPSW">记住密码</el-checkbox>
+                                </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                                    <el-button
+                                      type="primary"
+                                      :loading="logining"
+                                      @click="submitForm('loginForm')">登录</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-col>
@@ -34,15 +40,18 @@
 </template>
 
 <script>
+import { Base64 } from 'js-base64'
 import { mapActions } from 'vuex'
 export default {
   data() {
     return {
       loginForm: {
-        password: '3m4c3n9J',
+        password: '',
         username: '',
         prison: ''
       },
+      rememberPSW: false,
+      logining: false,
       rules: {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -51,12 +60,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.logining = true
           this.login(this.loginForm).then(res => {
+            this.logining = false
             if (!res) return
+            let params = {
+              password: Base64.encode(this.loginForm.password),
+              username: this.loginForm.username,
+              prison: this.loginForm.prison
+            }
+            if (this.rememberPSW) this.setCookie(params)
+            else this.removeCookie(params)
             this.$router.replace('/dashboard')
           })
         }
@@ -67,6 +85,12 @@ export default {
     if (localStorage.getItem('user')) {
       this.$router.replace('/dashboard')
     }
+    this.getCookie().then(res => {
+      if (res && res.password) {
+        this.loginForm = Object.assign({}, res, { password: Base64.decode(res.password) })
+        this.rememberPSW = true
+      }
+    })
   }
 }
 </script>

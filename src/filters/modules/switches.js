@@ -31,6 +31,7 @@ let switches = {
     { value: 'PASSED', label: '已通过' },
     { value: 'FINISHED', label: '已完成' },
     // { value: 'TOBECANCELED', label: '待取消' },
+    { value: 'EXPIRED', label: '已过期' },
     { value: 'CANCELED', label: '已取消' }
   ],
   registStatus: [

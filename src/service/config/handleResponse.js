@@ -45,6 +45,11 @@ const codes = {
       tips('请求方法错误！')
     }
   },
+  413: {
+    next: params => {
+      tips('文件过大，请重新上传')
+    }
+  },
   415: {
     next: params => {
       tips('提交的数据格式错误！')

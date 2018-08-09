@@ -172,7 +172,6 @@ export default {
   },
   mounted() {
     this.resetState({ prisonerDataResult: {} })
-    console.log(`${ this._$agency }` + '/prisoners/upload')
   }
 }
 </script>
