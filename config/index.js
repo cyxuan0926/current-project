@@ -11,12 +11,10 @@ module.exports = {
     assetsPublicPath: '/',
     // proxyTable: {
     //   '/ywgk': {
-    //     // target: 'http://10.10.10.122:8080/ywgk',
-    //     // target: 'http://10.10.10.2:8081/ywgk',
-    //     target: 'http://localhost:3000',
+    //     target: 'http://123.57.7.159',
     //     changeOrigin: true,
     //     pathRewrite: {
-    //       '^/ywgk': '/'
+    //       '^/ywgk': '/ywgk'
     //     }
     //   }
     // },
