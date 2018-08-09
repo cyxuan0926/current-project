@@ -21,11 +21,14 @@
                                 <el-form-item prop="password">
                                     <el-input v-model="loginForm.password" type="password" placeholder="请输入用户密码"></el-input>
                                 </el-form-item>
-                                <el-form-item style="margin: -22px 0 0">
+                                <el-form-item style="margin: -10px 0 0">
                                   <el-checkbox class="rememberPSW" v-model="rememberPSW">记住密码</el-checkbox>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+                                    <el-button
+                                      type="primary"
+                                      :loading="logining"
+                                      @click="submitForm('loginForm')">登录</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-col>
@@ -48,6 +51,7 @@ export default {
         prison: ''
       },
       rememberPSW: false,
+      logining: false,
       rules: {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -60,7 +64,9 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.logining = true
           this.login(this.loginForm).then(res => {
+            this.logining = false
             if (!res) return
             let params = {
               password: Base64.encode(this.loginForm.password),
