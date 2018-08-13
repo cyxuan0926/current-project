@@ -7,6 +7,7 @@ import store from './store'
 import filters from './filters'
 import components from '@/components'
 import config from '@/service/config/base'
+import 'viewerjs/dist/viewer.css'
 import '../static/bootstrap/js/bootstrap.min.js'
 import '../static/dist/js/app.min.js'
 

@@ -312,3 +312,18 @@ p{
 .rememberPSW, .rememberPSW .el-checkbox__input.is-checked+.el-checkbox__label{
   color: #fff;
 }
+.viewer-prev::before {
+  content: '' !important;
+}
+.viewer-prev {
+  width: 0px !important;
+}
+.viewer-next::before {
+  content: '' !important;
+}
+.viewer-next {
+  width: 0px !important;
+}
+.viewer-footer {
+  bottom: 4%;
+}

@@ -32,20 +32,14 @@
           min-width="138px"
           label="身份证正面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardFront"
-              :src="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardFront, 'id')">
+            <m-img-viewer :url="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
           </template>
         </el-table-column>
         <el-table-column
           min-width="138px"
           label="身份证背面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardBack"
-              :src="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardBack, 'id')">
+            <m-img-viewer :url="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
           </template>
         </el-table-column>
         <el-table-column

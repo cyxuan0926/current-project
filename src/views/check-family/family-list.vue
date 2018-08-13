@@ -24,18 +24,12 @@
           label="姓名" />
         <el-table-column label="身份证正面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardFront"
-              :src="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardFront, 'id')">
+            <m-img-viewer :url="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
           </template>
         </el-table-column>
         <el-table-column label="身份证背面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardBack"
-              :src="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardBack, 'id')">
+            <m-img-viewer :url="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
           </template>
         </el-table-column>
         <el-table-column label="对应罪犯">
@@ -137,14 +131,12 @@ export default {
       this.getDatas()
     },
     getDatas() {
-      console.log({ ...this.filter, ...this.pagination })
       this.getFamilies({ ...this.filter, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
     getFamilyDetail(e) {
-      console.log(e)
       this.$router.push({ path: `/family/detail/${ e }` })
     },
     showPrisonerDetail(prisoner) {

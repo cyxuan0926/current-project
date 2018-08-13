@@ -6,6 +6,7 @@ import Form from './modules/form'
 import timeRangePicker from './modules/time-range-picker'
 import tinymce from './modules/tinymce'
 import monthRangePicker from './modules/month-range-picker'
+import imgViewer from './modules/img-viewer'
 export default {
   Pagination,
   Search,
@@ -14,5 +15,6 @@ export default {
   Form,
   timeRangePicker,
   tinymce,
-  monthRangePicker
+  monthRangePicker,
+  imgViewer
 }
