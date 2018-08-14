@@ -29,14 +29,14 @@
           width="148px"
           label="身份证正面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
+            <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面照" />
           </template>
         </el-table-column>
         <el-table-column
           width="148px"
           label="身份证背面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
+            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
         <el-table-column
@@ -96,26 +96,10 @@
       width="530px">
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
-        <img
-          v-if="toAuthorize.idCardFront"
-          :src="toAuthorize.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-          @click="amplifyImage(toAuthorize.idCardFront, 'id')"
-          alt="身份证正面照">
-        <img
-          v-if="toAuthorize.idCardBack"
-          :src="toAuthorize.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-          @click="amplifyImage(toAuthorize.idCardBack, 'id')"
-          alt="身份证背面照">
-        <img
-          v-if="toAuthorize.avatarUrl"
-          :src="toAuthorize.avatarUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-          @click="amplifyImage(toAuthorize.avatarUrl)"
-          alt="头像">
-        <img
-          v-if="toAuthorize.relationalProofUrl"
-          :src="toAuthorize.relationalProofUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-          @click="amplifyImage(toAuthorize.relationalProofUrl)"
-          alt="关系证明图">
+        <m-img-viewer v-if="toAuthorize.idCardFront" :url="toAuthorize.idCardFront" title="身份证正面照"/>
+        <m-img-viewer v-if="toAuthorize.idCardBack" :url="toAuthorize.idCardBack" title="身份证背面照"/>
+        <m-img-viewer v-if="toAuthorize.avatarUrl" :url="toAuthorize.avatarUrl" title="头像"/>
+        <m-img-viewer v-if="toAuthorize.relationalProofUrl" :url="toAuthorize.relationalProofUrl" title="关系证明图"/>
       </div>
       <div
         v-if="!show.agree && !show.disagree && !show.callback"
@@ -211,13 +195,6 @@
           @click="closeWithdraw('withdrawForm')">关闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      :visible.sync="show.imgplus"
-      class="img-dialog"
-      :class="{ 'img-idCard' : isIdcard }"
-      :width="isIdcard ? '382.4px' : '440px'">
-      <img :src="imgSrc">
-    </el-dialog>
   </el-row>
 </template>
 
@@ -239,8 +216,7 @@ export default {
         authorize: false,
         agree: false,
         disagree: false,
-        callback: false,
-        imgplus: false
+        callback: false
       },
       withdrawForm: {
         withdrawReason: ''
@@ -253,8 +229,6 @@ export default {
         withdrawReason: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
       },
       remarks: '身份信息错误',
-      imgSrc: '',
-      isIdcard: false,
       btnDisable: false, // 按钮禁用与启用
       tabs: 'PENDING'
     }
@@ -347,12 +321,6 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = true
-    },
-    amplifyImage(imgSrc, isIdcard) {
-      if (isIdcard) this.isIdcard = true
-      else this.isIdcard = false
-      this.imgSrc = `${ imgSrc }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`
-      this.show.imgplus = true
     },
     closeWithdraw() {
       this.show.authorize = false

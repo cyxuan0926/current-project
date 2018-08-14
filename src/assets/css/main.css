@@ -327,3 +327,6 @@ p{
 .viewer-footer {
   bottom: 4%;
 }
+.viewer-backdrop {
+  background: rgba(0,0,0,.4) !important;
+}

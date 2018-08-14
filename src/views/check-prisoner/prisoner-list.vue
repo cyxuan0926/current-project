@@ -118,17 +118,17 @@
       <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
         <el-col :span="12" class="img-idCard">
           <label for="">身份证正面：</label>
-          <m-img-viewer :url="family.familyIdCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" />
+          <m-img-viewer v-if="family.familyIdCardFront" :url="family.familyIdCardFront" title="身份证正面"/>
         </el-col>
         <el-col :span="12" class="img-idCard">
           <label for="">身份证背面：</label>
-          <m-img-viewer :url="family.familyIdCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" />
+          <m-img-viewer v-if="family.familyIdCardBack" :url="family.familyIdCardBack" title="身份证背面" />
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <label for="">照片：</label>
-          <m-img-viewer :url="family.familyAvatarUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" class="avatar" />
+          <m-img-viewer v-if="family.familyAvatarUrl" :url="family.familyAvatarUrl" title="照片" class="avatar" />
         </el-col>
       </el-row>
     </el-dialog>

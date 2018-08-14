@@ -29,14 +29,14 @@
           width="148px"
           label="身份证正面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" />
+            <m-img-viewer :url="scope.row.idCardFront" title="身份证正面照" />
           </template>
         </el-table-column>
         <el-table-column
           width="148px"
           label="身份证背面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" />
+            <m-img-viewer :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
         <el-table-column
@@ -239,9 +239,7 @@ export default {
       withdraw: {},
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
-      },
-      dialogVisible: false,
-      imgSrc: ''
+      }
     }
   },
   computed: {

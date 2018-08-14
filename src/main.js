@@ -7,7 +7,6 @@ import store from './store'
 import filters from './filters'
 import components from '@/components'
 import config from '@/service/config/base'
-import 'viewerjs/dist/viewer.css'
 import '../static/bootstrap/js/bootstrap.min.js'
 import '../static/dist/js/app.min.js'
 
@@ -18,6 +17,7 @@ import '@/assets/fonts/iconfont.css'
 import '@/assets/icons/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
+import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.css'
 
 Vue.use(ElementUI)

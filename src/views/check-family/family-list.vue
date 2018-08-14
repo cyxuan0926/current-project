@@ -24,12 +24,12 @@
           label="姓名" />
         <el-table-column label="身份证正面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
+            <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面照"/>
           </template>
         </el-table-column>
         <el-table-column label="身份证背面">
           <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"/>
+            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
         <el-table-column label="对应罪犯">
@@ -94,12 +94,6 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog
-      :visible.sync="dialogVisible"
-      class="img-idCard"
-      width="382.4px">
-      <img :src="imgSrc">
-    </el-dialog>
   </el-row>
 </template>
 
@@ -113,9 +107,7 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       },
       dialogTableVisible: false,
-      prisoner: {},
-      dialogVisible: false,
-      imgSrc: ''
+      prisoner: {}
     }
   },
   computed: {
@@ -142,10 +134,6 @@ export default {
     showPrisonerDetail(prisoner) {
       this.prisoner = prisoner
       this.dialogTableVisible = true
-    },
-    amplifyImage(imgSrc) {
-      this.imgSrc = `${ imgSrc }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`
-      this.dialogVisible = true
     }
   }
 }
