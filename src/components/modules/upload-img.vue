@@ -78,7 +78,8 @@ export default {
   data() {
     return {
       imageUrl: '',
-      dialogVisible: false
+      dialogVisible: false,
+      changed: false
     }
   },
   computed: {
@@ -89,7 +90,6 @@ export default {
       }
       let r = this.value
       r.map(item => {
-        // if (item.url.indexOf('?token=') > -1) return
         item.url = `${ item.url }?token=${ this.headers.Authorization }`
       })
       return r
@@ -97,6 +97,12 @@ export default {
   },
   watch: {
     fileList(val) {
+      if (!this.changed && val.length) {
+        val.forEach(img => {
+          this.setImageLocalstorage('images', img.url.split('?token=')[0])
+        })
+        this.changed = true
+      }
       if (this.limit <= val.length) {
         this.$refs.uploadImg.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'none'
       }
@@ -111,6 +117,8 @@ export default {
         case 200:
           this.$message.success('图片上传成功')
           this.$emit('success', this.limit === 1 ? res.url : fileList)
+          this.setImageLocalstorage('images', res.url)
+          this.setImageLocalstorage('newImages', res.url)
           break
         default:
           this.$message.error(`上传图片失败:${ res.message }`)
@@ -163,6 +171,11 @@ export default {
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
+    },
+    setImageLocalstorage(key, value) {
+      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
+      if (storage.indexOf(value) < 0) storage.push(value)
+      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }
