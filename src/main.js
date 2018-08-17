@@ -17,6 +17,7 @@ import '@/assets/fonts/iconfont.css'
 import '@/assets/icons/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
+import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.css'
 
 Vue.use(ElementUI)

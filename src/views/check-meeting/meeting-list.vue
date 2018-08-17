@@ -21,7 +21,7 @@
         :data="meetings.contents"
         border
         stripe
-        style="width: 100%">
+        style="width: 100%" >
         <el-table-column
           prop="name"
           label="姓名" />
@@ -29,20 +29,14 @@
           width="148px"
           label="身份证正面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardFront"
-              :src="scope.row.idCardFront + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardFront, 'id')">
+            <m-img-viewer :url="scope.row.idCardFront" title="身份证正面照" />
           </template>
         </el-table-column>
         <el-table-column
           width="148px"
           label="身份证背面">
           <template slot-scope="scope">
-            <img
-              v-if="scope.row.idCardBack"
-              :src="scope.row.idCardBack + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
-              @click="amplifyImage(scope.row.idCardBack, 'id')">
+            <m-img-viewer :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
         <el-table-column
@@ -198,12 +192,6 @@
       </el-row>
     </el-dialog>
     <el-dialog
-      :visible.sync="dialogVisible"
-      class="img-idCard"
-      width="382.4px">
-      <img :src="imgSrc">
-    </el-dialog>
-    <el-dialog
       :visible.sync="toShow.id ? true : false"
       :title="'家属：' + toShow.name"
       width="530px"
@@ -251,9 +239,7 @@ export default {
       withdraw: {},
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
-      },
-      dialogVisible: false,
-      imgSrc: ''
+      }
     }
   },
   computed: {
@@ -331,10 +317,6 @@ export default {
           })
         }
       })
-    },
-    amplifyImage(imgSrc) {
-      this.imgSrc = `${ imgSrc }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`
-      this.dialogVisible = true
     }
   }
 }
