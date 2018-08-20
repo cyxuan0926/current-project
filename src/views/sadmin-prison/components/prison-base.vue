@@ -40,8 +40,8 @@ export default {
         this.values = this.prison
         this.onProvinceChange(this.prison.provincesId, 'init')
         let images = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : []
-        if (this.prison.description.match(/<img.*? \/>/g)) {
-          this.prison.description.match(/<img.*? \/>/g).forEach(ele => {
+        if (this.prison.description.match(/<img.*? \/>|<source.*? \/>/g)) {
+          this.prison.description.match(/<img.*? \/>|<source.*? \/>/g).forEach(ele => {
             let a = document.createElement('div')
             a.innerHTML = ele
             if (images.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) images.push(a.lastElementChild.src.split('?token=')[0])

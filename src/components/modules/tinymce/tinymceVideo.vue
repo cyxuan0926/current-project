@@ -54,6 +54,8 @@ export default {
         case 200:
           this.$message.success('视频上传成功')
           this.$emit('success', `${ res.url }?token=${ this.headers.Authorization }`)
+          this.setImageLocalstorage('images', res.url)
+          this.setImageLocalstorage('newImages', res.url)
           this.notification.close()
           break
         default:
@@ -87,6 +89,11 @@ export default {
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
+    },
+    setImageLocalstorage(key, value) {
+      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
+      if (storage.indexOf(value) < 0) storage.push(value)
+      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }

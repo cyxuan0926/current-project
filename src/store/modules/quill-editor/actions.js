@@ -1,4 +1,5 @@
 import http from '@/service'
+var deleting = 0
 
 export default {
   // 富文本上传图片
@@ -8,19 +9,22 @@ export default {
     http.uploadImageFromEditor(formData).then(res => commit('uploadImageFromEditor', res)).catch(err => console.log(err))
   },
   handleDeleteImage: ({ commit }, params) => {
+    // debugger
     let images = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : [],
       oldImages = localStorage.getItem('oldImages') ? JSON.parse(localStorage.getItem('oldImages')) : [],
       excpt = params[0] ? [params[0]] : [],
       allImages = Array.from(new Set(images.concat(oldImages)))
     if (allImages.length === 0) return
-    if (params[1].match(/<img.*? \/>/g)) {
-      params[1].match(/<img.*? \/>/g).forEach(ele => {
+    if (params[1] && params[1].match(/<img.*? \/>|<source.*? \/>/g)) {
+      params[1].match(/<img.*? \/>|<source.*? \/>/g).forEach(ele => {
         let a = document.createElement('div')
         a.innerHTML = ele
-        excpt.push(a.lastElementChild.src.split('?token=')[0])
+        if (excpt.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) excpt.push(a.lastElementChild.src.split('?token=')[0])
       })
     }
+    deleting = true
     http.deleteImage(allImages.filter(url => excpt.indexOf(url) < 0)).then(res => {
+      deleting = false
       if (res) {
         localStorage.removeItem('images')
         localStorage.removeItem('newImages')
@@ -31,6 +35,10 @@ export default {
   deleteUnusedImage: ({ commit }) => {
     localStorage.removeItem('images')
     localStorage.removeItem('oldImages')
+    if (deleting === true) {
+      // localStorage.removeItem('newImages')
+      return
+    }
     let newImages = localStorage.getItem('newImages') ? JSON.parse(localStorage.getItem('newImages')) : []
     if (!newImages.length) return
     http.deleteImage(newImages).then(res => {
