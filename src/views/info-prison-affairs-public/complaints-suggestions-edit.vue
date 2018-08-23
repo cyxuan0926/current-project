@@ -39,8 +39,11 @@ export default {
   mounted() {
     this.getNewsDetail(this.$route.params.id)
   },
+  destroyed() {
+    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+  },
   methods: {
-    ...mapActions(['getNewsDetail', 'editNews']),
+    ...mapActions(['getNewsDetail', 'editNews', 'deleteUnusedImage']),
     onSuccess(e) {
       this.news.imageUrl = e
     },

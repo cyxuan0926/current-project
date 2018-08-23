@@ -59,6 +59,17 @@ export default {
       }
     }
   },
+  mounted() {
+    if (localStorage.getItem('user')) {
+      this.$router.replace('/dashboard')
+    }
+    this.getCookie().then(res => {
+      if (res && res.password) {
+        this.loginForm = Object.assign({}, res, { password: Base64.decode(res.password) })
+        this.rememberPSW = true
+      }
+    })
+  },
   methods: {
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
     submitForm(formName) {
@@ -80,17 +91,6 @@ export default {
         }
       })
     }
-  },
-  mounted() {
-    if (localStorage.getItem('user')) {
-      this.$router.replace('/dashboard')
-    }
-    this.getCookie().then(res => {
-      if (res && res.password) {
-        this.loginForm = Object.assign({}, res, { password: Base64.decode(res.password) })
-        this.rememberPSW = true
-      }
-    })
   }
 }
 </script>

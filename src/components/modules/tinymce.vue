@@ -65,7 +65,7 @@ export default {
         }
         editor.on('NodeChange Change KeyUp', (data) => {
           this.hasChange = true
-          this.$emit('editorChange', editor.getContent({ format: 'row' }), editor.getContent({ format: 'text' }), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
+          this.$emit('editorChange', editor.getContent({ format: 'row' }), editor.getContent({ format: 'text' }).substr(0, 500), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
         })
       },
       setup: editor => {
