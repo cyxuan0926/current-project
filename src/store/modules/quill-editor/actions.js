@@ -1,5 +1,5 @@
 import http from '@/service'
-var deleting = 0
+var deleting = false
 
 export default {
   // 富文本上传图片
@@ -19,7 +19,7 @@ export default {
       params[1].match(/<img.*? \/>|<source.*? \/>/g).forEach(ele => {
         let a = document.createElement('div')
         a.innerHTML = ele
-        if (excpt.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) excpt.push(a.lastElementChild.src.split('?token=')[0])
+        if (excpt.indexOf(decodeURI(decodeURI(a.lastElementChild.src.split('?token=')[0]))) < 0) excpt.push(decodeURI(a.lastElementChild.src.split('?token=')[0]))
       })
     }
     deleting = true

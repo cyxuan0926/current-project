@@ -7,7 +7,7 @@ export default {
   },
   getNewsDetail: ({ commit }, params) => {
     return http.getNewsDetail(params).then(res => {
-      if (res.code !== 200) return
+      if (!res || res.code !== 200) return
       commit('getNewsDetail', res)
       let images = res.data.imageUrl ? [res.data.imageUrl] : []
       if (res.data.contents.match(/<img.*? \/>/g)) {

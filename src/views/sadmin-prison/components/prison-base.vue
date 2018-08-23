@@ -44,7 +44,7 @@ export default {
           this.prison.description.match(/<img.*? \/>|<source.*? \/>/g).forEach(ele => {
             let a = document.createElement('div')
             a.innerHTML = ele
-            if (images.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) images.push(a.lastElementChild.src.split('?token=')[0])
+            if (images.indexOf(decodeURI(a.lastElementChild.src.split('?token=')[0])) < 0) images.push(decodeURI(a.lastElementChild.src.split('?token=')[0]))
           })
           localStorage.setItem('images', JSON.stringify(images))
         }
