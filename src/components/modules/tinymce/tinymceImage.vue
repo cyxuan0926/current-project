@@ -24,7 +24,7 @@ export default {
       type: String,
       // default: 'http://39.108.185.51:1339/avatars'
       default: `https://www.yuwugongkai.com/image-server/avatars`
-      // default: `http://123.57.7.159:1339/image-server/avatars` // 测试和演示
+      // default: `http://120.79.67.25:1339/image-server/avatars` // 测试和演示
     },
     name: {
       type: String,
@@ -49,6 +49,8 @@ export default {
         case 200:
           this.$message.success('图片上传成功')
           this.$emit('success', res.url)
+          this.setImageLocalstorage('images', res.url)
+          this.setImageLocalstorage('newImages', res.url)
           break
         default:
           this.$message.error(`上传图片失败:${ res.message }`)
@@ -78,6 +80,11 @@ export default {
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
+    },
+    setImageLocalstorage(key, value) {
+      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
+      if (storage.indexOf(value) < 0) storage.push(value)
+      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }

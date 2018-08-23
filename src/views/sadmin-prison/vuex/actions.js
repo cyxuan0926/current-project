@@ -39,10 +39,13 @@ export default {
       return true
     })
   },
-  updatePrison: ({ commit }, params) => {
+  updatePrison: ({ commit, dispatch }, params) => {
     delete params.usual
     delete params.weekend
     delete params.special
-    return http.updatePrison(params).then(res => res)
+    return http.updatePrison(params).then(res => {
+      dispatch('handleDeleteImage', [params.imageUrl, params.description])
+      return res
+    })
   }
 }

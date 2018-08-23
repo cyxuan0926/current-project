@@ -125,8 +125,11 @@
         this.gettingProvince = false
       })
     },
+    destroyed() {
+      if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    },
     methods: {
-      ...mapActions(['getAdvertisementDetail', 'updateAdvertisement', 'getAdvertisementTypes', 'getProvincesAll']),
+      ...mapActions(['getAdvertisementDetail', 'updateAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'handleDeleteImage', 'deleteUnusedImage']),
       onSubmit(e) {
         this.$refs.form.validate(valid => {
           if (valid) {
@@ -134,7 +137,9 @@
             delete params.time
             this.updateAdvertisement(params).then(res => {
               if (!res) return
-              this.$router.push('/advertisement/list')
+              this.handleDeleteImage([params.imageUrl]).then(res => {
+                this.$router.push('/advertisement/list')
+              })
             })
           }
         })

@@ -41,8 +41,11 @@ export default {
       }
     }
   },
+  destroyed() {
+    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+  },
   methods: {
-    ...mapActions(['addNews']),
+    ...mapActions(['addNews', 'deleteUnusedImage']),
     onSuccess(e) {
       this.news.imageUrl = e
     },
