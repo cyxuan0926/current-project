@@ -330,3 +330,6 @@ p{
 .viewer-backdrop {
   background: rgba(0,0,0,.4) !important;
 }
+div.viewer-container {
+  z-index: 100000000000 !important;
+}

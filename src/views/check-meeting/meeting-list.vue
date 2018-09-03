@@ -40,9 +40,13 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="申请时间"
-          min-width="86px"
-          prop="applicationDate" />
+          label="会见申请时间"
+          min-width="86px">
+          <template slot-scope="scope">
+            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
+          </template>
+        </el-table-column>
+        <!--prop="applicationDate"-->
         <!-- <el-table-column
           label="预约时间"
           prop="meetingTime" /> -->
@@ -108,6 +112,7 @@
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
+      @close="closeAuthorize"
       title="授权"
       width="530px">
       <div
@@ -150,12 +155,18 @@
             :key="index">
           </el-option>
         </el-select>
+        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
+          <el-form-item prop="refuseRemark">
+            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 4 }"
+                      v-model="refuseForm.refuseRemark" :maxlength="200" ></el-input>
+          </el-form-item>
+        </el-form>
         <el-button
           plain
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
-          @click="show.disagree=false">返回</el-button>
+          @click="closeAuthorize('back')">返回</el-button>
         <el-button
           type="danger"
           plain
@@ -164,6 +175,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
+      @close="closeWithdraw"
       class="authorize-dialog"
       title="撤回"
       width="530px">
@@ -216,6 +228,11 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
+    const validateRefuseRemark = (rule, value, callback) => {
+      if (!value) callback(new Error('请填写驳回原因'))
+      else if (value.length >= 200) callback(new Error('字数不能超过200个字'))
+      else callback()
+    }
     return {
       tabs: 'PENDING',
       searchItems: {
@@ -224,7 +241,8 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         auditName: { type: 'input', label: '审核人' },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
-        auditAt: { type: 'date', label: '审核时间' }
+        auditAt: { type: 'date', label: '审核时间' },
+        applicationDate: { type: 'date', label: '会见申请时间' }
       },
       show: {
         authorize: false,
@@ -238,8 +256,10 @@ export default {
       remarks: '您的身份信息错误',
       withdraw: {},
       rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
-      }
+        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
+        refuseRemark: [{ validator: validateRefuseRemark }]
+      },
+      refuseForm: {}
     }
   },
   computed: {
@@ -254,7 +274,7 @@ export default {
         delete this.filter.status
         this.searchItems.status.miss = false
       }
-      this.getDatas()
+      this.onSearch()
     },
     toShow: {
       handler: function(val) {
@@ -262,6 +282,9 @@ export default {
         else this.show.detail = false
       },
       deep: true
+    },
+    remarks(val) {
+      if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
@@ -299,11 +322,26 @@ export default {
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
-      if (e === 'DENIED') params.remarks = this.remarks
+      if (e === 'DENIED') {
+        if (this.remarks === '其他') {
+          this.$refs['refuseForm'].validate(valid => {
+            if (valid) {
+              params.remarks = this.refuseForm.refuseRemark
+            }
+          })
+        }
+        else {
+          params.remarks = this.remarks
+        }
+        if (params.remarks) this.handleSubmit(params)
+      }
+    },
+    handleSubmit(params) {
       this.authorizeMeeting(params).then(res => {
         if (!res) return
+        this.closeAuthorize()
+        this.toAuthorize = {}
         this.getDatas()
-        this.show.authorize = false
       })
     },
     onWithdraw() {
@@ -312,11 +350,22 @@ export default {
           let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
           this.withdrawMeeting(params).then(res => {
             if (!res) return
+            this.closeWithdraw()
+            this.toAuthorize = {}
             this.getDatas()
-            this.show.withdraw = false
           })
         }
       })
+    },
+    closeAuthorize(e) {
+      if (e === 'back') this.show.disagree = false
+      else this.show.authorize = false
+      this.remarks = '您的身份信息错误'
+      this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
+    },
+    closeWithdraw() {
+      this.show.withdraw = false
+      this.$refs['withdrawForm'].resetFields()
     }
   }
 }
@@ -337,4 +386,6 @@ export default {
     display: inline-block;
     width: 84px;
     text-align: right;
+.withdraw-box
+  margin-bottom 20px;
 </style>

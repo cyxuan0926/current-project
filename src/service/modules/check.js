@@ -65,6 +65,10 @@ export default {
   updateAccessTime: params => {
     return service.post('/prisoners/updateAccessTime', params).then(res => res && res.code === 200)
   },
+  // 服刑人员信息管理-加入黑名单
+  addPrisonerBlacklist: params => {
+    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res && res.code === 200)
+  },
   // 家属信息管理-列表
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)

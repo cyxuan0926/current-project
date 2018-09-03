@@ -93,6 +93,7 @@
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
+      @close="closeAuthorize"
       title="授权"
       width="530px">
       <div
@@ -135,12 +136,18 @@
             :key="index">
           </el-option>
         </el-select>
+        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
+          <el-form-item prop="refuseRemark">
+            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 4 }"
+                      v-model="refuseForm.refuseRemark" :maxlength="200" ></el-input>
+          </el-form-item>
+        </el-form>
         <el-button
           plain
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
-          @click="show.disagree=false">返回</el-button>
+          @click="closeAuthorize('back')">返回</el-button>
         <el-button
           type="danger"
           plain
@@ -155,6 +162,7 @@
       <el-form
         :model="withdraw"
         :rules="rule"
+        @close="closeWithdraw"
         ref="withdrawForm">
         <el-form-item prop="remarks">
           <el-input
@@ -181,9 +189,13 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
 export default {
   data() {
+    const validateRefuseRemark = (rule, value, callback) => {
+      if (!value) callback(new Error('请填写驳回原因'))
+      else if (value.length >= 200) callback(new Error('字数不能超过200个字'))
+      else callback()
+    }
     return {
       tabs: 'first',
       searchItems: {
@@ -201,12 +213,17 @@ export default {
       withdraw: {},
       remarks: '您的身份信息错误',
       rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
-      }
+        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
+        refuseRemark: [{ validator: validateRefuseRemark }]
+      },
+      refuseForm: {}
     }
   },
   computed: {
-    ...mapState(['visits', 'frontRemarks'])
+    ...mapState({
+      visits: state => state.visits,
+      frontRemarks: state => [...state.frontRemarks.slice(0, state.frontRemarks.length - 1), '当月会见已次数已达上限，请下月再申请', '其他']
+    })
   },
   watch: {
     tabs(val) {
@@ -217,6 +234,9 @@ export default {
       //   this.filter.status = val
       // }
       this.onSearch()
+    },
+    remarks(val) {
+      if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
@@ -248,11 +268,26 @@ export default {
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
-      if (e === 'DENIED') params.remarks = this.remarks
+      if (e === 'DENIED') {
+        if (this.remarks === '其他') {
+          this.$refs['refuseForm'].validate(valid => {
+            if (valid) {
+              params.remarks = this.refuseForm.refuseRemark
+            }
+          })
+        }
+        else {
+          params.remarks = this.remarks
+        }
+        if (params.remarks) this.handleSubmit(params)
+      }
+    },
+    handleSubmit(params) {
       this.authorizeVisit(params).then(res => {
         if (!res) return
+        this.closeAuthorize()
+        this.toAuthorize = {}
         this.getDatas()
-        this.show.authorize = false
       })
     },
     onWithdraw() {
@@ -261,11 +296,22 @@ export default {
           let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
           this.withdrawVisit(params).then(res => {
             if (!res) return
+            this.closeWithdraw()
+            this.toAuthorize = {}
             this.getDatas()
-            this.show.withdraw = false
           })
         }
       })
+    },
+    closeAuthorize(e) {
+      if (e === 'back') this.show.disagree = false
+      else this.show.authorize = false
+      this.remarks = '您的身份信息错误'
+      this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
+    },
+    closeWithdraw() {
+      this.show.withdraw = false
+      this.$refs['withdrawForm'].resetFields()
     }
   }
 }
@@ -275,4 +321,6 @@ export default {
 .cell img
   width: 126.8px;
   cursor: pointer;
+.withdraw-box
+  margin-bottom 20px;
 </style>

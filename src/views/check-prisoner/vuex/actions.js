@@ -6,5 +6,8 @@ export default {
   },
   updateAccessTime({ commit }, params) {
     return http.updateAccessTime(params).then(res => res)
+  },
+  addPrisonerBlacklist({ commit }, params) {
+    return http.addPrisonerBlacklist(params).then(res => res)
   }
 }

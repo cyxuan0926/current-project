@@ -51,6 +51,7 @@
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
           </template>
         </el-table-column>
+        <el-table-column label="黑名单原因"></el-table-column>
         <el-table-column label="对应家属">
           <template slot-scope="scope">
             <el-button
@@ -60,6 +61,16 @@
               :key="family.id"
               style="margin-left: 0px; margin-right: 8px;"
               @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              @click="showBlackList(scope.row.id)">
+              加入黑名单
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -132,6 +143,36 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog
+      :visible.sync="blackTableShow"
+      @close="closeBlackTable"
+      class="authorize-dialog"
+      title="加入黑名单"
+      width="530px">
+      <el-form
+        :model="blackTable"
+        ref="blackTableForm"
+        :rules="rule">
+        <el-form-item prop="blackListReason">
+          <el-input
+            type="textarea"
+            :maxlength="300"
+            :autosize="{ minRows: 5 }"
+            placeholder="请输入加入黑名单理由"
+            v-model="blackTable.blackListReason"/>
+        </el-form-item>
+      </el-form>
+      <el-row :gutter="0">
+        <el-button
+          class="button-add"
+          size="mini"
+          type="danger"
+          @click="blackTableShow = false">取消</el-button>
+        <el-button
+          class="button-add"
+          size="mini" @click="handleBlackListReason">确定</el-button>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -139,17 +180,30 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
+    const validateBlackListReason = (rule, value, callback) => {
+      if (value.length >= 300) callback(new Error('字数不能超过200个'))
+      else if (!value) callback(new Error('请填写黑名单理由'))
+      else callback()
+    }
     return {
       searchItems: {
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        name: { type: 'input', label: '姓名' }
+        name: { type: 'input', label: '姓名' },
+        blackList: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
       },
       dialogTableVisible: false,
       family: {},
       isEditAccessTime: false,
       prisoner: {},
-      thePrisoner: {}
+      thePrisoner: {},
+      blackTableShow: false,
+      blackTable: {
+        blackListReason: ''
+      },
+      rule: {
+        blackListReason: [{ validator: validateBlackListReason }]
+      }
     }
   },
   computed: {
@@ -159,7 +213,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime']),
+    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -196,6 +250,16 @@ export default {
     showFamilyDetail(family) {
       this.family = family
       this.dialogTableVisible = true
+    },
+    showBlackList(id) {
+      console.log(id)
+      this.blackTableShow = true
+    },
+    closeBlackTable() {
+      this.$refs.blackTableForm.resetFields()
+    },
+    handleBlackListReason() {
+      this.addPrisonerBlacklist().then()
     }
   }
 }

@@ -242,7 +242,7 @@ export default {
         delete this.filter.status
         this.searchItems.status.miss = false
       }
-      this.getDatas()
+      this.onSearch()
     }
   },
   mounted() {
