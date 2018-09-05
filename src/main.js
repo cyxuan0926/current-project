@@ -22,7 +22,7 @@ import '@/assets/css/main.css'
 
 Vue.use(ElementUI)
 // Vue.use(VueWebsocket, 'wss://pandax.mofasion.com/ws/7')
-// Vue.use(VueWebsocket, `ws://123.57.7.159/ws/2`)
+// Vue.use(VueWebsocket, `ws://120.78.190.101/ws/2`)
 
 Vue.config.productionTip = false
 
