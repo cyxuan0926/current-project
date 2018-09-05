@@ -225,14 +225,9 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
+import validator from '@/utils'
 export default {
   data() {
-    const validateRefuseRemark = (rule, value, callback) => {
-      if (!value) callback(new Error('请填写驳回原因'))
-      else if (value.length >= 200) callback(new Error('字数不能超过200个字'))
-      else callback()
-    }
     return {
       tabs: 'PENDING',
       searchItems: {
@@ -257,7 +252,7 @@ export default {
       withdraw: {},
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [{ validator: validateRefuseRemark }]
+        refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 300 } ]
       },
       refuseForm: {}
     }

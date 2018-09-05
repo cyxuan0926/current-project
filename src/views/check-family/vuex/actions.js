@@ -6,5 +6,8 @@ export default {
   },
   getFamilyDetail({ commit }, params) {
     http.getFamilyDetail(params).then(res => res && commit('getFamilyDetail', res))
+  },
+  addFamilyBlacklist({ commit }, params) {
+    return http.addFamilyBlacklist(params).then(res => res)
   }
 }

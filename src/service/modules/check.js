@@ -67,7 +67,7 @@ export default {
   },
   // 服刑人员信息管理-加入黑名单
   addPrisonerBlacklist: params => {
-    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res && res.code === 200)
+    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res)
   },
   // 家属信息管理-列表
   getFamilies: params => {
@@ -76,6 +76,10 @@ export default {
   // 家属信息管理-详情
   getFamilyDetail: params => {
     return service.get('/families/basicInfo', params).then(res => res && res.data)
+  },
+  // 家属信息管理-加入黑名单
+  addFamilyBlacklist: params => {
+    return service.postFile('/blacklists/addFamilyBlacklist', params).then(res => res && res.data)
   },
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {

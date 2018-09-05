@@ -51,7 +51,7 @@
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因"></el-table-column>
+        <el-table-column label="黑名单原因" prop="reason"></el-table-column>
         <el-table-column label="对应家属">
           <template slot-scope="scope">
             <el-button
@@ -68,7 +68,8 @@
             <el-button
               type="text"
               size="small"
-              @click="showBlackList(scope.row.id)">
+              v-if="!scope.row.isBlacklist"
+              @click="showBlackList(scope.row, scope.$index)">
               加入黑名单
             </el-button>
           </template>
@@ -156,7 +157,6 @@
         <el-form-item prop="blackListReason">
           <el-input
             type="textarea"
-            :maxlength="300"
             :autosize="{ minRows: 5 }"
             placeholder="请输入加入黑名单理由"
             v-model="blackTable.blackListReason"/>
@@ -178,19 +178,15 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import validator from '@/utils'
 export default {
   data() {
-    const validateBlackListReason = (rule, value, callback) => {
-      if (value.length >= 300) callback(new Error('字数不能超过200个'))
-      else if (!value) callback(new Error('请填写黑名单理由'))
-      else callback()
-    }
     return {
       searchItems: {
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '姓名' },
-        blackList: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
+        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
       },
       dialogTableVisible: false,
       family: {},
@@ -198,11 +194,12 @@ export default {
       prisoner: {},
       thePrisoner: {},
       blackTableShow: false,
+      index: '',
       blackTable: {
         blackListReason: ''
       },
       rule: {
-        blackListReason: [{ validator: validateBlackListReason }]
+        blackListReason: [ { required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 300 } ]
       }
     }
   },
@@ -251,15 +248,28 @@ export default {
       this.family = family
       this.dialogTableVisible = true
     },
-    showBlackList(id) {
-      console.log(id)
+    showBlackList(e, index) {
+      this.prisoner = Object.assign({}, e)
       this.blackTableShow = true
+      this.index = index
     },
     closeBlackTable() {
       this.$refs.blackTableForm.resetFields()
     },
     handleBlackListReason() {
-      this.addPrisonerBlacklist().then()
+      this.$refs['blackTableForm'].validate(valid => {
+        if (valid) {
+          let params = new FormData()
+          params.append('prisonerId', this.prisoner.families[0].prisonerId)
+          params.append('reason', this.blackTable.blackListReason)
+          this.addPrisonerBlacklist(params).then(res => {
+            if (res.code !== 200) return
+            this.prisoners.contents[this.index].reason = res.data.prisoners.reason
+            this.prisoners.contents[this.index].isBlacklist = res.data.prisoners.isBlacklist
+            this.blackTableShow = false
+          })
+        }
+      })
     }
   }
 }
