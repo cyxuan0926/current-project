@@ -168,7 +168,7 @@ export default {
   width: calc(100% - 200px);
   min-width: 128px;
   display: flex;
-  justify-content flex-end
+  justify-content flex-end;
   align-items: center;
   flex-wrap: wrap;
   & > *:not(.el-button)

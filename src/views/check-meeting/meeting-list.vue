@@ -330,6 +330,9 @@ export default {
         }
         if (params.remarks) this.handleSubmit(params)
       }
+      else {
+        this.handleSubmit(params)
+      }
     },
     handleSubmit(params) {
       this.authorizeMeeting(params).then(res => {
