@@ -138,8 +138,8 @@
         </el-select>
         <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
           <el-form-item prop="refuseRemark">
-            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 4 }"
-                      v-model="refuseForm.refuseRemark" :maxlength="200" ></el-input>
+            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 5 }"
+                      v-model="refuseForm.refuseRemark" ></el-input>
           </el-form-item>
         </el-form>
         <el-button
@@ -189,13 +189,9 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import validator from '@/utils'
 export default {
   data() {
-    const validateRefuseRemark = (rule, value, callback) => {
-      if (!value) callback(new Error('请填写驳回原因'))
-      else if (value.length >= 200) callback(new Error('字数不能超过200个字'))
-      else callback()
-    }
     return {
       tabs: 'first',
       searchItems: {
@@ -214,7 +210,7 @@ export default {
       remarks: '您的身份信息错误',
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [{ validator: validateRefuseRemark }]
+        refuseRemark: [{ required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 300 }]
       },
       refuseForm: {}
     }

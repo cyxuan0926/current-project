@@ -157,8 +157,8 @@
         </el-select>
         <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
           <el-form-item prop="refuseRemark">
-            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 4 }"
-                      v-model="refuseForm.refuseRemark" :maxlength="200" ></el-input>
+            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 5 }"
+                      v-model="refuseForm.refuseRemark"></el-input>
           </el-form-item>
         </el-form>
         <el-button
