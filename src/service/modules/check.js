@@ -13,6 +13,10 @@ export default {
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
   },
+  // 家属会见申请-详情
+  getMeettingsDetail: params => {
+    return service.get('/meetings/detail', params).then(res => res && res.data)
+  },
   // 家属会见申请-授权
   authorizeMeeting: params => {
     return service.post('/meetings/authorize', params).then(res => res && res.code === 200)

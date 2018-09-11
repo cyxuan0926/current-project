@@ -32,7 +32,13 @@
             <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason"></el-table-column>
+        <el-table-column label="黑名单原因" prop="reason">
+          <template slot-scope="scope">
+            <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
+              <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="对应罪犯">
           <template slot-scope="scope">
             <el-button
@@ -59,6 +65,13 @@
               v-if="!scope.row.isBlacklist"
               @click="showBlackList(scope.row, scope.$index)">
               加入黑名单
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              v-else
+              disabled>
+              已加入黑名单
             </el-button>
           </template>
         </el-table-column>
@@ -152,7 +165,7 @@ export default {
         blackListReason: ''
       },
       rule: {
-        blackListReason: [{ required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 300 }]
+        blackListReason: [{ required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 200 }]
       },
       family: {},
       index: ''
@@ -195,7 +208,7 @@ export default {
       this.$refs['blackTableForm'].validate(valid => {
         if (valid) {
           let params = new FormData()
-          params.append('familyId', this.family.prisonerList[0].familyId)
+          params.append('familyId', this.family.id)
           params.append('reason', this.blackTable.blackListReason)
           this.addFamilyBlacklist(params).then(res => {
             if (!res.registrations) return
@@ -214,4 +227,13 @@ export default {
 .cell img
   width: 126.8px;
   cursor: pointer;
+.more-content-column
+  max-height: 66px;
+  overflow: hidden;
+  position: relative;
+  &::after
+    content: '...'
+    position: absolute;
+    bottom: -3px;
+    right: 0px;
 </style>

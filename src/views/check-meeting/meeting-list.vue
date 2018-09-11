@@ -23,34 +23,6 @@
         stripe
         style="width: 100%" >
         <el-table-column
-          prop="name"
-          label="姓名" />
-        <el-table-column
-          width="148px"
-          label="身份证正面">
-          <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardFront" title="身份证正面照" />
-          </template>
-        </el-table-column>
-        <el-table-column
-          width="148px"
-          label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardBack" title="身份证背面照"/>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="会见申请时间"
-          min-width="86px">
-          <template slot-scope="scope">
-            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
-          </template>
-        </el-table-column>
-        <!--prop="applicationDate"-->
-        <!-- <el-table-column
-          label="预约时间"
-          prop="meetingTime" /> -->
-        <el-table-column
           prop="prisonerNumber"
           min-width="92px"
           label="囚号" />
@@ -58,13 +30,26 @@
           prop="prisonArea"
           min-width="92px"
           label="监区" />
-        <!-- <el-table-column
-          prop="relationship"
-          width="64px"
-          label="关系" /> -->
-        <!-- <el-table-column
-          prop="terminalNumber"
-          label="终端号" /> -->
+        <el-table-column
+          label="会见申请时间"
+          min-width="86px">
+          <template slot-scope="scope">
+            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="家属">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              v-for="family in scope.row.families"
+              :key="family.familyId"
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(family)">
+              {{family.familyName}}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           class-name="orange"
           min-width="78px"
@@ -220,6 +205,38 @@
         <div v-if="toShow.status === 'DENIED'" style="width: 100%;"><label>拒绝原因：</label><span>{{ toShow.content }}</span></div>
       </div>
     </el-dialog>
+    <el-dialog
+      title="家属信息"
+      :visible.sync="show.familiesDetialInform">
+      <el-row :gutter="0">
+        <el-col :span="12">
+          <el-col :span="24">
+            <label for="">姓名：</label>
+            <span>{{ family.familyName }}</span>
+          </el-col>
+          <el-col :span="24">
+            <label for="">关系：</label>
+            <span>{{ family.relationship }}</span>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证正面：</label>
+          <m-img-viewer v-if="family.familyIdCardFront" :url="family.familyIdCardFront" title="身份证正面"/>
+        </el-col>
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证背面：</label>
+          <m-img-viewer v-if="family.familyIdCardBack" :url="family.familyIdCardBack" title="身份证背面"/>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12" class="img-idCard">
+          <label for="">关系证明图：</label>
+          <m-img-viewer v-if="family.familyRelationalProofUrl" :url="family.familyRelationalProofUrl" title="关系证明图"/>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -244,7 +261,8 @@ export default {
         agree: false,
         disagree: false,
         withdraw: false,
-        detail: false
+        detail: false,
+        familiesDetialInform: false
       },
       toAuthorize: {},
       toShow: {},
@@ -252,9 +270,10 @@ export default {
       withdraw: {},
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 300 } ]
+        refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 } ]
       },
-      refuseForm: {}
+      refuseForm: {},
+      family: {}
     }
   },
   computed: {
@@ -286,7 +305,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting']),
+    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeettingsDetail']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -364,6 +383,14 @@ export default {
     closeWithdraw() {
       this.show.withdraw = false
       this.$refs['withdrawForm'].resetFields()
+    },
+    showFamilyDetail(e) {
+      let params = { id: e.familyId }
+      this.show.familiesDetialInform = true
+      this.getMeettingsDetail(params).then(res => {
+        if (!res.family) return
+        this.family = Object.assign({}, res.family)
+      })
     }
   }
 }
@@ -385,5 +412,11 @@ export default {
     width: 84px;
     text-align: right;
 .withdraw-box
-  margin-bottom 20px;
+  margin-bottom: 20px;
+.row-flex
+  flex-wrap: wrap;
+img
+  display: block;
+.img-idCard
+  min-width: 350px;
 </style>

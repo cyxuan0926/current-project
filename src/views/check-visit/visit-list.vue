@@ -210,7 +210,7 @@ export default {
       remarks: '您的身份信息错误',
       rule: {
         remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [{ required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 300 }]
+        refuseRemark: [{ required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 }]
       },
       refuseForm: {}
     }
@@ -218,7 +218,7 @@ export default {
   computed: {
     ...mapState({
       visits: state => state.visits,
-      frontRemarks: state => [...state.frontRemarks.slice(0, state.frontRemarks.length - 1), '当月会见已次数已达上限，请下月再申请', '其他']
+      frontRemarks: state => [...state.frontRemarks.slice(0, state.frontRemarks.length - 1), '当月会见次数已达上限，请下月再申请', '其他']
     })
   },
   watch: {

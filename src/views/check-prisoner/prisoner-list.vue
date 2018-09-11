@@ -51,7 +51,13 @@
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason"></el-table-column>
+        <el-table-column label="黑名单原因" prop="reason">
+          <template slot-scope="scope">
+            <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
+            <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="对应家属">
           <template slot-scope="scope">
             <el-button
@@ -71,6 +77,13 @@
               v-if="!scope.row.isBlacklist"
               @click="showBlackList(scope.row, scope.$index)">
               加入黑名单
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              v-else
+              disabled>
+              已加入黑名单
             </el-button>
           </template>
         </el-table-column>
@@ -199,7 +212,7 @@ export default {
         blackListReason: ''
       },
       rule: {
-        blackListReason: [ { required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 300 } ]
+        blackListReason: [ { required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 200 } ]
       }
     }
   },
@@ -257,10 +270,11 @@ export default {
       this.$refs.blackTableForm.resetFields()
     },
     handleBlackListReason() {
+      console.log(this.prisoner)
       this.$refs['blackTableForm'].validate(valid => {
         if (valid) {
           let params = new FormData()
-          params.append('prisonerId', this.prisoner.families[0].prisonerId)
+          params.append('prisonerId', this.prisoner.id)
           params.append('reason', this.blackTable.blackListReason)
           this.addPrisonerBlacklist(params).then(res => {
             if (res.code !== 200) return
@@ -287,4 +301,13 @@ export default {
   min-width: 350px;
 .row-flex
   flex-wrap: wrap;
+.more-content-column
+  max-height: 66px;
+  overflow: hidden;
+  position: relative;
+  &::after
+    content: '...'
+    position: absolute;
+    bottom: -3px;
+    right: 0px;
 </style>

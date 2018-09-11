@@ -333,3 +333,7 @@ p{
 div.viewer-container {
   z-index: 100000000000 !important;
 }
+div.el-tooltip__popper {
+  max-width: 60% !important;
+  margin: 0px auto !important;
+}
