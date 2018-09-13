@@ -56,6 +56,20 @@
           prop="relationship"
           min-width="64px"
           label="关系" />
+        <el-table-column label="家属会见告知书">
+          <template slot-scope="scope">
+            <span :class="[
+              'bold',
+              { 'red' : !scope.row.notifyId },
+              { 'green' : scope.row.notifyId }
+              ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
+            <el-button
+              v-if="scope.row.notifyId"
+              type="text"
+              size="small"
+              @click="showSign(scope.row.notifyId)">点击查看</el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="申请状态"
           min-width="74px"
@@ -195,6 +209,26 @@
           @click="closeWithdraw('withdrawForm')">关闭</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="notificationShow"
+      title="会见告知书"
+      width="530px"
+      class="authorize-dialog">
+      <div class="flex-dialog">
+        <div style="width: 100%;"><label>家属姓名：</label><span>{{ notification.familyName }}</span></div>
+        <div style="width: 100%;"><label>家属身份证号：</label><span>{{ notification.familyUuid }}</span></div>
+        <div style="width: 100%;"><label>与服刑人员关系：</label><span>{{ notification.familyRelationship }}</span></div>
+        <div style="width: 100%;"><label>协议编号：</label><span>{{ notification.protoNum }}</span></div>
+        <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
+      </div>
+      <el-row :gutter="0">
+        <el-button
+          class="button-add"
+          size="mini"
+          type="danger"
+          @click="notificationShow = false">关闭</el-button>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -230,7 +264,8 @@ export default {
       },
       remarks: '身份信息错误',
       btnDisable: false, // 按钮禁用与启用
-      tabs: 'PENDING'
+      tabs: 'PENDING',
+      notificationShow: false
     }
   },
   watch: {
@@ -249,10 +284,10 @@ export default {
     this.getDatas()
   },
   computed: {
-    ...mapState(['registrations', 'registRemarks'])
+    ...mapState(['registrations', 'registRemarks', 'notification'])
   },
   methods: {
-    ...mapActions(['getRegistrations', 'authorizeRegistrations']),
+    ...mapActions(['getRegistrations', 'authorizeRegistrations', 'getNotification']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -329,6 +364,12 @@ export default {
       this.refuseForm.anotherRemarks = ''
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+    },
+    showSign(e) {
+      this.getNotification({ id: e }).then(res => {
+        if (!res) return
+        this.notificationShow = true
+      })
     }
   }
 }
@@ -340,4 +381,12 @@ export default {
   cursor pointer
 .withdraw-box
   margin-bottom 8px
+.flex-dialog
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 32px;
+  label
+    display: inline-block;
+    width: 114px;
+    text-align: right;
 </style>

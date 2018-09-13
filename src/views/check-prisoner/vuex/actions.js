@@ -9,5 +9,25 @@ export default {
   },
   addPrisonerBlacklist({ commit }, params) {
     return http.addPrisonerBlacklist(params).then(res => res)
+  },
+  getNotification({ commit }, params) {
+    return http.getNotification(params).then(res => {
+      if (!res) return
+      commit('getNotification', res)
+      return true
+    })
+  },
+  updateNotification({ commit }, params) {
+    return http.updateNotification(params).then(res => res)
+  },
+  addNotification({ commit }, params) {
+    return http.addNotification(params).then(res => res)
+  },
+  getNotificationFamilies({ commit }, params) {
+    return http.getNotificationFamilies(params).then(res => {
+      if (!res) return
+      commit('getNotificationFamilies', res)
+      return true
+    })
   }
 }

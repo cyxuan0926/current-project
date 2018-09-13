@@ -32,12 +32,12 @@
             <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason">
-          <template slot-scope="scope">
+        <el-table-column label="黑名单原因" prop="reason" show-show-overflow-tooltip>
+          <!-- <template slot-scope="scope">
             <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
               <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
             </el-tooltip>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column label="对应罪犯">
           <template slot-scope="scope">

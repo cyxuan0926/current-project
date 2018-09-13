@@ -26,6 +26,15 @@
         :label="item.props.label ? option[item.props.label] : option.label"
         :value="item.props.value ? option[item.props.value] : option.value"/>
     </el-select>
+    <el-date-picker
+      v-if="item.type === 'date'"
+      v-model="fields[prop]"
+      type="date"
+      :disabled="item.disabled"
+      value-format="yyyy-MM-dd"
+      :picker-options="item.pickerOptions"
+      :placeholder="'请选择' + item.label">
+    </el-date-picker>
     <el-switch
       v-if="item.type === 'switch'"
       v-model="fields[prop]"

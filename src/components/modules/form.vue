@@ -3,6 +3,7 @@
     <el-form
       v-if="flag"
       ref="form"
+      :label-position="items.formConfigs ?  items.formConfigs.labelPosition : ''"
       :inline="items.formConfigs ? items.formConfigs.inline : false"
       :label-width="items.formConfigs ?  items.formConfigs.labelWidth : ''"
       :model="fields"

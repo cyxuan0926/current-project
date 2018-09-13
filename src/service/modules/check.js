@@ -73,6 +73,22 @@ export default {
   addPrisonerBlacklist: params => {
     return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res)
   },
+  // 服刑人员信息管理-会见告知书-详情
+  getNotification: params => {
+    return service.get('/notification/detail', params).then(res => res.data)
+  },
+  // 服刑人员信息管理-会见告知书-编辑
+  updateNotification: params => {
+    return service.post('/notification/update', params).then(res => res && res.code === 200)
+  },
+  // 服刑人员信息管理-会见告知书-新增
+  addNotification: params => {
+    return service.post('/notification/add', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理-会见告知书-家属列表
+  getNotificationFamilies: params => {
+    return service.get('/notification/families', params).then(res => res && res.data)
+  },
   // 家属信息管理-列表
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)
