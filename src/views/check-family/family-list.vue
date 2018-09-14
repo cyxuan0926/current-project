@@ -32,7 +32,7 @@
             <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason" show-show-overflow-tooltip>
+        <el-table-column label="黑名单原因" prop="reason" show-overflow-tooltip>
           <!-- <template slot-scope="scope">
             <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
               <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
