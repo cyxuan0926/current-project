@@ -382,6 +382,7 @@ export default {
         this.notificationForm = Object.assign({}, e)
       }
       else {
+        this.notificationForm.familyId = ''
         this.notificationForm.familyName = ''
         this.notificationForm.familyRelationship = ''
         this.notificationForm.familyUuid = ''
