@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { helper } from '@/utils'
 export default {
   props: {
     items: {
@@ -143,7 +144,7 @@ export default {
             params[key] = this.items[key].value
           }
         })
-        this.$parent.$parent.filter = params
+        this.$parent.$parent.filter = helper.trimObject(params) || params
       }
       this.$emit('search')
     }
