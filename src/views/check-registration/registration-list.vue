@@ -242,7 +242,7 @@ export default {
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         auditName: { type: 'input', label: '审核人' },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true },
+        status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'] },
         auditAt: { type: 'date', label: '审核时间' }
       },
       toAuthorize: {},
@@ -387,6 +387,6 @@ export default {
   line-height: 32px;
   label
     display: inline-block;
-    width: 114px;
+    width: 120px;
     text-align: right;
 </style>
