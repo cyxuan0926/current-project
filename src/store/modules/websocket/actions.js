@@ -2,7 +2,7 @@
 import { Notification } from 'element-ui'
 
 // const wsUrl = jailId => `ws://123.57.7.159/ws/${ jailId }` // 测试
-const wsUrl = jailId => `ws://123.57.7.159/ws-demo/${ jailId }` // 演示
+const wsUrl = jailId => `ws://120.78.190.101:8083/ywgk-demo/websocket/${ jailId }` // 演示
 // const wsUrl = jailId => `wss://www.yuwugongkai.com/ws/${ jailId }`
 
 export default {
