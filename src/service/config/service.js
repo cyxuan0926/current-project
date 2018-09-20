@@ -11,6 +11,7 @@ let state = ''
 // export const agency = ''
 export const agency = '/ywgk'
 // export const agency = '/ywgk-demo'
+// export const agency = '/ywgk-auth'
 // 获取异步请求的url
 const getUrl = (url) => `${ agency }${ url }`
 // http request 拦截器

@@ -13,6 +13,10 @@ export default {
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
   },
+  // 家属会见申请-详情
+  getMeettingsDetail: params => {
+    return service.get('/meetings/detail', params).then(res => res && res.data)
+  },
   // 家属会见申请-授权
   authorizeMeeting: params => {
     return service.post('/meetings/authorize', params).then(res => res && res.code === 200)
@@ -65,6 +69,26 @@ export default {
   updateAccessTime: params => {
     return service.post('/prisoners/updateAccessTime', params).then(res => res && res.code === 200)
   },
+  // 服刑人员信息管理-加入黑名单
+  addPrisonerBlacklist: params => {
+    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res)
+  },
+  // 服刑人员信息管理-会见告知书-详情
+  getNotification: params => {
+    return service.get('/notification/detail', params).then(res => res.data)
+  },
+  // 服刑人员信息管理-会见告知书-编辑
+  updateNotification: params => {
+    return service.post('/notification/update', params).then(res => res && res.code === 200)
+  },
+  // 服刑人员信息管理-会见告知书-新增
+  addNotification: params => {
+    return service.post('/notification/add', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理-会见告知书-家属列表
+  getNotificationFamilies: params => {
+    return service.get('/notification/families', params).then(res => res && res.data)
+  },
   // 家属信息管理-列表
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)
@@ -72,6 +96,10 @@ export default {
   // 家属信息管理-详情
   getFamilyDetail: params => {
     return service.get('/families/basicInfo', params).then(res => res && res.data)
+  },
+  // 家属信息管理-加入黑名单
+  addFamilyBlacklist: params => {
+    return service.postFile('/blacklists/addFamilyBlacklist', params).then(res => res && res.data)
   },
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {

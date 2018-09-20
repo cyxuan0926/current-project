@@ -138,7 +138,9 @@ export default {
       // meeting.changed = true
       this.clicked.push(meeting)
       if (this.clicked.length === 2 && (this.clicked[0].id || this.clicked[1].id)) {
-        if (this.clicked[0].id === this.clicked[1].id) this.clicked = []
+        if (this.clicked[0].id === this.clicked[1].id) {
+          this.clicked = []
+        }
         else {
           let toChange = Object.assign({}, this.meetings[this.clicked[0].terminalNumber][this.clicked[0].duration])
           this.meetings[this.clicked[0].terminalNumber][this.clicked[0].duration] = Object.assign({}, this.clicked[1], { terminalNumber: this.clicked[0].terminalNumber, duration: this.clicked[0].duration })

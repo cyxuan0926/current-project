@@ -5,11 +5,12 @@ export default {
   // method: 'get',
   // 基础url前缀
   baseURL: 'https://www.yuwugongkai.com/',
-  // baseURL: 'http://10.10.10.20:8081/', // 杨波
-  // baseURL: 'http://123.57.7.159/', // 测试
-  // baseURL: 'http://123.57.7.159:8083/', // 演示
+  // baseURL: 'http://10.10.10.20:8085/', // 杨波
+  // baseURL: 'http://120.78.190.101:8081', // 测试
+  // baseURL: 'http://120.78.190.101:8085', // 授权
+  // baseURL: 'http://120.78.190.101:8083/', // 演示
   // baseURL: 'http://39.108.185.51:8081/',
-  // baseURL: 'http://10.10.10.10:8081/', // 黄科
+  // baseURL: 'http://10.10.10.46:8085/', // 黄科
   // baseURL: 'http://10.10.10.103:8081/', // 刘琴
   // baseURL: 'http://10.10.10.18:8081/',
   // 请求发送之前对出参进行处理
