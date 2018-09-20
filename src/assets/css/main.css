@@ -8,6 +8,15 @@ img{
 p{
   margin: 0;
 }
+.red{
+  color: #F56C6C;
+}
+.green{
+  color: #67C23A;
+}
+.bold{
+  font-weight: bold;
+}
 .el-submenu__icon-arrow{
   margin-top: -5px;
 }
@@ -79,6 +88,12 @@ p{
   width: 100%;
   margin-left: 0;
   margin-bottom: 10px;
+}
+.notification-dialog .el-form-item{
+  width: calc(50% - 20px);
+}
+.notification-dialog .el-form-item__label{
+  line-height: 24px;
 }
 .img-dialog img{
   width: 400px;
@@ -329,4 +344,11 @@ p{
 }
 .viewer-backdrop {
   background: rgba(0,0,0,.4) !important;
+}
+div.viewer-container {
+  z-index: 100000000000 !important;
+}
+div.el-tooltip__popper {
+  max-width: 60% !important;
+  margin: 0px auto !important;
 }

@@ -23,30 +23,6 @@
         stripe
         style="width: 100%" >
         <el-table-column
-          prop="name"
-          label="姓名" />
-        <el-table-column
-          width="148px"
-          label="身份证正面">
-          <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardFront" title="身份证正面照" />
-          </template>
-        </el-table-column>
-        <el-table-column
-          width="148px"
-          label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer :url="scope.row.idCardBack" title="身份证背面照"/>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="申请时间"
-          min-width="86px"
-          prop="applicationDate" />
-        <!-- <el-table-column
-          label="预约时间"
-          prop="meetingTime" /> -->
-        <el-table-column
           prop="prisonerNumber"
           min-width="92px"
           label="囚号" />
@@ -54,13 +30,36 @@
           prop="prisonArea"
           min-width="92px"
           label="监区" />
-        <!-- <el-table-column
-          prop="relationship"
-          width="64px"
-          label="关系" /> -->
-        <!-- <el-table-column
-          prop="terminalNumber"
-          label="终端号" /> -->
+        <el-table-column
+          label="会见申请时间"
+          min-width="86px">
+          <template slot-scope="scope">
+            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="家属">
+          <template slot-scope="scope">
+            <div v-if="scope.row.families && scope.row.families.length">
+              <el-button
+                type="text"
+                size="small"
+                v-for="family in scope.row.families"
+                :key="family.familyId"
+                style="margin-left: 0px; margin-right: 8px;"
+                @click="showFamilyDetail(family.familyId)">
+                {{family.familyName}}
+              </el-button>
+            </div>
+            <el-button
+              type="text"
+              size="small"
+              v-else
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(scope.row.familyId)">
+              {{scope.row.name}}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           class-name="orange"
           min-width="78px"
@@ -108,6 +107,7 @@
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
+      @close="closeAuthorize"
       title="授权"
       width="530px">
       <div
@@ -150,12 +150,18 @@
             :key="index">
           </el-option>
         </el-select>
+        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
+          <el-form-item prop="refuseRemark">
+            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 5 }"
+                      v-model="refuseForm.refuseRemark"></el-input>
+          </el-form-item>
+        </el-form>
         <el-button
           plain
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
-          @click="show.disagree=false">返回</el-button>
+          @click="closeAuthorize('back')">返回</el-button>
         <el-button
           type="danger"
           plain
@@ -164,6 +170,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
+      @close="closeWithdraw"
       class="authorize-dialog"
       title="撤回"
       width="530px">
@@ -208,12 +215,45 @@
         <div v-if="toShow.status === 'DENIED'" style="width: 100%;"><label>拒绝原因：</label><span>{{ toShow.content }}</span></div>
       </div>
     </el-dialog>
+    <el-dialog
+      title="家属信息"
+      :visible.sync="show.familiesDetialInform"
+      @close="family = {}">
+      <el-row :gutter="0">
+        <el-col :span="12">
+          <el-col :span="24">
+            <label for="">姓名：</label>
+            <span>{{ family.familyName }}</span>
+          </el-col>
+          <el-col :span="24">
+            <label for="">关系：</label>
+            <span>{{ family.relationship }}</span>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证正面：</label>
+          <m-img-viewer v-if="family.familyIdCardFront" :url="family.familyIdCardFront" title="身份证正面"/>
+        </el-col>
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证背面：</label>
+          <m-img-viewer v-if="family.familyIdCardBack" :url="family.familyIdCardBack" title="身份证背面"/>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12" class="img-idCard">
+          <label for="">关系证明图：</label>
+          <m-img-viewer v-if="family.familyRelationalProofUrl" :url="family.familyRelationalProofUrl" title="关系证明图"/>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
+import validator from '@/utils'
 export default {
   data() {
     return {
@@ -224,22 +264,27 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         auditName: { type: 'input', label: '审核人' },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
-        auditAt: { type: 'date', label: '审核时间' }
+        auditAt: { type: 'date', label: '审核时间' },
+        applicationDate: { type: 'date', label: '会见申请时间' }
       },
       show: {
         authorize: false,
         agree: false,
         disagree: false,
         withdraw: false,
-        detail: false
+        detail: false,
+        familiesDetialInform: false
       },
       toAuthorize: {},
       toShow: {},
       remarks: '您的身份信息错误',
       withdraw: {},
       rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
-      }
+        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
+        refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 } ]
+      },
+      refuseForm: {},
+      family: {}
     }
   },
   computed: {
@@ -254,7 +299,7 @@ export default {
         delete this.filter.status
         this.searchItems.status.miss = false
       }
-      this.getDatas()
+      this.onSearch()
     },
     toShow: {
       handler: function(val) {
@@ -262,13 +307,16 @@ export default {
         else this.show.detail = false
       },
       deep: true
+    },
+    remarks(val) {
+      if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting']),
+    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeettingsDetail']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -299,11 +347,29 @@ export default {
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
-      if (e === 'DENIED') params.remarks = this.remarks
+      if (e === 'DENIED') {
+        if (this.remarks === '其他') {
+          this.$refs['refuseForm'].validate(valid => {
+            if (valid) {
+              params.remarks = this.refuseForm.refuseRemark
+            }
+          })
+        }
+        else {
+          params.remarks = this.remarks
+        }
+        if (params.remarks) this.handleSubmit(params)
+      }
+      else {
+        this.handleSubmit(params)
+      }
+    },
+    handleSubmit(params) {
       this.authorizeMeeting(params).then(res => {
         if (!res) return
+        this.closeAuthorize()
+        this.toAuthorize = {}
         this.getDatas()
-        this.show.authorize = false
       })
     },
     onWithdraw() {
@@ -312,10 +378,29 @@ export default {
           let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
           this.withdrawMeeting(params).then(res => {
             if (!res) return
+            this.closeWithdraw()
+            this.toAuthorize = {}
             this.getDatas()
-            this.show.withdraw = false
           })
         }
+      })
+    },
+    closeAuthorize(e) {
+      if (e === 'back') this.show.disagree = false
+      else this.show.authorize = false
+      this.remarks = '您的身份信息错误'
+      this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
+    },
+    closeWithdraw() {
+      this.show.withdraw = false
+      this.$refs['withdrawForm'].resetFields()
+    },
+    showFamilyDetail(e) {
+      let params = { id: e }
+      this.show.familiesDetialInform = true
+      this.getMeettingsDetail(params).then(res => {
+        if (!res.family) return
+        this.family = Object.assign({}, res.family)
       })
     }
   }
@@ -335,6 +420,14 @@ export default {
   flex-wrap: wrap;
   label
     display: inline-block;
-    width: 84px;
+    width: 90px;
     text-align: right;
+.withdraw-box
+  margin-bottom: 20px;
+.row-flex
+  flex-wrap: wrap;
+img
+  display: block;
+.img-idCard
+  min-width: 350px;
 </style>

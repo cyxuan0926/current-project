@@ -37,7 +37,7 @@ export default {
   deleteImage: params => {
     params = Array.from(new Set(params.concat(localStorage.getItem('toDelete') ? JSON.parse(localStorage.getItem('toDelete')) : [])))
     if (!params.length) return new Promise(function(resolve, reject) { resolve(true) })
-    return axios.delete('http://120.79.67.25:1339/delete/resources', { data: { urls: params }, headers: { Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' } }).then(res => {
+    return axios.delete('http://120.78.190.101:1339/delete/resources', { data: { urls: params }, headers: { Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' } }).then(res => {
       if (res.status === 200 && res.data.code === 200) {
         localStorage.removeItem('toDelete')
         return true
