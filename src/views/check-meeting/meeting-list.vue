@@ -39,14 +39,24 @@
         </el-table-column>
         <el-table-column label="家属">
           <template slot-scope="scope">
+            <div v-if="scope.row.families && scope.row.families.length">
+              <el-button
+                type="text"
+                size="small"
+                v-for="family in scope.row.families"
+                :key="family.familyId"
+                style="margin-left: 0px; margin-right: 8px;"
+                @click="showFamilyDetail(family.familyId)">
+                {{family.familyName}}
+              </el-button>
+            </div>
             <el-button
               type="text"
               size="small"
-              v-for="family in scope.row.families"
-              :key="family.familyId"
+              v-else
               style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(family)">
-              {{family.familyName}}
+              @click="showFamilyDetail(scope.row.familyId)">
+              {{scope.row.name}}
             </el-button>
           </template>
         </el-table-column>
@@ -207,7 +217,8 @@
     </el-dialog>
     <el-dialog
       title="家属信息"
-      :visible.sync="show.familiesDetialInform">
+      :visible.sync="show.familiesDetialInform"
+      @close="family = {}">
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">
@@ -385,7 +396,7 @@ export default {
       this.$refs['withdrawForm'].resetFields()
     },
     showFamilyDetail(e) {
-      let params = { id: e.familyId }
+      let params = { id: e }
       this.show.familiesDetialInform = true
       this.getMeettingsDetail(params).then(res => {
         if (!res.family) return
