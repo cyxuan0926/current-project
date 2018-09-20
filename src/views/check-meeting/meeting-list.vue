@@ -420,7 +420,7 @@ export default {
   flex-wrap: wrap;
   label
     display: inline-block;
-    width: 84px;
+    width: 90px;
     text-align: right;
 .withdraw-box
   margin-bottom: 20px;
