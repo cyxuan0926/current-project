@@ -18,10 +18,11 @@ export default {
     }
     return {
       formItems: Object.assign({}, {
-        formConfigs: { labelWidth: '140px' },
+        formConfigs: { labelWidth: '150px' },
         cost: { type: 'input', label: '单次会见费用', disabled: this.$route.meta.role === '3', rules: ['required', 'isFee'], append: '/元', value: 0 },
         branchPrison: { type: 'switch', label: '是否需要分监区', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
         meeting: { type: 'switch', label: '会见模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
+        dailyApplyLimit: { type: 'input', label: '每人/日申请次数', disabled: this.$route.meta.role === '3', rules: ['isNumber'], append: '/次', value: null },
         rewards: { type: 'switch', label: '奖励模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
         shopping: { type: 'switch', label: '电子商务模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
         prisonTerm: { type: 'switch', label: '监狱条款模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },

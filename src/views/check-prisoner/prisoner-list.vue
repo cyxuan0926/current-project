@@ -212,7 +212,7 @@
       width="530px">
       <div class="el-form el-form--inline">
         <div class="el-form-item">
-          <label class="el-fotm-item__label">选择家属</label>
+          <label class="el-fotm-item__label">可选家属</label>
           <div class="el-form-item__content" style="width: 100%;">
             <el-select
               placeholder="可选家属"
