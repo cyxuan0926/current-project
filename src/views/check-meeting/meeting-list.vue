@@ -18,26 +18,38 @@
           name="PENDING" />
       </el-tabs>
       <el-table
+        ref="meetingTable"
         :data="meetings.contents"
         border
         stripe
-        style="width: 100%" >
+        style="width: 100%"
+        @sort-change="sortChange">
         <el-table-column
           prop="prisonerNumber"
-          min-width="92px"
+          min-width="72px"
           label="囚号" />
         <el-table-column
           prop="prisonArea"
-          min-width="92px"
-          label="监区" />
+          min-width="82px"
+          label="监区"
+          :sortable="'custom'" />
+        <!--:render-header="handleMy"-->
         <el-table-column
-          label="会见申请时间"
-          min-width="86px">
+          label="申请时间"
+          min-width="80px">
           <template slot-scope="scope">
-            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
+            <span >{{scope.row.applicationDate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="家属">
+        <el-table-column
+          label="会见时间"
+          min-width="130px" :sortable="'custom'" prop="meetingTime">
+          <template slot-scope="scope">
+            <span >{{scope.row.meetingTime}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="服刑人员姓名" min-width="116"></el-table-column>
+        <el-table-column label="家属" min-width="116">
           <template slot-scope="scope">
             <div v-if="scope.row.families && scope.row.families.length">
               <el-button
@@ -265,7 +277,8 @@ export default {
         auditName: { type: 'input', label: '审核人' },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
         auditAt: { type: 'date', label: '审核时间' },
-        applicationDate: { type: 'date', label: '会见申请时间' }
+        applicationDate: { type: 'date', label: '申请时间' },
+        meetingTime: { type: 'date', label: '会见时间' }
       },
       show: {
         authorize: false,
@@ -322,6 +335,7 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      this.$refs.meetingTable && this.$refs.meetingTable.clearSort()
       if (this.tabs !== 'first') this.filter.status = this.tabs
       this.getMeetings({ ...this.filter, ...this.pagination })
     },
@@ -402,7 +416,37 @@ export default {
         if (!res.family) return
         this.family = Object.assign({}, res.family)
       })
+    },
+    sortChange({ column, prop, order }) {
+      console.log(111)
     }
+    // handleMy(h) {
+    //   let self = this
+    //   return h('div', [
+    //     h('span', {
+    //       domProps: {
+    //         innerHTML: '监区'
+    //       }
+    //     }), h('select', {
+    //       on: {
+    //         change: function(event) {
+    //           self.sortChange(event.target.value)
+    //         }
+    //       }
+    //     }, [
+    //       ['', '升序', '倒序'].map(item => {
+    //         return h('option', {
+    //           attrs: {
+    //             value: item
+    //           },
+    //           domProps: {
+    //             innerHTML: item
+    //           }
+    //         })
+    //       })
+    //     ])
+    //   ])
+    // }
   }
 }
 </script>

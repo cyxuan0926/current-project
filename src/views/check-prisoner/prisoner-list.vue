@@ -98,6 +98,12 @@
               disabled>
               已加入黑名单
             </el-button>
+            <el-button
+              type="text"
+              size="small"
+              @click="showPrisonConfig">
+              更换监区
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -240,6 +246,15 @@
           @click="handleSureSign">确定</el-button>
       </el-row>
     </el-dialog>
+    <el-dialog
+      :visible.sync="changePrisonConfigName"
+      title="更换监区"
+      class="authorize-dialog"
+      width="530px">
+      <el-select class="only-select">
+        <el-option></el-option>
+      </el-select>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -253,7 +268,9 @@ export default {
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '姓名' },
-        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
+        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] },
+        isNotify: { type: 'select', label: '会见告书', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] },
+        famyilyName: { type: 'input', label: '家属姓名' }
       },
       formItems: {
         formConfigs: { inline: true, labelPosition: 'top' },
@@ -289,7 +306,8 @@ export default {
       notificationForm: {},
       notificationFamily: {},
       selectLoading: true,
-      submitting: false
+      submitting: false,
+      changePrisonConfigName: false
     }
   },
   computed: {
@@ -431,6 +449,9 @@ export default {
           this.notificationShow = false
         })
       }
+    },
+    showPrisonConfig() {
+      this.changePrisonConfigName = true
     }
   }
 }
@@ -457,4 +478,9 @@ export default {
     position: absolute;
     bottom: -3px;
     right: 0px;
+.el-button
+  &+.el-button
+    margin-left 0px !important
+.only-select
+  width 100%
 </style>
