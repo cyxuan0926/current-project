@@ -260,7 +260,7 @@ export default {
       },
       withdrawRule: {
         anotherRemarks: [{ required: true, message: '请填写驳回原因' }],
-        withdrawReason: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }]
+        withdrawReason: [{ required: true, message: '请填写撤回理由' }]
       },
       remarks: '身份信息错误',
       btnDisable: false, // 按钮禁用与启用
