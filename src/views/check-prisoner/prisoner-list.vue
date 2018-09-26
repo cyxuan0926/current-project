@@ -307,8 +307,8 @@ export default {
       notificationForm: {},
       notificationFamily: {},
       selectLoading: true,
-      submitting: false,
-      changePrisonConfigName: false
+      submitting: false
+      // changePrisonConfigName: false,
       // PrisonConfigName: '一监区'
     }
   },
