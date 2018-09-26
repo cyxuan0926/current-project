@@ -26,29 +26,28 @@
         @sort-change="sortChange">
         <el-table-column
           prop="prisonerNumber"
-          min-width="72px"
+          min-width="68px"
           label="囚号" />
         <el-table-column
           prop="prisonArea"
-          min-width="82px"
+          min-width="84px"
           label="监区"
           :sortable="'custom'" />
-        <!--:render-header="handleMy"-->
         <el-table-column
           label="申请时间"
-          min-width="80px">
+          min-width="124px">
           <template slot-scope="scope">
-            <span >{{scope.row.applicationDate}}</span>
+            <span >{{scope.row.createdAt}}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="会见时间"
-          min-width="130px" :sortable="'custom'" prop="meetingTime">
+          min-width="138px" :sortable="'custom'" prop="meetingTime">
           <template slot-scope="scope">
-            <span >{{scope.row.meetingTime}}</span>
+            <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="服刑人员姓名" min-width="116"></el-table-column>
+        <el-table-column label="服刑人员姓名" min-width="92" prop="prisonerName"></el-table-column>
         <el-table-column label="家属" min-width="116">
           <template slot-scope="scope">
             <div v-if="scope.row.families && scope.row.families.length">
@@ -56,7 +55,7 @@
                 type="text"
                 size="small"
                 v-for="family in scope.row.families"
-                :key="family.familyId"
+                :key="family.familyId+Math.random()*1000+1"
                 style="margin-left: 0px; margin-right: 8px;"
                 @click="showFamilyDetail(family.familyId)">
                 {{family.familyName}}
@@ -265,7 +264,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import validator from '@/utils'
+import validator, { helper } from '@/utils'
 export default {
   data() {
     return {
@@ -277,8 +276,7 @@ export default {
         auditName: { type: 'input', label: '审核人' },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
         auditAt: { type: 'date', label: '审核时间' },
-        applicationDate: { type: 'date', label: '申请时间' },
-        meetingTime: { type: 'date', label: '会见时间' }
+        applicationDate: { type: 'date', label: '会见时间' }
       },
       show: {
         authorize: false,
@@ -297,7 +295,8 @@ export default {
         refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 } ]
       },
       refuseForm: {},
-      family: {}
+      family: {},
+      sortObj: {}
     }
   },
   computed: {
@@ -321,6 +320,12 @@ export default {
       },
       deep: true
     },
+    sortObj: {
+      handler: function(val) {
+        // this.$parent.$parent.$refs.meetingTable && this.$parent.$parent.$refs.meetingTable.clearSort()
+      },
+      deep: true
+    },
     remarks(val) {
       if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
@@ -335,11 +340,18 @@ export default {
       this.getDatas()
     },
     getDatas() {
-      this.$refs.meetingTable && this.$refs.meetingTable.clearSort()
       if (this.tabs !== 'first') this.filter.status = this.tabs
       this.getMeetings({ ...this.filter, ...this.pagination })
     },
     onSearch() {
+      if (helper.isEmptyObject(this.sortObj)) {
+        this.filter = Object.assign(this.filter, this.sortObj)
+      }
+      else {
+        this.$refs.meetingTable && this.$refs.meetingTable.clearSort()
+        delete this.filter.sortDirection
+        delete this.filter.orderField
+      }
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
@@ -418,35 +430,19 @@ export default {
       })
     },
     sortChange({ column, prop, order }) {
-      console.log(111)
+      if (!prop && !order) {
+        this.sortObj = {}
+        delete this.filter.sortDirection
+        delete this.filter.orderField
+      }
+      else {
+        this.sortObj.orderField = prop
+        if (order === 'descending') this.sortObj.sortDirection = 'desc'
+        else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+        this.filter = Object.assign(this.filter, this.sortObj)
+      }
+      this.getDatas()
     }
-    // handleMy(h) {
-    //   let self = this
-    //   return h('div', [
-    //     h('span', {
-    //       domProps: {
-    //         innerHTML: '监区'
-    //       }
-    //     }), h('select', {
-    //       on: {
-    //         change: function(event) {
-    //           self.sortChange(event.target.value)
-    //         }
-    //       }
-    //     }, [
-    //       ['', '升序', '倒序'].map(item => {
-    //         return h('option', {
-    //           attrs: {
-    //             value: item
-    //           },
-    //           domProps: {
-    //             innerHTML: item
-    //           }
-    //         })
-    //       })
-    //     ])
-    //   ])
-    // }
   }
 }
 </script>

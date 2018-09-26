@@ -251,8 +251,9 @@
       title="更换监区"
       class="authorize-dialog"
       width="530px">
-      <el-select class="only-select">
-        <el-option></el-option>
+      <el-select class="only-select" v-model="PrisonConfigName">
+        <el-option value="一监区"></el-option>
+        <el-option value="二监区"></el-option>
       </el-select>
     </el-dialog>
   </el-row>
@@ -307,7 +308,8 @@ export default {
       notificationFamily: {},
       selectLoading: true,
       submitting: false,
-      changePrisonConfigName: false
+      changePrisonConfigName: false,
+      PrisonConfigName: '一监区'
     }
   },
   computed: {
@@ -328,6 +330,9 @@ export default {
         }
       },
       deep: true
+    },
+    PrisonConfigName(val) {
+      console.log(11111)
     }
   },
   mounted() {

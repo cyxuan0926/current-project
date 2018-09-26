@@ -45,6 +45,9 @@ export default {
       }
     },
     handleCurrentChange(e) {
+      // this.$parent.$parent.$refs.meetingTable && this.$parent.$parent.$refs.meetingTable.clearSort()
+      // this.$parent.$parent.filter.sortDirection && delete this.$parent.$parent.filter.sortDirection
+      // this.$parent.$parent.filter.orderField && delete this.$parent.$parent.filter.orderField
       this.$parent.$parent.pagination.page = e
       this.$emit('onPageChange')
       this.currentPage = e
