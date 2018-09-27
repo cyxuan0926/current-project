@@ -135,7 +135,7 @@
         class="button-box">
         <el-button
           plain
-          :disabled="btnDisable"
+          :loading="btnDisable"
           @click="onAuthorization('PASSED')">确定申请通过？</el-button>
         <el-button
           plain
@@ -165,7 +165,7 @@
         </el-form>
         <el-button
           plain
-          :disabled="btnDisable"
+          :loading="btnDisable"
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
@@ -200,7 +200,7 @@
         </el-form>
         <el-button
           plain
-          :disabled="btnDisable"
+          :loading="btnDisable"
           @click="onAuthorization('WITHDRAW')"
           >提交</el-button>
         <el-button
