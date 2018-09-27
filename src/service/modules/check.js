@@ -127,5 +127,9 @@ export default {
   // 服刑人员零花钱管理-列表
   getPrisonersPocketMoney: params => {
     return service.get('/pocket_money/page', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理 - 监区配置
+  getPrisonConfigs: params => {
+    return service.get('/prison_config/getPrisonConfigs', params).then(res => res && res.data)
   }
 }

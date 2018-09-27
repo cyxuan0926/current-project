@@ -98,12 +98,12 @@
               disabled>
               已加入黑名单
             </el-button>
-            <!--<el-button-->
-              <!--type="text"-->
-              <!--size="small"-->
-              <!--@click="showPrisonConfig">-->
-              <!--更换监区-->
-            <!--</el-button>-->
+            <el-button
+              type="text"
+              size="small"
+              @click="showPrisonConfig">
+              更换监区
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -246,16 +246,15 @@
           @click="handleSureSign">确定</el-button>
       </el-row>
     </el-dialog>
-    <!--<el-dialog-->
-      <!--:visible.sync="changePrisonConfigName"-->
-      <!--title="更换监区"-->
-      <!--class="authorize-dialog"-->
-      <!--width="530px">-->
-      <!--<el-select class="only-select" v-model="PrisonConfigName">-->
-        <!--<el-option value="一监区"></el-option>-->
-        <!--<el-option value="二监区"></el-option>-->
-      <!--</el-select>-->
-    <!--</el-dialog>-->
+    <el-dialog
+      :visible.sync="changePrisonConfigName"
+      title="更换监区"
+      class="authorize-dialog"
+      width="530px">
+      <el-select class="only-select" v-model="PrisonConfigName">
+        <el-option value="一监区"></el-option>
+      </el-select>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -307,9 +306,9 @@ export default {
       notificationForm: {},
       notificationFamily: {},
       selectLoading: true,
-      submitting: false
-      // changePrisonConfigName: false,
-      // PrisonConfigName: '一监区'
+      submitting: false,
+      changePrisonConfigName: false,
+      PrisonConfigName: '一监区'
     }
   },
   computed: {
@@ -330,16 +329,15 @@ export default {
         }
       },
       deep: true
+    },
+    PrisonConfigName(val) {
     }
-    // PrisonConfigName(val) {
-    //   console.log(11111)
-    // }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies']),
+    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -454,10 +452,10 @@ export default {
           this.notificationShow = false
         })
       }
+    },
+    showPrisonConfig() {
+      this.changePrisonConfigName = true
     }
-    // showPrisonConfig() {
-    //   this.changePrisonConfigName = true
-    // }
   }
 }
 </script>
