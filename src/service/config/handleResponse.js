@@ -114,6 +114,6 @@ export default params => {
     tips(params.data ? params.data.msg : (params.message ? params.message : ''))
     return false
   }
-  result.next && result.next(params.data, params.request.responseURL)
+  result.next && result.next(params.data, params.config.url)
   if (result.resData) return params.data
 }
