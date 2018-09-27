@@ -55,7 +55,7 @@
                 type="text"
                 size="small"
                 v-for="family in scope.row.families"
-                :key="family.familyId+Math.random()*1000+1"
+                :key="family.familyId"
                 style="margin-left: 0px; margin-right: 8px;"
                 @click="showFamilyDetail(family.familyId)">
                 {{family.familyName}}
