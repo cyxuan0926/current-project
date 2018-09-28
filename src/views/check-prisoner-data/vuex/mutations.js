@@ -4,7 +4,11 @@ export default {
     // console.log(prisonerDataResult)
     state.prisonerDataResult = prisonerDataResult
   },
-
+  // 狱政科罪犯数据模板上传成功后将罪犯数据模板导入到服务端
+  importPrisonerYZK: (state, params) => {
+    // console.log(params)
+    state.prisonerYZKDataResult = params
+  },
   // 刑期变动模板上传成功后将刑期变动模板导入到服务端
   importPrisonTerm: (state, prisonTermResult) => {
     prisonTermResult.prisonTerms.forEach(pt => {

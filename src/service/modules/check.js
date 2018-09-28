@@ -105,6 +105,10 @@ export default {
   importPrisoner: params => {
     return service.get('/prisoners/processing', params).then(res => res && res.data)
   },
+  // 数据管理-狱政科罪犯数据导入-上传到服务器
+  importPrisonerYZK: params => {
+    return service.get('/prisoners/processingYzk', params).then(res => res && res.data)
+  },
   // 数据管理-刑期变动数据导入-上传到服务器
   importPrisonTerm: params => {
     return service.get('/prison_terms/processing', params).then(res => res && res.data)
