@@ -101,7 +101,7 @@
             <el-button
               type="text"
               size="small"
-              @click="showPrisonConfig">
+              @click="showPrisonConfig(scope.row, scope.$index)">
               更换监区
             </el-button>
           </template>
@@ -248,12 +248,15 @@
     </el-dialog>
     <el-dialog
       :visible.sync="changePrisonConfigName"
+      @close="closePrisonConfig"
+      ref="prisonConfigDialog"
       title="更换监区"
       class="authorize-dialog"
       width="530px">
-      <el-select class="only-select" v-model="PrisonConfigName">
-        <el-option value="一监区"></el-option>
+      <el-select class="only-select" v-model="prisonConfigName" placeholder="请选择监区" v-if="prisonConfigs.length > 1">
+        <el-option v-for="item of prisonConfigData" :value="item.id" :label="item.name" :key="item.id"></el-option>
       </el-select>
+      <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
   </el-row>
 </template>
@@ -269,8 +272,8 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '姓名' },
         isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] },
-        isNotify: { type: 'select', label: '会见告书', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] },
-        famyilyName: { type: 'input', label: '家属姓名' }
+        isNotify: { type: 'select', label: '会见告书', options: [{ label: '已签署', value: 1 }, { label: '未签署', value: 0 }] },
+        familyName: { type: 'input', label: '家属姓名' }
       },
       formItems: {
         formConfigs: { inline: true, labelPosition: 'top' },
@@ -308,7 +311,9 @@ export default {
       selectLoading: true,
       submitting: false,
       changePrisonConfigName: false,
-      PrisonConfigName: '一监区'
+      prisonConfigName: '',
+      prisonConfigData: [],
+      prisonConfigs: []
     }
   },
   computed: {
@@ -330,14 +335,40 @@ export default {
       },
       deep: true
     },
-    PrisonConfigName(val) {
+    prisonConfigName(val) {
+      if (val) {
+        this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消相关会见申请，并以短信形式通知相关家属，请确认是否继续操作！', '提示：修改服刑人员监区后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          customClass: 'prisonConfigMessage'
+        }).then(() => {
+          let params = {
+            prisonerId: this.prisoner.id,
+            jailId: this.prisoner.jailId,
+            prisonAreaId: val
+          }
+          this.changePrisonArea(params).then(res => {
+            if (res.code !== 200) return
+            setTimeout(() => {
+              this.closePrisonConfig()
+              this.prisoners.contents[this.index].prisonArea = this.prisonConfigs.filter(value => {
+                return val === value.id
+              })[0].name
+            }, 500)
+          })
+        }).catch(() => {
+          this.prisonConfigName = ''
+        })
+      }
     }
   },
   mounted() {
+    this.getPrisonConfigInform(JSON.parse(localStorage['user']))
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs']),
+    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -453,8 +484,24 @@ export default {
         })
       }
     },
-    showPrisonConfig() {
+    getPrisonConfigInform(arg) {
+      let parmas = { jailId: arg.jailId }
+      this.getPrisonConfigs(parmas).then(res => {
+        if (res.code !== 200) return
+        this.prisonConfigs = res.data.prisonConfigs
+      })
+    },
+    showPrisonConfig(e, index) {
+      this.prisoner = Object.assign({}, e)
+      this.index = index
       this.changePrisonConfigName = true
+      this.prisonConfigData = this.prisonConfigs.filter(val => {
+        return e.prisonArea !== val.name
+      })
+    },
+    closePrisonConfig() {
+      this.changePrisonConfigName = false
+      this.prisonConfigName = ''
     }
   }
 }
@@ -472,18 +519,11 @@ export default {
   min-width: 350px;
 .row-flex
   flex-wrap: wrap;
-.more-content-column
-  max-height: 66px;
-  overflow: hidden;
-  position: relative;
-  &::after
-    content: '...'
-    position: absolute;
-    bottom: -3px;
-    right: 0px;
 .el-button
   &+.el-button
     margin-left 0px !important
 .only-select
   width 100%
+.el-dialog__body
+  padding-bottom: 20px !important
 </style>

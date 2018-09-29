@@ -227,13 +227,4 @@ export default {
 .cell img
   width: 126.8px;
   cursor: pointer;
-.more-content-column
-  max-height: 66px;
-  overflow: hidden;
-  position: relative;
-  &::after
-    content: '...'
-    position: absolute;
-    bottom: -3px;
-    right: 0px;
 </style>

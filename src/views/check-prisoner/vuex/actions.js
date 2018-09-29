@@ -32,5 +32,8 @@ export default {
   },
   getPrisonConfigs({ commit }, params) {
     return http.getPrisonConfigs(params).then(res => res)
+  },
+  changePrisonArea({ commit }, params) {
+    return http.changePrisonArea(params).then(res => res)
   }
 }
