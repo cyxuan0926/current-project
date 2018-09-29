@@ -175,6 +175,22 @@ let superAdminMenu = [{
     path: '/adminPrison-area/list',
     title: '监区管理',
     icon: 'iconfont icon-jianquxinxi'
+  }, {
+    path: '/meeting-report',
+    title: '会见统计',
+    icon: 'iconfont icon-huijiantongji',
+    active: false,
+    children: [
+      {
+        path: '/meeting-report/prison',
+        title: '监狱统计',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/meeting-report/prison-area',
+        title: '监区统计',
+        icon: 'iconfont icon-circle-o'
+      }
+    ]
   }]
 
 export default [superAdminMenu, checkMenu, shopMenu, infoMenu, adminMenu]

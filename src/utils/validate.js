@@ -37,6 +37,9 @@ export default {
     if (isNaN(num)) {
       callback(new Error('请输入数字'))
     }
+    else if (num < 0) {
+      callback(new Error('请输入大于0的数字'))
+    }
     else if (parseInt(num * 100) !== num * 100) {
       callback(new Error('最多保留两位小数'))
     }
