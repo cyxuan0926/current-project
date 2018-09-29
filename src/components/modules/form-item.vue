@@ -44,6 +44,9 @@
       :inactive-value="0"
       :disabled="item.disabled"
       :width="60" />
+      <span
+        v-if="item.type === 'switch' && item.tips && fields[prop]"
+        style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
     <m-upload-img
       v-if="item.type === 'uploadImg'"
       v-model="fields[prop]"

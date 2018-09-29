@@ -40,7 +40,6 @@ let superAdminMenu = [{
     icon: 'iconfont icon-bengkuirizhi'
   }],
   checkMenu = [{
-
     path: '/registration/list',
     title: '家属注册管理',
     icon: 'iconfont icon-jiashuzhuce'
@@ -61,6 +60,22 @@ let superAdminMenu = [{
       }, {
         path: '/meeting/records',
         title: '免费会见记录',
+        icon: 'iconfont icon-circle-o'
+      }
+    ]
+  }, {
+    path: '/meeting-report',
+    title: '会见统计',
+    icon: 'iconfont icon-huijiantongji',
+    active: false,
+    children: [
+      {
+        path: '/meeting-report/prison',
+        title: '监狱统计',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/meeting-report/prison-area',
+        title: '监区统计',
         icon: 'iconfont icon-circle-o'
       }
     ]
