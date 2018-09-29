@@ -24,8 +24,8 @@
           v-model="item.value"
           :placeholder="'请选择' + item.label"
           :loading="item.getting || false"
-          :filterable="item.filterable"
-          clearable>
+          :clearable="!item.canNotClear"
+          :filterable="item.filterable">
           <el-option
             v-for="option in item.options"
             v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
@@ -46,6 +46,16 @@
           v-model="item.value"
           type="date"
           value-format="yyyy-MM-dd"
+          :placeholder="item.label">
+        </el-date-picker>
+        <el-date-picker
+          v-if="item.type === 'month'"
+          v-model="item.value"
+          type="month"
+          :clearable="!item.canNotClear"
+          :editable="!item.canNotClear"
+          :picker-options="item.pickerOptions"
+          value-format="yyyy-MM"
           :placeholder="item.label">
         </el-date-picker>
         <el-date-picker
@@ -121,7 +131,7 @@ export default {
     }
   },
   mounted() {
-    this.$parent.$parent.filter = {}
+    this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
     sizeChange(e) {
