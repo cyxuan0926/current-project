@@ -22,7 +22,7 @@
         <el-select
           v-if="item.type === 'select' && !item.miss"
           v-model="item.value"
-          :placeholder="'请选择' + item.label"
+          :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
           :filterable="item.filterable">
