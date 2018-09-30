@@ -352,9 +352,7 @@ export default {
             if (res.code !== 200) return
             setTimeout(() => {
               this.closePrisonConfig()
-              this.prisoners.contents[this.index].prisonArea = this.prisonConfigs.filter(value => {
-                return val === value.id
-              })[0].name
+              this.onSearch()
             }, 500)
           })
         }).catch(() => {
