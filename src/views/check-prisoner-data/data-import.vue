@@ -21,21 +21,11 @@
       :gutter="0">
       <el-col :span="22"
         :offset="2">
-        <!-- <el-tabs
-          v-model="tabs"
-          type="card">
-          <el-tab-pane
-            label="罪犯数据导入"
-            name="first" />
-          <el-tab-pane
-            label="狱政科模版罪犯数据导入"
-            name="second" />
-        </el-tabs> -->
         <span>点击下载模板：</span>
         <a :href="prisonerHref">罪犯信息导入模板</a>&nbsp;&nbsp;
         <span
           v-if="tabs === 'second'"
-          style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中中，修改相应监区名称)</span>
+          style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中，修改相应监区名称)</span>
       </el-col>
       <el-col :gutter="0">
         <el-col :span="22"
@@ -111,7 +101,7 @@
           prop="reason" />
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length">
+    <el-row v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length" style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
       <el-table :data="prisonerDataResult.prisoners">
@@ -196,7 +186,7 @@
           prop="reason" />
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length">
+    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length" style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
       <el-table :data="prisonerYZKDataResult.prisoners">
@@ -248,6 +238,7 @@ export default {
     return {
       tabs: 'first',
       fileList: [],
+      notify: null,
       prisonerHref: `${ this._$baseURL }/download/downloadfile?filepath=prison_template.xls`
     }
   },
@@ -256,12 +247,23 @@ export default {
   },
   watch: {
     tabs(val) {
+      if (this.notify) {
+        this.notify.close()
+      }
       if (val === 'first') {
         this.prisonerHref = `${ this._$baseURL }/download/downloadfile?filepath=prison_template.xls`
       }
       else if (val === 'second') {
         this.prisonerHref = `${ this._$baseURL }/download/downloadfile?filepath=prison_yzk_template.xlsx`
       }
+    }
+  },
+  mounted() {
+    this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
+  },
+  destroyed() {
+    if (this.notify) {
+      this.notify.close()
     }
   },
   methods: {
@@ -295,20 +297,36 @@ export default {
     },
     // 解析文件成功后执行的方法
     alertInformation(information) {
-      this.$notify({
+      if (this.notify) {
+        this.notify.close()
+      }
+      let message = ''
+      if (information.error_total !== 0 && information.success_total === 0) {
+        message = `<div style="line-height: 30px; margin-top: 10px;">
+                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ information.errors.length }条
+                    <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
+                  </div>`
+      }
+      if (information.error_total !== 0 && information.success_total !== 0) {
+        message = `<div style="line-height: 30px; margin-top: 10px;">
+                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ information.errors.length }条
+                    <p style="padding-left: 30px">原因：数据内容格式有误，请检查导入失败记录，仔细对照下载的模版数据。</p>
+                  </div>`
+      }
+      if (information.success_total !== 0) {
+        message += `<div style="line-height: 30px; margin-top: 10px;">
+                      <i class="el-icon-success green" style="font-size: 20px; margin-right: 10px;"></i>成功：${ information.success_total }条
+                      <p style="padding-left: 30px">其中：新增${ information.add_total }条&nbsp;&nbsp;&nbsp;修改${ information.update_total }条</p>
+                    </div>`
+      }
+      this.notify = this.$notify({
         title: '解析结果提示',
         dangerouslyUseHTMLString: true,
-        message: `<p>新增：${ information.add_total }</p>
-                  <p>成功：${ information.success_total }</p>
-                  <p>修改：${ information.update_total }</p>
-                  <p>失败：${ information.errors.length }</p>`,
-        duration: 8000,
+        message: message,
+        duration: 0,
         offset: 100
       })
     }
-  },
-  mounted() {
-    this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
   }
 }
 </script>

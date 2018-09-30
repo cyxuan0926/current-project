@@ -88,11 +88,12 @@ export default {
         prisonArea: {
           type: 'select',
           label: '监区',
+          value: '',
           canNotClear: true,
           getting: true,
-          miss: true,
           belong: { value: 'name', label: 'name' },
-          filterable: true
+          filterable: true,
+          options: []
         },
         reportDate: {
           value: Moment().subtract(1, 'months').format('YYYY-MM'),
@@ -117,18 +118,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonAreaReportList', 'jailPrisonAreas'])
+    ...mapState(['prisonAreaReportList', 'jailPrisonAreas', 'user'])
   },
   mounted() {
-    this.getJailPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination }).then(res => {
-      if (this.jailPrisonAreas.length !== 0) {
-        this.searchItems.prisonArea.options = this.jailPrisonAreas
-        this.searchItems.prisonArea.getting = false
-        this.searchItems.prisonArea.miss = false
-      }
-      else {
-        this.getDatas()
-      }
+    this.getJailPrisonAreas({ jailId: JSON.parse(localStorage['user']).jailId }).then(res => {
+      this.searchItems.prisonArea.options = this.jailPrisonAreas
+      this.searchItems.prisonArea.options.push({ label: '无监区', name: '无监区' })
+      this.searchItems.prisonArea.value = this.searchItems.prisonArea.options[0].name
+      this.filter.prisonArea = this.searchItems.prisonArea.options[0].name
+      this.searchItems.prisonArea.getting = false
+      this.getDatas()
     })
   },
   methods: {
@@ -139,6 +138,8 @@ export default {
     },
     getDatas() {
       this.show = true
+      if (this.filter.prisonArea === '无监区' && this.searchItems.prisonArea.options.length === 1) delete this.filter.prisonArea
+      else if (this.filter.prisonArea === '无监区' && this.searchItems.prisonArea.options.length > 1) this.filter.prisonArea = ''
       this.getPrisonAreaReportList({ ...this.filter, ...this.pagination })
     },
     onSearch() {
@@ -149,7 +150,7 @@ export default {
       const sums = []
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = this.filter.prisonArea
+          sums[index] = this.searchItems.prisonArea.value || this.user.jailName
           return
         }
         else if (index <= 2) {

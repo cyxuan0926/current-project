@@ -20,7 +20,7 @@ export default {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '150px' },
         cost: { type: 'input', label: '单次会见费用', disabled: this.$route.meta.role === '3', rules: ['required', 'isFee'], append: '/元', value: 0 },
-        branchPrison: { type: 'switch', label: '是否需要分监区', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
+        branchPrison: { type: 'switch', label: '是否需要分监区', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1, tips: '开启监狱分监区，请及时通知该监狱人员，为监狱审核人员分配监区权限' },
         meeting: { type: 'switch', label: '会见模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
         dailyApplyLimit: { type: 'input', label: '每人日申请次数限制', disabled: this.$route.meta.role === '3', rules: ['isNumber', 'numberRange0'], append: '次/人', value: null },
         rewards: { type: 'switch', label: '奖励模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
@@ -46,6 +46,7 @@ export default {
     }
   },
   mounted() {
+    if (this.$route.meta.role === '3') this.formItems.branchPrison.tips = ''
     if (this.permission === 'edit') return
     if (parseInt(sessionStorage.getItem('step')) !== 1 || !sessionStorage.getItem('base')) {
       this.$router.push({ query: Object.assign({}, { tag: 'prisonBase' }) })
