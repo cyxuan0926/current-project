@@ -27,18 +27,19 @@
           label="姓名" />
         <el-table-column
           width="148px"
-          label="身份证正面">
+          label="身份证信息">
           <template slot-scope="scope">
             <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面照" />
+            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照" style="margin-top: 5px;" />
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           width="148px"
           label="身份证背面">
           <template slot-scope="scope">
             <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           min-width="86px"
           label="申请时间">
@@ -80,7 +81,7 @@
           prop="auditRealName"
           min-width="150px"
           label="审核信息">
-          <template v-if="scope.row.auditRealName" slot-scope="scope">{{ scope.row.auditRealName }}<br />{{ scope.row.auditUserName }}<br />({{ scope.row.auditAt | Date }})</template>
+          <template v-if="scope.row.auditAt" slot-scope="scope">{{ scope.row.auditRealName }}<br />{{ scope.row.auditUserName }}<br />({{ scope.row.auditAt | Date }})</template>
         </el-table-column>
         <el-table-column
           label="操作">
@@ -242,7 +243,7 @@ export default {
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         auditName: { type: 'input', label: '审核人' },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'] },
+        status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'], value: '' },
         auditAt: { type: 'date', label: '审核时间' }
       },
       toAuthorize: {},
@@ -275,6 +276,7 @@ export default {
       }
       else {
         delete this.filter.status
+        this.searchItems.status.value = ''
         this.searchItems.status.miss = false
       }
       this.onSearch()
