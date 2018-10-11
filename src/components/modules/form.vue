@@ -88,7 +88,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(8888, this.values)
     this.render()
   },
   beforeDestroy() {
@@ -115,7 +114,6 @@ export default {
         if (this.items[key].type === 'select') this.initSelect(this.items[key], key)
       })
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
-      // console.log(333, this.fields)
       this.flag = true
     },
     validateField(e) {
@@ -144,8 +142,8 @@ export default {
     ruleSwitch(rule, label, type) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
-        if (range[0] !== '') validate.min = parseInt(range[0])
-        if (range[1] !== '') validate.max = parseInt(range[1])
+        if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
+        if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
         return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
       }
       let plea = ['input', 'editor', 'jaileditor'].indexOf(type) > -1 ? '请输入' : '请选择'

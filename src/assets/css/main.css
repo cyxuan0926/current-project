@@ -352,3 +352,11 @@ div.el-tooltip__popper {
   max-width: 60% !important;
   margin: 0px auto !important;
 }
+.prisonConfigMessage button.el-message-box__headerbtn {
+  top: 12px !important;
+  right: 3px !important;
+}
+.prisonConfigMessage div.el-message-box__title {
+  font-size: 16px !important;
+}
+

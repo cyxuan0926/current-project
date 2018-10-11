@@ -9,6 +9,14 @@ export default {
       return true
     })
   },
+  // 狱政科罪犯数据模板上传成功后将罪犯数据模板导入到服务端
+  importPrisonerYZK: ({ commit }, params) => {
+    return http.importPrisonerYZK(params).then(res => {
+      if (!res) return
+      commit('importPrisonerYZK', res)
+      return true
+    })
+  },
   // 刑期变动模板上传成功后将刑期变动模板导入到服务端
   importPrisonTerm: ({ commit }, params) => {
     return http.importPrisonTerm(params).then(res => {

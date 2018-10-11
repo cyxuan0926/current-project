@@ -62,7 +62,7 @@ export default {
       this.menus[this.user.role].forEach(item => {
         if (e.path !== item.path) item.active = false
       })
-      e.active = true
+      e.active = !e.active
     }
   }
 }
