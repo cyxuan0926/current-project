@@ -27,6 +27,7 @@ import checkVisit from '@/views/check-visit/vuex'
 import checkPrisonerPocketMoney from '@/views/check-prisoner-pocket-money/vuex'
 import infoPrisonAffairsPublic from '@/views/info-prison-affairs-public/vuex'
 import meeting from '@/views/meeting/vuex'
+import meetingReport from '@/views/meeting-report/vuex'
 import noPage from './modules/no-page'
 import websocket from './modules/websocket'
 import login from '@/views/login/vuex'
@@ -59,6 +60,7 @@ merge(
   adminPrisonUser,
   infoPrisonAffairsPublic,
   meeting,
+  meetingReport,
   filter,
   adminAdvertisement,
   adminPrison,

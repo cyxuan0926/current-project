@@ -105,6 +105,10 @@ export default {
   importPrisoner: params => {
     return service.get('/prisoners/processing', params).then(res => res && res.data)
   },
+  // 数据管理-狱政科罪犯数据导入-上传到服务器
+  importPrisonerYZK: params => {
+    return service.get('/prisoners/processingYzk', params).then(res => res && res.data)
+  },
   // 数据管理-刑期变动数据导入-上传到服务器
   importPrisonTerm: params => {
     return service.get('/prison_terms/processing', params).then(res => res && res.data)
@@ -127,5 +131,13 @@ export default {
   // 服刑人员零花钱管理-列表
   getPrisonersPocketMoney: params => {
     return service.get('/pocket_money/page', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理 - 监区配置
+  getPrisonConfigs: params => {
+    return service.get('/prison_config/getPrisonConfigs', params).then(res => res)
+  },
+  // 服刑人员信息管理 - 更换监区
+  changePrisonArea: params => {
+    return service.post('/prisoners/changePrisonArea', params).then(res => res)
   }
 }
