@@ -29,5 +29,14 @@ export default {
       commit('getNotificationFamilies', res)
       return true
     })
+  },
+  getPrisonConfigs({ commit }, params) {
+    return http.getPrisonConfigs(params).then(res => res)
+  },
+  changePrisonArea({ commit }, params) {
+    return http.changePrisonArea(params).then(res => res)
+  },
+  removePrisonerBlacklist({ commit }, params) {
+    return http.removePrisonerBlacklist(params).then(res => res)
   }
 }

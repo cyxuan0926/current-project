@@ -18,8 +18,13 @@ const tips = (msg = '操作失败！', type = 'error') => {
 const codes = {
   200: {
     resData: true,
-    next: params => {
-      tips(params.msg || '操作成功', 'success')
+    next: (params, url) => {
+      if (url.indexOf('/prisoners/processing') > -1) {
+        tips('导入的Excel罪犯数据解析完成', 'success')
+      }
+      else {
+        tips(params.msg || '操作成功', 'success')
+      }
     }
   },
   401: {
@@ -114,6 +119,6 @@ export default params => {
     tips(params.data ? params.data.msg : (params.message ? params.message : ''))
     return false
   }
-  result.next && result.next(params.data, params.request.responseURL)
+  result.next && result.next(params.data, params.config.url)
   if (result.resData) return params.data
 }

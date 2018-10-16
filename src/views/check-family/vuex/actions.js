@@ -9,5 +9,8 @@ export default {
   },
   addFamilyBlacklist({ commit }, params) {
     return http.addFamilyBlacklist(params).then(res => res)
+  },
+  removeFamilyBlacklist({ commit }, params) {
+    return http.removeFamilyBlacklist(params).then(res => res)
   }
 }

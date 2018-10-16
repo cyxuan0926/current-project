@@ -18,26 +18,37 @@
           name="PENDING" />
       </el-tabs>
       <el-table
+        ref="meetingTable"
         :data="meetings.contents"
         border
         stripe
-        style="width: 100%" >
+        style="width: 100%"
+        @sort-change="sortChange">
         <el-table-column
           prop="prisonerNumber"
-          min-width="92px"
+          min-width="68px"
           label="囚号" />
         <el-table-column
           prop="prisonArea"
-          min-width="92px"
-          label="监区" />
+          min-width="84px"
+          label="监区"
+          :sortable="'custom'" />
         <el-table-column
-          label="会见申请时间"
-          min-width="86px">
+          label="申请时间"
+          min-width="124px">
+          <template slot-scope="scope">
+            <span >{{scope.row.createdAt}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="会见时间"
+          min-width="138px" :sortable="'custom'" prop="meetingTime">
           <template slot-scope="scope">
             <span >{{scope.row.meetingTime || scope.row.applicationDate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="家属">
+        <el-table-column label="服刑人员姓名" min-width="92" prop="prisonerName"></el-table-column>
+        <el-table-column label="家属" min-width="116">
           <template slot-scope="scope">
             <div v-if="scope.row.families && scope.row.families.length">
               <el-button
@@ -212,6 +223,7 @@
         <div style="width: 50%;"><label>审核人姓名：</label><span>{{ toShow.auditRealName }}</span></div>
         <div style="width: 50%;"><label>审核时间：</label><span>{{ toShow.auditAt | Date }}</span></div>
         <div style="width: 50%;"><label>审核状态：</label><span>{{ toShow.status | applyStatus }}</span></div>
+        <div style="width: 50%;"><label>会见时长：</label><span>{{toShow.duration | time }}</span></div>
         <div v-if="toShow.status === 'DENIED'" style="width: 100%;"><label>拒绝原因：</label><span>{{ toShow.content }}</span></div>
       </div>
     </el-dialog>
@@ -253,7 +265,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import validator from '@/utils'
+import validator, { helper } from '@/utils'
 export default {
   data() {
     return {
@@ -265,7 +277,7 @@ export default {
         auditName: { type: 'input', label: '审核人' },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
         auditAt: { type: 'date', label: '审核时间' },
-        applicationDate: { type: 'date', label: '会见申请时间' }
+        applicationDate: { type: 'date', label: '会见时间' }
       },
       show: {
         authorize: false,
@@ -284,7 +296,8 @@ export default {
         refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 } ]
       },
       refuseForm: {},
-      family: {}
+      family: {},
+      sortObj: {}
     }
   },
   computed: {
@@ -308,6 +321,12 @@ export default {
       },
       deep: true
     },
+    sortObj: {
+      handler: function(val) {
+        // this.$parent.$parent.$refs.meetingTable && this.$parent.$parent.$refs.meetingTable.clearSort()
+      },
+      deep: true
+    },
     remarks(val) {
       if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
@@ -326,6 +345,14 @@ export default {
       this.getMeetings({ ...this.filter, ...this.pagination })
     },
     onSearch() {
+      if (helper.isEmptyObject(this.sortObj)) {
+        this.filter = Object.assign(this.filter, this.sortObj)
+      }
+      else {
+        this.$refs.meetingTable && this.$refs.meetingTable.clearSort()
+        delete this.filter.sortDirection
+        delete this.filter.orderField
+      }
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
@@ -402,6 +429,20 @@ export default {
         if (!res.family) return
         this.family = Object.assign({}, res.family)
       })
+    },
+    sortChange({ column, prop, order }) {
+      if (!prop && !order) {
+        this.sortObj = {}
+        delete this.filter.sortDirection
+        delete this.filter.orderField
+      }
+      else {
+        this.sortObj.orderField = prop
+        if (order === 'descending') this.sortObj.sortDirection = 'desc'
+        else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+        this.filter = Object.assign(this.filter, this.sortObj)
+      }
+      this.getDatas()
     }
   }
 }

@@ -70,8 +70,8 @@
               type="text"
               size="small"
               v-else
-              disabled>
-              已加入黑名单
+              @click="removeBlackList(scope.row, scope.$index)">
+              移出黑名单
             </el-button>
           </template>
         </el-table-column>
@@ -178,7 +178,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getFamilies', 'addFamilyBlacklist']),
+    ...mapActions(['getFamilies', 'addFamilyBlacklist', 'removeFamilyBlacklist']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -211,13 +211,28 @@ export default {
           params.append('familyId', this.family.id)
           params.append('reason', this.blackTable.blackListReason)
           this.addFamilyBlacklist(params).then(res => {
-            if (!res.registrations) return
-            this.families.contents[this.index].reason = res.registrations[0].reason
-            this.families.contents[this.index].isBlacklist = res.registrations[0].isBlacklist
+            if (!res) return
+            this.families.contents[this.index].reason = this.blackTable.blackListReason
+            this.families.contents[this.index].isBlacklist = 1
             this.blackTableShow = false
           })
         }
       })
+    },
+    removeBlackList(e, index) {
+      this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let params = new FormData()
+        params.append('familyId', e.id)
+        this.removeFamilyBlacklist(params).then(res => {
+          if (!res) return
+          this.families.contents[index].reason = ''
+          this.families.contents[index].isBlacklist = 0
+        })
+      }).catch(() => {})
     }
   }
 }
@@ -227,13 +242,4 @@ export default {
 .cell img
   width: 126.8px;
   cursor: pointer;
-.more-content-column
-  max-height: 66px;
-  overflow: hidden;
-  position: relative;
-  &::after
-    content: '...'
-    position: absolute;
-    bottom: -3px;
-    right: 0px;
 </style>

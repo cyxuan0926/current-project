@@ -43,14 +43,6 @@
     },
     computed: {
       ...mapState(['prisonersPocketMoney'])
-      // prisonAreaComputed: {
-      //   get() {},
-      //   set() {
-      //     if (JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) Object.assign(this.prisonArea, { type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true })
-      //     else Object.assign(this.prisonArea, { type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } })
-      //     return this.prisonArea
-      //   }
-      // }
     },
     methods: {
       ...mapActions(['getPrisonersPocketMoney']),
@@ -64,8 +56,6 @@
       onSearch() {
         this.$refs.pagination.handleCurrentChange(1)
       }
-    },
-    mounted() {
     }
   }
 </script>
