@@ -95,8 +95,8 @@
               type="text"
               size="small"
               v-else
-              disabled>
-              已加入黑名单
+              @click="removeBlackList(scope.row, scope.$index)">
+              移出黑名单
             </el-button>
             <el-button
               type="text"
@@ -366,7 +366,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea']),
+    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -419,13 +419,28 @@ export default {
           params.append('prisonerId', this.prisoner.id)
           params.append('reason', this.blackTable.blackListReason)
           this.addPrisonerBlacklist(params).then(res => {
-            if (res.code !== 200) return
-            this.prisoners.contents[this.index].reason = res.data.prisoners.reason
-            this.prisoners.contents[this.index].isBlacklist = res.data.prisoners.isBlacklist
+            if (!res) return
+            this.prisoners.contents[this.index].reason = this.blackTable.blackListReason
+            this.prisoners.contents[this.index].isBlacklist = 1
             this.blackTableShow = false
           })
         }
       })
+    },
+    removeBlackList(e, index) {
+      this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let params = new FormData()
+        params.append('prisonerId', e.id)
+        this.removePrisonerBlacklist(params).then(res => {
+          if (!res) return
+          this.prisoners.contents[index].reason = ''
+          this.prisoners.contents[index].isBlacklist = 0
+        })
+      }).catch(() => {})
     },
     onSelectChange(e) {
       if (e && e.familyId) {
