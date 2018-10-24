@@ -139,7 +139,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.deletePrisonUser({ id: e }).then(() => {
+        this.deletePrisonUser({ id: e }).then(res => {
+          if (!res) return
           this.getDatas()
         })
       }).catch(() => {})
