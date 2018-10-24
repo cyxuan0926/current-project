@@ -9,15 +9,29 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    // proxyTable: {
-    //   '/ywgk': {
-    //     target: 'http://123.57.7.159',
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/ywgk': '/ywgk'
-    //     }
-    //   }
-    // },
+    proxyTable: {
+      '/ywgk-auth': {
+        target: 'http://120.78.190.101:8085/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ywgk-auth': '/ywgk-auth'
+        }
+      },
+      '/ywgk-demo': {
+        target: 'http://120.78.190.101:8083/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ywgk-demo': '/ywgk-demo'
+        }
+      },
+      '/ywgk': {
+        target: 'https://www.yuwugongkai.com/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ywgk': '/ywgk'
+        }
+      }
+    },
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8081, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
