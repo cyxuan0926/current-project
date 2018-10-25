@@ -80,13 +80,13 @@
           prop="crimes" />
         <el-table-column label="附加刑"
           prop="additionalPunishment" />
-        <el-table-column label="现刑期起日"
+        <el-table-column label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="现刑期止日"
+        <el-table-column label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
@@ -120,13 +120,13 @@
           prop="crimes" />
         <el-table-column label="附加刑"
           prop="additionalPunishment" />
-        <el-table-column label="现刑期起日"
+        <el-table-column label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="现刑期止日"
+        <el-table-column label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
@@ -165,13 +165,13 @@
           prop="crimes" />
         <el-table-column label="罚金"
           prop="additionalPunishment" />
-        <el-table-column label="现刑期起日"
+        <el-table-column label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="现刑期止日"
+        <el-table-column label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
@@ -205,13 +205,13 @@
           prop="crimes" />
         <el-table-column label="罚金"
           prop="additionalPunishment" />
-        <el-table-column label="现刑期起日"
+        <el-table-column label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="现刑期止日"
+        <el-table-column label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>

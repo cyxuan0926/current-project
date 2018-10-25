@@ -7,6 +7,6 @@ export default {
     result += hours ? `${ hours }小时` : ''
     result += minutes ? `${ minutes }分钟` : ''
     result += second ? `${ second }秒` : ''
-    return result || '0秒'
+    return result
   }
 }

@@ -35,5 +35,8 @@ export default {
   },
   changePrisonArea({ commit }, params) {
     return http.changePrisonArea(params).then(res => res)
+  },
+  removePrisonerBlacklist({ commit }, params) {
+    return http.removePrisonerBlacklist(params).then(res => res)
   }
 }

@@ -223,6 +223,7 @@
         <div style="width: 50%;"><label>审核人姓名：</label><span>{{ toShow.auditRealName }}</span></div>
         <div style="width: 50%;"><label>审核时间：</label><span>{{ toShow.auditAt | Date }}</span></div>
         <div style="width: 50%;"><label>审核状态：</label><span>{{ toShow.status | applyStatus }}</span></div>
+        <div style="width: 50%;"><label>会见时长：</label><span>{{toShow.duration | time }}</span></div>
         <div v-if="toShow.status === 'DENIED'" style="width: 100%;"><label>拒绝原因：</label><span>{{ toShow.content }}</span></div>
       </div>
     </el-dialog>
@@ -334,7 +335,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeettingsDetail']),
+    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -366,7 +367,11 @@ export default {
       this.show.withdraw = true
     },
     onDetail(e) {
-      this.toShow = Object.assign({}, e)
+      let params = { meetingId: e.id }
+      this.getMeettingsDetail(params).then(res => {
+        if (!res) return
+        this.toShow = Object.assign({}, res)
+      })
     },
     onCloseShow() {
       this.toShow.id = ''
@@ -424,7 +429,7 @@ export default {
     showFamilyDetail(e) {
       let params = { id: e }
       this.show.familiesDetialInform = true
-      this.getMeettingsDetail(params).then(res => {
+      this.getMeetingsFamilyDetail(params).then(res => {
         if (!res.family) return
         this.family = Object.assign({}, res.family)
       })

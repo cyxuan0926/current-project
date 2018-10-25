@@ -13,9 +13,13 @@ export default {
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
   },
-  // 家属会见申请-详情
+  // 家属会见申请-家属详情
+  getMeetingsFamilyDetail: params => {
+    return service.get('/meetings/familyDetail', params).then(res => res && res.data)
+  },
+  // 家属会见申请-会见详情
   getMeettingsDetail: params => {
-    return service.get('/meetings/detail', params).then(res => res && res.data)
+    return service.get('/meetings/detail', params).then(res => res && res.data.meetings)
   },
   // 家属会见申请-授权
   authorizeMeeting: params => {
@@ -71,7 +75,11 @@ export default {
   },
   // 服刑人员信息管理-加入黑名单
   addPrisonerBlacklist: params => {
-    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res)
+    return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res && res.code === 200)
+  },
+  // 服刑人员信息管理-移出黑名单
+  removePrisonerBlacklist: params => {
+    return service.postFile('/blacklists/removePrisonerBlacklist', params).then(res => res && res.code === 200)
   },
   // 服刑人员信息管理-会见告知书-详情
   getNotification: params => {
@@ -99,7 +107,11 @@ export default {
   },
   // 家属信息管理-加入黑名单
   addFamilyBlacklist: params => {
-    return service.postFile('/blacklists/addFamilyBlacklist', params).then(res => res && res.data)
+    return service.postFile('/blacklists/addFamilyBlacklist', params).then(res => res && res.code === 200)
+  },
+  // 家属信息管理-移出黑名单
+  removeFamilyBlacklist: params => {
+    return service.postFile('/blacklists/removeFamilyBlacklist', params).then(res => res && res.code === 200)
   },
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {

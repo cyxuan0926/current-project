@@ -23,6 +23,9 @@ export default {
   getFreeMeetings({ commit }, params) {
     http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', res))
   },
+  getMeetingsFamilyDetail({ commit }, params) {
+    return http.getMeetingsFamilyDetail(params).then(res => res)
+  },
   getMeettingsDetail({ commit }, params) {
     return http.getMeettingsDetail(params).then(res => res)
   }
