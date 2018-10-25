@@ -12,7 +12,7 @@ let common = [{
   }]
 }, {
   path: '/login',
-  name: '登录',
+  name: '旧登录',
   meta: { notLogin: true },
   component: resolve => require(['@/views/login/login'], resolve)
 }, {
