@@ -20,6 +20,8 @@
         stripe
         style="width: 100%">
         <el-table-column
+          label="汇款单号" />
+        <el-table-column
           label="服刑人员姓名" />
         <el-table-column
           label="囚号" />
