@@ -72,6 +72,11 @@ let check = [{
     path: '/prisoner/list',
     name: '服刑人员列表',
     component: resolve => require(['@/views/check-prisoner/prisoner-list'], resolve)
+  },
+  {
+    path: '/prisoner/faimly',
+    name: '家属汇款记录',
+    component: resovle => require(['@/views/check-prisoner/family-pay'], resovle)
   }]
 }, {
   path: '/family',
