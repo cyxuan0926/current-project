@@ -93,22 +93,9 @@ let superAdminMenu = [{
     title: '监狱长信箱',
     icon: 'iconfont icon-jianyuchangxinxiang'
   }, {
-    path: '/prisoner',
+    path: '/prisoner/list',
     title: '服刑人员信息管理',
-    icon: 'iconfont icon-fuxingrenyuan',
-    active: false,
-    children: [
-      {
-        path: '/prisoner/list',
-        title: '服刑人员列表',
-        icon: 'iconfont icon-circle-o'
-      },
-      {
-        path: '/prisoner/faimly',
-        title: '家属汇款记录',
-        icon: 'iconfont icon-circle-o'
-      }
-    ]
+    icon: 'iconfont icon-fuxingrenyuan'
   }, {
     path: '/prisoner-pocket-money/list',
     title: '服刑人员零花钱管理',
