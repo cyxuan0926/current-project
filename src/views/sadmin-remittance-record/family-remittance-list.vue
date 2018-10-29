@@ -19,12 +19,12 @@
         border
         stripe
         style="width: 100%">
-        <el-table-column label="汇款单号" prop="remitNum"/>
+        <el-table-column label="汇款单号" prop="remitNum" min-width="120"/>
         <el-table-column label="服刑人员姓名" prop="prisonerName"/>
         <el-table-column label="囚号" prop="prisonerNumber"/>
         <el-table-column label="汇款家属" prop="familyName"/>
-        <el-table-column label="汇款金额(元)" prop="money"/>
-        <el-table-column label="汇款时间">
+        <el-table-column label="汇款金额(元)" prop="money" min-width="80"/>
+        <el-table-column label="汇款时间" min-width="110">
           <template slot-scope="scope">
             {{scope.row.createdAt | Date}}
           </template>
