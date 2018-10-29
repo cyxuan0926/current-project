@@ -6,7 +6,7 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col :span="24">
+    <el-col :span="24" v-show="show">
       <el-tabs
         value="first"
         type="card">
@@ -15,55 +15,83 @@
           name="first" />
       </el-tabs>
       <el-table
-        :data="[]"
+        :data="familyRemittanceRecords.contents"
         border
         stripe
         style="width: 100%">
-        <el-table-column
-          label="汇款单号" />
-        <el-table-column
-          label="服刑人员姓名" />
-        <el-table-column
-          label="囚号" />
-        <el-table-column
-          label="汇款家属" />
-        <el-table-column
-          label="汇款金额" />
-        <el-table-column
-          label="汇款时间" />
-        <el-table-column
-          label="汇款状态" />
+        <el-table-column label="汇款单号" prop="remitNum"/>
+        <el-table-column label="服刑人员姓名" prop="prisonerName"/>
+        <el-table-column label="囚号" prop="prisonerNumber"/>
+        <el-table-column label="汇款家属" prop="familyName"/>
+        <el-table-column label="汇款金额(元)" prop="money"/>
+        <el-table-column label="汇款时间">
+          <template slot-scope="scope">
+            {{scope.row.createdAt | Date}}
+          </template>
+        </el-table-column>
+        <el-table-column label="汇款状态">
+          <template slot-scope="scope">
+            {{ scope.row.status | payStatus}}
+          </template>
+        </el-table-column>
       </el-table>
     </el-col>
     <m-pagination
+      v-show="show"
       ref="pagination"
-      :total="10"
+      :total="familyRemittanceRecords.total"
       @onPageChange="getDatas" />
   </el-row>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
       searchItems: {
-        prisoner: { type: 'select', label: '所属监狱' },
+        jailId: {
+          type: 'select',
+          label: '所属监狱',
+          canNotClear: true,
+          filterable: true,
+          getting: true,
+          options: [],
+          value: '',
+          belong: { label: 'title', value: 'id' }
+        },
         prisonerName: { type: 'input', label: '服刑人员姓名' },
         prisonerNumber: { type: 'input', label: '囚号' },
-        payFamily: { type: 'input', label: '汇款家属' },
-        payAt: { type: 'date', label: '汇款时间' }
-      }
+        familyName: { type: 'input', label: '汇款家属' },
+        remitTime: { type: 'date', label: '汇款时间' }
+      },
+      show: false
     }
   },
+  computed: {
+    ...mapState(['familyRemittanceRecords'])
+  },
+  mounted() {
+    this.getJailAll().then(res => {
+      this.searchItems.jailId.options = Object.assign({}, res)
+      this.searchItems.jailId.value = this.searchItems.jailId.options[0].id
+      this.filter.jailId = this.searchItems.jailId.options[0].id
+      this.searchItems.jailId.getting = false
+      this.getDatas()
+    })
+  },
   methods: {
-    sizeChange() {
-      console.log(1111)
+    ...mapActions(['getJailAll', 'getFamilyRemittance']),
+    sizeChange(rows) {
+      this.$refs.pagination.handleSizeChange(rows)
+      this.getDatas()
     },
     onSearch() {
-      console.log(22222)
+      this.$refs.pagination.handleCurrentChange(1)
     },
     getDatas() {
-      console.log(33333)
+      this.show = true
+      this.getFamilyRemittance({ ...this.filter, ...this.pagination })
     }
   }
 }

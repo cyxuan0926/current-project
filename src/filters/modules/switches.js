@@ -38,6 +38,11 @@ let switches = {
     { value: 'PENDING', label: '未授权' },
     { value: 'DENIED', label: '已拒绝' },
     { value: 'PASSED', label: '已通过' }
+  ],
+  payStatus: [
+    { value: 0, label: '支付中' },
+    { value: 1, label: '支付成功' },
+    { value: -1, label: '支付失败' }
   ]
 }
 
