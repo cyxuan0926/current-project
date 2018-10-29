@@ -6,7 +6,7 @@ import ElementUI from 'element-ui'
 import store from './store'
 import filters from './filters'
 import components from '@/components'
-import config from '@/service/config/base'
+// import config from '@/service/config/base'
 import '../static/bootstrap/js/bootstrap.min.js'
 import '../static/dist/js/app.min.js'
 
@@ -32,7 +32,7 @@ Vue.config.productionTip = false
 
 // Vue.prototype._$agency = 'http://39.108.185.51:1339'
 
-Vue.prototype._$agency = `${ config.baseURL }image-server`
+Vue.prototype._$agency = 'http://120.78.190.101:8083/image-server'
 
 // Vue.prototype._$agency = 'http://10.10.10.127:8081';
 
@@ -42,8 +42,7 @@ Vue.prototype._$agency = `${ config.baseURL }image-server`
 
 // Vue.prototype._$baseURL = 'http://39.108.185.51:8081/ywgk'
 
-// Vue.prototype._$baseURL = `${ config.baseURL }ywgk`
-Vue.prototype._$baseURL = `${ config.baseURL }ywgk-demo`
+Vue.prototype._$baseURL = 'http://120.78.190.101:8083/ywgk-demo'
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))
