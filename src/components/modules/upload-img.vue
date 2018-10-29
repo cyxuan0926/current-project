@@ -39,8 +39,8 @@ export default {
     action: {
       type: String,
       // default: 'http://39.108.185.51:1339/avatars'
-      // default: `https://www.yuwugongkai.com/image-server/avatars`
-      default: `http://120.78.190.101:1339/image-server/avatars` // 测试和演示
+      default: `https://www.yuwugongkai.com/image-server/avatars`
+      // default: `http://120.79.67.25:1339/image-server/avatars` // 测试和演示
     },
     headers: {
       type: Object,
