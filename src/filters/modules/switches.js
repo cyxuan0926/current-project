@@ -40,7 +40,6 @@ let switches = {
     { value: 'PASSED', label: '已通过' }
   ],
   payStatus: [
-    { value: 0, label: '支付中' },
     { value: 1, label: '支付成功' },
     { value: -1, label: '支付失败' }
   ]
