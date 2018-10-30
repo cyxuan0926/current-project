@@ -28,10 +28,6 @@ export default {
   enableOrDisablePrisonUser: params => {
     return service.get(`/users/enableOrDisable`, params).then(res => res && res.code === 200)
   },
-  // 家属汇款记录-所有监狱
-  getJailAll: () => {
-    return service.get('/jails/getJailAll').then(res => res && res.data.jails)
-  },
   // 家属汇款记录-列表
   getFamilyRemittance: params => {
     return service.get('/family_remit/list', params).then(res => res && res.data)

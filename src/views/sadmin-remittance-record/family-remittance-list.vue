@@ -69,19 +69,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(['familyRemittanceRecords'])
+    ...mapState(['familyRemittanceRecords', 'prisonAll'])
   },
   mounted() {
-    this.getJailAll().then(res => {
-      this.searchItems.jailId.options = Object.assign({}, res)
-      this.searchItems.jailId.value = this.searchItems.jailId.options[0].id
-      this.filter.jailId = this.searchItems.jailId.options[0].id
+    this.getPrisonAll().then(res => {
+      this.searchItems.jailId.options = this.prisonAll
+      this.searchItems.jailId.value = this.prisonAll[0].id
+      this.filter.jailId = this.prisonAll[0].id
       this.searchItems.jailId.getting = false
       this.getDatas()
     })
   },
   methods: {
-    ...mapActions(['getJailAll', 'getFamilyRemittance']),
+    ...mapActions(['getPrisonAll', 'getFamilyRemittance']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -100,4 +100,3 @@ export default {
 <style scoped>
 
 </style>
-
