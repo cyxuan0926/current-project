@@ -17,6 +17,7 @@ import adminPrisonUser from '@/views/sadmin-prison-user/vuex'
 import adminTerminal from '@/views/sadmin-terminal/vuex'
 import adminVersion from '@/views/sadmin-version/vuex'
 import adminWhitemember from '@/views/sadmin-whitemember/vuex'
+import adminRemittanceRecord from '@/views/sadmin-remittance-record/vuex'
 import checkFamily from '@/views/check-family/vuex'
 import checkMailbox from '@/views/check-mailbox/vuex'
 import checkMeeting from '@/views/check-meeting/vuex'
@@ -68,6 +69,7 @@ merge(
   adminTerminal,
   adminVersion,
   adminWhitemember,
+  adminRemittanceRecord,
   checkFamily,
   checkMailbox,
   checkMeeting,

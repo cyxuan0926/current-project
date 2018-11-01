@@ -15,6 +15,11 @@ let superAdminMenu = [{
     title: '监狱用户管理',
     icon: 'iconfont icon-jianyuyonghu'
   }, {
+    path: '/family-remittance/list',
+    title: '家属汇款记录',
+    icon: 'iconfont icon-jiashuhuikuanjilu'
+  },
+  {
     path: '/feedback/list',
     title: '意见反馈',
     icon: 'iconfont icon-yijian'
