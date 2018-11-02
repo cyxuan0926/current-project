@@ -78,6 +78,16 @@ let superAdmin = [{
     component: resolve => require(['@/views/sadmin-feedback/feedback-list'], resolve)
   }]
 }, {
+  path: '/family-remittance',
+  name: '家属汇款记录',
+  meta: { hidden: true },
+  children: [{
+    path: '/family-remittance/list',
+    name: '家属汇款',
+    component: resolve => require(['@/views/sadmin-remittance-record/family-remittance-list'], resolve)
+  }]
+},
+{
   path: '/advertisement',
   name: '广告管理',
   meta: { hidden: true },
