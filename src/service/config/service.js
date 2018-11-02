@@ -9,9 +9,9 @@ const instance = axios.create(base)
 let state = ''
 // 代理服务器
 // export const agency = ''
-// export const agency = '/ywgk'
+export const agency = '/ywgk'
 // export const agency = '/ywgk-demo'
-export const agency = '/ywgk-auth'
+// export const agency = '/ywgk-auth'
 // 获取异步请求的url
 const getUrl = (url) => `${ agency }${ url }`
 // http request 拦截器

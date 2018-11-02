@@ -32,7 +32,7 @@ Vue.config.productionTip = false
 
 // Vue.prototype._$agency = 'http://39.108.185.51:1339'
 
-Vue.prototype._$agency = 'http://120.78.190.101:8085/image-server'
+Vue.prototype._$agency = 'https://www.yuwugongkai.com/image-server'
 
 // Vue.prototype._$agency = 'http://10.10.10.127:8081';
 
@@ -42,7 +42,8 @@ Vue.prototype._$agency = 'http://120.78.190.101:8085/image-server'
 
 // Vue.prototype._$baseURL = 'http://39.108.185.51:8081/ywgk'
 
-Vue.prototype._$baseURL = 'http://120.78.190.101:8085/ywgk-auth'
+Vue.prototype._$baseURL = 'https://www.yuwugongkai.com/ywgk'
+// Vue.prototype._$baseURL = `${ config.baseURL }ywgk-demo`
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))
