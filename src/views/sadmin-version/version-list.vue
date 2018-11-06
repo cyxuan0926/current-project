@@ -11,12 +11,14 @@
       <el-col :span="24">
         <p>{{ type.label }}</p>
       </el-col>
-      <el-col :span="24">
+      <el-col
+        :span="24"
+        style="margin-bottom: 10px;">
         <el-table
           :data="versions[type.typeId]"
           border
           stripe
-          style="width: 100%">
+          style="width: 100%;">
           <el-table-column label="版本名">
             <template slot-scope="scope">
               <el-input
