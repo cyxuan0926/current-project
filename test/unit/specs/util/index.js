@@ -1,34 +1,34 @@
 /**
  * Created by Administrator on 2018/3/15/015.
  */
-import Vue from 'vue';
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Element from 'element-ui'
 import store from '@/store'
-Vue.use(Element);
-Vue.use(Vuex);
+Vue.use(Element)
+Vue.use(Vuex)
 
-let id = 0;
+let id = 0
 
-const createElm = function () {
-  const elm = document.createElement('div');
+const createElm = function() {
+  const elm = document.createElement('div')
 
-  elm.id = 'app' + ++id;
-  document.body.appendChild(elm);
+  elm.id = `app${ ++id }`
+  document.body.appendChild(elm)
 
-  return elm;
-};
+  return elm
+}
 
 /**
  * 回收 vm
  * @param  {Object} vm
  */
-exports.destroyVM = function (vm) {
-  vm.$destroy && vm.$destroy();
+exports.destroyVM = function(vm) {
+  vm.$destroy && vm.$destroy()
   vm.$el &&
   vm.$el.parentNode &&
-  vm.$el.parentNode.removeChild(vm.$el);
-};
+  vm.$el.parentNode.removeChild(vm.$el)
+}
 
 /**
  * 创建一个 Vue 的实例对象
@@ -36,12 +36,12 @@ exports.destroyVM = function (vm) {
  * @param  {Boolean=false} mounted 是否添加到 DOM 上
  * @return {Object} vm
  */
-exports.createVue = function (Compo, mounted = false) {
+exports.createVue = function(Compo, mounted = false) {
   if (Object.prototype.toString.call(Compo) === '[object String]') {
-    Compo = {template: Compo, store};
+    Compo = { template: Compo, store }
   }
-  return new Vue(Compo).$mount(mounted === false ? null : createElm());
-};
+  return new Vue(Compo).$mount(mounted === false ? null : createElm())
+}
 
 /**
  * 创建一个测试组件实例
@@ -51,15 +51,15 @@ exports.createVue = function (Compo, mounted = false) {
  * @param  {Boolean=false} mounted  - 是否添加到 DOM 上
  * @return {Object} vm
  */
-exports.createTest = function (Compo, propsData = {}, mounted = false) {
+exports.createTest = function(Compo, propsData = {}, mounted = false) {
   if (propsData === true || propsData === false) {
-    mounted = propsData;
-    propsData = {};
+    mounted = propsData
+    propsData = {}
   }
-  const elm = createElm();
-  const Ctor = Vue.extend(Compo);
-  return new Ctor({propsData, store}).$mount(mounted === false ? null : elm);
-};
+  const elm = createElm()
+  const Ctor = Vue.extend(Compo)
+  return new Ctor({ propsData, store }).$mount(mounted === false ? null : elm)
+}
 
 /**
  * 触发一个事件
@@ -68,34 +68,36 @@ exports.createTest = function (Compo, propsData = {}, mounted = false) {
  * @param  {String} name
  * @param  {*} opts
  */
-exports.triggerEvent = function (elm, name, ...opts) {
-  let eventName;
+exports.triggerEvent = function(elm, name, ...opts) {
+  let eventName
 
   if (/^mouse|click/.test(name)) {
-    eventName = 'MouseEvents';
-  } else if (/^key/.test(name)) {
-    eventName = 'KeyboardEvent';
-  } else {
-    eventName = 'HTMLEvents';
+    eventName = 'MouseEvents'
   }
-  const evt = document.createEvent(eventName);
+  else if (/^key/.test(name)) {
+    eventName = 'KeyboardEvent'
+  }
+  else {
+    eventName = 'HTMLEvents'
+  }
+  const evt = document.createEvent(eventName)
 
-  evt.initEvent(name, ...opts);
+  evt.initEvent(name, ...opts)
   elm.dispatchEvent
     ? elm.dispatchEvent(evt)
-    : elm.fireEvent('on' + name, evt);
+    : elm.fireEvent(`on${ name }`, evt)
 
-  return elm;
-};
+  return elm
+}
 
 /**
  * 触发 “mouseup” 和 “mousedown” 事件
  * @param {Element} elm
  * @param {*} opts
  */
-exports.triggerClick = function (elm, ...opts) {
-  exports.triggerEvent(elm, 'mousedown', ...opts);
-  exports.triggerEvent(elm, 'mouseup', ...opts);
+exports.triggerClick = function(elm, ...opts) {
+  exports.triggerEvent(elm, 'mousedown', ...opts)
+  exports.triggerEvent(elm, 'mouseup', ...opts)
 
-  return elm;
-};
+  return elm
+}

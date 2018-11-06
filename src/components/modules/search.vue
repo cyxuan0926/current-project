@@ -16,7 +16,7 @@
         <el-input
           clearable
           :disabled="item.disabled"
-          v-if="item.type === 'input'"
+          v-if="item.type === 'input' && !item.miss"
           v-model="item.value"
           :placeholder="'请输入' + item.label" />
         <el-select
@@ -42,7 +42,7 @@
           :picker-options="pickerOptions">
         </el-date-picker>
         <el-date-picker
-          v-if="item.type === 'date'"
+          v-if="item.type === 'date' && !item.miss"
           v-model="item.value"
           type="date"
           value-format="yyyy-MM-dd"
