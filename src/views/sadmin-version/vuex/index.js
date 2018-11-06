@@ -2,8 +2,8 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
-  prisonVersions: [],
-  familyVersions: [],
+  // prisonVersions: [],
+  // familyVersions: [],
   versionsTotal: 0,
   versions: {},
   versionTypes: [
