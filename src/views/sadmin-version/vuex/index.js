@@ -8,11 +8,11 @@ let state = {
   versions: {},
   versionTypes: [
     {
-      typeId: 1,
+      typeId: 2,
       label: '监狱端'
     },
     {
-      typeId: 2,
+      typeId: 1,
       label: '家属端Android版'
     },
     {
