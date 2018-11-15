@@ -275,14 +275,14 @@ export default {
         this.searchItems.status.miss = true
         this.searchItems.auditName.miss = true
         this.searchItems.auditAt.miss = true
+        delete this.filter.auditName
+        delete this.filter.auditAt
+        this.searchItems.auditName.value = ''
+        this.searchItems.auditAt.value = ''
+        this.searchItems.status.value = ''
       }
       else {
         delete this.filter.status
-        delete this.filter.auditName
-        delete this.filter.auditAt
-        this.searchItems.status.value = ''
-        this.searchItems.auditName.value = ''
-        this.searchItems.auditAt.value = ''
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.auditAt.miss = false
