@@ -8,11 +8,14 @@
       @search="onSearch" />
     <!--监狱版本-->
     <template v-for="(type, index) in versionTypes">
-      <el-col :span="24">
+      <el-col
+        :span="24"
+        :key="index">
         <p>{{ type.label }}</p>
       </el-col>
       <el-col
         :span="24"
+        :key="index"
         style="margin-bottom: 10px;">
         <el-table
           :data="versions[type.typeId]"

@@ -274,10 +274,10 @@ export default {
         name: { type: 'input', label: '家属姓名' },
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        applicationDate: { type: 'date', label: '会见时间' },
         auditName: { type: 'input', label: '审核人', miss: true },
         status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
-        auditAt: { type: 'date', label: '审核时间', miss: true },
-        applicationDate: { type: 'date', label: '会见时间' }
+        auditAt: { type: 'date', label: '审核时间', miss: true }
       },
       show: {
         authorize: false,
@@ -309,14 +309,14 @@ export default {
         this.searchItems.status.miss = true
         this.searchItems.auditAt.miss = true
         this.searchItems.auditName.miss = true
+        delete this.filter.auditAt
+        delete this.filter.auditName
+        this.searchItems.auditName.value = ''
+        this.searchItems.auditAt.value = ''
+        this.searchItems.status.value = ''
       }
       else {
         delete this.filter.status
-        delete this.filter.auditName
-        delete this.filter.auditAt
-        this.searchItems.status.value = ''
-        this.searchItems.auditName.value = ''
-        this.searchItems.auditAt.value = ''
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.auditAt.miss = false
@@ -355,6 +355,7 @@ export default {
     },
     onSearch() {
       if (helper.isEmptyObject(this.sortObj)) {
+        console.log(this.filter)
         this.filter = Object.assign(this.filter, this.sortObj)
       }
       else {
