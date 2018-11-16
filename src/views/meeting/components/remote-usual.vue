@@ -6,8 +6,12 @@
       :model="remoteUsualConfig"
       inline>
       <div style="clear: both;">
-        <div class="el-form-item is-required" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">常规配置</label>
+        <div
+          class="el-form-item is-required"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">常规配置</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
           <template v-for="(item, index) in remoteUsualConfig.queue">

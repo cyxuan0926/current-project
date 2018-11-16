@@ -1,19 +1,19 @@
 <template>
-    <div>
-        <div :id="tinymceId"></div>
-        <tinymce-image
-          ref="uploadImage"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onImageSuccess" />
-        <tinymce-video
-          ref="uploadVideo"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onVideoSuccess" />
-        <tinymce-audio
-          ref="uploadAudio"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onAudioSuccess" />
-    </div>
+  <div>
+    <div :id="tinymceId"/>
+    <tinymce-image
+      ref="uploadImage"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onImageSuccess" />
+    <tinymce-video
+      ref="uploadVideo"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onVideoSuccess" />
+    <tinymce-audio
+      ref="uploadAudio"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onAudioSuccess" />
+  </div>
 </template>
 
 <script>

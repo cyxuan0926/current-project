@@ -1,7 +1,8 @@
 <template>
-  <div class="m-range-picker"
-       @mouseenter="showClose"
-       @mouseleave="hideClose">
+  <div
+    class="m-range-picker"
+    @mouseenter="showClose"
+    @mouseleave="hideClose">
     <el-date-picker
       v-model="startDate"
       ref="start"
@@ -27,7 +28,10 @@
     />
     <span class="el-input__suffix">
       <span class="el-input__suffix-inner">
-        <i class="el-input__icon el-icon-circle-close close-icon" @click="close" v-if="closeShow"></i>
+        <i
+          class="el-input__icon el-icon-circle-close close-icon"
+          @click="close"
+          v-if="closeShow" />
       </span>
     </span>
   </div>
@@ -53,7 +57,16 @@ export default {
       }
     }
   },
-  props: ['startDateValue', 'endDateValue'],
+  props: {
+    startDateValue: {
+      type: String,
+      default: null
+    },
+    endDateValue: {
+      type: String,
+      default: null
+    }
+  },
   methods: {
     onChange(e) {
       this.startDate = e

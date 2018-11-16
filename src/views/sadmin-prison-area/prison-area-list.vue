@@ -25,14 +25,18 @@
         <el-table-column
           prop="jailName"
           label="所属监狱" />
-        <el-table-column prop="createdAt" label="创建时间">
+        <el-table-column
+          prop="createdAt"
+          label="创建时间">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
-        <el-table-column prop="updatedAt" label="更新时间">
+        <el-table-column
+          prop="updatedAt"
+          label="更新时间">
           <template slot-scope="scope">
-            {{scope.row.updatedAt | Date}}
+            {{ scope.row.updatedAt | Date }}
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -43,7 +47,8 @@
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
             <el-button
               size="mini"
-              type="danger"  @click="onDelete(scope.row.id)">删除</el-button>
+              type="danger"
+              @click="onDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

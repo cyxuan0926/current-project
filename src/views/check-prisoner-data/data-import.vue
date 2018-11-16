@@ -19,7 +19,8 @@
     <el-row
       class="row-container"
       :gutter="0">
-      <el-col :span="22"
+      <el-col
+        :span="22"
         :offset="2">
         <span>点击下载模板：</span>
         <a :href="prisonerHref">罪犯信息导入模板</a>&nbsp;&nbsp;
@@ -28,7 +29,8 @@
           style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中，修改相应监区名称)</span>
       </el-col>
       <el-col :gutter="0">
-        <el-col :span="22"
+        <el-col
+          :span="22"
           :offset="2">
           <span>上传模板文件：</span>
           <p>限制文件后缀名为
@@ -36,9 +38,11 @@
           </p>
         </el-col>
       </el-col>
-      <el-col :span="6"
+      <el-col
+        :span="6"
         :offset="2">
-        <el-upload class="upload-demo"
+        <el-upload
+          class="upload-demo"
           ref="upload"
           :action="_$agency + '/prisoners/upload'"
           :before-upload="beforeUpload"
@@ -46,14 +50,17 @@
           :auto-upload="false"
           :limit="1"
           accept=".xls,.xlsx">
-          <el-button slot="trigger"
+          <el-button
+            slot="trigger"
             size="small"
             type="primary">选取文件</el-button>
-          <el-button style="margin-left: 10px;"
+          <el-button
+            style="margin-left: 10px;"
             size="small"
             type="success"
             @click="submitUpload">上传到服务器</el-button>
-          <div slot="tip"
+          <div
+            slot="tip"
             class="el-upload__tip">请上传.xls或.xlsx文件</div>
         </el-upload>
       </el-col>
@@ -62,83 +69,105 @@
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerDataResult.errors">
-        <el-table-column label="所在行"
+        <el-table-column
+          label="所在行"
           prop="rowNum"
           width="70px" />
-        <el-table-column label="罪犯编号"
+        <el-table-column
+          label="罪犯编号"
           prop="prisonerNumber"
           width="100px" />
-        <el-table-column label="罪犯名字"
+        <el-table-column
+          label="罪犯名字"
           prop="name" />
-        <el-table-column label="性别"
+        <el-table-column
+          label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{scope.row.gender | gender}}
+            {{ scope.row.gender | gender }}
           </template>
         </el-table-column>
-        <el-table-column label="犯罪事实"
+        <el-table-column
+          label="犯罪事实"
           prop="crimes" />
-        <el-table-column label="附加刑"
+        <el-table-column
+          label="附加刑"
           prop="additionalPunishment" />
-        <el-table-column label="刑期起日"
+        <el-table-column
+          label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="刑期止日"
+        <el-table-column
+          label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="监区"
+        <el-table-column
+          label="监区"
           prop="prisonArea" />
-        <el-table-column label="原判刑期"
+        <el-table-column
+          label="原判刑期"
           prop="originalSentence" />
-        <el-table-column label="失败原因"
+        <el-table-column
+          label="失败原因"
           show-overflow-tooltip
           prop="reason" />
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length" style="margin-top: 10px;">
+    <el-row
+      v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length"
+      style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
       <el-table :data="prisonerDataResult.prisoners">
-        <el-table-column label="罪犯编号"
+        <el-table-column
+          label="罪犯编号"
           prop="prisonerNumber"
           width="100px" />
-        <el-table-column label="罪犯名字"
+        <el-table-column
+          label="罪犯名字"
           prop="name" />
-        <el-table-column label="性别"
+        <el-table-column
+          label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{scope.row.gender | gender}}
+            {{ scope.row.gender | gender }}
           </template>
         </el-table-column>
-        <el-table-column label="犯罪事实"
+        <el-table-column
+          label="犯罪事实"
           prop="crimes" />
-        <el-table-column label="附加刑"
+        <el-table-column
+          label="附加刑"
           prop="additionalPunishment" />
-        <el-table-column label="刑期起日"
+        <el-table-column
+          label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="刑期止日"
+        <el-table-column
+          label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="监区"
+        <el-table-column
+          label="监区"
           prop="prisonArea" />
-        <el-table-column label="原判刑期"
+        <el-table-column
+          label="原判刑期"
           prop="originalSentence" />
         <el-table-column label="创建时间">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
       </el-table>
@@ -147,83 +176,105 @@
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerYZKDataResult.errors">
-        <el-table-column label="所在行"
+        <el-table-column
+          label="所在行"
           prop="rowNum"
           width="70px" />
-        <el-table-column label="罪犯编号"
+        <el-table-column
+          label="罪犯编号"
           prop="prisonerNumber"
           width="100px" />
-        <el-table-column label="姓名"
+        <el-table-column
+          label="姓名"
           prop="name" />
-        <el-table-column label="性别"
+        <el-table-column
+          label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{scope.row.gender | gender}}
+            {{ scope.row.gender | gender }}
           </template>
         </el-table-column>
-        <el-table-column label="罪名"
+        <el-table-column
+          label="罪名"
           prop="crimes" />
-        <el-table-column label="罚金"
+        <el-table-column
+          label="罚金"
           prop="additionalPunishment" />
-        <el-table-column label="刑期起日"
+        <el-table-column
+          label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="刑期止日"
+        <el-table-column
+          label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="监区"
+        <el-table-column
+          label="监区"
           prop="prisonArea" />
-        <el-table-column label="原判刑期"
+        <el-table-column
+          label="原判刑期"
           prop="originalSentence" />
-        <el-table-column label="失败原因"
+        <el-table-column
+          label="失败原因"
           show-overflow-tooltip
           prop="reason" />
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length" style="margin-top: 10px;">
+    <el-row
+      v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length"
+      style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
       <el-table :data="prisonerYZKDataResult.prisoners">
-        <el-table-column label="罪犯编号"
+        <el-table-column
+          label="罪犯编号"
           prop="prisonerNumber"
           width="100px" />
-        <el-table-column label="姓名"
+        <el-table-column
+          label="姓名"
           prop="name" />
-        <el-table-column label="性别"
+        <el-table-column
+          label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{scope.row.gender | gender}}
+            {{ scope.row.gender | gender }}
           </template>
         </el-table-column>
-        <el-table-column label="罪名"
+        <el-table-column
+          label="罪名"
           prop="crimes" />
-        <el-table-column label="罚金"
+        <el-table-column
+          label="罚金"
           prop="additionalPunishment" />
-        <el-table-column label="刑期起日"
+        <el-table-column
+          label="刑期起日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="刑期止日"
+        <el-table-column
+          label="刑期止日"
           show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="监区"
+        <el-table-column
+          label="监区"
           prop="prisonArea" />
-        <el-table-column label="原判刑期"
+        <el-table-column
+          label="原判刑期"
           prop="originalSentence" />
         <el-table-column label="创建时间">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
       </el-table>

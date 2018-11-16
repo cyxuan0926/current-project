@@ -9,8 +9,12 @@
       style="overflow: hidden;"
       inline>
       <div style="overflow: hidden;">
-        <div class="el-form-item" style="float: left; margin-bottom: 10px;">
-           <label class="el-form-item__label" style="width: 140px; padding-right: 0;">请选择日期</label>
+        <div
+          class="el-form-item"
+          style="float: left; margin-bottom: 10px;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px; padding-right: 0;">请选择日期</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
           <el-form-item
@@ -48,7 +52,9 @@
             @click="onAddDate">新增特殊日期</el-button>
         </div>
       </div>
-      <div v-if="special.effectDate" style="float: left; width: calc(100% - 150px); margin-left: 150px;">
+      <div
+        v-if="special.effectDate"
+        style="float: left; width: calc(100% - 150px); margin-left: 150px;">
         <template v-for="(item, idx) in special.queue">
           <el-form-item
             :key="idx"

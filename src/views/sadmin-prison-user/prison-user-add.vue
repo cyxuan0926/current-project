@@ -23,8 +23,7 @@
               v-for="item in prisonAllWithBranchPrison"
               :key="item.id"
               :label="item.title"
-              :value="item.id">
-            </el-option>
+              :value="item.id"/>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -42,7 +41,7 @@
               v-for="prisonArea in jailPrisonAreas"
               :key="prisonArea.id"
               :label="prisonArea.name"
-              :value="prisonArea.id"></el-option>
+              :value="prisonArea.id"/>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -50,14 +49,14 @@
           prop="policeNumber">
           <el-input
             v-model="prisonUser.policeNumber"
-            placeholder="请填写狱警号"></el-input>
+            placeholder="请填写狱警号"/>
         </el-form-item>
         <el-form-item
           label="真实姓名"
           prop="realName">
           <el-input
             v-model="prisonUser.realName"
-            placeholder="请填写真实姓名"></el-input>
+            placeholder="请填写真实姓名"/>
         </el-form-item>
         <el-form-item
           label="角色"
@@ -71,8 +70,7 @@
               v-if="item.value !== 0 && item.value != routeRole"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"/>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -80,7 +78,7 @@
           prop="username">
           <el-input
             v-model="prisonUser.username"
-            placeholder="请填写用户名"></el-input>
+            placeholder="请填写用户名"/>
         </el-form-item>
       </el-form>
       <el-button

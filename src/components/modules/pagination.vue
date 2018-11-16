@@ -1,17 +1,18 @@
 <template>
-  <el-col :span="24" class="m-pagination showTotal-pagination">
-      <span>共{{ total }}条记录</span>
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="total"
-        :page-size="pageSize"
-        :current-page.sync="currentPage"
-        prev-text="上一页"
-        next-text="下一页"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange">
-      </el-pagination>
+  <el-col
+    :span="24"
+    class="m-pagination showTotal-pagination">
+    <span>共{{ total }}条记录</span>
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="total"
+      :page-size="pageSize"
+      :current-page.sync="currentPage"
+      prev-text="上一页"
+      next-text="下一页"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"/>
   </el-col>
 </template>
 

@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
-      buttonText="刷新"
+      button-text="刷新"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -24,8 +24,11 @@
           show-overflow-tooltip
           min-width="180">
           <template slot-scope="scope">
-            <el-button @click="goDetail(scope.row.id)" type="text" size="small">
-              {{scope.row.title}}
+            <el-button
+              @click="goDetail(scope.row.id)"
+              type="text"
+              size="small">
+              {{ scope.row.title }}
             </el-button>
           </template>
         </el-table-column>
@@ -33,16 +36,14 @@
           prop="contents"
           label="内容"
           show-overflow-tooltip
-          min-width="180">
-        </el-table-column>
+          min-width="180"/>
         <el-table-column
           prop="name"
-          label="发件人">
-        </el-table-column>
+          label="发件人"/>
         <el-table-column
           label="发送日期">
           <template slot-scope="scope">
-            {{scope.row.createdAt}}
+            {{ scope.row.createdAt }}
           </template>
         </el-table-column>
       </el-table>

@@ -1,5 +1,7 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+  <el-row
+    class="row-container"
+    :gutter="0">
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"

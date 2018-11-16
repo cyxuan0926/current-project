@@ -33,7 +33,7 @@
           prop="role"
           label="角色">
           <template slot-scope="scope">
-            {{scope.row.role | role}}
+            {{ scope.row.role | role }}
           </template>
         </el-table-column>
         <el-table-column
@@ -51,30 +51,32 @@
         <el-table-column
           width="210px"
           label="操作">
-            <template v-if="routeRole != scope.row.role" slot-scope="scope">
-              <el-button
-                type="primary"
-                size="mini"
-                @click="onEdit(scope.row.id)">编辑</el-button>
-              <el-button
-                v-if="scope.row.sysFlag == 0"
-                size="mini"
-                type="success"
-                style="margin-left: 5px;"
-                @click="onChangeStatus(scope.row, 1)">启用</el-button>
-              <el-button
-                v-if="scope.row.sysFlag == 1"
-                size="mini"
-                type="info"
-                style="margin-left: 5px;"
-                @click="onChangeStatus(scope.row, 0)">禁用</el-button>
-              <el-button
-                v-if="routeRole === '0'"
-                type="danger"
-                size="mini"
-                style="margin-left: 5px;"
-                @click="onDelete(scope.row.id)">删除</el-button>
-            </template>
+          <template
+            v-if="routeRole != scope.row.role"
+            slot-scope="scope">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row.id)">编辑</el-button>
+            <el-button
+              v-if="scope.row.sysFlag == 0"
+              size="mini"
+              type="success"
+              style="margin-left: 5px;"
+              @click="onChangeStatus(scope.row, 1)">启用</el-button>
+            <el-button
+              v-if="scope.row.sysFlag == 1"
+              size="mini"
+              type="info"
+              style="margin-left: 5px;"
+              @click="onChangeStatus(scope.row, 0)">禁用</el-button>
+            <el-button
+              v-if="routeRole === '0'"
+              type="danger"
+              size="mini"
+              style="margin-left: 5px;"
+              @click="onDelete(scope.row.id)">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-col>

@@ -1,22 +1,27 @@
 <template>
   <div class="layout">
-    <the-header v-if="!$route.meta.notLogin"></the-header>
+    <the-header v-if="!$route.meta.notLogin" />
     <!--页面侧边栏-->
-    <the-aside v-if="!$route.meta.notLogin"></the-aside>
-    <div class="content-wrapper" :class="{'content-wrapper-login':$route.meta.notLogin}" :style="'min-height:' + wrapperHeight">
-    <!--页面内容-->
+    <the-aside v-if="!$route.meta.notLogin" />
+    <div
+      class="content-wrapper"
+      :class="{'content-wrapper-login':$route.meta.notLogin}"
+      :style="'min-height:' + wrapperHeight">
+      <!--页面内容-->
       <section
         class="content"
         :class="{'content-not-login':!$route.meta.notLogin}"
         v-loading="loading"
         element-loading-background="rgba(255, 255, 255, 0.5)">
-        <the-breadcrumb v-if="!$route.meta.notLogin"></the-breadcrumb>
-        <transition name="router-fade" mode="out-in">
-            <router-view></router-view>
+        <the-breadcrumb v-if="!$route.meta.notLogin" />
+        <transition
+          name="router-fade"
+          mode="out-in">
+          <router-view />
         </transition>
       </section>
     </div>
-    <the-footer v-if="!$route.meta.notLogin"></the-footer>
+    <the-footer v-if="!$route.meta.notLogin" />
   </div>
 </template>
 

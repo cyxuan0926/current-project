@@ -7,88 +7,118 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <!--监狱版本-->
-    <template v-for="(type, index) in versionTypes">
-      <el-col :span="24">
-        <p>{{ type.label }}</p>
-      </el-col>
-      <el-col
-        :span="24"
-        style="margin-bottom: 10px;">
-        <el-table
-          :data="versions[type.typeId]"
-          border
-          stripe
-          style="width: 100%;">
-          <el-table-column label="版本名">
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.versionCode"
-                :disabled="scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="版本号">
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.versionNumber"
-                :disabled="scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="是否强制更新">
-            <template slot-scope="scope">
-              <el-select
-                v-model="scope.row.isForce"
-                placeholder="请选择"
-                :disabled="scope.row.isCheck">
-                <el-option
-                  v-for="(item,$key) in {'是':1,'否':0}"
-                  :key="item"
-                  :label="$key"
-                  :value="item" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="描述" >
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.description"
-                :disabled="scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button
-                v-if="scope.row.isCheck"
-                type="primary"
-                size="mini"
-                @click="scope.row.isCheck = false">修改</el-button>
-              <el-button
-                v-else type="primary"
-                size="mini"
-                @click="modifyOrSave(scope.row)">保存</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-col>
+    <template
+      v-for="(type, index) in versionTypes">
+      <div :key="index">
+        <el-col :span="'24'">
+          <p>{{ type.label }}</p>
+        </el-col>
+        <el-col
+          :span="'24'"
+          style="margin-bottom: 10px;">
+          <el-table
+            :data="versions[type.typeId]"
+            border
+            stripe
+            style="width: 100%;">
+            <el-table-column label="版本名">
+              <template slot-scope="scope">
+                <el-input
+                  type="text"
+                  v-model="scope.row.versionCode"
+                  :disabled="scope.row.isCheck" />
+              </template>
+            </el-table-column>
+            <el-table-column label="版本号">
+              <template slot-scope="scope">
+                <el-input
+                  type="text"
+                  v-model="scope.row.versionNumber"
+                  :disabled="scope.row.isCheck" />
+              </template>
+            </el-table-column>
+            <el-table-column label="是否强制更新">
+              <template slot-scope="scope">
+                <el-select
+                  v-model="scope.row.isForce"
+                  placeholder="请选择"
+                  :disabled="scope.row.isCheck">
+                  <el-option
+                    v-for="(item,$key) in {'是':1,'否':0}"
+                    :key="item"
+                    :label="$key"
+                    :value="item" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="描述" >
+              <template slot-scope="scope">
+                <el-input
+                  type="text"
+                  v-model="scope.row.description"
+                  :disabled="scope.row.isCheck" />
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  v-if="scope.row.isCheck"
+                  type="primary"
+                  size="mini"
+                  @click="scope.row.isCheck = false">修改</el-button>
+                <el-button
+                  v-else
+                  type="primary"
+                  size="mini"
+                  @click="modifyOrSave(scope.row)">保存</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </div>
     </template>
     <m-pagination
       ref="pagination"
       :total="versionsTotal"
       @onPageChange="getDatas" />
-    <el-dialog title="狱务通版本管理" :visible.sync="dialogVisible">
-      <el-form :model="ruleForm" status-icon :rules="rules2" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label-width="0" prop="username">
-          <el-input type="text" v-model="ruleForm.username" auto-complete="off" placeholder="用户名" prefix-icon="iconfont icon-account"></el-input>
+    <el-dialog
+      title="狱务通版本管理"
+      :visible.sync="dialogVisible">
+      <el-form
+        :model="ruleForm"
+        status-icon
+        :rules="rules2"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm">
+        <el-form-item
+          label-width="0"
+          prop="username">
+          <el-input
+            type="text"
+            v-model="ruleForm.username"
+            auto-complete="off"
+            placeholder="用户名"
+            prefix-icon="iconfont icon-account"/>
         </el-form-item>
-        <el-form-item label-width="0" prop="pass">
-          <el-input type="password" v-model="ruleForm.pass" auto-complete="off" placeholder="密码" prefix-icon="iconfont icon-password"></el-input>
+        <el-form-item
+          label-width="0"
+          prop="pass">
+          <el-input
+            type="password"
+            v-model="ruleForm.pass"
+            auto-complete="off"
+            placeholder="密码"
+            prefix-icon="iconfont icon-password"/>
         </el-form-item>
-        <el-form-item label-width="0" class="btn-box">
+        <el-form-item
+          label-width="0"
+          class="btn-box">
           <!-- `checked` 为 true 或 false -->
           <el-button @click="submitForm('ruleForm')">登录</el-button>
-          <el-button type="danger" @click="dialogVisible = !dialogVisible">取消</el-button>
+          <el-button
+            type="danger"
+            @click="dialogVisible = !dialogVisible">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
