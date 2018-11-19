@@ -18,8 +18,16 @@
           <p>{{ user.username }}</p>
           <p>
             <span>{{ user.role | role }}</span>
+            <el-tooltip
+              v-if="prisonerAreas.length"
+              :disabled="prisonerAreas.length === 1"
+              popper-class="prisonser_areas__popper"
+              :content="prisonerAreas.join('、')"
+              placement="bottom">
+              <span style="margin-left: 5px">{{ prisonerAreas[0] }}</span>
+            </el-tooltip>
           </p>
-          <!--<a href="#" @click="$event.preventDefault()"><i class="fa fa-circle text-success"></i> 在线</a>-->
+        <!--<a href="#" @click="$event.preventDefault()"><i class="fa fa-circle text-success"></i> 在线</a>-->
         </div>
       </div>
       <!-- /.search form -->
@@ -72,7 +80,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user']),
+    prisonerAreas: vm => {
+      let values = []
+      if (vm.user && vm.user.prisonConfigList && vm.user.prisonConfigList.length) {
+        for (let val of vm.user.prisonConfigList.values()) {
+          values.push(val.prisonConfigName)
+        }
+      }
+      return values
+    }
   },
   methods: {
     onTreeMenuClick(e) {

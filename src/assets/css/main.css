@@ -350,7 +350,10 @@ div.viewer-container {
 }
 div.el-tooltip__popper {
   max-width: 60% !important;
-  margin: 0px auto !important;
+  margin: 5px auto !important;
+}
+.prisonser_areas__popper {
+  font-size: 10px !important;
 }
 .prisonConfigMessage button.el-message-box__headerbtn {
   top: 12px !important;

@@ -17,6 +17,7 @@
           type="primary"
           style="margin-left: 10px;"
           @click="getConfigs">确定</el-button>
+        <label style="margin-left: 5px;font-size: 12px;color: red">注：仅支持2天后的会见申请调整</label>
         <div
           v-if="show"
           class="adjustTable"
@@ -201,6 +202,9 @@ export default {
         this.resetMeetings()
       })
     }
+  },
+  mounted() {
+    this.getConfigs()
   },
   destroyed() {
     // console.log(999)
