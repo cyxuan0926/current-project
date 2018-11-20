@@ -5,7 +5,7 @@
     <el-row :gutter="0">
       <el-col :span="12">
         <img
-          :src="jailInformation.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
+          :src="jailInformation.imageUrl + '?token=' + $urls.token"
           alt="">
           <!--<img src="../../assets/images/default.jpg" alt="">-->
       </el-col>

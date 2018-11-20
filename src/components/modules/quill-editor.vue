@@ -7,7 +7,7 @@
       @change="editorChange($event)"/>
     <el-upload
       v-show="false"
-      :action="_$agency + '/avatars'"
+      :action="$urls.imageUrl"
       name="avatar"
       :headers="authorization"
       :before-upload="beforUpload"
@@ -38,7 +38,7 @@ export default {
   data() {
     const _this = this
     return {
-      authorization: { 'Authorization': '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' },
+      authorization: { 'Authorization': this.$urls.token },
       fileListForEditor: [], // 富文本上传图片列表
       editorOption: {
         placeholder: '请输入内容',
@@ -86,7 +86,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('图片上传成功')
-          this.editor.insertEmbed(this.editor.getSelection().index, 'image', `${ res.url }?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`)
+          this.editor.insertEmbed(this.editor.getSelection().index, 'image', `${ res.url }?token=${ this.$urls.token }`)
           break
         default:
           this.$message.error(`上传图片失败:${ res.message }`)

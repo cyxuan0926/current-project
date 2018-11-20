@@ -1,11 +1,8 @@
 // import { Notification, Message } from 'element-ui'
 import { Notification } from 'element-ui'
+import urls from '@/service/urls'
 
-// const wsUrl = jailId => `ws://123.57.7.159/ws-demo/${ jailId }` // 演示
-// const wsUrl = jailId => `ws://120.78.190.101/ws/${ jailId }` // 测试
-// const wsUrl = jailId => `ws://120.78.190.101/ws-demo/${ jailId }` // 演示
-const wsUrl = jailId => `ws://120.78.190.101:8085/ywgk-auth/websocket/${ jailId }` // 授权
-// const wsUrl = jailId => `wss://www.yuwugongkai.com/ws/${ jailId }`
+const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
 
 export default {
   getWebsocketResult: ({ commit, state }, params) => {

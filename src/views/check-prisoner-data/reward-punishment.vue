@@ -97,7 +97,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      prisonerRewardHref: `${ this._$baseURL }/download/downloadfile?filepath=prisoner_reward_punishment_template.xls`,
+      prisonerRewardHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_reward_punishment_template.xls`,
       fileList: []
     }
   },
