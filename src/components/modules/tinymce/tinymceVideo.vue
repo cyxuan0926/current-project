@@ -1,7 +1,7 @@
 <template>
   <el-upload
     ref="uploadVideo"
-    :action="action"
+    :action="$urls.videoUrl"
     :headers="headers"
     :name="name"
     :before-upload="beforUpload"
@@ -20,12 +20,6 @@
 <script>
 export default {
   props: {
-    action: {
-      type: String,
-      // default: 'http://39.108.185.51:1339/avatars'
-      // default: `https://www.yuwugongkai.com/image-server/avatars`
-      default: `http://120.78.190.101:1339/video-server/videos` // 测试和演示
-    },
     name: {
       type: String,
       default: 'video'
@@ -39,7 +33,7 @@ export default {
     return {
       fileList: [],
       headers: {
-        Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
+        Authorization: this.$urls.token
       },
       notification: null
     }
@@ -53,7 +47,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('视频上传成功')
-          this.$emit('success', `${ res.url }?token=${ this.headers.Authorization }`)
+          this.$emit('success', `${ res.url }?token=${ this.$urls.token }`)
           this.setImageLocalstorage('images', res.url)
           this.setImageLocalstorage('newImages', res.url)
           this.notification.close()

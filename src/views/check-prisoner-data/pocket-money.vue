@@ -21,7 +21,7 @@
         :offset="2">
         <el-upload class="upload-demo"
           ref="upload"
-          :action="_$agency + '/prisoners/upload'"
+          action="/prisoners/upload"
           :before-upload="beforeUpload"
           :file-list="fileList"
           :auto-upload="false"
@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       fileList: [],
-      prisonerHref: `${ this._$baseURL }/download/downloadfile?filepath=pocket_money_template.xls`
+      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=pocket_money_template.xls`
     }
   },
   computed: {

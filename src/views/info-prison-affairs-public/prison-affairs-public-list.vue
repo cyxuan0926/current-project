@@ -25,7 +25,7 @@
           </el-table-column>
           <el-table-column label="新闻图片">
             <template slot-scope="scope" v-if="scope.row.imageUrl">
-              <img :src="scope.row.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'" alt="">
+              <img :src="scope.row.imageUrl + '?token=' + $urls.token" alt="">
             </template>
           </el-table-column>
           <el-table-column

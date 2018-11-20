@@ -40,7 +40,7 @@
         :offset="2">
         <el-upload class="upload-demo"
           ref="upload"
-          :action="_$agency + '/prisoners/upload'"
+          action="/prisoners/upload"
           :before-upload="beforeUpload"
           :file-list="fileList"
           :auto-upload="false"
@@ -239,7 +239,7 @@ export default {
       tabs: 'first',
       fileList: [],
       notify: null,
-      prisonerHref: `${ this._$baseURL }/download/downloadfile?filepath=prison_template.xls`
+      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
     }
   },
   computed: {
@@ -251,14 +251,15 @@ export default {
         this.notify.close()
       }
       if (val === 'first') {
-        this.prisonerHref = `${ this._$baseURL }/download/downloadfile?filepath=prison_template.xls`
+        this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
       }
       else if (val === 'second') {
-        this.prisonerHref = `${ this._$baseURL }/download/downloadfile?filepath=prison_yzk_template.xlsx`
+        this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xlsx`
       }
     }
   },
   mounted() {
+    console.log(this.$urls)
     this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
   },
   destroyed() {

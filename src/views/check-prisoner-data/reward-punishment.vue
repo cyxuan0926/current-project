@@ -16,7 +16,7 @@
     </el-row>
     <el-row :gutter="0">
       <el-col :span="6" :offset="2">
-        <el-upload class="upload-demo" ref="upload" :action="_$agency + '/prisoner_reward_punishment/upload'" :before-upload="beforeUpload" :file-list="fileList" :auto-upload="false" :limit="1" accept=".xls">
+        <el-upload class="upload-demo" ref="upload" action="/prisoner_reward_punishment/upload" :before-upload="beforeUpload" :file-list="fileList" :auto-upload="false" :limit="1" accept=".xls">
           <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
           <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
           <div slot="tip" class="el-upload__tip">只能上传.xls文件</div>
@@ -57,7 +57,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      prisonerRewardHref: `${ this._$baseURL }/download/downloadfile?filepath=prisoner_reward_punishment_template.xls`,
+      prisonerRewardHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_reward_punishment_template.xls`,
       fileList: []
     }
   },

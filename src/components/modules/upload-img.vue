@@ -3,7 +3,7 @@
     <el-upload
       class="avatar-uploader"
       ref="uploadImg"
-      :action="action"
+      :action="$urls.imageUrl"
       :headers="headers"
       :multiple="multiple"
       :name="name"
@@ -36,17 +36,11 @@ export default {
     value: {
       default: ''
     },
-    action: {
-      type: String,
-      // default: 'http://39.108.185.51:1339/avatars'
-      // default: `https://www.yuwugongkai.com/image-server/avatars`
-      default: `http://120.78.190.101:1339/image-server/avatars` // 测试和演示
-    },
     headers: {
       type: Object,
       default: function() {
         return {
-          Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
+          Authorization: this.$urls.token
         }
       }
     },
@@ -85,12 +79,12 @@ export default {
   computed: {
     fileList() {
       if (this.limit === 1) {
-        let res = (!this.value || !this.value.length) ? [] : [{ url: `${ this.value }?token=${ this.headers.Authorization }` }]
+        let res = (!this.value || !this.value.length) ? [] : [{ url: `${ this.value }?token=${ this.$urls.token }` }]
         return res
       }
       let r = this.value
       r.map(item => {
-        item.url = `${ item.url }?token=${ this.headers.Authorization }`
+        item.url = `${ item.url }?token=${ this.$urls.token }`
       })
       return r
     }
