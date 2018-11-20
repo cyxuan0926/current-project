@@ -7,75 +7,75 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <!--监狱版本-->
-    <template
-      v-for="(type, index) in versionTypes">
-      <div :key="index">
-        <el-col :span="'24'">
-          <p>{{ type.label }}</p>
-        </el-col>
-        <el-col
-          :span="'24'"
-          style="margin-bottom: 10px;">
-          <el-table
-            :data="versions[type.typeId]"
-            border
-            stripe
-            style="width: 100%;">
-            <el-table-column label="版本名">
-              <template slot-scope="scope">
-                <el-input
-                  type="text"
-                  v-model="scope.row.versionCode"
-                  :disabled="scope.row.isCheck" />
-              </template>
-            </el-table-column>
-            <el-table-column label="版本号">
-              <template slot-scope="scope">
-                <el-input
-                  type="text"
-                  v-model="scope.row.versionNumber"
-                  :disabled="scope.row.isCheck" />
-              </template>
-            </el-table-column>
-            <el-table-column label="是否强制更新">
-              <template slot-scope="scope">
-                <el-select
-                  v-model="scope.row.isForce"
-                  placeholder="请选择"
-                  :disabled="scope.row.isCheck">
-                  <el-option
-                    v-for="(item,$key) in {'是':1,'否':0}"
-                    :key="item"
-                    :label="$key"
-                    :value="item" />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="描述" >
-              <template slot-scope="scope">
-                <el-input
-                  type="text"
-                  v-model="scope.row.description"
-                  :disabled="scope.row.isCheck" />
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button
-                  v-if="scope.row.isCheck"
-                  type="primary"
-                  size="mini"
-                  @click="scope.row.isCheck = false">修改</el-button>
-                <el-button
-                  v-else
-                  type="primary"
-                  size="mini"
-                  @click="modifyOrSave(scope.row)">保存</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </div>
+    <template v-for="type in versionTypes">
+      <el-col
+        :span="24"
+        :key="type.id">
+        <p>{{ type.label }}</p>
+      </el-col>
+      <el-col
+        :span="24"
+        :key="type.id"
+        style="margin-bottom: 10px;">
+        <el-table
+          :data="versions[type.typeId]"
+          border
+          stripe
+          style="width: 100%;">
+          <el-table-column label="版本名">
+            <template slot-scope="scope">
+              <el-input
+                type="text"
+                v-model="scope.row.versionCode"
+                :disabled="scope.row.isCheck" />
+            </template>
+          </el-table-column>
+          <el-table-column label="版本号">
+            <template slot-scope="scope">
+              <el-input
+                type="text"
+                v-model="scope.row.versionNumber"
+                :disabled="scope.row.isCheck" />
+            </template>
+          </el-table-column>
+          <el-table-column label="是否强制更新">
+            <template slot-scope="scope">
+              <el-select
+                v-model="scope.row.isForce"
+                placeholder="请选择"
+                :disabled="scope.row.isCheck">
+                <el-option
+                  v-for="(item,$key) in {'是':1,'否':0}"
+                  :key="item"
+                  :label="$key"
+                  :value="item" />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="描述" >
+            <template slot-scope="scope">
+              <el-input
+                type="text"
+                v-model="scope.row.description"
+                :disabled="scope.row.isCheck" />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.isCheck"
+                type="primary"
+                size="mini"
+                @click="scope.row.isCheck = false">修改</el-button>
+              <el-button
+                v-else
+                type="primary"
+                size="mini"
+                @click="modifyOrSave(scope.row)">保存</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
     </template>
     <m-pagination
       ref="pagination"

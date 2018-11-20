@@ -15,7 +15,7 @@
             alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>{{ user.username }}</p>
+          <p>{{ user.jailName || user.username }}</p>
           <p>
             <span>{{ user.role | role }}</span>
             <el-tooltip

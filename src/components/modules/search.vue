@@ -17,73 +17,79 @@
     </div>
     <div class="filter-right">
       <template v-for="(item, index) in items">
-        <div :key="index">
-          <el-input
-            clearable
-            :disabled="item.disabled"
-            v-if="item.type === 'input' && !item.miss"
-            v-model="item.value"
-            :placeholder="'请输入' + item.label" />
-          <el-select
-            v-if="item.type === 'select' && !item.miss"
-            v-model="item.value"
-            :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
-            :loading="item.getting || false"
-            :clearable="!item.canNotClear"
-            :filterable="item.filterable">
-            <el-option
-              v-for="option in item.options"
-              v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
-              :key="item.belong ? option[item.belong.value] : option.value"
-              :label="item.belong ? option[item.belong.label] : option.label"
-              :value="item.belong ? option[item.belong.value] : option.value" />
-          </el-select>
-          <el-date-picker
-            v-if="item.type === 'datetime'"
-            v-model="item.value"
-            type="datetime"
-            :placeholder="item.label"
-            align="right"
-            :picker-options="pickerOptions"/>
-          <el-date-picker
-            v-if="item.type === 'date' && !item.miss"
-            v-model="item.value"
-            type="date"
-            value-format="yyyy-MM-dd"
-            :placeholder="item.label"/>
-          <el-date-picker
-            v-if="item.type === 'month'"
-            v-model="item.value"
-            type="month"
-            :clearable="!item.canNotClear"
-            :editable="!item.canNotClear"
-            :picker-options="item.pickerOptions"
-            value-format="yyyy-MM"
-            :placeholder="item.label"/>
-          <el-date-picker
-            v-if="item.type === 'datetimerange'"
-            v-model="item.value"
-            type="datetimerange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            :default-time="['00:00:00', '23:59:59']"/>
-          <el-date-picker
-            v-if="item.type === 'daterange'"
-            v-model="item.value"
-            unlink-panels
-            type="daterange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            format="yyyy-MM"
-            value-format="yyyy-MM"/>
-          <m-month-range-picker
-            v-if="item.type=== 'monthrange'"
-            class="monthrange"
-            :start-date-value.sync="startValue"
-            :end-date-value.sync="endValue" />
-        </div>
+        <el-input
+          :key="index"
+          clearable
+          :disabled="item.disabled"
+          v-if="item.type === 'input' && !item.miss"
+          v-model="item.value"
+          :placeholder="'请输入' + item.label" />
+        <el-select
+          :key="index"
+          v-if="item.type === 'select' && !item.miss"
+          v-model="item.value"
+          :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
+          :loading="item.getting || false"
+          :clearable="!item.canNotClear"
+          :filterable="item.filterable">
+          <el-option
+            v-for="option in item.options"
+            v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
+            :key="item.belong ? option[item.belong.value] : option.value"
+            :label="item.belong ? option[item.belong.label] : option.label"
+            :value="item.belong ? option[item.belong.value] : option.value" />
+        </el-select>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'datetime'"
+          v-model="item.value"
+          type="datetime"
+          :placeholder="item.label"
+          align="right"
+          :picker-options="pickerOptions"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'date' && !item.miss"
+          v-model="item.value"
+          type="date"
+          value-format="yyyy-MM-dd"
+          :placeholder="item.label"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'month'"
+          v-model="item.value"
+          type="month"
+          :clearable="!item.canNotClear"
+          :editable="!item.canNotClear"
+          :picker-options="item.pickerOptions"
+          value-format="yyyy-MM"
+          :placeholder="item.label"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'datetimerange'"
+          v-model="item.value"
+          type="datetimerange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM-dd HH:mm:ss"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          :default-time="['00:00:00', '23:59:59']"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'daterange'"
+          v-model="item.value"
+          unlink-panels
+          type="daterange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM"
+          value-format="yyyy-MM"/>
+        <m-month-range-picker
+          :key="index"
+          v-if="item.type=== 'monthrange'"
+          class="monthrange"
+          :start-date-value.sync="startValue"
+          :end-date-value.sync="endValue" />
       </template>
       <template>
         <el-button
@@ -210,4 +216,6 @@ export default {
   .monthrange
     width 230px
     max-width  230px
+  .el-date-editor.el-input, .el-date-editor.el-input__inner
+    max-width:  230px
 </style>
