@@ -58,7 +58,6 @@
           <div
             v-for="(special, list) in meeting.special"
             :key="list">
-            <p>{{ special }}</p>
             <el-form-item class="special-config">
               <el-date-picker
                 v-model="special.date"
@@ -71,55 +70,63 @@
             </el-form-item>
             <el-button
               v-if="special.date"
-              type="primary"
-              @click="getSpecialQueue(list)">配置会见时间段</el-button>
+              type="text"
+              @click="getSpecialQueue(list)">配置</el-button>
             <el-button
               v-if="special.queue[0] !== null"
               type="text"
               style="color: #F56C6C;"
-              @click="deleteSpecialQueue(list)">删除当前日期配置</el-button>
-            <div v-show="flag.dialog[list]">
-              <el-form
-                ref="special"
-                :model="meeting.special[list]"
-                inline
-                :rules="rules">
-                <div>
-                  <el-form-item
-                    style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;"
-                    v-for="(q, order) in meeting.special[list].queue"
-                    :key="order"
-                    :prop="'queue.' + order">
-                    <p>{{ q }}</p>
-                    <m-time-range-picker
-                      :val="q"
-                      :prev="meeting.special[list].queue[order - 1]"
-                      :next="meeting.special[list].queue[order + 1]"
-                      type="special"
-                      @handleBlur="handleBlur" />
-                  </el-form-item>
-                  <el-button
-                    :disabled="!flag.canAddSpecial[list]"
-                    type="primary"
-                    style="margin-right: 10px; margin-bottom: 22px;"
-                    @click="onAddRange('special')">新增会见时间段</el-button>
-                  <P>{{ meeting.special[specialIndex] }}</P>
-                  <el-button
-                    v-if="meeting.special[list].queue[0]"
-                    style="margin-left: 0; margin-bottom: 22px;"
-                    @click="onRestRange('special')">重置特殊日期配置</el-button>
-                  <el-button
-                    v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
-                    type="text"
-                    style="margin-left: 10px; margin-bottom: 22px;"
-                    @click="onAddRange('specialDate')">新增特殊日期配置</el-button>
-                </div>
-              </el-form>
-            </div>
+              @click="deleteSpecialQueue(list)">删除</el-button>
+            <el-button
+              v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
+              type="text"
+              @click="onAddRange('specialDate')">新增特殊日期</el-button>
           </div>
         </div>
       </div>
     </el-form>
+    <el-dialog
+      :visible.sync="flag.dialog"
+      class="authorize-dialog"
+      :title="meeting.special[specialIndex].date + '会见配置'">
+      <el-form
+        ref="special"
+        :model="meeting.special[specialIndex]"
+        inline
+        :rules="rules">
+        <div>
+          <el-form-item
+            v-for="(q, order) in meeting.special[specialIndex].queue"
+            :key="order"
+            :prop="'queue.' + order"
+            style="width: calc(30% - 10px); margin-right: 10px;"
+            :rules="[{ required: true, message: '请选择会见时间段' }]">
+            <m-time-range-picker
+              :val="q"
+              :prev="meeting.special[specialIndex].queue[order - 1]"
+              :next="meeting.special[specialIndex].queue[order + 1]"
+              type="special"
+              @handleBlur="handleBlur" />
+          </el-form-item>
+          <el-button
+            :disabled="!flag.canAddSpecial"
+            type="primary"
+            style="margin-right: 10px; margin-bottom: 22px;"
+            @click="onAddRange('special')">新增会见时间段</el-button>
+          <el-button
+            v-if="meeting.special[specialIndex].queue[0]"
+            style="margin-left: 0; margin-bottom: 22px;"
+            @click="onRestRange('special')">重置</el-button>
+        </div>
+      </el-form>
+      <template slot="footer">
+        <el-button
+          class="button-add"
+          type="primary"
+          size="mini"
+          @click="onCloseDialog">确定</el-button>
+      </template>
+    </el-dialog>
     <div class="button-box">
       <el-button
         v-if="permission !== 'edit'"
@@ -167,8 +174,8 @@ export default {
       flag: {
         canAddUsual: true,
         canAddWeekend: true,
-        canAddSpecial: [false],
-        dialog: [false]
+        canAddSpecial: false,
+        dialog: false
       },
       pickerOptions: {
         disabledDate: (time) => {
@@ -223,18 +230,15 @@ export default {
       })
     },
     handleBlur(e, type) {
-      console.log('会见时间段选择器失去焦点')
       if (type !== 'special') {
-        console.log('不是新增特殊日期的情况')
         this.meeting[type][this.meeting[type].length - 1] = e
         if (type === 'usual') this.$refs.form.validateField('usual.0')
         this.getNextTime(type, e)
       }
       else {
-        console.log('特殊日期的情况')
         let queue = this.meeting.special[this.specialIndex].queue
         this.meeting.special[this.specialIndex].queue[queue.length - 1] = e
-        // this.$refs.special.validateField('queue.0')
+        this.$refs.special.validateField('queue.0')
         this.getNextTime(type, e)
       }
     },
@@ -306,46 +310,29 @@ export default {
       }
     },
     onAddRange(type) {
-      console.log('新增')
-      console.log(type)
       if (type === 'specialDate') {
-        // 新增特殊日期配置
-        console.log('新增特殊日期')
-        this.flag.dialog.push(false)
-        this.flag.canAddSpecial.push(false)
         this.meeting.special.push({ date: '', queue: [null] })
       }
       else if (type === 'special') {
-        console.log('新增特殊日期的会见时间段')
-        // 新增会见时间段
         this.meeting.special[this.specialIndex].queue.push(this[`${ type }ToAdd`])
         let queue = this.meeting.special[this.specialIndex].queue
         this.getNextTime(type, queue[queue.length - 1])
       }
       else {
-        console.log('新增其他配置的会见时间段')
         this.meeting[type].push(this[`${ type }ToAdd`])
         this.getNextTime(type, this.meeting[type][this.meeting[type].length - 1])
       }
     },
     onRestRange(type) {
-      console.log('重置')
-      console.log(type)
       if (type === 'special') {
-        console.log('特殊日期的会见时间段的重置')
-        this.$set(this.flag.canAddSpecial, this.specialIndex, false)
         this.meeting.special[this.specialIndex].queue = [null]
-        console.log(this.specialIndex)
-        console.log(this.meeting.special)
       }
       else {
-        console.log('其他情况的会见时间段的重置')
         this.meeting[type] = [null]
-        this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
       }
+      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
     },
     getNextTime(type, last = null) {
-      console.log('获取下一个时间段')
       if (!this.handleCanAdd(type, last) || !last) return
       let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
         end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
@@ -359,8 +346,6 @@ export default {
       }
     },
     handleCanAdd(type, last) {
-      console.log('可以添加')
-      console.log(type, last)
       let flag = true
       if (last === null) {
         flag = false
@@ -368,30 +353,26 @@ export default {
       else if (last[1] === '23:59') {
         flag = false
       }
-      if (type === 'special') this.$set(this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`], this.specialIndex, flag)
-      else this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
-      console.log(this.flag)
+      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
       return flag
     },
     getSpecialQueue(index) {
-      console.log('获取特殊日期的会见时间段')
-      console.log(index)
       this.specialIndex = index
       this.getNextTime('special', this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1])
-      this.$set(this.flag.dialog, index, true)
+      this.flag.dialog = true
+    },
+    onCloseDialog() {
+      this.$refs.special.validate(valid => {
+        if (valid) {
+          this.flag.dialog = false
+          this.specialIndex = 0
+        }
+      })
     },
     deleteSpecialQueue(index) {
-      console.log('删除特殊日期的会见时间段')
-      console.log(index)
-      if (this.meeting.special.length === 1) {
-        this.meeting.special = [{ date: '', queue: [null] }]
-        this.flag.dialog = [false]
-        this.flag.canAddSpecial = [false]
-      }
+      if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
       else {
         this.meeting.special.splice(index, 1)
-        this.flag.dialog.splice(index, 1)
-        this.flag.canAddSpecial.splice(index, 1)
       }
     },
     onPrevClick(e) {
