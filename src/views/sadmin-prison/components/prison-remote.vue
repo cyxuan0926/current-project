@@ -70,24 +70,25 @@
             </el-form-item>
             <el-button
               v-if="special.date"
-              type="primary"
-              @click="getSpecialQueue(list)">配置会见时间段</el-button>
+              type="text"
+              @click="getSpecialQueue(list)">配置</el-button>
             <el-button
               v-if="special.queue[0] !== null"
               type="text"
               style="color: #F56C6C;"
-              @click="deleteSpecialQueue(list)">删除当前日期配置</el-button>
-            <!-- v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"-->
+              @click="deleteSpecialQueue(list)">删除</el-button>
             <el-button
+              v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
               type="text"
               @click="onAddRange('specialDate')">新增特殊日期</el-button>
           </div>
         </div>
       </div>
     </el-form>
-    <div
-      v-show="flag.dialog"
-      style="float: left; width: calc(100% - 150px);">
+    <el-dialog
+      :visible.sync="flag.dialog"
+      class="authorize-dialog"
+      :title="meeting.special[specialIndex].date + '会见配置'">
       <el-form
         ref="special"
         :model="meeting.special[specialIndex]"
@@ -95,10 +96,11 @@
         :rules="rules">
         <div>
           <el-form-item
-            style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;"
             v-for="(q, order) in meeting.special[specialIndex].queue"
             :key="order"
-            :prop="'queue.' + order">
+            :prop="'queue.' + order"
+            style="width: calc(30% - 10px); margin-right: 10px;"
+            :rules="[{ required: true, message: '请选择会见时间段' }]">
             <m-time-range-picker
               :val="q"
               :prev="meeting.special[specialIndex].queue[order - 1]"
@@ -114,10 +116,17 @@
           <el-button
             v-if="meeting.special[specialIndex].queue[0]"
             style="margin-left: 0; margin-bottom: 22px;"
-            @click="onRestRange('special')">重置特殊日期配置</el-button>
+            @click="onRestRange('special')">重置</el-button>
         </div>
       </el-form>
-    </div>
+      <template slot="footer">
+        <el-button
+          class="button-add"
+          type="primary"
+          size="mini"
+          @click="onCloseDialog">确定</el-button>
+      </template>
+    </el-dialog>
     <div class="button-box">
       <el-button
         v-if="permission !== 'edit'"
@@ -211,7 +220,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           if (this.meeting.special[this.meeting.special.length - 1].date &&
-            this.meeting.special[this.meeting.special.length - 1].queue[0] === null) {
+              this.meeting.special[this.meeting.special.length - 1].queue[0] === null) {
             this.$confirm(`特殊日期配置中日期为${ this.meeting.special[this.meeting.special.length - 1].date }尚未设置会见时间段，是否继续？`, '提示', { type: 'warning' }).then(() => { this.handleSubmit() }).catch(() => {})
           }
           else {
@@ -351,6 +360,14 @@ export default {
       this.specialIndex = index
       this.getNextTime('special', this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1])
       this.flag.dialog = true
+    },
+    onCloseDialog() {
+      this.$refs.special.validate(valid => {
+        if (valid) {
+          this.flag.dialog = false
+          this.specialIndex = 0
+        }
+      })
     },
     deleteSpecialQueue(index) {
       if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
