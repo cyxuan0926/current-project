@@ -310,7 +310,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$urls)
     this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
   },
   destroyed() {
