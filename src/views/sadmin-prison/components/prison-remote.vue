@@ -6,9 +6,17 @@
       :model="meeting"
       inline
       :rules="rules">
-      <div v-for="(type, idx) in types" :key="idx" style="clear: both;">
-        <div class="el-form-item" :class="{ 'is-required': type.name==='usual' }" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">{{ type.label }}</label>
+      <div
+        v-for="(type, idx) in types"
+        :key="idx"
+        style="clear: both;">
+        <div
+          class="el-form-item"
+          :class="{ 'is-required': type.name==='usual' }"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">{{ type.label }}</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
           <template v-for="(item, index) in meeting[type.name]">
@@ -37,11 +45,19 @@
         </div>
       </div>
       <div style="clear: both;">
-        <div class="el-form-item" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">特殊日期配置</label>
+        <div
+          class="el-form-item"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">特殊日期配置</label>
         </div>
-        <div class="time-queue" style="float: left; width: calc(100% - 150px);">
-          <div v-for="(special, list) in meeting.special" :key="list">
+        <div
+          class="time-queue"
+          style="float: left; width: calc(100% - 150px);">
+          <div
+            v-for="(special, list) in meeting.special"
+            :key="list">
             <el-form-item class="special-config">
               <el-date-picker
                 v-model="special.date"
@@ -204,7 +220,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           if (this.meeting.special[this.meeting.special.length - 1].date &&
-            this.meeting.special[this.meeting.special.length - 1].queue[0] === null) {
+              this.meeting.special[this.meeting.special.length - 1].queue[0] === null) {
             this.$confirm(`特殊日期配置中日期为${ this.meeting.special[this.meeting.special.length - 1].date }尚未设置会见时间段，是否继续？`, '提示', { type: 'warning' }).then(() => { this.handleSubmit() }).catch(() => {})
           }
           else {

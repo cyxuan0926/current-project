@@ -32,20 +32,26 @@
           min-width="138px"
           label="身份证正面">
           <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面"/>
+            <m-img-viewer
+              v-if="scope.row.idCardFront"
+              :url="scope.row.idCardFront"
+              title="身份证正面"/>
           </template>
         </el-table-column>
         <el-table-column
           min-width="138px"
           label="身份证背面">
           <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面"/>
+            <m-img-viewer
+              v-if="scope.row.idCardBack"
+              :url="scope.row.idCardBack"
+              title="身份证背面"/>
           </template>
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
           label="囚号" />
-          <el-table-column
+        <el-table-column
           prop="prisonArea"
           label="监区" />
         <el-table-column
@@ -63,9 +69,12 @@
           class-name="orange"
           label="申请状态">
           <template slot-scope="scope">
-            <span v-if="!scope.row.remarks">{{scope.row.status | applyStatus}}</span>
-            <el-tooltip v-else :content="scope.row.remarks" placement="top">
-              <span>{{scope.row.status | applyStatus}}</span>
+            <span v-if="!scope.row.remarks">{{ scope.row.status | applyStatus }}</span>
+            <el-tooltip
+              v-else
+              :content="scope.row.remarks"
+              placement="top">
+              <span>{{ scope.row.status | applyStatus }}</span>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -133,13 +142,20 @@
             v-for="(remark,index) in frontRemarks"
             :value="remark"
             :label="remark"
-            :key="index">
-          </el-option>
+            :key="index" />
         </el-select>
-        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="rule" ref="refuseForm" class="withdraw-box">
+        <el-form
+          v-if="remarks === '其他'"
+          :model="refuseForm"
+          :rules="rule"
+          ref="refuseForm"
+          class="withdraw-box">
           <el-form-item prop="refuseRemark">
-            <el-input type="textarea" placeholder="请输入驳回原因..." :autosize="{ minRows: 5 }"
-                      v-model="refuseForm.refuseRemark" ></el-input>
+            <el-input
+              type="textarea"
+              placeholder="请输入驳回原因..."
+              :autosize="{ minRows: 5 }"
+              v-model="refuseForm.refuseRemark" />
           </el-form-item>
         </el-form>
         <el-button

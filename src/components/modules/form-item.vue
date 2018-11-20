@@ -9,9 +9,11 @@
       v-model="fields[prop]"
       :disabled="item.disabled"
       :placeholder="'请输入' + item.label">
-      <template v-if="item.append" slot="append">{{ item.append }}</template>
+      <template
+        v-if="item.append"
+        slot="append">{{ item.append }}</template>
     </el-input>
-      <!-- <template v-if="item.type === 'select'">{{ item }}</template> -->
+    <!-- <template v-if="item.type === 'select'">{{ item }}</template> -->
     <el-select
       v-if="item.type === 'select'"
       :placeholder="'请选择' + item.label"
@@ -33,8 +35,7 @@
       :disabled="item.disabled"
       value-format="yyyy-MM-dd"
       :picker-options="item.pickerOptions"
-      :placeholder="'请选择' + item.label">
-    </el-date-picker>
+      :placeholder="'请选择' + item.label"/>
     <el-switch
       v-if="item.type === 'switch'"
       v-model="fields[prop]"
@@ -44,9 +45,9 @@
       :inactive-value="0"
       :disabled="item.disabled"
       :width="60" />
-      <span
-        v-if="item.type === 'switch' && item.tips && fields[prop]"
-        style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
+    <span
+      v-if="item.type === 'switch' && item.tips && fields[prop]"
+      style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
     <m-upload-img
       v-if="item.type === 'uploadImg'"
       v-model="fields[prop]"
@@ -67,9 +68,22 @@
 // import { mapActions } from 'vuex'
 export default {
   props: {
-    item: Object,
-    prop: String,
-    fields: Object
+    item: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    prop: {
+      type: String,
+      default: ''
+    },
+    fields: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
   },
   data() {
     return {

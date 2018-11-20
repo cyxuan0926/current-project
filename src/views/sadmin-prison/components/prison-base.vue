@@ -1,6 +1,10 @@
 <template>
   <div>
-    <m-form v-if="show" :items="formItems" @submit="onSubmit" :values="values"></m-form>
+    <m-form
+      v-if="show"
+      :items="formItems"
+      @submit="onSubmit"
+      :values="values"/>
   </div>
 </template>
 

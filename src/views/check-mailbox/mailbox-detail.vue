@@ -2,16 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <h3 class="mail-title">{{mailbox.title}}</h3>
+    <h3 class="mail-title">{{ mailbox.title }}</h3>
     <div class="mail-from">
       <h5>来自：
-        <span>{{mailbox.name}} &nbsp;&nbsp;&nbsp; &lt;{{mailbox.prisonerName}} 的 {{mailbox.relationship}}&gt;</span>
+        <span>{{ mailbox.name }} &nbsp;&nbsp;&nbsp; &lt;{{ mailbox.prisonerName }} 的 {{ mailbox.relationship }}&gt;</span>
       </h5>
-      <h5>日期： <span>{{mailbox.createdAt | Date}}</span></h5>
+      <h5>日期： <span>{{ mailbox.createdAt | Date }}</span></h5>
     </div>
     <div class="mail-content">
       <h5>信件内容：</h5>
-      <p class="contents">{{mailbox.contents}}</p>
+      <p class="contents">{{ mailbox.contents }}</p>
     </div>
     <div class="mail-reply">
       <div
@@ -19,9 +19,9 @@
         :key="comments.id">
         <p class="reply-top">
           <span class="blue">监狱回复：</span>
-          <span>{{comments.createdAt | Date}}</span>
+          <span>{{ comments.createdAt | Date }}</span>
         </p>
-        <p class="contents">{{comments.contents}}</p>
+        <p class="contents">{{ comments.contents }}</p>
       </div>
     </div>
     <el-form
@@ -33,8 +33,7 @@
           type="textarea"
           :rows="3"
           placeholder="快速回复"
-          v-model="comments.contents">
-        </el-input>
+          v-model="comments.contents" />
       </el-form-item>
     </el-form>
     <el-button

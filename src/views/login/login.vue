@@ -1,24 +1,58 @@
 <template>
-  <div id="login" @keyup.enter="submitForm('ruleForm2')">
-    <el-row :gutter="0" class="loginBackground">
-      <el-col :span="6" :offset="9">
+  <div
+    id="login"
+    @keyup.enter="submitForm('ruleForm2')">
+    <el-row
+      :gutter="0"
+      class="loginBackground">
+      <el-col
+        :span="6"
+        :offset="9">
         <el-col :span="24">
           <p class="projectName">狱务公开管理平台</p>
         </el-col>
-        <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
-          <el-form-item label-width="0" prop="prison">
-            <el-input type="text" v-model="ruleForm2.prison" auto-complete="off" placeholder="监狱代码"></el-input>
+        <el-form
+          :model="ruleForm2"
+          status-icon
+          :rules="rules2"
+          ref="ruleForm2"
+          label-width="100px"
+          class="demo-ruleForm">
+          <el-form-item
+            label-width="0"
+            prop="prison">
+            <el-input
+              type="text"
+              v-model="ruleForm2.prison"
+              auto-complete="off"
+              placeholder="监狱代码"/>
           </el-form-item>
-          <el-form-item label-width="0" prop="username">
-            <el-input type="text" v-model="ruleForm2.username" auto-complete="off" placeholder="用户名"></el-input>
+          <el-form-item
+            label-width="0"
+            prop="username">
+            <el-input
+              type="text"
+              v-model="ruleForm2.username"
+              auto-complete="off"
+              placeholder="用户名"/>
           </el-form-item>
-          <el-form-item label-width="0" prop="password">
-            <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
+          <el-form-item
+            label-width="0"
+            prop="password">
+            <el-input
+              type="password"
+              v-model="ruleForm2.password"
+              auto-complete="off"
+              placeholder="密码"/>
           </el-form-item>
-          <el-form-item label-width="0" class="btn-box">
+          <el-form-item
+            label-width="0"
+            class="btn-box">
             <!-- `checked` 为 true 或 false -->
             <!--<el-checkbox v-model="ruleForm2.checked">记住密码</el-checkbox>-->
-            <el-button type="" @click="submitForm('ruleForm2')">提交</el-button>
+            <el-button
+              type=""
+              @click="submitForm('ruleForm2')">提交</el-button>
           </el-form-item>
         </el-form>
       </el-col>

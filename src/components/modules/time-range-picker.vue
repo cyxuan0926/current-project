@@ -2,8 +2,7 @@
   <!-- { 'error-tip': errorMessage }, -->
   <div
     class="m-range-picker"
-    :class="[
-      { 'm-disabled-range': next.length > 0 || disabled }]"
+    :class="[{ 'm-disabled-range': next.length > 0 || disabled }]"
     @click="onClick">
     <el-time-picker
       v-model="startTime"

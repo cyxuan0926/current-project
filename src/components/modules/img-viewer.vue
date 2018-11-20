@@ -1,5 +1,8 @@
 <template>
-    <img :src="url+`?token=${token}`" @click="showImg" :alt="title">
+  <img
+    :src="url+`?token=${token}`"
+    @click="showImg"
+    :alt="title">
 </template>
 
 <script>

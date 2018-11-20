@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <m-tinymce />
-    </div>
+  <div>
+    <m-tinymce />
+  </div>
 </template>
 
 <script>

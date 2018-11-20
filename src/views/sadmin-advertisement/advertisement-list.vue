@@ -51,7 +51,7 @@
           label="是否上架"
           min-width="100px">
           <template slot-scope="scope">
-            {{scope.row.status | isTrue}}
+            {{ scope.row.status | isTrue }}
             <el-button
               type="text"
               size="mini"
@@ -63,8 +63,14 @@
           label="操作"
           min-width="146px">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row.id)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="onDelete(scope.row.id)">删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row.id)">编辑</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              @click="onDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

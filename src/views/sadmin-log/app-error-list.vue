@@ -1,5 +1,7 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+  <el-row
+    class="row-container"
+    :gutter="0">
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -39,7 +41,7 @@
         <el-table-column
           label="创建时间">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
       </el-table>

@@ -29,7 +29,7 @@
         <el-table-column
           label="反馈时间">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
       </el-table>

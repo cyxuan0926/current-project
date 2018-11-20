@@ -68,7 +68,8 @@
                 size="mini"
                 @click="scope.row.isCheck = false">修改</el-button>
               <el-button
-                v-else type="primary"
+                v-else
+                type="primary"
                 size="mini"
                 @click="modifyOrSave(scope.row)">保存</el-button>
             </template>
@@ -80,18 +81,44 @@
       ref="pagination"
       :total="versionsTotal"
       @onPageChange="getDatas" />
-    <el-dialog title="狱务通版本管理" :visible.sync="dialogVisible">
-      <el-form :model="ruleForm" status-icon :rules="rules2" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label-width="0" prop="username">
-          <el-input type="text" v-model="ruleForm.username" auto-complete="off" placeholder="用户名" prefix-icon="iconfont icon-account"></el-input>
+    <el-dialog
+      title="狱务通版本管理"
+      :visible.sync="dialogVisible">
+      <el-form
+        :model="ruleForm"
+        status-icon
+        :rules="rules2"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm">
+        <el-form-item
+          label-width="0"
+          prop="username">
+          <el-input
+            type="text"
+            v-model="ruleForm.username"
+            auto-complete="off"
+            placeholder="用户名"
+            prefix-icon="iconfont icon-account"/>
         </el-form-item>
-        <el-form-item label-width="0" prop="pass">
-          <el-input type="password" v-model="ruleForm.pass" auto-complete="off" placeholder="密码" prefix-icon="iconfont icon-password"></el-input>
+        <el-form-item
+          label-width="0"
+          prop="pass">
+          <el-input
+            type="password"
+            v-model="ruleForm.pass"
+            auto-complete="off"
+            placeholder="密码"
+            prefix-icon="iconfont icon-password"/>
         </el-form-item>
-        <el-form-item label-width="0" class="btn-box">
+        <el-form-item
+          label-width="0"
+          class="btn-box">
           <!-- `checked` 为 true 或 false -->
           <el-button @click="submitForm('ruleForm')">登录</el-button>
-          <el-button type="danger" @click="dialogVisible = !dialogVisible">取消</el-button>
+          <el-button
+            type="danger"
+            @click="dialogVisible = !dialogVisible">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>

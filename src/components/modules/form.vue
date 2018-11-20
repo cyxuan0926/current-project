@@ -3,9 +3,9 @@
     <el-form
       v-if="flag"
       ref="form"
-      :label-position="items.formConfigs ?  items.formConfigs.labelPosition : ''"
+      :label-position="items.formConfigs ? items.formConfigs.labelPosition : ''"
       :inline="items.formConfigs ? items.formConfigs.inline : false"
-      :label-width="items.formConfigs ?  items.formConfigs.labelWidth : ''"
+      :label-width="items.formConfigs ? items.formConfigs.labelWidth : ''"
       :model="fields"
       :rules="rules">
       <template v-for="(item, key) in items">
@@ -18,7 +18,9 @@
           @validateField="validateField" />
       </template>
     </el-form>
-    <div v-if="items.buttons && Object.keys(items.buttons).length" class="button-box">
+    <div
+      v-if="items.buttons && Object.keys(items.buttons).length"
+      class="button-box">
       <template v-for="(button, index) in items.buttons">
         <el-button
           v-if="button === 'prev' || button.prev"
@@ -60,9 +62,17 @@ export default {
   components: { formItem },
   props: {
     items: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {}
+      }
     },
-    values: Object
+    values: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
   },
   watch: {
     values: {

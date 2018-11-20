@@ -1,5 +1,7 @@
 <template>
-  <div class="yt-form" style="padding-top: 20px;">
+  <div
+    class="yt-form"
+    style="padding-top: 20px;">
     <el-form
       v-if="show"
       ref="form"
@@ -9,18 +11,22 @@
       style="width: 75%; margin: auto; overflow: hidden;"
       :rules="rules">
       <el-form-item
-          label="实地探监窗口个数"
-          prop="windowSize">
-          <el-input
-            v-model="prisonVisitConfigDetail.windowSize"
-            :disabled="prisonVisitConfigDetail.canNotChange"
-            placeholder="请填写实地探监窗口个数(1-20)">
-            <template slot="append">/个</template>
-          </el-input>
-        </el-form-item>
+        label="实地探监窗口个数"
+        prop="windowSize">
+        <el-input
+          v-model="prisonVisitConfigDetail.windowSize"
+          :disabled="prisonVisitConfigDetail.canNotChange"
+          placeholder="请填写实地探监窗口个数(1-20)">
+          <template slot="append">/个</template>
+        </el-input>
+      </el-form-item>
       <div>
-        <div class="el-form-item is-required" style="float: left;">
-           <label class="el-form-item__label" style="width: 130px; padding-right: 2px;">配置</label>
+        <div
+          class="el-form-item is-required"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 130px; padding-right: 2px;">配置</label>
         </div>
         <div style="float: left; width: calc(100% - 140px);">
           <template v-for="(item, index) in prisonVisitConfigDetail.usual">

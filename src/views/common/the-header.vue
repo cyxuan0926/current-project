@@ -1,7 +1,12 @@
 <template>
-  <header id="main-header" class="main-header">
+  <header
+    id="main-header"
+    class="main-header">
     <!-- Logo -->
-    <a href="#" class="logo" @click="$event.preventDefault()">
+    <a
+      href="#"
+      class="logo"
+      @click="$event.preventDefault()">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>狱务</b></span>
       <!-- logo for regular state and mobile devices -->
@@ -10,26 +15,36 @@
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
       <!-- Sidebar toggle button-->
-      <a href="#" data-toggle="offcanvas" role="button" @click="$event.preventDefault()">
-        <i class="iconfont icon-category"></i>
+      <a
+        href="#"
+        data-toggle="offcanvas"
+        role="button"
+        @click="$event.preventDefault()">
+        <i class="iconfont icon-category" />
         <span class="sr-only">Toggle navigation</span>
       </a>
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="../../../static/dist/img/user2-160x160.jpg" class="user-image">
+            <a
+              href="#"
+              class="dropdown-toggle"
+              data-toggle="dropdown">
+              <img
+                src="../../../static/dist/img/user2-160x160.jpg"
+                class="user-image">
               <span class="hidden-xs">{{ user.username || user.jailName }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- Menu Footer-->
-              <li>
-              </li>
+              <li/>
               <li class="user-footer">
                 <div class="text-center">
-                  <router-link to="/password/edit" class="pull-left">
-                    <i class="iconfont icon-edit"></i>
+                  <router-link
+                    to="/password/edit"
+                    class="pull-left">
+                    <i class="iconfont icon-edit" />
                     修改用户密码
                   </router-link>
                 </div>
@@ -38,8 +53,11 @@
           </li>
           <!-- Control Sidebar Toggle Button -->
           <li>
-            <a href="#" data-toggle="control-sidebar" @click="confirmExit($event)">
-              <i class="iconfont icon-icon-logout"></i>
+            <a
+              href="#"
+              data-toggle="control-sidebar"
+              @click="confirmExit($event)">
+              <i class="iconfont icon-icon-logout" />
             </a>
           </li>
         </ul>
