@@ -1,8 +1,12 @@
 <template>
   <ol class="breadcrumb">
-    <li v-for="bc in breadcrumbs">
-      <a href="#" @click="$event.preventDefault()">
-        {{bc}}
+    <li
+      v-for="bc in breadcrumbs"
+      :key="bc">
+      <a
+        href="#"
+        @click="$event.preventDefault()">
+        {{ bc }}
       </a>
     </li>
   </ol>

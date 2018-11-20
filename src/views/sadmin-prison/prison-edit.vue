@@ -1,11 +1,20 @@
 <template>
   <div>
     <div class="form-container">
-      <el-tabs v-model="activeName" type="border-card" class="no-bottom-padding" @tab-click="handleClick">
+      <el-tabs
+        v-model="activeName"
+        type="border-card"
+        class="no-bottom-padding"
+        @tab-click="handleClick">
         <template v-for="item in tabMapOptions">
-          <el-tab-pane :label="item.label" :key='item.key' :name="item.key">
+          <el-tab-pane
+            :label="item.label"
+            :key='item.key'
+            :name="item.key">
             <keep-alive>
-              <component v-if='activeName == item.key' :is="activeName"></component>
+              <component
+                v-if='activeName == item.key'
+                :is="activeName"/>
             </keep-alive>
           </el-tab-pane>
         </template>

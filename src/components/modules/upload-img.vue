@@ -8,7 +8,7 @@
       :multiple="multiple"
       :name="name"
       :accept="accept"
-      :listType="listType"
+      :list-type="listType"
       :file-list="fileList"
       :limit="limit"
       :on-preview="handlePictureCardPreview"
@@ -17,14 +17,19 @@
       :on-exceed="handleExceed"
       :on-error="handleError"
       :on-remove="handleRemove">
-      <i class="el-icon-plus"></i>
-      <div slot="tip" class="el-upload__tip">
+      <i class="el-icon-plus"/>
+      <div
+        slot="tip"
+        class="el-upload__tip">
         只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
         <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
       </div>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="imageUrl" alt="">
+      <img
+        width="100%"
+        :src="imageUrl"
+        alt="">
     </el-dialog>
   </div>
 
@@ -34,6 +39,7 @@
 export default {
   props: {
     value: {
+      type: String,
       default: ''
     },
     headers: {

@@ -12,7 +12,7 @@
     :on-exceed="handleExceed"
     :file-list="fileList"
     :on-remove="handleRemove">
-    <i class="mce-ico mce-i-image"></i>
+    <i class="mce-ico mce-i-image"/>
   </el-upload>
 
 </template>

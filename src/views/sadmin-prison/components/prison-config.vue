@@ -1,6 +1,9 @@
 <template>
   <div>
-    <m-form :items="formItems" @submit="onSubmit" :values="values"></m-form>
+    <m-form
+      :items="formItems"
+      @submit="onSubmit"
+      :values="values"/>
   </div>
 </template>
 

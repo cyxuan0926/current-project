@@ -2,61 +2,64 @@
   <el-row
     class="row-container"
     :gutter="0">
-      <el-button
-        class="button-add"
-        size="small"
-        type="primary"
-        plain
-        @click="onAdd">添加狱务公开信息</el-button>
-      <m-search
-        :items="searchItems"
-        @sizeChange="sizeChange"
-        @search="onSearch" />
-      <el-col :span="24">
-        <el-table
-          :data="newsList.contents"
-          border
-          stripe
-          style="width: 100%">
-          <el-table-column
-            prop="title"
-            show-overflow-tooltip
-            label="新闻标题">
-          </el-table-column>
-          <el-table-column label="新闻图片">
-            <template slot-scope="scope" v-if="scope.row.imageUrl">
-              <img :src="scope.row.imageUrl + '?token=' + $urls.token" alt="">
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="焦点">
-            <template slot-scope="scope">
-              {{ scope.row.isFocus ? '是' : '否' }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="操作">
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                @click="onEdit(scope.row.id)"
-                type="primary">
-                编辑
-              </el-button>
-              <el-button
-                size="mini"
-                @click="onDelete(scope.row.id)"
-                type="danger">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-col>
-      <m-pagination
-        ref="pagination"
-        :total="newsList.total"
-        @onPageChange="getDatas" />
+    <el-button
+      class="button-add"
+      size="small"
+      type="primary"
+      plain
+      @click="onAdd">添加狱务公开信息</el-button>
+    <m-search
+      :items="searchItems"
+      @sizeChange="sizeChange"
+      @search="onSearch" />
+    <el-col :span="24">
+      <el-table
+        :data="newsList.contents"
+        border
+        stripe
+        style="width: 100%">
+        <el-table-column
+          prop="title"
+          show-overflow-tooltip
+          label="新闻标题"/>
+        <el-table-column label="新闻图片">
+          <template
+            slot-scope="scope"
+            v-if="scope.row.imageUrl">
+            <img
+              :src="scope.row.imageUrl + '?token=' + $urls.token"
+              alt="">
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="焦点">
+          <template slot-scope="scope">
+            {{ scope.row.isFocus ? '是' : '否' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="onEdit(scope.row.id)"
+              type="primary">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              @click="onDelete(scope.row.id)"
+              type="danger">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-col>
+    <m-pagination
+      ref="pagination"
+      :total="newsList.total"
+      @onPageChange="getDatas" />
   </el-row>
 </template>
 

@@ -33,7 +33,7 @@
               v-for="prison in prisonAllWithBranchPrison"
               :key="prison.id"
               :label="prison.title"
-              :value="prison.id"></el-option>
+              :value="prison.id"/>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -50,7 +50,7 @@
               v-for="prisonArea in jailPrisonAreas"
               :key="prisonArea.id"
               :label="prisonArea.name"
-              :value="prisonArea.id"></el-option>
+              :value="prisonArea.id"/>
           </el-select>
         </el-form-item>
         <el-form-item

@@ -24,15 +24,24 @@
           label="姓名" />
         <el-table-column label="身份证正面">
           <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面照"/>
+            <m-img-viewer
+              v-if="scope.row.idCardFront"
+              :url="scope.row.idCardFront"
+              title="身份证正面照"/>
           </template>
         </el-table-column>
         <el-table-column label="身份证背面">
           <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
+            <m-img-viewer
+              v-if="scope.row.idCardBack"
+              :url="scope.row.idCardBack"
+              title="身份证背面照"/>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason" show-overflow-tooltip>
+        <el-table-column
+          label="黑名单原因"
+          prop="reason"
+          show-overflow-tooltip>
           <!-- <template slot-scope="scope">
             <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
               <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
@@ -47,7 +56,7 @@
               type="text"
               size="small"
               @click="showPrisonerDetail(prisoner)">
-              {{prisoner.name}}
+              {{ prisoner.name }}
             </el-button>
           </template>
         </el-table-column>
@@ -107,11 +116,11 @@
       <el-row :gutter="0">
         <el-col :span="12">
           <label for="">性别：</label>
-          <span>{{prisoner.gender | gender}}</span>
+          <span>{{ prisoner.gender | gender }}</span>
         </el-col>
         <el-col :span="12">
           <label for="">关系：</label>
-          <span>{{prisoner.relationship}}</span>
+          <span>{{ prisoner.relationship }}</span>
         </el-col>
       </el-row>
     </el-dialog>
@@ -141,7 +150,8 @@
           @click="blackTableShow = false && closeBlackTable()">取消</el-button>
         <el-button
           class="button-add"
-          size="mini" @click="handleBlackListReason">确定</el-button>
+          size="mini"
+          @click="handleBlackListReason">确定</el-button>
       </el-row>
     </el-dialog>
   </el-row>

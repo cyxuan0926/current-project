@@ -1,25 +1,55 @@
 <template>
   <div id="login">
-    <el-row :gutter="0" class="loginBackground">
-      <el-col :span="7" :offset="8">
+    <el-row
+      :gutter="0"
+      class="loginBackground">
+      <el-col
+        :span="7"
+        :offset="8">
         <el-col :span="24">
           <p class="projectName">修改密码</p>
         </el-col>
-        <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
-                 class="demo-ruleForm">
-          <el-form-item label-width="0" prop="password">
-            <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="原密码"></el-input>
+        <el-form
+          :model="ruleForm2"
+          status-icon
+          :rules="rules2"
+          ref="ruleForm2"
+          label-width="100px"
+          class="demo-ruleForm">
+          <el-form-item
+            label-width="0"
+            prop="password">
+            <el-input
+              type="password"
+              v-model="ruleForm2.password"
+              auto-complete="off"
+              placeholder="原密码"/>
           </el-form-item>
-          <el-form-item label-width="0" prop="new_password">
-            <el-input type="password" v-model="ruleForm2.new_password" auto-complete="off" placeholder="新密码"></el-input>
+          <el-form-item
+            label-width="0"
+            prop="new_password">
+            <el-input
+              type="password"
+              v-model="ruleForm2.new_password"
+              auto-complete="off"
+              placeholder="新密码"/>
           </el-form-item>
-          <el-form-item label-width="0" prop="passwordReview">
-            <el-input type="password" v-model="ruleForm2.passwordReview" auto-complete="off"
-                      placeholder="重新输入密码"></el-input>
+          <el-form-item
+            label-width="0"
+            prop="passwordReview">
+            <el-input
+              type="password"
+              v-model="ruleForm2.passwordReview"
+              auto-complete="off"
+              placeholder="重新输入密码"/>
           </el-form-item>
-          <el-form-item label-width="0" class="btn-box">
+          <el-form-item
+            label-width="0"
+            class="btn-box">
             <!-- `checked` 为 true 或 false -->
-            <el-button type="" @click="submitForm('ruleForm2')">提交</el-button>
+            <el-button
+              type=""
+              @click="submitForm('ruleForm2')">提交</el-button>
           </el-form-item>
         </el-form>
       </el-col>

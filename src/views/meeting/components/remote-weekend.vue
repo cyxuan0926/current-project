@@ -6,8 +6,12 @@
       :model="remoteWeekendConfig"
       inline>
       <div style="clear: both;">
-        <div class="el-form-item" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">周末配置</label>
+        <div
+          class="el-form-item"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">周末配置</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
           <template v-for="(item, index) in remoteWeekendConfig.queue">

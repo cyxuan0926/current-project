@@ -1,22 +1,43 @@
 <template>
-  <el-row class="row-container" :gutter="0">
-    <el-col :span="13" :offset="5">
-      <el-form ref="form" :model="news" label-position="top" :rules="rules">
-        <el-form-item label="新闻标题" prop="title">
-          <el-input v-model="news.title" placeholder="请填写新闻标题"></el-input>
+  <el-row
+    class="row-container"
+    :gutter="0">
+    <el-col
+      :span="13"
+      :offset="5">
+      <el-form
+        ref="form"
+        :model="news"
+        label-position="top"
+        :rules="rules">
+        <el-form-item
+          label="新闻标题"
+          prop="title">
+          <el-input
+            v-model="news.title"
+            placeholder="请填写新闻标题" />
         </el-form-item>
-        <el-form-item class="is-required" label="新闻内容" prop="contents">
+        <el-form-item
+          class="is-required"
+          label="新闻内容"
+          prop="contents">
           <!-- <m-quill-editor @editorChange="editorChange"></m-quill-editor> -->
-          <m-tinymce @editorChange="editorChange"></m-tinymce>
+          <m-tinymce @editorChange="editorChange" />
         </el-form-item>
         <el-form-item label="新闻图片">
-          <m-upload-img v-model="news.imageUrl" @success="onSuccess"></m-upload-img>
+          <m-upload-img
+            v-model="news.imageUrl"
+            @success="onSuccess" />
         </el-form-item>
         <el-form-item>
           <el-checkbox v-model="news.isFocus">是否设为焦点新闻</el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" size="small" style="float: right;">新增</el-button>
+          <el-button
+            type="primary"
+            @click="onSubmit"
+            size="small"
+            style="float: right;">新增</el-button>
         </el-form-item>
       </el-form>
     </el-col>

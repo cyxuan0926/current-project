@@ -6,9 +6,17 @@
       :model="meeting"
       inline
       :rules="rules">
-      <div v-for="(type, idx) in types" :key="idx" style="clear: both;">
-        <div class="el-form-item" :class="{ 'is-required': type.name==='usual' }" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">{{ type.label }}</label>
+      <div
+        v-for="(type, idx) in types"
+        :key="idx"
+        style="clear: both;">
+        <div
+          class="el-form-item"
+          :class="{ 'is-required': type.name==='usual' }"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">{{ type.label }}</label>
         </div>
         <div style="float: left; width: calc(100% - 150px);">
           <template v-for="(item, index) in meeting[type.name]">
@@ -37,11 +45,19 @@
         </div>
       </div>
       <div style="clear: both;">
-        <div class="el-form-item" style="float: left;">
-           <label class="el-form-item__label" style="width: 140px;padding-right: 2px;">特殊日期配置</label>
+        <div
+          class="el-form-item"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">特殊日期配置</label>
         </div>
-        <div class="time-queue" style="float: left; width: calc(100% - 150px);">
-          <div v-for="(special, list) in meeting.special" :key="list">
+        <div
+          class="time-queue"
+          style="float: left; width: calc(100% - 150px);">
+          <div
+            v-for="(special, list) in meeting.special"
+            :key="list">
             <el-form-item class="special-config">
               <el-date-picker
                 v-model="special.date"
@@ -54,25 +70,24 @@
             </el-form-item>
             <el-button
               v-if="special.date"
-              type="text"
-              @click="getSpecialQueue(list)">配置</el-button>
+              type="primary"
+              @click="getSpecialQueue(list)">配置会见时间段</el-button>
             <el-button
               v-if="special.queue[0] !== null"
               type="text"
               style="color: #F56C6C;"
-              @click="deleteSpecialQueue(list)">删除</el-button>
+              @click="deleteSpecialQueue(list)">删除当前日期配置</el-button>
+            <!-- v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"-->
             <el-button
-              v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
               type="text"
               @click="onAddRange('specialDate')">新增特殊日期</el-button>
           </div>
         </div>
       </div>
     </el-form>
-    <el-dialog
-      :visible.sync="flag.dialog"
-      class="authorize-dialog"
-      :title="meeting.special[specialIndex].date + '会见配置'">
+    <div
+      v-show="flag.dialog"
+      style="float: left; width: calc(100% - 150px);">
       <el-form
         ref="special"
         :model="meeting.special[specialIndex]"
@@ -80,11 +95,10 @@
         :rules="rules">
         <div>
           <el-form-item
+            style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;"
             v-for="(q, order) in meeting.special[specialIndex].queue"
             :key="order"
-            :prop="'queue.' + order"
-            style="width: calc(30% - 10px); margin-right: 10px;"
-            :rules="[{ required: true, message: '请选择会见时间段' }]">
+            :prop="'queue.' + order">
             <m-time-range-picker
               :val="q"
               :prev="meeting.special[specialIndex].queue[order - 1]"
@@ -100,17 +114,10 @@
           <el-button
             v-if="meeting.special[specialIndex].queue[0]"
             style="margin-left: 0; margin-bottom: 22px;"
-            @click="onRestRange('special')">重置</el-button>
+            @click="onRestRange('special')">重置特殊日期配置</el-button>
         </div>
       </el-form>
-      <template slot="footer">
-        <el-button
-          class="button-add"
-          type="primary"
-          size="mini"
-          @click="onCloseDialog">确定</el-button>
-      </template>
-    </el-dialog>
+    </div>
     <div class="button-box">
       <el-button
         v-if="permission !== 'edit'"
@@ -344,14 +351,6 @@ export default {
       this.specialIndex = index
       this.getNextTime('special', this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1])
       this.flag.dialog = true
-    },
-    onCloseDialog() {
-      this.$refs.special.validate(valid => {
-        if (valid) {
-          this.flag.dialog = false
-          this.specialIndex = 0
-        }
-      })
     },
     deleteSpecialQueue(index) {
       if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
