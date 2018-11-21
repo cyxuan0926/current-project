@@ -71,7 +71,6 @@ export default {
       this.loading = false
       switch (res.code) {
         case 200:
-          console.log(this.value)
           this.$message.success('音频上传成功')
           this.$emit('success', res.url)
           this.setImageLocalstorage('images', res.url)

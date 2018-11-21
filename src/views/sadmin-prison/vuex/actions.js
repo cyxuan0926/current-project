@@ -48,7 +48,6 @@ export default {
       params.imagePath && excpt.push(params.imagePath)
       params.audioPath && excpt.push(params.audioPath)
       params.videoPath && excpt.push(params.videoPath)
-      console.log(excpt)
       dispatch('handleDeleteImage', [excpt, params.description])
       return res
     })
