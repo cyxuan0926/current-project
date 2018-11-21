@@ -4,10 +4,55 @@
     :gutter="0">
     <el-row :gutter="0">
       <el-col :span="12">
+        <video
+          v-if="jailInformation.videoPath"
+          controls
+          poster="/static/images/video-cover.png"
+          style="max-width: 100%; margin-bottom: 10px; vertical-align: middle;">
+          <source
+            :src="jailInformation.videoPath + '?token=' + $urls.token"
+            type='video/mp4'>
+          <source
+            :src="jailInformation.videoPath + '?token=' + $urls.token"
+            type='video/webm'>
+          <source
+            :src="jailInformation.videoPath + '?token=' + $urls.token"
+            type='video/ogg'>您的浏览器不支持Video标签。
+        </video>
         <img
-          :src="jailInformation.imageUrl + '?token=' + $urls.token"
+          v-if="jailInformation.imagePath"
+          :src="jailInformation.imagePath + '?token=' + $urls.token"
+          style="margin-bottom: 10px; vertical-align: middle;"
           alt="">
-          <!--<img src="../../assets/images/default.jpg" alt="">-->
+        <div
+          class="audio-container"
+          v-if="jailInformation.audioPath">
+          <button
+            style="outline: none;margin: 0;padding: 0;border: none;background: transparent;"
+            @click.prevent="handleAudio">
+            <img
+              src="@/assets/images/audio-icon.png"
+              style="width: 2.1rem;vertical-align: middle;cursor: pointer"
+              alt="音频icon">
+          </button>
+          <div class="audio-container-right">
+            <div
+              class="progress__bar"
+              :style="{'width':progressBarVal+'%'}"
+              ref="progress-bar"/>
+            <audio
+              ref="audio"
+              @timeupdate="handleTimeUpdate($event)">
+              <source
+                :src="jailInformation.audioPath + '?token=' + $urls.token"
+                type="audio/mp3">
+              <source
+                :src="jailInformation.audioPath + '?token=' + $urls.token"
+                type="audio/ogg">
+              您的浏览器不支持Audio标签
+            </audio>
+          </div>
+        </div>
       </el-col>
       <el-col :span="12">
         <el-col :span="24">
@@ -82,6 +127,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
+      progressBarVal: 0
       // isJailEdit: false // 是否是监狱基本信息编辑页面
     }
   },
@@ -101,6 +147,22 @@ export default {
       this.$router.push({
         path: '/jails/add'
       })
+    },
+    handleAudio() {
+      if (this.$refs.audio.paused) {
+        this.$refs.audio.play()
+      }
+      else {
+        this.$refs.audio.pause()
+      }
+    },
+    handleTimeUpdate(e) {
+      if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended || this.$refs.audio.paused || this.progressBarVal >= 96) {
+        this.progressBarVal = 0
+      }
+      else {
+        this.progressBarVal += 32
+      }
     }
   },
   mounted() {
@@ -143,4 +205,28 @@ export default {
             p
               color: #A6A6A6
               text-align: right
+    .audio-container
+      display: flex
+      justify-items: flex-start
+      align-items:center
+      background:rgba(235,235,235,1)
+      padding: 12px 15px
+    .prison-detail
+      font-size:1.1rem !important
+      font-family:PingFang-SC-Medium !important
+      font-weight:500 !important
+      color:rgba(102,102,102,1) !important
+      text-indent: 2.4rem
+    .audio-container-right
+      width: 86%
+      height: .7rem
+      border: .05rem solid #2B569A
+      margin: 0 auto
+      border-radius: .4rem
+      display:flex
+      align-items:center
+    .progress__bar
+      height: .16rem
+      background: #264c90
+      margin-left: .4rem
 </style>

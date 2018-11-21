@@ -52,6 +52,16 @@
       v-if="item.type === 'uploadImg'"
       v-model="fields[prop]"
       @success="onSuccess" />
+    <m-upload-audio
+      v-if="item.type === 'uploadAudio'"
+      ref="audio"
+      v-model="fields[prop]"
+      @success="onSuccess" />
+    <m-upload-video
+      v-if="item.type === 'uploadVideo'"
+      ref="video"
+      v-model="fields[prop]"
+      @success="onSuccess" />
     <m-quill-editor
       v-if="item.type === 'editor'"
       :contents="fields[prop]"

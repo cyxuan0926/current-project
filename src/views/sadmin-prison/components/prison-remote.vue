@@ -70,63 +70,54 @@
             </el-form-item>
             <el-button
               v-if="special.date"
-              type="text"
-              @click="getSpecialQueue(list)">配置</el-button>
+              type="primary"
+              @click="getSpecialQueue(list)">配置会见时间段</el-button>
             <el-button
               v-if="special.queue[0] !== null"
               type="text"
               style="color: #F56C6C;"
-              @click="deleteSpecialQueue(list)">删除</el-button>
-            <el-button
-              v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
-              type="text"
-              @click="onAddRange('specialDate')">新增特殊日期</el-button>
+              @click="deleteSpecialQueue(list)">删除当前日期配置</el-button>
+            <div v-show="flag.dialog[list]">
+              <el-form
+                ref="special"
+                :model="meeting.special[list]"
+                inline
+                :rules="rules">
+                <div>
+                  <el-form-item
+                    style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;"
+                    v-for="(q, order) in meeting.special[list].queue"
+                    :key="order"
+                    :prop="'queue.' + order">
+                    <m-time-range-picker
+                      :val="q"
+                      :prev="special.queue[order - 1]"
+                      :next="special.queue[order + 1]"
+                      type="special"
+                      :index="list"
+                      @handleBlur="handleBlur" />
+                  </el-form-item>
+                  <el-button
+                    :disabled="!flag.canAddSpecial[list]"
+                    type="primary"
+                    style="margin-right: 10px; margin-bottom: 22px;"
+                    @click="onAddRange('special', list)">新增会见时间段</el-button>
+                  <el-button
+                    v-if="special.queue[0]"
+                    style="margin-left: 0; margin-bottom: 22px;"
+                    @click="onRestRange('special', list)">重置特殊日期配置</el-button>
+                  <el-button
+                    v-if="list === (meeting.special.length - 1) && special.queue[0] !== null"
+                    type="text"
+                    style="margin-left: 10px; margin-bottom: 22px;"
+                    @click="onAddRange('specialDate')">新增特殊日期配置</el-button>
+                </div>
+              </el-form>
+            </div>
           </div>
         </div>
       </div>
     </el-form>
-    <el-dialog
-      :visible.sync="flag.dialog"
-      class="authorize-dialog"
-      :title="meeting.special[specialIndex].date + '会见配置'">
-      <el-form
-        ref="special"
-        :model="meeting.special[specialIndex]"
-        inline
-        :rules="rules">
-        <div>
-          <el-form-item
-            v-for="(q, order) in meeting.special[specialIndex].queue"
-            :key="order"
-            :prop="'queue.' + order"
-            style="width: calc(30% - 10px); margin-right: 10px;"
-            :rules="[{ required: true, message: '请选择会见时间段' }]">
-            <m-time-range-picker
-              :val="q"
-              :prev="meeting.special[specialIndex].queue[order - 1]"
-              :next="meeting.special[specialIndex].queue[order + 1]"
-              type="special"
-              @handleBlur="handleBlur" />
-          </el-form-item>
-          <el-button
-            :disabled="!flag.canAddSpecial"
-            type="primary"
-            style="margin-right: 10px; margin-bottom: 22px;"
-            @click="onAddRange('special')">新增会见时间段</el-button>
-          <el-button
-            v-if="meeting.special[specialIndex].queue[0]"
-            style="margin-left: 0; margin-bottom: 22px;"
-            @click="onRestRange('special')">重置</el-button>
-        </div>
-      </el-form>
-      <template slot="footer">
-        <el-button
-          class="button-add"
-          type="primary"
-          size="mini"
-          @click="onCloseDialog">确定</el-button>
-      </template>
-    </el-dialog>
     <div class="button-box">
       <el-button
         v-if="permission !== 'edit'"
@@ -174,8 +165,8 @@ export default {
       flag: {
         canAddUsual: true,
         canAddWeekend: true,
-        canAddSpecial: false,
-        dialog: false
+        canAddSpecial: [false],
+        dialog: [false]
       },
       pickerOptions: {
         disabledDate: (time) => {
@@ -183,7 +174,6 @@ export default {
           return (time.getTime() < Date.now()) || (this.meeting.special.find(item => item.date === t))
         }
       },
-      specialIndex: 0,
       permission
     }
   },
@@ -229,17 +219,16 @@ export default {
         }
       })
     },
-    handleBlur(e, type) {
+    handleBlur(e, type, index) {
       if (type !== 'special') {
         this.meeting[type][this.meeting[type].length - 1] = e
         if (type === 'usual') this.$refs.form.validateField('usual.0')
-        this.getNextTime(type, e)
+        this.getNextTime(type, e, index)
       }
       else {
-        let queue = this.meeting.special[this.specialIndex].queue
-        this.meeting.special[this.specialIndex].queue[queue.length - 1] = e
-        this.$refs.special.validateField('queue.0')
-        this.getNextTime(type, e)
+        let queue = this.meeting.special[index].queue
+        this.meeting.special[index].queue[queue.length - 1] = e
+        this.getNextTime(type, e, index)
       }
     },
     handleSubmit() {
@@ -309,31 +298,34 @@ export default {
         })
       }
     },
-    onAddRange(type) {
+    onAddRange(type, index) {
       if (type === 'specialDate') {
+        this.flag.dialog.push(false)
+        this.flag.canAddSpecial.push(false)
         this.meeting.special.push({ date: '', queue: [null] })
       }
       else if (type === 'special') {
-        this.meeting.special[this.specialIndex].queue.push(this[`${ type }ToAdd`])
-        let queue = this.meeting.special[this.specialIndex].queue
-        this.getNextTime(type, queue[queue.length - 1])
+        this.meeting.special[index].queue.push(this[`${ type }ToAdd`])
+        let queue = this.meeting.special[index].queue
+        this.getNextTime(type, queue[queue.length - 1], index)
       }
       else {
         this.meeting[type].push(this[`${ type }ToAdd`])
-        this.getNextTime(type, this.meeting[type][this.meeting[type].length - 1])
+        this.getNextTime(type, this.meeting[type][this.meeting[type].length - 1], index)
       }
     },
-    onRestRange(type) {
+    onRestRange(type, index) {
       if (type === 'special') {
-        this.meeting.special[this.specialIndex].queue = [null]
+        this.$set(this.flag.canAddSpecial, index, false)
+        this.meeting.special[index].queue = [null]
       }
       else {
         this.meeting[type] = [null]
+        this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
       }
-      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = false
     },
-    getNextTime(type, last = null) {
-      if (!this.handleCanAdd(type, last) || !last) return
+    getNextTime(type, last = null, index) {
+      if (!this.handleCanAdd(type, last, index) || !last) return
       let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
         end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
         duration = end.diff(start, 'minutes'),
@@ -345,7 +337,7 @@ export default {
         this[`${ type }ToAdd`] = [last[1], `${ toEnd.format('HH:mm') }`]
       }
     },
-    handleCanAdd(type, last) {
+    handleCanAdd(type, last, index) {
       let flag = true
       if (last === null) {
         flag = false
@@ -353,26 +345,24 @@ export default {
       else if (last[1] === '23:59') {
         flag = false
       }
-      this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
+      if (type === 'special') this.$set(this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`], index, flag)
+      else this.flag[`canAdd${ type.replace(/(\w)/, (v) => v.toUpperCase()) }`] = flag
       return flag
     },
     getSpecialQueue(index) {
-      this.specialIndex = index
-      this.getNextTime('special', this.meeting.special[this.specialIndex].queue[this.meeting.special[this.specialIndex].queue.length - 1])
-      this.flag.dialog = true
-    },
-    onCloseDialog() {
-      this.$refs.special.validate(valid => {
-        if (valid) {
-          this.flag.dialog = false
-          this.specialIndex = 0
-        }
-      })
+      this.getNextTime('special', this.meeting.special[index].queue[this.meeting.special[index].queue.length - 1], index)
+      this.$set(this.flag.dialog, index, true)
     },
     deleteSpecialQueue(index) {
-      if (this.meeting.special.length === 1) this.meeting.special = [{ date: '', queue: [null] }]
+      if (this.meeting.special.length === 1) {
+        this.meeting.special = [{ date: '', queue: [null] }]
+        this.flag.dialog = [false]
+        this.flag.canAddSpecial = [false]
+      }
       else {
         this.meeting.special.splice(index, 1)
+        this.flag.dialog.splice(index, 1)
+        this.flag.canAddSpecial.splice(index, 1)
       }
     },
     onPrevClick(e) {
