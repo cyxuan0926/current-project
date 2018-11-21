@@ -44,7 +44,12 @@ export default {
     delete params.weekend
     delete params.special
     return http.updatePrison(params).then(res => {
-      dispatch('handleDeleteImage', [params.imageUrl, params.description])
+      let excpt = []
+      params.imagePath && excpt.push(params.imagePath)
+      params.audioPath && excpt.push(params.audioPath)
+      params.videoPath && excpt.push(params.videoPath)
+      console.log(excpt)
+      dispatch('handleDeleteImage', [excpt, params.description])
       return res
     })
   }
