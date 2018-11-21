@@ -54,6 +54,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    index: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -121,7 +125,7 @@ export default {
       //   this.errorMessage = '间隔时间太短'
       //   return false
       // }
-      this.$emit('handleBlur', [this.startTime, this.endTime], this.type)
+      this.$emit('handleBlur', [this.startTime, this.endTime], this.type, this.index)
     }
   }
 }
