@@ -40,7 +40,7 @@
           :key="index"
           size="small"
           type="primary"
-          :loading="button.update.loading"
+          :loading="button.update && button.update.loading"
           @click="onSubmit">更新</el-button>
         <el-button
           v-if="button === 'add'"
