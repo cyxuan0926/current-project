@@ -11,6 +11,7 @@
       <template v-for="(item, key) in items">
         <form-item
           v-if="dismiss.indexOf(key) < 0"
+          :ref="key"
           :key="key"
           :prop="key"
           :item="item"
@@ -35,10 +36,11 @@
           type="primary"
           @click="onSubmit">下一步</el-button>
         <el-button
-          v-if="button === 'update'"
+          v-if="button === 'update' || button.update"
           :key="index"
           size="small"
           type="primary"
+          :loading="button.update && button.update.loading"
           @click="onSubmit">更新</el-button>
         <el-button
           v-if="button === 'add'"

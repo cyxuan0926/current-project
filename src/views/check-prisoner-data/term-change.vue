@@ -106,7 +106,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      prisonTermHref: `${ this._$baseURL }/download/downloadfile?filepath=prison_term_template.xls`, // 下载罪犯刑期模板文件的地址
+      prisonTermHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_term_template.xls`, // 下载罪犯刑期模板文件的地址
       fileList: []
     }
   },

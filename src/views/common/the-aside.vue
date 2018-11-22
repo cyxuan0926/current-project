@@ -15,8 +15,8 @@
             alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>{{ user.username }}</p>
-          <p>
+          <p v-if="Number(user.role)">{{ user.jailName }}</p>
+          <p :class="{'super-role': !Number(user.role)}">
             <span>{{ user.role | role }}</span>
             <el-tooltip
               v-if="prisonerAreas.length"
@@ -113,4 +113,6 @@ export default {
         padding-left: 10px;
     .treeview-menu>li>a
       padding-left: 12px;
+    .super-role
+      margin-top 10px
 </style>

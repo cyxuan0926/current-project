@@ -33,7 +33,7 @@
           label="广告类型" />
         <el-table-column label="广告图片">
           <template slot-scope="scope">
-            <img :src="scope.row.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'">
+            <img :src="scope.row.imageUrl + '?token=' + $urls.token">
           </template>
         </el-table-column>
         <el-table-column
