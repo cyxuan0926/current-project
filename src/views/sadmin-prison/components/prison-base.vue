@@ -31,7 +31,7 @@ export default {
         description: { type: 'jaileditor', label: '监狱简介', rules: ['required'] },
         audioPath: { type: 'uploadAudio', label: '监狱音频' },
         videoPath: { type: 'uploadVideo', label: '监狱视频' },
-        imagePath: { type: 'uploadImg', label: '监狱图片' }
+        imageUrl: { type: 'uploadImg', label: '监狱图片' }
       }, formButton),
       values: {},
       permission

@@ -70,6 +70,7 @@
             </el-form-item>
             <el-button
               v-if="special.date"
+              :disabled="flag.dialog[list]"
               type="primary"
               @click="getSpecialQueue(list)">配置会见时间段</el-button>
             <el-button
