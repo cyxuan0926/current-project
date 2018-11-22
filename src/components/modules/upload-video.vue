@@ -2,23 +2,23 @@
   <div style="overflow: hidden;">
     <div class="video-box">
       <div
-        v-if="!value"
+        v-if="!realValue"
         class="no-video">
         <i class="iconfont icon-video" />
       </div>
       <video
-        v-if="jailInformation.videoPath"
+        v-else
         controls
         poster="/static/images/video-cover.png"
-        style="max-width: 100%; margin-bottom: 10px; vertical-align: middle;">
+        style="width: 192px; height: 108px;">
         <source
-          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          :src="value + '?token=' + $urls.token"
           type='video/mp4'>
         <source
-          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          :src="value + '?token=' + $urls.token"
           type='video/webm'>
         <source
-          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          :src="value + '?token=' + $urls.token"
           type='video/ogg'>您的浏览器不支持Video标签。
       </video>
       <span
@@ -55,6 +55,7 @@
       <el-button
         type="danger"
         size="small"
+        :disabled="!loading && !Boolean(value)"
         style="margin-top: 10px;"
         @click="handleDelete">删除</el-button>
     </div>
@@ -74,6 +75,7 @@ export default {
       headers: {
         Authorization: this.$urls.token
       },
+      realValue: '',
       loading: false,
       changed: false,
       notification: null
@@ -97,6 +99,9 @@ export default {
         })
         this.changed = true
       }
+    },
+    value(val) {
+      this.realValue = val
     }
   },
   destroyed() {
@@ -148,6 +153,10 @@ export default {
     },
     handleDelete() {
       console.log(123)
+      this.realValue = ''
+      console.log(this.$refs.uploadVideo)
+      // this.$refs.uploadVideo.clearFiles()
+      // this.handleRemove()
     },
     setImageLocalstorage(key, value) {
       let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
@@ -171,13 +180,13 @@ export default {
     display: inline-flex;
     flex-direction: column;
     margin-right: 10px;
-    width: 160px;
+    width: 192px;
   }
   .no-video{
-    height: 90px;
-    width: 160px;
+    height: 108px;
+    width: 192px;
     background: #E5E5E5;
-    line-height: 90px;
+    line-height: 108px;
     text-align: center;
     color: #8C8080;
     flex-shrink: 0;
@@ -186,7 +195,7 @@ export default {
     font-size: 20px;
   }
   .upload-buttons{
-    height: 90px;
+    height: 108px;
     float: left;
     display: inline-flex;
     flex-direction: column;
