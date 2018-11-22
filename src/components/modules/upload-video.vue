@@ -145,7 +145,6 @@ export default {
     },
     handleRemove(file, fileList) {
       this.loading = false
-      console.log(22222)
       this.$emit('success', fileList.length ? fileList : '')
     },
     handleDelete() {
@@ -176,19 +175,19 @@ export default {
     margin-right: 10px;
     width: 192px;
   }
-  .no-video{
+  .video-box .no-video{
     height: 108px;
-    width: 192px;
+    width: 100%;
     background: #E5E5E5;
     line-height: 108px;
     text-align: center;
     color: #8C8080;
     flex-shrink: 0;
   }
-  .no-video .iconfont{
-    font-size: 20px;
+  .video-box .no-video .iconfont{
+    font-size: 28px;
   }
-  .upload-buttons{
+  .video-box + .upload-buttons{
     height: 108px;
     float: left;
     display: inline-flex;

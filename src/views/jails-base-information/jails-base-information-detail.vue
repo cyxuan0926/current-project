@@ -25,15 +25,15 @@
           style="margin-bottom: 10px; vertical-align: middle;"
           alt="">
         <div
-          class="audio-container"
-          v-if="jailInformation.audioPath">
+          v-if="jailInformation.audioPath"
+          class="audio-container">
           <button
             style="outline: none;margin: 0;padding: 0;border: none;background: transparent;"
             @click.prevent="handleAudio">
             <img
-              src="@/assets/images/audio-icon.png"
+              :src="audioImg"
               style="width: 2.1rem;vertical-align: middle;cursor: pointer"
-              alt="音频icon">
+              alt="">
           </button>
           <div class="audio-container-right">
             <div
@@ -42,15 +42,22 @@
               ref="progress-bar"/>
             <audio
               ref="audio"
-              @timeupdate="handleTimeUpdate($event)">
+              @timeupdate="handleTimeUpdate"
+              @loadedmetadata="getTotalDuration">
               <source
                 :src="jailInformation.audioPath + '?token=' + $urls.token"
                 type="audio/mp3">
               <source
                 :src="jailInformation.audioPath + '?token=' + $urls.token"
                 type="audio/ogg">
+              <source
+                :src="jailInformation.audioPath + '?token=' + $urls.token"
+                type="audio/mpeg">
               您的浏览器不支持Audio标签
             </audio>
+          </div>
+          <div class="audio-container-time">
+            <span>{{ showTime }}</span>
           </div>
         </div>
       </el-col>
@@ -109,7 +116,9 @@
         </el-col>
         <div style="height: 10px; width: 100%; clear: both;"/>
         <el-col :span="24">
-          <p v-html="jailInformation.description"/>
+          <p
+            class="desc"
+            v-html="jailInformation.description"/>
         </el-col>
         <el-col :span="24">
           <el-button
@@ -123,16 +132,30 @@
 </template>
 
 <script>
+import AudioThree from '@/assets/images/audio-icon.png'
+import AudioOne from '@/assets/images/audio-no.png'
+import audioTwo from '@/assets/images/audio-one.png'
+import helper from '@/filters/modules/time'
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      progressBarVal: 0
+      triggered: false,
+      showTime: null,
+      progressBarVal: 0,
+      audioImgs: [AudioOne, audioTwo, AudioThree],
+      audioImg: AudioThree,
+      interval: null
       // isJailEdit: false // 是否是监狱基本信息编辑页面
     }
   },
   computed: {
     ...mapState(['jailInformation'])
+  },
+  mounted() {
+    this.getJailInformation().then(() => {
+      this.$refs.audio && this.getTotalDuration()
+    })
   },
   methods: {
     ...mapActions(['getJailInformation']),
@@ -151,22 +174,35 @@ export default {
     handleAudio() {
       if (this.$refs.audio.paused) {
         this.$refs.audio.play()
+        let index = 0
+        this.interval = setInterval(() => {
+          this.audioImg = this.audioImgs[index]
+          index++
+          if (index > 2) index = 0
+        }, 1000)
       }
       else {
         this.$refs.audio.pause()
+        clearInterval(this.interval)
+        this.audioImg = AudioThree
       }
     },
-    handleTimeUpdate(e) {
-      if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended || this.$refs.audio.paused || this.progressBarVal >= 96) {
+    handleTimeUpdate() {
+      if (!this.$refs.audio) return
+      let totalTime = parseInt(this.$refs.audio.duration),
+        currentTime = parseInt(this.$refs.audio.currentTime)
+      this.showTime = helper.timeNew(totalTime - currentTime)
+      if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
+        this.showTime = helper.timeNew(totalTime)
       }
       else {
-        this.progressBarVal += 32
+        this.progressBarVal = (currentTime / totalTime * 100)
       }
+    },
+    getTotalDuration() {
+      this.showTime = helper.timeNew(parseInt(this.$refs.audio.duration))
     }
-  },
-  mounted() {
-    this.getJailInformation()
   }
 }
 </script>
@@ -210,7 +246,7 @@ export default {
       justify-items: flex-start
       align-items:center
       background:rgba(235,235,235,1)
-      padding: 12px 15px
+      padding: 12px 8px
     .prison-detail
       font-size:1.1rem !important
       font-family:PingFang-SC-Medium !important
@@ -218,7 +254,7 @@ export default {
       color:rgba(102,102,102,1) !important
       text-indent: 2.4rem
     .audio-container-right
-      width: 86%
+      width: 82%
       height: .7rem
       border: .05rem solid #2B569A
       margin: 0 auto
@@ -229,4 +265,9 @@ export default {
       height: .16rem
       background: #264c90
       margin-left: .4rem
+    .desc
+      img
+        display: block
+        margin: auto
+        max-width: 100%
 </style>
