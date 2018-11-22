@@ -1,32 +1,63 @@
 <template>
-  <div>
-    <el-upload
-      ref="uploadVideo"
-      :action="$urls.videoUrl"
-      :headers="headers"
-      name="video"
-      :before-upload="beforUpload"
-      :file-list="fileList"
-      :on-success="handleSuccess"
-      :on-error="handleError"
-      accept="video/mp4,video/webm,video/ogg"
-      :multiple="false"
-      :limit="1"
-      :on-exceed="handleExceed"
-      :on-remove="handleRemove">
-      <el-button
-        slot="trigger"
-        size="small"
-        :disabled="loading || Boolean(value)"
-        type="primary">上传视频文件
-      </el-button>
+  <div style="overflow: hidden;">
+    <div class="video-box">
+      <div
+        v-if="!value"
+        class="no-video">
+        <i class="iconfont icon-video" />
+      </div>
+      <video
+        v-if="jailInformation.videoPath"
+        controls
+        poster="/static/images/video-cover.png"
+        style="max-width: 100%; margin-bottom: 10px; vertical-align: middle;">
+        <source
+          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          type='video/mp4'>
+        <source
+          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          type='video/webm'>
+        <source
+          :src="jailInformation.videoPath + '?token=' + $urls.token"
+          type='video/ogg'>您的浏览器不支持Video标签。
+      </video>
       <span
         slot="tip"
         class="el-upload__tip"
-        style="margin-left: 10px; line-height: 40px;">
+        style="line-height: 40px;">
         只能上传<span class="red">mp4/webm/ogg</span>文件
       </span>
-    </el-upload>
+    </div>
+    <div class="upload-buttons">
+      <el-upload
+        ref="uploadVideo"
+        :action="$urls.videoUrl"
+        :headers="headers"
+        name="video"
+        :show-file-list="false"
+        :before-upload="beforUpload"
+        :file-list="fileList"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        accept="video/mp4,video/webm,video/ogg"
+        :multiple="false"
+        :limit="1"
+        :disabled="loading || Boolean(value)"
+        :on-exceed="handleExceed"
+        :on-remove="handleRemove">
+        <el-button
+          slot="trigger"
+          size="small"
+          :disabled="loading || Boolean(value)"
+          type="primary">上传视频
+        </el-button>
+      </el-upload>
+      <el-button
+        type="danger"
+        size="small"
+        style="margin-top: 10px;"
+        @click="handleDelete">删除</el-button>
+    </div>
   </div>
 </template>
 
@@ -115,6 +146,9 @@ export default {
       this.loading = false
       this.$emit('success', fileList.length ? fileList : '')
     },
+    handleDelete() {
+      console.log(123)
+    },
     setImageLocalstorage(key, value) {
       let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
       if (storage.indexOf(value) < 0) storage.push(value)
@@ -131,5 +165,32 @@ export default {
   }
   .red{
     color: #f00;
+  }
+  .video-box{
+    float: left;
+    display: inline-flex;
+    flex-direction: column;
+    margin-right: 10px;
+    width: 160px;
+  }
+  .no-video{
+    height: 90px;
+    width: 160px;
+    background: #E5E5E5;
+    line-height: 90px;
+    text-align: center;
+    color: #8C8080;
+    flex-shrink: 0;
+  }
+  .no-video .iconfont{
+    font-size: 20px;
+  }
+  .upload-buttons{
+    height: 90px;
+    float: left;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
   }
 </style>
