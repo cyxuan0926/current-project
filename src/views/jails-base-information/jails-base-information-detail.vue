@@ -20,8 +20,8 @@
             type='video/ogg'>您的浏览器不支持Video标签。
         </video>
         <img
-          v-if="jailInformation.imagePath"
-          :src="jailInformation.imagePath + '?token=' + $urls.token"
+          v-if="jailInformation.imageUrl"
+          :src="jailInformation.imageUrl + '?token=' + $urls.token"
           style="margin-bottom: 10px; vertical-align: middle;"
           alt="">
         <div

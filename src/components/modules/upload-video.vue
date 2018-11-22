@@ -2,7 +2,7 @@
   <div style="overflow: hidden;">
     <div class="video-box">
       <div
-        v-if="!realValue"
+        v-if="!value"
         class="no-video">
         <i class="iconfont icon-video" />
       </div>
@@ -75,7 +75,6 @@ export default {
       headers: {
         Authorization: this.$urls.token
       },
-      realValue: '',
       loading: false,
       changed: false,
       notification: null
@@ -99,9 +98,6 @@ export default {
         })
         this.changed = true
       }
-    },
-    value(val) {
-      this.realValue = val
     }
   },
   destroyed() {
@@ -149,14 +145,12 @@ export default {
     },
     handleRemove(file, fileList) {
       this.loading = false
+      console.log(22222)
       this.$emit('success', fileList.length ? fileList : '')
     },
     handleDelete() {
-      console.log(123)
-      this.realValue = ''
-      console.log(this.$refs.uploadVideo)
-      // this.$refs.uploadVideo.clearFiles()
-      // this.handleRemove()
+      this.$refs.uploadVideo.clearFiles()
+      this.handleRemove('', [])
     },
     setImageLocalstorage(key, value) {
       let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
