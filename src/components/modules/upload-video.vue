@@ -9,7 +9,7 @@
       <video
         v-else
         controls
-        poster="/static/images/video-cover.png"
+        poster="/static/images/video-background.png"
         style="width: 192px; height: 108px;">
         <source
           :src="value + '?token=' + $urls.token"
