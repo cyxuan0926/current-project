@@ -195,6 +195,8 @@ export default {
       if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
         this.showTime = helper.timeNew(totalTime)
+        clearInterval(this.interval)
+        this.audioImg = AudioThree
       }
       else {
         this.progressBarVal = (currentTime / totalTime * 100)
