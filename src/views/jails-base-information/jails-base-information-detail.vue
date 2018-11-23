@@ -8,7 +8,7 @@
           v-if="jailInformation.videoPath"
           controls
           poster="/static/images/video-cover.png"
-          style="max-width: 100%; margin-bottom: 10px; vertical-align: middle;">
+          style="max-width: 100%; margin: 0 auto 10px; display: block;">
           <source
             :src="jailInformation.videoPath + '?token=' + $urls.token"
             type='video/mp4'>
@@ -22,7 +22,7 @@
         <img
           v-if="jailInformation.imageUrl"
           :src="jailInformation.imageUrl + '?token=' + $urls.token"
-          style="margin-bottom: 10px; vertical-align: middle;"
+          style="max-width: 100%; margin: 0 auto 10px; display: block; float: none;"
           alt="">
         <div
           v-if="jailInformation.audioPath"
