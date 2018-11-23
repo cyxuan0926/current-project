@@ -1,30 +1,63 @@
 <template>
-  <div class="">
-    <el-upload
-      class="avatar-uploader"
-      ref="uploadImg"
-      :action="$urls.imageUrl"
-      :headers="headers"
-      :multiple="multiple"
-      :name="name"
-      :accept="accept"
-      :list-type="listType"
-      :file-list="fileList"
-      :limit="limit"
-      :on-preview="handlePictureCardPreview"
-      :on-success="handleSuccess"
-      :before-upload="beforUpload"
-      :on-exceed="handleExceed"
-      :on-error="handleError"
-      :on-remove="handleRemove">
-      <i class="el-icon-plus"/>
+  <div style="overflow: hidden;">
+    <div class="component-img__box">
       <div
-        slot="tip"
-        class="el-upload__tip">
-        只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
-        <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
+        v-if="!value"
+        class="no-video">
+        <i class="iconfont icon-image" />
       </div>
-    </el-upload>
+      <img
+        v-else
+        :src="value + '?token=' + $urls.token"
+        style="width: 108px; height: 108px;"
+        @click="handlePictureCardPreview">
+    </div>
+    <div class="upload-buttons">
+      <el-upload
+        class="avatar-uploader"
+        ref="uploadImage"
+        :action="$urls.imageUrl"
+        :headers="headers"
+        :multiple="multiple"
+        name="avatar"
+        :accept="accept"
+        :file-list="fileList"
+        :limit="1"
+        :show-file-list="false"
+        :on-success="handleSuccess"
+        :before-upload="beforUpload"
+        :on-exceed="handleExceed"
+        :disabled="loading || Boolean(value)"
+        :on-error="handleError"
+        :on-remove="handleRemove">
+        <el-button
+          slot="trigger"
+          size="small"
+          :disabled="loading || Boolean(value)"
+          type="primary">上传图片
+        </el-button>
+        <!-- <i class="el-icon-plus"/>
+        <div
+          slot="tip"
+          class="el-upload__tip">
+          只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
+          <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
+        </div> -->
+      </el-upload>
+      <el-button
+        type="danger"
+        size="small"
+        :disabled="!loading && !Boolean(value)"
+        style="margin-top: 10px;"
+        @click="handleDelete">删除</el-button>
+    </div>
+    <span
+      slot="tip"
+      class="el-upload__tip"
+      style="line-height: 40px; clear: both; display: block;">
+      只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
+      <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
+    </span>
     <el-dialog :visible.sync="dialogVisible">
       <img
         width="100%"
@@ -42,21 +75,9 @@ export default {
       type: String,
       default: ''
     },
-    headers: {
-      type: Object,
-      default: function() {
-        return {
-          Authorization: this.$urls.token
-        }
-      }
-    },
     multiple: {
       type: Boolean,
       default: false
-    },
-    name: {
-      type: String,
-      default: 'avatar'
     },
     accept: {
       type: String,
@@ -65,10 +86,6 @@ export default {
     listType: {
       type: String,
       default: 'picture-card'
-    },
-    limit: {
-      type: Number,
-      default: 1
     },
     ratio: {
       type: String,
@@ -79,35 +96,31 @@ export default {
     return {
       imageUrl: '',
       dialogVisible: false,
-      changed: false
+      changed: false,
+      headers: {
+        Authorization: this.$urls.token
+      },
+      loading: false,
+      notification: null
     }
   },
   computed: {
     fileList() {
-      if (this.limit === 1) {
-        let res = (!this.value || !this.value.length) ? [] : [{ url: `${ this.value }?token=${ this.$urls.token }` }]
-        return res
+      let files = [], name = ''
+      if (this.value) {
+        name = this.value.replace(`${ this.$urls.imageUrl }/`, '').replace(/-[0-9]+\./, '.')
+        files.push({ name: name, url: this.value })
       }
-      let r = this.value
-      r.map(item => {
-        item.url = `${ item.url }?token=${ this.$urls.token }`
-      })
-      return r
+      return files
     }
   },
   watch: {
     fileList(val) {
       if (!this.changed && val.length) {
-        val.forEach(img => {
-          this.setImageLocalstorage('images', img.url.split('?token=')[0])
+        val.forEach(file => {
+          this.setImageLocalstorage('images', file.url)
         })
         this.changed = true
-      }
-      if (this.limit <= val.length) {
-        this.$refs.uploadImg.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'none'
-      }
-      else if (this.limit > val.length) {
-        this.$refs.uploadImg.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'inline-block'
       }
     }
   },
@@ -116,7 +129,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('图片上传成功')
-          this.$emit('success', this.limit === 1 ? res.url : fileList)
+          this.$emit('success', res.url)
           this.setImageLocalstorage('images', res.url)
           this.setImageLocalstorage('newImages', res.url)
           break
@@ -158,19 +171,23 @@ export default {
         reader.readAsDataURL(file)
       })
     },
-    handlePictureCardPreview(file) {
-      this.imageUrl = file.url
+    handlePictureCardPreview() {
+      this.imageUrl = `${ this.value }?token=${ this.$urls.token }`
       this.dialogVisible = true
     },
     handleExceed() {
       this.$message.error('图片数量超出限制')
-      this.$refs.uploadImg.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'none'
+      this.$refs.uploadImage.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'none'
     },
     handleError(e) {
       console.log(e)
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
+    },
+    handleDelete() {
+      this.$refs.uploadImage.clearFiles()
+      this.handleRemove('', [])
     },
     setImageLocalstorage(key, value) {
       let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
@@ -181,12 +198,39 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
   .el-upload__tip{
     margin-top: 0;
     line-height: 20px;
   }
   .red{
     color: #f00;
+  }
+  .component-img__box{
+    float: left;
+    display: inline-flex;
+    flex-direction: column;
+    margin-right: 10px;
+    width: 108px;
+  }
+  .component-img__box .no-video{
+    height: 108px;
+    width: 100%;
+    background: #E5E5E5;
+    line-height: 108px;
+    text-align: center;
+    color: #8C8080;
+    flex-shrink: 0;
+  }
+  .component-img__box .no-video .iconfont{
+    font-size: 28px;
+  }
+  .component-img__box + .upload-buttons{
+    height: 108px;
+    float: left;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
   }
 </style>

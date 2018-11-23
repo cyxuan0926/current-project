@@ -110,12 +110,13 @@ export default {
     ...mapState(['advertisement', 'advertisementTypes', 'provincesAll'])
   },
   mounted() {
-    this.getAdvertisementDetail({ id: this.$route.params.id }).then(() => {
+    this.getAdvertisementDetail({ id: this.$route.params.id }).then(res => {
+      if (!res) return
       if (!this.advertisement.startDate || !this.advertisement.endDate) return
       this.advertisement.startDate = helper.Date(this.advertisement.startDate)
       this.advertisement.endDate = helper.Date(this.advertisement.endDate)
       this.advertisement.time = [this.advertisement.startDate, this.advertisement.endDate]
-      this.advertisement.typeId === 2 ? this.imageRatio = '360:200' : (this.advertisement.typeId === 1 ? '9:16' : '')
+      this.imageRatio = this.advertisement.typeId === 2 ? '360:200' : (this.advertisement.typeId === 1 ? '9:16' : '')
     })
     this.getAdvertisementTypes().then(() => {
       this.gettingType = false
