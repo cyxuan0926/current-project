@@ -1,6 +1,6 @@
 <template>
   <div style="overflow: hidden;">
-    <div class="img-box">
+    <div class="component-img__box">
       <div
         v-if="!value"
         class="no-video">
@@ -198,7 +198,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
   .el-upload__tip{
     margin-top: 0;
     line-height: 20px;
@@ -206,14 +206,14 @@ export default {
   .red{
     color: #f00;
   }
-  .img-box{
+  .component-img__box{
     float: left;
     display: inline-flex;
     flex-direction: column;
     margin-right: 10px;
     width: 108px;
   }
-  .img-box .no-video{
+  .component-img__box .no-video{
     height: 108px;
     width: 100%;
     background: #E5E5E5;
@@ -222,10 +222,10 @@ export default {
     color: #8C8080;
     flex-shrink: 0;
   }
-  .img-box .no-video .iconfont{
+  .component-img__box .no-video .iconfont{
     font-size: 28px;
   }
-  .img-box + .upload-buttons{
+  .component-img__box + .upload-buttons{
     height: 108px;
     float: left;
     display: inline-flex;
