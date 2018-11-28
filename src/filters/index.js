@@ -1,6 +1,7 @@
 import date from './modules/date'
 import switches from './modules/switches'
 import time from './modules/time'
+import storage from './modules/storage'
 
 let filterObj = Object.assign({}, switches), filters = {}
 
@@ -19,5 +20,6 @@ Object.keys(filterObj).forEach(k => {
 export default {
   ...filters,
   ...date,
-  ...time
+  ...time,
+  ...storage
 }
