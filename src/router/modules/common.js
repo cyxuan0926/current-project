@@ -51,6 +51,17 @@ let common = [{
     component: resolve => require(['@/views/download/app-prison'], resolve)
   }]
 }, {
+  path: '/download',
+  name: '文件下载',
+  component: frame,
+  meta: { hidden: true },
+  children: [{
+    path: '/download/operation',
+    name: '操作手册',
+    meta: { notLogin: true },
+    component: resolve => require(['@/views/download/operation'], resolve)
+  }]
+}, {
   path: '*',
   redirect: '/dashboard'
 }]
