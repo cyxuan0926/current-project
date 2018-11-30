@@ -8,11 +8,17 @@
       </div>
       <el-table
         :data="list.contents"
-        border
-        width="80%">
+        border>
         <el-table-column
           label="文件名称"
-          prop="name" />
+          prop="name"
+          min-width="260px" />
+        <el-table-column
+          label="文件类型">
+          <template slot-scope="scope">
+            {{ scope.row.type }}文件
+          </template>
+        </el-table-column>
         <el-table-column
           label="文件大小">
           <template slot-scope="scope">
@@ -20,7 +26,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="文件日期">
+          label="文件日期"
+          min-width="140px">
           <template slot-scope="scope">
             {{ scope.row.date | Date }}
           </template>

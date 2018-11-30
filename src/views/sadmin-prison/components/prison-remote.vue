@@ -6,6 +6,26 @@
       :model="meeting"
       inline
       :rules="rules">
+      <div>
+        <div
+          class="el-form-item"
+          style="float: left;">
+          <label
+            class="el-form-item__label"
+            style="width: 140px;padding-right: 2px;">每人日申请次数限制</label>
+        </div>
+        <el-form-item
+          prop="dailyApplyLimit"
+          class="special-config"
+          style="width: calc(100% - 160px);">
+          <el-input
+            v-model="meeting.dailyApplyLimit"
+            placeholder="请输入每人日申请次数限制"
+            style="width: 100%;">
+            <template slot="append">次/人</template>
+          </el-input>
+        </el-form-item>
+      </div>
       <div
         v-for="(type, idx) in types"
         :key="idx"
@@ -142,6 +162,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+import validator from '@/utils/validate'
 
 export default {
   data() {
@@ -162,7 +183,9 @@ export default {
         ]
       },
       meeting: { usual: [null], weekend: [null], special: [{ date: '', queue: [null] }] },
-      rules: {},
+      rules: {
+        dailyApplyLimit: [{ validator: validator.isNumber }, { validator: validator.numberRange, min: 0 }]
+      },
       flag: {
         canAddUsual: true,
         canAddWeekend: true,
