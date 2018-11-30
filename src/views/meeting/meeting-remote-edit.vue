@@ -28,15 +28,17 @@
 import usual from './components/remote-usual'
 import weekend from './components/remote-weekend'
 import special from './components/remote-special'
+import times from './components/remote-times'
 export default {
-  components: { usual, weekend, special },
+  components: { usual, weekend, special, times },
   data() {
     return {
       activeName: 'usual',
       tabMapOptions: [
         { label: '常规配置', key: 'usual' },
         { label: '周末配置', key: 'weekend' },
-        { label: '特殊日期配置', key: 'special' }
+        { label: '特殊日期配置', key: 'special' },
+        { label: '每人日申请次数限制配置', key: 'times' }
       ]
     }
   },
