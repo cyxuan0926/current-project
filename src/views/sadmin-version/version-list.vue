@@ -7,15 +7,15 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <!--监狱版本-->
-    <template v-for="type in versionTypes">
+    <template v-for="(type, index) in versionTypes">
       <el-col
         :span="24"
-        :key="type.id">
+        :key="index">
         <p>{{ type.label }}</p>
       </el-col>
       <el-col
         :span="24"
-        :key="type.id"
+        :key="index"
         style="margin-bottom: 10px;">
         <el-table
           :data="versions[type.typeId]"
