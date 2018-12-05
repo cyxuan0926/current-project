@@ -90,6 +90,19 @@
           class="monthrange"
           :start-date-value.sync="startValue"
           :end-date-value.sync="endValue" />
+        <m-month-range-selector
+          :key="index"
+          v-if="item.type=== 'monthRangeSelector'"
+          class="monthRangeSelector"
+          :prop="index"
+          :clear="!item.canNotClear"
+          :range="item.range"
+          :start-key="item.startKey"
+          :end-key="item.endKey"
+          :callback="item.callback"
+          :start-value="item.startValue"
+          :end-value="item.endValue"
+          @onEnsure="onEnsure" />
       </template>
       <template>
         <el-button
@@ -159,6 +172,10 @@ export default {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
+          if (this.items[key].type === 'monthRangeSelector') {
+            params[this.items[key].startKey] = this.items[key][this.items[key].startKey]
+            params[this.items[key].endKey] = this.items[key][this.items[key].endKey]
+          }
           if (this.items[key].type === 'monthrange') {
             params[this.items[key].start] = this.startValue
             params[this.items[key].end] = this.endValue
@@ -175,6 +192,14 @@ export default {
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
       this.$emit('search')
+    },
+    onEnsure(e) {
+      let prop = e.prop
+      Object.keys(e).forEach(key => {
+        if (key === 'prop' || key === 'callback') return
+        this.items[prop][key] = e[key]
+      })
+      if (e.callback) this.onSearch()
     }
   }
 }
@@ -206,6 +231,8 @@ export default {
     min-width: 120px;
     max-width: 190px;
     width: 20%;
+  .monthRangeSelector
+    min-width: 180px;
   .el-button
     margin-left: 20px;
     margin-bottom: 10px;
