@@ -27,6 +27,11 @@ const codes = {
       }
     }
   },
+  400: {
+    next: params => {
+      tips('请求无效')
+    }
+  },
   401: {
     next: params => {
       localStorage.removeItem('user')

@@ -214,6 +214,9 @@ p{
  .el-form--inline .special-config .el-form-item__content{
   display: block;
 }
+.month-panel-popover{
+  padding: 0;
+}
 .m-date-form{
   margin-bottom: 10px;
 }
