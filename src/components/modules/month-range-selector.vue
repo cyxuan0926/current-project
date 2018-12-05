@@ -307,7 +307,6 @@ export default {
         this.preYear = this.nextYear
         this.nextYear = parseInt(this.nextYear) + 1
       }
-      // this[e] = parseInt(this[e]) + 1
     },
     handleClearPicked(e) {
       this.pickedPreYear = null

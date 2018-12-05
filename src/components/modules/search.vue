@@ -185,10 +185,6 @@ export default {
             params[this.items[key].start] = this.items[key].value[0]
             params[this.items[key].end] = this.items[key].value[1]
           }
-          // else if (this.items[key].type === 'monthRangeSelector') {
-          //   params[this.items[key].startKey] = e[this.items[key].startKey]
-          //   params[this.items[key].endKey] = e[this.items[key].endKey]
-          // }
           else {
             params[key] = this.items[key].value
           }
