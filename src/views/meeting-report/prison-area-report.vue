@@ -79,12 +79,16 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
+const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
 export default {
   data() {
     return {
       show: false,
       filterInit: { // 默认查询上一个月的，筛选框初始化
-        reportDate: Moment().subtract(1, 'months').format('YYYY-MM')
+        // reportDate: Moment().subtract(1, 'months').format('YYYY-MM')
+        startDate: startDate,
+        endDate: endDate
       },
       searchItems: {
         prisonArea: {
@@ -97,16 +101,29 @@ export default {
           filterable: true,
           options: []
         },
-        reportDate: {
-          value: Moment().subtract(1, 'months').format('YYYY-MM'),
-          type: 'month',
-          label: '统计月份',
+        // reportDate: {
+        //   value: Moment().subtract(1, 'months').format('YYYY-MM'),
+        //   type: 'month',
+        //   label: '统计月份',
+        //   canNotClear: true,
+        //   pickerOptions: {
+        //     disabledDate(time) {
+        //       return Moment(time).format('YYYY-MM') > Moment().subtract(1, 'months').format('YYYY-MM')
+        //     }
+        //   }
+        // },
+        reportRange: {
+          type: 'monthRangeSelector',
           canNotClear: true,
-          pickerOptions: {
-            disabledDate(time) {
-              return Moment(time).format('YYYY-MM') > Moment().subtract(1, 'months').format('YYYY-MM')
-            }
-          }
+          startValue: startDate,
+          endValue: endDate,
+          startKey: 'startDate',
+          endKey: 'endDate',
+          range: {
+            min: Moment().subtract(24, 'months').format('YYYY-MM'),
+            max: Moment().subtract(1, 'months').format('YYYY-MM')
+          },
+          callback: true
         },
         prisonerName: {
           type: 'input',
