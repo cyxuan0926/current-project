@@ -328,11 +328,6 @@ export default {
 }
 </script>
 <style scoped>
-.el-input__inner{
-  width: 100%;
-  padding-left: 9px;
-  padding-right: 9px;
-}
 .el-date-editor .el-range-separator{
   padding: 0;
   width: 20px;
