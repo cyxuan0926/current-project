@@ -233,6 +233,10 @@ export default {
     width: 20%;
   .monthRangeSelector
     min-width: 180px;
+    .el-date-editor--daterange.el-popover__reference
+      width: 100%;
+      padding-left: 9px;
+      padding-right: 9px;
   .el-button
     margin-left: 20px;
     margin-bottom: 10px;
