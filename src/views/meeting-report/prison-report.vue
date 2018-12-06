@@ -91,8 +91,7 @@ export default {
           range: {
             min: Moment().subtract(24, 'months').format('YYYY-MM'),
             max: Moment().subtract(1, 'months').format('YYYY-MM')
-          },
-          callback: true
+          }
         }
       }
     }

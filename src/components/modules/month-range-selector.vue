@@ -39,6 +39,16 @@
     <div
       v-clickoutside="{ func: 'handleBlur', ignoreEle: '.el-date-editor--daterange' }"
       class="picker-panel">
+      <div class="show-picked">
+        <div>
+          <span>开始月份</span>
+          <span class="pre-content">{{ pickedPreYear }}-{{ fillPre(pickedPreMonth) }}</span>
+        </div>
+        <div>
+          <span>结束月份</span>
+          <span class="next-content">{{ pickedNextYear }}-{{ fillPre(pickedNextMonth) }}</span>
+        </div>
+      </div>
       <div class="el-picker-panel__content el-date-range-picker__content is-left">
         <div
           class="el-date-range-picker__header">
@@ -108,15 +118,15 @@
           size="mini"
           type="text"
           class="el-picker-panel__link-btn"
-          @click="handleClearPicked">
+          @click="handleClearPicked(0)">
           清空
         </el-button>
         <el-button
           size="mini"
           type="primary"
           class="el-picker-panel__link-btn"
-          :disabled="!pickedPreMonth || !pickedNextMonth"
-          @click="handleEnsure(callback)">
+          :disabled="(!pickedPreMonth && !pickedNextMonth) || (pickedPreMonth && pickedNextMonth && (pickedPreYear !== pickedNextYear || (pickedPreYear === pickedNextYear && pickedPreMonth !== pickedNextMonth)))"
+          @click="handleEnsure('single')">
           查询当月
         </el-button>
         <el-button
@@ -124,7 +134,7 @@
           size="mini"
           class="el-picker-panel__link-btn"
           :disabled="!pickedPreMonth || !pickedNextMonth"
-          @click="handleEnsure(null)">
+          @click="handleEnsure('picked')">
           确定
         </el-button>
       </div>
@@ -186,10 +196,6 @@ export default {
     clear: {
       type: Boolean,
       default: true
-    },
-    callback: {
-      type: Boolean,
-      default: false
     }
   },
   directives: { Clickoutside },
@@ -256,13 +262,15 @@ export default {
       return false
     },
     fillPre(num) {
+      if (!num) return ''
       return `00${ num }`.slice(-2)
     },
     handlePick(year, month) {
+      if (this.count >= 2) this.count = 0
       this.count++
 
       if (this.count === 1) {
-        this.handleClearPicked()
+        this.handleClearPicked(this.count)
         this.pickedPreYear = year
         this.pickedPreMonth = month
       }
@@ -280,7 +288,6 @@ export default {
           this.pickedNextMonth = month
         }
       }
-      if (this.count >= 2) this.count = 0
     },
     handleBlur(e) {
       if (!this.visible) return
@@ -309,6 +316,7 @@ export default {
       }
     },
     handleClearPicked(e) {
+      this.count = e
       this.pickedPreYear = null
       this.pickedNextYear = null
       this.pickedPreMonth = null
@@ -316,8 +324,14 @@ export default {
     },
     handleEnsure(e) {
       this.start = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
-      this.end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
-      this.$emit('onEnsure', { [this.startKey]: this.start, [this.endKey]: this.end, prop: this.prop, callback: e })
+      if (e === 'single') {
+        this.end = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+        this.count = 0
+      }
+      else {
+        this.end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+      }
+      this.$emit('onEnsure', { [this.startKey]: this.start, [this.endKey]: this.end, prop: this.prop })
       this.visible = false
     },
     handleClear(e) {
@@ -349,8 +363,29 @@ export default {
 .el-date-range-picker__header{
   border-bottom: 1px solid #ebeef5;
 }
+.show-picked{
+  border-bottom: 1px solid #ebeef5;
+  display: table;
+  width: 100%;
+  padding-bottom: 4px;
+}
+.show-picked>div{
+  display: table-cell;
+  line-height: 30px;
+  text-align: center;
+}
+.show-picked .pre-content, .show-picked .next-content{
+  border: 1px solid #ebeef5;
+  text-align: center;
+  border-radius: 4px;
+  margin-left: 10px;
+  width: 90px;
+  display: inline-block;
+  padding: 0 20px;
+}
 .el-date-range-picker__header div{
   margin-right: 0;
+  line-height: 28px;
 }
 .table-month td{
   padding: 10px 3px;

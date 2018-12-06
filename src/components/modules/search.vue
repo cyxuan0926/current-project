@@ -99,7 +99,6 @@
           :range="item.range"
           :start-key="item.startKey"
           :end-key="item.endKey"
-          :callback="item.callback"
           :start-value="item.startValue"
           :end-value="item.endValue"
           @onEnsure="onEnsure" />
@@ -196,10 +195,9 @@ export default {
     onEnsure(e) {
       let prop = e.prop
       Object.keys(e).forEach(key => {
-        if (key === 'prop' || key === 'callback') return
+        if (key === 'prop') return
         this.items[prop][key] = e[key]
       })
-      if (e.callback) this.onSearch()
     }
   }
 }
@@ -232,7 +230,7 @@ export default {
     max-width: 190px;
     width: 20%;
   .monthRangeSelector
-    min-width: 180px;
+    min-width: 170px;
     .el-date-editor--daterange.el-popover__reference
       width: 100%;
       padding-left: 9px;
