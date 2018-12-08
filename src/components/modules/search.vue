@@ -172,8 +172,8 @@ export default {
         let params = {}
         Object.keys(this.items).forEach(key => {
           if (this.items[key].type === 'monthRangeSelector') {
-            params[this.items[key].startKey] = this.items[key][this.items[key].startKey]
-            params[this.items[key].endKey] = this.items[key][this.items[key].endKey]
+            params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+            params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
           }
           if (this.items[key].type === 'monthrange') {
             params[this.items[key].start] = this.startValue
