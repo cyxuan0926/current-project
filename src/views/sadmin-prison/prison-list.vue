@@ -122,7 +122,7 @@ export default {
         this.$router.push(`/prison/visit/${ e }`)
       }
       else {
-        this.$router.push(`/prison/meeting-remote/${ e }`)
+        this.$router.push(`/remote/edit/${ e }`)
       }
     }
   }

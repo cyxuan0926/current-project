@@ -1,4 +1,7 @@
 export default {
+  getRemoteNormalConfig(state, params) {
+    state.normalConfig = params
+  },
   getPrisonVisitConfigDetail(state, params) {
     state.prisonVisitConfigDetail = Object.assign({}, params)
   },

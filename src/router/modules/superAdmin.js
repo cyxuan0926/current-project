@@ -17,11 +17,16 @@ let superAdmin = [{
     name: '监狱实地会见配置',
     meta: { role: '0' },
     component: resolve => require(['@/views/meeting/visit-config'], resolve)
+  // }, {
+  //   path: '/prison/meeting-remote/:id',
+  //   name: '监狱远程会见配置',
+  //   meta: { role: '0' },
+  //   component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
   }, {
-    path: '/prison/meeting-remote/:id',
+    path: '/remote/edit/:id',
     name: '监狱远程会见配置',
     meta: { role: '0' },
-    component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
+    component: resolve => require(['@/views/meeting/remote-edit'], resolve)
   }, {
     path: '/prison/edit/:id',
     name: '编辑监狱',

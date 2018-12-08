@@ -1,6 +1,21 @@
-import http from '@/service'
+import http from './service'
 
 export default {
+  getRemoteNormalConfig({ commit }, params) {
+    return http.getRemoteNormalConfig(params).then(res => {
+      if (!res) return
+      if (!res.normalConfig || !res.normalConfig.length) {
+        commit('getRemoteNormalConfig', [{ days: [], config: [], queue: [] }])
+        return true
+      }
+      res.normalConfig.forEach(config => {
+        config.queue = []
+        config.config.forEach(c => config.queue.push(c.split('-')))
+      })
+      commit('getRemoteNormalConfig', res.normalConfig)
+      return true
+    })
+  },
   getRemoteUsualConfig({ commit }, params) {
     return http.getRemoteUsualConfig(params).then(res => {
       if (!res) return

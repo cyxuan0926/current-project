@@ -1,145 +1,185 @@
 <template>
-  <div class="yt-form">
-    <el-form
-      ref="form"
-      label-width="140px"
-      :model="remoteUsualConfig"
-      inline>
-      <div style="clear: both;">
+  <div class="m-container">
+    <div
+      v-for="(config, index) in configs"
+      :key="index"
+      class="config-box">
+      <div class="day-box">
+        <label class="c-label">选择工作日</label>
+        <el-checkbox-group
+          v-model="config.days"
+          :disabled="config.queue.length > 0">
+          <el-checkbox
+            v-for="(w, i) in week"
+            :key="i"
+            v-if="showWeek(w, config, index)"
+            :label="w.value">{{ w.label }}</el-checkbox>
+        </el-checkbox-group>
+        <el-button
+          type="primary"
+          size="mini"
+          v-if="!config.queue.length && config.days.length"
+          @click="handleConfig(index)">配置会见时间</el-button>
+        <el-button
+          plain
+          type="danger"
+          size="mini"
+          v-if="config.queue.length"
+          @click="handleDeleteConfig(index)">删除当前日期配置</el-button>
+      </div>
+      <div
+        v-if="config.queue.length && flag"
+        style="overflow: hidden; margin-bottom: 10px;">
+        <label class="c-label">常规配置</label>
         <div
-          class="el-form-item is-required"
-          style="float: left;">
-          <label
-            class="el-form-item__label"
-            style="width: 140px;padding-right: 2px;">常规配置</label>
-        </div>
-        <div style="float: left; width: calc(100% - 150px);">
-          <template v-for="(item, index) in remoteUsualConfig.queue">
-            <el-form-item
-              :key="index"
-              :prop="'queue.' + index"
-              :rules="[{ required: true, message: '请选择会见时间段' }]"
-              style="width: calc(25% - 10px); min-width: 140px; max-width: 350px;">
-              <m-time-range-picker
-                :val="remoteUsualConfig.queue[index]"
-                :prev="remoteUsualConfig.queue[index - 1]"
-                :next="remoteUsualConfig.queue[index + 1]"
-                type="queue"
-                @handleBlur="handleBlur" />
-            </el-form-item>
-          </template>
+          style="float: left; width: calc(100% - 80px); overflow: hidden;">
+          <m-time-range-selector
+            v-for="(queue, o) in config.queue"
+            :key="o"
+            :val="queue"
+            :prev="config.queue[o - 1]"
+            :next="config.queue[o + 1]"
+            type="queue"
+            @handleBlur="handleBlur($event, config.queue, index)" />
           <el-button
-            :disabled="!flag.canAddQueue"
+            v-if="config.queue[config.queue.length - 1][1] !== '23:59'"
             type="primary"
-            style="margin-right: 10px; margin-bottom: 22px;"
-            @click="onAddRange">新增会见时间段</el-button>
+            size="mini"
+            class="button-float"
+            style="margin-right: 10px;"
+            @click="onAddRange(config.queue)">新增会见时间段</el-button>
           <el-button
-            v-if="remoteUsualConfig.queue[0]"
-            style="margin-left: 0; margin-bottom: 22px;"
-            @click="onRestRange">重置</el-button>
+            size="mini"
+            class="button-float"
+            :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+            @click="onRestQueue(config)">重置会见时间段</el-button>
+          <el-button
+            v-if="index === configs.length - 1"
+            size="mini"
+            type="success"
+            class="button-float"
+            @click="onRestQueue(config)">新增工作日</el-button>
         </div>
       </div>
-    </el-form>
-    <div class="button-box">
-      <el-button
-        size="small"
-        type="primary"
-        :loading="loading"
-        @click="onSubmit">更新</el-button>
     </div>
   </div>
 </template>
-
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
-
 export default {
   data() {
     return {
-      flag: {
-        canAddQueue: true
-      },
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
-      loading: false
+      week: [
+        { label: '星期一', value: 1 },
+        { label: '星期二', value: 2 },
+        { label: '星期三', value: 3 },
+        { label: '星期四', value: 4 },
+        { label: '星期五', value: 5 },
+        { label: '星期六', value: 6 },
+        { label: '星期日', value: 0 }
+      ],
+      configs: [
+        { days: [4], config: [], queue: [] }
+      ],
+      queue: ['09:00', '09:30'],
+      flag: true
     }
   },
   computed: {
-    ...mapState(['remoteUsualConfig'])
-  },
-  activated() {
-    this.getRemoteUsualConfig({ jailId: this.jailId }).then(res => {
-      if (!res) return
-      this.getNextTime(this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1])
-    })
+    ...mapState(['normalConfig'])
   },
   mounted() {
+    this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
+      if (!res) return
+      this.configs = this.normalConfig
+    })
   },
   methods: {
-    ...mapActions(['getRemoteUsualConfig', 'updateRemoteUsualConfig']),
-    onSubmit(e) {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          let params = Object.assign({}, this.remoteUsualConfig, { jailId: this.jailId })
-          this.handleQueue(params)
-          if (params.settings.toString() !== this.remoteUsualConfig.settings.toString()) {
-            this.loading = true
-            this.updateRemoteUsualConfig(params).then(res => {
-              this.loading = false
-              if (!res) return
-              if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-            })
-          }
-        }
-      })
+    ...mapActions(['getRemoteNormalConfig', 'updateRemoteUsualConfig']),
+    handleConfig(e) {
+      this.configs[e].queue = [this.queue]
     },
-    handleBlur(e) {
-      this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1] = e
-      this.$refs.form.validateField('queue.0')
-      this.getNextTime(e)
+    handleBlur(e, queue) {
+      this.flag = false
+      queue[queue.length - 1] = e
+      this.flag = true
     },
-    handleQueue(params) {
-      params.settings = []
-      params.queue.forEach(queue => {
-        params.settings.push(`${ queue[0] }-${ queue[1] }`)
-      })
-      delete params.queue
-    },
-    onAddRange() {
-      this.remoteUsualConfig.queue.push(this.queueToAdd)
-      this.getNextTime(this.remoteUsualConfig.queue[this.remoteUsualConfig.queue.length - 1])
-    },
-    onRestRange() {
-      this.remoteUsualConfig.queue = [null]
-      this.flag.canAddQueue = false
-    },
-    getNextTime(last = null) {
-      if (!this.handleCanAdd(last) || !last) return
-      let start = Moment(new Date(2000, 0, 1, last[0].split(':')[0], last[0].split(':')[1])),
-        end = Moment(new Date(2000, 0, 1, last[1].split(':')[0], last[1].split(':')[1])),
-        duration = end.diff(start, 'minutes'),
-        toEnd = end.add(duration, 'minutes')
-      if (toEnd.date() !== 1) {
-        this.queueToAdd = [last[1], '23:59']
+    handleDeleteConfig(e) {
+      if (this.configs.length > 1) {
+        this.configs.splice(e, 1)
       }
       else {
-        this.queueToAdd = [last[1], `${ toEnd.format('HH:mm') }`]
+        this.configs = [{ days: [], config: [], queue: [] }]
       }
     },
-    handleCanAdd(last) {
-      let flag = true
-      if (last === null) {
-        flag = false
+    onAddRange(e) {
+      e.push(this.getNextRange(e[e.length - 1]))
+    },
+    onRestQueue(e) {
+      e.queue = [this.queue]
+    },
+    getNextRange(e) {
+      let sh = parseInt(e[0]),
+        eh = parseInt(e[1]),
+        sm = parseInt(e[0].split(':')[1]),
+        em = parseInt(e[1].split(':')[1]),
+        dur = (eh - sh) * 60 + em - sm,
+        time = Moment(new Date(2000, 0, 1, eh, em)).add(dur, 'minutes')
+      if (time.date() !== 1) {
+        return [e[1], '23:59']
       }
-      else if (last[1] === '23:59') {
-        flag = false
+      return [e[1], time.format('HH:mm')]
+    },
+    showWeek(w, config, index) {
+      if (config.queue.length) {
+        return config.days.some(v => v === w.value)
       }
-      this.flag.canAddQueue = flag
-      return flag
+      else {
+        let days = []
+        this.configs.forEach(config => {
+          days.concat(config.days)
+        })
+        return !days.some(v => v === w.value)
+      }
     }
   }
 }
 </script>
-
-<style lang="css">
+<style lang="scss" scoped>
+.m-container{
+  min-height: 600px;
+  .config-box{
+    overflow: hidden;
+  }
+  .config-box+.config-box{
+    border-top: 1px solid #dcdfe6;
+    padding-top: 10px;
+  }
+  label.c-label{
+    width: 70px;
+    text-align: right;
+    font-weight: normal;
+    float: left;
+    color: #606266;
+    line-height: 28px;
+    margin-right: 10px;
+  }
+  .button-float{
+    float: left;
+    margin-bottom: 10px;
+    margin-left: 0;
+  }
+}
+.day-box{
+  overflow: hidden;
+  &>button{
+    float: right;
+  }
+  &>div{
+    // width: calc(100% - 190px);
+    float: left;
+  }
+}
 </style>

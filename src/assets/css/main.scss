@@ -268,6 +268,40 @@ p{
 .m-range-picker .endClass .el-input__suffix{
   right: 0;
 }
+.m-range-selector{
+  border-radius: 4px;
+  .el-input__inner{
+    border: 0;
+    text-align: center;
+    width: 58px;
+    height: 26px;
+    line-height: 26px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .startClass{
+    .el-input__inner{
+      margin-left: 25px;
+    }
+    .el-input__prefix{
+      left: 0;
+    }
+  }
+  .endClass{
+    .el-input__prefix, .el-input__suffix{
+      display: none;
+    }
+    &.is-disabled .el-input__inner{
+      background: transparent;
+      cursor: text;
+    }
+  }
+  &.m-disabled-range .endClass.is-disabled .el-input__inner{
+    background-color: #f5f7fa;
+    color: #c0c4cc;
+    cursor: not-allowed;
+  }
+}
 .m-range-picker .endClass.is-disabled .el-input__inner{
   background: transparent;
   cursor: text;
@@ -365,4 +399,14 @@ div.el-tooltip__popper {
 .prisonConfigMessage div.el-message-box__title {
   font-size: 16px !important;
 }
-
+.day-box{
+  .el-checkbox{
+    line-height: 28px;
+  }
+  .el-checkbox+.el-checkbox{
+    margin-left: 10px;
+  }
+  .el-checkbox__label{
+    padding-left: 4px;
+  }
+}

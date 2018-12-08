@@ -6,6 +6,7 @@ import UploadAudio from './modules/upload-audio'
 import UploadVideo from './modules/upload-video'
 import Form from './modules/form'
 import timeRangePicker from './modules/time-range-picker'
+import timeRangeSelector from './modules/time-range-selector'
 import tinymce from './modules/tinymce'
 import monthRangePicker from './modules/month-range-picker'
 import monthRangeSelector from './modules/month-range-selector'
@@ -19,6 +20,7 @@ export default {
   UploadVideo,
   Form,
   timeRangePicker,
+  timeRangeSelector,
   tinymce,
   monthRangePicker,
   monthRangeSelector,
