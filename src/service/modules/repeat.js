@@ -20,7 +20,7 @@ export default {
     return service.postObj('/jails/weekend_config/update', params).then(res => res && res.code === 200)
   },
   // 远程会见-特殊配置-详情
-  getRemoteSpecialConfig: params => {
+  getRemoteSpecialConfigOld: params => {
     return service.get('/jails/special_configs/list', params).then(res => res && res.data)
   },
   // 远程会见-特殊配置-新增

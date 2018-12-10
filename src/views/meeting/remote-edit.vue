@@ -34,7 +34,6 @@ export default {
       activeName: 'usual',
       tabMapOptions: [
         { label: '常规配置', key: 'usual' },
-        { label: '周末配置', key: 'weekend' },
         { label: '特殊日期配置', key: 'special' },
         { label: '每人日申请次数限制配置', key: 'times' }
       ]

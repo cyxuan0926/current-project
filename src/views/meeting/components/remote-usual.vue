@@ -54,13 +54,21 @@
             :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
             @click="onRestQueue(config)">重置会见时间段</el-button>
           <el-button
-            v-if="index === configs.length - 1"
+            v-if="index === configs.length - 1 && canAddDay"
             size="mini"
             type="success"
             class="button-float"
-            @click="onRestQueue(config)">新增工作日</el-button>
+            @click="onAddDay">新增工作日</el-button>
         </div>
       </div>
+    </div>
+    <div class="button-box">
+      <el-button
+        v-if="configs[0].queue.length"
+        size="small"
+        type="primary"
+        :loading="loading"
+        @click="onSubmit">更新</el-button>
     </div>
   </div>
 </template>
@@ -81,23 +89,45 @@ export default {
         { label: '星期日', value: 0 }
       ],
       configs: [
-        { days: [4], config: [], queue: [] }
+        { days: [], config: [], queue: [] }
       ],
       queue: ['09:00', '09:30'],
-      flag: true
+      flag: true,
+      loading: false
     }
   },
   computed: {
-    ...mapState(['normalConfig'])
+    ...mapState(['normalConfig']),
+    canAddDay() {
+      let days = []
+      this.configs.forEach(config => {
+        days = days.concat(config.days)
+      })
+      return days.length < 7
+    }
   },
   mounted() {
     this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
       if (!res) return
-      this.configs = this.normalConfig
+      this.configs = this.normalConfig.normalConfig
     })
   },
   methods: {
-    ...mapActions(['getRemoteNormalConfig', 'updateRemoteUsualConfig']),
+    ...mapActions(['getRemoteNormalConfig', 'updateRemoteNormalConfig']),
+    onSubmit(e) {
+      let params = []
+      this.configs.forEach(config => {
+        if (!config.days.length) return
+        let c = []
+        config.queue.forEach(q => c.push(q.join('-')))
+        params.push({ days: config.days, config: c })
+      })
+      this.loading = true
+      this.updateRemoteNormalConfig({ id: this.normalConfig.id, jailId: this.normalConfig.jailId, normalConfig: params }).then(res => {
+        this.loading = false
+        if (!res) return
+      })
+    },
     handleConfig(e) {
       this.configs[e].queue = [this.queue]
     },
@@ -116,6 +146,9 @@ export default {
     },
     onAddRange(e) {
       e.push(this.getNextRange(e[e.length - 1]))
+    },
+    onAddDay() {
+      this.configs.push({ days: [], config: [], queue: [] })
     },
     onRestQueue(e) {
       e.queue = [this.queue]
@@ -138,8 +171,8 @@ export default {
       }
       else {
         let days = []
-        this.configs.forEach(config => {
-          days.concat(config.days)
+        this.configs.forEach((config, i) => {
+          if (i !== index) days = days.concat(config.days)
         })
         return !days.some(v => v === w.value)
       }
@@ -171,15 +204,12 @@ export default {
     margin-bottom: 10px;
     margin-left: 0;
   }
-}
-.day-box{
-  overflow: hidden;
-  &>button{
-    float: right;
-  }
-  &>div{
-    // width: calc(100% - 190px);
-    float: left;
+  .button-box{
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    clear: both;
   }
 }
 </style>
