@@ -141,7 +141,7 @@ export default {
       deep: true
     }
   },
-  mounted() {
+  activated() {
     if (this.$route.meta.role === '0') this.disabled = false
     if (this.$route.meta.permission === 'edit') this.permission = 'edit'
     if (this.permission === 'edit') {

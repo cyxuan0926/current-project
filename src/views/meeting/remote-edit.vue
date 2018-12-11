@@ -24,11 +24,10 @@
 
 <script>
 import usual from './components/remote-usual'
-import weekend from './components/remote-weekend'
 import special from './components/remote-special'
 import times from './components/remote-times'
 export default {
-  components: { usual, weekend, special, times },
+  components: { usual, special, times },
   data() {
     return {
       activeName: 'usual',

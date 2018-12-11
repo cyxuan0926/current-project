@@ -109,7 +109,7 @@ export default {
   computed: {
     ...mapState(['specialConfig'])
   },
-  mounted() {
+  activated() {
     if (this.$route.meta.role === '0') this.disabled = false
     if (this.$route.meta.permission === 'edit') this.permission = 'edit'
     if (this.permission === 'edit') {
@@ -145,6 +145,7 @@ export default {
         this.addSpecialConfig(params).then(res => {
           if (!res) return
           config.oldDay = params.day
+          config.jailId = params.jailId
           config.config = params.config ? params.config : []
           config.id = res.id
           this.show = false

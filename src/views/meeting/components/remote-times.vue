@@ -35,8 +35,7 @@ export default {
   methods: {
     ...mapActions(['getPrisonDetail', 'updatePrison']),
     onSubmit(e) {
-      let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-      this.updatePrison(params).then(res => {
+      this.updatePrison(e).then(res => {
         if (!res) return
         // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
         // else this.$router.push('/jails/detail')
