@@ -3,7 +3,7 @@
     <el-tabs
       v-model="activeName"
       type="border-card"
-      class="no-bottom-padding"
+      class="min-height-400"
       @tab-click="handleClick">
       <template v-for="item in tabMapOptions">
         <el-tab-pane

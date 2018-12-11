@@ -8,7 +8,7 @@
         <label class="c-label">选择工作日</label>
         <el-checkbox-group
           v-model="config.days"
-          :disabled="config.queue.length > 0">
+          :disabled="config.queue.length > 0 || disabled">
           <el-checkbox
             v-for="(w, i) in week"
             :key="i"
@@ -18,13 +18,13 @@
         <el-button
           type="primary"
           size="mini"
-          v-if="!config.queue.length && config.days.length"
+          v-if="!config.queue.length && config.days.length && !disabled"
           @click="handleConfig(index)">配置会见时间</el-button>
         <el-button
           plain
           type="danger"
           size="mini"
-          v-if="config.queue.length"
+          v-if="config.queue.length && !disabled"
           @click="handleDeleteConfig(index)">删除当前日期配置</el-button>
       </div>
       <div
@@ -37,24 +37,26 @@
             v-for="(queue, o) in config.queue"
             :key="o"
             :val="queue"
+            :disabled="disabled"
             :prev="config.queue[o - 1]"
             :next="config.queue[o + 1]"
             type="queue"
             @handleBlur="handleBlur($event, config.queue, index)" />
           <el-button
-            v-if="config.queue[config.queue.length - 1][1] !== '23:59'"
+            v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
             type="primary"
             size="mini"
             class="button-float"
             style="margin-right: 10px;"
             @click="onAddRange(config.queue)">新增会见时间段</el-button>
           <el-button
+            v-if="!disabled"
             size="mini"
             class="button-float"
             :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
             @click="onRestQueue(config)">重置会见时间段</el-button>
           <el-button
-            v-if="index === configs.length - 1 && canAddDay"
+            v-if="index === configs.length - 1 && canAddDay && !disabled"
             size="mini"
             type="success"
             class="button-float"
@@ -64,12 +66,34 @@
     </div>
     <div class="button-box">
       <el-button
-        v-if="configs[0].queue.length"
+        v-if="configs[0].queue.length && !disabled && permission === 'edit'"
         size="small"
         type="primary"
-        :loading="loading"
-        @click="onSubmit">更新</el-button>
+        @click="visible = true">更新</el-button>
     </div>
+    <el-dialog
+      :visible.sync="visible"
+      width="400px">
+      <span
+        slot="title"
+        style="display: block; text-align: center; font-weight: bold;">提示</span>
+      <div style="text-align: center;">修改常规配置后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属。</div>
+      <div style="text-align: center;">注意：若预约日期无法在当日分配时间段，系统将自动取消该条待会见申请，并以短信形式通知相关家属，请确认是否继续操作！</div>
+      <div
+        slot="footer"
+        class="button-box"
+        style="padding-bottom: 0;">
+        <el-button
+          type="default"
+          size="mini"
+          @click="visible = false">取消</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          :loading="loading"
+          @click="onSubmit">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -93,7 +117,10 @@ export default {
       ],
       queue: ['09:00', '09:30'],
       flag: true,
-      loading: false
+      loading: false,
+      disabled: true,
+      permission: 'add',
+      visible: false
     }
   },
   computed: {
@@ -106,27 +133,45 @@ export default {
       return days.length < 7
     }
   },
+  watch: {
+    'configs.0': {
+      handler: function(val) {
+        this.$emit('canAdd', val.queue.length > 0)
+      },
+      deep: true
+    }
+  },
   mounted() {
-    this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
-      if (!res) return
-      this.configs = this.normalConfig.normalConfig
-    })
+    if (this.$route.meta.role === '0') this.disabled = false
+    if (this.$route.meta.permission === 'edit') this.permission = 'edit'
+    if (this.permission === 'edit') {
+      this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
+        if (!res) return
+        this.configs = this.normalConfig.normalConfig
+      })
+    }
   },
   methods: {
     ...mapActions(['getRemoteNormalConfig', 'updateRemoteNormalConfig']),
     onSubmit(e) {
       let params = []
       this.configs.forEach(config => {
-        if (!config.days.length) return
+        if (!config.days.length || !config.queue.length) return
         let c = []
         config.queue.forEach(q => c.push(q.join('-')))
         params.push({ days: config.days, config: c })
       })
-      this.loading = true
-      this.updateRemoteNormalConfig({ id: this.normalConfig.id, jailId: this.normalConfig.jailId, normalConfig: params }).then(res => {
-        this.loading = false
-        if (!res) return
-      })
+      if (e) {
+        this.loading = true
+        this.updateRemoteNormalConfig({ id: this.normalConfig.id, jailId: this.normalConfig.jailId, normalConfig: params }).then(res => {
+          this.loading = false
+          if (!res) return
+          this.visible = false
+        })
+      }
+      else {
+        this.$emit('submit', params)
+      }
     },
     handleConfig(e) {
       this.configs[e].queue = [this.queue]
@@ -182,7 +227,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .m-container{
-  min-height: 600px;
   .config-box{
     overflow: hidden;
   }

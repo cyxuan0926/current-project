@@ -168,7 +168,7 @@ export default {
       const sums = []
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = this.searchItems.prisonAreaId.value || this.user.jailName
+          sums[index] = this.searchItems.prisonAreaId.options.find(o => o.id === this.searchItems.prisonAreaId.value).name || this.user.jailName
           return
         }
         else if (index <= 2) {

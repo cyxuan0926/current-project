@@ -66,7 +66,7 @@ let infomation = [{
     path: '/remote/edit',
     name: '远程会见配置',
     meta: { role: '3' },
-    component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
+    component: resolve => require(['@/views/meeting/remote-edit'], resolve)
   }]
 }, {
   path: '/visit',

@@ -29,7 +29,12 @@ export default {
       res.complexSpecialConfigs.forEach(config => {
         config.queue = []
         config.oldDay = config.day
-        config.config.forEach(c => config.queue.push(c.split('-')))
+        config.oldEnabled = config.enabledMeeting
+        if (config.enabledMeeting) config.config.forEach(c => config.queue.push(c.split('-')))
+        else {
+          config.config = []
+          config.queue = []
+        }
       })
       commit('getRemoteSpecialConfig', res.complexSpecialConfigs)
       return true

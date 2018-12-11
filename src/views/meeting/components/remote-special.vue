@@ -12,12 +12,14 @@
           v-model="config.day"
           size="mini"
           type="date"
+          :disabled="disabled"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :picker-options="pickerOptions"
           @change="handleDate(config)" />
         <el-radio-group
           v-model="config.enabledMeeting"
+          :disabled="disabled"
           @change="handleDate(config)">
           <el-radio :label="1">支持会见申请</el-radio>
           <el-radio :label="0">不支持会见</el-radio>
@@ -27,15 +29,15 @@
           plain
           type="danger"
           size="mini"
-          v-if="config.queue.length"
+          v-if="(config.enabledMeeting === 0 || config.queue.length) && !disabled"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
         <el-button
-          v-if="canSave(config)"
+          v-if="canSave(config) && !disabled && permission === 'edit'"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>
         <el-button
-          v-if="index === configs.length - 1 && config.enabledMeeting === 0 && config.day"
+          v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day && !disabled)"
           size="mini"
           type="success"
           class="button-float"
@@ -51,24 +53,26 @@
             v-for="(queue, o) in config.queue"
             :key="o"
             :val="queue"
+            :disabled="disabled"
             :prev="config.queue[o - 1]"
             :next="config.queue[o + 1]"
             type="queue"
             @handleBlur="handleBlur($event, config.queue, index)" />
           <el-button
-            v-if="config.queue[config.queue.length - 1][1] !== '23:59'"
+            v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
             type="primary"
             size="mini"
             class="button-float"
             style="margin-right: 10px;"
             @click="onAddRange(config.queue)">新增会见时间段</el-button>
           <el-button
+            v-if="!disabled"
             size="mini"
             class="button-float"
             :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
             @click="onRestQueue(config)">重置会见时间段</el-button>
           <el-button
-            v-if="index === configs.length - 1 && config.queue.length > 0"
+            v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0 && !disabled)"
             size="mini"
             type="success"
             class="button-float"
@@ -97,31 +101,38 @@ export default {
           let t = Moment(new Date(time)).format('YYYY-MM-DD')
           return (time.getTime() < Date.now()) || (this.configs.find(item => item.day === t))
         }
-      }
+      },
+      disabled: true,
+      permission: 'add'
     }
   },
   computed: {
     ...mapState(['specialConfig'])
   },
   mounted() {
-    this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
-      if (!res) return
-      this.configs = [...this.specialConfig]
-    })
+    if (this.$route.meta.role === '0') this.disabled = false
+    if (this.$route.meta.permission === 'edit') this.permission = 'edit'
+    if (this.permission === 'edit') {
+      this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
+        if (!res) return
+        this.configs = [...this.specialConfig]
+      })
+    }
   },
   methods: {
     ...mapActions(['getRemoteSpecialConfig', 'addSpecialConfig', 'updateSpecialConfig', 'deleteSpecialConfig']),
-    onSubmit(config, index) {
+    onSubmit(config, index, e) {
       let params = {
         day: config.day,
         enabledMeeting: config.enabledMeeting,
-        jailId: this.jailId,
+        jailId: Number(this.jailId),
         config: null
       }
       if (config.enabledMeeting) {
         params.config = []
         config.queue.forEach(q => params.config.push(q.join('-')))
       }
+      if (e) return params
       if (config.id) {
         params.id = config.id
         this.updateSpecialConfig(params).then(res => {
@@ -134,12 +145,19 @@ export default {
         this.addSpecialConfig(params).then(res => {
           if (!res) return
           config.oldDay = params.day
-          config.config = params.config
+          config.config = params.config ? params.config : []
           config.id = res.id
           this.show = false
           this.show = true
         })
       }
+    },
+    handleEmit() {
+      let params = []
+      this.configs.forEach((config, index) => {
+        if (this.canSave(config)) params.push(this.onSubmit(config, index, true))
+      })
+      this.$emit('submit', params)
     },
     handleDate(config) {
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
@@ -181,6 +199,7 @@ export default {
         return false
       }
       else if (config.enabledMeeting === 0) {
+        if (config.oldEnabled === 0 && config.day === config.oldDay) return false
         return true
       }
       else if (config.queue.length === 0) {
@@ -221,7 +240,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .m-container{
-  min-height: 600px;
   .config-box{
     overflow: hidden;
   }

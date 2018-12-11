@@ -1,4 +1,5 @@
 <template>
+  <!-- v-clickoutside="{ func: 'handleClickOut' }" -->
   <div
     class="m-range-selector"
     :class="[{ 'm-disabled-range': next.length > 0 || disabled }]"
@@ -34,6 +35,7 @@
 
 <script>
 import Moment from 'moment'
+// import Clickoutside from '@/utils/clickoutside'
 export default {
   props: {
     prev: {
@@ -61,6 +63,7 @@ export default {
       default: 0
     }
   },
+  // directives: { Clickoutside },
   data() {
     return {
       format: 'HH:mm',
@@ -120,6 +123,9 @@ export default {
     },
     onStartBlur(e) {
       this.$refs.end.focus()
+    },
+    handleClickOut(e) {
+      console.log(e, 123)
     },
     onEndBlur(e) {
       // if (this.startTime === this.endTime) {
