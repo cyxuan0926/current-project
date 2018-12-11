@@ -18,6 +18,13 @@ export default {
       return true
     })
   },
+  validatePrisonerYZK: ({ commit }, params) => {
+    return api.validateYZK(params).then(res => {
+      if (!res) return
+      commit('validatePrisoner', res)
+      return true
+    })
+  },
   // 狱政科罪犯数据模板上传成功后将罪犯数据模板导入到服务端
   importPrisonerYZK: ({ commit }, params) => {
     return http.importPrisonerYZK(params).then(res => {

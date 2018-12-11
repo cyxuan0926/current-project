@@ -377,26 +377,40 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['validatePrisoner', 'importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
+    ...mapActions(['validatePrisonerYZK', 'validatePrisoner', 'importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
     submitUpload() {
       this.$refs.upload.submit()
     },
     onSubmit() {
       this.loading = true
-      this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
-        this.loading = false
-        this.visible = false
-        if (!res) return
-        this.alertInformation(this.prisonerDataResult)
-      })
+      if (this.tabs === 'first') {
+        this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
+          this.loading = false
+          this.visible = false
+          if (!res) return
+          this.alertInformation(this.prisonerDataResult)
+        })
+      }
+      else if (this.tabs === 'second') {
+        this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+          this.loading = false
+          this.visible = false
+          if (!res) return
+          this.alertInformation(this.prisonerYZKDataResult)
+        })
+      }
     },
     beforeUpload(file) {
+      if (this.notify) {
+        this.notify.close()
+      }
       if (this.tabs === 'first') {
         this.resetState({ prisonerDataResult: {} })
       }
       else if (this.tabs === 'second') {
         this.resetState({ prisonerYZKDataResult: {} })
       }
+      this.resetState({ validatePrisonerResult: {} })
       this.uploadFile(file).then(res => {
         if (!res) return
         if (this.tabs === 'first') {
@@ -405,13 +419,14 @@ export default {
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
-            console.log(this.validatePrisonerResult)
           })
         }
         else if (this.tabs === 'second') {
-          this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+          this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
             if (!res) return
-            this.alertInformation(this.prisonerYZKDataResult)
+            if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+              this.visible = true
+            }
           })
         }
       })

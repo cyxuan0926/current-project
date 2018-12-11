@@ -165,6 +165,7 @@ export default {
     },
     getSummaries(params) {
       const { columns, data } = params
+      if (!columns || !data.length) return ''
       const sums = []
       columns.forEach((column, index) => {
         if (index === 0) {
