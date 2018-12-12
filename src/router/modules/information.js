@@ -65,7 +65,7 @@ let infomation = [{
   children: [{
     path: '/remote/edit',
     name: '远程会见配置',
-    meta: { role: '3' },
+    meta: { role: '3', permission: 'edit' },
     component: resolve => require(['@/views/meeting/remote-edit'], resolve)
   }]
 }, {

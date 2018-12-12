@@ -116,6 +116,7 @@
         <el-table-column
           label="失败原因"
           show-overflow-tooltip
+          class-name="tips"
           prop="reason" />
       </el-table>
     </el-row>
@@ -222,6 +223,7 @@
           prop="originalSentence" />
         <el-table-column
           label="失败原因"
+          class-name="tips"
           show-overflow-tooltip
           prop="reason" />
       </el-table>
@@ -419,6 +421,9 @@ export default {
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
+            else {
+              this.onSubmit()
+            }
           })
         }
         else if (this.tabs === 'second') {
@@ -426,6 +431,9 @@ export default {
             if (!res) return
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
+            }
+            else {
+              this.onSubmit()
             }
           })
         }
