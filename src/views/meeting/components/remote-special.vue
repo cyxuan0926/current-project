@@ -148,6 +148,7 @@ export default {
           config.jailId = params.jailId
           config.config = params.config ? params.config : []
           config.id = res.id
+          // this.$forceUpdate()
           this.show = false
           this.show = true
         })
