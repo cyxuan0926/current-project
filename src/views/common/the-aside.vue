@@ -1,5 +1,15 @@
 <template>
-  <div>kkk</div>
+  <div>
+    <div class="aside-top">
+      <img
+        src="/static/images/user2-160x160.jpg"
+        class="avatar">
+      <div class="info">
+        <b>{{ user.jailName }}</b>
+        <span>在线</span>
+      </div>
+    </div>
+  </div>
   <!-- <aside
     id="main-sidebar"
     class="main-sidebar">
@@ -95,18 +105,6 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus">
-  #main-sidebar
-    &.main-sidebar
-      a
-        font-size: 14px;
-        line-height: 22px;
-        display: flex;
-        align-items: center;
-        padding-left: 10px;
-    .treeview-menu>li>a
-      padding-left: 12px;
-    .super-role
-      margin-top 10px
+<style lang="scss" scoped>
+@import "../../assets/css/layout";
 </style>

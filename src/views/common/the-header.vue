@@ -1,9 +1,16 @@
 <template>
-  <div class="over-hidden">
-    <div :class="['header-left', 'transition', { 'collapsed': isCollapsed }]">
+  <div class="header-container">
+    <div
+      :class="[
+        'header-left',
+        'transition',
+        { 'collapsed': isCollapsed }]">
       <span class="bold">狱务通</span>管理平台
     </div>
-    <div class="header-right">
+    <div
+      :class="[
+        'header-right',
+        { 'width100': isBlock }]">
       <i
         class="iconfont icon-category bold"
         @click="handleCollapse" />
@@ -13,7 +20,7 @@
           @command="onClick">
           <div class="item">
             <img
-              src="../../../static/images/user2-160x160.jpg"
+              src="/static/images/user2-160x160.jpg"
               class="avatar">
             <span class="hidden-xs-only">{{ user.username }}</span>
           </div>
@@ -33,8 +40,11 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  data() {
-    return {}
+  props: {
+    isBlock: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     ...mapState({
