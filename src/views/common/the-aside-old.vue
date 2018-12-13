@@ -1,11 +1,12 @@
 <template>
-  <div>kkk</div>
-  <!-- <aside
+  <aside
     id="main-sidebar"
     class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
     <section
       class="sidebar"
       style="height: auto;">
+      <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
           <img
@@ -26,8 +27,11 @@
               <span style="margin-left: 5px">{{ prisonerAreas[0] }}</span>
             </el-tooltip>
           </p>
+        <!--<a href="#" @click="$event.preventDefault()"><i class="fa fa-circle text-success"></i> 在线</a>-->
         </div>
       </div>
+      <!-- /.search form -->
+      <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">导航</li>
         <li
@@ -39,7 +43,7 @@
               <span>{{ first.title }}</span>
             </router-link>
           </template>
-          <template v-else>
+          <template v-else><!-- first.active = !first.active -->
             <a
               href="javascript:;"
               @click="onTreeMenuClick(first)">
@@ -59,8 +63,10 @@
           </template>
         </li>
       </ul>
+      <!--商品侧边栏-->
     </section>
-  </aside> -->
+    <!-- /.sidebar -->
+  </aside>
 </template>
 
 <script>

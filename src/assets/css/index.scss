@@ -1,0 +1,29 @@
+@import "./common.scss";
+html, body{
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+ul{
+  list-style: none;
+}
+ul, li, div{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+img{
+  vertical-align: middle;
+}
+.el-header{
+  padding: 0;
+  background-color: #367fa9;
+}
+.el-dropdown{
+  vertical-align: top;
+}
+@media only screen and (max-width: 768px){
+  .el-header{
+    margin-bottom: 50px;
+  }
+}

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import layout from '@/views/common/vuex-and-service'
 import jailsInformation from './modules/jails-information'
 import common from './modules/common'
 import passwordModification from './modules/password-modification'
@@ -88,5 +89,8 @@ export default new Vuex.Store({
   actions,
   mutations,
   getters,
-  state
+  state,
+  modules: {
+    layout
+  }
 })

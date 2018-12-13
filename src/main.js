@@ -9,17 +9,18 @@ import components from '@/components'
 import urls from '@/service/urls'
 // import config from '@/service/config/base'
 import '../static/bootstrap/js/bootstrap.min.js'
-import '../static/dist/js/app.min.js'
+// import '../static/dist/js/app.min.js'
 
-import '../static/bootstrap/css/bootstrap.min.css'
-import '../static/dist/css/AdminLTE.min.css'
-import '../static/dist/css/skins/_all-skins.min.css'
+// import '../static/bootstrap/css/bootstrap.min.css'
+// import '../static/dist/css/AdminLTE.min.css'
+// import '../static/dist/css/skins/_all-skins.min.css'
 import '@/assets/fonts/iconfont.css'
 import '@/assets/icons/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
 import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'
+import '@/assets/css/index.scss'
 
 Vue.use(ElementUI)
 
