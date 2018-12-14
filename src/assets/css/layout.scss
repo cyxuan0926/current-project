@@ -40,7 +40,35 @@
   }
 }
 .aside-top{
-  background-color: yellow;
+  background-color: #222d32;
+}
+.aside-top{
+  padding: 10px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  font-size: 14px;
+  .avatar{
+    width: 100%;
+    max-width: 45px;
+    float: left;
+    margin-right: 10px;
+  }
+  .info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 20px;
+    height: 60px;
+  }
+  .ellipsis{
+    display: inline-block;
+    vertical-align: bottom;
+  }
+  .disappear{
+    transition-duration: 0.5s;
+  }
 }
 @media only screen and (max-width: 768px){
   .header-left, .header-right{

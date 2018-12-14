@@ -1,24 +1,25 @@
 <template>
-  <div>
+  <div class="aside-container">
     <div class="aside-top">
       <img
         src="/static/images/user2-160x160.jpg"
         class="avatar circle">
-      <div class="info">
+      <div
+        :class="['info', 'over-hidden', {'disappear' : isCollapsed}]">
         <span
-          class="bold"
-          v-if="Number(user.role)">{{ user.jailName }}</span>
+          class="bold ellipsis"
+          v-if="Number(user.role)">{{ user.jailName }}{{ user.jailName }}{{ user.jailName }}</span>
         <div>
           <span class="bold">{{ user.role | role }}</span>
           <el-popover
-            v-if="user.prisonConfigList && user.prisonConfigList.length"
             placement="bottom"
             width="260"
             trigger="hover"
+            :disabled="prisonerAreas.length <= 1"
             :content="prisonerAreas.join('、')">
             <span
-              class="bold"
-              slot="reference">{{ prisonerAreas[0] }}</span>
+              class="bold ellipsis"
+              slot="reference">dddddddddd{{ prisonerAreas[0] }}</span>
           </el-popover>
         </div>
       </div>
@@ -99,12 +100,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState({
+      user: state => state.user,
+      isCollapsed: state => state.layout.isCollapsed
+    })
   },
   mounted() {
-    console.dir({ ...this.user })
     if (this.user.prisonConfigList && this.user.prisonConfigList.length) {
-      this.prisonerAreas = []
+      this.prisonerAreas = this.user.prisonConfigList.reduce((pre, cur) => {
+        return pre.concat([cur.prisonConfigName])
+      }, [])
     }
   },
   methods: {

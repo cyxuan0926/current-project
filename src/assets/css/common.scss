@@ -13,6 +13,16 @@
 .circle{
   border-radius: 50%;
 }
+.ellipsis{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.disappear{
+  height: 0;
+  width: 0;
+  overflow: hidden;
+}
 main, footer{
   background: greenyellow;
 }
