@@ -21,7 +21,7 @@
           <div class="item">
             <img
               src="/static/images/user2-160x160.jpg"
-              class="avatar">
+              class="avatar circle">
             <span class="hidden-xs-only">{{ user.username }}</span>
           </div>
           <el-dropdown-menu slot="dropdown">

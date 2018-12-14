@@ -10,6 +10,9 @@
 .transition{
   transition: all .3s ease-in-out;
 }
+.circle{
+  border-radius: 50%;
+}
 main, footer{
   background: greenyellow;
 }

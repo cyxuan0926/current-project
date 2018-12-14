@@ -3,10 +3,24 @@
     <div class="aside-top">
       <img
         src="/static/images/user2-160x160.jpg"
-        class="avatar">
+        class="avatar circle">
       <div class="info">
-        <b>{{ user.jailName }}</b>
-        <span>在线</span>
+        <span
+          class="bold"
+          v-if="Number(user.role)">{{ user.jailName }}</span>
+        <div>
+          <span class="bold">{{ user.role | role }}</span>
+          <el-popover
+            v-if="user.prisonConfigList && user.prisonConfigList.length"
+            placement="bottom"
+            width="260"
+            trigger="hover"
+            :content="prisonerAreas.join('、')">
+            <span
+              class="bold"
+              slot="reference">{{ prisonerAreas[0] }}</span>
+          </el-popover>
+        </div>
       </div>
     </div>
   </div>
@@ -80,19 +94,17 @@ import menu from './menu.js'
 export default {
   data() {
     return {
-      menus: menu
+      menus: menu,
+      prisonerAreas: []
     }
   },
   computed: {
-    ...mapState(['user']),
-    prisonerAreas: vm => {
-      let values = []
-      if (vm.user && vm.user.prisonConfigList && vm.user.prisonConfigList.length) {
-        for (let val of vm.user.prisonConfigList.values()) {
-          values.push(val.prisonConfigName)
-        }
-      }
-      return values
+    ...mapState(['user'])
+  },
+  mounted() {
+    console.dir({ ...this.user })
+    if (this.user.prisonConfigList && this.user.prisonConfigList.length) {
+      this.prisonerAreas = []
     }
   },
   methods: {
