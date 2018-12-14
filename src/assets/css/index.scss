@@ -21,6 +21,12 @@ img{
 .el-dropdown{
   vertical-align: top;
 }
+.el-aside{
+  background: #222d32;
+}
+.el-menu{
+  border-right: 0;
+}
 @media only screen and (max-width: 768px){
   .el-header{
     height: 100px !important;

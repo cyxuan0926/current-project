@@ -40,34 +40,34 @@
   }
 }
 .aside-top{
-  background-color: #222d32;
-}
-.aside-top{
   padding: 10px;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: stretch;
   font-size: 14px;
+  border-bottom: 5px solid #1A2226;
   .avatar{
     width: 100%;
-    max-width: 45px;
+    height: 100%;
+    max-width: 40px;
+    max-height: 40px;
     float: left;
     margin-right: 10px;
   }
   .info{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    line-height: 20px;
-    height: 60px;
+    justify-content: space-between;
   }
   .ellipsis{
-    display: inline-block;
-    vertical-align: bottom;
+    max-width: 155px;
   }
-  .disappear{
-    transition-duration: 0.5s;
+}
+.first-level{
+  .iconfont{
+    color: #b8c7ce;
+    font-size: 20px;
   }
 }
 @media only screen and (max-width: 768px){
