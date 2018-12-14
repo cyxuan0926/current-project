@@ -293,6 +293,7 @@
       <el-table
         :data="validatePrisonerResult.prisoners"
         size="small"
+        max-height="400"
         border>
         <el-table-column
           prop="prisonerNumber"
