@@ -11,6 +11,7 @@ import tinymce from './modules/tinymce'
 import monthRangePicker from './modules/month-range-picker'
 import monthRangeSelector from './modules/month-range-selector'
 import imgViewer from './modules/img-viewer'
+import audio from './modules/audio'
 export default {
   Pagination,
   Search,
@@ -24,5 +25,6 @@ export default {
   tinymce,
   monthRangePicker,
   monthRangeSelector,
-  imgViewer
+  imgViewer,
+  audio
 }

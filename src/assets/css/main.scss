@@ -17,6 +17,19 @@ p{
 .bold{
   font-weight: bold;
 }
+// .three-line{
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   display: -webkit-box;
+//   -webkit-line-clamp: 3;
+//   -webkit-box-orient: vertical;
+// }
+.detail-item.special{
+  img{
+    max-width: 400px !important;
+    display: block;
+  }
+}
 .el-submenu__icon-arrow{
   margin-top: -5px;
 }

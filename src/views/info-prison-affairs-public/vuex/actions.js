@@ -3,7 +3,11 @@ import http from '@/service'
 export default {
   // 获取狱务公开信息
   getNewsList: ({ commit }, params) => {
-    http.getNewsList(params).then(res => res && commit('getNewsList', res))
+    return http.getNewsList(params).then(res => {
+      if (!res) return false
+      commit('getNewsList', res)
+      return true
+    })
   },
   getNewsDetail: ({ commit }, params) => {
     return http.getNewsDetail(params).then(res => {
@@ -25,7 +29,11 @@ export default {
   editNews({ commit, dispatch }, params) {
     return http.editNews(params).then(res => {
       if (res.code !== 200) return
-      dispatch('handleDeleteImage', [params.imageUrl, params.contents])
+      let excpt = []
+      params.imageUrl && excpt.push(params.imageUrl)
+      params.audioPath && excpt.push(params.audioPath)
+      params.videoPath && excpt.push(params.videoPath)
+      dispatch('handleDeleteImage', [excpt, params.contents])
       return true
     })
   },
@@ -33,7 +41,11 @@ export default {
   addNews({ commit, dispatch }, params) {
     return http.addNews(params).then(res => {
       if (res.code !== 200) return
-      dispatch('handleDeleteImage', [params.imageUrl, params.contents])
+      let excpt = []
+      params.imageUrl && excpt.push(params.imageUrl)
+      params.audioPath && excpt.push(params.audioPath)
+      params.videoPath && excpt.push(params.videoPath)
+      dispatch('handleDeleteImage', [excpt, params.contents])
       return true
     })
   },
