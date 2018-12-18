@@ -65,9 +65,25 @@
   }
 }
 .first-level{
-  .iconfont{
-    color: #b8c7ce;
-    font-size: 20px;
+  transition-duration: 0s;
+  // .is-active .iconfont{
+  //   color: #ffffff;
+  // }
+}
+.border-bottom.is-active{
+  &.el-menu-item, .el-submenu__title{
+    background: #1D262A !important;
+    position: relative;
+    &:before{
+      content: '';
+      display: block;
+      height: 100%;
+      width: 3px;
+      background: #3c8dbc;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
 }
 @media only screen and (max-width: 768px){
