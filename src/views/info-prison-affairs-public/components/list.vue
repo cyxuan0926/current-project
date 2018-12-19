@@ -7,7 +7,7 @@
       size="small"
       type="primary"
       plain
-      @click="onAdd">添加狱务公开信息</el-button>
+      @click="onAdd">添加{{ routeName }}</el-button>
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -24,6 +24,7 @@
           label="新闻标题"/>
         <el-table-column
           label="新闻内容"
+          width="160px"
           :resizable="false">
           <template slot-scope="scope">
             <p class="summary">{{ scope.row.summary }}</p>
@@ -31,7 +32,7 @@
         </el-table-column>
         <el-table-column
           label="新闻视频"
-          min-width="192px">
+          width="212px">
           <template
             slot-scope="scope"
             v-if="scope.row.videoPath">
@@ -51,7 +52,9 @@
             </video>
           </template>
         </el-table-column>
-        <el-table-column label="新闻图片">
+        <el-table-column
+          label="新闻图片"
+          min-width="100px">
           <template
             slot-scope="scope"
             v-if="scope.row.imageUrl">
@@ -62,7 +65,7 @@
         </el-table-column>
         <el-table-column
           label="新闻音频"
-          min-width="192px">
+          width="212px">
           <template
             slot-scope="scope"
             v-if="scope.row.audioPath">
@@ -167,7 +170,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['newsList'])
+    ...mapState(['newsList']),
+    routeName() {
+      return this.$route.name
+    }
+  },
+  watch: {
+    $route(val) {
+      this.getDatas()
+    }
   },
   mounted() {
     this.getDatas()
@@ -179,7 +190,7 @@ export default {
       this.getDatas()
     },
     getDatas() {
-      this.getNewsList({ ...this.filter, ...this.pagination, type: 1 }).then(res => {
+      this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
         if (!res) return
         document.querySelectorAll('.summary').forEach(row => {
           if (row.offsetHeight > 69) {
@@ -207,14 +218,34 @@ export default {
       }).catch(() => {})
     },
     onEdit(id) {
-      this.$router.push({
-        path: `/prison-affairs-public/prison-affairs-public/edit/${ id }`
-      })
+      switch (this.$route.meta.typeId) {
+        case 1:
+          this.$router.push(`/prison-affairs-public/prison-affairs-public/edit/${ id }`)
+          break
+        case 2:
+          this.$router.push(`/prison-affairs-public/working-dynamics/edit/${ id }`)
+          break
+        case 3:
+          this.$router.push(`/prison-affairs-public/complaints-suggestions/edit/${ id }`)
+          break
+        default:
+          this.$message.error('不识别的类型')
+      }
     },
     onAdd() {
-      this.$router.push({
-        path: '/prison-affairs-public/prison-affairs-public/add'
-      })
+      switch (this.$route.meta.typeId) {
+        case 1:
+          this.$router.push('/prison-affairs-public/prison-affairs-public/add')
+          break
+        case 2:
+          this.$router.push('/prison-affairs-public/working-dynamics/add')
+          break
+        case 3:
+          this.$router.push('/prison-affairs-public/complaints-suggestions/add')
+          break
+        default:
+          this.$message.error('不识别的类型')
+      }
     }
   }
 }

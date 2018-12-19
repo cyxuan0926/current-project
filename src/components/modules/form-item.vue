@@ -140,7 +140,7 @@ export default {
       this.$emit('validateField', this.prop)
     },
     handleCheckboxChange(e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 }

@@ -23,7 +23,7 @@ let infomation = [{
   meta: { hidden: true },
   children: [{
     path: '/prison-affairs-public/prison-affairs-public',
-    name: '狱务公开信息列表',
+    name: '狱务公开信息',
     meta: { typeId: 1 },
     component: resolve => require(['@/views/info-prison-affairs-public/components/list'], resolve)
   }, {
@@ -40,32 +40,32 @@ let infomation = [{
     path: '/prison-affairs-public/working-dynamics',
     name: '工作动态',
     meta: { typeId: 2 },
-    component: resolve => require(['@/views/info-prison-affairs-public/working-dynamics-list'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/list'], resolve)
   }, {
     path: '/prison-affairs-public/working-dynamics/add',
     name: '新增工作动态',
     meta: { typeId: 2 },
-    component: resolve => require(['@/views/info-prison-affairs-public/working-dynamics-add'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/add'], resolve)
   }, {
     path: '/prison-affairs-public/working-dynamics/edit/:id',
     name: '编辑工作动态',
     meta: { typeId: 2 },
-    component: resolve => require(['@/views/info-prison-affairs-public/working-dynamics-edit'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/edit'], resolve)
   }, {
     path: '/prison-affairs-public/complaints-suggestions',
     name: '投诉建议公示',
     meta: { typeId: 3 },
-    component: resolve => require(['@/views/info-prison-affairs-public/complaints-suggestions-list'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/list'], resolve)
   }, {
     path: '/prison-affairs-public/complaints-suggestions/add',
     name: '新增投诉/建议',
     meta: { typeId: 3 },
-    component: resolve => require(['@/views/info-prison-affairs-public/complaints-suggestions-add'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/add'], resolve)
   }, {
     path: '/prison-affairs-public/complaints-suggestions/edit/:id',
     name: '编辑投诉/建议',
     meta: { typeId: 3 },
-    component: resolve => require(['@/views/info-prison-affairs-public/complaints-suggestions-edit'], resolve)
+    component: resolve => require(['@/views/info-prison-affairs-public/components/edit'], resolve)
   }]
 }, {
   path: '/remote',

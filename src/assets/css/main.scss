@@ -17,13 +17,12 @@ p{
 .bold{
   font-weight: bold;
 }
-// .three-line{
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   display: -webkit-box;
-//   -webkit-line-clamp: 3;
-//   -webkit-box-orient: vertical;
-// }
+.el-table--striped .el-table__body tr.el-table__row--striped td .three-line::after{
+  background: #FAFAFA;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td .three-line::after{
+  background: #f5f7fa;
+}
 .detail-item.special{
   img{
     max-width: 400px !important;
