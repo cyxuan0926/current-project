@@ -27,7 +27,7 @@
           width="160px"
           :resizable="false">
           <template slot-scope="scope">
-            <p class="summary">{{ scope.row.summary }}</p>
+            <p :class="['summary', { 'three-line': scope.row.ellipsis }]">{{ scope.row.summary }}</p>
           </template>
         </el-table-column>
         <el-table-column
@@ -192,9 +192,12 @@ export default {
     getDatas() {
       this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
         if (!res) return
-        document.querySelectorAll('.summary').forEach(row => {
+        document.querySelectorAll('.summary').forEach((row, index) => {
           if (row.offsetHeight > 69) {
-            row.classList.add('three-line')
+            this.newsList.contents[index].ellipsis = true
+          }
+          else {
+            this.newsList.contents[index].ellipsis = false
           }
         })
       })
@@ -213,7 +216,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.deleteNews({ id: id }).then(res => {
-          if (res) this.currentChange()
+          if (res) this.getDatas()
         })
       }).catch(() => {})
     },

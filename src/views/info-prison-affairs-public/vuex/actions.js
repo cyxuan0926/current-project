@@ -5,6 +5,9 @@ export default {
   getNewsList: ({ commit }, params) => {
     return http.getNewsList(params).then(res => {
       if (!res) return false
+      if (res.news && res.news.length) {
+        res.news.forEach(news => { news.ellipsis = false })
+      }
       commit('getNewsList', res)
       return true
     })
