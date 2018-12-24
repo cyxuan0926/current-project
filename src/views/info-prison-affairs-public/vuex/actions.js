@@ -36,7 +36,7 @@ export default {
       params.imageUrl && excpt.push(params.imageUrl)
       params.audioPath && excpt.push(params.audioPath)
       params.videoPath && excpt.push(params.videoPath)
-      dispatch('handleDeleteImage', [excpt, params.contents])
+      dispatch('handleDeleteImage', [excpt, params.contents, true])
       return true
     })
   },

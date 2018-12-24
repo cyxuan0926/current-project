@@ -162,9 +162,10 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      searchItems: {
+      searchItemInit: {
         title: { type: 'input', label: '新闻标题' }
       },
+      searchItems: Object.assign({}, this.searchItemInit),
       visible: false,
       news: {}
     }
@@ -177,14 +178,22 @@ export default {
   },
   watch: {
     $route(val) {
-      this.getDatas()
+      this.render()
     }
   },
   mounted() {
-    this.getDatas()
+    this.render()
   },
   methods: {
     ...mapActions(['getNewsList', 'deleteNews']),
+    render() {
+      this.searchItems = Object.assign({}, this.searchItemInit)
+      Object.keys(this.searchItems).forEach(key => {
+        delete this.searchItems[key].value
+        if (this.filter) delete this.filter[key]
+      })
+      this.getDatas()
+    },
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -192,14 +201,16 @@ export default {
     getDatas() {
       this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
         if (!res) return
-        document.querySelectorAll('.summary').forEach((row, index) => {
-          if (row.offsetHeight > 69) {
-            this.newsList.contents[index].ellipsis = true
-          }
-          else {
-            this.newsList.contents[index].ellipsis = false
-          }
-        })
+        setTimeout(() => {
+          document.querySelectorAll('.summary').forEach((row, index) => {
+            if (row.offsetHeight > 69) {
+              this.newsList.contents[index].ellipsis = true
+            }
+            else {
+              this.newsList.contents[index].ellipsis = false
+            }
+          })
+        }, 50)
       })
     },
     onSearch() {
