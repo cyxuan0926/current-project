@@ -4,8 +4,16 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      append-btn="下载"
+      @appendHandler="handleDownload"
       @sizeChange="sizeChange"
-      @search="onSearch" />
+      @search="onSearch">
+      <el-button
+        slot="append"
+        type="primary"
+        :loading="downloading"
+        @click="handleDownload">下载</el-button>
+    </m-search>
     <el-col :span="24">
       <el-tabs
         value="first"
@@ -32,7 +40,9 @@
         <el-table-column
           label="反馈图片">
           <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
+            <m-img-viewer
+              v-if="scope.row.imageUrls.length"
+              :src="scope.row.imageUrls[0] + '?token=' + $urls.token" />
           </template>
         </el-table-column>
         <el-table-column
@@ -52,11 +62,20 @@
           label="操作">
           <template slot-scope="scope">
             <el-button
+              v-if="!scope.row.isReply"
               size="mini"
               class="button-column"
-              @click="handleReply(scope.row.id)"
+              @click="handleReply(scope.row)"
               type="primary">
               答复
+            </el-button>
+            <el-button
+              v-else
+              size="mini"
+              class="button-column"
+              disabled
+              type="primary">
+              已答复
             </el-button>
             <br>
             <el-button
@@ -99,19 +118,23 @@
           class="detail-item"
           v-if="feedback.imageUrls.length">
           <label>反馈图片</label>
-          <img
-            v-for="(img, index) in feedback.imageUrls"
-            :key="index"
-            :src="img + '?token=' + $urls.token">
+          <div class="img-box">
+            <m-img-viewer
+              v-for="(img, index) in feedback.imageUrls"
+              :key="index"
+              v-if="img"
+              :src="img + '?token=' + $urls.token" />
+          </div>
         </div>
         <div
           class="detail-item"
-          v-if="feedback.answer">
+          v-if="feedback.isReply">
           <label>回复内容</label>
-          <span>{{ feedback.answer }}</span>
+          <span>{{ feedback.reply }}</span>
         </div>
         <div
-          id="aaa"
+          v-else
+          id="answer"
           class="detail-item"><label>回复内容</label>
           <span>
             <el-input
@@ -119,6 +142,15 @@
               type="textarea"
               placeholder="请输入内容"
               resize="none" /></span>
+        </div>
+        <div class="detail-item">
+          <el-button
+            v-if="!feedback.isReply"
+            type="primary"
+            size="mini"
+            :loading="replying"
+            :disabled="disabled"
+            @click="onReply(feedback.id)">答复</el-button>
         </div>
       </div>
     </el-dialog>
@@ -137,12 +169,18 @@ export default {
         name: { type: 'input', label: '家属姓名' }
       },
       visible: false,
+      replying: false,
+      downloading: false,
       feedback: {},
       answer: ''
     }
   },
   computed: {
-    ...mapState(['feedbacks', 'feedbackTypes'])
+    ...mapState(['feedbacks', 'feedbackTypes']),
+    disabled() {
+      let pattern = /^\s*(.*?)\s*$/
+      return !this.answer.replace(pattern, '$1')
+    }
   },
   mounted() {
     this.getDatas()
@@ -153,7 +191,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback']),
+    ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -164,8 +202,39 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+    handleDownload(e) {
+      this.downloading = true
+      let link = document.createElement('a'), params = ''
+      Object.keys(this.filter).forEach((key, index) => {
+        params = `${ params }${ index === 0 ? '?' : '&' }${ key }=${ this.filter[key] }`
+      })
+      link.href = `${ this.$urls.apiHost }${ this.$urls.apiPath }/feedbacks/download${ params }`
+      link.id = 'linkId'
+      document.body.appendChild(link)
+      document.getElementById('linkId').click()
+      document.body.removeChild(document.getElementById('linkId'))
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
     handleReply(e) {
-      console.log(e)
+      this.feedback = e
+      this.visible = true
+      setTimeout(() => {
+        document.querySelector('#answer textarea').focus()
+      }, 300)
+    },
+    onReply(e) {
+      let params = { reply: this.answer.replace(/^\s*(.*?)\s*$/, '$1'), id: e }
+      this.replying = true
+      this.replyFeedback(params).then(res => {
+        this.replying = false
+        if (!res) return
+        this.getDatas()
+        this.visible = false
+        this.feedback = {}
+        this.answer = ''
+      })
     },
     onDelete(id) {
       this.$confirm('确定删除？', '提示', {
@@ -174,17 +243,26 @@ export default {
         type: 'warning'
       }).then(() => {
         this.deleteFeedback({ id: id }).then(res => {
-          if (res) this.getDatas()
+          if (!res) return
+          if (this.feedbacks.contents.length === 1) {
+            this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
+          }
+          else this.getDatas()
         })
       }).catch(() => {})
     },
     getDetail(e) {
-      console.log(e)
-      this.feedback = e
-      this.visible = true
-      setTimeout(() => {
-        document.querySelector('#aaa textarea').focus()
-      }, 500)
+      if ((e.isReply && e.reply) || !e.isReply) {
+        this.feedback = e
+        this.visible = true
+      }
+      else {
+        this.getFeedbackDetail({ id: e.id }).then(res => {
+          if (!res) return
+          this.feedback = res
+          this.visible = true
+        })
+      }
     }
   }
 }
@@ -193,6 +271,7 @@ export default {
 <style lang="scss" scoped>
 .button-column{
   margin-bottom: 4px;
+  width: 68px;
 }
 .tips-title{
   display: block;
@@ -224,6 +303,17 @@ export default {
       float: left;
       width: 400px;
       word-break: break-all;
+    }
+    .img-box{
+      width: 400px;
+      img{
+        width: 195px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+    }
+    button{
+      width: 100%;
     }
   }
 }

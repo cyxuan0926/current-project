@@ -111,6 +111,7 @@
           v-else
           icon="el-icon-search"
           @click="onSearch" />
+        <slot name="append" />
       </template>
     </div>
   </el-col>

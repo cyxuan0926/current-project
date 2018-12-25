@@ -43,8 +43,8 @@ instance.interceptors.response.use(
  * @param params
  * @returns {Promise}
  */
-export const get = (url, params = {}) =>
-  instance.get(getUrl(url), { params: params }).then(res => res)
+export const get = (url, params = {}, config = {}) =>
+  instance.get(getUrl(url), { params: params, config }).then(res => res)
 /**
  * 封装post请求
  * @param url
