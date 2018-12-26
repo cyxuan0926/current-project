@@ -133,7 +133,10 @@
               v-model="answer"
               type="textarea"
               placeholder="请输入内容"
-              resize="none" /></span>
+              resize="none" />
+            <p
+              v-if="tips"
+              class="tips">最多输入300个字符</p></span>
         </div>
         <div class="detail-item">
           <el-button
@@ -170,7 +173,11 @@ export default {
     ...mapState(['mailboxes', 'mailboxTypes']),
     disabled() {
       let pattern = /^\s*(.*?)\s*$/
-      return !this.answer.replace(pattern, '$1')
+      return this.answer.replace(pattern, '$1').length > 300 || this.answer.replace(pattern, '$1').length === 0
+    },
+    tips() {
+      let pattern = /^\s*(.*?)\s*$/
+      return this.answer.replace(pattern, '$1').length > 300
     }
   },
   mounted() {
