@@ -255,12 +255,14 @@ export default {
     getDetail(e) {
       if ((e.isReply && e.reply) || !e.isReply) {
         this.feedback = e
+        this.answer = ''
         this.visible = true
       }
       else {
         this.getFeedbackDetail({ id: e.id }).then(res => {
           if (!res) return
           this.feedback = res
+          this.answer = ''
           this.visible = true
         })
       }
