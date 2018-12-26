@@ -116,7 +116,7 @@ let check = [{
 }]
 
 check.forEach(item => {
-  item.component = frame
+  if (!item.component) item.component = frame
 })
 
 export default check

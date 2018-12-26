@@ -9,7 +9,7 @@
       </el-aside>
       <el-container>
         <el-main>Main</el-main>
-        <el-footer>Footer</el-footer>
+        <el-footer height="50px"><the-footer /></el-footer>
       </el-container>
     </el-container>
   </el-container>
