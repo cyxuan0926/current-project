@@ -4,26 +4,18 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      append-btn="下载"
-      @appendHandler="handleDownload"
       @sizeChange="sizeChange"
-      @search="onSearch">
-      <el-button
-        slot="append"
-        type="primary"
-        :loading="downloading"
-        @click="handleDownload">下载</el-button>
-    </m-search>
+      @search="onSearch" />
     <el-col :span="24">
       <el-tabs
         value="first"
         type="card">
         <el-tab-pane
-          label="意见反馈"
+          label="监狱长信箱"
           name="first" />
       </el-tabs>
       <el-table
-        :data="feedbacks.contents"
+        :data="mailboxes.contents"
         border
         stripe
         style="width: 100%">
@@ -32,13 +24,13 @@
           label="用户" />
         <el-table-column
           prop="typeName"
-          label="反馈类别" />
+          label="信件类别" />
         <el-table-column
-          prop="content"
+          prop="contents"
           show-overflow-tooltip
-          label="反馈内容" />
+          label="信件内容" />
         <el-table-column
-          label="反馈图片">
+          label="图片">
           <template slot-scope="scope">
             <m-img-viewer
               v-if="scope.row.imageUrls.length"
@@ -46,7 +38,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="反馈时间">
+          label="发件时间">
           <template slot-scope="scope">
             {{ scope.row.createdAt | Date }}
           </template>
@@ -99,7 +91,7 @@
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="feedbacks.total"
+      :total="mailboxes.total"
       @onPageChange="getDatas" />
     <el-dialog
       :visible.sync="visible"
@@ -110,17 +102,17 @@
         slot="title"
         class="tips-title">详细内容</span>
       <div class="dialog-container">
-        <div class="detail-item"><label>用户</label><span>{{ feedback.name }}</span></div>
-        <div class="detail-item"><label>反馈时间</label><span>{{ feedback.createdAt | Date }}</span></div>
-        <div class="detail-item"><label>反馈类别</label><span>{{ feedback.typeName }}</span></div>
-        <div class="detail-item"><label>反馈内容</label><span>{{ feedback.content }}</span></div>
+        <div class="detail-item"><label>用户</label><span>{{ mailbox.familyName }}</span></div>
+        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt | Date }}</span></div>
+        <div class="detail-item"><label>信件类别</label><span>{{ mailbox.typeName }}</span></div>
+        <div class="detail-item"><label>信件内容</label><span>{{ mailbox.contents }}</span></div>
         <div
           class="detail-item"
-          v-if="feedback.imageUrls.length">
-          <label>反馈图片</label>
+          v-if="mailbox.imageUrls.length">
+          <label>图片</label>
           <div class="img-box">
             <m-img-viewer
-              v-for="(img, index) in feedback.imageUrls"
+              v-for="(img, index) in mailbox.imageUrls"
               :key="index"
               v-if="img"
               :src="img + '?token=' + $urls.token" />
@@ -128,9 +120,9 @@
         </div>
         <div
           class="detail-item"
-          v-if="feedback.isReply">
+          v-if="mailbox.isReply">
           <label>回复内容</label>
-          <span>{{ feedback.reply }}</span>
+          <span>{{ mailbox.reply }}</span>
         </div>
         <div
           v-else
@@ -145,12 +137,12 @@
         </div>
         <div class="detail-item">
           <el-button
-            v-if="!feedback.isReply"
+            v-if="!mailbox.isReply"
             type="primary"
             size="mini"
             :loading="replying"
             :disabled="disabled"
-            @click="onReply(feedback.id)">答复</el-button>
+            @click="onReply(mailbox.id)">答复</el-button>
         </div>
       </div>
     </el-dialog>
@@ -164,19 +156,18 @@ export default {
     return {
       searchItems: {
         time: { type: 'datetimerange', start: 'startTime', end: 'endTime' },
-        type: { type: 'select', label: '反馈类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
+        type: { type: 'select', label: '信件类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
         isReply: { type: 'select', label: '是否回复', options: [{ value: 1, label: '是' }, { value: 0, label: '否' }] },
-        name: { type: 'input', label: '家属姓名' }
+        name: { type: 'input', label: '用户名' }
       },
       visible: false,
       replying: false,
-      downloading: false,
-      feedback: {},
+      mailbox: {},
       answer: ''
     }
   },
   computed: {
-    ...mapState(['feedbacks', 'feedbackTypes']),
+    ...mapState(['mailboxes', 'mailboxTypes']),
     disabled() {
       let pattern = /^\s*(.*?)\s*$/
       return !this.answer.replace(pattern, '$1')
@@ -184,41 +175,26 @@ export default {
   },
   mounted() {
     this.getDatas()
-    this.getFeedbackTypes().then(res => {
+    this.getMailboxTypes().then(res => {
       if (!res) return
-      this.searchItems.type.options = this.feedbackTypes
+      this.searchItems.type.options = this.mailboxTypes
       this.searchItems.type.getting = false
     })
   },
   methods: {
-    ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail']),
+    ...mapActions(['getMailboxes', 'getMailboxTypes', 'deleteMailbox', 'replyMailbox', 'getMailboxDetail']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getFeedbacks({ ...this.filter, ...this.pagination })
+      this.getMailboxes({ ...this.filter, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    handleDownload(e) {
-      this.downloading = true
-      let link = document.createElement('a'), params = ''
-      Object.keys(this.filter).forEach((key, index) => {
-        params = `${ params }${ index === 0 ? '?' : '&' }${ key }=${ this.filter[key] }`
-      })
-      link.href = `${ this.$urls.apiHost }${ this.$urls.apiPath }/feedbacks/download${ params }`
-      link.id = 'linkId'
-      document.body.appendChild(link)
-      document.getElementById('linkId').click()
-      document.body.removeChild(document.getElementById('linkId'))
-      setTimeout(() => {
-        this.downloading = false
-      }, 300)
-    },
     handleReply(e) {
-      this.feedback = e
+      this.mailbox = e
       this.answer = ''
       this.visible = true
       setTimeout(() => {
@@ -226,14 +202,14 @@ export default {
       }, 300)
     },
     onReply(e) {
-      let params = { reply: this.answer.replace(/^\s*(.*?)\s*$/, '$1'), id: e }
+      let params = { contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'), id: e }
       this.replying = true
-      this.replyFeedback(params).then(res => {
+      this.replyMailbox(params).then(res => {
         this.replying = false
         if (!res) return
         this.getDatas()
         this.visible = false
-        this.feedback = {}
+        this.mailbox = {}
         this.answer = ''
       })
     },
@@ -243,9 +219,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.deleteFeedback({ id: id }).then(res => {
+        this.deleteMailbox({ id: id }).then(res => {
           if (!res) return
-          if (this.feedbacks.contents.length === 1) {
+          if (this.mailboxes.contents.length === 1) {
             this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
           }
           else this.getDatas()
@@ -254,13 +230,15 @@ export default {
     },
     getDetail(e) {
       if ((e.isReply && e.reply) || !e.isReply) {
-        this.feedback = e
+        this.mailbox = e
+        this.answer = ''
         this.visible = true
       }
       else {
-        this.getFeedbackDetail({ id: e.id }).then(res => {
+        this.getMailboxDetail({ id: e.id }).then(res => {
           if (!res) return
-          this.feedback = res
+          this.mailbox = res
+          this.answer = ''
           this.visible = true
         })
       }
