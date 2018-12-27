@@ -8,7 +8,14 @@
         <the-sidebar />
       </el-aside>
       <el-container>
-        <el-main>Main</el-main>
+        <the-breadcrumb />
+        <el-main>
+          <transition
+            name="router-fade"
+            mode="out-in">
+            <router-view />
+          </transition>
+        </el-main>
         <el-footer height="50px"><the-footer /></el-footer>
       </el-container>
     </el-container>

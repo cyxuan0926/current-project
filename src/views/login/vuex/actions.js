@@ -9,9 +9,6 @@ export default {
       return true
     })
   },
-  logout: ({ commit }) => {
-    return http.logout().then(res => res)
-  },
   setCookie: ({ commit }, params) => {
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=${ params[key] };`

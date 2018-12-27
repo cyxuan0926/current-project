@@ -11,6 +11,15 @@ let common = [{
     component: resolve => require(['@/views/test/test'], resolve)
   }]
 }, {
+  path: '/',
+  meta: { hidden: true },
+  component: frame,
+  children: [{
+    path: '/dashboard',
+    name: '工作台',
+    component: resolve => require(['@/views/dashboard/dashboard'], resolve)
+  }]
+}, {
   path: '/login',
   name: '登录',
   meta: { notLogin: true },
@@ -26,10 +35,10 @@ let common = [{
   component: frame,
   meta: { hidden: true },
   children: [{
-    path: '/dashboard',
-    name: '欢迎',
-    component: resolve => require(['@/views/dashboard/dashboard'], resolve)
-  }, {
+  //   path: '/dashboard',
+  //   name: '欢迎',
+  //   component: resolve => require(['@/views/dashboard/dashboard'], resolve)
+  // }, {
     path: '/password/edit',
     name: '修改密码',
     component: resolve => require(['@/views/password/password-edit'], resolve)
