@@ -55,8 +55,8 @@ export default {
         username: '',
         prison: ''
       },
-      rememberPSW: false,
-      logining: false,
+      isRember: false,
+      loading: false,
       rules: {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -71,25 +71,25 @@ export default {
     this.getCookie().then(res => {
       if (res && res.password) {
         this.formData = Object.assign({}, res, { password: Base64.decode(res.password) })
-        this.rememberPSW = true
+        this.isRember = true
       }
     })
   },
   methods: {
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    onSubmit() {
+      this.$refs.form.validate(valid => {
         if (valid) {
-          this.logining = true
+          this.loading = true
           this.login(this.formData).then(res => {
-            this.logining = false
+            this.loading = false
             if (!res) return
             let params = {
               password: Base64.encode(this.formData.password),
               username: this.formData.username,
               prison: this.formData.prison
             }
-            if (this.rememberPSW) this.setCookie(params)
+            if (this.isRember) this.setCookie(params)
             else this.removeCookie(params)
             this.$router.replace('/dashboard')
           })
