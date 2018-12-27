@@ -1,10 +1,11 @@
-import http from '@/service'
+import api from './service'
 
 export default {
   login: ({ commit, dispatch }, params) => {
-    return http.login(params).then(res => {
+    return api.login(params).then(res => {
       if (!res) return
       if (res.users.role === '1') dispatch('getWebsocketResult', res.users.jailId)
+      dispatch('setUser', res.users)
       commit('login', res)
       return true
     })

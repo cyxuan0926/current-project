@@ -49,7 +49,7 @@ export default {
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
-      user: state => state.user
+      user: state => state.global.user
     })
   },
   methods: {

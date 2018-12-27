@@ -81,22 +81,9 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.user,
+      user: state => state.global.user,
       isCollapsed: state => state.layout.isCollapsed
     })
-  },
-  watch: {
-    isCollapsed(val) {
-      console.log(val)
-      if (val) {
-        setTimeout(() => {
-          this.collapsed = val
-        }, 300)
-      }
-      else {
-        this.collapsed = val
-      }
-    }
   },
   mounted() {
     if (this.user.prisonConfigList && this.user.prisonConfigList.length) {

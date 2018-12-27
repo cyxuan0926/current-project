@@ -16,7 +16,7 @@
             <router-view />
           </transition>
         </el-main>
-        <el-footer height="50px"><the-footer /></el-footer>
+        <el-footer height="40px"><the-footer /></el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -45,7 +45,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-// @import "../../assets/css/layout";
-</style>

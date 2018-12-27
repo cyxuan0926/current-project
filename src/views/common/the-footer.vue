@@ -23,7 +23,7 @@ export default {
   background: #fff;
   color: #444;
   border-top: 1px solid #d2d6de;
-  line-height: 50px;
+  line-height: 40px;
   padding: 0 15px;
   overflow: hidden;
   .hidden-xs-only{

@@ -1,90 +1,65 @@
 <template>
-  <div
-    id="login"
-    @keyup.enter="submitForm('ruleForm2')">
-    <el-row
-      :gutter="0"
-      class="loginBackground">
-      <el-col
-        :span="6"
-        :offset="9">
-        <el-col :span="24">
-          <p class="projectName">狱务公开管理平台</p>
-        </el-col>
+  <div class="height100 center">
+    <div class="login-container">
+      <h1>狱务公开管理平台</h1>
+      <div class="login-form">
         <el-form
-          :model="ruleForm2"
-          status-icon
-          :rules="rules2"
-          ref="ruleForm2"
-          label-width="100px"
-          class="demo-ruleForm">
-          <el-form-item
-            label-width="0"
-            prop="prison">
+          ref="form"
+          :model="formData"
+          :rules="rules"
+          @keyup.enter.native="onSubmit">
+          <el-form-item prop="prison">
             <el-input
-              type="text"
-              v-model="ruleForm2.prison"
-              auto-complete="off"
-              placeholder="监狱代码"/>
+              v-model="formData.prison"
+              placeholder="监狱编号">
+              <!-- <template slot="prepend">监狱编号</template> -->
+            </el-input>
           </el-form-item>
-          <el-form-item
-            label-width="0"
-            prop="username">
+          <el-form-item prop="username">
             <el-input
-              type="text"
-              v-model="ruleForm2.username"
-              auto-complete="off"
-              placeholder="用户名"/>
+              v-model="formData.username"
+              placeholder="用户名">
+              <!-- <template slot="prepend">用户名</template> -->
+            </el-input>
           </el-form-item>
-          <el-form-item
-            label-width="0"
-            prop="password">
+          <el-form-item prop="password">
             <el-input
               type="password"
-              v-model="ruleForm2.password"
-              auto-complete="off"
-              placeholder="密码"/>
+              v-model="formData.password"
+              placeholder="密码">
+              <!-- <template slot="prepend">密码</template> -->
+            </el-input>
           </el-form-item>
-          <el-form-item
-            label-width="0"
-            class="btn-box">
-            <!-- `checked` 为 true 或 false -->
-            <!--<el-checkbox v-model="ruleForm2.checked">记住密码</el-checkbox>-->
-            <el-button
-              type=""
-              @click="submitForm('ruleForm2')">提交</el-button>
+          <el-form-item class="white-login">
+            <el-checkbox v-model="isRember">记住密码</el-checkbox>
           </el-form-item>
         </el-form>
-      </el-col>
-    </el-row>
+        <el-button
+          class="button-login"
+          type="primary"
+          :loading="loading"
+          @click="onSubmit">登录</el-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { Base64 } from 'js-base64'
 import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      ruleForm2: {
+      formData: {
         password: '',
         username: '',
         prison: ''
       },
-      // ruleForm2: {
-      //   password: '3m4c3n9J',
-      //   username: 'admin',
-      //   prison: '9999'
-      // },
-      // ruleForm2: {
-      //   password: '3m4c3n9J',
-      //   username: '4501_xx',
-      //   prison: '4501'
-      // },
-      rules2: {
+      rememberPSW: false,
+      logining: false,
+      rules: {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
+        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         prison: [{ required: true, message: '请输入监狱代码', trigger: 'blur' }]
       }
     }
@@ -93,15 +68,29 @@ export default {
     if (localStorage.getItem('user')) {
       this.$router.replace('/dashboard')
     }
+    this.getCookie().then(res => {
+      if (res && res.password) {
+        this.formData = Object.assign({}, res, { password: Base64.decode(res.password) })
+        this.rememberPSW = true
+      }
+    })
   },
   methods: {
-    ...mapActions(['login']),
-    // 点击提交按钮执行的方法
+    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.login(this.ruleForm2).then(res => {
+          this.logining = true
+          this.login(this.formData).then(res => {
+            this.logining = false
             if (!res) return
+            let params = {
+              password: Base64.encode(this.formData.password),
+              username: this.formData.username,
+              prison: this.formData.prison
+            }
+            if (this.rememberPSW) this.setCookie(params)
+            else this.removeCookie(params)
             this.$router.replace('/dashboard')
           })
         }
@@ -110,30 +99,7 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-  white = #fff
-  #login
-    .loginBackground
-      background: #4F98C2
-      margin-top: 10%
-    .projectName
-      font-size: 35px
-      color: white
-      margin-top: 20px
-      margin-bottom: 20px
-    .btn-box
-      & /deep/ .el-button
-        background: #186C9C
-        color: white
-        float: right
-        border: 0
-        border-radius: 0
-        width: 86px
-        height: 34px
-        vertical-align: middle
-      & /deep/ .el-checkbox
-        float: left
-      & /deep/ .el-checkbox__label
-        color: white
+<style lang="scss" scoped>
+@import "../../assets/css/login";
 </style>
+

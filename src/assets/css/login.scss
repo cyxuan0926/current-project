@@ -1,0 +1,26 @@
+.height100{
+  background: url('../../assets/images/bg-login.jpg') 0 60% no-repeat;
+  background-size: cover;
+}
+.login-container{
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  width: 50%;
+  min-width: 340px;
+  max-width: 640px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #666666;
+  h1{
+    background: rgba(0, 0, 0, 0.05);
+    color: #3c8dbc;
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    border-bottom: 1px solid #dddddd;
+  }
+  .login-form{
+    width: 75%;
+    margin: auto;
+    padding: 20px 0;
+  }
+}
