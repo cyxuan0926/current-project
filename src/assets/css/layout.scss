@@ -9,6 +9,9 @@
       background: #367fa9;
     }
   }
+  .collapsed{
+    width: 50px;
+  }
 }
 .header-left{
   float: left;
@@ -18,9 +21,6 @@
   font-size: 20px; 
   overflow: hidden;
 }
-.collapsed{
-  width: 50px;
- }
 .header-right{
   display: flex;
   background-color: #3c8dbc;
@@ -46,7 +46,13 @@
   align-items: center;
   justify-content: stretch;
   font-size: 14px;
+  overflow: hidden;
+  transition: width 0.3s ease-in-out;
   border-bottom: 5px solid #1A2226;
+  width: 230px;
+  .collapsed &{
+    width: 50px;
+  }
   .avatar{
     width: 100%;
     height: 100%;
@@ -78,6 +84,13 @@
       top: 0;
       left: 0;
     }
+  }
+}
+.first-level{
+  width: 230px;
+  overflow: hidden;
+  &.el-menu--collapse{
+    width: 50px;
   }
 }
 @media only screen and (max-width: 768px){

@@ -8,7 +8,7 @@ import filters from './filters'
 import components from '@/components'
 import urls from '@/service/urls'
 // import config from '@/service/config/base'
-import '../static/bootstrap/js/bootstrap.min.js'
+// import '../static/bootstrap/js/bootstrap.min.js'
 // import '../static/dist/js/app.min.js'
 
 // import '../static/bootstrap/css/bootstrap.min.css'

@@ -36,6 +36,7 @@
         <el-menu-item
           v-if="!item.children"
           class="border-bottom"
+          :popper-append-to-body="false"
           :key="item.path"
           :index="item.path">
           <i :class="item.icon" />
@@ -45,6 +46,7 @@
           v-if="item.children"
           :class="[
             'border-bottom',
+            'second-level',
             { 'is-active': item.children.indexOf(r => r.path === $route.path) > -1 }
           ]"
           :key="item.path"

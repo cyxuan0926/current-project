@@ -26,6 +26,7 @@ a{
 }
 .el-aside{
   background: #222d32;
+  overflow: hidden;
 }
 .el-menu{
   border-right: 0;
@@ -42,6 +43,28 @@ a{
     color: #b8c7ce;
     margin-left: -6px;
   }
+  .second-level{
+    &.is-active>.el-submenu__title{
+      background: #1D262A !important;
+      position: relative;
+      &:before{
+        content: '';
+        display: block;
+        height: 100%;
+        width: 3px;
+        background: #3c8dbc;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+    &>.el-menu{
+      border-bottom: 1px solid #444;
+    }
+  }
+}
+body>.el-tooltip__popper.is-dark{
+  left: 60px !important;
 }
 .el-footer{
   padding: 0;
