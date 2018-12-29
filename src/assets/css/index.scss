@@ -78,6 +78,14 @@ body>.el-tooltip__popper.is-dark{
 .el-footer{
   padding: 0;
 }
+.login-container{
+  .el-input-group__prepend{
+    padding: 0 10px;
+  }
+  .el-form-item:last-child{
+    margin-bottom: 10px;
+  }
+}
 @media only screen and (max-width: 768px){
   .el-header{
     height: 100px !important;
