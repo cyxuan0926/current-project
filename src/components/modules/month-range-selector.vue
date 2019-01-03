@@ -54,12 +54,12 @@
           class="el-date-range-picker__header">
           <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-left"
-            :class="{'is-disabled' : minYear && preYear <= minYear}"
-            @click="handlePreYear('pre', minYear && preYear <= minYear)" />
-          <i
+            :class="{'is-disabled' : (minYear && preYear <= minYear) || (minRangeYear && preYear <= minRangeYear)}"
+            @click="handlePreYear('pre', (minYear && preYear <= minYear) || (minRangeYear && preYear <= minRangeYear))" />
+          <!-- <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-right"
             :class="{'is-disabled' : preYear >= nextYear - 1}"
-            @click="handleNextYear('pre', preYear >= nextYear - 1)" />
+            @click="handleNextYear('pre', preYear >= nextYear - 1)" /> -->
           <div>{{ preYear }}年</div>
         </div>
         <table
@@ -76,7 +76,7 @@
                   {'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === preYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === preYear)},
                   {'in-range' : inRange(preYear, (row - 1) * 4 + col)},
                   {'is-disabled' : isDisabled(preYear, (row - 1) * 4 + col)}]"
-                @click="handlePick(preYear, (row - 1) * 4 + col)">{{ (row - 1) * 4 + col }}月</span>
+                @click="handlePick(preYear, (row - 1) * 4 + col, isDisabled(preYear, (row - 1) * 4 + col))">{{ (row - 1) * 4 + col }}月</span>
             </td>
           </tr>
         </table>
@@ -84,14 +84,14 @@
       <div class="el-picker-panel__content el-date-range-picker__content is-right">
         <div
           class="el-date-range-picker__header">
-          <i
+          <!-- <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-left"
             :class="{'is-disabled' : nextYear <= preYear + 1}"
-            @click="handlePreYear('next', nextYear <= preYear + 1)" />
+            @click="handlePreYear('next', nextYear <= preYear + 1)" /> -->
           <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-right"
-            :class="{'is-disabled' : maxYear && nextYear >= maxYear}"
-            @click="handleNextYear('next', maxYear && nextYear >= maxYear)"/>
+            :class="{'is-disabled' : (maxYear && nextYear >= maxYear) || (maxRangeYear && nextYear >= maxRangeYear)}"
+            @click="handleNextYear('next', (maxYear && nextYear >= maxYear) || (maxRangeYear && nextYear >= maxRangeYear))"/>
           <div>{{ nextYear }}年</div>
         </div>
         <table
@@ -108,7 +108,7 @@
                   {'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === nextYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === nextYear)},
                   {'in-range' : inRange(nextYear, (row - 1) * 4 + col)},
                   {'is-disabled' : isDisabled(nextYear, (row - 1) * 4 + col)}]"
-                @click="handlePick(nextYear, (row - 1) * 4 + col)">{{ (row - 1) * 4 + col }}月</span>
+                @click="handlePick(nextYear, (row - 1) * 4 + col, isDisabled(nextYear, (row - 1) * 4 + col))">{{ (row - 1) * 4 + col }}月</span>
             </td>
           </tr>
         </table>
@@ -121,14 +121,14 @@
           @click="handleClearPicked(0)">
           清空
         </el-button>
-        <el-button
+        <!-- <el-button
           size="mini"
           type="primary"
           class="el-picker-panel__link-btn"
           :disabled="(!pickedPreMonth && !pickedNextMonth) || (pickedPreMonth && pickedNextMonth && (pickedPreYear !== pickedNextYear || (pickedPreYear === pickedNextYear && pickedPreMonth !== pickedNextMonth)))"
           @click="handleEnsure('single')">
           查询当月
-        </el-button>
+        </el-button> -->
         <el-button
           plain
           size="mini"
@@ -143,7 +143,7 @@
 </template>
 <script>
 import Clickoutside from '@/utils/clickoutside'
-// import Moment from 'moment'
+import Moment from 'moment'
 export default {
   props: {
     startValue: {
@@ -189,7 +189,8 @@ export default {
       default: function() {
         return {
           min: null,
-          max: null
+          max: null,
+          maxMonthRange: null
         }
       }
     },
@@ -211,7 +212,11 @@ export default {
       pickedPreMonth: 0,
       pickedNextMonth: 0,
       minYear: null,
+      minRangeYear: null,
+      minRangeMonth: null,
       maxYear: null,
+      maxRangeYear: null,
+      maxRangeMonth: null,
       count: 0
     }
   },
@@ -256,7 +261,7 @@ export default {
     },
     isDisabled(year, month) {
       let now = `${ year }-${ this.fillPre(month) }`
-      if ((this.range.min && now < this.range.min) || (this.range.max && now > this.range.max)) {
+      if ((this.range.min && now < this.range.min) || (this.range.max && now > this.range.max) || (this.range.maxMonthRange && this.minRangeYear && this.minRangeMonth && now < `${ this.minRangeYear }-${ this.minRangeMonth }`) || (this.range.maxMonthRange && this.maxRangeYear && this.maxRangeMonth && now > `${ this.maxRangeYear }-${ this.maxRangeMonth }`)) {
         return true
       }
       return false
@@ -265,14 +270,15 @@ export default {
       if (!num) return ''
       return `00${ num }`.slice(-2)
     },
-    handlePick(year, month) {
+    handlePick(year, month, disabled) {
+      if (disabled) return
       if (this.count >= 2) this.count = 0
       this.count++
-
       if (this.count === 1) {
         this.handleClearPicked(this.count)
         this.pickedPreYear = year
         this.pickedPreMonth = month
+        if (this.range.maxMonthRange) this.handleRange(year, month, this.range.maxMonthRange - 1)
       }
       else if (this.count === 2) {
         let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`,
@@ -287,7 +293,15 @@ export default {
           this.pickedNextYear = year
           this.pickedNextMonth = month
         }
+        if (this.range.maxMonthRange) this.clearRange()
       }
+    },
+    handleRange(year, month, dur) {
+      let minRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).subtract(dur, 'months').format('YYYY-MM').split('-'), maxRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).add(dur, 'months').format('YYYY-MM').split('-')
+      this.minRangeYear = minRangeMonth[0]
+      this.minRangeMonth = minRangeMonth[1]
+      this.maxRangeYear = maxRangeMonth[0]
+      this.maxRangeMonth = maxRangeMonth[1]
     },
     handleBlur(e) {
       if (!this.visible) return
@@ -321,6 +335,13 @@ export default {
       this.pickedNextYear = null
       this.pickedPreMonth = null
       this.pickedNextMonth = null
+      if (this.range.maxMonthRange) this.clearRange()
+    },
+    clearRange() {
+      this.minRangeYear = null
+      this.minRangeMonth = null
+      this.maxRangeYear = null
+      this.maxRangeMonth = null
     },
     handleEnsure(e) {
       this.start = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`

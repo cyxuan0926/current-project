@@ -120,8 +120,8 @@ export default {
           startKey: 'startDate',
           endKey: 'endDate',
           range: {
-            min: Moment().subtract(24, 'months').format('YYYY-MM'),
-            max: Moment().subtract(1, 'months').format('YYYY-MM')
+            max: Moment().subtract(1, 'months').format('YYYY-MM'),
+            maxMonthRange: 24
           }
         },
         prisonerName: {
