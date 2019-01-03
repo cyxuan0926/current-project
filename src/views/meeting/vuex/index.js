@@ -2,6 +2,8 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
+  normalConfig: [{ days: [], config: [] }],
+  specialConfig: [],
   prisonVisitConfigDetail: { usual: [null] },
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },

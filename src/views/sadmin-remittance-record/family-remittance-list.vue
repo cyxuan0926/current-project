@@ -89,6 +89,7 @@ export default {
   },
   mounted() {
     this.getPrisonAll().then(res => {
+      if (!res) return
       this.searchItems.jailId.options = this.prisonAll
       this.searchItems.jailId.value = this.prisonAll[0].id
       this.filter.jailId = this.prisonAll[0].id

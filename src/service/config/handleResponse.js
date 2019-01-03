@@ -27,6 +27,11 @@ const codes = {
       }
     }
   },
+  400: {
+    next: params => {
+      tips('请求无效')
+    }
+  },
   401: {
     next: params => {
       localStorage.removeItem('user')
@@ -123,6 +128,9 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
+  if (params.config.url.indexOf('/feedbacks/download') > -1) {
+    if (params.status === 200 && !params.data.code) return params
+  }
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
     tips(params.data ? params.data.msg : handleErrorMessage(params.message))

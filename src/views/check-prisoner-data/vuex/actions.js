@@ -1,4 +1,5 @@
 import http from '@/service'
+import api from './service'
 
 export default {
   // 罪犯数据模板上传成功后将罪犯数据模板导入到服务端
@@ -6,6 +7,21 @@ export default {
     return http.importPrisoner(params).then(res => {
       if (!res) return
       commit('importPrisoner', res)
+      return true
+    })
+  },
+  // 罪犯数据导入-验证
+  validatePrisoner: ({ commit }, params) => {
+    return api.validate(params).then(res => {
+      if (!res) return
+      commit('validatePrisoner', res)
+      return true
+    })
+  },
+  validatePrisonerYZK: ({ commit }, params) => {
+    return api.validateYZK(params).then(res => {
+      if (!res) return
+      commit('validatePrisoner', res)
       return true
     })
   },
