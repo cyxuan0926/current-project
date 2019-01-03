@@ -137,7 +137,7 @@ export default {
           delete params.time
           this.updateAdvertisement(params).then(res => {
             if (!res) return
-            this.handleDeleteImage([params.imageUrl]).then(res => {
+            this.handleDeleteImage([params.imageUrl, null, true]).then(res => {
               this.$router.push('/advertisement/list')
             })
           })

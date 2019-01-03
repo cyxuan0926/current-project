@@ -2,7 +2,11 @@ import http from '@/service'
 
 export default {
   getPrisonAll: ({ commit }, params) => {
-    return http.getPrisonAll(params).then(res => res && commit('getPrisonAll', res))
+    return http.getPrisonAll(params).then(res => {
+      if (!res) return
+      commit('getPrisonAll', res)
+      return true
+    })
   },
   getPrisonAllWithBranchPrison: ({ commit }, params) => {
     return http.getPrisonAllWithBranchPrison(params).then(res => res && commit('getPrisonAllWithBranchPrison', res))

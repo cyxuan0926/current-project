@@ -35,7 +35,6 @@ export default {
   data() {
     return {
       activeName: 'prisonBase',
-      placeHolder: 0,
       tabMapOptions: [
         { label: '基本信息', key: 'prisonBase' },
         { label: '配置信息', key: 'prisonConfig' },

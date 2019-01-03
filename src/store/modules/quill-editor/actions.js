@@ -28,7 +28,9 @@ export default {
       if (res) {
         localStorage.removeItem('images')
         localStorage.removeItem('newImages')
-        localStorage.setItem('oldImages', JSON.stringify(excpt))
+        if (!params[2]) {
+          excpt.length && localStorage.setItem('oldImages', JSON.stringify(excpt))
+        }
       }
     })
   },

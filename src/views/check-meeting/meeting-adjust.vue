@@ -118,8 +118,19 @@ export default {
   methods: {
     ...mapActions(['getMeetingConfigs', 'adjustMeeting']),
     getConfigs() {
+      this.show = false
       this.getMeetingConfigs(this.adjustDate).then(res => {
         if (!res) return
+        if (!this.meetingAdjustment.meetingQueue || !this.meetingAdjustment.meetingQueue.length) {
+          this.$message.closeAll()
+          this.$message.warning('该日无可调整时间段')
+          return
+        }
+        if (!this.meetingAdjustment.terminals || !this.meetingAdjustment.terminals.length) {
+          this.$message.closeAll()
+          this.$message.warning('该日无可用终端')
+          return
+        }
         this.meetingAdjustment.terminals.forEach((terminal, index) => {
           this.meetings[terminal.terminalNumber] = { terminalId: terminal.id }
           this.origin[terminal.terminalNumber] = {}

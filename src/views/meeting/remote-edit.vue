@@ -1,0 +1,72 @@
+<template>
+  <div class="w80">
+    <el-tabs
+      v-model="activeName"
+      type="border-card"
+      class="min-height-400"
+      @tab-click="handleClick">
+      <template v-for="item in tabMapOptions">
+        <el-tab-pane
+          :label="item.label"
+          :key='item.key'
+          :name="item.key">
+          <keep-alive>
+            <component
+              v-if='activeName == item.key'
+              :is="activeName"/>
+          </keep-alive>
+        </el-tab-pane>
+      </template>
+    </el-tabs>
+  </div>
+
+</template>
+
+<script>
+import usual from './components/remote-usual'
+import special from './components/remote-special'
+import times from './components/remote-times'
+export default {
+  components: { usual, special, times },
+  data() {
+    return {
+      activeName: 'usual',
+      tabMapOptions: [
+        { label: '常规配置', key: 'usual' },
+        { label: '特殊日期配置', key: 'special' },
+        { label: '每人日申请次数限制配置', key: 'times' }
+      ]
+    }
+  },
+  watch: {
+    '$route': 'render'
+  },
+  mounted() {
+    this.render()
+  },
+  methods: {
+    handleClick() {
+      this.$router.replace({ query: { tag: this.activeName } })
+    },
+    render() {
+      if (!this.$route.query.tag) {
+        this.$router.replace({ query: { tag: this.activeName } })
+      }
+      else if (this.$route.query.tag !== this.activeName) {
+        if (this.tabMapOptions.find(item => item.key === this.$route.query.tag)) {
+          this.activeName = this.$route.query.tag
+        }
+        else {
+          this.activeName = this.tabMapOptions[0].key
+          this.handleClick()
+        }
+      }
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.w80{
+  padding: 20px 10%;
+}
+</style>
