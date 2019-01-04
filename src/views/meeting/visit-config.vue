@@ -33,20 +33,21 @@
           type="primary"
           size="mini"
           class="button-float"
-          @click="onAddRange(prisonVisitConfigDetail.queue)">新增会见时间段</el-button>
+          @click="onAddRange(prisonVisitConfigDetail.queue)">新增实地会见批次</el-button>
         <el-button
           v-if="!prisonVisitConfigDetail.canNotChange && prisonVisitConfigDetail.queue[0]"
           size="mini"
           class="button-float"
-          @click="onRestQueue(prisonVisitConfigDetail)">重置会见时间段</el-button>
+          @click="onRestQueue(prisonVisitConfigDetail)">重置实地会见时间段</el-button>
       </div>
     </div>
     <div class="button-box">
       <el-button
-        v-if="!prisonVisitConfigDetail.canNotChange && prisonVisitConfigDetail.windowSize && !errorMsg && prisonVisitConfigDetail.queue[0] !== null"
+        v-if="!prisonVisitConfigDetail.canNotChange"
+        :disabled="!(prisonVisitConfigDetail.windowSize && !errorMsg && prisonVisitConfigDetail.queue[0] !== null)"
         size="small"
         type="primary"
-        @click="onSubmit">更新</el-button>
+        @click="onSubmit">确定</el-button>
     </div>
   </div>
 </template>
@@ -88,7 +89,20 @@ export default {
   methods: {
     ...mapActions(['getPrisonVisitConfigDetail', 'updatePrisonVisitConfig']),
     onSubmit(e) {
-      // kkk
+      if (!this.prisonVisitConfigDetail.queue[0]) return
+      let params = {
+        windowSize: parseInt(this.prisonVisitConfigDetail.windowSize),
+        jailId: this.jailId,
+        batchQueue: []
+      }
+      this.prisonVisitConfigDetail.queue.forEach(queue => {
+        params.batchQueue.push(queue.join('-'))
+      })
+      this.updatePrisonVisitConfig(params).then(res => {
+        if (!res) return
+        this.prisonVisitConfigDetail.canNotChange = true
+        this.$forceUpdate()
+      })
     },
     handleBlur(e, queue) {
       queue[queue.length - 1] = e
