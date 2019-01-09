@@ -83,12 +83,16 @@
           min-width="78px"
           label="申请状态">
           <template slot-scope="scope">
-            <span v-if="!scope.row.content">{{ scope.row.status | applyStatus }}</span>
+            <span v-if="!scope.row.content">
+              <template v-if="scope.row.isLock === 1">处理中</template>
+              <template v-else>{{ scope.row.status | applyStatus }}</template>
+            </span>
             <el-tooltip
               v-else
               :content="scope.row.content"
               placement="top">
-              <span>{{ scope.row.status | applyStatus }}</span>
+              <span v-if="scope.row.isLock === 1">处理中</span>
+              <span v-else>{{ scope.row.status | applyStatus }}</span>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -98,7 +102,7 @@
           width="76px">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.status == 'PENDING'"
+              v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
               size="mini"
               @click="handleAuthorization(scope.row)">授权</el-button>
             <el-button
@@ -339,9 +343,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['meetings', 'frontRemarks'])
+    ...mapState(['meetings', 'frontRemarks', 'meetingRefresh'])
   },
   watch: {
+    meetingRefresh(val) {
+      console.log(val)
+      if (val) {
+        if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) {
+          this.getDatas()
+          this.meetingApplyDealing()
+        }
+      }
+    },
     tabs(val) {
       if (val !== 'first') {
         this.searchItems.status.miss = true
@@ -382,7 +395,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail']),
+    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()

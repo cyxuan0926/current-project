@@ -14,5 +14,14 @@ export default {
       contents: params.freeMeetings,
       total: params.total
     }
+  },
+  meetingApplyDealing(state, params) {
+    console.log(params)
+    if (params && state.meetings.contents.length) {
+      if (state.meetings.contents.find(m => m.id === params)) state.meetingRefresh = true
+    }
+    else {
+      state.meetingRefresh = false
+    }
   }
 }

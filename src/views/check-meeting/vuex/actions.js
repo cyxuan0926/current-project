@@ -28,5 +28,8 @@ export default {
   },
   getMeettingsDetail({ commit }, params) {
     return http.getMeettingsDetail(params).then(res => res)
+  },
+  meetingApplyDealing({ commit }, params) {
+    commit('meetingApplyDealing', params)
   }
 }
