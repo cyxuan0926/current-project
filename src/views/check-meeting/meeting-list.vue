@@ -466,6 +466,7 @@ export default {
             if (!res) return
             this.closeWithdraw(true)
             this.toAuthorize = {}
+            this.getDatas()
           })
         }
       })
