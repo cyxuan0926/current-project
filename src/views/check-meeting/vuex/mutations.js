@@ -16,9 +16,9 @@ export default {
     }
   },
   meetingApplyDealing(state, params) {
-    console.log(params)
     if (params && state.meetings.contents.length) {
-      if (state.meetings.contents.find(m => m.id === params)) state.meetingRefresh = true
+      if (state.meetings.contents.find(m => m.id === params)) state.meetingRefresh = params
+      else state.meetingRefresh = false
     }
     else {
       state.meetingRefresh = false

@@ -117,12 +117,6 @@
               @click="onDetail(scope.row)">详情</el-button>
           </template>
         </el-table-column>
-        <!-- <el-table-column
-          prop="auditRealName"
-          min-width="150px"
-          label="审核信息">
-          <template v-if="scope.row.auditRealName" slot-scope="scope">{{ scope.row.auditRealName }}<br />{{ scope.row.auditUserName }}<br />({{ scope.row.auditAt | Date }})</template>
-        </el-table-column> -->
       </el-table>
     </el-col>
     <m-pagination
@@ -253,7 +247,7 @@
     <el-dialog
       title="家属信息"
       :visible.sync="show.familiesDetialInform"
-      @close="family = {}">
+      @close="closeFamilyDetail">
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">
@@ -347,11 +341,9 @@ export default {
   },
   watch: {
     meetingRefresh(val) {
-      console.log(val)
       if (val) {
         if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) {
-          this.getDatas()
-          this.meetingApplyDealing()
+          this.getDatas(true)
         }
       }
     },
@@ -381,18 +373,12 @@ export default {
       },
       deep: true
     },
-    sortObj: {
-      handler: function(val) {
-        // this.$parent.$parent.$refs.meetingTable && this.$parent.$parent.$refs.meetingTable.clearSort()
-      },
-      deep: true
-    },
     remarks(val) {
       if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
-    this.getDatas()
+    this.getDatas(true)
   },
   methods: {
     ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
@@ -400,13 +386,15 @@ export default {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
-    getDatas() {
+    getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getMeetings({ ...this.filter, ...this.pagination })
+      this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
+        if (!res) return
+        if (this.meetingRefresh) this.meetingApplyDealing()
+      })
     },
     onSearch() {
       if (helper.isEmptyObject(this.sortObj)) {
-        console.log(this.filter)
         this.filter = Object.assign(this.filter, this.sortObj)
       }
       else {
@@ -436,6 +424,12 @@ export default {
     },
     onCloseShow() {
       this.toShow.id = ''
+      if (this.meetingRefresh) this.getDatas()
+    },
+    closeFamilyDetail() {
+      this.family = {}
+      this.show.familiesDetialInform = false
+      if (this.meetingRefresh) this.getDatas()
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
@@ -470,21 +464,26 @@ export default {
           let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
           this.withdrawMeeting(params).then(res => {
             if (!res) return
-            this.closeWithdraw()
+            this.closeWithdraw(true)
             this.toAuthorize = {}
-            this.getDatas()
           })
         }
       })
     },
     closeAuthorize(e) {
       if (e === 'back') this.show.disagree = false
-      else this.show.authorize = false
+      else {
+        this.show.authorize = false
+        if (this.meetingRefresh) {
+          this.getDatas()
+        }
+      }
       this.remarks = '您的身份信息错误'
       this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
     },
-    closeWithdraw() {
+    closeWithdraw(e) {
       this.show.withdraw = false
+      if (e !== true && this.meetingRefresh) this.getDatas()
       this.$refs['withdrawForm'].resetFields()
     },
     showFamilyDetail(e) {
