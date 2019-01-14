@@ -5,7 +5,7 @@ import urls from '@/service/urls'
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
 
 export default {
-  getWebsocketResult: ({ commit, state }, params) => {
+  getWebsocketResult: ({ commit, state, dispatch }, params) => {
     let socket,
       lockReconnect = false,
       heartCheck = {
@@ -22,8 +22,11 @@ export default {
           var self = this
           this.frontTimeout = setTimeout(function() {
             socket.send('test')
+            console.log('start')
             self.serverTimeout = setTimeout(function() {
               socket.close()
+              console.log('close')
+              console.dir(socket)
             }, self.timeout)
           }, this.timeout)
         }
@@ -52,13 +55,33 @@ export default {
               duration: 8000
             })
           }
-          else if (res.code !== 200) {
+          else if (res.code === 200 && res.data && res.data.meetingId) {
             Notification({
-              title: `${ res.data.meetings.name }会见调整失败`,
-              type: 'error',
-              message: `会见时间：${ res.data.meetings.meetingTime }，终端号：${ res.data.meetings.terminalNumber }，失败原因：${ res.msg }`,
+              title: '处理成功',
+              type: 'success',
+              message: `${ res.data.info }`,
               duration: 8000
             })
+            dispatch('meetingApplyDealing', res.data.meetingId)
+          }
+          else if (res.code !== 200) {
+            if (res.data && res.data.meetings) {
+              Notification({
+                title: `${ res.data.meetings.name }会见调整失败`,
+                type: 'error',
+                message: `会见时间：${ res.data.meetings.meetingTime }，终端号：${ res.data.meetings.terminalNumber }，失败原因：${ res.msg }`,
+                duration: 8000
+              })
+            }
+            else if (res.data && res.data.meetingId) {
+              Notification({
+                title: `处理失败`,
+                type: 'error',
+                message: `${ res.data.info }`,
+                duration: 8000
+              })
+              dispatch('meetingApplyDealing', res.data.meetingId)
+            }
           }
         }
         socket.onclose = function(e, r) {

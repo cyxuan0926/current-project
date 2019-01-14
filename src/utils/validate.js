@@ -14,7 +14,7 @@ export default {
   required: (rule, value, callback) => {
     let pattern = /^\s*(.*?)\s*$/
     if (isEmpty(value)) {
-      callback(new Error())
+      callback(new Error(rule.message))
     }
     else if (typeof value === 'string' && isEmpty(value.replace(pattern, '$1'))) {
       callback(new Error(rule.message))
@@ -72,6 +72,10 @@ export default {
     }
   },
   numberRange: (rule, value, callback) => {
+    if (isEmpty(value)) {
+      callback()
+      return
+    }
     let val = Number(value)
     if (!isEmpty(rule.min) && !isEmpty(rule.max) && (val < rule.min || val > rule.max)) {
       callback(new Error(`请输入${ rule.min }-${ rule.max }之间的数字`))
