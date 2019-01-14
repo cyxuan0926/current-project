@@ -22,8 +22,11 @@ export default {
           var self = this
           this.frontTimeout = setTimeout(function() {
             socket.send('test')
+            console.log('start')
             self.serverTimeout = setTimeout(function() {
               socket.close()
+              console.log('close')
+              console.dir(socket)
             }, self.timeout)
           }, this.timeout)
         }

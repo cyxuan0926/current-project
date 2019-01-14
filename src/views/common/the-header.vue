@@ -87,6 +87,7 @@ export default {
       }).then(() => {
         this.logout().then(res => {
           if (!res) return
+          console.log('logout')
           localStorage.removeItem('user')
           localStorage.removeItem('routes')
           this.$router.replace('/new-login')
