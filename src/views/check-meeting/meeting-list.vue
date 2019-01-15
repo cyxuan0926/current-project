@@ -84,14 +84,14 @@
           label="申请状态">
           <template slot-scope="scope">
             <span v-if="!scope.row.content">
-              <template v-if="scope.row.isLock === 1">处理中</template>
+              <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
               <template v-else>{{ scope.row.status | applyStatus }}</template>
             </span>
             <el-tooltip
               v-else
               :content="scope.row.content"
               placement="top">
-              <span v-if="scope.row.isLock === 1">处理中</span>
+              <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
               <span v-else>{{ scope.row.status | applyStatus }}</span>
             </el-tooltip>
           </template>

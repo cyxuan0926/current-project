@@ -3,7 +3,7 @@ import { Notification } from 'element-ui'
 import urls from '@/service/urls'
 
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
-let socket
+let socket, i = 0
 
 export default {
   getWebsocketResult: ({ commit, state, dispatch }, params) => {
@@ -31,19 +31,17 @@ export default {
         }
       },
       createWS = () => {
-        console.log(111111)
+        console.log(111111, i)
         try {
-          // if (socket) socket.close()
-          // else console.log('no-socket')
           console.log('createWS', socket ? socket.readyState : '0')
           if (socket && socket.readyState !== 3) {
             console.log('正在关')
             socket.close()
-            // reconnect()
           }
           else {
             console.log('已经关了')
             socket = new WebSocket(wsUrl(params))
+            i++
             initWS()
           }
         }
@@ -99,6 +97,7 @@ export default {
         }
         socket.onclose = function(e, r) {
           console.log(333, 'onclose')
+          i--
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }
         socket.onerror = (event) => {
