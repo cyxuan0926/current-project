@@ -1,6 +1,6 @@
 <template>
   <el-row
-    class="row-container"
+    class="list-container"
     :gutter="0">
     <m-search
       :items="searchItems"
@@ -512,7 +512,9 @@ export default {
   }
 }
 </script>
-
+<style lang="scss" scoped>
+@import "../../assets/css/list";
+</style>
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width: 126.8px;

@@ -4,7 +4,8 @@
 <style lang="scss" scoped>
 p{
   text-align: center;
-  line-height: 300px;
+  line-height: 50px;
+  margin-top: 100px;
   font-size: 24px;
 }
 </style>

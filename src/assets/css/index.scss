@@ -1,8 +1,11 @@
 @import "./common.scss", "element-ui/lib/theme-chalk/display.css";
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
 html, body{
   height: 100%;
   padding: 0;
   margin: 0;
+  font-size: 14px;
+  font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;;
 }
 ul{
   list-style: none;
@@ -10,6 +13,8 @@ ul{
 ul, li, div, p, h1{
   padding: 0;
   margin: 0;
+}
+ul, li, div, p, h1, span{
   box-sizing: border-box;
 }
 img{
@@ -26,7 +31,6 @@ a{
 }
 .el-aside{
   background: #222d32;
-  overflow: hidden;
 }
 .el-menu{
   border-right: 0;
@@ -65,11 +69,17 @@ a{
 }
 .el-breadcrumb{
   padding: 0 20px;
-  line-height: 30px;
+  line-height: 40px;
+  height: 40px;
+  word-break: break-all;
   font-size: 12px;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
   & + .el-main{
     background: #ffffff;
-    padding-top: 0;
+    padding: 0;
+    margin: 0 0 10px;
   }
 }
 body>.el-tooltip__popper.is-dark{

@@ -3,11 +3,11 @@ import { Notification } from 'element-ui'
 import urls from '@/service/urls'
 
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
+let socket
 
 export default {
   getWebsocketResult: ({ commit, state, dispatch }, params) => {
-    let socket,
-      lockReconnect = false,
+    let lockReconnect = false,
       heartCheck = {
         timeout: 6000,
         frontTimeout: null,
@@ -26,15 +26,26 @@ export default {
             self.serverTimeout = setTimeout(function() {
               socket.close()
               console.log('close')
-              console.dir(socket)
             }, self.timeout)
           }, this.timeout)
         }
       },
       createWS = () => {
+        console.log(111111)
         try {
-          socket = new WebSocket(wsUrl(params))
-          initWS()
+          // if (socket) socket.close()
+          // else console.log('no-socket')
+          console.log('createWS', socket ? socket.readyState : '0')
+          if (socket && socket.readyState !== 3) {
+            console.log('正在关')
+            socket.close()
+            // reconnect()
+          }
+          else {
+            console.log('已经关了')
+            socket = new WebSocket(wsUrl(params))
+            initWS()
+          }
         }
         catch (e) {
           reconnect()
@@ -56,13 +67,14 @@ export default {
             })
           }
           else if (res.code === 200 && res.data && res.data.meetingId) {
+            dispatch('meetingApplyDealing', res.data.meetingId)
             Notification({
               title: '处理成功',
               type: 'success',
               message: `${ res.data.info }`,
               duration: 8000
             })
-            dispatch('meetingApplyDealing', res.data.meetingId)
+            console.log(res.data.meetingId)
           }
           else if (res.code !== 200) {
             if (res.data && res.data.meetings) {
@@ -74,17 +86,19 @@ export default {
               })
             }
             else if (res.data && res.data.meetingId) {
+              dispatch('meetingApplyDealing', res.data.meetingId)
+              console.log(res.data.meetingId)
               Notification({
                 title: `处理失败`,
                 type: 'error',
                 message: `${ res.data.info }`,
                 duration: 8000
               })
-              dispatch('meetingApplyDealing', res.data.meetingId)
             }
           }
         }
         socket.onclose = function(e, r) {
+          console.log(333, 'onclose')
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }
         socket.onerror = (event) => {

@@ -23,5 +23,6 @@ export default {
     else {
       state.meetingRefresh = false
     }
+    console.log(state.meetingRefresh)
   }
 }
