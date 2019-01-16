@@ -51,7 +51,7 @@
   overflow: hidden;
   transition: width 0.3s ease-in-out;
   border-bottom: 5px solid #1A2226;
-  width: 230px;
+  width: 100%;
   .collapsed &{
     width: 50px;
   }
@@ -62,6 +62,7 @@
     max-height: 40px;
     float: left;
     margin-right: 10px;
+    flex-shrink: 0;
   }
   .info{
     display: flex;
@@ -89,7 +90,7 @@
   }
 }
 .first-level{
-  width: 230px;
+  width: 100%;
   overflow: hidden;
   &.el-menu--collapse{
     width: 50px;

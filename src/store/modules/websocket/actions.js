@@ -3,13 +3,13 @@ import { Notification } from 'element-ui'
 import urls from '@/service/urls'
 
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
-let socket, i = 0
+let socket
 
 export default {
   getWebsocketResult: ({ commit, state, dispatch }, params) => {
     let lockReconnect = false,
       heartCheck = {
-        timeout: 6000,
+        timeout: 10000,
         frontTimeout: null,
         serverTimeout: null,
         reset: function() {
@@ -22,26 +22,19 @@ export default {
           var self = this
           this.frontTimeout = setTimeout(function() {
             socket.send('test')
-            console.log('start')
             self.serverTimeout = setTimeout(function() {
               socket.close()
-              console.log('close')
             }, self.timeout)
           }, this.timeout)
         }
       },
       createWS = () => {
-        console.log(111111, i)
         try {
-          console.log('createWS', socket ? socket.readyState : '0')
           if (socket && socket.readyState !== 3) {
-            console.log('正在关')
             socket.close()
           }
           else {
-            console.log('已经关了')
             socket = new WebSocket(wsUrl(params))
-            i++
             initWS()
           }
         }
@@ -57,6 +50,8 @@ export default {
           heartCheck.reset().start()
           let res = JSON.parse(response.data)
           if (res.code === 200 && res.data && res.data.meetings) {
+            dispatch('meetingAdjustDealing', res.data.meetings.name)
+            console.log('onmessage', res.data.meetings.name, res.data.meetings.meetingTime, res.data.meetings.terminalNumber)
             Notification({
               title: res.data.meetings.name,
               type: 'success',
@@ -65,17 +60,18 @@ export default {
             })
           }
           else if (res.code === 200 && res.data && res.data.meetingId) {
-            dispatch('meetingApplyDealing', res.data.meetingId)
+            dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
             Notification({
               title: '处理成功',
               type: 'success',
               message: `${ res.data.info }`,
               duration: 8000
             })
-            console.log(res.data.meetingId)
           }
           else if (res.code !== 200) {
             if (res.data && res.data.meetings) {
+              dispatch('meetingAdjustDealing', res.data.meetings.name)
+              console.log('onmessage', res.data.meetings.name, res.data.meetings.meetingTime, res.data.meetings.terminalNumber)
               Notification({
                 title: `${ res.data.meetings.name }会见调整失败`,
                 type: 'error',
@@ -84,8 +80,7 @@ export default {
               })
             }
             else if (res.data && res.data.meetingId) {
-              dispatch('meetingApplyDealing', res.data.meetingId)
-              console.log(res.data.meetingId)
+              dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
               Notification({
                 title: `处理失败`,
                 type: 'error',
@@ -96,12 +91,9 @@ export default {
           }
         }
         socket.onclose = function(e, r) {
-          console.log(333, 'onclose')
-          i--
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }
         socket.onerror = (event) => {
-          // Message.error('Socket发生了错误')
           console.log('Socket发生了错误', event)
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }

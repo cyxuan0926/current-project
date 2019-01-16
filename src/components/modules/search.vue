@@ -241,47 +241,19 @@ export default {
 }
 </style>
 <style type="text/stylus" lang="stylus">
-// .filter-box
-//   overflow: hidden;
-//   margin-bottom: 10px;
-// .filter-left
-//   width: 200px;
-//   float: left;
-//   margin-bottom: 10px;
-//   z-index: 10;
-//   .el-select .el-input
-//     width: 154px;
-// .filter-right
-//   float: right;
-//   z-index: 10;
-//   width: calc(100% - 200px);
-//   min-width: 128px;
-//   display: flex;
-//   justify-content flex-end;
-//   align-items: center;
-//   flex-wrap: wrap;
-//   & > *:not(.el-button)
-//     margin-left: 20px;
-//     margin-bottom: 10px;
-//     min-width: 120px;
-//     max-width: 190px;
-//     width: 20%;
-//   .monthRangeSelector
-//     min-width: 170px;
-//     .el-date-editor--daterange.el-popover__reference
-//       width: 100%;
-//       padding-left: 9px;
-//       padding-right: 9px;
-//   .el-button
-//     margin-left: 20px;
-//     margin-bottom: 10px;
-//     flex-shrink: 0;
-//   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
-//     width: 320px;
-//     max-width: 320px;
-//   .monthrange
-//     width 230px
-//     max-width  230px
-//   .el-date-editor.el-input, .el-date-editor.el-input__inner
-//     max-width:  230px
+.filter-container .filter-right
+  .monthRangeSelector
+    min-width: 170px;
+    .el-date-editor--daterange.el-popover__reference
+      width: 100%;
+      padding-left: 9px;
+      padding-right: 9px;
+  .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
+    width: 320px;
+    max-width: 320px;
+  .monthrange
+    width: 230px;
+    max-width: 230px;
+  .el-date-editor.el-input, .el-date-editor.el-input__inner
+    max-width:  230px
 </style>

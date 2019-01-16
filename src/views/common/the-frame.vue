@@ -1,7 +1,7 @@
 <template>
   <el-container class="height100">
     <el-header height="50px"><the-header /></el-header>
-    <el-container>
+    <el-container class="main-container">
       <el-aside
         :width="isCollapsed ? (hidden ? '0px' : '50px') : '230px'"
         :class="['transition', { 'collapsed': isCollapsed }]">

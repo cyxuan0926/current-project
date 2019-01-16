@@ -96,11 +96,18 @@ body>.el-tooltip__popper.is-dark{
     margin-bottom: 10px;
   }
 }
+.main-container{
+  flex-shrink: 0;
+  height: calc(100% - 50px);
+}
 @media only screen and (max-width: 768px){
   .el-header{
     height: 100px !important;
   }
   .el-aside.collapsed{
     width: 0 !important;
+  }
+  .main-container{
+    height: calc(100% - 100px);
   }
 }

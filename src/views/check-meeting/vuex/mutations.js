@@ -17,12 +17,21 @@ export default {
   },
   meetingApplyDealing(state, params) {
     if (params && state.meetings.contents.length) {
-      if (state.meetings.contents.find(m => m.id === params)) state.meetingRefresh = params
-      else state.meetingRefresh = false
+      if (state.meetings.contents.find(m => m.id === parseInt(params))) {
+        state.meetingRefresh = parseInt(params)
+        console.log(parseInt(params), '需要刷新')
+      }
+      else {
+        state.meetingRefresh = false
+        console.log(parseInt(params), 'meetings有值但该会见不在meetings中', state.meetings.contents[0].id)
+      }
     }
     else {
       state.meetingRefresh = false
+      console.log(params, '没有params')
     }
-    console.log(state.meetingRefresh)
+  },
+  meetingAdjustDealing(state, params) {
+    state.meetingAdjustRefresh = params
   }
 }

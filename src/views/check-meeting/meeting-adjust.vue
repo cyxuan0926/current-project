@@ -86,6 +86,7 @@
         class="button-add"
         type="primary"
         size="small"
+        :loading="buttonLoading"
         @click="onSubmit">确认调整</el-button>
     </el-col>
   </el-row>
@@ -109,17 +110,27 @@ export default {
       },
       meetings: {},
       origin: {},
-      clicked: []
+      clicked: [],
+      buttonLoading: false
     }
   },
   computed: {
-    ...mapState(['meetingAdjustment'])
+    ...mapState(['meetingAdjustment', 'meetingAdjustRefresh'])
+  },
+  watch: {
+    meetingAdjustRefresh(val) {
+      if (val) {
+        console.log('需要刷新')
+        this.getConfigs()
+      }
+    }
   },
   methods: {
-    ...mapActions(['getMeetingConfigs', 'adjustMeeting']),
+    ...mapActions(['getMeetingConfigs', 'adjustMeeting', 'meetingAdjustDealing']),
     getConfigs() {
       this.show = false
       this.getMeetingConfigs(this.adjustDate).then(res => {
+        console.log(this.meetingAdjustRefresh, 'getConfigs')
         if (!res) return
         if (!this.meetingAdjustment.meetingQueue || !this.meetingAdjustment.meetingQueue.length) {
           this.$message.closeAll()
@@ -149,6 +160,17 @@ export default {
         this.colWidth = `width: ${ 100 / (this.meetingAdjustment.meetingQueue.length + 1) }%`
         this.lastRowWidth = `width: ${ 100 - 100 / (this.meetingAdjustment.meetingQueue.length + 1) }%`
         this.show = true
+        this.meetingAdjustDealing(false)
+      })
+    },
+    saveOrigin() {
+      Object.keys(this.origin).forEach(terminal => {
+        Object.keys(this.origin[terminal]).forEach(duration => {
+          if (this.meetings[terminal][duration].changed) {
+            delete this.meetings[terminal][duration].changed
+            this.origin[terminal][duration] = Object.assign({}, this.meetings[terminal][duration])
+          }
+        })
       })
     },
     onCellClick(row, col, meeting) {
@@ -191,6 +213,7 @@ export default {
       this.getConfigs()
     },
     onSubmit() {
+      this.buttonLoading = true
       let params = [], meeting = {}
       Object.keys(this.meetings).forEach(terminal => {
         Object.keys(this.meetings[terminal]).forEach(queue => {
@@ -208,9 +231,16 @@ export default {
           }
         })
       })
+      if (!params.length) {
+        this.buttonLoading = false
+        return
+      }
       this.adjustMeeting(params).then(res => {
-        if (!res) return
-        this.resetMeetings()
+        this.buttonLoading = false
+        // if (!res) return
+        // this.resetMeetings()
+        this.clicked = []
+        this.saveOrigin()
       })
     }
   },

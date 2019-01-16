@@ -134,10 +134,10 @@
         class="button-box">
         <el-button
           plain
-          @click="show.agree = true">同意</el-button>
+          @click="show.agree = true; buttonLoading = false">同意</el-button>
         <el-button
           plain
-          @click="show.disagree = true">不同意</el-button>
+          @click="show.disagree = true; buttonLoading = false">不同意</el-button>
         <el-button
           type="danger"
           plain
@@ -148,6 +148,7 @@
         class="button-box">
         <el-button
           plain
+          :loading="buttonLoading"
           @click="onAuthorization('PASSED')">确定申请通过？</el-button>
         <el-button
           plain
@@ -184,6 +185,7 @@
         </el-form>
         <el-button
           plain
+          :loading="buttonLoading"
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
@@ -312,7 +314,7 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         applicationDate: { type: 'date', label: '会见时间' },
         auditName: { type: 'input', label: '审核人', miss: true },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
+        status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true, value: '' },
         auditAt: { type: 'date', label: '审核时间', miss: true }
       },
       show: {
@@ -333,7 +335,8 @@ export default {
       },
       refuseForm: {},
       family: {},
-      sortObj: {}
+      sortObj: {},
+      buttonLoading: false
     }
   },
   computed: {
@@ -343,7 +346,7 @@ export default {
     meetingRefresh(val) {
       if (val) {
         if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) {
-          this.getDatas(true)
+          this.getDatas('meetingRefresh')
         }
       }
     },
@@ -378,18 +381,20 @@ export default {
     }
   },
   mounted() {
-    this.getDatas(true)
+    this.getDatas('mounted')
   },
   methods: {
     ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
+      this.getDatas('sizeChange')
     },
     getDatas(e) {
+      console.log(e)
       if (this.tabs !== 'first') this.filter.status = this.tabs
       this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
         if (!res) return
+        console.log('获取了meetings')
         if (this.meetingRefresh) this.meetingApplyDealing()
       })
     },
@@ -402,6 +407,7 @@ export default {
         delete this.filter.sortDirection
         delete this.filter.orderField
       }
+      console.log('onSearch')
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
@@ -424,12 +430,12 @@ export default {
     },
     onCloseShow() {
       this.toShow.id = ''
-      if (this.meetingRefresh) this.getDatas()
+      if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
     closeFamilyDetail() {
       this.family = {}
       this.show.familiesDetialInform = false
-      if (this.meetingRefresh) this.getDatas()
+      if (this.meetingRefresh) this.getDatas('closeFamilyDetail')
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
@@ -451,11 +457,14 @@ export default {
       }
     },
     handleSubmit(params) {
+      this.buttonLoading = true
       this.authorizeMeeting(params).then(res => {
+        this.buttonLoading = false
         if (!res) return
         this.closeAuthorize()
         this.toAuthorize = {}
-        this.getDatas()
+        console.log('审核了会见', params.status)
+        this.getDatas('handleSubmit')
       })
     },
     onWithdraw() {
@@ -466,7 +475,7 @@ export default {
             if (!res) return
             this.closeWithdraw(true)
             this.toAuthorize = {}
-            this.getDatas()
+            this.getDatas('onWithdraw')
           })
         }
       })
@@ -476,7 +485,7 @@ export default {
       else {
         this.show.authorize = false
         if (this.meetingRefresh) {
-          this.getDatas()
+          this.getDatas('closeAuthorize')
         }
       }
       this.remarks = '您的身份信息错误'
@@ -484,7 +493,7 @@ export default {
     },
     closeWithdraw(e) {
       this.show.withdraw = false
-      if (e !== true && this.meetingRefresh) this.getDatas()
+      if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       this.$refs['withdrawForm'].resetFields()
     },
     showFamilyDetail(e) {
@@ -507,7 +516,7 @@ export default {
         else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
         this.filter = Object.assign(this.filter, this.sortObj)
       }
-      this.getDatas()
+      this.getDatas('sortChange')
     }
   }
 }

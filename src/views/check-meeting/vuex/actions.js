@@ -2,7 +2,7 @@ import http from '@/service'
 
 export default {
   getMeetings({ commit }, params) {
-    http.getMeetings(params).then(res => {
+    return http.getMeetings(params).then(res => {
       if (!res) return
       commit('getMeetings', res)
       return true
@@ -35,5 +35,8 @@ export default {
   },
   meetingApplyDealing({ commit }, params) {
     commit('meetingApplyDealing', params)
+  },
+  meetingAdjustDealing({ commit }, params) {
+    commit('meetingAdjustDealing', params)
   }
 }

@@ -3,13 +3,13 @@ import frame from '@/views/common/the-frame'
 let common = [{
   path: '/test',
   name: '测试',
-  component: frame,
-  meta: { hidden: true },
-  children: [{
-    path: '/test/test',
-    name: '测试表单',
-    component: resolve => require(['@/views/test/test'], resolve)
-  }]
+  component: resolve => require(['@/views/test/test'], resolve)
+  // meta: { hidden: true }
+  // children: [{
+  //   path: '/test/test',
+  //   name: '测试表单',
+  //   component: resolve => require(['@/views/test/test'], resolve)
+  // }]
 }, {
   path: '/',
   meta: { hidden: true },
