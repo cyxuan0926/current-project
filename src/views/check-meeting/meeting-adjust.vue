@@ -16,7 +16,8 @@
         <el-button
           type="primary"
           style="margin-left: 10px;"
-          @click="getConfigs">确定</el-button>
+          :loading="gettingConfigs"
+          @click="getConfigs('sure')">确定</el-button>
         <label style="margin-left: 5px;font-size: 12px;color: red">注：仅支持2天后的会见申请调整</label>
         <div
           v-if="show"
@@ -102,6 +103,7 @@ export default {
       colWidth: 0,
       lastRowWidth: 0,
       adjustDate: helper.dateFormate(new Date(Date.now() + 172800000)),
+      realDate: helper.dateFormate(new Date(Date.now() + 172800000)),
       // adjustDate: helper.dateFormate(new Date(2018, 6, 3, 12, 12, 12)),
       pickerOptions: {
         disabledDate(time) {
@@ -111,7 +113,8 @@ export default {
       meetings: {},
       origin: {},
       clicked: [],
-      buttonLoading: false
+      buttonLoading: false,
+      gettingConfigs: true
     }
   },
   computed: {
@@ -119,19 +122,26 @@ export default {
   },
   watch: {
     meetingAdjustRefresh(val) {
-      if (val) {
+      console.log(this.adjustDate, this.realDate)
+      if (val && val === this.realDate) {
         console.log('需要刷新')
+        this.adjustDate = this.realDate
         this.getConfigs()
       }
     }
   },
   methods: {
     ...mapActions(['getMeetingConfigs', 'adjustMeeting', 'meetingAdjustDealing']),
-    getConfigs() {
+    getConfigs(e) {
       this.show = false
-      this.getMeetingConfigs(this.adjustDate).then(res => {
+      let adjustDate = this.realDate
+      if (e === 'sure') adjustDate = this.adjustDate
+      this.gettingConfigs = true
+      this.getMeetingConfigs(adjustDate).then(res => {
         console.log(this.meetingAdjustRefresh, 'getConfigs')
+        this.gettingConfigs = false
         if (!res) return
+        this.realDate = adjustDate
         if (!this.meetingAdjustment.meetingQueue || !this.meetingAdjustment.meetingQueue.length) {
           this.$message.closeAll()
           this.$message.warning('该日无可调整时间段')
@@ -151,7 +161,7 @@ export default {
           })
         })
         this.meetingAdjustment.meetings.map(meeting => {
-          let time = meeting.meetingTime.replace(`${ this.adjustDate } `, '')
+          let time = meeting.meetingTime.replace(`${ this.realDate } `, '')
           meeting = Object.assign({}, meeting)
           this.meetings[meeting.terminalNumber][time] = Object.assign({}, meeting, { duration: time })
           this.origin[meeting.terminalNumber][time] = Object.assign({}, meeting, { duration: time })
@@ -210,6 +220,7 @@ export default {
       this.show = true
     },
     resetMeetings() {
+      this.adjustDate = this.realDate
       this.getConfigs()
     },
     onSubmit() {
@@ -221,7 +232,7 @@ export default {
             meeting = {
               name: this.meetings[terminal][queue].name,
               id: this.meetings[terminal][queue].id,
-              meetingTime: `${ this.adjustDate } ${ queue }`,
+              meetingTime: `${ this.realDate } ${ queue }`,
               terminalId: this.meetings[terminal].terminalId,
               terminalNumber: terminal,
               jailId: `${ this.meetingAdjustment.config.jail_id }`,
@@ -237,7 +248,7 @@ export default {
       }
       this.adjustMeeting(params).then(res => {
         this.buttonLoading = false
-        // if (!res) return
+        if (!res) return
         // this.resetMeetings()
         this.clicked = []
         this.saveOrigin()

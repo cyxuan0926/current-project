@@ -1,5 +1,5 @@
 <template>
-  <p>欢迎来到狱务公开管理平台</p>
+  <p>欢迎来到狱务通管理平台</p>
 </template>
 <style lang="scss" scoped>
 p{

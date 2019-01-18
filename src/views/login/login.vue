@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <div class="login-container">
-      <h1>狱务公开管理平台</h1>
+      <h1>狱务通管理平台</h1>
       <div class="login-form">
         <el-form
           ref="form"

@@ -219,7 +219,7 @@ export default {
     }
   }
   .filter-right{
-    width: calc(100% - 180px);
+    width: calc(100% - 170px);
     min-width: 128px;
     float: right;
     z-index: 10;
@@ -231,11 +231,12 @@ export default {
       width: 20%;
       max-width: 200px;
       min-width: 100px;
-      margin-right: 10px;
+      margin-left: 10px;
       margin-bottom: 10px;
     }
     button{
       height: 40px;
+      margin-left: 10px;
     }
   }
 }
