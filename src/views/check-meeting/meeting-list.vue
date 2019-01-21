@@ -1,6 +1,6 @@
 <template>
   <el-row
-    class="row-container"
+    class="list-container"
     :gutter="0">
     <m-search
       :items="searchItems"
@@ -83,12 +83,16 @@
           min-width="78px"
           label="申请状态">
           <template slot-scope="scope">
-            <span v-if="!scope.row.content">{{ scope.row.status | applyStatus }}</span>
+            <span v-if="!scope.row.content">
+              <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
+              <template v-else>{{ scope.row.status | applyStatus }}</template>
+            </span>
             <el-tooltip
               v-else
               :content="scope.row.content"
               placement="top">
-              <span>{{ scope.row.status | applyStatus }}</span>
+              <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
+              <span v-else>{{ scope.row.status | applyStatus }}</span>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -98,7 +102,7 @@
           width="76px">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.status == 'PENDING'"
+              v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
               size="mini"
               @click="handleAuthorization(scope.row)">授权</el-button>
             <el-button
@@ -113,12 +117,6 @@
               @click="onDetail(scope.row)">详情</el-button>
           </template>
         </el-table-column>
-        <!-- <el-table-column
-          prop="auditRealName"
-          min-width="150px"
-          label="审核信息">
-          <template v-if="scope.row.auditRealName" slot-scope="scope">{{ scope.row.auditRealName }}<br />{{ scope.row.auditUserName }}<br />({{ scope.row.auditAt | Date }})</template>
-        </el-table-column> -->
       </el-table>
     </el-col>
     <m-pagination
@@ -136,10 +134,10 @@
         class="button-box">
         <el-button
           plain
-          @click="show.agree = true">同意</el-button>
+          @click="show.agree = true; buttonLoading = false">同意</el-button>
         <el-button
           plain
-          @click="show.disagree = true">不同意</el-button>
+          @click="show.disagree = true; buttonLoading = false">不同意</el-button>
         <el-button
           type="danger"
           plain
@@ -150,6 +148,7 @@
         class="button-box">
         <el-button
           plain
+          :loading="buttonLoading"
           @click="onAuthorization('PASSED')">确定申请通过？</el-button>
         <el-button
           plain
@@ -186,6 +185,7 @@
         </el-form>
         <el-button
           plain
+          :loading="buttonLoading"
           @click="onAuthorization('DENIED')">提交</el-button>
         <el-button
           plain
@@ -249,7 +249,7 @@
     <el-dialog
       title="家属信息"
       :visible.sync="show.familiesDetialInform"
-      @close="family = {}">
+      @close="closeFamilyDetail">
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">
@@ -314,7 +314,7 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         applicationDate: { type: 'date', label: '会见时间' },
         auditName: { type: 'input', label: '审核人', miss: true },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true },
+        status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true, value: '' },
         auditAt: { type: 'date', label: '审核时间', miss: true }
       },
       show: {
@@ -335,13 +335,21 @@ export default {
       },
       refuseForm: {},
       family: {},
-      sortObj: {}
+      sortObj: {},
+      buttonLoading: false
     }
   },
   computed: {
-    ...mapState(['meetings', 'frontRemarks'])
+    ...mapState(['meetings', 'frontRemarks', 'meetingRefresh'])
   },
   watch: {
+    meetingRefresh(val) {
+      if (val) {
+        if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) {
+          this.getDatas('meetingRefresh')
+        }
+      }
+    },
     tabs(val) {
       if (val !== 'first') {
         this.searchItems.status.miss = true
@@ -368,32 +376,28 @@ export default {
       },
       deep: true
     },
-    sortObj: {
-      handler: function(val) {
-        // this.$parent.$parent.$refs.meetingTable && this.$parent.$parent.$refs.meetingTable.clearSort()
-      },
-      deep: true
-    },
     remarks(val) {
       if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
-    this.getDatas()
+    this.getDatas('mounted')
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail']),
+    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
+      this.getDatas('sizeChange')
     },
-    getDatas() {
+    getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getMeetings({ ...this.filter, ...this.pagination })
+      this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
+        if (!res) return
+        if (this.meetingRefresh) this.meetingApplyDealing()
+      })
     },
     onSearch() {
       if (helper.isEmptyObject(this.sortObj)) {
-        console.log(this.filter)
         this.filter = Object.assign(this.filter, this.sortObj)
       }
       else {
@@ -423,6 +427,12 @@ export default {
     },
     onCloseShow() {
       this.toShow.id = ''
+      if (this.meetingRefresh) this.getDatas('onCloseShow')
+    },
+    closeFamilyDetail() {
+      this.family = {}
+      this.show.familiesDetialInform = false
+      if (this.meetingRefresh) this.getDatas('closeFamilyDetail')
     },
     onAuthorization(e) {
       let params = { id: this.toAuthorize.id, status: e }
@@ -444,11 +454,13 @@ export default {
       }
     },
     handleSubmit(params) {
+      this.buttonLoading = true
       this.authorizeMeeting(params).then(res => {
+        this.buttonLoading = false
         if (!res) return
         this.closeAuthorize()
         this.toAuthorize = {}
-        this.getDatas()
+        this.getDatas('handleSubmit')
       })
     },
     onWithdraw() {
@@ -457,21 +469,27 @@ export default {
           let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
           this.withdrawMeeting(params).then(res => {
             if (!res) return
-            this.closeWithdraw()
+            this.closeWithdraw(true)
             this.toAuthorize = {}
-            this.getDatas()
+            this.getDatas('onWithdraw')
           })
         }
       })
     },
     closeAuthorize(e) {
       if (e === 'back') this.show.disagree = false
-      else this.show.authorize = false
+      else {
+        this.show.authorize = false
+        if (this.meetingRefresh) {
+          this.getDatas('closeAuthorize')
+        }
+      }
       this.remarks = '您的身份信息错误'
       this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
     },
-    closeWithdraw() {
+    closeWithdraw(e) {
       this.show.withdraw = false
+      if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       this.$refs['withdrawForm'].resetFields()
     },
     showFamilyDetail(e) {
@@ -494,12 +512,14 @@ export default {
         else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
         this.filter = Object.assign(this.filter, this.sortObj)
       }
-      this.getDatas()
+      this.getDatas('sortChange')
     }
   }
 }
 </script>
-
+<style lang="scss" scoped>
+@import "../../assets/css/list";
+</style>
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width: 126.8px;

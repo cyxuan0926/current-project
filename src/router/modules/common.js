@@ -3,12 +3,25 @@ import frame from '@/views/common/the-frame'
 let common = [{
   path: '/test',
   name: '测试',
-  component: frame,
+  component: resolve => require(['@/views/test/test'], resolve)
+  // meta: { hidden: true }
+  // children: [{
+  //   path: '/test/test',
+  //   name: '测试表单',
+  //   component: resolve => require(['@/views/test/test'], resolve)
+  // }]
+}, {
+  path: '/',
   meta: { hidden: true },
+  component: frame,
   children: [{
-    path: '/test/test',
-    name: '测试表单',
-    component: resolve => require(['@/views/test/test'], resolve)
+    path: '/dashboard',
+    name: '工作台',
+    component: resolve => require(['@/views/dashboard/dashboard'], resolve)
+  }, {
+    path: '/password/edit',
+    name: '修改密码',
+    component: resolve => require(['@/views/password/password-edit'], resolve)
   }]
 }, {
   path: '/login',
@@ -20,20 +33,6 @@ let common = [{
   name: '新登录',
   meta: { notLogin: true },
   component: resolve => require(['@/views/login/new-login'], resolve)
-}, {
-  path: '/dashboard1',
-  name: 'dashboard1',
-  component: frame,
-  meta: { hidden: true },
-  children: [{
-    path: '/dashboard',
-    name: '欢迎',
-    component: resolve => require(['@/views/dashboard/dashboard'], resolve)
-  }, {
-    path: '/password/edit',
-    name: '修改密码',
-    component: resolve => require(['@/views/password/password-edit'], resolve)
-  }]
 }, {
   path: '/app_preview',
   name: 'app下载',

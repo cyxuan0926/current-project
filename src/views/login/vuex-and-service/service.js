@@ -1,7 +1,6 @@
-import * as service from '../config/service'
+import * as service from '@/service/config/service'
 
 export default {
-  // 用户登录
   login: params => {
     return service.post('/users/login', params).then(res => res && res.data)
   }

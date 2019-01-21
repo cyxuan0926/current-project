@@ -11,7 +11,7 @@
             class="form-box">
             <el-col class="form-top">
               <el-col class="form-top-left">
-                <h2>狱务公开管理平台</h2>
+                <h2>狱务通管理平台</h2>
                 <p>请输入监狱编号, 您的用户名和密码:</p>
               </el-col>
             </el-col>
@@ -82,7 +82,9 @@ export default {
   },
   mounted() {
     if (localStorage.getItem('user')) {
-      this.$router.replace('/dashboard')
+      if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
+      else this.$router.replace('/dashboard')
+      return
     }
     this.getCookie().then(res => {
       if (res && res.password) {
@@ -107,7 +109,8 @@ export default {
             }
             if (this.rememberPSW) this.setCookie(params)
             else this.removeCookie(params)
-            this.$router.replace('/dashboard')
+            if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
+            else this.$router.replace('/dashboard')
           })
         }
       })
