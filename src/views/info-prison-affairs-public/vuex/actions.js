@@ -8,7 +8,7 @@ export default {
       if (res.news && res.news.length) {
         res.news.forEach(news => { news.ellipsis = false })
       }
-      commit('getNewsList', res)
+      commit('getNewsList', Object.assign({}, res))
       return true
     })
   },

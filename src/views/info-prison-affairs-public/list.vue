@@ -14,6 +14,7 @@
       @search="onSearch" />
     <el-col :span="24">
       <el-table
+        v-if="showTable"
         :data="newsList.contents"
         border
         stripe
@@ -167,7 +168,8 @@ export default {
       },
       searchItems: Object.assign({}, this.searchItemInit),
       visible: false,
-      news: {}
+      news: {},
+      showTable: false
     }
   },
   computed: {
@@ -179,6 +181,12 @@ export default {
   watch: {
     $route(val) {
       this.render()
+    },
+    newsList: {
+      handler: (val) => {
+        console.log(val.contents[0].videoPath)
+      },
+      deep: true
     }
   },
   mounted() {
@@ -199,7 +207,9 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      this.showTable = false
       this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
+        this.showTable = true
         if (!res) return
         setTimeout(() => {
           document.querySelectorAll('.summary').forEach((row, index) => {
