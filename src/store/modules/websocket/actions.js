@@ -51,7 +51,6 @@ export default {
           let res = JSON.parse(response.data)
           if (res.code === 200 && res.data && res.data.meetings) {
             dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
-            console.log('onmessage', res.data.meetings.name, res.data.meetings.meetingTime, res.data.meetings.terminalNumber)
             Notification({
               title: res.data.meetings.name,
               type: 'success',
@@ -71,7 +70,6 @@ export default {
           else if (res.code !== 200) {
             if (res.data && res.data.meetings) {
               dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
-              console.log('onmessage', res.data.meetings.name, res.data.meetings.meetingTime, res.data.meetings.terminalNumber)
               Notification({
                 title: `${ res.data.meetings.name }会见调整失败`,
                 type: 'error',

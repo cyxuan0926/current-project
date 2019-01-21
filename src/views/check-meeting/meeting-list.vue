@@ -390,11 +390,9 @@ export default {
       this.getDatas('sizeChange')
     },
     getDatas(e) {
-      console.log(e)
       if (this.tabs !== 'first') this.filter.status = this.tabs
       this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
         if (!res) return
-        console.log('获取了meetings')
         if (this.meetingRefresh) this.meetingApplyDealing()
       })
     },
@@ -407,7 +405,6 @@ export default {
         delete this.filter.sortDirection
         delete this.filter.orderField
       }
-      console.log('onSearch')
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
@@ -463,7 +460,6 @@ export default {
         if (!res) return
         this.closeAuthorize()
         this.toAuthorize = {}
-        console.log('审核了会见', params.status)
         this.getDatas('handleSubmit')
       })
     },

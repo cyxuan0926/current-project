@@ -122,9 +122,7 @@ export default {
   },
   watch: {
     meetingAdjustRefresh(val) {
-      console.log(this.adjustDate, this.realDate)
       if (val && val === this.realDate) {
-        console.log('需要刷新')
         this.adjustDate = this.realDate
         this.getConfigs()
       }
@@ -138,7 +136,6 @@ export default {
       if (e === 'sure') adjustDate = this.adjustDate
       this.gettingConfigs = true
       this.getMeetingConfigs(adjustDate).then(res => {
-        console.log(this.meetingAdjustRefresh, 'getConfigs')
         this.gettingConfigs = false
         if (!res) return
         this.realDate = adjustDate
@@ -257,9 +254,6 @@ export default {
   },
   mounted() {
     this.getConfigs()
-  },
-  destroyed() {
-    // console.log(999)
   }
 }
 </script>

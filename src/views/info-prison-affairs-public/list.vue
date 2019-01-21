@@ -181,12 +181,6 @@ export default {
   watch: {
     $route(val) {
       this.render()
-    },
-    newsList: {
-      handler: (val) => {
-        console.log(val.contents[0].videoPath)
-      },
-      deep: true
     }
   },
   mounted() {
