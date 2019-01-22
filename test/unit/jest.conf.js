@@ -10,15 +10,15 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
-  reporters: [
-    'default',
-    ['./node_modules/jest-html-reporter', {
-      pageTitle: 'Test Report',
-      outputPath: 'test/unit/test-report.html',
-      includeFailureMsg: true,
-      includeConsoleLog: true
-    }]
-  ],
+  // reporters: [
+  //   'default',
+  //   ['./node_modules/jest-html-reporter', {
+  //     pageTitle: 'Test Report',
+  //     outputPath: 'test/unit/test-report.html',
+  //     includeFailureMsg: true,
+  //     includeConsoleLog: true
+  //   }]
+  // ],
   transform: {
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
     '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest'
