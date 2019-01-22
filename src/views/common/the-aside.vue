@@ -75,8 +75,7 @@ export default {
   data() {
     return {
       menu: [],
-      prisonerAreas: [],
-      collapsed: false
+      prisonerAreas: []
     }
   },
   computed: {
@@ -95,7 +94,7 @@ export default {
   },
   methods: {
     getActiveMenu() {
-      let active = this.$route.path.replace(/(\/[A-z-]+)(\/[A-z-]+)*/, '$1')
+      let active = this.$route.path.replace(/(\/[A-z-]+)(\/[0-9A-z-]+)*/, '$1/list')
       return active
     },
     handleSelect(e, keyPath) {
