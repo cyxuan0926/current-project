@@ -24,10 +24,12 @@ export default {
   },
   methods: {
     render(route) {
-      let breadcrumb = [], getBreadcrumb = (route, arr) => {
-        if (!route || !route.name) return
-        arr.push({ name: route.name, path: route.path })
-        getBreadcrumb(route.parent, arr)
+      // console.log(this.$router.options.routes)
+      if (!route || !route.path) return
+      let breadcrumb = [], getBreadcrumb = (rt, arr) => {
+        if (!rt || !rt.name) return
+        arr.push({ name: rt.name, path: rt.path })
+        getBreadcrumb(rt.parent, arr)
       }
       getBreadcrumb(route.matched[route.matched.length - 1], breadcrumb)
       this.breadcrumb = breadcrumb.reverse()
