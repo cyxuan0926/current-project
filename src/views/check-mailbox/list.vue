@@ -111,11 +111,12 @@
           v-if="mailbox.imageUrls.length">
           <label>图片</label>
           <div class="img-box">
-            <m-img-viewer
-              v-for="(img, index) in mailbox.imageUrls"
-              :key="index"
-              v-if="img"
-              :src="img + '?token=' + $urls.token" />
+            <template v-for="(img, index) in mailbox.imageUrls">
+              <m-img-viewer
+                :key="index"
+                v-if="img"
+                :src="img + '?token=' + $urls.token" />
+            </template>
           </div>
         </div>
         <div

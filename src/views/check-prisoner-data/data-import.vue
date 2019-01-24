@@ -4,7 +4,8 @@
     :gutter="0">
     <el-col
       :span="22"
-      :offset="2">
+      :offset="2"
+      style="margin-top: 20px;">
       <el-tabs
         v-model="tabs"
         type="card">
@@ -65,7 +66,9 @@
         </el-upload>
       </el-col>
     </el-row>
-    <el-row v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerDataResult.errors">
@@ -121,6 +124,7 @@
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -173,7 +177,9 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerYZKDataResult.errors">
@@ -229,6 +235,7 @@
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -502,5 +509,9 @@ export default {
   font-weight: bold;
   text-align: center;
   // font-size: 12px;
+}
+.table-box{
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>

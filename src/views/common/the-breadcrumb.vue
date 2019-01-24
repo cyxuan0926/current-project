@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     render(route) {
-      // console.log(this.$router.options.routes)
       if (!route || !route.path) return
       let breadcrumb = [], getBreadcrumb = (rt, arr) => {
         if (!rt || !rt.name) return

@@ -167,7 +167,7 @@ export default {
     sizeChange(e) {
       this.$emit('sizeChange', this.pageSize)
     },
-    onSearch() {
+    onSearch(e) {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
@@ -190,7 +190,7 @@ export default {
         })
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
-      this.$emit('search')
+      if (e !== 'tabs') this.$emit('search')
     },
     onEnsure(e) {
       let prop = e.prop

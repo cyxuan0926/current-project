@@ -14,7 +14,6 @@
       @search="onSearch" />
     <el-col :span="24">
       <el-table
-        v-if="showTable"
         :data="newsList.contents"
         border
         stripe
@@ -36,7 +35,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.videoPath">
+            v-if="showTable && scope.row.videoPath">
             <video
               controls
               poster="/static/images/video-background.png"
@@ -69,7 +68,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.audioPath">
+            v-if="showTable && scope.row.audioPath">
             <m-audio :value="scope.row.audioPath + '?token=' + $urls.token" />
           </template>
         </el-table-column>
