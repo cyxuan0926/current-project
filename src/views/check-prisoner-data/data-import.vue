@@ -59,6 +59,7 @@
             style="margin-left: 10px;"
             size="small"
             type="success"
+            :loading="onProgress"
             @click="submitUpload">上传到服务器</el-button>
           <div
             slot="tip"
@@ -338,6 +339,7 @@
         <el-button
           type="danger"
           size="mini"
+          :disabled="loading"
           @click="visible = false">取消上传</el-button>
         <el-button
           type="primary"
@@ -359,6 +361,7 @@ export default {
       fileList: [],
       visible: false,
       notify: null,
+      onProgress: false,
       prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
     }
   },
@@ -397,6 +400,7 @@ export default {
         this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
           this.loading = false
           this.visible = false
+          this.onProgress = false
           if (!res) return
           this.alertInformation(this.prisonerDataResult)
         })
@@ -405,12 +409,14 @@ export default {
         this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
           this.loading = false
           this.visible = false
+          this.onProgress = false
           if (!res) return
           this.alertInformation(this.prisonerYZKDataResult)
         })
       }
     },
     beforeUpload(file) {
+      this.onProgress = true
       if (this.notify) {
         this.notify.close()
       }
@@ -422,10 +428,16 @@ export default {
       }
       this.resetState({ validatePrisonerResult: {} })
       this.uploadFile(file).then(res => {
-        if (!res) return
+        if (!res) {
+          this.onProgress = false
+          return
+        }
         if (this.tabs === 'first') {
           this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
+            if (!res) {
+              this.onProgress = false
+              return
+            }
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
@@ -436,7 +448,10 @@ export default {
         }
         else if (this.tabs === 'second') {
           this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
+            if (!res) {
+              this.onProgress = false
+              return
+            }
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
