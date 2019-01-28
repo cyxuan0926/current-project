@@ -25,7 +25,7 @@
         <el-upload
           class="upload-demo"
           ref="upload"
-          :action="_$agency + '/prisoner_reward_punishment/upload'"
+          action="/prisoners/upload"
           :before-upload="beforeUpload"
           :file-list="fileList"
           :auto-upload="false"

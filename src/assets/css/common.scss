@@ -1,0 +1,33 @@
+.over-hidden{
+  overflow: hidden;
+}
+.height100{
+  height: 100%;
+}
+.width100{
+  width: 100%;
+}
+.transition{
+  transition: all .3s ease-in-out;
+}
+.circle{
+  border-radius: 50%;
+}
+.ellipsis{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.disappear{
+  height: 0;
+  width: 0;
+  overflow: hidden;
+}
+.ml-10{
+  margin-left: 10px;
+}
+.center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

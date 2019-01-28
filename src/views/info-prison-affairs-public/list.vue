@@ -35,7 +35,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.videoPath">
+            v-if="showTable && scope.row.videoPath">
             <video
               controls
               poster="/static/images/video-background.png"
@@ -68,7 +68,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.audioPath">
+            v-if="showTable && scope.row.audioPath">
             <m-audio :value="scope.row.audioPath + '?token=' + $urls.token" />
           </template>
         </el-table-column>
@@ -167,7 +167,8 @@ export default {
       },
       searchItems: Object.assign({}, this.searchItemInit),
       visible: false,
-      news: {}
+      news: {},
+      showTable: false
     }
   },
   computed: {
@@ -199,7 +200,9 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      this.showTable = false
       this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
+        this.showTable = true
         if (!res) return
         setTimeout(() => {
           document.querySelectorAll('.summary').forEach((row, index) => {
