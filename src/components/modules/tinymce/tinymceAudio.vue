@@ -1,7 +1,7 @@
 <template>
   <el-upload
     ref="uploadAudio"
-    :action="action"
+    :action="$urls.audioUrl"
     :headers="headers"
     :name="name"
     :before-upload="beforUpload"
@@ -12,7 +12,7 @@
     :on-exceed="handleExceed"
     :file-list="fileList"
     :on-remove="handleRemove">
-    <i class="mce-ico mce-i-media"></i>
+    <i class="mce-ico mce-i-media"/>
   </el-upload>
 
 </template>
@@ -20,12 +20,6 @@
 <script>
 export default {
   props: {
-    action: {
-      type: String,
-      // default: 'http://39.108.185.51:1339/avatars'
-      default: `https://www.yuwugongkai.com/audio-server/audios`
-      // default: `http://120.79.67.25:1339/audio-server/audios` // 测试和演示
-    },
     name: {
       type: String,
       default: 'audio'
@@ -39,7 +33,7 @@ export default {
     return {
       fileList: [],
       headers: {
-        Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
+        Authorization: this.$urls.token
       },
       notification: null
     }
@@ -53,7 +47,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
-          this.$emit('success', `${ res.url }?token=${ this.headers.Authorization }`)
+          this.$emit('success', `${ res.url }?token=${ this.$urls.token }`)
           this.notification.close()
           break
         default:

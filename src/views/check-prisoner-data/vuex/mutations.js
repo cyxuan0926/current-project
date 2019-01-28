@@ -4,6 +4,9 @@ export default {
     // console.log(prisonerDataResult)
     state.prisonerDataResult = prisonerDataResult
   },
+  validatePrisoner: (state, params) => {
+    state.validatePrisonerResult = params
+  },
   // 狱政科罪犯数据模板上传成功后将罪犯数据模板导入到服务端
   importPrisonerYZK: (state, params) => {
     // console.log(params)

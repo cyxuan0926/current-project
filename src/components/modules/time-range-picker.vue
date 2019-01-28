@@ -2,8 +2,7 @@
   <!-- { 'error-tip': errorMessage }, -->
   <div
     class="m-range-picker"
-    :class="[
-      { 'm-disabled-range': next.length > 0 || disabled }]"
+    :class="[{ 'm-disabled-range': next.length > 0 || disabled }]"
     @click="onClick">
     <el-time-picker
       v-model="startTime"
@@ -55,6 +54,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    index: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -122,7 +125,7 @@ export default {
       //   this.errorMessage = '间隔时间太短'
       //   return false
       // }
-      this.$emit('handleBlur', [this.startTime, this.endTime], this.type)
+      this.$emit('handleBlur', [this.startTime, this.endTime], this.type, this.index)
     }
   }
 }

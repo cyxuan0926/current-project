@@ -1,7 +1,7 @@
 <template>
   <el-upload
     ref="uploadImg"
-    :action="action"
+    :action="$urls.imageUrl"
     :headers="headers"
     :name="name"
     :before-upload="beforUpload"
@@ -12,7 +12,7 @@
     :on-exceed="handleExceed"
     :file-list="fileList"
     :on-remove="handleRemove">
-    <i class="mce-ico mce-i-image"></i>
+    <i class="mce-ico mce-i-image"/>
   </el-upload>
 
 </template>
@@ -20,12 +20,6 @@
 <script>
 export default {
   props: {
-    action: {
-      type: String,
-      // default: 'http://39.108.185.51:1339/avatars'
-      default: `https://www.yuwugongkai.com/image-server/avatars`
-      // default: `http://120.79.67.25:1339/image-server/avatars` // 测试和演示
-    },
     name: {
       type: String,
       default: 'avatar'
@@ -39,7 +33,7 @@ export default {
     return {
       fileList: [],
       headers: {
-        Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
+        Authorization: this.$urls.token
       }
     }
   },

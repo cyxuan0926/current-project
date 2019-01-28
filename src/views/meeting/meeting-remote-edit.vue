@@ -1,11 +1,20 @@
 <template>
   <div>
     <div class="form-container">
-      <el-tabs v-model="activeName" type="border-card" class="no-bottom-padding" @tab-click="handleClick">
+      <el-tabs
+        v-model="activeName"
+        type="border-card"
+        class="no-bottom-padding"
+        @tab-click="handleClick">
         <template v-for="item in tabMapOptions">
-          <el-tab-pane :label="item.label" :key='item.key' :name="item.key">
+          <el-tab-pane
+            :label="item.label"
+            :key='item.key'
+            :name="item.key">
             <keep-alive>
-              <component v-if='activeName == item.key' :is="activeName"></component>
+              <component
+                v-if='activeName == item.key'
+                :is="activeName"/>
             </keep-alive>
           </el-tab-pane>
         </template>
@@ -19,15 +28,17 @@
 import usual from './components/remote-usual'
 import weekend from './components/remote-weekend'
 import special from './components/remote-special'
+import times from './components/remote-times'
 export default {
-  components: { usual, weekend, special },
+  components: { usual, weekend, special, times },
   data() {
     return {
       activeName: 'usual',
       tabMapOptions: [
         { label: '常规配置', key: 'usual' },
         { label: '周末配置', key: 'weekend' },
-        { label: '特殊日期配置', key: 'special' }
+        { label: '特殊日期配置', key: 'special' },
+        { label: '每人日申请次数限制配置', key: 'times' }
       ]
     }
   },

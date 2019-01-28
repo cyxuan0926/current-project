@@ -1,8 +1,11 @@
 <template>
-  <el-col :span="24" class="filter-box">
+  <el-col :span="24"
+          class="filter-box">
     <el-col :span="8">
       <!--页数选择框-->
-      <el-select v-model="pageSize" placeholder="请选择" @change="sizeChange">
+      <el-select v-model="pageSize"
+                 placeholder="请选择"
+                 @change="sizeChange">
         <el-option
           v-for="item in selectItem"
           :key="item"
@@ -13,13 +16,18 @@
       条记录
     </el-col>
     <!--搜索框-->
-    <el-col :span="16" class="search-box">
+    <el-col :span="16"
+            class="search-box">
       <el-col>
-        <el-button v-if="buttonText" @click="onSearch">{{ buttonText }}</el-button>
-        <el-button v-else icon="el-icon-search" @click="onSearch"></el-button>
+        <el-button v-if="buttonText"
+                   @click="onSearch">{{ buttonText }}</el-button>
+        <el-button v-else
+                   icon="el-icon-search"
+                   @click="onSearch"></el-button>
       </el-col>
       <template v-for="(item, index) in items">
-        <el-col :key="index" v-if="item.type !== 'datetimerange'">
+        <el-col :key="index"
+                v-if="item.type !== 'datetimerange'">
           <el-input
             v-if="item.type === 'input'"
             v-model="item.value"

@@ -47,11 +47,14 @@
         </el-table-column>
         <el-table-column label="刑期起止">
           <template slot-scope="scope">
-            <span class="separate">{{scope.row.prisonTermStartedAt | dateFormate}}</span>
-            <span class="separate">{{scope.row.prisonTermEndedAt | dateFormate}}</span>
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="黑名单原因" prop="reason" show-overflow-tooltip>
+        <el-table-column
+          label="黑名单原因"
+          prop="reason"
+          show-overflow-tooltip>
           <!-- <template slot-scope="scope">
             <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
               <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
@@ -71,11 +74,12 @@
         </el-table-column>
         <el-table-column label="家属会见告知书">
           <template slot-scope="scope">
-            <span :class="[
-              'bold',
-              { 'red' : !scope.row.notifyId },
-              { 'green' : scope.row.notifyId }
-              ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
+            <span
+              :class="[
+                'bold',
+                { 'red' : !scope.row.notifyId },
+                { 'green' : scope.row.notifyId }
+            ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
             <el-button
               type="text"
               size="small"
@@ -129,7 +133,7 @@
             :min="0"
             v-model="prisoner.accessTime"
             controls-position="right"
-            @change="onAccessTimeChange"></el-input-number>
+            @change="onAccessTimeChange"/>
         </el-form-item>
       </el-form>
       <template slot="footer">
@@ -159,20 +163,38 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
-        <el-col :span="12" class="img-idCard">
+      <el-row
+        class="row-flex"
+        :gutter="20"
+        justify="space-between"
+        type="flex">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证正面：</label>
-          <m-img-viewer v-if="family.familyIdCardFront" :url="family.familyIdCardFront" title="身份证正面"/>
+          <m-img-viewer
+            v-if="family.familyIdCardFront"
+            :url="family.familyIdCardFront"
+            title="身份证正面"/>
         </el-col>
-        <el-col :span="12" class="img-idCard">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证背面：</label>
-          <m-img-viewer v-if="family.familyIdCardBack" :url="family.familyIdCardBack" title="身份证背面" />
+          <m-img-viewer
+            v-if="family.familyIdCardBack"
+            :url="family.familyIdCardBack"
+            title="身份证背面" />
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <label for="">照片：</label>
-          <m-img-viewer v-if="family.familyAvatarUrl" :url="family.familyAvatarUrl" title="照片" class="avatar" />
+          <m-img-viewer
+            v-if="family.familyAvatarUrl"
+            :url="family.familyAvatarUrl"
+            title="照片"
+            class="avatar" />
         </el-col>
       </el-row>
     </el-dialog>
@@ -202,7 +224,8 @@
           @click="blackTableShow = false">取消</el-button>
         <el-button
           class="button-add"
-          size="mini" @click="handleBlackListReason">确定</el-button>
+          size="mini"
+          @click="handleBlackListReason">确定</el-button>
       </el-row>
     </el-dialog>
     <el-dialog
@@ -213,7 +236,9 @@
       <div class="el-form el-form--inline">
         <div class="el-form-item">
           <label class="el-fotm-item__label">可选家属</label>
-          <div class="el-form-item__content" style="width: 100%;">
+          <div
+            class="el-form-item__content"
+            style="width: 100%;">
             <el-select
               placeholder="可选家属"
               v-model="notificationFamily"
@@ -232,7 +257,12 @@
         </div>
       </div>
 
-      <m-form v-if="notificationShow" ref="notification" :items="formItems" @submit="onSubmit" :values="notificationForm"></m-form>
+      <m-form
+        v-if="notificationShow"
+        ref="notification"
+        :items="formItems"
+        @submit="onSubmit"
+        :values="notificationForm" />
       <el-row :gutter="0">
         <el-button
           class="button-add"
@@ -253,10 +283,20 @@
       title="更换监区"
       class="authorize-dialog"
       width="530px">
-      <el-select class="only-select" v-model="prisonConfigName" placeholder="请选择监区" v-if="prisonConfigs.length > 1">
-        <el-option v-for="item of prisonConfigData" :value="item.id" :label="item.name" :key="item.id"></el-option>
+      <el-select
+        class="only-select"
+        v-model="prisonConfigName"
+        placeholder="请选择监区"
+        v-if="prisonConfigs.length > 1">
+        <el-option
+          v-for="item of prisonConfigData"
+          :value="item.id"
+          :label="item.name"
+          :key="item.id" />
       </el-select>
-      <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
+      <div
+        v-else
+        style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
   </el-row>
 </template>

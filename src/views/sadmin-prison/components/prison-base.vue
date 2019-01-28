@@ -1,6 +1,11 @@
 <template>
   <div>
-    <m-form v-if="show" :items="formItems" @submit="onSubmit" :values="values"></m-form>
+    <m-form
+      v-if="show"
+      ref="form"
+      :items="formItems"
+      @submit="onSubmit"
+      :values="values"/>
   </div>
 </template>
 
@@ -10,7 +15,7 @@ export default {
   data() {
     let formButton = { buttons: ['next'] }, permission = 'add'
     if (this.$route.meta.permission === 'edit') {
-      formButton.buttons = ['update']
+      formButton.buttons = [{ update: { loading: false } }]
       permission = 'edit'
     }
     return {
@@ -18,12 +23,14 @@ export default {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '140px' },
         title: { type: 'input', label: '监狱名称', rules: ['required'] },
-        description: { type: 'jaileditor', label: '监狱简介', rules: ['required'] },
         provincesId: { type: 'select', label: '所在省', rely: 'citysId', func: this.onProvinceChange, loading: true, rules: ['required'], action: 'getProvincesAll' },
         citysId: { type: 'select', label: '所在市', rules: ['required'], defer: true, disabled: true, loading: true },
         street: { type: 'input', label: '街道' },
         visitAddress: { type: 'textarea', label: '探监路线', autosize: { minRows: 2, maxRows: 6 } },
         zipcode: { type: 'input', label: '监狱编号', rules: ['required', 'isNumber', 'lengthRange-6'] },
+        description: { type: 'jaileditor', label: '监狱简介', rules: ['required'] },
+        audioPath: { type: 'uploadAudio', label: '监狱音频' },
+        videoPath: { type: 'uploadVideo', label: '监狱视频' },
         imageUrl: { type: 'uploadImg', label: '监狱图片' }
       }, formButton),
       values: {},
@@ -63,6 +70,10 @@ export default {
   methods: {
     ...mapActions(['getCities', 'getPrisonDetail', 'updatePrison', 'deleteUnusedImage']),
     onSubmit(e) {
+      if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
+        this.$message.warning('正在上传文件')
+        return false
+      }
       if (this.permission !== 'edit') {
         sessionStorage.setItem('base', JSON.stringify(e))
         sessionStorage.setItem('step', 1)
@@ -70,7 +81,9 @@ export default {
       }
       else if (this.permission === 'edit') {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
+        this.formItems.buttons[0].update.loading = true
         this.updatePrison(params).then(res => {
+          this.formItems.buttons[0].update.loading = false
           if (!res) return
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
           // else this.$router.push('/jails/detail')

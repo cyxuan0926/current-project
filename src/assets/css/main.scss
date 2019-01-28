@@ -17,6 +17,18 @@ p{
 .bold{
   font-weight: bold;
 }
+.el-table--striped .el-table__body tr.el-table__row--striped td .three-line::after{
+  background: #FAFAFA;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td .three-line::after{
+  background: #f5f7fa;
+}
+.detail-item.special{
+  img{
+    max-width: 400px !important;
+    display: block;
+  }
+}
 .el-submenu__icon-arrow{
   margin-top: -5px;
 }
@@ -192,7 +204,7 @@ p{
   min-width: 140px;
   max-width: 350px;
 }
-.time-queue .el-date-editor--timerange.el-input__inner, .time-queue .el-date-editor.el-input, .el-date-editor.el-input__inner{
+.time-queue .el-date-editor--timerange.el-input__inner, .time-queue .el-date-editor--date.el-input, .el-date-editor--date.el-input__inner{
   width: 100%;
   min-width: 140px;
   max-width: 350px;
@@ -204,6 +216,9 @@ p{
   align-items: center;
   clear: both;
 }
+.tips{
+  color: #f56c6c;
+}
 .no-bottom-padding.el-tabs--border-card>.el-tabs__content{
   padding-bottom: 0;
   overflow-x: auto
@@ -213,6 +228,9 @@ p{
 }
  .el-form--inline .special-config .el-form-item__content{
   display: block;
+}
+.month-panel-popover{
+  padding: 0;
 }
 .m-date-form{
   margin-bottom: 10px;
@@ -264,6 +282,40 @@ p{
 }
 .m-range-picker .endClass .el-input__suffix{
   right: 0;
+}
+.m-range-selector{
+  border-radius: 4px;
+  .el-input__inner{
+    border: 0;
+    text-align: center;
+    width: 58px;
+    height: 26px;
+    line-height: 26px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .startClass{
+    .el-input__inner{
+      margin-left: 25px;
+    }
+    .el-input__prefix{
+      left: 0;
+    }
+  }
+  .endClass{
+    .el-input__prefix, .el-input__suffix{
+      display: none;
+    }
+    &.is-disabled .el-input__inner{
+      background: transparent;
+      cursor: text;
+    }
+  }
+  &.m-disabled-range .endClass.is-disabled .el-input__inner{
+    background-color: #f5f7fa;
+    color: #c0c4cc;
+    cursor: not-allowed;
+  }
 }
 .m-range-picker .endClass.is-disabled .el-input__inner{
   background: transparent;
@@ -350,7 +402,10 @@ div.viewer-container {
 }
 div.el-tooltip__popper {
   max-width: 60% !important;
-  margin: 0px auto !important;
+  margin: 5px auto !important;
+}
+.prisonser_areas__popper {
+  font-size: 10px !important;
 }
 .prisonConfigMessage button.el-message-box__headerbtn {
   top: 12px !important;
@@ -359,4 +414,33 @@ div.el-tooltip__popper {
 .prisonConfigMessage div.el-message-box__title {
   font-size: 16px !important;
 }
-
+.day-box{
+  overflow: hidden;
+  .el-date-editor.el-input{
+    width: 160px;
+    margin-right: 10px;
+  }
+  .el-checkbox, .el-radio{
+    line-height: 28px;
+  }
+  .el-checkbox, .el-radio{
+    margin-right: 10px;
+    margin-left: 0;
+  }
+  .el-checkbox__label, .el-radio__label{
+    padding-left: 4px;
+  }
+  .el-button{
+    float: left;
+    margin-right: 10px;
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+  &>div{
+    // width: calc(100% - 190px);
+    float: left;
+  }
+}
+.min-height-400{
+  min-height: 400px;
+}

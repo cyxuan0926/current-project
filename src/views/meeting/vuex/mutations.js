@@ -1,4 +1,10 @@
 export default {
+  getRemoteNormalConfig(state, params) {
+    state.normalConfig = params
+  },
+  getRemoteSpecialConfig(state, params) {
+    state.specialConfig = params
+  },
   getPrisonVisitConfigDetail(state, params) {
     state.prisonVisitConfigDetail = Object.assign({}, params)
   },
@@ -8,7 +14,7 @@ export default {
   getRemoteWeekendConfig(state, params) {
     state.remoteWeekendConfig = Object.assign({}, params)
   },
-  getRemoteSpecialConfig(state, params) {
+  getRemoteSpecialConfigOld(state, params) {
     if (params) {
       state.remoteSpecialConfig = params
     }

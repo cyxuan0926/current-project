@@ -26,6 +26,7 @@ import checkPrisonDataManagement from '@/views/check-prisoner-data/vuex'
 import checkRegistration from '@/views/check-registration/vuex'
 import checkVisit from '@/views/check-visit/vuex'
 import checkPrisonerPocketMoney from '@/views/check-prisoner-pocket-money/vuex'
+import download from '@/views/download/vuex'
 import infoPrisonAffairsPublic from '@/views/info-prison-affairs-public/vuex'
 import meeting from '@/views/meeting/vuex'
 import meetingReport from '@/views/meeting-report/vuex'
@@ -59,6 +60,7 @@ merge(
   breadCrumbs,
   adminFeedback,
   adminPrisonUser,
+  download,
   infoPrisonAffairsPublic,
   meeting,
   meetingReport,

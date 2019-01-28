@@ -1,28 +1,29 @@
 <template>
-    <div>
-        <div :id="tinymceId"></div>
-        <tinymce-image
-          ref="uploadImage"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onImageSuccess" />
-        <tinymce-video
-          ref="uploadVideo"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onVideoSuccess" />
-        <tinymce-audio
-          ref="uploadAudio"
-          style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-          @success="onAudioSuccess" />
-    </div>
+  <div>
+    <div :id="tinymceId"/>
+    <tinymce-image
+      ref="uploadImage"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onImageSuccess" />
+      <!-- <tinymce-video
+      ref="uploadVideo"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onVideoSuccess" />
+    <tinymce-audio
+      ref="uploadAudio"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onAudioSuccess" /> -->
+  </div>
 </template>
 
 <script>
 import tinymceImage from './tinymce/tinymceImage'
-import tinymceVideo from './tinymce/tinymceVideo'
-import tinymceAudio from './tinymce/tinymceAudio'
+// import tinymceVideo from './tinymce/tinymceVideo'
+// import tinymceAudio from './tinymce/tinymceAudio'
 
 export default {
-  components: { tinymceImage, tinymceVideo, tinymceAudio },
+  // components: { tinymceImage, tinymceVideo, tinymceAudio },
+  components: { tinymceImage },
   props: {
     value: {
       type: String,
@@ -57,7 +58,8 @@ export default {
       branding: false,
       content_style: 'blockquote{padding: 10px 20px; margin: 0 0 20px; font-size: initial; border-left: 5px solid #eee;} p{ margin: 0; line-height: 1.42857143; }.mce-panel{ box-sizing: border-box; }',
       plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table',
-      toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo | preview',
+      toolbar: 'bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | outdent indent table | alignleft aligncenter alignright alignjustify alignnone | link imageUpload charmap emoticons insertdatetime | removeformat searchreplace undo redo | preview',
+      // toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo | preview',
       init_instance_callback: editor => { //  media
         this.hasInit = true
         if (this.value) {
@@ -76,21 +78,21 @@ export default {
             this.$refs.uploadImage.$refs.uploadImg.$refs['upload-inner'].$refs.input.click()
           }
         })
-        if (this.tools === 'onlyImage') return
-        editor.addButton('videoUpload', {
-          icon: 'media',
-          tooltip: '插入视频(支持格式:mp4/webm/ogg)',
-          onclick: (data) => {
-            this.$refs.uploadVideo.$refs.uploadVideo.$refs['upload-inner'].$refs.input.click()
-          }
-        })
-        editor.addButton('audioUpload', {
-          icon: 'i iconfont icon-yinpin',
-          tooltip: '插入音频',
-          onclick: (data) => {
-            this.$refs.uploadAudio.$refs.uploadAudio.$refs['upload-inner'].$refs.input.click()
-          }
-        })
+        // if (this.tools === 'onlyImage') return
+        // editor.addButton('videoUpload', {
+        //   icon: 'media',
+        //   tooltip: '插入视频(支持格式:mp4/webm/ogg)',
+        //   onclick: (data) => {
+        //     this.$refs.uploadVideo.$refs.uploadVideo.$refs['upload-inner'].$refs.input.click()
+        //   }
+        // })
+        // editor.addButton('audioUpload', {
+        //   icon: 'i iconfont icon-yinpin',
+        //   tooltip: '插入音频',
+        //   onclick: (data) => {
+        //     this.$refs.uploadAudio.$refs.uploadAudio.$refs['upload-inner'].$refs.input.click()
+        //   }
+        // })
       }
     })
   },
@@ -119,7 +121,7 @@ export default {
     },
     onAudioSuccess(e) {
       if (!e) return
-      let htmlString = `<audio controls">
+      let htmlString = `<audio controls>
         <source
           src='${ e }'
           type='audio/mpeg'>

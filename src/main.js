@@ -6,6 +6,7 @@ import ElementUI from 'element-ui'
 import store from './store'
 import filters from './filters'
 import components from '@/components'
+import urls from '@/service/urls'
 // import config from '@/service/config/base'
 import '../static/bootstrap/js/bootstrap.min.js'
 import '../static/dist/js/app.min.js'
@@ -18,32 +19,13 @@ import '@/assets/icons/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
 import 'viewerjs/dist/viewer.css'
-import '@/assets/css/main.css'
+import '@/assets/css/main.scss'
 
 Vue.use(ElementUI)
-// Vue.use(VueWebsocket, 'wss://pandax.mofasion.com/ws/7')
-// Vue.use(VueWebsocket, `ws://120.78.190.101/ws/2`)
 
 Vue.config.productionTip = false
 
-// Vue.prototype._$baseUrl = 'https://www.yuwugongkai.com'
-
-// Vue.prototype._$agency = 'http://10.10.10.2:8081/ywgk'
-
-// Vue.prototype._$agency = 'http://39.108.185.51:1339'
-
-Vue.prototype._$agency = 'https://www.yuwugongkai.com/image-server'
-
-// Vue.prototype._$agency = 'http://10.10.10.127:8081';
-
-// Vue.prototype._$agency = 'http://localhost:3000';
-
-// Vue.prototype._$agency = 'http://localhost:1339'
-
-// Vue.prototype._$baseURL = 'http://39.108.185.51:8081/ywgk'
-
-Vue.prototype._$baseURL = 'https://www.yuwugongkai.com/ywgk'
-// Vue.prototype._$baseURL = `${ config.baseURL }ywgk-demo`
+Vue.prototype.$urls = urls
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))

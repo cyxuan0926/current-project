@@ -1,5 +1,7 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+  <el-row
+    class="row-container"
+    :gutter="0">
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -77,33 +79,49 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
+const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
 export default {
   data() {
     return {
       show: false,
       filterInit: { // 默认查询上一个月的，筛选框初始化
-        reportDate: Moment().subtract(1, 'months').format('YYYY-MM')
+        // reportDate: Moment().subtract(1, 'months').format('YYYY-MM')
+        startDate: startDate,
+        endDate: endDate
       },
       searchItems: {
-        prisonArea: {
+        prisonAreaId: {
           type: 'select',
           label: '监区',
           value: '',
           canNotClear: true,
           getting: true,
-          belong: { value: 'name', label: 'name' },
+          belong: { value: 'id', label: 'name' },
           filterable: true,
           options: []
         },
-        reportDate: {
-          value: Moment().subtract(1, 'months').format('YYYY-MM'),
-          type: 'month',
-          label: '统计月份',
+        // reportDate: {
+        //   value: Moment().subtract(1, 'months').format('YYYY-MM'),
+        //   type: 'month',
+        //   label: '统计月份',
+        //   canNotClear: true,
+        //   pickerOptions: {
+        //     disabledDate(time) {
+        //       return Moment(time).format('YYYY-MM') > Moment().subtract(1, 'months').format('YYYY-MM')
+        //     }
+        //   }
+        // },
+        reportRange: {
+          type: 'monthRangeSelector',
           canNotClear: true,
-          pickerOptions: {
-            disabledDate(time) {
-              return Moment(time).format('YYYY-MM') > Moment().subtract(1, 'months').format('YYYY-MM')
-            }
+          startValue: startDate,
+          endValue: endDate,
+          startKey: 'startDate',
+          endKey: 'endDate',
+          range: {
+            max: Moment().subtract(1, 'months').format('YYYY-MM'),
+            maxMonthRange: 24
           }
         },
         prisonerName: {
@@ -122,11 +140,11 @@ export default {
   },
   mounted() {
     this.getJailPrisonAreas({ jailId: JSON.parse(localStorage['user']).jailId }).then(res => {
-      this.searchItems.prisonArea.options = this.jailPrisonAreas
-      this.searchItems.prisonArea.options.push({ label: '无监区', name: '无监区' })
-      this.searchItems.prisonArea.value = this.searchItems.prisonArea.options[0].name
-      this.filter.prisonArea = this.searchItems.prisonArea.options[0].name
-      this.searchItems.prisonArea.getting = false
+      this.searchItems.prisonAreaId.options = this.jailPrisonAreas
+      this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
+      this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
+      this.filter.prisonAreaId = this.searchItems.prisonAreaId.options[0].id
+      this.searchItems.prisonAreaId.getting = false
       this.getDatas()
     })
   },
@@ -138,8 +156,8 @@ export default {
     },
     getDatas() {
       this.show = true
-      if (this.filter.prisonArea === '无监区' && this.searchItems.prisonArea.options.length === 1) delete this.filter.prisonArea
-      else if (this.filter.prisonArea === '无监区' && this.searchItems.prisonArea.options.length > 1) this.filter.prisonArea = ''
+      if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length === 1) delete this.filter.prisonAreaId
+      else if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length > 1) this.filter.prisonAreaId = ''
       this.getPrisonAreaReportList({ ...this.filter, ...this.pagination })
     },
     onSearch() {
@@ -147,10 +165,11 @@ export default {
     },
     getSummaries(params) {
       const { columns, data } = params
+      if (!columns || !data.length) return ''
       const sums = []
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = this.searchItems.prisonArea.value || this.user.jailName
+          sums[index] = this.searchItems.prisonAreaId.options.find(o => o.id === this.searchItems.prisonAreaId.value).name || this.user.jailName
           return
         }
         else if (index <= 2) {

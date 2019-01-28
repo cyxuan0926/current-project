@@ -1,5 +1,6 @@
 import * as service from '../config/service'
 import axios from 'axios'
+import { deleteMediaUrl, default as urls } from '../urls'
 
 export default {
   // 远程会见-常规配置-详情
@@ -19,7 +20,7 @@ export default {
     return service.postObj('/jails/weekend_config/update', params).then(res => res && res.code === 200)
   },
   // 远程会见-特殊配置-详情
-  getRemoteSpecialConfig: params => {
+  getRemoteSpecialConfigOld: params => {
     return service.get('/jails/special_configs/list', params).then(res => res && res.data)
   },
   // 远程会见-特殊配置-新增
@@ -46,8 +47,7 @@ export default {
   deleteImage: params => {
     params = Array.from(new Set(params.concat(localStorage.getItem('toDelete') ? JSON.parse(localStorage.getItem('toDelete')) : [])))
     if (!params.length) return new Promise(function(resolve, reject) { resolve(true) })
-    return axios.delete('https://www.yuwugongkai.com/image-server/delete/resources', { data: { urls: params }, headers: { Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' } }).then(res => {
-    // return axios.delete('http://120.79.67.25:1339/delete/resources', { data: { urls: params }, headers: { Authorization: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a' } }).then(res => {
+    return axios.delete(deleteMediaUrl, { data: { urls: params }, headers: { Authorization: urls.token } }).then(res => {
       if (res.status === 200 && res.data.code === 200) {
         localStorage.removeItem('toDelete')
         return true

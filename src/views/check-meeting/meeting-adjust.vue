@@ -12,24 +12,28 @@
           value-format="yyyy-MM-dd"
           :clearable="false"
           placeholder="选择日期"
-          :picker-options="pickerOptions">
-        </el-date-picker>
+          :picker-options="pickerOptions"/>
         <el-button
           type="primary"
           style="margin-left: 10px;"
           @click="getConfigs">确定</el-button>
+        <label style="margin-left: 5px;font-size: 12px;color: red">注：仅支持2天后的会见申请调整</label>
         <div
           v-if="show"
           class="adjustTable"
           style="float: right;">
-            <el-tag class="occupied">已分配且未调整</el-tag>
-            <el-tag class="occupied is-choosed">待调整</el-tag>
-            <el-tag class="occupied is-changed">已调整</el-tag>
+          <el-tag class="occupied">已分配且未调整</el-tag>
+          <el-tag class="occupied is-choosed">待调整</el-tag>
+          <el-tag class="occupied is-changed">已调整</el-tag>
         </div>
       </div>
-      <div class="adjustTable" v-if="show">
+      <div
+        class="adjustTable"
+        v-if="show">
         <div class="adjust-row bold">
-          <div class="adjust-col" :style="colWidth">终端号</div>
+          <div
+            class="adjust-col"
+            :style="colWidth">终端号</div>
           <div
             v-for="meetingQueue in meetingAdjustment.meetingQueue"
             :key="meetingQueue"
@@ -40,7 +44,9 @@
           v-for="(terminal, row) in meetingAdjustment.terminals"
           :key="row"
           class="adjust-row">
-          <div class="adjust-col bold" :style="colWidth">
+          <div
+            class="adjust-col bold"
+            :style="colWidth">
             {{ terminal.terminalNumber }}
           </div>
           <div
@@ -53,7 +59,7 @@
                 'is-choosed': clicked.length === 1 && clicked[0].terminalNumber === terminal.terminalNumber && clicked[0].duration === meetingQueue,
                 'is-choosed-occupied': clicked.length === 2 && clicked[1].terminalNumber === terminal.terminalNumber && clicked[1].duration === meetingQueue,
                 'is-changed': meetings[terminal.terminalNumber][meetingQueue].changed
-              }]"
+            }]"
             :style="colWidth"
             @click="onCellClick(row, col, meetings[terminal.terminalNumber][meetingQueue], $event)">
             {{ meetings[terminal.terminalNumber][meetingQueue].name }}
@@ -112,8 +118,19 @@ export default {
   methods: {
     ...mapActions(['getMeetingConfigs', 'adjustMeeting']),
     getConfigs() {
+      this.show = false
       this.getMeetingConfigs(this.adjustDate).then(res => {
         if (!res) return
+        if (!this.meetingAdjustment.meetingQueue || !this.meetingAdjustment.meetingQueue.length) {
+          this.$message.closeAll()
+          this.$message.warning('该日无可调整时间段')
+          return
+        }
+        if (!this.meetingAdjustment.terminals || !this.meetingAdjustment.terminals.length) {
+          this.$message.closeAll()
+          this.$message.warning('该日无可用终端')
+          return
+        }
         this.meetingAdjustment.terminals.forEach((terminal, index) => {
           this.meetings[terminal.terminalNumber] = { terminalId: terminal.id }
           this.origin[terminal.terminalNumber] = {}
@@ -196,6 +213,9 @@ export default {
         this.resetMeetings()
       })
     }
+  },
+  mounted() {
+    this.getConfigs()
   },
   destroyed() {
     // console.log(999)

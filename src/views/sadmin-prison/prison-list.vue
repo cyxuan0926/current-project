@@ -1,5 +1,7 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+  <el-row
+    class="row-container"
+    :gutter="0">
     <el-button
       size="small"
       type="primary"
@@ -30,7 +32,7 @@
           <template slot-scope="scope">
             <img
               v-if="scope.row.imageUrl"
-              :src="scope.row.imageUrl + '?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'"
+              :src="scope.row.imageUrl + '?token=' + $urls.token"
               alt="">
           </template>
         </el-table-column>
@@ -41,18 +43,24 @@
           <template slot-scope="scope">
             <span
               class="separate"
-              v-if="scope.row.provincesName">{{scope.row.provincesName}}</span>
+              v-if="scope.row.provincesName">{{ scope.row.provincesName }}</span>
             <span
               class="separate"
-              v-if="scope.row.citysName">{{scope.row.citysName}}</span>
+              v-if="scope.row.citysName">{{ scope.row.citysName }}</span>
             <span
               class="separate"
-              v-if="scope.row.street">{{scope.row.street}}</span>
+              v-if="scope.row.street">{{ scope.row.street }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="170px" align="center">
+        <el-table-column
+          label="操作"
+          width="170px"
+          align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row.id)">编辑</el-button><br>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row.id)">编辑</el-button><br>
             <el-button
               type="text"
               size="mini"
@@ -114,7 +122,7 @@ export default {
         this.$router.push(`/prison/visit/${ e }`)
       }
       else {
-        this.$router.push(`/prison/meeting-remote/${ e }`)
+        this.$router.push(`/remote/edit/${ e }`)
       }
     }
   }

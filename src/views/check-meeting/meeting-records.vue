@@ -39,7 +39,7 @@
           label="会见时长"
           show-overflow-tooltip>
           <template slot-scope="props">
-            {{props.row.duration | time}}
+            {{ props.row.duration | time }}
           </template>
         </el-table-column>
         <el-table-column

@@ -28,6 +28,7 @@ export default {
         if (images.indexOf(res.imageUrl) < 0) images.push(res.imageUrl)
         localStorage.setItem('images', JSON.stringify(images))
       }
+      return true
     })
   },
   updateAdvertisement: ({ commit, dispatch }, params) => {

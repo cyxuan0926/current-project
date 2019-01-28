@@ -43,8 +43,7 @@
             format="yyyy-MM-dd HH:mm:ss"
             value-format="yyyy-MM-dd HH:mm:ss"
             :default-time="['00:00:00', '23:59:59']"
-            @change="onTimeRangeChange">
-          </el-date-picker>
+            @change="onTimeRangeChange"/>
         </el-form-item>
         <el-form-item
           label="省份"
@@ -89,82 +88,82 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
-  export default {
-    data() {
-      return {
-        gettingType: true,
-        gettingProvince: true,
-        advertisement: { imageUrl: '' },
-        rules: {
-          name: [{ required: true, message: '请填写广告名称' }],
-          typeId: [{ required: true, message: '请选择广告类型' }],
-          time: [{ required: true, message: '请选择广告有效时间' }],
-          imageUrl: [{ required: true, message: '请上传广告图片' }],
-          status: [{ required: true, message: '请选择是否上架' }]
-        },
-        imageRatio: ''
-      }
-    },
-    computed: {
-      ...mapState(['advertisementTypes', 'provincesAll'])
-    },
-    mounted() {
-      this.getAdvertisementTypes().then(() => {
-        this.gettingType = false
-      })
-      this.getProvincesAll().then(() => {
-        this.gettingProvince = false
-      })
-    },
-    destroyed() {
-      if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
-    },
-    methods: {
-      ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'deleteUnusedImage', 'handleDeleteImage']),
-      onSubmit(e) {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            let params = Object.assign({}, this.advertisement)
-            delete params.time
-            this.addAdvertisement(params).then(res => {
-              if (!res) return
-              this.handleDeleteImage([params.imageUrl]).then(res => {
-                this.$router.push('/advertisement/list')
-              })
+import { mapActions, mapState } from 'vuex'
+export default {
+  data() {
+    return {
+      gettingType: true,
+      gettingProvince: true,
+      advertisement: { imageUrl: '' },
+      rules: {
+        name: [{ required: true, message: '请填写广告名称' }],
+        typeId: [{ required: true, message: '请选择广告类型' }],
+        time: [{ required: true, message: '请选择广告有效时间' }],
+        imageUrl: [{ required: true, message: '请上传广告图片' }],
+        status: [{ required: true, message: '请选择是否上架' }]
+      },
+      imageRatio: ''
+    }
+  },
+  computed: {
+    ...mapState(['advertisementTypes', 'provincesAll'])
+  },
+  mounted() {
+    this.getAdvertisementTypes().then(() => {
+      this.gettingType = false
+    })
+    this.getProvincesAll().then(() => {
+      this.gettingProvince = false
+    })
+  },
+  destroyed() {
+    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+  },
+  methods: {
+    ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'deleteUnusedImage', 'handleDeleteImage']),
+    onSubmit(e) {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          let params = Object.assign({}, this.advertisement)
+          delete params.time
+          this.addAdvertisement(params).then(res => {
+            if (!res) return
+            this.handleDeleteImage([params.imageUrl]).then(res => {
+              this.$router.push('/advertisement/list')
             })
-          }
-        })
-      },
-      onTypeChange(e) {
-        switch (e) {
-          case 2:
-            this.imageRatio = '360:200'
-            this.advertisement.imageUrl = ''
-            break
-          case 1:
-            this.imageRatio = '9:16'
-            this.advertisement.imageUrl = ''
-            break
-          default:
-            this.imageRatio = ''
+          })
         }
-      },
-      onTimeRangeChange(e) {
-        if (e) {
-          this.advertisement.startDate = e[0]
-          this.advertisement.endDate = e[1]
-        }
-        else {
-          this.advertisement.startDate = ''
-          this.advertisement.endDate = ''
-        }
-      },
-      onSuccess(e) {
-        this.advertisement.imageUrl = e
+      })
+    },
+    onTypeChange(e) {
+      switch (e) {
+        case 2:
+          this.imageRatio = '360:200'
+          this.advertisement.imageUrl = ''
+          break
+        case 1:
+          this.imageRatio = '9:16'
+          this.advertisement.imageUrl = ''
+          break
+        default:
+          this.imageRatio = ''
       }
+    },
+    onTimeRangeChange(e) {
+      if (e) {
+        this.advertisement.startDate = e[0]
+        this.advertisement.endDate = e[1]
+      }
+      else {
+        this.advertisement.startDate = ''
+        this.advertisement.endDate = ''
+      }
+    },
+    onSuccess(e) {
+      this.advertisement.imageUrl = e
     }
   }
+}
 </script>
 
 <style type="text/stylus" lang="stylus">

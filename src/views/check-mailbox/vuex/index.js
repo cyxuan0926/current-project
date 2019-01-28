@@ -3,7 +3,7 @@ import mutations from './mutations'
 
 let state = {
   mailboxes: { contents: [], total: 0 },
-  mailbox: {}
+  mailboxTypes: []
 }
 
 export default {

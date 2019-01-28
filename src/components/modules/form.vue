@@ -3,14 +3,15 @@
     <el-form
       v-if="flag"
       ref="form"
-      :label-position="items.formConfigs ?  items.formConfigs.labelPosition : ''"
+      :label-position="items.formConfigs ? items.formConfigs.labelPosition : ''"
       :inline="items.formConfigs ? items.formConfigs.inline : false"
-      :label-width="items.formConfigs ?  items.formConfigs.labelWidth : ''"
+      :label-width="items.formConfigs ? items.formConfigs.labelWidth : ''"
       :model="fields"
       :rules="rules">
       <template v-for="(item, key) in items">
         <form-item
           v-if="dismiss.indexOf(key) < 0"
+          :ref="key"
           :key="key"
           :prop="key"
           :item="item"
@@ -18,7 +19,9 @@
           @validateField="validateField" />
       </template>
     </el-form>
-    <div v-if="items.buttons && Object.keys(items.buttons).length" class="button-box">
+    <div
+      v-if="items.buttons && Object.keys(items.buttons).length"
+      class="button-box">
       <template v-for="(button, index) in items.buttons">
         <el-button
           v-if="button === 'prev' || button.prev"
@@ -33,16 +36,18 @@
           type="primary"
           @click="onSubmit">下一步</el-button>
         <el-button
-          v-if="button === 'update'"
+          v-if="button === 'update' || button.update"
           :key="index"
           size="small"
           type="primary"
+          :loading="button.update && button.update.loading"
           @click="onSubmit">更新</el-button>
         <el-button
-          v-if="button === 'add'"
+          v-if="button === 'add' || button.add"
           :key="index"
           size="small"
           type="primary"
+          :loading="button.add && button.add.loading"
           @click="onSubmit">新增</el-button>
         <el-button
           v-if="button === 'back'"
@@ -60,9 +65,17 @@ export default {
   components: { formItem },
   props: {
     items: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {}
+      }
     },
-    values: Object
+    values: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
   },
   watch: {
     values: {

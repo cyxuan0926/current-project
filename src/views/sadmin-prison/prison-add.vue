@@ -1,13 +1,22 @@
 <template>
   <div>
     <div class="form-container">
-      <el-steps :active="status" finish-status="success" simple style="margin-bottom: 20px">
-        <el-step v-for="(tag, index) in tabMapOptions" :key="index" :title="tag.label" ></el-step>
+      <el-steps
+        :active="status"
+        finish-status="success"
+        simple
+        style="margin-bottom: 20px">
+        <el-step
+          v-for="(tag, index) in tabMapOptions"
+          :key="index"
+          :title="tag.label" />
       </el-steps>
 
       <template v-for="(item, idx) in tabMapOptions">
         <keep-alive :key="idx">
-          <component v-if='status == idx' :is="item.key"></component>
+          <component
+            v-if='status == idx'
+            :is="item.key"/>
         </keep-alive>
       </template>
 
@@ -26,7 +35,6 @@ export default {
   data() {
     return {
       activeName: 'prisonBase',
-      placeHolder: 0,
       tabMapOptions: [
         { label: '基本信息', key: 'prisonBase' },
         { label: '配置信息', key: 'prisonConfig' },

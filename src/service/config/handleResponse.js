@@ -27,6 +27,11 @@ const codes = {
       }
     }
   },
+  400: {
+    next: params => {
+      tips('请求无效')
+    }
+  },
   401: {
     next: params => {
       localStorage.removeItem('user')
@@ -112,11 +117,23 @@ const codes = {
     }
   }
 }
+const enToZh = {
+  timeout: '请求超时，请稍后重试'
+}
 
+const handleErrorMessage = (message) => {
+  let word = Object.keys(enToZh).find(w => {
+    return message.indexOf(w) > -1
+  })
+  return word ? enToZh[word] : message
+}
 export default params => {
+  if (params.config.url.indexOf('/feedbacks/download') > -1) {
+    if (params.status === 200 && !params.data.code) return params
+  }
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
-    tips(params.data ? params.data.msg : (params.message ? params.message : ''))
+    tips(params.data ? params.data.msg : handleErrorMessage(params.message))
     return false
   }
   result.next && result.next(params.data, params.config.url)

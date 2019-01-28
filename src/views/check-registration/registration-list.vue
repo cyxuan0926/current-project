@@ -29,8 +29,15 @@
           width="148px"
           label="身份证信息">
           <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardFront" :url="scope.row.idCardFront" title="身份证正面照" />
-            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照" style="margin-top: 5px;" />
+            <m-img-viewer
+              v-if="scope.row.idCardFront"
+              :url="scope.row.idCardFront"
+              title="身份证正面照" />
+            <m-img-viewer
+              v-if="scope.row.idCardBack"
+              :url="scope.row.idCardBack"
+              title="身份证背面照"
+              style="margin-top: 5px;" />
           </template>
         </el-table-column>
         <!-- <el-table-column
@@ -43,7 +50,7 @@
         <el-table-column
           min-width="86px"
           label="申请时间">
-          <template slot-scope="scope"> {{scope.row.createdAt | Date}} </template>
+          <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
@@ -59,11 +66,12 @@
           label="关系" />
         <el-table-column label="家属会见告知书">
           <template slot-scope="scope">
-            <span :class="[
-              'bold',
-              { 'red' : !scope.row.notifyId },
-              { 'green' : scope.row.notifyId }
-              ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
+            <span
+              :class="[
+                'bold',
+                { 'red' : !scope.row.notifyId },
+                { 'green' : scope.row.notifyId }
+            ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
             <el-button
               v-if="scope.row.notifyId"
               type="text"
@@ -75,13 +83,15 @@
           label="申请状态"
           min-width="74px"
           class-name="orange">
-          <template slot-scope="scope"> {{scope.row.status | registStatus}} </template>
+          <template slot-scope="scope"> {{ scope.row.status | registStatus }} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
           min-width="150px"
           label="审核信息">
-          <template v-if="scope.row.auditAt" slot-scope="scope">{{ scope.row.auditRealName }}<br />{{ scope.row.auditUserName }}<br />({{ scope.row.auditAt | Date }})</template>
+          <template
+            v-if="scope.row.auditAt"
+            slot-scope="scope">{{ scope.row.auditRealName }}<br >{{ scope.row.auditUserName }}<br >({{ scope.row.auditAt | Date }})</template>
         </el-table-column>
         <el-table-column
           label="操作">
@@ -111,10 +121,22 @@
       width="530px">
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
-        <m-img-viewer v-if="toAuthorize.idCardFront" :url="toAuthorize.idCardFront" title="身份证正面照"/>
-        <m-img-viewer v-if="toAuthorize.idCardBack" :url="toAuthorize.idCardBack" title="身份证背面照"/>
-        <m-img-viewer v-if="toAuthorize.avatarUrl" :url="toAuthorize.avatarUrl" title="头像"/>
-        <m-img-viewer v-if="toAuthorize.relationalProofUrl" :url="toAuthorize.relationalProofUrl" title="关系证明图"/>
+        <m-img-viewer
+          v-if="toAuthorize.idCardFront"
+          :url="toAuthorize.idCardFront"
+          title="身份证正面照"/>
+        <m-img-viewer
+          v-if="toAuthorize.idCardBack"
+          :url="toAuthorize.idCardBack"
+          title="身份证背面照"/>
+        <m-img-viewer
+          v-if="toAuthorize.avatarUrl"
+          :url="toAuthorize.avatarUrl"
+          title="头像"/>
+        <m-img-viewer
+          v-if="toAuthorize.relationalProofUrl"
+          :url="toAuthorize.relationalProofUrl"
+          title="关系证明图"/>
       </div>
       <div
         v-if="!show.agree && !show.disagree && !show.callback"
@@ -156,12 +178,19 @@
             v-for="(remark,index) in registRemarks"
             :value="remark"
             :label="remark"
-            :key="index">
-          </el-option>
+            :key="index"/>
         </el-select>
-        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="withdrawRule" ref="refuseForm" class="withdraw-box">
+        <el-form
+          v-if="remarks === '其他'"
+          :model="refuseForm"
+          :rules="withdrawRule"
+          ref="refuseForm"
+          class="withdraw-box">
           <el-form-item prop="anotherRemarks">
-            <el-input type="textarea" placeholder="请输入驳回原因..." v-model="refuseForm.anotherRemarks"></el-input>
+            <el-input
+              type="textarea"
+              placeholder="请输入驳回原因..."
+              v-model="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
         <el-button
@@ -186,24 +215,37 @@
             v-for="(remark,index) in registRemarks"
             :value="remark"
             :label="remark"
-            :key="index">
-          </el-option>
+            :key="index"/>
         </el-select>
-        <el-form v-if="remarks === '其他'" :model="refuseForm" :rules="withdrawRule" ref="refuseForm" class="withdraw-box">
+        <el-form
+          v-if="remarks === '其他'"
+          :model="refuseForm"
+          :rules="withdrawRule"
+          ref="refuseForm"
+          class="withdraw-box">
           <el-form-item prop="anotherRemarks">
-            <el-input type="textarea" placeholder="请输入驳回原因..." v-model="refuseForm.anotherRemarks"></el-input>
+            <el-input
+              type="textarea"
+              placeholder="请输入驳回原因..."
+              v-model="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
-        <el-form :model="withdrawForm" :rules="withdrawRule" ref="withdrawForm" class="withdraw-box">
+        <el-form
+          :model="withdrawForm"
+          :rules="withdrawRule"
+          ref="withdrawForm"
+          class="withdraw-box">
           <el-form-item prop="withdrawReason">
-            <el-input type="textarea" placeholder="请输入撤回理由..." v-model="withdrawForm.withdrawReason"></el-input>
+            <el-input
+              type="textarea"
+              placeholder="请输入撤回理由..."
+              v-model="withdrawForm.withdrawReason" />
           </el-form-item>
         </el-form>
         <el-button
           plain
           :loading="btnDisable"
-          @click="onAuthorization('WITHDRAW')"
-          >提交</el-button>
+          @click="onAuthorization('WITHDRAW')">提交</el-button>
         <el-button
           type="danger"
           plain
@@ -242,9 +284,9 @@ export default {
         name: { type: 'input', label: '家属姓名' },
         prisonerNumber: { type: 'input', label: '囚号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        auditName: { type: 'input', label: '审核人' },
+        auditName: { type: 'input', label: '审核人', miss: true },
         status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'], value: '' },
-        auditAt: { type: 'date', label: '审核时间' }
+        auditAt: { type: 'date', label: '审核时间', miss: true }
       },
       toAuthorize: {},
       show: {
@@ -273,11 +315,19 @@ export default {
     tabs(val) {
       if (val !== 'first') {
         this.searchItems.status.miss = true
+        this.searchItems.auditName.miss = true
+        this.searchItems.auditAt.miss = true
+        delete this.filter.auditName
+        delete this.filter.auditAt
+        this.searchItems.auditName.value = ''
+        this.searchItems.auditAt.value = ''
+        this.searchItems.status.value = ''
       }
       else {
         delete this.filter.status
-        this.searchItems.status.value = ''
         this.searchItems.status.miss = false
+        this.searchItems.auditName.miss = false
+        this.searchItems.auditAt.miss = false
       }
       this.onSearch()
     }

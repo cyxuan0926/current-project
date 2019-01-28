@@ -6,7 +6,9 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col :span="24" v-show="show">
+    <el-col
+      :span="24"
+      v-show="show">
       <el-tabs
         value="first"
         type="card">
@@ -19,19 +21,33 @@
         border
         stripe
         style="width: 100%">
-        <el-table-column label="汇款单号" prop="remitNum" min-width="120"/>
-        <el-table-column label="服刑人员姓名" prop="prisonerName"/>
-        <el-table-column label="囚号" prop="prisonerNumber"/>
-        <el-table-column label="汇款家属" prop="familyName"/>
-        <el-table-column label="汇款金额(元)" prop="money" min-width="80"/>
-        <el-table-column label="汇款时间" min-width="110">
+        <el-table-column
+          label="汇款单号"
+          prop="remitNum"
+          min-width="120"/>
+        <el-table-column
+          label="服刑人员姓名"
+          prop="prisonerName"/>
+        <el-table-column
+          label="囚号"
+          prop="prisonerNumber"/>
+        <el-table-column
+          label="汇款家属"
+          prop="familyName"/>
+        <el-table-column
+          label="汇款金额(元)"
+          prop="money"
+          min-width="80"/>
+        <el-table-column
+          label="汇款时间"
+          min-width="110">
           <template slot-scope="scope">
-            {{scope.row.createdAt | Date}}
+            {{ scope.row.createdAt | Date }}
           </template>
         </el-table-column>
         <el-table-column label="汇款状态">
           <template slot-scope="scope">
-            {{ scope.row.status | payStatus}}
+            {{ scope.row.status | payStatus }}
           </template>
         </el-table-column>
       </el-table>
@@ -73,6 +89,7 @@ export default {
   },
   mounted() {
     this.getPrisonAll().then(res => {
+      if (!res) return
       this.searchItems.jailId.options = this.prisonAll
       this.searchItems.jailId.value = this.prisonAll[0].id
       this.filter.jailId = this.prisonAll[0].id

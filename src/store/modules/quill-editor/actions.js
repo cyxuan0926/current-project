@@ -12,7 +12,7 @@ export default {
     // debugger
     let images = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : [],
       oldImages = localStorage.getItem('oldImages') ? JSON.parse(localStorage.getItem('oldImages')) : [],
-      excpt = params[0] ? [params[0]] : [],
+      excpt = params[0] ? (typeof params[0] === 'string' ? [params[0]] : params[0]) : [],
       allImages = Array.from(new Set(images.concat(oldImages)))
     if (allImages.length === 0) return
     if (params[1] && params[1].match(/<img.*? \/>|<source.*? \/>/g)) {
@@ -28,7 +28,9 @@ export default {
       if (res) {
         localStorage.removeItem('images')
         localStorage.removeItem('newImages')
-        localStorage.setItem('oldImages', JSON.stringify(excpt))
+        if (!params[2]) {
+          excpt.length && localStorage.setItem('oldImages', JSON.stringify(excpt))
+        }
       }
     })
   },

@@ -1,6 +1,6 @@
 <template>
   <el-form-item
-    :label="item.label"
+    :label="item.noLabel ? '' : item.label"
     :prop="prop">
     <el-input
       v-if="item.type === 'input' || item.type === 'textarea'"
@@ -9,9 +9,11 @@
       v-model="fields[prop]"
       :disabled="item.disabled"
       :placeholder="'请输入' + item.label">
-      <template v-if="item.append" slot="append">{{ item.append }}</template>
+      <template
+        v-if="item.append"
+        slot="append">{{ item.append }}</template>
     </el-input>
-      <!-- <template v-if="item.type === 'select'">{{ item }}</template> -->
+    <!-- <template v-if="item.type === 'select'">{{ item }}</template> -->
     <el-select
       v-if="item.type === 'select'"
       :placeholder="'请选择' + item.label"
@@ -33,8 +35,7 @@
       :disabled="item.disabled"
       value-format="yyyy-MM-dd"
       :picker-options="item.pickerOptions"
-      :placeholder="'请选择' + item.label">
-    </el-date-picker>
+      :placeholder="'请选择' + item.label"/>
     <el-switch
       v-if="item.type === 'switch'"
       v-model="fields[prop]"
@@ -44,11 +45,30 @@
       :inactive-value="0"
       :disabled="item.disabled"
       :width="60" />
-      <span
-        v-if="item.type === 'switch' && item.tips && fields[prop]"
-        style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
+    <el-checkbox-group
+      v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
+      v-model="fields[prop]"
+      @change="handleCheckboxChange">
+      <el-checkbox
+        v-for="box in item.group"
+        :key="box.value"
+        :label="box.value">{{ box.label }}</el-checkbox>
+    </el-checkbox-group>
+    <span
+      v-if="item.type === 'switch' && item.tips && fields[prop]"
+      style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
     <m-upload-img
       v-if="item.type === 'uploadImg'"
+      v-model="fields[prop]"
+      @success="onSuccess" />
+    <m-upload-audio
+      v-if="item.type === 'uploadAudio'"
+      ref="audio"
+      v-model="fields[prop]"
+      @success="onSuccess" />
+    <m-upload-video
+      v-if="item.type === 'uploadVideo'"
+      ref="video"
       v-model="fields[prop]"
       @success="onSuccess" />
     <m-quill-editor
@@ -67,9 +87,22 @@
 // import { mapActions } from 'vuex'
 export default {
   props: {
-    item: Object,
-    prop: String,
-    fields: Object
+    item: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    prop: {
+      type: String,
+      default: ''
+    },
+    fields: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
   },
   data() {
     return {
@@ -92,13 +125,22 @@ export default {
       this.$emit('validateField', this.prop)
     },
     tinymceChange(contents, text, content) {
-      if (!content) this.fields[this.prop] = ''
-      else this.fields[this.prop] = contents
+      if (!content) {
+        this.fields[this.prop] = ''
+        if (this.item.summary) this.fields[this.item.summary] = ''
+      }
+      else {
+        this.fields[this.prop] = contents
+        if (this.item.summary) this.fields[this.item.summary] = text
+      }
       this.$emit('validateField', this.prop)
     },
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
+    },
+    handleCheckboxChange(e) {
+      // console.log(e)
     }
   }
 }
