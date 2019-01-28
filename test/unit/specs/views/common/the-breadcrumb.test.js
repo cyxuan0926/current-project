@@ -1,13 +1,13 @@
-import Vue from 'vue'
 import ElementUI from 'element-ui'
-import vueRouter from 'vue-router'
+import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import component from '@/views/common/the-breadcrumb'
-import routes from '@/router/modules/superAdmin'
-import sinon from 'sinon'
+
 
 const localVue = createLocalVue()
 localVue.use(ElementUI)
+
+const router = new VueRouter()
 
 describe('views-面包屑', () => {
   let wrapper
@@ -59,29 +59,19 @@ describe('views-面包屑', () => {
     expect(wrapper.vm.breadcrumb).toMatchObject([{ name: '监狱管理', path: '/prison' }, { name: '编辑监狱', path: '/prison/edit/:id' }])
   })
 
-  it('watch-$route', () => {
+  it('watch-$route', done => {
+    localVue.use(VueRouter)
     wrapper = shallowMount(component, {
       localVue,
-      mocks: {
-        $route: {
-          matched: [{
-            parent: {
-              name: '监狱管理',
-              path: '/prison'
-            },
-            path: '/prison/edit/:id',
-            name: '编辑监狱'
-          }],
-          path: '/prison/edit/77',
-          name: '编辑监狱'
-        }
-      }
+      router
     })
-    
-    let spyRoute = sinon.spy()
-    wrapper.vm.$route.$on('change', spyRoute)
-    wrapper.vm.$route = { path: '/dashboard', name: 'gongzuotai' }
-    console.log(wrapper.vm.$route.path)
-    expect(spyRoute).toHaveBeenCalled()
+    let spyRoute = jest.fn()
+    wrapper.setMethods({ render: spyRoute })
+    // wrapper.vm._watchers[0].cb.apply(wrapper.vm, [{ path: '/prison/add' }])
+    wrapper.vm.$router.push('/hahaha')
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.vm.render).toHaveBeenCalled()
+      done()
+    })
   })
 })

@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
 import ElementUI from 'element-ui'
 import VueRouter from 'vue-router'
@@ -6,11 +5,11 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import component from '@/views/common/the-aside'
 
 const filters = require('@/filters').default.role
-Vue.filter('role', filters)
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(ElementUI)
+localVue.filter('role', filters)
 
 const router = new VueRouter()
 
