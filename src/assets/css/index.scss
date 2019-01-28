@@ -82,9 +82,6 @@ a{
     margin: 0 0 10px;
   }
 }
-body>.el-tooltip__popper.is-dark{
-  // left: 60px !important;
-}
 .el-footer{
   padding: 0;
 }
@@ -104,6 +101,12 @@ body>.el-tooltip__popper.is-dark{
   &>.el-container{
     width: calc(100% - 230px);
   }
+}
+.ql-snow .ql-color-picker .ql-picker-label svg, .ql-snow .ql-icon-picker .ql-picker-label svg{
+  vertical-align: top;
+}
+.ql-container.ql-snow{
+  min-height: 240px;
 }
 @media only screen and (max-width: 768px){
   .el-header{

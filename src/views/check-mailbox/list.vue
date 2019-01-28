@@ -103,7 +103,7 @@
         class="tips-title">详细内容</span>
       <div class="dialog-container">
         <div class="detail-item"><label>用户</label><span>{{ mailbox.familyName || mailbox.name }}</span></div>
-        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt | Date }}</span></div>
+        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt }}</span></div>
         <div class="detail-item"><label>信件类别</label><span>{{ mailbox.typeName }}</span></div>
         <div class="detail-item"><label>信件内容</label><span>{{ mailbox.contents }}</span></div>
         <div

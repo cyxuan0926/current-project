@@ -38,6 +38,7 @@ export default {
     this.getNewsDetail(this.$route.params.id).then(res => {
       if (!res) return
       this.values = this.news
+      console.log(this.news.contents)
     })
   },
   methods: {
@@ -51,6 +52,7 @@ export default {
         this.$message.warning('请填写新闻内容')
         return false
       }
+      console.log(e.contents)
       this.editNews(e).then(res => {
         if (res) {
           switch (this.$route.meta.typeId) {

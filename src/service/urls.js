@@ -1,7 +1,7 @@
 // const env = 'dev' // 测试环境
 // const env = 'demo' // 演示环境
-const env = 'auth' // 认证授权
-// const env = 'master' // 正式环境
+// const env = 'auth' // 认证授权
+const env = 'master' // 正式环境
 const nodeUrl = 'http://120.78.190.101:1339'
 
 // apiHost: 接口ip+端口,
@@ -43,6 +43,7 @@ const config = {
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
+    // imageUrl: 'http://39.108.185.51:1339/image-server/avatars',
     imageUrl: 'https://www.yuwugongkai.com/image-server/avatars',
     // fileUrl: 'https://www.yuwugongkai.com/image-server',
     videoUrl: 'https://www.yuwugongkai.com/video-server/videos',

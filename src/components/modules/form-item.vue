@@ -113,7 +113,7 @@ export default {
       // console.log(prop)
     },
     editorChange(contents, text) {
-      console.log(contents)
+      console.log(contents, text)
       this.fields[this.prop] = contents
       this.$emit('validateField', this.prop)
     },
