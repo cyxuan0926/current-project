@@ -40,7 +40,7 @@
         <el-table-column
           label="发件时间">
           <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
+            {{ scope.row.createdAt }}
           </template>
         </el-table-column>
         <el-table-column

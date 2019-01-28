@@ -288,6 +288,7 @@ export default {
 .adjustTable .adjust-col{
   min-width: 100px;
   min-height: 40px;
+  line-height: 40px;
   border-top: 1px solid #ebeef5;
   border-left: 1px solid #ebeef5;
   display: flex;

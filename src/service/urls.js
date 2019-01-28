@@ -1,5 +1,5 @@
 // const env = 'dev' // 测试环境
-// const env = 'demo' // 演示环境
+// const env = 'demo' // /演示环境
 // const env = 'auth' // 认证授权
 const env = 'master' // 正式环境
 const nodeUrl = 'http://120.78.190.101:1339'

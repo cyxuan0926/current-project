@@ -1,6 +1,6 @@
 <template>
   <el-row
-    class="row-container"
+    class="list-container"
     :gutter="0">
     <m-search
       :items="searchItems"
