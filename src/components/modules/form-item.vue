@@ -106,21 +106,14 @@ export default {
   },
   data() {
     return {
-      // getting: true
-      // options: {}
     }
   },
-  // watch
-  mounted() {
-    // console.log(this.item, this.prop, this.fields)
-  },
   methods: {
-    // ...mapActions({ this.item.action }),
     onSelectChange(e, prop) {
-      // this.fields[prop] = e
-      // if (this.item.rely)
+      // console.log(prop)
     },
     editorChange(contents, text) {
+      console.log(contents)
       this.fields[this.prop] = contents
       this.$emit('validateField', this.prop)
     },

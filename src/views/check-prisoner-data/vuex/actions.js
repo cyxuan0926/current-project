@@ -64,7 +64,6 @@ export default {
               error.err = `${ error.err }</br>${ index + 1 }. ${ msg }`
             })
           }
-          console.log(error.err)
         })
       }
       commit('uploadPocketMoneyExcel', res)

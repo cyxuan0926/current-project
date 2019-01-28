@@ -540,7 +540,7 @@ export default {
     getPrisonConfigInform(arg) {
       let parmas = { jailId: arg.jailId }
       this.getPrisonConfigs(parmas).then(res => {
-        if (res.code !== 200) return
+        if (!res || res.code !== 200) return
         this.prisonConfigs = res.data.prisonConfigs
       })
     },

@@ -6,7 +6,6 @@ import passwordModification from './modules/password-modification'
 import quillEditor from './modules/quill-editor'
 import downloadFile from './modules/download-file'
 import uploadFile from './modules/upload-file'
-import breadCrumbs from './modules/breadcrumb'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
 import adminFeedback from '@/views/sadmin-feedback/vuex'
@@ -32,7 +31,9 @@ import meeting from '@/views/meeting/vuex'
 import meetingReport from '@/views/meeting-report/vuex'
 import noPage from './modules/no-page'
 import websocket from './modules/websocket'
-import login from '@/views/login/vuex'
+import layout from '@/views/common/vuex-and-service'
+import login from '@/views/login/vuex-and-service'
+import global from './modules/global'
 
 import filter from './modules/filter'
 
@@ -57,7 +58,6 @@ merge(
   downloadFile,
   uploadFile,
   adminLog,
-  breadCrumbs,
   adminFeedback,
   adminPrisonUser,
   download,
@@ -80,7 +80,6 @@ merge(
   checkPrisonerPocketMoney,
   checkRegistration,
   checkVisit,
-  login,
   noPage,
   websocket
 )
@@ -88,5 +87,10 @@ export default new Vuex.Store({
   actions,
   mutations,
   getters,
-  state
+  state,
+  modules: {
+    layout,
+    login,
+    global
+  }
 })

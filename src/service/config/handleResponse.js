@@ -37,7 +37,7 @@ const codes = {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
       tips('身份验证失败，请重新登录')
-      router.push({ path: '/new-login' })
+      router.push({ path: '/new-login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   403: {
@@ -90,7 +90,7 @@ const codes = {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
       tips(params.msg || '登录超时')
-      router.push({ path: '/new-login' })
+      router.push({ path: '/new-login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   99998: {

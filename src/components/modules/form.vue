@@ -83,12 +83,6 @@ export default {
         this.fields = Object.assign({}, this.fields, val)
       },
       deep: true
-    },
-    items: {
-      handler: val => {
-        // console.log('222222222', val)
-      },
-      deep: true
     }
   },
   data() {

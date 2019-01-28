@@ -1,76 +1,65 @@
 <template>
-  <div class="layout">
-    <the-header v-if="!$route.meta.notLogin" />
-    <!--页面侧边栏-->
-    <the-aside v-if="!$route.meta.notLogin" />
-    <div
-      class="content-wrapper"
-      :class="{'content-wrapper-login':$route.meta.notLogin}"
-      :style="'min-height:' + wrapperHeight">
-      <!--页面内容-->
-      <section
-        class="content"
-        :class="{'content-not-login':!$route.meta.notLogin}"
-        v-loading="loading"
-        element-loading-background="rgba(255, 255, 255, 0.5)">
-        <the-breadcrumb v-if="!$route.meta.notLogin" />
-        <transition
-          name="router-fade"
-          mode="out-in">
-          <router-view />
-        </transition>
-      </section>
-    </div>
-    <the-footer v-if="!$route.meta.notLogin" />
-  </div>
+  <el-container class="height100">
+    <el-header height="50px"><the-header /></el-header>
+    <el-container class="main-container">
+      <el-aside
+        :width="isCollapsed ? (hidden ? '0px' : '50px') : '230px'"
+        :class="['transition', { 'collapsed': isCollapsed }]">
+        <the-sidebar />
+      </el-aside>
+      <el-container>
+        <the-breadcrumb />
+        <el-main>
+          <transition
+            name="router-fade"
+            mode="out-in">
+            <router-view />
+          </transition>
+        </el-main>
+        <el-footer height="40px"><the-footer /></el-footer>
+      </el-container>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import { mapState, mapActions } from 'Vuex'
 import TheHeader from './the-header'
-import TheAside from './the-aside'
-import TheFooter from './the-footer'
+import TheSidebar from './the-aside'
 import TheBreadcrumb from './the-breadcrumb'
+import TheFooter from './the-footer'
 
 export default {
-  components: {
-    'the-header': TheHeader,
-    'the-aside': TheAside,
-    'the-footer': TheFooter,
-    'the-breadcrumb': TheBreadcrumb
-  },
-  computed: {
-    // 获取vuex数据
-    ...mapGetters({
-      loading: 'loading' // 获取是否显示遮罩层
-    })
-  },
+  components: { TheHeader, TheSidebar, TheBreadcrumb, TheFooter },
   data() {
     return {
-      wrapperHeight: ''
+      hidden: false
     }
   },
+  computed: {
+    ...mapState({
+      isCollapsed: state => state.layout.isCollapsed
+    })
+  },
   mounted() {
-    this.wrapperHeight = `${ parseInt(window.innerHeight) - 100 }px`
+    this.handleResize()
+    window.onresize = () => {
+      this.handleResize()
+    }
   },
   methods: {
+    ...mapActions(['handleCollapse']),
+    handleResize() {
+      if (window.innerWidth <= 768) {
+        if (!this.hidden) {
+          this.handleCollapse(true)
+          this.hidden = true
+        }
+      }
+      else {
+        this.hidden = false
+      }
+    }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-white = #fff
-.content-wrapper
-  &.content-wrapper-login
-    margin-left: 0;
-  .content
-    padding: 0;
-    > div
-      background: white
-  .content-not-login
-    padding: 15px;
-    padding-top: 0
-.layout
-  background: #222D32;
-</style>

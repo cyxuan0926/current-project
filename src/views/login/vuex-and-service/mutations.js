@@ -18,7 +18,6 @@ let addPath = (arr, routes = []) => {
 
 export default {
   login(state, params) {
-    state.user = params.users
     localStorage.setItem('user', JSON.stringify(params.users))
     switch (params.users.role) {
       case '0':

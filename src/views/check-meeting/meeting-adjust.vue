@@ -16,7 +16,8 @@
         <el-button
           type="primary"
           style="margin-left: 10px;"
-          @click="getConfigs">确定</el-button>
+          :loading="gettingConfigs"
+          @click="getConfigs('sure')">确定</el-button>
         <label style="margin-left: 5px;font-size: 12px;color: red">注：仅支持2天后的会见申请调整</label>
         <div
           v-if="show"
@@ -86,6 +87,7 @@
         class="button-add"
         type="primary"
         size="small"
+        :loading="buttonLoading"
         @click="onSubmit">确认调整</el-button>
     </el-col>
   </el-row>
@@ -101,6 +103,7 @@ export default {
       colWidth: 0,
       lastRowWidth: 0,
       adjustDate: helper.dateFormate(new Date(Date.now() + 172800000)),
+      realDate: helper.dateFormate(new Date(Date.now() + 172800000)),
       // adjustDate: helper.dateFormate(new Date(2018, 6, 3, 12, 12, 12)),
       pickerOptions: {
         disabledDate(time) {
@@ -109,18 +112,33 @@ export default {
       },
       meetings: {},
       origin: {},
-      clicked: []
+      clicked: [],
+      buttonLoading: false,
+      gettingConfigs: true
     }
   },
   computed: {
-    ...mapState(['meetingAdjustment'])
+    ...mapState(['meetingAdjustment', 'meetingAdjustRefresh'])
+  },
+  watch: {
+    meetingAdjustRefresh(val) {
+      if (val && val === this.realDate) {
+        this.adjustDate = this.realDate
+        this.getConfigs()
+      }
+    }
   },
   methods: {
-    ...mapActions(['getMeetingConfigs', 'adjustMeeting']),
-    getConfigs() {
+    ...mapActions(['getMeetingConfigs', 'adjustMeeting', 'meetingAdjustDealing']),
+    getConfigs(e) {
       this.show = false
-      this.getMeetingConfigs(this.adjustDate).then(res => {
+      let adjustDate = this.realDate
+      if (e === 'sure') adjustDate = this.adjustDate
+      this.gettingConfigs = true
+      this.getMeetingConfigs(adjustDate).then(res => {
+        this.gettingConfigs = false
         if (!res) return
+        this.realDate = adjustDate
         if (!this.meetingAdjustment.meetingQueue || !this.meetingAdjustment.meetingQueue.length) {
           this.$message.closeAll()
           this.$message.warning('该日无可调整时间段')
@@ -140,7 +158,7 @@ export default {
           })
         })
         this.meetingAdjustment.meetings.map(meeting => {
-          let time = meeting.meetingTime.replace(`${ this.adjustDate } `, '')
+          let time = meeting.meetingTime.replace(`${ this.realDate } `, '')
           meeting = Object.assign({}, meeting)
           this.meetings[meeting.terminalNumber][time] = Object.assign({}, meeting, { duration: time })
           this.origin[meeting.terminalNumber][time] = Object.assign({}, meeting, { duration: time })
@@ -149,6 +167,17 @@ export default {
         this.colWidth = `width: ${ 100 / (this.meetingAdjustment.meetingQueue.length + 1) }%`
         this.lastRowWidth = `width: ${ 100 - 100 / (this.meetingAdjustment.meetingQueue.length + 1) }%`
         this.show = true
+        this.meetingAdjustDealing(false)
+      })
+    },
+    saveOrigin() {
+      Object.keys(this.origin).forEach(terminal => {
+        Object.keys(this.origin[terminal]).forEach(duration => {
+          if (this.meetings[terminal][duration].changed) {
+            delete this.meetings[terminal][duration].changed
+            this.origin[terminal][duration] = Object.assign({}, this.meetings[terminal][duration])
+          }
+        })
       })
     },
     onCellClick(row, col, meeting) {
@@ -188,9 +217,11 @@ export default {
       this.show = true
     },
     resetMeetings() {
+      this.adjustDate = this.realDate
       this.getConfigs()
     },
     onSubmit() {
+      this.buttonLoading = true
       let params = [], meeting = {}
       Object.keys(this.meetings).forEach(terminal => {
         Object.keys(this.meetings[terminal]).forEach(queue => {
@@ -198,7 +229,7 @@ export default {
             meeting = {
               name: this.meetings[terminal][queue].name,
               id: this.meetings[terminal][queue].id,
-              meetingTime: `${ this.adjustDate } ${ queue }`,
+              meetingTime: `${ this.realDate } ${ queue }`,
               terminalId: this.meetings[terminal].terminalId,
               terminalNumber: terminal,
               jailId: `${ this.meetingAdjustment.config.jail_id }`,
@@ -208,17 +239,21 @@ export default {
           }
         })
       })
+      if (!params.length) {
+        this.buttonLoading = false
+        return
+      }
       this.adjustMeeting(params).then(res => {
+        this.buttonLoading = false
         if (!res) return
-        this.resetMeetings()
+        // this.resetMeetings()
+        this.clicked = []
+        this.saveOrigin()
       })
     }
   },
   mounted() {
     this.getConfigs()
-  },
-  destroyed() {
-    // console.log(999)
   }
 }
 </script>
@@ -253,6 +288,7 @@ export default {
 .adjustTable .adjust-col{
   min-width: 100px;
   min-height: 40px;
+  line-height: 40px;
   border-top: 1px solid #ebeef5;
   border-left: 1px solid #ebeef5;
   display: flex;
