@@ -39,6 +39,7 @@ export default {
           }
         }
         catch (e) {
+          console.log(999, e)
           reconnect()
         }
       },

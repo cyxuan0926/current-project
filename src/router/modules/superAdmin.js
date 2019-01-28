@@ -33,7 +33,8 @@ let superAdmin = [{
     name: '编辑监狱',
     meta: {
       permission: 'edit',
-      role: '0'
+      role: '0',
+      deep: true
     },
     component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }]

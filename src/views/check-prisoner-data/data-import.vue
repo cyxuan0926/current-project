@@ -4,7 +4,8 @@
     :gutter="0">
     <el-col
       :span="22"
-      :offset="2">
+      :offset="2"
+      style="margin-top: 20px;">
       <el-tabs
         v-model="tabs"
         type="card">
@@ -58,6 +59,7 @@
             style="margin-left: 10px;"
             size="small"
             type="success"
+            :loading="onProgress"
             @click="submitUpload">上传到服务器</el-button>
           <div
             slot="tip"
@@ -65,7 +67,9 @@
         </el-upload>
       </el-col>
     </el-row>
-    <el-row v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerDataResult.errors">
@@ -121,6 +125,7 @@
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -173,7 +178,9 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerYZKDataResult.errors">
@@ -229,6 +236,7 @@
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -331,6 +339,7 @@
         <el-button
           type="danger"
           size="mini"
+          :disabled="loading"
           @click="visible = false">取消上传</el-button>
         <el-button
           type="primary"
@@ -352,6 +361,7 @@ export default {
       fileList: [],
       visible: false,
       notify: null,
+      onProgress: false,
       prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
     }
   },
@@ -390,6 +400,7 @@ export default {
         this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
           this.loading = false
           this.visible = false
+          this.onProgress = false
           if (!res) return
           this.alertInformation(this.prisonerDataResult)
         })
@@ -398,12 +409,14 @@ export default {
         this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
           this.loading = false
           this.visible = false
+          this.onProgress = false
           if (!res) return
           this.alertInformation(this.prisonerYZKDataResult)
         })
       }
     },
     beforeUpload(file) {
+      this.onProgress = true
       if (this.notify) {
         this.notify.close()
       }
@@ -415,10 +428,16 @@ export default {
       }
       this.resetState({ validatePrisonerResult: {} })
       this.uploadFile(file).then(res => {
-        if (!res) return
+        if (!res) {
+          this.onProgress = false
+          return
+        }
         if (this.tabs === 'first') {
           this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
+            if (!res) {
+              this.onProgress = false
+              return
+            }
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
@@ -429,7 +448,10 @@ export default {
         }
         else if (this.tabs === 'second') {
           this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
+            if (!res) {
+              this.onProgress = false
+              return
+            }
             if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
               this.visible = true
             }
@@ -502,5 +524,9 @@ export default {
   font-weight: bold;
   text-align: center;
   // font-size: 12px;
+}
+.table-box{
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>

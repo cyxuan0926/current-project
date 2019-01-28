@@ -4,6 +4,7 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      ref="search"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -245,6 +246,7 @@ export default {
       // else {
       //   this.filter.status = val
       // }
+      this.$refs.search.onSearch('tabs')
       this.onSearch()
     },
     remarks(val) {

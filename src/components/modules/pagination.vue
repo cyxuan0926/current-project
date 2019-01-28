@@ -1,7 +1,5 @@
 <template>
-  <el-col
-    :span="24"
-    class="m-pagination showTotal-pagination">
+  <div class="m-pagination showTotal-pagination">
     <span>共{{ total }}条记录</span>
     <el-pagination
       background
@@ -13,7 +11,7 @@
       next-text="下一页"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"/>
-  </el-col>
+  </div>
 </template>
 
 <script>

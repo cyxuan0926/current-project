@@ -119,11 +119,12 @@
           v-if="feedback.imageUrls.length">
           <label>反馈图片</label>
           <div class="img-box">
-            <m-img-viewer
-              v-for="(img, index) in feedback.imageUrls"
-              :key="index"
-              v-if="img"
-              :src="img + '?token=' + $urls.token" />
+            <template v-for="(img, index) in feedback.imageUrls">
+              <m-img-viewer
+                :key="index"
+                v-if="img"
+                :src="img + '?token=' + $urls.token" />
+            </template>
           </div>
         </div>
         <div

@@ -97,7 +97,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonReportList', 'user'])
+    ...mapState({
+      prisonReportList: state => state.prisonReportList,
+      user: state => state.global.user
+    })
   },
   mounted() {
     this.getDatas()
