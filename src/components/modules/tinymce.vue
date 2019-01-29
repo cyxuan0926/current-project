@@ -1,36 +1,29 @@
 <template>
   <div>
-    <quill-editor
-      ref="quillEditor"
-      v-model="content"
-      :options="options"
-       @change="editorChange($event)" />
-    <el-upload
-      ref="uploadImg"
-      class="hidden"
-      :action="$urls.imageUrl"
-      :headers="headers"
-      name="avatar"
-      :before-upload="beforUpload"
-      :on-success="handleSuccess"
-      :on-error="handleError"
-      :accept="accept"
-      multiple
-      :on-exceed="handleExceed"
-      :file-list="fileList"
-      :on-remove="handleRemove">
-    </el-upload>
+    <div :id="tinymceId"/>
+    <tinymce-image
+      ref="uploadImage"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onImageSuccess" />
+      <!-- <tinymce-video
+      ref="uploadVideo"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onVideoSuccess" />
+    <tinymce-audio
+      ref="uploadAudio"
+      style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
+      @success="onAudioSuccess" /> -->
   </div>
 </template>
+
 <script>
-import { quillEditor } from 'vue-quill-editor'
-import * as ImageResize from 'quill-image-resize-module'
-// console.log(ImageResize)
-quillEditor.register('modules/imageResize', ImageResize)
+import tinymceImage from './tinymce/tinymceImage'
+// import tinymceVideo from './tinymce/tinymceVideo'
+// import tinymceAudio from './tinymce/tinymceAudio'
+
 export default {
-  components: {
-    quillEditor
-  },
+  // components: { tinymceImage, tinymceVideo, tinymceAudio },
+  components: { tinymceImage },
   props: {
     value: {
       type: String,
@@ -41,97 +34,107 @@ export default {
       default: 'onlyImage'
     }
   },
-  computed: {
-    editor() {
-      return this.$refs.quillEditor.quill
+  data() {
+    return {
+      hasChanged: false,
+      hasInit: false,
+      tinymceId: this.id || `vue-tinymce-${ +new Date() }`
     }
   },
   watch: {
     value(val) {
-      this.content = val
-    }
-  },
-  data() {
-    return {
-      content: '',
-      options: {
-        placeholder: '请输入内容...',
-        modules: {
-          toolbar: [['bold', 'italic', 'underline', 'strike'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'script': 'sub'}, { 'script': 'super' }], [{ 'indent': '-1'}, { 'indent': '+1' }], [{ 'color': [] }, { 'background': [] }], [{ 'align': [] }], ['link', 'image'], ['clean']],
-          ImageResize: {
-            modules: ['Resize']
-          }
-        }
-      },
-      accept: 'image/jpeg,image/jpg',
-      fileList: [],
-      headers: {
-        Authorization: this.$urls.token
+      if (!this.hasChange && this.hasInit) {
+        let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = val.replace(pattern, `src="${ this.$urls.imageUrl }`)
+        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(c))
       }
     }
   },
   mounted() {
-    console.log(this.editor.getModule('toolbar'))
-    this.editor.getModule('toolbar').addHandler('image', this.handleImageUpload)
+    window.tinymce.init({
+      selector: `#${ this.tinymceId }`,
+      language: 'zh_CN',
+      menubar: '',
+      height: 300,
+      resize: false,
+      branding: false,
+      content_style: 'blockquote{padding: 10px 20px; margin: 0 0 20px; font-size: initial; border-left: 5px solid #eee;} p{ margin: 0; line-height: 1.42857143; }.mce-panel{ box-sizing: border-box; }',
+      plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table',
+      toolbar: 'bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | outdent indent table | alignleft aligncenter alignright alignjustify alignnone | link imageUpload charmap emoticons insertdatetime | removeformat searchreplace undo redo | preview',
+      // toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo | preview',
+      init_instance_callback: editor => { //  media
+        this.hasInit = true
+        if (this.value) {
+          editor.setContent(this.value)
+        }
+        editor.on('NodeChange Change KeyUp', (data) => {
+          this.hasChange = true
+          this.$emit('editorChange', editor.getContent({ format: 'row' }), editor.getContent({ format: 'text' }).substr(0, 500), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
+        })
+      },
+      setup: editor => {
+        editor.addButton('imageUpload', {
+          icon: 'image',
+          tooltip: '选择图片',
+          onclick: (data) => {
+            this.$refs.uploadImage.$refs.uploadImg.$refs['upload-inner'].$refs.input.click()
+          }
+        })
+        // if (this.tools === 'onlyImage') return
+        // editor.addButton('videoUpload', {
+        //   icon: 'media',
+        //   tooltip: '插入视频(支持格式:mp4/webm/ogg)',
+        //   onclick: (data) => {
+        //     this.$refs.uploadVideo.$refs.uploadVideo.$refs['upload-inner'].$refs.input.click()
+        //   }
+        // })
+        // editor.addButton('audioUpload', {
+        //   icon: 'i iconfont icon-yinpin',
+        //   tooltip: '插入音频',
+        //   onclick: (data) => {
+        //     this.$refs.uploadAudio.$refs.uploadAudio.$refs['upload-inner'].$refs.input.click()
+        //   }
+        // })
+      }
+    })
+  },
+  destroyed() {
+    window.tinymce.get(this.tinymceId).destroy()
   },
   methods: {
-    editorChange({ editor, html, text }) {
-      console.log('editorChange', html, 888, text, 777, html.replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
-      this.$emit('editorChange', html, text.substr(0, 500), html.replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
+    onImageSuccess(e) {
+      if (!e) return
+      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' style="max-width: 100%;">`)
     },
-    handleImageUpload(e) {
-      this.$refs.uploadImg.$refs['upload-inner'].$refs.input.click()
+    onVideoSuccess(e) {
+      if (!e) return
+      let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
+        <source
+          src='${ e }'
+          type='video/mp4'>
+        <source
+          src='${ e }'
+          type='video/webm'>
+        <source
+          src='${ e }'
+          type='video/ogg'>您的浏览器不支持Video标签。
+      </video>`
+      window.tinymce.get(this.tinymceId).insertContent(htmlString)
     },
-    beforUpload(file) {
-      let fileType = this.accept.split(',')
-      const isAccept = fileType.indexOf(file.type) > -1
-      const isSize = file.size / 1024 / 1024 < 1
-      if (!isAccept) {
-        let accept = []
-        fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
-        this.$message.error(`请上传${ accept.join('或') }格式的文件`)
-        return false
-      }
-      if (!isSize) {
-        this.$message.error('文件大小不能超过1MB!')
-        return false
-      }
-      return true
-    },
-    handleError(e) {
-      console.log(e)
-    },
-    handleExceed() {
-      this.$message.error('图片数量超出限制')
-    },
-    handleRemove(file, fileList) {
-      this.$emit('success', fileList.length ? fileList : '')
-    },
-    handleSuccess(res, file, fileList) {
-      switch (res.code) {
-        case 200:
-          this.$message.success('图片上传成功')
-          this.editor.insertEmbed(this.editor.getSelection().index, 'image', `${ res.url }?token=${ this.$urls.token }`)
-          this.setImageLocalstorage('images', res.url)
-          this.setImageLocalstorage('newImages', res.url)
-          break
-        default:
-          this.$message.error(`上传图片失败:${ res.message }`)
-      }
-    },
-    setImageLocalstorage(key, value) {
-      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
-      if (storage.indexOf(value) < 0) storage.push(value)
-      localStorage.setItem(key, JSON.stringify(storage))
+    onAudioSuccess(e) {
+      if (!e) return
+      let htmlString = `<audio controls>
+        <source
+          src='${ e }'
+          type='audio/mpeg'>
+        <source
+          src='${ e }'
+          type='audio/ogg'>您的浏览器不支持Audio标签。
+      </audio>`
+      window.tinymce.get(this.tinymceId).insertContent(htmlString)
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-@import "quill/dist/quill.core.css", "quill/dist/quill.snow.css", "quill/dist/quill.bubble.css";
-.hidden{
-  height: 0;
-  width: 0;
-  overflow: hidden;
-}
+
+<style scoped>
 </style>
