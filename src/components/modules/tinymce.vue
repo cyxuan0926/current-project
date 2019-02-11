@@ -44,7 +44,8 @@ export default {
   watch: {
     value(val) {
       if (!this.hasChange && this.hasInit) {
-        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(val))
+        let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = val.replace(pattern, `src="${ this.$urls.imageUrl }`)
+        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(c))
       }
     }
   },
