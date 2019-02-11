@@ -113,7 +113,6 @@ export default {
       // console.log(prop)
     },
     editorChange(contents, text) {
-      console.log(contents)
       this.fields[this.prop] = contents
       this.$emit('validateField', this.prop)
     },
@@ -123,7 +122,8 @@ export default {
         if (this.item.summary) this.fields[this.item.summary] = ''
       }
       else {
-        this.fields[this.prop] = contents
+        let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = contents.replace(pattern, `src="${ this.$urls.imageUrl }`)
+        this.fields[this.prop] = c
         if (this.item.summary) this.fields[this.item.summary] = text
       }
       this.$emit('validateField', this.prop)
