@@ -6,9 +6,7 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col
-      :span="24"
-      v-show="show">
+    <el-col :span="24">
       <el-tabs
         value="first"
         type="card">
@@ -53,7 +51,6 @@
       </el-table>
     </el-col>
     <m-pagination
-      v-show="show"
       ref="pagination"
       :total="familyRemittanceRecords.total"
       @onPageChange="getDatas" />
@@ -80,8 +77,7 @@ export default {
         prisonerNumber: { type: 'input', label: '囚号' },
         familyName: { type: 'input', label: '汇款家属' },
         remitTime: { type: 'date', label: '汇款时间' }
-      },
-      show: false
+      }
     }
   },
   computed: {
@@ -107,7 +103,6 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     getDatas() {
-      this.show = true
       this.getFamilyRemittance({ ...this.filter, ...this.pagination })
     }
   }
