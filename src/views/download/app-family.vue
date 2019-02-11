@@ -35,12 +35,12 @@
         <i class="iconfont icon-aaa" />
       </div>
     </section>
-    <footer class="main-footer">
+    <!-- <footer class="m-footer">
       <p><strong>Copyright © 2014-2018 <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a></strong> 版权所有.</p>
       <div>
         <b>版本</b> 1.0.0
       </div>
-    </footer>
+    </footer> -->
   </main>
 </template>
 <script>
@@ -89,13 +89,14 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
-@import '../../assets/css/new.css';
-.blue-block
+<style lang="scss" scoped>
+@import "../../assets/css/new.css";
+.blue-block{
   background: #337AB7;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 15px 0;
   position: relative;
+}
 </style>

@@ -1,14 +1,17 @@
 <template>
-  <el-container class="height100">
-    <el-header height="50px"><the-header /></el-header>
+  <el-container :class="['height100', { 'no-login': $route.meta.notLogin }]">
+    <el-header
+      v-if="!$route.meta.notLogin"
+      height="50px"><the-header /></el-header>
     <el-container class="main-container">
       <el-aside
+        v-if="!$route.meta.notLogin"
         :width="isCollapsed ? (hidden ? '0px' : '50px') : '230px'"
         :class="['transition', { 'collapsed': isCollapsed }]">
         <the-sidebar />
       </el-aside>
       <el-container>
-        <the-breadcrumb />
+        <the-breadcrumb v-if="!$route.meta.notLogin" />
         <el-main>
           <transition
             name="router-fade"
@@ -16,7 +19,8 @@
             <router-view />
           </transition>
         </el-main>
-        <el-footer height="40px"><the-footer /></el-footer>
+        <el-footer
+          height="40px"><the-footer /></el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -63,3 +67,6 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+@import "../../assets/css/no-login";
+</style>
