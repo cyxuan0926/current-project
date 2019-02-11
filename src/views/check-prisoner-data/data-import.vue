@@ -40,7 +40,7 @@
         </el-col>
       </el-col>
       <el-col
-        :span="6"
+        :span="22"
         :offset="2">
         <el-upload
           class="upload-demo"
@@ -56,7 +56,6 @@
             size="small"
             type="primary">选取文件</el-button>
           <el-button
-            style="margin-left: 10px;"
             size="small"
             type="success"
             :loading="onProgress"
