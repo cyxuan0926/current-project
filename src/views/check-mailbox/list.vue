@@ -237,19 +237,12 @@ export default {
       }).catch(() => {})
     },
     getDetail(e) {
-      if ((e.isReply && e.reply) || !e.isReply) {
-        this.mailbox = e
+      this.getMailboxDetail({ id: e.id }).then(res => {
+        if (!res) return
+        this.mailbox = res
         this.answer = ''
         this.visible = true
-      }
-      else {
-        this.getMailboxDetail({ id: e.id }).then(res => {
-          if (!res) return
-          this.mailbox = res
-          this.answer = ''
-          this.visible = true
-        })
-      }
+      })
     }
   }
 }

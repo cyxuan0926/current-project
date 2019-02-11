@@ -43,6 +43,7 @@ const config = {
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
+    // imageUrl: 'http://39.108.185.51:1339/image-server/avatars',
     imageUrl: 'https://www.yuwugongkai.com/image-server/avatars',
     // fileUrl: 'https://www.yuwugongkai.com/image-server',
     videoUrl: 'https://www.yuwugongkai.com/video-server/videos',
