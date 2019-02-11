@@ -248,8 +248,17 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
-.cell img
+<style lang="scss" scoped>
+.cell img{
   width: 126.8px;
   cursor: pointer;
+}
+.cell {
+  button{
+    margin-right: 6px;
+    &+button{
+      margin: 5px 6px 0 0;
+    }
+  }
+}
 </style>
