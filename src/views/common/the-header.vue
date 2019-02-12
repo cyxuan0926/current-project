@@ -7,10 +7,7 @@
         { 'collapsed': isCollapsed }]">
       <span class="bold">狱务通</span>管理平台
     </div>
-    <div
-      :class="[
-        'header-right',
-        { 'width100': isBlock }]">
+    <div class="header-right">
       <i
         class="iconfont icon-category bold"
         @click="handleCollapse" />
@@ -40,12 +37,6 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  props: {
-    isBlock: {
-      type: Boolean,
-      default: false
-    }
-  },
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
