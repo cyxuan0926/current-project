@@ -14,7 +14,7 @@
       <div>
         <el-dropdown
           trigger="click"
-          @command="onClick">
+          @command="handleNavigation">
           <div class="item">
             <img
               src="/static/images/user2-160x160.jpg"
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     ...mapActions(['handleCollapse', 'logout', 'resetState']),
-    onClick(e) {
+    handleNavigation(e) {
       this.$router.push(e)
     },
     handleLogout() {
