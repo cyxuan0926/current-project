@@ -20,7 +20,7 @@ describe('views-页面布局', () => {
     store = new Vuex.Store({
       modules: {
         layout: {
-          state: { isCollapsed: false }
+          state: { isCollapsed: false, loading: true }
         },
         global: {
           actions: {
