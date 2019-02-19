@@ -3,7 +3,7 @@ import mutations from './mutations'
 
 let state = {
   isCollapsed: false,
-  loading: true
+  loading: false
 }
 
 export default {

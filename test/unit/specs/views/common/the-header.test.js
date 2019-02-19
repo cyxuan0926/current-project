@@ -33,7 +33,7 @@ describe('views-侧边栏', () => {
         },
         actions: {
           handleCollapse: spyHandleCollapse,
-          logout: spyLogout
+          logout: spyLogout.mockReturnValue(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
         }
       }
 
@@ -45,6 +45,7 @@ describe('views-侧边栏', () => {
       }
     })
   })
+
   afterEach(() => {
     wrapper.destroy()
   })
@@ -72,18 +73,44 @@ describe('views-侧边栏', () => {
     })
   })
 
-  it('method-handleLogout', done => {
+  it('method-handleLogout-false', done => {
     wrapper = shallowMount(component, {
       store,
       localVue,
       router
     })
 
+    // wrapper.find('.iconfont.icon-tuichu').trigger('click')
     wrapper.vm.handleLogout()
 
-    wrapper.vm.$nextTick(() => {
-      // expect(wrapper.find('["aria-label"="提示"]').exists()).toBe(true)
-      done()
+    setTimeout(() => {
+      expect(getComputedStyle(document.querySelector('.el-message-box__wrapper')).getPropertyValue('display')).not.toBe('none')
+      document.querySelector('.el-button.el-button--default.el-button--small.el-button--primary').click()
+      setTimeout(() => {
+        expect(wrapper.vm.$route.path).not.toBe('/new-login')
+        expect(spyResetState).not.toHaveBeenCalled()
+        done()
+      }, 10)
+    }, 300)
+  })
+  it('method-handleLogout-true', done => {
+    wrapper = shallowMount(component, {
+      store,
+      localVue,
+      router
     })
+    // wrapper.find('.iconfont.icon-tuichu').trigger('click')
+    // wrapper.vm.logout().then(res => {
+    wrapper.vm.handleLogout()
+
+    setTimeout(() => {
+      expect(getComputedStyle(document.querySelector('.el-message-box__wrapper')).getPropertyValue('display')).not.toBe('none')
+      document.querySelector('.el-button.el-button--default.el-button--small.el-button--primary').click()
+      setTimeout(() => {
+        expect(wrapper.vm.$route.path).toBe('/new-login')
+        expect(spyResetState).toHaveBeenCalled()
+        done()
+      }, 10)
+    }, 300)
   })
 })
