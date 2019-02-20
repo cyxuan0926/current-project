@@ -6,5 +6,11 @@ export default {
     else {
       state.isCollapsed = !state.isCollapsed
     }
+  },
+  showLoading: state => {
+    state.loading = true
+  },
+  hideLoading: state => {
+    state.loading = false
   }
 }
