@@ -34,12 +34,10 @@ let check = [{
   children: [{
     path: '/meeting-report/prison',
     name: '监狱统计1',
-    props: { role: '1' },
     component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
   }, {
     path: '/meeting-report/prison-area',
     name: '监区统计1',
-    props: { role: '1' },
     component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
   }]
 }, {

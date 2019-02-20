@@ -5,6 +5,10 @@ export default {
     http.getPrisonReportList(params).then(res => res && commit('getPrisonReportList', res))
   },
   getPrisonAreaReportList: ({ commit }, params) => {
-    http.getPrisonAreaReportList(params).then(res => res && commit('getPrisonAreaReportList', res))
+    return http.getPrisonAreaReportList(params).then(res => {
+      if (!res) return
+      commit('getPrisonAreaReportList', res)
+      return true
+    })
   }
 }
