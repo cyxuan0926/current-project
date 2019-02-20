@@ -12,7 +12,9 @@
       </el-aside>
       <el-container>
         <the-breadcrumb v-if="!$route.meta.notLogin" />
-        <el-main>
+        <el-main
+          v-loading="loading"
+          element-loading-background="rgba(255, 255, 255, 0.5)">
           <transition
             name="router-fade"
             mode="out-in">
@@ -42,7 +44,8 @@ export default {
   },
   computed: {
     ...mapState({
-      isCollapsed: state => state.layout.isCollapsed
+      isCollapsed: state => state.layout.isCollapsed,
+      loading: state => state.layout.loading
     })
   },
   mounted() {

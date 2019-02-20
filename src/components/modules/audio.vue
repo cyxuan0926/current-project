@@ -30,7 +30,7 @@
       </audio>
     </div>
     <div class="audio-container-time">
-      <span>0{{ showTime }}</span>
+      <span>{{ leastTime }}</span>
     </div>
   </div>
 </template>
@@ -39,6 +39,7 @@ import AudioThree from '@/assets/images/audio-icon.png'
 import AudioOne from '@/assets/images/audio-no.png'
 import audioTwo from '@/assets/images/audio-one.png'
 import helper from '@/filters/modules/time'
+import { durationFormat } from '@/utils/helper'
 export default {
   props: {
     value: {
@@ -53,7 +54,7 @@ export default {
   data() {
     return {
       show: false,
-      showTime: null,
+      leastTime: null,
       progressBarVal: 0,
       audioImgs: [AudioOne, audioTwo, AudioThree],
       audioImg: AudioThree,
@@ -65,12 +66,12 @@ export default {
       if (!this.$refs.audio) return
       let totalTime = parseInt(this.$refs.audio.duration),
         currentTime = parseInt(this.$refs.audio.currentTime)
-      this.showTime = helper.timeNew(totalTime - currentTime)
+      this.leastTime = durationFormat(totalTime - currentTime, { format: 'mm:ss' })
       if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
         this.interval && clearInterval(this.interval)
         this.audioImg = AudioThree
-        this.showTime = helper.timeNew(totalTime)
+        this.leastTime = durationFormat(totalTime, { format: 'mm:ss' })
       }
       else {
         this.progressBarVal = (currentTime / totalTime * 100)
@@ -93,7 +94,7 @@ export default {
       }
     },
     getTotalDuration(e) {
-      this.showTime = helper.timeNew(parseInt(this.$refs.audio.duration))
+      this.leastTime = durationFormat(parseInt(this.$refs.audio.duration), { format: 'mm:ss' })
       if (!this.show) this.show = true
     }
   }

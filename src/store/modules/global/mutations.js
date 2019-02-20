@@ -1,13 +1,17 @@
 export default {
-  handleCollapse(state, params) {
-    if (params === true) {
-      state.isCollapsed = true
-    }
-    else {
-      state.isCollapsed = !state.isCollapsed
-    }
-  },
   setUser(state, params) {
     state.user = params || {}
+  },
+  resetState: (state, params) => {
+    if (params === 'logout') {
+      Object.keys(state).forEach(key => {
+        if (state[key] && state[key].contents && state[key].contents.length) state[key] = { contents: [], total: 0 }
+      })
+    }
+    else {
+      Object.keys(params).forEach(key => {
+        state[key] = params[key]
+      })
+    }
   }
 }

@@ -24,42 +24,10 @@
           :src="jailInformation.imageUrl + '?token=' + $urls.token"
           style="max-width: 100%; margin: 0 auto 10px; display: block; float: none;"
           alt="">
-        <div
+        <m-audio
           v-if="jailInformation.audioPath"
-          class="audio-container">
-          <button
-            style="outline: none;margin: 0;padding: 0;border: none;background: transparent;"
-            @click.prevent="handleAudio">
-            <img
-              :src="audioImg"
-              style="width: 2.1rem;vertical-align: middle;cursor: pointer"
-              alt="">
-          </button>
-          <div class="audio-container-right">
-            <div
-              class="progress__bar"
-              :style="{'width':progressBarVal+'%'}"
-              ref="progress-bar"/>
-            <audio
-              ref="audio"
-              @timeupdate="handleTimeUpdate"
-              @loadedmetadata="getTotalDuration">
-              <source
-                :src="jailInformation.audioPath + '?token=' + $urls.token"
-                type="audio/mp3">
-              <source
-                :src="jailInformation.audioPath + '?token=' + $urls.token"
-                type="audio/ogg">
-              <source
-                :src="jailInformation.audioPath + '?token=' + $urls.token"
-                type="audio/mpeg">
-              您的浏览器不支持Audio标签
-            </audio>
-          </div>
-          <div class="audio-container-time">
-            <span>{{ showTime }}</span>
-          </div>
-        </div>
+          width="100%"
+          :value="jailInformation.audioPath + '?token=' + $urls.token" />
       </el-col>
       <el-col :span="12">
         <el-col :span="24">
@@ -243,26 +211,12 @@ export default {
             p
               color: #A6A6A6
               text-align: right
-    .audio-container
-      display: flex
-      justify-items: flex-start
-      align-items:center
-      background:rgba(235,235,235,1)
-      padding: 12px 8px
     .prison-detail
       font-size:1.1rem !important
       font-family:PingFang-SC-Medium !important
       font-weight:500 !important
       color:rgba(102,102,102,1) !important
       text-indent: 2.4rem
-    .audio-container-right
-      width: 82%
-      height: .7rem
-      border: .05rem solid #2B569A
-      margin: 0 auto
-      border-radius: .4rem
-      display:flex
-      align-items:center
     .progress__bar
       height: .16rem
       background: #264c90

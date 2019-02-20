@@ -20,21 +20,22 @@ module.exports = {
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],
   setupFiles: ['<rootDir>/test/unit/setup'],
   // mapCoverage: true,
-  collectCoverage: true,
+  // collectCoverage: true,
+  collectCoverage: false,
   coverageDirectory: '<rootDir>/test/unit/coverage',
   collectCoverageFrom: [
     'src/**/*.{js,vue}',
     '!src/main.js',
     '!src/router/index.js',
     '!**/node_modules/**'
-  ],
-  reporters: [
-    'default',
-    ['./node_modules/jest-html-reporter', {
-      pageTitle: 'Test Report',
-      outputPath: 'test/unit/test-report.html',
-      includeFailureMsg: true,
-      includeConsoleLog: true
-    }]
+  // ],
+  // reporters: [
+  //   'default',
+  //   ['./node_modules/jest-html-reporter', {
+  //     pageTitle: 'Test Report',
+  //     outputPath: 'test/unit/test-report.html',
+  //     includeFailureMsg: true,
+  //     includeConsoleLog: true
+  //   }]
   ]
 }

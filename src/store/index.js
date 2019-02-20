@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import jailsInformation from './modules/jails-information'
-import common from './modules/common'
 import passwordModification from './modules/password-modification'
 import quillEditor from './modules/quill-editor'
 import downloadFile from './modules/download-file'
@@ -52,7 +51,6 @@ let actions = {}, mutations = {}, getters = {}, state = {}, merge = (...args) =>
 // 将对应的actions,mutations,getters,state 添加到声明的对象中
 merge(
   jailsInformation,
-  common,
   passwordModification,
   quillEditor,
   downloadFile,
