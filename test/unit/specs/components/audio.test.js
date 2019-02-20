@@ -1,49 +1,14 @@
-import Vuex from 'vuex'
-import ElementUI from 'element-ui'
-import VueRouter from 'vue-router'
+// import ElementUI from 'element-ui'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-import component from '@/views/common/the-header'
+import component from '@/components/modules/audio'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
-localVue.use(ElementUI)
-localVue.use(VueRouter)
+// localVue.use(ElementUI)
 
-const router = new VueRouter()
-
-describe('views-侧边栏', () => {
-  let wrapper,
-      store,
-      spyHandleCollapse = jest.fn(),
-      spyLogout = jest.fn(),
-      spyResetState = jest.fn(),
-      global = {
-        state: {
-          user: {
-            username: 'username'
-          }
-        },
-        actions: {
-          resetState: spyResetState
-        }
-      },
-      layout = {
-        state: {
-          isCollapsed: false
-        },
-        actions: {
-          handleCollapse: spyHandleCollapse,
-          logout: spyLogout.mockReturnValue(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
-        }
-      }
+describe('components-audio', () => {
+  let wrapper
 
   beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        global,
-        layout
-      }
-    })
   })
 
   afterEach(() => {
@@ -52,18 +17,15 @@ describe('views-侧边栏', () => {
 
   it('mounted正确', () => {
     wrapper = shallowMount(component, {
-      store,
       localVue
     })
-    expect(wrapper.vm.user).toMatchObject(store.state.global.user)
+    expect(wrapper.vm.show).toBe(false)
     expect(wrapper.vm.isCollapsed).toEqual(store.state.layout.isCollapsed)
   })
 
   it('method-handleNavigation', done => {
     wrapper = shallowMount(component, {
-      store,
-      localVue,
-      router
+      localVue
     })
 
     wrapper.vm.handleNavigation('/dashboard')
@@ -75,9 +37,7 @@ describe('views-侧边栏', () => {
 
   it('method-handleLogout-false', done => {
     wrapper = shallowMount(component, {
-      store,
-      localVue,
-      router
+      localVue
     })
 
     // wrapper.find('.iconfont.icon-tuichu').trigger('click')
@@ -95,9 +55,7 @@ describe('views-侧边栏', () => {
   })
   it('method-handleLogout-true', done => {
     wrapper = shallowMount(component, {
-      store,
-      localVue,
-      router
+      localVue
     })
     // wrapper.find('.iconfont.icon-tuichu').trigger('click')
     // wrapper.vm.logout().then(res => {
