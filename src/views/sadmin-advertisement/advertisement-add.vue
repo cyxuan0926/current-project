@@ -117,10 +117,10 @@ export default {
     })
   },
   destroyed() {
-    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    this.removeUrlStorage()
   },
   methods: {
-    ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'deleteUnusedImage', 'handleDeleteImage']),
+    ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'removeUrlStorage', 'handleDeleteImage']),
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -128,9 +128,7 @@ export default {
           delete params.time
           this.addAdvertisement(params).then(res => {
             if (!res) return
-            this.handleDeleteImage([params.imageUrl]).then(res => {
-              this.$router.push('/advertisement/list')
-            })
+            this.$router.push('/advertisement/list')
           })
         }
       })

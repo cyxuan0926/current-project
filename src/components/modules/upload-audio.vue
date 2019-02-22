@@ -49,6 +49,7 @@ import AudioThree from '@/assets/images/audio-icon.png'
 import AudioOne from '@/assets/images/audio-no.png'
 import audioTwo from '@/assets/images/audio-one.png'
 import helper from '@/filters/modules/time'
+import { mapActions } from 'vuex'
 export default {
   props: {
     value: {
@@ -62,7 +63,6 @@ export default {
         Authorization: this.$urls.token
       },
       loading: false,
-      changed: false,
       notification: null,
       leastTime: null,
       progressBarVal: 0,
@@ -81,16 +81,6 @@ export default {
       return files
     }
   },
-  watch: {
-    fileList(val) {
-      if (!this.changed && val.length) {
-        val.forEach(file => {
-          this.setImageLocalstorage('images', file.url)
-        })
-        this.changed = true
-      }
-    }
-  },
   mounted() {
     this.$refs.audio && this.getTotalDuration()
   },
@@ -99,14 +89,16 @@ export default {
     this.notification = null
   },
   methods: {
+    ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       this.loading = false
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
           this.$emit('success', res.url)
-          this.setImageLocalstorage('images', res.url)
-          this.setImageLocalstorage('newImages', res.url)
+          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          this.setUrlStorage({ urls: [...urls, res.url] })
+          this.setNewUrlStorage({ urls: [res.url] })
           this.notification.close()
           break
         default:
@@ -179,11 +171,6 @@ export default {
     handleRemove(file, fileList) {
       this.loading = false
       this.$emit('success', fileList.length ? fileList : '')
-    },
-    setImageLocalstorage(key, value) {
-      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
-      if (storage.indexOf(value) < 0) storage.push(value)
-      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }

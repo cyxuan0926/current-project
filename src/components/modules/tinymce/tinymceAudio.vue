@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     name: {
@@ -43,11 +44,15 @@ export default {
     this.notification = null
   },
   methods: {
+    ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
           this.$emit('success', `${ res.url }?token=${ this.$urls.token }`)
+          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          this.setUrlStorage({ urls: [...urls, res.url] })
+          this.setNewUrlStorage({ urls: [res.url] })
           this.notification.close()
           break
         default:
