@@ -9,7 +9,7 @@ export default {
   },
   addAdvertisement: ({ commit, dispatch }, params) => {
     return http.addAdvertisement(params).then(res => {
-      // dispatch('handleDeleteImage', [params.imageUrl])
+      dispatch('deleteUrls', { urls: [params.imageUrl] })
       return res
     })
   },

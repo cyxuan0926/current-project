@@ -39,7 +39,7 @@ export default {
       params.imageUrl && excpt.push(params.imageUrl)
       params.audioPath && excpt.push(params.audioPath)
       params.videoPath && excpt.push(params.videoPath)
-      dispatch('handleDeleteImage', [excpt, params.contents])
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.contents })
       return true
     })
   },
