@@ -38,19 +38,15 @@ export default {
     localStorage.setItem('newUrls', JSON.stringify(u))
   },
   removeUrlStorage({ state, dispatch }) {
-    console.log(111, state.urlStorage)
     if (state.urlStorage && localStorage.getItem('newUrls')) {
       localStorage.removeItem('newUrls')
-      console.log(222)
     }
     else if (!state.urlStorage && localStorage.getItem('newUrls')) {
       dispatch('deleteUrls', { urls: JSON.parse(localStorage.getItem('newUrls')), destroyed: true })
-      console.log(333)
     }
     else if (!state.urlStorage) {
       localStorage.removeItem('urls')
       localStorage.removeItem('save')
-      console.log(444)
     }
   },
   deleteUrls({ commit }, params) {
@@ -73,7 +69,6 @@ export default {
     localStorage.removeItem('newUrls')
     deleteUrls = localStorage.getItem('delete') ? JSON.parse(localStorage.getItem('delete')) : []
     urlStorage = [...urlStorage, ...deleteUrls]
-    console.log(urlStorage, params.save)
     if (urlStorage.length) {
       api.deleteUrls(urlStorage).then(res => {
         if (!res) {
@@ -87,7 +82,6 @@ export default {
       })
     }
     else {
-      console.log(999)
       localStorage.removeItem('urls')
       commit('setUrlStorage', false)
     }
