@@ -11,7 +11,7 @@
     <div class="audio-container-right">
       <div
         class="progress__bar"
-        :style="{'width':progressBarVal+'%'}"
+        :style="{ width: progressBarVal+'%' }"
         ref="progress-bar"/>
       <audio
         ref="audio"
