@@ -120,7 +120,7 @@ export default {
     this.removeUrlStorage()
   },
   methods: {
-    ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'removeUrlStorage', 'handleDeleteImage']),
+    ...mapActions(['addAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'removeUrlStorage']),
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
