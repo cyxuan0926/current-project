@@ -13,5 +13,8 @@ export default {
         state[key] = params[key]
       })
     }
+  },
+  setUrlStorage: (state, params) => {
+    state.urlStorage = params
   }
 }

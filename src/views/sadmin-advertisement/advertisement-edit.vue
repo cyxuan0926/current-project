@@ -112,6 +112,7 @@ export default {
   mounted() {
     this.getAdvertisementDetail({ id: this.$route.params.id }).then(res => {
       if (!res) return
+      this.setUrlStorage({ urls: [this.advertisement.imageUrl] })
       if (!this.advertisement.startDate || !this.advertisement.endDate) return
       this.advertisement.startDate = helper.Date(this.advertisement.startDate)
       this.advertisement.endDate = helper.Date(this.advertisement.endDate)
@@ -126,10 +127,10 @@ export default {
     })
   },
   destroyed() {
-    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    this.removeUrlStorage()
   },
   methods: {
-    ...mapActions(['getAdvertisementDetail', 'updateAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'handleDeleteImage', 'deleteUnusedImage']),
+    ...mapActions(['getAdvertisementDetail', 'updateAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'setUrlStorage', 'removeUrlStorage']),
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -137,9 +138,9 @@ export default {
           delete params.time
           this.updateAdvertisement(params).then(res => {
             if (!res) return
-            this.handleDeleteImage([params.imageUrl, null, true]).then(res => {
-              this.$router.push('/advertisement/list')
-            })
+            this.$router.push('/advertisement/list')
+            // this.handleDeleteImage([params.imageUrl, null, true]).then(res => {
+            // })
           })
         }
       })
