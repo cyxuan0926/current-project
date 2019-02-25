@@ -103,7 +103,7 @@ export default {
   methods: {
     onImageSuccess(e) {
       if (!e) return
-      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' style="max-width: 100%;">`)
+      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
     onVideoSuccess(e) {
       if (!e) return

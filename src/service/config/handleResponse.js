@@ -36,7 +36,7 @@ const codes = {
     next: params => {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
-      tips('身份验证失败，请重新登录')
+      tips(params.msg || '身份验证失败，请重新登录')
       router.push({ path: '/new-login', query: { redirect: router.currentRoute.fullPath } })
     }
   },

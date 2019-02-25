@@ -32,16 +32,17 @@ export default {
     ...mapState(['news'])
   },
   destroyed() {
-    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    this.removeUrlStorage()
   },
   mounted() {
     this.getNewsDetail(this.$route.params.id).then(res => {
       if (!res) return
+      this.setUrlStorage({ urls: [this.news.imageUrl, this.news.audioPath, this.news.videoPath], contents: this.news.contents })
       this.values = this.news
     })
   },
   methods: {
-    ...mapActions(['getNewsDetail', 'editNews', 'deleteUnusedImage']),
+    ...mapActions(['getNewsDetail', 'editNews', 'setUrlStorage', 'removeUrlStorage']),
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')

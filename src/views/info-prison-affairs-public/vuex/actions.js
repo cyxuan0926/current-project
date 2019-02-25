@@ -16,15 +16,6 @@ export default {
     return http.getNewsDetail(params).then(res => {
       if (!res || res.code !== 200) return
       commit('getNewsDetail', res)
-      let images = res.data.imageUrl ? [res.data.imageUrl] : []
-      if (res.data.contents.match(/<img.*? \/>/g)) {
-        res.data.contents.match(/<img.*? \/>/g).forEach(ele => {
-          let a = document.createElement('div')
-          a.innerHTML = ele
-          if (images.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) images.push(a.lastElementChild.src.split('?token=')[0])
-        })
-        localStorage.setItem('images', JSON.stringify(images))
-      }
       return true
     })
   },
@@ -36,7 +27,7 @@ export default {
       params.imageUrl && excpt.push(params.imageUrl)
       params.audioPath && excpt.push(params.audioPath)
       params.videoPath && excpt.push(params.videoPath)
-      dispatch('handleDeleteImage', [excpt, params.contents, true])
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.contents })
       return true
     })
   },
