@@ -4,14 +4,27 @@
     :style="'width:' + width"
     v-show="show">
     <img
-      :src="audioImg"
+      v-if="audioImg === 3"
+      src="@/assets/images/audio-icon.png"
       style="width: 16px;vertical-align: middle;cursor: pointer;height: 16px;"
-      @click="handleAudio"
+      @click="handlePlay"
+      alt="">
+    <img
+      v-if="audioImg === 1"
+      src="@/assets/images/audio-no.png"
+      style="width: 16px;vertical-align: middle;cursor: pointer;height: 16px;"
+      @click="handlePlay"
+      alt="">
+    <img
+      v-if="audioImg === 2"
+      src="@/assets/images/audio-one.png"
+      style="width: 16px;vertical-align: middle;cursor: pointer;height: 16px;"
+      @click="handlePlay"
       alt="">
     <div class="audio-container-right">
       <div
         class="progress__bar"
-        :style="{ width: progressBarVal+'%' }"
+        :style="{ width: progressBarVal + '%' }"
         ref="progress-bar"/>
       <audio
         ref="audio"
@@ -35,10 +48,6 @@
   </div>
 </template>
 <script>
-import AudioThree from '@/assets/images/audio-icon.png'
-import AudioOne from '@/assets/images/audio-no.png'
-import audioTwo from '@/assets/images/audio-one.png'
-import helper from '@/filters/modules/time'
 import { durationFormat } from '@/utils/helper'
 export default {
   props: {
@@ -56,8 +65,7 @@ export default {
       show: false,
       leastTime: null,
       progressBarVal: 0,
-      audioImgs: [AudioOne, audioTwo, AudioThree],
-      audioImg: AudioThree,
+      audioImg: 3,
       interval: null
     }
   },
@@ -70,19 +78,19 @@ export default {
       if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
         this.interval && clearInterval(this.interval)
-        this.audioImg = AudioThree
+        this.audioImg = 3
         this.leastTime = durationFormat(totalTime, { format: 'mm:ss' })
       }
       else {
         this.progressBarVal = (currentTime / totalTime * 100)
       }
     },
-    handleAudio() {
+    handlePlay() {
       if (this.$refs.audio.paused) {
         this.$refs.audio.play()
         let index = 0
         this.interval = setInterval(() => {
-          this.audioImg = this.audioImgs[index]
+          this.audioImg = index + 1
           index++
           if (index > 2) index = 0
         }, 1000)
@@ -90,7 +98,7 @@ export default {
       else {
         this.$refs.audio.pause()
         clearInterval(this.interval)
-        this.audioImg = AudioThree
+        this.audioImg = 3
       }
     },
     getTotalDuration(e) {

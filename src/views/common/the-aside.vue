@@ -57,9 +57,31 @@
           </template>
           <template v-for="second in item.children">
             <el-menu-item
-              v-if="!second.hidden"
+              v-if="!second.hidden && !second.children"
               :key="second.path"
               :index="second.path">{{ second.title }}</el-menu-item>
+            <el-submenu
+              v-else
+              :class="[
+                'border-bottom',
+                'third-level',
+                { 'is-active': second.children.indexOf(r => r.path === $route.path) > -1 }
+              ]"
+              :key="second.path"
+              :index="second.path">
+              <template slot="title">
+                <span>{{ second.title }}</span>
+              </template>
+              <template v-for="third in second.children">
+                <el-menu-item
+                  v-if="!third.hidden"
+                  :key="third.path"
+                  :index="third.path">
+                  <!-- <i :class="third.icon" /> -->
+                  {{ third.title }}
+                </el-menu-item>
+              </template>
+            </el-submenu>
           </template>
         </el-submenu>
       </template>

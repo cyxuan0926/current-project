@@ -13,7 +13,6 @@
         v-if="item.append"
         slot="append">{{ item.append }}</template>
     </el-input>
-    <!-- <template v-if="item.type === 'select'">{{ item }}</template> -->
     <el-select
       v-if="item.type === 'select'"
       :placeholder="'请选择' + item.label"
@@ -21,7 +20,7 @@
       :loading="item.loading"
       filterable
       :disabled="item.disabled"
-      @change="item.func ? item.func($event, prop) : onSelectChange($event, prop)">
+      @change="item.func && item.func($event, prop)">
       <el-option
         v-for="(option) in item.options"
         :key="item.props ? option[item.props.value] : option.value"
@@ -47,8 +46,7 @@
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
-      v-model="fields[prop]"
-      @change="handleCheckboxChange">
+      v-model="fields[prop]">
       <el-checkbox
         v-for="box in item.group"
         :key="box.value"
@@ -71,10 +69,10 @@
       ref="video"
       v-model="fields[prop]"
       @success="onSuccess" />
-    <m-quill-editor
+    <!-- <m-quill-editor
       v-if="item.type === 'editor'"
       :contents="fields[prop]"
-      @editorChange="editorChange" />
+      @editorChange="editorChange" /> -->
     <m-tinymce
       v-if="item.type === 'jaileditor'"
       :value="fields[prop]"
@@ -109,13 +107,10 @@ export default {
     }
   },
   methods: {
-    onSelectChange(e, prop) {
-      // console.log(prop)
-    },
-    editorChange(contents, text) {
-      this.fields[this.prop] = contents
-      this.$emit('validateField', this.prop)
-    },
+    // editorChange(contents, text) {
+    //   this.fields[this.prop] = contents
+    //   this.$emit('validateField', this.prop)
+    // },
     tinymceChange(contents, text, content) {
       if (!content) {
         this.fields[this.prop] = ''
@@ -131,13 +126,10 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
-    },
-    handleCheckboxChange(e) {
-      // console.log(e)
     }
   }
 }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
 </style>
