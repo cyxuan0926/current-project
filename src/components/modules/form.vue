@@ -61,6 +61,7 @@
 <script>
 import formItem from './form-item'
 import validator, { helper } from '@/utils'
+import { setTimeout } from 'timers';
 export default {
   components: { formItem },
   props: {
@@ -105,6 +106,7 @@ export default {
       this.$router.back()
     },
     onSubmit(e) {
+      console.log(999)
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$emit('submit', helper.trimObject(this.fields))
@@ -122,6 +124,9 @@ export default {
       })
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
       this.flag = true
+      setTimeout(() => {
+        console.log(9999999, this.fields.age)
+      }, 300)
     },
     validateField(e) {
       if (this.destroyed) return
