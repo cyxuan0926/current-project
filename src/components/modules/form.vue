@@ -61,7 +61,6 @@
 <script>
 import formItem from './form-item'
 import validator, { helper } from '@/utils'
-import { setTimeout } from 'timers';
 export default {
   components: { formItem },
   props: {
