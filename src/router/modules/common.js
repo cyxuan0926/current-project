@@ -12,7 +12,7 @@ let common = [{
   // }]
 }, {
   path: '/',
-  meta: { hidden: true, jjj: 'ppp' },
+  meta: { hidden: true },
   component: frame,
   children: [{
     path: '/dashboard',

@@ -29,17 +29,15 @@ let check = [{
   }]
 }, {
   path: '/meeting-report',
-  name: '会见统计',
+  name: '会见统计1',
   meta: { hidden: true },
   children: [{
     path: '/meeting-report/prison',
-    name: '监狱统计',
-    props: { role: '1' },
+    name: '监狱统计1',
     component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
   }, {
     path: '/meeting-report/prison-area',
-    name: '监区统计',
-    props: { role: '1' },
+    name: '监区统计1',
     component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
   }]
 }, {

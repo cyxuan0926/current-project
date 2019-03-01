@@ -23,9 +23,65 @@ let infomation = [{
   meta: { hidden: true },
   children: [{
     path: '/prison-affairs-public/prison-affairs-public',
-    name: '狱务公开信息',
-    meta: { typeId: 1 },
-    component: resolve => require(['@/views/info-prison-affairs-public/list'], resolve)
+    name: '狱务公开',
+    meta: { typeId: 1, hidden: true },
+    component: resolve => require(['@/views/common/router-view'], resolve),
+    children: [
+      {
+        path: '/prison-affairs-public/prison-affairs-public/4',
+        name: '减刑假释',
+        meta: { typeId: 4 },
+        component: resolve => require(['@/views/info-prison-affairs-public/list'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/4/add',
+        name: '新增减刑假释',
+        meta: { typeId: 4 },
+        component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/4/edit/:id',
+        name: '编辑减刑假释',
+        meta: { typeId: 4 },
+        component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/5',
+        name: '暂予监外执行',
+        meta: { typeId: 5 },
+        component: resolve => require(['@/views/info-prison-affairs-public/list'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/5/add',
+        name: '新增暂予监外执行',
+        meta: { typeId: 5 },
+        component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/5/edit/:id',
+        name: '编辑暂予监外执行',
+        meta: { typeId: 5 },
+        component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/6',
+        name: '社会帮教',
+        meta: { typeId: 6 },
+        component: resolve => require(['@/views/info-prison-affairs-public/list'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/6/add',
+        name: '新增社会帮教',
+        meta: { typeId: 6 },
+        component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
+      },
+      {
+        path: '/prison-affairs-public/prison-affairs-public/6/edit/:id',
+        name: '编辑社会帮教',
+        meta: { typeId: 6 },
+        component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
+      }
+    ]
   }, {
     path: '/prison-affairs-public/prison-affairs-public/add',
     name: '新增狱务公开信息',

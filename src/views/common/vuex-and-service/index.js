@@ -2,7 +2,8 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
-  isCollapsed: false
+  isCollapsed: false,
+  loading: false
 }
 
 export default {

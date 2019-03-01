@@ -7,17 +7,14 @@
         { 'collapsed': isCollapsed }]">
       <span class="bold">狱务通</span>管理平台
     </div>
-    <div
-      :class="[
-        'header-right',
-        { 'width100': isBlock }]">
+    <div class="header-right">
       <i
         class="iconfont icon-category bold"
         @click="handleCollapse" />
       <div>
         <el-dropdown
           trigger="click"
-          @command="onClick">
+          @command="handleNavigation">
           <div class="item">
             <img
               src="/static/images/user2-160x160.jpg"
@@ -40,12 +37,6 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  props: {
-    isBlock: {
-      type: Boolean,
-      default: false
-    }
-  },
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
@@ -54,7 +45,7 @@ export default {
   },
   methods: {
     ...mapActions(['handleCollapse', 'logout', 'resetState']),
-    onClick(e) {
+    handleNavigation(e) {
       this.$router.push(e)
     },
     handleLogout() {
