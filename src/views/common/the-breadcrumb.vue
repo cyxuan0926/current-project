@@ -27,7 +27,7 @@ export default {
       if (!route || !route.path) return
       let breadcrumb = [], getBreadcrumb = (rt, arr) => {
         if (!rt || !rt.name) return
-        arr.push({ name: rt.name, path: rt.path })
+        arr.push({ name: rt.name.replace(/[a-z]/g, ''), path: rt.path })
         getBreadcrumb(rt.parent, arr)
       }
       getBreadcrumb(route.matched[route.matched.length - 1], breadcrumb)

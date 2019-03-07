@@ -18,6 +18,10 @@ let superAdminMenu = [{
     path: '/family-remittance/list',
     title: '家属汇款记录',
     icon: 'iconfont icon-jiashuhuikuanjilu'
+  }, {
+    path: '/trade/account',
+    title: '交易流水记录',
+    icon: 'iconfont icon-jiaoyiliushuijilu'
   },
   {
     path: '/feedback/list',
