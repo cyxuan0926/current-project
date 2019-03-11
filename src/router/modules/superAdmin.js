@@ -118,7 +118,7 @@ let superAdmin = [{
       },
       {
         path: '/trade/refund',
-        name: '退费明细',
+        name: '退款明细',
         component: resolve => require(['@/views/trade/refund'], resolve)
       }
     ]
