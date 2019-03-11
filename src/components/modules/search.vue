@@ -266,5 +266,6 @@ export default {
     width: 230px;
     max-width: 230px;
   .el-date-editor.el-input, .el-date-editor.el-input__inner
-    max-width:  230px
+    max-width: 230px;
+    min-width: 230px;
 </style>
