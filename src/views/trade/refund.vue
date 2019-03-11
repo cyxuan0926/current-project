@@ -34,6 +34,7 @@
       prop="remark"
       label="退款状态" />
     <el-table-column
+      show-overflow-tooltip
       label="备注">
       <template slot-scope="scope">
         <span
