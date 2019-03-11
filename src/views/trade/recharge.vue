@@ -24,7 +24,7 @@
       label="订单总金额(元)">
     </el-table-column>
     <el-table-column
-      prop="contents"
+      prop="callbackResults"
       label="备注" />
   </el-table>
 </template>

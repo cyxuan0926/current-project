@@ -73,7 +73,7 @@ export default {
     return {
       dialogTableVisible: false,
       rowClass: ({ row, rowIndex }) => {
-        if (row.remark >= 0 && rowIndex % 3) {
+        if (row.remark > 0) {
           return 'table-row-blue'
         }
         else if (row.remark < 0) {

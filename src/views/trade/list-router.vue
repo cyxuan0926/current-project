@@ -58,15 +58,20 @@ export default {
             { label: '微信', value: 'weixin' }
           ]
         },
-        // paymentType: {
-        //   miss: true,
-        //   type: 'select',
-        //   label: '退款方式',
-        //   options: [
-        //     { label: '支付宝', value: 'alipay' },
-        //     { label: '微信', value: 'weixin' }
-        //   ]
-        // },
+        refundType: {
+          miss: true,
+          type: 'select',
+          label: '退款方式',
+          options: [
+            { label: '支付宝', value: 'alipay' },
+            { label: '微信', value: 'weixin' }
+          ]
+        },
+        refundNo: {
+          miss: true,
+          type: 'input',
+          label: '退款编号'
+        },
         tradeNo: {
           miss: true,
           type: 'input',
@@ -88,25 +93,26 @@ export default {
         account: ['accountStatus', 'phone'],
         recharge: ['paymentType', 'tradeNo', 'phone', 'range'],
         consumption: ['phone', 'range'],
-        refund: []
-
+        refund: ['refundType', 'tradeNo', 'phone', 'range']
       }
     }
   },
   watch: {
-    activeName(val, old) {
-      this.getSearchItems()
+    '$route': {
+      handler: function(val) {
+        this.activeName = val.path.slice(val.path.lastIndexOf('/') + 1)
+        this.getSearchItems()
+      },
+      deep: true
     }
   },
   mounted() {
     this.getSearchItems()
-    this.getDatas()
   },
   methods: {
     ...mapActions(['getAccountList', 'getRechargeList', 'getConsumptionList', 'getRefundList']),
     handleClick() {
       this.$router.push(`/trade/${ this.activeName }`)
-      this.getDatas()
     },
     getSearchItems() {
       let show = this.showSearch[this.activeName]
@@ -119,6 +125,7 @@ export default {
           this.searchItems[key].miss = false
         }
       })
+      this.getDatas()
     },
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
