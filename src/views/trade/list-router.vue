@@ -101,7 +101,7 @@ export default {
     '$route': {
       handler: function(val) {
         this.activeName = val.path.slice(val.path.lastIndexOf('/') + 1)
-        this.getSearchItems()
+        this.getSearchItems('clearFilter')
       },
       deep: true
     }
@@ -114,7 +114,7 @@ export default {
     handleClick() {
       this.$router.push(`/trade/${ this.activeName }`)
     },
-    getSearchItems() {
+    getSearchItems(e) {
       let show = this.showSearch[this.activeName]
       Object.keys(this.searchItems).forEach(key => {
         delete this.searchItems[key].value
@@ -125,6 +125,7 @@ export default {
           this.searchItems[key].miss = false
         }
       })
+      if (e === 'clearFilter') this.filter = {}
       this.getDatas()
     },
     sizeChange(rows) {
