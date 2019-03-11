@@ -36,7 +36,7 @@ export default {
         { label: '账户明细', key: 'account' },
         { label: '充值明细', key: 'recharge' },
         { label: '消费明细', key: 'consumption' },
-        { label: '退费明细', key: 'refund' }
+        { label: '退款明细', key: 'refund' }
       ],
       list: { total: 0, contents: [] },
       searchItems: {

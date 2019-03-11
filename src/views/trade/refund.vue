@@ -37,7 +37,7 @@
       label="备注">
       <template slot-scope="scope">
         <span
-          class="red" v-if="scope.row.is_apply === 2">{{ scope.row.remark }}</span>
+          class="red" v-if="scope.row.is_apply === 2">{{ scope.row.callback_results }}</span>
       </template>
     </el-table-column>
   </el-table>
