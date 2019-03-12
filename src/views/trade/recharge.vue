@@ -25,6 +25,7 @@
     </el-table-column>
     <el-table-column
       prop="callbackResults"
+      show-overflow-tooltip
       label="备注" />
   </el-table>
 </template>

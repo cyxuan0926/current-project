@@ -33,7 +33,7 @@
         prop="contents"
         label="备注">
         <template slot-scope="scope">
-          {{ scope.row.remark === 0 ? '' : scope.row.remark }}
+          {{ scope.row.remark ? (scope.row.remark > 0 ? '+' + scope.row.remark : scope.row.remark) : '' }}
         </template>
       </el-table-column>
     </el-table>

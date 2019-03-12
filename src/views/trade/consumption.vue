@@ -7,8 +7,11 @@
       prop="phone"
       label="手机号码" />
     <el-table-column
-      prop="money"
-      label="交易金额(元)" />
+      label="交易金额(元)">
+      <template slot-scope="scope">
+        {{ scope.row.money > 0 ? '+' + scope.row.money : scope.row.money }}
+      </template>
+    </el-table-column>
     <el-table-column
       prop="createdAt"
       label="交易场景时间">
