@@ -125,8 +125,13 @@ export default {
           this.searchItems[key].miss = false
         }
       })
-      if (e === 'clearFilter') this.filter = {}
-      this.getDatas()
+      if (e === 'clearFilter') {
+        this.filter = {}
+        this.$refs.pagination.handleCurrentChange(1)
+      }
+      else {
+        this.getDatas()
+      }
     },
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
