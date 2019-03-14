@@ -14,6 +14,7 @@ export default {
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=${ params[key] };`
     })
+    console.log('setCookie', document.cookie)
   },
   getCookie: ({ commit }, params) => {
     let cookie = {}
@@ -22,6 +23,7 @@ export default {
         cookie[cook.split('=')[0]] = cook.split('=')[1]
       })
     }
+    console.log('getCookie', cookie)
     return cookie
   },
   removeCookie: ({ commit }, params) => {
@@ -30,5 +32,6 @@ export default {
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=; expires=${ time.toGMTString() }`
     })
+    console.log('removeCookie', cookie)
   }
 }
