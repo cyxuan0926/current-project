@@ -11,10 +11,11 @@ export default {
     })
   },
   setCookie: ({ commit }, params) => {
+    let expires = new Date()
+    expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000)
     Object.keys(params).forEach(key => {
-      document.cookie = `${ key }=${ params[key] };`
+      document.cookie = `${ key }=${ params[key] };expires=${ expires.toUTCString() }`
     })
-    console.log('setCookie', document.cookie)
   },
   getCookie: ({ commit }, params) => {
     let cookie = {}
@@ -23,7 +24,6 @@ export default {
         cookie[cook.split('=')[0]] = cook.split('=')[1]
       })
     }
-    console.log('getCookie', cookie)
     return cookie
   },
   removeCookie: ({ commit }, params) => {
@@ -32,6 +32,5 @@ export default {
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=; expires=${ time.toGMTString() }`
     })
-    console.log('removeCookie', cookie)
   }
 }
