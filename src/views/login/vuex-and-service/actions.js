@@ -10,7 +10,7 @@ export default {
       return true
     })
   },
-  setCookie: ({ commit, dispatch }, params) => {
+  setCookie: ({ commit }, params) => {
     let expires = new Date()
     expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000)
     Object.keys(params).forEach(key => {
