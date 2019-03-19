@@ -40,7 +40,7 @@
         </el-select>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'datetime'"
+          v-if="item.type === 'datetime' && !item.miss"
           v-model="item.value"
           type="datetime"
           :placeholder="item.label"
@@ -55,7 +55,7 @@
           :placeholder="item.label"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'month'"
+          v-if="item.type === 'month' && !item.miss"
           v-model="item.value"
           type="month"
           :clearable="!item.canNotClear"
@@ -65,7 +65,7 @@
           :placeholder="item.label"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'datetimerange'"
+          v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
           start-placeholder="开始时间"
@@ -75,7 +75,7 @@
           :default-time="['00:00:00', '23:59:59']"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'daterange'"
+          v-if="item.type === 'daterange' && !item.miss"
           v-model="item.value"
           unlink-panels
           type="daterange"
@@ -83,15 +83,24 @@
           end-placeholder="结束时间"
           format="yyyy-MM"
           value-format="yyyy-MM"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'dateRange' && !item.miss"
+          v-model="item.value"
+          type="daterange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"/>
         <m-month-range-picker
           :key="index"
-          v-if="item.type=== 'monthrange'"
+          v-if="item.type=== 'monthrange' && !item.miss"
           class="monthrange"
           :start-date-value.sync="startValue"
           :end-date-value.sync="endValue" />
         <m-month-range-selector
           :key="index"
-          v-if="item.type=== 'monthRangeSelector'"
+          v-if="item.type=== 'monthRangeSelector' && !item.miss"
           class="monthRangeSelector"
           :prop="index"
           :clear="!item.canNotClear"
@@ -171,6 +180,7 @@ export default {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
+          if (this.items[key].miss) return
           if (this.items[key].type === 'monthRangeSelector') {
             params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
             params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
@@ -180,7 +190,7 @@ export default {
             params[this.items[key].end] = this.endValue
           }
           if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-          if (this.items[key].type === 'datetimerange' || this.items[key].type === 'daterange') {
+          if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
             params[this.items[key].start] = this.items[key].value[0]
             params[this.items[key].end] = this.items[key].value[1]
           }
@@ -256,5 +266,6 @@ export default {
     width: 230px;
     max-width: 230px;
   .el-date-editor.el-input, .el-date-editor.el-input__inner
-    max-width:  230px
+    max-width: 230px;
+    min-width: 230px;
 </style>

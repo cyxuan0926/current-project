@@ -32,6 +32,7 @@ import noPage from './modules/no-page'
 import websocket from './modules/websocket'
 import layout from '@/views/common/vuex-and-service'
 import login from '@/views/login/vuex-and-service'
+import trade from '@/views/trade/vuex-and-service'
 import global from './modules/global'
 
 import filter from './modules/filter'
@@ -89,6 +90,7 @@ export default new Vuex.Store({
   modules: {
     layout,
     login,
-    global
+    global,
+    trade
   }
 })

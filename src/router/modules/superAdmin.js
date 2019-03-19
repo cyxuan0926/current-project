@@ -93,6 +93,36 @@ let superAdmin = [{
     name: '家属汇款',
     component: resolve => require(['@/views/sadmin-remittance-record/family-remittance-list'], resolve)
   }]
+}, {
+  path: '/',
+  meta: { hidden: true },
+  children: [{
+    path: '/trade',
+    name: '交易流水记录',
+    component: resolve => require(['@/views/trade/list-router'], resolve),
+    children: [
+      {
+        path: '/trade/account',
+        name: '账户明细',
+        component: resolve => require(['@/views/trade/account'], resolve)
+      },
+      {
+        path: '/trade/recharge',
+        name: '充值明细',
+        component: resolve => require(['@/views/trade/recharge'], resolve)
+      },
+      {
+        path: '/trade/consumption',
+        name: '消费明细',
+        component: resolve => require(['@/views/trade/consumption'], resolve)
+      },
+      {
+        path: '/trade/refund',
+        name: '退款明细',
+        component: resolve => require(['@/views/trade/refund'], resolve)
+      }
+    ]
+  }]
 },
 {
   path: '/advertisement',

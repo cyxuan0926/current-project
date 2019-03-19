@@ -11,8 +11,10 @@ export default {
     })
   },
   setCookie: ({ commit }, params) => {
+    let expires = new Date()
+    expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000)
     Object.keys(params).forEach(key => {
-      document.cookie = `${ key }=${ params[key] };`
+      document.cookie = `${ key }=${ params[key] };expires=${ expires.toUTCString() }`
     })
   },
   getCookie: ({ commit }, params) => {
