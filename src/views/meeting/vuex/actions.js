@@ -114,11 +114,11 @@ export default {
   getPrisonVisitConfigDetail({ commit }, params) {
     return http.getPrisonVisitConfigDetail(params).then(res => {
       if (!res) return
-      res.usual = [null]
-      if (res.batchQueue) {
-        res.usual = []
+      res.queue = [null]
+      if (res.batchQueue && res.batchQueue.length) {
+        res.queue = []
         res.batchQueue.forEach(queue => {
-          res.usual.push(queue.split('-'))
+          res.queue.push(queue.split('-'))
         })
         res.canNotChange = true
       }

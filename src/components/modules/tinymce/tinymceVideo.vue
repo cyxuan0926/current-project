@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     name: {
@@ -43,13 +44,15 @@ export default {
     this.notification = null
   },
   methods: {
+    ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
           this.$message.success('视频上传成功')
           this.$emit('success', `${ res.url }?token=${ this.$urls.token }`)
-          this.setImageLocalstorage('images', res.url)
-          this.setImageLocalstorage('newImages', res.url)
+          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          this.setUrlStorage({ urls: [...urls, res.url] })
+          this.setNewUrlStorage({ urls: [res.url] })
           this.notification.close()
           break
         default:
@@ -83,11 +86,6 @@ export default {
     },
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
-    },
-    setImageLocalstorage(key, value) {
-      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
-      if (storage.indexOf(value) < 0) storage.push(value)
-      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }

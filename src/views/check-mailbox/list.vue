@@ -40,7 +40,7 @@
         <el-table-column
           label="发件时间">
           <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
+            {{ scope.row.createdAt }}
           </template>
         </el-table-column>
         <el-table-column
@@ -111,11 +111,12 @@
           v-if="mailbox.imageUrls.length">
           <label>图片</label>
           <div class="img-box">
-            <m-img-viewer
-              v-for="(img, index) in mailbox.imageUrls"
-              :key="index"
-              v-if="img"
-              :src="img + '?token=' + $urls.token" />
+            <template v-for="(img, index) in mailbox.imageUrls">
+              <m-img-viewer
+                :key="index"
+                v-if="img"
+                :src="img + '?token=' + $urls.token" />
+            </template>
           </div>
         </div>
         <div
@@ -236,19 +237,12 @@ export default {
       }).catch(() => {})
     },
     getDetail(e) {
-      if ((e.isReply && e.reply) || !e.isReply) {
-        this.mailbox = e
+      this.getMailboxDetail({ id: e.id }).then(res => {
+        if (!res) return
+        this.mailbox = res
         this.answer = ''
         this.visible = true
-      }
-      else {
-        this.getMailboxDetail({ id: e.id }).then(res => {
-          if (!res) return
-          this.mailbox = res
-          this.answer = ''
-          this.visible = true
-        })
-      }
+      })
     }
   }
 }

@@ -18,7 +18,7 @@ module.exports = {
     'standard'
   ],
   // required to lint *.vue files
-  plugins: ['vue'],
+  plugins: ['vue', 'html'],
   // add your custom rules here
   settings: {
       'import/resolver': {
@@ -36,7 +36,7 @@ module.exports = {
     // 禁止不必要的括号 //(a * b) + c;//报错
     "no-extra-parens": 0,
     // 禁止不必要的分号
-    // "no-extra-semi": 2,
+    "no-extra-semi": 2,
     // 禁止在return、throw、continue 和 break语句之后出现不可达代码
     "no-unreachable": 2,
     // 控制逗号前后的空格

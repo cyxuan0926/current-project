@@ -6,42 +6,9 @@
         class="no-video">
         <i class="iconfont icon-yinpinaudio47" />
       </div>
-      <div
+      <m-audio
         v-else
-        class="audio-container">
-        <button
-          style="outline: none;margin: 0;padding: 0;border: none;background: transparent;"
-          @click.prevent="handleAudio">
-          <img
-            :src="audioImg"
-            style="width: 2.1rem;vertical-align: middle;cursor: pointer"
-            alt="">
-        </button>
-        <div class="audio-container-right">
-          <div
-            class="progress__bar"
-            :style="{'width':progressBarVal+'%'}"
-            ref="progress-bar"/>
-          <audio
-            ref="audio"
-            @timeupdate="handleTimeUpdate"
-            @loadedmetadata="getTotalDuration">
-            <source
-              :src="value + '?token=' + $urls.token"
-              type="audio/mp3">
-            <source
-              :src="value + '?token=' + $urls.token"
-              type="audio/ogg">
-            <source
-              :src="value + '?token=' + $urls.token"
-              type="audio/mpeg">
-            您的浏览器不支持Audio标签
-          </audio>
-        </div>
-        <div class="audio-container-time">
-          <span>{{ showTime }}</span>
-        </div>
-      </div>
+        :value="value + '?token=' + $urls.token" />
     </div>
     <div class="upload-buttons">
       <el-upload
@@ -82,6 +49,7 @@ import AudioThree from '@/assets/images/audio-icon.png'
 import AudioOne from '@/assets/images/audio-no.png'
 import audioTwo from '@/assets/images/audio-one.png'
 import helper from '@/filters/modules/time'
+import { mapActions } from 'vuex'
 export default {
   props: {
     value: {
@@ -95,9 +63,8 @@ export default {
         Authorization: this.$urls.token
       },
       loading: false,
-      changed: false,
       notification: null,
-      showTime: null,
+      leastTime: null,
       progressBarVal: 0,
       audioImgs: [AudioOne, audioTwo, AudioThree],
       audioImg: AudioThree,
@@ -114,16 +81,6 @@ export default {
       return files
     }
   },
-  watch: {
-    fileList(val) {
-      if (!this.changed && val.length) {
-        val.forEach(file => {
-          this.setImageLocalstorage('images', file.url)
-        })
-        this.changed = true
-      }
-    }
-  },
   mounted() {
     this.$refs.audio && this.getTotalDuration()
   },
@@ -132,14 +89,16 @@ export default {
     this.notification = null
   },
   methods: {
+    ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       this.loading = false
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
           this.$emit('success', res.url)
-          this.setImageLocalstorage('images', res.url)
-          this.setImageLocalstorage('newImages', res.url)
+          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          this.setUrlStorage({ urls: [...urls, res.url] })
+          this.setNewUrlStorage({ urls: [res.url] })
           this.notification.close()
           break
         default:
@@ -165,10 +124,10 @@ export default {
       if (!this.$refs.audio) return
       let totalTime = parseInt(this.$refs.audio.duration),
         currentTime = parseInt(this.$refs.audio.currentTime)
-      this.showTime = helper.timeNew(totalTime - currentTime)
+      this.leastTime = helper.timeNew(totalTime - currentTime)
       if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
-        this.showTime = helper.timeNew(totalTime)
+        this.leastTime = helper.timeNew(totalTime)
       }
       else {
         this.progressBarVal = (currentTime / totalTime * 100)
@@ -198,7 +157,7 @@ export default {
       }
     },
     getTotalDuration() {
-      this.showTime = helper.timeNew(parseInt(this.$refs.audio.duration))
+      this.leastTime = helper.timeNew(parseInt(this.$refs.audio.duration))
     },
     handleExceed() {
       this.loading = false
@@ -212,17 +171,12 @@ export default {
     handleRemove(file, fileList) {
       this.loading = false
       this.$emit('success', fileList.length ? fileList : '')
-    },
-    setImageLocalstorage(key, value) {
-      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
-      if (storage.indexOf(value) < 0) storage.push(value)
-      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
   .el-upload__tip{
     margin-top: 0;
     line-height: 20px;
@@ -240,10 +194,10 @@ export default {
     box-sizing: border-box;
   }
   .audio-box .no-video{
-    height: 40px;
+    height: 36px;
     width: 100%;
     background: #E5E5E5;
-    line-height: 40px;
+    line-height: 36px;
     text-align: center;
     color: #8C8080;
     flex-shrink: 0;
@@ -253,7 +207,8 @@ export default {
     font-size: 20px;
   }
   .audio-box + .upload-buttons{
-    height: 40px;
+    height: 34px;
+    line-height: 34px;
     float: left;
     display: flex;
     align-items: center;
@@ -261,32 +216,9 @@ export default {
     justify-content: center;
     align-items: stretch; */
   }
-  .audio-box .audio-container {
-    display: flex;
-    justify-items: flex-start;
-    align-items:center;
-    background:rgba(235,235,235,1);
-    padding: 0 4px;
-  }
-  .audio-box .audio-container-right {
-      width: 112px;
-      height: .7rem;
-      border: .05rem solid #2B569A;
-      margin: 0 auto;
-      border-radius: .4rem;
-      display:flex;
-      align-items:center;
-      padding: 0 .4rem 0 .4rem;
-  }
   .audio-box .progress__bar {
       height: .16rem;
       background: #264c90;
       /*margin-left: .4rem*/
-  }
-  .audio-box .audio-container-time {
-      font-size:.9rem;
-      font-family:PingFang-SC-Medium;
-      font-weight:500;
-      color:rgba(51,51,51,1);
   }
 </style>

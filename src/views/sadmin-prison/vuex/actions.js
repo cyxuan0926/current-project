@@ -4,8 +4,12 @@ export default {
   getPrisons: ({ commit }, params) => {
     http.getPrisons(params).then(res => res && commit('getPrisons', res))
   },
-  addPrison: ({ commit }, params) => {
-    return http.addPrison(params).then(res => res)
+  addPrison: ({ dispatch }, params) => {
+    return http.addPrison(params).then(res => {
+      if (!res) return
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.description, save: true })
+      return res
+    })
   },
   getPrisonDetail: ({ commit }, params) => {
     return http.getPrisonDetail(params).then(res => {
@@ -21,7 +25,7 @@ export default {
       params.imageUrl && excpt.push(params.imageUrl)
       params.audioPath && excpt.push(params.audioPath)
       params.videoPath && excpt.push(params.videoPath)
-      dispatch('handleDeleteImage', [excpt, params.description])
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.description, save: true })
       return res
     })
   }

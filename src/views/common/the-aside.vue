@@ -1,72 +1,92 @@
 <template>
-  <aside
-    id="main-sidebar"
-    class="main-sidebar">
-    <!-- sidebar: style can be found in sidebar.less -->
-    <section
-      class="sidebar"
-      style="height: auto;">
-      <!-- Sidebar user panel -->
-      <div class="user-panel">
-        <div class="pull-left image">
-          <img
-            src="../../../static/dist/img/user2-160x160.jpg"
-            class="img-circle"
-            alt="User Image">
-        </div>
-        <div class="pull-left info">
-          <p v-if="Number(user.role)">{{ user.jailName }}</p>
-          <p :class="{'super-role': !Number(user.role)}">
-            <span>{{ user.role | role }}</span>
-            <el-tooltip
-              v-if="prisonerAreas.length"
-              :disabled="prisonerAreas.length === 1"
-              popper-class="prisonser_areas__popper"
-              :content="prisonerAreas.join('、')"
-              placement="bottom">
-              <span style="margin-left: 5px">{{ prisonerAreas[0] }}</span>
-            </el-tooltip>
-          </p>
-        <!--<a href="#" @click="$event.preventDefault()"><i class="fa fa-circle text-success"></i> 在线</a>-->
+  <div class="aside-container">
+    <div class="aside-top">
+      <img
+        src="/static/images/user2-160x160.jpg"
+        class="avatar circle">
+      <div class="info">
+        <span
+          class="bold ellipsis"
+          v-if="Number(user.role)">{{ user.jailName }}</span>
+        <div class="ellipsis">
+          <span class="bold1">{{ user.role | role }}</span>
+          <el-popover
+            placement="bottom"
+            width="260"
+            trigger="hover"
+            :disabled="prisonerAreas.length <= 1"
+            :content="prisonerAreas.join('、')">
+            <span
+              class="bold1 ml-10"
+              slot="reference">{{ prisonerAreas[0] }}</span>
+          </el-popover>
         </div>
       </div>
-      <!-- /.search form -->
-      <!-- sidebar menu: : style can be found in sidebar.less -->
-      <ul class="sidebar-menu">
-        <li class="header">导航</li>
-        <li
-          v-for="(first, index) in menus[user.role]"
-          :key="index">
-          <template v-if="!first.children">
-            <router-link :to="first.path">
-              <i :class="first.icon"/>
-              <span>{{ first.title }}</span>
-            </router-link>
+    </div>
+    <el-menu
+      :default-active="$route.meta.deep ? getActiveMenu() : $route.path"
+      background-color="#222d32"
+      text-color="#b8c7ce"
+      active-text-color="#fff"
+      :collapse="isCollapsed"
+      class="first-level"
+      unique-opened
+      @select="handleSelect">
+      <template v-for="(item) in menu">
+        <el-menu-item
+          v-if="!item.children"
+          class="border-bottom"
+          :popper-append-to-body="false"
+          :key="item.path"
+          :index="item.path">
+          <i :class="item.icon" />
+          <span slot="title">{{ item.title }}</span>
+        </el-menu-item>
+        <el-submenu
+          v-if="item.children"
+          :class="[
+            'border-bottom',
+            'second-level',
+            { 'is-active': item.children.indexOf(r => r.path === $route.path) > -1 }
+          ]"
+          :key="item.path"
+          :index="item.path">
+          <template slot="title">
+            <i :class="item.icon" />
+            <span>{{ item.title }}</span>
           </template>
-          <template v-else><!-- first.active = !first.active -->
-            <a
-              href="javascript:;"
-              @click="onTreeMenuClick(first)">
-              <i :class="first.icon"/>
-              <span>{{ first.title }}</span>
-              <i
-                class="el-submenu__icon-arrow"
-                :class="first.active ? 'el-icon-arrow-down' : 'el-icon-arrow-right'"/>
-            </a>
-            <ul class="treeview-menu">
-              <li
-                v-for="(second, order) in first.children"
-                :key="order">
-                <router-link :to="second.path"><i :class="second.icon"/>&nbsp;&nbsp;{{ second.title }}</router-link>
-              </li>
-            </ul>
+          <template v-for="second in item.children">
+            <el-menu-item
+              v-if="!second.hidden && !second.children"
+              :key="second.path"
+              :index="second.path">{{ second.title }}</el-menu-item>
+            <el-submenu
+              v-else
+              :class="[
+                'border-bottom',
+                'third-level',
+                { 'is-active': second.children.indexOf(r => r.path === $route.path) > -1 }
+              ]"
+              :key="second.path"
+              :index="second.path">
+              <template slot="title">
+                <span>{{ second.title }}</span>
+              </template>
+              <template v-for="third in second.children">
+                <el-menu-item
+                  v-if="!third.hidden"
+                  :key="third.path"
+                  :index="third.path">
+                  <!-- <i :class="third.icon" /> -->
+                  {{ third.title }}
+                </el-menu-item>
+              </template>
+            </el-submenu>
           </template>
-        </li>
-      </ul>
-      <!--商品侧边栏-->
-    </section>
-    <!-- /.sidebar -->
-  </aside>
+        </el-submenu>
+      </template>
+    </el-menu>
+  </div>
 </template>
 
 <script>
@@ -76,43 +96,35 @@ import menu from './menu.js'
 export default {
   data() {
     return {
-      menus: menu
+      menu: [],
+      prisonerAreas: []
     }
   },
   computed: {
-    ...mapState(['user']),
-    prisonerAreas: vm => {
-      let values = []
-      if (vm.user && vm.user.prisonConfigList && vm.user.prisonConfigList.length) {
-        for (let val of vm.user.prisonConfigList.values()) {
-          values.push(val.prisonConfigName)
-        }
-      }
-      return values
+    ...mapState({
+      user: state => state.global.user,
+      isCollapsed: state => state.layout.isCollapsed
+    })
+  },
+  mounted() {
+    if (this.user.prisonConfigList && this.user.prisonConfigList.length) {
+      this.prisonerAreas = this.user.prisonConfigList.reduce((pre, cur) => {
+        return pre.concat([cur.prisonConfigName])
+      }, [])
     }
+    this.menu = menu[Number(this.user.role)]
   },
   methods: {
-    onTreeMenuClick(e) {
-      this.menus[this.user.role].forEach(item => {
-        if (e.path !== item.path) item.active = false
-      })
-      e.active = !e.active
+    getActiveMenu() {
+      let active = this.$route.path.replace(/(\/[A-z-]+)(\/[0-9A-z-]+)*/, '$1/list')
+      return active
+    },
+    handleSelect(e, keyPath) {
+      this.$router.push(e)
     }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus">
-  #main-sidebar
-    &.main-sidebar
-      a
-        font-size: 14px;
-        line-height: 22px;
-        display: flex;
-        align-items: center;
-        padding-left: 10px;
-    .treeview-menu>li>a
-      padding-left: 12px;
-    .super-role
-      margin-top 10px
+<style lang="scss" scoped>
+@import "../../assets/css/layout";
 </style>

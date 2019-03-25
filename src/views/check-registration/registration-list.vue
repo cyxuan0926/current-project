@@ -4,6 +4,7 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      ref="search"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -313,6 +314,7 @@ export default {
   },
   watch: {
     tabs(val) {
+      this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
         this.searchItems.status.miss = true
         this.searchItems.auditName.miss = true

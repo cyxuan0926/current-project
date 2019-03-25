@@ -42,6 +42,10 @@ let switches = {
   payStatus: [
     { value: 1, label: '支付成功' },
     { value: -1, label: '支付失败' }
+  ],
+  payType: [
+    { value: 'alipay', label: '支付宝' },
+    { value: 'weixin', label: '微信' }
   ]
 }
 

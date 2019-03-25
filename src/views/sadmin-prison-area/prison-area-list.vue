@@ -153,5 +153,13 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style lang="scss" scoped>
+.cell{
+  button{
+    margin-right: 6px;
+  }
+  button+button{
+    margin: 5px 6px 0 0;
+  }
+}
 </style>

@@ -36,6 +36,9 @@ p{
   font-size: 22px;
   margin-right: 5px;
 }
+.m-pagination{
+  clear: both;
+}
 .m-pagination .el-pagination{
   margin: 20px 0;
   float: right;
@@ -51,7 +54,7 @@ p{
   padding: 20px 20px 0;
 }
 .row-container{
-  padding: 20px 1% 0 1%;
+  padding: 20px 20px 0 20px;
 }
 .row-container .el-tabs__item{
   background: #fff;
@@ -427,6 +430,9 @@ div.el-tooltip__popper {
     margin-right: 10px;
     margin-left: 0;
   }
+  .el-radio{
+    margin-bottom: 10px;
+  }
   .el-checkbox__label, .el-radio__label{
     padding-left: 4px;
   }
@@ -441,6 +447,9 @@ div.el-tooltip__popper {
     float: left;
   }
 }
-.min-height-400{
-  min-height: 400px;
+.el-table__row.table-row-blue{
+  background: #81cdf1;
+}
+.el-table__row.table-row-red{
+  background: #ffbdbf;
 }

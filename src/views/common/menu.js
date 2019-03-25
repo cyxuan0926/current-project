@@ -18,6 +18,10 @@ let superAdminMenu = [{
     path: '/family-remittance/list',
     title: '家属汇款记录',
     icon: 'iconfont icon-jiashuhuikuanjilu'
+  }, {
+    path: '/trade/account',
+    title: '交易流水记录',
+    icon: 'iconfont icon-jiaoyiliushuijilu'
   },
   {
     path: '/feedback/list',
@@ -167,7 +171,24 @@ let superAdminMenu = [{
       {
         path: '/prison-affairs-public/prison-affairs-public',
         title: '狱务公开',
-        icon: 'iconfont icon-circle-o'
+        icon: 'iconfont icon-circle-o',
+        children: [
+          {
+            path: '/prison-affairs-public/prison-affairs-public/4',
+            title: '减刑假释',
+            icon: 'iconfont icon-circle-o'
+          },
+          {
+            path: '/prison-affairs-public/prison-affairs-public/5',
+            title: '暂予监外执行',
+            icon: 'iconfont icon-circle-o'
+          },
+          {
+            path: '/prison-affairs-public/prison-affairs-public/6',
+            title: '社会帮教',
+            icon: 'iconfont icon-circle-o'
+          }
+        ]
       }, {
         path: '/prison-affairs-public/working-dynamics',
         title: '工作动态',

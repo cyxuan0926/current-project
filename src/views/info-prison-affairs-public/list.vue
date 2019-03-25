@@ -35,7 +35,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.videoPath">
+            v-if="showTable && scope.row.videoPath">
             <video
               controls
               poster="/static/images/video-background.png"
@@ -68,7 +68,7 @@
           width="212px">
           <template
             slot-scope="scope"
-            v-if="scope.row.audioPath">
+            v-if="showTable && scope.row.audioPath">
             <m-audio :value="scope.row.audioPath + '?token=' + $urls.token" />
           </template>
         </el-table-column>
@@ -167,7 +167,34 @@ export default {
       },
       searchItems: Object.assign({}, this.searchItemInit),
       visible: false,
-      news: {}
+      news: {},
+      showTable: false,
+      types: [
+        {
+          name: 'prison-affairs-public',
+          typeId: 1
+        },
+        {
+          name: 'working-dynamics',
+          typeId: 2
+        },
+        {
+          name: 'complaints-suggestions',
+          typeId: 3
+        },
+        {
+          name: 'prison-affairs-public/4',
+          typeId: 4
+        },
+        {
+          name: 'prison-affairs-public/5',
+          typeId: 5
+        },
+        {
+          name: 'prison-affairs-public/6',
+          typeId: 6
+        }
+      ]
     }
   },
   computed: {
@@ -199,17 +226,20 @@ export default {
       this.getDatas()
     },
     getDatas() {
+      this.showTable = false
       this.getNewsList({ ...this.filter, ...this.pagination, type: this.$route.meta.typeId }).then(res => {
+        this.showTable = true
         if (!res) return
         setTimeout(() => {
-          document.querySelectorAll('.summary').forEach((row, index) => {
-            if (row.offsetHeight > 69) {
+          let sum = document.querySelectorAll('.summary'), index
+          for (index = 0; index < sum.length; index++) {
+            if (sum[index].offsetHeight > 69) {
               this.newsList.contents[index].ellipsis = true
             }
             else {
               this.newsList.contents[index].ellipsis = false
             }
-          })
+          }
         }, 50)
       })
     },
@@ -232,33 +262,21 @@ export default {
       }).catch(() => {})
     },
     onEdit(id) {
-      switch (this.$route.meta.typeId) {
-        case 1:
-          this.$router.push(`/prison-affairs-public/prison-affairs-public/edit/${ id }`)
-          break
-        case 2:
-          this.$router.push(`/prison-affairs-public/working-dynamics/edit/${ id }`)
-          break
-        case 3:
-          this.$router.push(`/prison-affairs-public/complaints-suggestions/edit/${ id }`)
-          break
-        default:
-          this.$message.error('不识别的类型')
+      let type = this.types.find(t => t.typeId === this.$route.meta.typeId)
+      if (!type) {
+        this.$message.error('不识别的类型')
+      }
+      else {
+        this.$router.push(`/prison-affairs-public/${ type.name }/edit/${ id }`)
       }
     },
     onAdd() {
-      switch (this.$route.meta.typeId) {
-        case 1:
-          this.$router.push('/prison-affairs-public/prison-affairs-public/add')
-          break
-        case 2:
-          this.$router.push('/prison-affairs-public/working-dynamics/add')
-          break
-        case 3:
-          this.$router.push('/prison-affairs-public/complaints-suggestions/add')
-          break
-        default:
-          this.$message.error('不识别的类型')
+      let type = this.types.find(t => t.typeId === this.$route.meta.typeId)
+      if (!type) {
+        this.$message.error('不识别的类型')
+      }
+      else {
+        this.$router.push(`/prison-affairs-public/${ type.name }/add`)
       }
     }
   }

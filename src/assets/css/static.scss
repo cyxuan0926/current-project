@@ -1,0 +1,8 @@
+.upload-demo{
+  .el-button{
+    margin-right: 6px;
+    &+.el-button{
+      margin: 5px 6px 0 0;
+    }
+  }
+}

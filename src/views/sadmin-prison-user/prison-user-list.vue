@@ -52,7 +52,7 @@
           width="210px"
           label="操作">
           <template
-            v-if="routeRole != scope.row.role"
+            v-if="routeRole != scope.row.role && scope.row.role !== 0"
             slot-scope="scope">
             <el-button
               type="primary"

@@ -25,23 +25,50 @@ export default {
         imageUrl: { type: 'uploadImg', label: '新闻图片' },
         isFocus: { type: 'checkbox', value: false, noLabel: true, group: [{ value: true, label: '是否设为焦点新闻' }] }
       },
-      values: {}
+      values: {},
+      types: [
+        {
+          name: 'prison-affairs-public',
+          typeId: 1
+        },
+        {
+          name: 'working-dynamics',
+          typeId: 2
+        },
+        {
+          name: 'complaints-suggestions',
+          typeId: 3
+        },
+        {
+          name: 'prison-affairs-public/4',
+          typeId: 4
+        },
+        {
+          name: 'prison-affairs-public/5',
+          typeId: 5
+        },
+        {
+          name: 'prison-affairs-public/6',
+          typeId: 6
+        }
+      ]
     }
   },
   computed: {
     ...mapState(['news'])
   },
   destroyed() {
-    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    this.removeUrlStorage()
   },
   mounted() {
     this.getNewsDetail(this.$route.params.id).then(res => {
       if (!res) return
+      this.setUrlStorage({ urls: [this.news.imageUrl, this.news.audioPath, this.news.videoPath], contents: this.news.contents })
       this.values = this.news
     })
   },
   methods: {
-    ...mapActions(['getNewsDetail', 'editNews', 'deleteUnusedImage']),
+    ...mapActions(['getNewsDetail', 'editNews', 'setUrlStorage', 'removeUrlStorage']),
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')
@@ -53,18 +80,12 @@ export default {
       }
       this.editNews(e).then(res => {
         if (res) {
-          switch (this.$route.meta.typeId) {
-            case 1:
-              this.$router.push('/prison-affairs-public/prison-affairs-public')
-              break
-            case 2:
-              this.$router.push('/prison-affairs-public/working-dynamics')
-              break
-            case 3:
-              this.$router.push('/prison-affairs-public/complaints-suggestions')
-              break
-            default:
-              this.$message.error('不识别的类型')
+          let type = this.types.find(t => t.typeId === this.$route.meta.typeId)
+          if (!type) {
+            this.$message.error('不识别的类型')
+          }
+          else {
+            this.$router.push(`/prison-affairs-public/${ type.name }`)
           }
         }
       })
