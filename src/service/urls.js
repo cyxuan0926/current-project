@@ -1,12 +1,8 @@
 // const env = 'dev' // 测试环境
 // const env = 'demo' // 演示环境
-<<<<<<< HEAD
 // const env = 'auth' // 认证授权
-const env = 'master' // 正式环境
-=======
 const env = 'auth' // 认证授权
 // const env = 'master' // 正式环境
->>>>>>> 7a0ed42493c5588a2d7208f6d9371f05e16fe5b5
 const nodeUrl = 'http://120.78.190.101:1339'
 
 // apiHost: 接口ip+端口,
