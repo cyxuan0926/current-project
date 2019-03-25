@@ -3,6 +3,7 @@
     <div class="login-container">
       <h1>狱务通管理平台</h1>
       <div class="login-form">
+        <p class="white">请输入监狱编号, 您的用户名和密码:</p>
         <el-form
           ref="form"
           :model="formData"
@@ -12,19 +13,12 @@
             <el-input
               v-model="formData.prison"
               placeholder="监狱编号">
-              <!-- login -->
-              <span
-                class="prepend"
-                slot="prepend">监狱编号</span>
             </el-input>
           </el-form-item>
           <el-form-item prop="username">
             <el-input
               v-model="formData.username"
               placeholder="用户名">
-              <span
-                class="prepend"
-                slot="prepend">用户名</span>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -32,9 +26,6 @@
               type="password"
               v-model="formData.password"
               placeholder="密码">
-              <span
-                class="prepend"
-                slot="prepend">密码</span>
             </el-input>
           </el-form-item>
           <el-form-item>
@@ -74,7 +65,13 @@ export default {
   },
   mounted() {
     if (localStorage.getItem('user')) {
-      this.$router.replace('/dashboard')
+      if (this.$route.query.redirect) {
+        this.$router.replace(this.$route.query.redirect)
+      }
+      else {
+        this.$router.replace('/dashboard')
+      }
+      return
     }
     this.getCookie().then(res => {
       if (res && res.password) {
@@ -101,7 +98,8 @@ export default {
             }
             if (this.isRember) this.setCookie(params)
             else this.removeCookie(params)
-            this.$router.replace('/dashboard')
+            if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
+            else this.$router.replace('/dashboard')
           })
         }
       })
