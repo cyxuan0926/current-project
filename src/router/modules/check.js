@@ -1,4 +1,4 @@
-import frame from '@/views/common/the-frame'
+import frame from '@/views/layout/the-frame'
 
 let check = [{
   path: '/registration',

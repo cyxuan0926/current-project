@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
   if (!to.meta.notLogin) {
     let isLogin = localStorage.getItem('user')
     if (!isLogin) {
-      next({ path: '/new-login', replace: true, query: { redirect: to.fullPath } })
+      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
     }
   }
   let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
