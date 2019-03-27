@@ -43,6 +43,7 @@ const codes = {
   403: {
     next: params => {
       tips(typeof params === 'string' ? params : '权限不足，请重新登录')
+      router.replace({ path: '/dashboard' })
     }
   },
   404: {
