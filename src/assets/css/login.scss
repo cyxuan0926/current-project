@@ -1,0 +1,40 @@
+.center{
+  background: url('../../assets/images/bg-login.jpg') 0 60% no-repeat;
+  background-size: cover;
+  min-height: 100%;
+}
+.login-container{
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  width: 50%;
+  min-width: 340px;
+  max-width: 640px;
+  overflow: hidden;
+  margin: 20px;
+  h1{
+    background: rgba(0, 0, 0, 0.05);
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 36px;
+  }
+  .login-form{
+    width: 75%;
+    margin: auto;
+    padding: 20px 0;
+    &>.white{
+      margin-bottom: 10px;
+    }
+  }
+  .white{
+    color: #ffffff;
+  }
+  .prepend{
+    width: 56px;
+    display: block;
+    text-align: center;
+  }
+  .width100{
+    vertical-align: top;
+  }
+}

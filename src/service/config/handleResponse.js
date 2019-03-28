@@ -27,17 +27,23 @@ const codes = {
       }
     }
   },
+  400: {
+    next: params => {
+      tips('请求无效')
+    }
+  },
   401: {
     next: params => {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
-      tips('身份验证失败，请重新登录')
-      router.push({ path: '/new-login' })
+      tips(params.msg || '身份验证失败，请重新登录')
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   403: {
     next: params => {
       tips(typeof params === 'string' ? params : '权限不足，请重新登录')
+      router.replace({ path: '/dashboard' })
     }
   },
   404: {
@@ -85,7 +91,7 @@ const codes = {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
       tips(params.msg || '登录超时')
-      router.push({ path: '/new-login' })
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   99998: {
@@ -123,6 +129,9 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
+  if (params.config.url.indexOf('/feedbacks/download') > -1) {
+    if (params.status === 200 && !params.data.code) return params
+  }
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
     tips(params.data ? params.data.msg : handleErrorMessage(params.message))

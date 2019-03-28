@@ -1,8 +1,6 @@
 <template>
-  <el-col
-    :span="24"
-    class="filter-box">
-    <div class="pagination-box">
+  <div class="filter-container">
+    <div class="filter-left">
       <el-select
         v-model="pageSize"
         placeholder="请选择"
@@ -32,16 +30,17 @@
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
           :filterable="item.filterable">
-          <el-option
-            v-for="option in item.options"
-            v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
-            :key="item.belong ? option[item.belong.value] : option.value"
-            :label="item.belong ? option[item.belong.label] : option.label"
-            :value="item.belong ? option[item.belong.value] : option.value" />
+          <template v-for="option in item.options">
+            <el-option
+              v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
+              :key="item.belong ? option[item.belong.value] : option.value"
+              :label="item.belong ? option[item.belong.label] : option.label"
+              :value="item.belong ? option[item.belong.value] : option.value" />
+          </template>
         </el-select>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'datetime'"
+          v-if="item.type === 'datetime' && !item.miss"
           v-model="item.value"
           type="datetime"
           :placeholder="item.label"
@@ -56,7 +55,7 @@
           :placeholder="item.label"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'month'"
+          v-if="item.type === 'month' && !item.miss"
           v-model="item.value"
           type="month"
           :clearable="!item.canNotClear"
@@ -66,17 +65,17 @@
           :placeholder="item.label"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'datetimerange'"
+          v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           format="yyyy-MM-dd HH:mm:ss"
-          value-format="yyyy-MM-dd HH:mm:ss"
+          :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
           :default-time="['00:00:00', '23:59:59']"/>
         <el-date-picker
           :key="index"
-          v-if="item.type === 'daterange'"
+          v-if="item.type === 'daterange' && !item.miss"
           v-model="item.value"
           unlink-panels
           type="daterange"
@@ -84,12 +83,34 @@
           end-placeholder="结束时间"
           format="yyyy-MM"
           value-format="yyyy-MM"/>
+        <el-date-picker
+          :key="index"
+          v-if="item.type === 'dateRange' && !item.miss"
+          v-model="item.value"
+          type="daterange"
+          :unlink-panels="item.unlinkPanels"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"/>
         <m-month-range-picker
           :key="index"
-          v-if="item.type=== 'monthrange'"
+          v-if="item.type=== 'monthrange' && !item.miss"
           class="monthrange"
           :start-date-value.sync="startValue"
           :end-date-value.sync="endValue" />
+        <m-month-range-selector
+          :key="index"
+          v-if="item.type=== 'monthRangeSelector' && !item.miss"
+          class="monthRangeSelector"
+          :prop="index"
+          :clear="!item.canNotClear"
+          :range="item.range"
+          :start-key="item.startKey"
+          :end-key="item.endKey"
+          :start-value="item.startValue"
+          :end-value="item.endValue"
+          @onEnsure="onEnsure" />
       </template>
       <template>
         <el-button
@@ -99,9 +120,10 @@
           v-else
           icon="el-icon-search"
           @click="onSearch" />
+        <slot name="append" />
       </template>
     </div>
-  </el-col>
+  </div>
 </template>
 
 <script>
@@ -155,16 +177,21 @@ export default {
     sizeChange(e) {
       this.$emit('sizeChange', this.pageSize)
     },
-    onSearch() {
+    onSearch(e) {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
+          if (this.items[key].miss) return
+          if (this.items[key].type === 'monthRangeSelector') {
+            params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+            params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
+          }
           if (this.items[key].type === 'monthrange') {
             params[this.items[key].start] = this.startValue
             params[this.items[key].end] = this.endValue
           }
           if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-          if (this.items[key].type === 'datetimerange' || this.items[key].type === 'daterange') {
+          if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
             params[this.items[key].start] = this.items[key].value[0]
             params[this.items[key].end] = this.items[key].value[1]
           }
@@ -174,48 +201,72 @@ export default {
         })
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
-      this.$emit('search')
+      if (e !== 'tabs') this.$emit('search')
+    },
+    onEnsure(e) {
+      let prop = e.prop
+      Object.keys(e).forEach(key => {
+        if (key === 'prop') return
+        this.items[prop][key] = e[key]
+      })
     }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus">
-.filter-box
+<style lang="scss" scoped>
+.filter-container{
+  line-height: 40px;
+  width: 100%;
   overflow: hidden;
-  margin-bottom: 10px;
-.pagination-box
-  width: 200px;
-  float: left;
-  margin-bottom: 10px;
-  z-index: 10;
-  .el-select .el-input
-    width: 154px;
-.filter-right
-  float: right;
-  z-index: 10;
-  width: calc(100% - 200px);
-  min-width: 128px;
-  display: flex;
-  justify-content flex-end;
-  align-items: center;
-  flex-wrap: wrap;
-  & > *:not(.el-button)
-    margin-left: 20px;
+  .filter-left{
+    width: 170px;
+    float: left;
+    z-index: 10;
     margin-bottom: 10px;
-    min-width: 120px;
-    max-width: 190px;
-    width: 20%;
-  .el-button
-    margin-left: 20px;
-    margin-bottom: 10px;
-    flex-shrink: 0;
+    div:first-child{
+      float: left;
+      width: 120px;
+      margin-right: 5px;
+    }
+  }
+  .filter-right{
+    width: calc(100% - 170px);
+    min-width: 128px;
+    float: right;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    &>*:not(button){
+      // float: left;
+      width: 20%;
+      max-width: 200px;
+      min-width: 100px;
+      margin-left: 10px;
+      margin-bottom: 10px;
+    }
+    button{
+      height: 40px;
+      margin-left: 10px;
+    }
+  }
+}
+</style>
+<style type="text/stylus" lang="stylus">
+.filter-container .filter-right
+  .monthRangeSelector
+    min-width: 170px;
+    .el-date-editor--daterange.el-popover__reference
+      width: 100%;
+      padding-left: 9px;
+      padding-right: 9px;
   .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
     width: 320px;
     max-width: 320px;
   .monthrange
-    width 230px
-    max-width  230px
-  .el-date-editor.el-input, .el-date-editor.el-input__inner
-    max-width:  230px
+    width: 230px;
+    max-width: 230px;
+  &>.el-date-editor.el-input, &>.el-date-editor.el-input__inner
+      max-width: 230px;
+      min-width: 230px;
 </style>

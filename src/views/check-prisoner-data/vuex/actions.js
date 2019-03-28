@@ -1,4 +1,5 @@
 import http from '@/service'
+import api from './service'
 
 export default {
   // 罪犯数据模板上传成功后将罪犯数据模板导入到服务端
@@ -6,6 +7,21 @@ export default {
     return http.importPrisoner(params).then(res => {
       if (!res) return
       commit('importPrisoner', res)
+      return true
+    })
+  },
+  // 罪犯数据导入-验证
+  validatePrisoner: ({ commit }, params) => {
+    return api.validate(params).then(res => {
+      if (!res) return
+      commit('validatePrisoner', res)
+      return true
+    })
+  },
+  validatePrisonerYZK: ({ commit }, params) => {
+    return api.validateYZK(params).then(res => {
+      if (!res) return
+      commit('validatePrisoner', res)
       return true
     })
   },
@@ -33,10 +49,11 @@ export default {
       return true
     })
   },
-  uploadPocketMoneyExcel: ({ commit }, params) => {
+  uploadAnalyticExcel: ({ commit }, params) => {
     let formData = new FormData()
-    params && formData.append('file', params)
-    return http.uploadPocketMoneyExcel(formData).then(res => {
+    params && formData.append('file', params.values)
+    params.values = formData
+    return http.uploadAnalyticExcel(params).then(res => {
       if (!res) return
       if (res.error_arrays && res.error_arrays.length) {
         res.error_arrays.forEach(error => {
@@ -48,17 +65,16 @@ export default {
               error.err = `${ error.err }</br>${ index + 1 }. ${ msg }`
             })
           }
-          console.log(error.err)
         })
       }
-      commit('uploadPocketMoneyExcel', res)
+      commit('uploadAnalyticExcel', res)
       return true
     })
   },
-  importPocketMoney: ({ commit }, params) => {
-    return http.importPocketMoney(params).then(res => {
+  importSuccessfulAnalysisExcel: ({ commit }, params) => {
+    return http.importSuccessfulAnalysisExcel(params).then(res => {
       if (!res) return
-      commit('importPocketMoney', res)
+      commit('importSuccessfulAnalysisExcel', res)
       return true
     })
   }

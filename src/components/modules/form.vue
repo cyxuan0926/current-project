@@ -43,10 +43,11 @@
           :loading="button.update && button.update.loading"
           @click="onSubmit">更新</el-button>
         <el-button
-          v-if="button === 'add'"
+          v-if="button === 'add' || button.add"
           :key="index"
           size="small"
           type="primary"
+          :loading="button.add && button.add.loading"
           @click="onSubmit">新增</el-button>
         <el-button
           v-if="button === 'back'"
@@ -80,12 +81,6 @@ export default {
     values: {
       handler: function(val) {
         this.fields = Object.assign({}, this.fields, val)
-      },
-      deep: true
-    },
-    items: {
-      handler: val => {
-        // console.log('222222222', val)
       },
       deep: true
     }

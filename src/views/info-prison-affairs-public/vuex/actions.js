@@ -3,21 +3,19 @@ import http from '@/service'
 export default {
   // 获取狱务公开信息
   getNewsList: ({ commit }, params) => {
-    http.getNewsList(params).then(res => res && commit('getNewsList', res))
+    return http.getNewsList(params).then(res => {
+      if (!res) return false
+      if (res.news && res.news.length) {
+        res.news.forEach(news => { news.ellipsis = false })
+      }
+      commit('getNewsList', Object.assign({}, res))
+      return true
+    })
   },
   getNewsDetail: ({ commit }, params) => {
     return http.getNewsDetail(params).then(res => {
       if (!res || res.code !== 200) return
       commit('getNewsDetail', res)
-      let images = res.data.imageUrl ? [res.data.imageUrl] : []
-      if (res.data.contents.match(/<img.*? \/>/g)) {
-        res.data.contents.match(/<img.*? \/>/g).forEach(ele => {
-          let a = document.createElement('div')
-          a.innerHTML = ele
-          if (images.indexOf(a.lastElementChild.src.split('?token=')[0]) < 0) images.push(a.lastElementChild.src.split('?token=')[0])
-        })
-        localStorage.setItem('images', JSON.stringify(images))
-      }
       return true
     })
   },
@@ -25,7 +23,11 @@ export default {
   editNews({ commit, dispatch }, params) {
     return http.editNews(params).then(res => {
       if (res.code !== 200) return
-      dispatch('handleDeleteImage', [params.imageUrl, params.contents])
+      let excpt = []
+      params.imageUrl && excpt.push(params.imageUrl)
+      params.audioPath && excpt.push(params.audioPath)
+      params.videoPath && excpt.push(params.videoPath)
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.contents })
       return true
     })
   },
@@ -33,7 +35,11 @@ export default {
   addNews({ commit, dispatch }, params) {
     return http.addNews(params).then(res => {
       if (res.code !== 200) return
-      dispatch('handleDeleteImage', [params.imageUrl, params.contents])
+      let excpt = []
+      params.imageUrl && excpt.push(params.imageUrl)
+      params.audioPath && excpt.push(params.audioPath)
+      params.videoPath && excpt.push(params.videoPath)
+      dispatch('deleteUrls', { urls: [params.imageUrl, params.audioPath, params.videoPath], contents: params.contents })
       return true
     })
   },

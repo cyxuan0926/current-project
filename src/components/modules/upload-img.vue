@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     value: {
@@ -96,7 +97,6 @@ export default {
     return {
       imageUrl: '',
       dialogVisible: false,
-      changed: false,
       headers: {
         Authorization: this.$urls.token
       },
@@ -114,24 +114,16 @@ export default {
       return files
     }
   },
-  watch: {
-    fileList(val) {
-      if (!this.changed && val.length) {
-        val.forEach(file => {
-          this.setImageLocalstorage('images', file.url)
-        })
-        this.changed = true
-      }
-    }
-  },
   methods: {
+    ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
           this.$message.success('图片上传成功')
           this.$emit('success', res.url)
-          this.setImageLocalstorage('images', res.url)
-          this.setImageLocalstorage('newImages', res.url)
+          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          this.setUrlStorage({ urls: [...urls, res.url] })
+          this.setNewUrlStorage({ urls: [res.url] })
           break
         default:
           this.$message.error(`上传图片失败:${ res.message }`)
@@ -188,11 +180,6 @@ export default {
     handleDelete() {
       this.$refs.uploadImage.clearFiles()
       this.handleRemove('', [])
-    },
-    setImageLocalstorage(key, value) {
-      let storage = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : []
-      if (storage.indexOf(value) < 0) storage.push(value)
-      localStorage.setItem(key, JSON.stringify(storage))
     }
   }
 }

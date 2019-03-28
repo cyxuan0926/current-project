@@ -44,7 +44,8 @@ export default {
   watch: {
     value(val) {
       if (!this.hasChange && this.hasInit) {
-        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(val))
+        let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = val.replace(pattern, `src="${ this.$urls.imageUrl }`)
+        this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(c))
       }
     }
   },
@@ -55,9 +56,12 @@ export default {
       menubar: '',
       height: 300,
       resize: false,
+      // powerpaste_word_import: 'clean',
+      // powerpaste_html_import: 'clean',
+      paste_as_text: true,
       branding: false,
       content_style: 'blockquote{padding: 10px 20px; margin: 0 0 20px; font-size: initial; border-left: 5px solid #eee;} p{ margin: 0; line-height: 1.42857143; }.mce-panel{ box-sizing: border-box; }',
-      plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table',
+      plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table paste',
       toolbar: 'bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | outdent indent table | alignleft aligncenter alignright alignjustify alignnone | link imageUpload charmap emoticons insertdatetime | removeformat searchreplace undo redo | preview',
       // toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo | preview',
       init_instance_callback: editor => { //  media
@@ -102,7 +106,7 @@ export default {
   methods: {
     onImageSuccess(e) {
       if (!e) return
-      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }?token=${ this.$refs.uploadImage.headers.Authorization }' style="max-width: 100%;">`)
+      window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
     onVideoSuccess(e) {
       if (!e) return

@@ -7,7 +7,10 @@ let state = {
   prisonTermResult: {}, // 刑期变动模板导入结果
   prisonerRewardPunishmentResult: {}, // 罪犯奖惩模板导入结果
   uploadPocketMoneyExcelResult: {},
-  importPocketMoneyResult: {}
+  importPocketMoneyResult: {},
+  validatePrisonerResult: {},
+  uploadInsideJailsCostsExcelResult: {},
+  importInsideJailsCostsResult: {}
 }
 
 export default {

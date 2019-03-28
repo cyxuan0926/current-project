@@ -44,17 +44,9 @@ export default {
     if ((this.permission === 'edit' && this.$route.query.tag === 'prisonBase') || (this.permission === 'edit' && !this.$route.query.tag)) {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
+        this.setUrlStorage({ urls: [this.prison.imageUrl, this.prison.audioPath, this.prison.videoPath], contents: this.prison.description })
         this.values = this.prison
         this.onProvinceChange(this.prison.provincesId, 'init')
-        let images = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : []
-        if (this.prison.description.match(/<img.*? \/>|<source.*? \/>/g)) {
-          this.prison.description.match(/<img.*? \/>|<source.*? \/>/g).forEach(ele => {
-            let a = document.createElement('div')
-            a.innerHTML = ele
-            if (images.indexOf(decodeURI(a.lastElementChild.src.split('?token=')[0])) < 0) images.push(decodeURI(a.lastElementChild.src.split('?token=')[0]))
-          })
-          localStorage.setItem('images', JSON.stringify(images))
-        }
       })
     }
     this.show = true
@@ -65,10 +57,10 @@ export default {
     }
   },
   destroyed() {
-    if (localStorage.getItem('images') || localStorage.getItem('oldImages')) this.deleteUnusedImage()
+    this.removeUrlStorage()
   },
   methods: {
-    ...mapActions(['getCities', 'getPrisonDetail', 'updatePrison', 'deleteUnusedImage']),
+    ...mapActions(['getCities', 'getPrisonDetail', 'updatePrison', 'removeUrlStorage', 'setUrlStorage']),
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')

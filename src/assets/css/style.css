@@ -1,11 +1,11 @@
 
 body {
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    font-weight: 300;
-    color: #888;
-    line-height: 30px;
-    text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  color: #888;
+  line-height: 30px;
+  text-align: center;
 }
 
 strong { font-weight: 500; }
@@ -13,22 +13,22 @@ strong { font-weight: 500; }
 a, a:hover, a:focus {
 	color: #de615e;
 	text-decoration: none;
-    -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
+  -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
 }
 
 h1, h2 {
 	margin-top: 10px;
 	font-size: 38px;
-    font-weight: bold;
-    color: #fff;
-    line-height: 50px;
+  font-weight: bold;
+  color: #fff;
+  line-height: 50px;
 }
 
 h3 {
 	font-size: 22px;
-    font-weight: 300;
-    color: #555;
-    line-height: 30px;
+  font-weight: 300;
+  color: #555;
+  line-height: 30px;
 }
 
 img { max-width: 100%; }
@@ -44,10 +44,10 @@ img { max-width: 100%; }
 	padding: 16px 20px 0 20px;
 	background: #de615e;
 	font-size: 16px;
-    font-weight: 300;
-    line-height: 16px;
-    color: #fff;
-    -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
+  font-weight: 300;
+  line-height: 16px;
+  color: #fff;
+  -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 .btn-link-1:hover, .btn-link-1:focus, .btn-link-1:active { outline: 0; opacity: 0.6; color: #fff; }
 
@@ -70,10 +70,10 @@ img { max-width: 100%; }
 	background: rgba(0, 0, 0, 0.3);
 	border: 1px solid #fff;
 	font-size: 16px;
-    font-weight: 300;
-    line-height: 16px;
-    color: #fff;
-    -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
+  font-weight: 300;
+  line-height: 16px;
+  color: #fff;
+  -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 .btn-link-2:hover, .btn-link-2:focus, 
 .btn-link-2:active, .btn-link-2:active:focus { outline: 0; opacity: 0.6; background: rgba(0, 0, 0, 0.3); color: #fff; }
@@ -83,11 +83,11 @@ img { max-width: 100%; }
 
 .inner-bg {
 	position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-	background: url(../../assets/images/backgrounds/ywgk-background.jpg) 0 60% no-repeat;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+	background: url(../../assets/images/bg-login.jpg) 0 60% no-repeat;
 	background-size: cover;
 }
 

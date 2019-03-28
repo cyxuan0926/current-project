@@ -1,4 +1,4 @@
-import frame from '@/views/common/the-frame'
+import frame from '@/views/layout/the-frame'
 
 let check = [{
   path: '/registration',
@@ -17,6 +17,21 @@ let check = [{
     path: '/meeting/list',
     name: '会见申请列表',
     component: resolve => require(['@/views/check-meeting/meeting-list'], resolve)
+    // beforeRouteEnter(to, from, next) {
+    //   console.log(1)
+    //   console.log(to, from)
+    //   next()
+    // },
+    // beforeRouteUpdate(to, from, next) {
+    //   console.log(2)
+    //   console.log(to, from)
+    //   next()
+    // },
+    // beforeRouteLeave(to, from, next) {
+    //   console.log(3)
+    //   console.log(to, from)
+    //   next()
+    // }
   }, {
     path: '/meeting/adjust',
     name: '会见申请调整',
@@ -29,17 +44,15 @@ let check = [{
   }]
 }, {
   path: '/meeting-report',
-  name: '会见统计',
+  name: '会见统计1',
   meta: { hidden: true },
   children: [{
     path: '/meeting-report/prison',
-    name: '监狱统计',
-    props: { role: '1' },
+    name: '监狱统计1',
     component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
   }, {
     path: '/meeting-report/prison-area',
-    name: '监区统计',
-    props: { role: '1' },
+    name: '监区统计1',
     component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
   }]
 }, {
@@ -58,11 +71,7 @@ let check = [{
   children: [{
     path: '/mailbox/list',
     name: '信件列表',
-    component: resolve => require(['@/views/check-mailbox/mailbox-list'], resolve)
-  }, {
-    path: '/mailbox/detail/:id',
-    name: '信件详情',
-    component: resolve => require(['@/views/check-mailbox/mailbox-detail'], resolve)
+    component: resolve => require(['@/views/check-mailbox/list'], resolve)
   }]
 }, {
   path: '/prisoner',
@@ -107,6 +116,10 @@ let check = [{
     path: '/prisoner-data/pocket-money',
     name: '零花钱数据导入',
     component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve)
+  }, {
+    path: '/prisoner-data/inside-jails-costs',
+    name: '狱内消费情况数据导入',
+    component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve)
   }]
 }, {
   path: '/prisoner-pocket-money',
@@ -117,10 +130,19 @@ let check = [{
     name: '服刑人员零花钱列表',
     component: resolve => require(['@/views/check-prisoner-pocket-money/prisoner-pocket-money-list'], resolve)
   }]
+}, {
+  path: '/prisoner-inside-jails-costs',
+  name: '服刑人员狱内消费情况',
+  meta: { hidden: true },
+  children: [{
+    path: '/prisoner-inside-jails-costs/list',
+    name: '服刑人员狱内消费情况列表',
+    component: resolve => require(['@/views/check-prisoner-inside-jails-costs/prisoner-inside-jails-costs-list'], resolve)
+  }]
 }]
 
 check.forEach(item => {
-  item.component = frame
+  if (!item.component) item.component = frame
 })
 
 export default check

@@ -1,12 +1,13 @@
 export default {
   // 罪犯数据模板上传成功后将罪犯数据模板导入到服务端
   importPrisoner: (state, prisonerDataResult) => {
-    // console.log(prisonerDataResult)
     state.prisonerDataResult = prisonerDataResult
+  },
+  validatePrisoner: (state, params) => {
+    state.validatePrisonerResult = params
   },
   // 狱政科罪犯数据模板上传成功后将罪犯数据模板导入到服务端
   importPrisonerYZK: (state, params) => {
-    // console.log(params)
     state.prisonerYZKDataResult = params
   },
   // 刑期变动模板上传成功后将刑期变动模板导入到服务端
@@ -31,10 +32,30 @@ export default {
   importPrisonerRewardPunishment: (state, prisonerRewardPunishmentResult) => {
     state.prisonerRewardPunishmentResult = prisonerRewardPunishmentResult
   },
-  uploadPocketMoneyExcel: (state, params) => {
-    state.uploadPocketMoneyExcelResult = params
+  uploadAnalyticExcel: (state, params) => {
+    switch (params.type) {
+      case 0:
+        state.uploadPocketMoneyExcelResult = params
+        break
+      case 1:
+        state.uploadInsideJailsCostsExcelResult = params
+        break
+      default:
+        state.uploadPocketMoneyExcelResult = {}
+        state.uploadInsideJailsCostsExcelResult = {}
+    }
   },
-  importPocketMoney: (state, params) => {
-    state.importPocketMoneyResult = params
+  importSuccessfulAnalysisExcel: (state, params) => {
+    switch (params.type) {
+      case 0:
+        state.importPocketMoneyResult = params
+        break
+      case 1:
+        state.importInsideJailsCostsResult = params
+        break
+      default:
+        state.importPocketMoneyResult = {}
+        state.importInsideJailsCostsResult = {}
+    }
   }
 }

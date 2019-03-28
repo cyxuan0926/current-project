@@ -70,30 +70,37 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
+const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
 export default {
   data() {
     return {
       tabNum: 'first',
       filterInit: { // 默认查询上一个月的，筛选框初始化
-        reportDate: Moment().subtract(1, 'months').format('YYYY-MM')
+        startDate: startDate,
+        endDate: endDate
       },
       searchItems: {
-        reportDate: {
-          value: Moment().subtract(1, 'months').format('YYYY-MM'),
-          type: 'month',
-          label: '统计月份',
+        reportRange: {
+          type: 'monthRangeSelector',
           canNotClear: true,
-          pickerOptions: {
-            disabledDate(time) {
-              return Moment(time).format('YYYY-MM') > Moment().subtract(1, 'months').format('YYYY-MM')
-            }
+          startValue: startDate,
+          endValue: endDate,
+          startKey: 'startDate',
+          endKey: 'endDate',
+          range: {
+            max: Moment().subtract(1, 'months').format('YYYY-MM'),
+            maxMonthRange: 24
           }
         }
       }
     }
   },
   computed: {
-    ...mapState(['prisonReportList', 'user'])
+    ...mapState({
+      prisonReportList: state => state.prisonReportList,
+      user: state => state.global.user
+    })
   },
   mounted() {
     this.getDatas()

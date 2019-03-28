@@ -9,7 +9,7 @@ export default {
   },
   addAdvertisement: ({ commit, dispatch }, params) => {
     return http.addAdvertisement(params).then(res => {
-      dispatch('handleDeleteImage', [params.imageUrl])
+      dispatch('deleteUrls', { urls: [params.imageUrl] })
       return res
     })
   },
@@ -23,16 +23,12 @@ export default {
     return http.getAdvertisementDetail(params).then(res => {
       if (!res) return
       commit('getAdvertisementDetail', res)
-      if (res.imageUrl) {
-        let images = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : []
-        if (images.indexOf(res.imageUrl) < 0) images.push(res.imageUrl)
-        localStorage.setItem('images', JSON.stringify(images))
-      }
       return true
     })
   },
   updateAdvertisement: ({ commit, dispatch }, params) => {
     return http.updateAdvertisement(params).then(res => {
+      dispatch('deleteUrls', { urls: [params.imageUrl] })
       return res
     })
   }

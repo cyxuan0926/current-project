@@ -2,7 +2,9 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
-  prisonVisitConfigDetail: { usual: [null] },
+  normalConfig: [{ days: [], config: [] }], // new
+  specialConfig: [], // new
+  prisonVisitConfigDetail: { queue: [null] }, // new
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },
   originSpecial: { effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false },

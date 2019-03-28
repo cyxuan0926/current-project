@@ -1,4 +1,4 @@
-import frame from '@/views/common/the-frame'
+import frame from '@/views/layout/the-frame'
 
 let superAdmin = [{
   path: '/prison',
@@ -11,23 +11,30 @@ let superAdmin = [{
   }, {
     path: '/prison/add',
     name: '新增监狱',
+    meta: { role: '0', permission: 'add' },
     component: resolve => require(['@/views/sadmin-prison/prison-add'], resolve)
   }, {
     path: '/prison/visit/:id',
     name: '监狱实地会见配置',
     meta: { role: '0' },
     component: resolve => require(['@/views/meeting/visit-config'], resolve)
+  // }, {
+  //   path: '/prison/meeting-remote/:id',
+  //   name: '监狱远程会见配置',
+  //   meta: { role: '0' },
+  //   component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
   }, {
-    path: '/prison/meeting-remote/:id',
+    path: '/remote/edit/:id',
     name: '监狱远程会见配置',
-    meta: { role: '0' },
-    component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
+    meta: { role: '0', permission: 'edit' },
+    component: resolve => require(['@/views/meeting/remote-edit'], resolve)
   }, {
     path: '/prison/edit/:id',
     name: '编辑监狱',
     meta: {
       permission: 'edit',
-      role: '0'
+      role: '0',
+      deep: true
     },
     component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }]
@@ -85,6 +92,36 @@ let superAdmin = [{
     path: '/family-remittance/list',
     name: '家属汇款',
     component: resolve => require(['@/views/sadmin-remittance-record/family-remittance-list'], resolve)
+  }]
+}, {
+  path: '/',
+  meta: { hidden: true },
+  children: [{
+    path: '/trade',
+    name: '交易流水记录',
+    component: resolve => require(['@/views/trade/list-router'], resolve),
+    children: [
+      {
+        path: '/trade/account',
+        name: '账户明细',
+        component: resolve => require(['@/views/trade/account'], resolve)
+      },
+      {
+        path: '/trade/recharge',
+        name: '充值明细',
+        component: resolve => require(['@/views/trade/recharge'], resolve)
+      },
+      {
+        path: '/trade/consumption',
+        name: '消费明细',
+        component: resolve => require(['@/views/trade/consumption'], resolve)
+      },
+      {
+        path: '/trade/refund',
+        name: '退款明细',
+        component: resolve => require(['@/views/trade/refund'], resolve)
+      }
+    ]
   }]
 },
 {

@@ -4,7 +4,8 @@
     :gutter="0">
     <el-col
       :span="22"
-      :offset="2">
+      :offset="2"
+      style="margin-top: 20px;">
       <el-tabs
         v-model="tabs"
         type="card">
@@ -39,7 +40,7 @@
         </el-col>
       </el-col>
       <el-col
-        :span="6"
+        :span="22"
         :offset="2">
         <el-upload
           class="upload-demo"
@@ -55,9 +56,9 @@
             size="small"
             type="primary">选取文件</el-button>
           <el-button
-            style="margin-left: 10px;"
             size="small"
             type="success"
+            :loading="onProgress"
             @click="submitUpload">上传到服务器</el-button>
           <div
             slot="tip"
@@ -65,7 +66,9 @@
         </el-upload>
       </el-col>
     </el-row>
-    <el-row v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerDataResult.errors">
@@ -116,10 +119,12 @@
         <el-table-column
           label="失败原因"
           show-overflow-tooltip
+          class-name="tips"
           prop="reason" />
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -172,7 +177,9 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-row v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
+    <el-row
+      class="table-box"
+      v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
       <el-table :data="prisonerYZKDataResult.errors">
@@ -222,11 +229,13 @@
           prop="originalSentence" />
         <el-table-column
           label="失败原因"
+          class-name="tips"
           show-overflow-tooltip
           prop="reason" />
       </el-table>
     </el-row>
     <el-row
+      class="table-box"
       v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length"
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
@@ -279,6 +288,65 @@
         </el-table-column>
       </el-table>
     </el-row>
+    <el-dialog
+      :visible.sync="visible"
+      class="authorize-dialog"
+      width="640px">
+      <span
+        slot="title"
+        class="tips-title">提醒注意</span>
+      <div class="tips">上传文件中部分服刑人员监区与原录入系统中的监区不符</div>
+      <div style="text-align: center;">更换监区罪犯的会见申请未审批的将移交至新监区审核，已成功预约会见申请并未会见的视频申请将根据新监区的会见申请排期表重新安排会见时间段，如同日申请会见的排期未有空期则取消当日转移罪犯的会见申请。</div>
+      <el-table
+        :data="validatePrisonerResult.prisoners"
+        size="small"
+        max-height="400"
+        border>
+        <el-table-column
+          prop="prisonerNumber"
+          label="囚号" />
+        <el-table-column
+          prop="name"
+          label="姓名" />
+        <el-table-column
+          prop="crimes"
+          label="犯罪事实" />
+        <el-table-column
+          label="刑期起日">
+          <template slot-scope="scope">
+            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="prisonTermEndedAt"
+          label="刑期止日">
+          <template slot-scope="scope">
+            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="originalPrisonArea"
+          label="原监区" />
+        <el-table-column
+          prop="prisonArea"
+          label="现监区" />
+      </el-table>
+      <div
+        slot="footer"
+        class="button-group"
+        style="padding-bottom: 0;">
+        <el-button
+          type="danger"
+          size="mini"
+          :disabled="loading"
+          @click="visible = false">取消上传</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          :loading="loading"
+          @click="onSubmit">确定上传</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -288,13 +356,16 @@ export default {
   data() {
     return {
       tabs: 'first',
+      loading: false,
       fileList: [],
+      visible: false,
       notify: null,
+      onProgress: false,
       prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
     }
   },
   computed: {
-    ...mapState(['prisonerDataResult', 'uploadResult', 'prisonerYZKDataResult'])
+    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'uploadResult', 'prisonerYZKDataResult'])
   },
   watch: {
     tabs(val) {
@@ -318,29 +389,74 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
+    ...mapActions(['validatePrisonerYZK', 'validatePrisoner', 'importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
     submitUpload() {
       this.$refs.upload.submit()
     },
+    onSubmit() {
+      this.loading = true
+      if (this.tabs === 'first') {
+        this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
+          this.loading = false
+          this.visible = false
+          this.onProgress = false
+          if (!res) return
+          this.alertInformation(this.prisonerDataResult)
+        })
+      }
+      else if (this.tabs === 'second') {
+        this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+          this.loading = false
+          this.visible = false
+          this.onProgress = false
+          if (!res) return
+          this.alertInformation(this.prisonerYZKDataResult)
+        })
+      }
+    },
     beforeUpload(file) {
+      this.onProgress = true
+      if (this.notify) {
+        this.notify.close()
+      }
       if (this.tabs === 'first') {
         this.resetState({ prisonerDataResult: {} })
       }
       else if (this.tabs === 'second') {
         this.resetState({ prisonerYZKDataResult: {} })
       }
+      this.resetState({ validatePrisonerResult: {} })
       this.uploadFile(file).then(res => {
-        if (!res) return
+        if (!res) {
+          this.onProgress = false
+          return
+        }
         if (this.tabs === 'first') {
-          this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
-            this.alertInformation(this.prisonerDataResult)
+          this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
+            if (!res) {
+              this.onProgress = false
+              return
+            }
+            if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+              this.visible = true
+            }
+            else {
+              this.onSubmit()
+            }
           })
         }
         else if (this.tabs === 'second') {
-          this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) return
-            this.alertInformation(this.prisonerYZKDataResult)
+          this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+            if (!res) {
+              this.onProgress = false
+              return
+            }
+            if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+              this.visible = true
+            }
+            else {
+              this.onSubmit()
+            }
           })
         }
       })
@@ -382,12 +498,34 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style lang="scss" scoped>
 .row-container {
   line-height: 40px;
   .red {
     color: #F56C6C;
     font-weight: bold;
   }
+}
+.button-group{
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  clear: both;
+}
+.tips-title{
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+.tips{
+  color: #f56c6c;
+  font-weight: bold;
+  text-align: center;
+  // font-size: 12px;
+}
+.table-box{
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>

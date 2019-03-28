@@ -1,0 +1,125 @@
+@import "./common.scss", "element-ui/lib/theme-chalk/display.css";
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+html, body{
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;;
+}
+ul{
+  list-style: none;
+}
+ul, li, div, p, h1{
+  padding: 0;
+  margin: 0;
+}
+ul, li, div, p, h1, span{
+  box-sizing: border-box;
+}
+img{
+  vertical-align: middle;
+}
+a{
+  text-decoration: none;
+}
+.el-header{
+  padding: 0;
+}
+.el-dropdown{
+  vertical-align: top;
+}
+.el-aside{
+  background: #222d32;
+}
+.el-menu{
+  border-right: 0;
+  .el-menu-item, .el-submenu__title{
+    height: 46px;
+    line-height: 46px;
+  }
+  .el-menu-item.is-active{
+    background: #1D262A !important;
+  }
+  .iconfont{
+    font-size: 22px;
+    font-weight: 500;
+    color: #b8c7ce;
+    margin-left: -6px;
+  }
+  .second-level{
+    &.is-active>.el-submenu__title{
+      background: #1D262A !important;
+      position: relative;
+      &:before{
+        content: '';
+        display: block;
+        height: 100%;
+        width: 3px;
+        background: #3c8dbc;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+    &>.el-menu{
+      border-bottom: 1px solid #444;
+    }
+  }
+}
+.el-breadcrumb{
+  padding: 0 20px;
+  line-height: 40px;
+  height: 40px;
+  word-break: break-all;
+  font-size: 12px;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+  & + .el-main{
+    background: #ffffff;
+    padding: 0;
+    margin: 0 0 10px;
+  }
+}
+.el-footer{
+  padding: 0;
+}
+.login-container{
+  .el-input-group__prepend{
+    padding: 0 10px;
+  }
+  .el-form-item:last-child{
+    margin-bottom: 10px;
+  }
+}
+.main-container{
+  flex-shrink: 0;
+  height: calc(100% - 50px);
+  width: 100%;
+  overflow: hidden;
+  &>.el-container{
+    width: calc(100% - 230px);
+  }
+}
+.ql-snow .ql-color-picker .ql-picker-label svg, .ql-snow .ql-icon-picker .ql-picker-label svg{
+  vertical-align: top;
+}
+.ql-container.ql-snow{
+  min-height: 240px;
+}
+@media only screen and (max-width: 768px){
+  .el-header{
+    height: 100px !important;
+  }
+  .el-aside.collapsed{
+    width: 0 !important;
+    overflow: hidden;
+  }
+  .main-container{
+    height: calc(100% - 100px);
+  }
+  .m-footer{
+    text-align: center;
+  }
+}

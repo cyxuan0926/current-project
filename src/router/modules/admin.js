@@ -1,4 +1,4 @@
-import frame from '@/views/common/the-frame'
+import frame from '@/views/layout/the-frame'
 
 let admin = [{
   path: '/account',
@@ -37,12 +37,10 @@ let admin = [{
   children: [{
     path: '/meeting-report/prison',
     name: '监狱统计',
-    props: { role: '4' },
     component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
   }, {
     path: '/meeting-report/prison-area',
     name: '监区统计',
-    props: { role: '4' },
     component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
   }]
 }]
