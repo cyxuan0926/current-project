@@ -352,6 +352,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import Utils from './utils'
 export default {
   data() {
     return {
@@ -401,7 +402,7 @@ export default {
           this.visible = false
           this.onProgress = false
           if (!res) return
-          this.alertInformation(this.prisonerDataResult)
+          Utils.alertParseResult(this.prisonerDataResult)
         })
       }
       else if (this.tabs === 'second') {
@@ -410,7 +411,7 @@ export default {
           this.visible = false
           this.onProgress = false
           if (!res) return
-          this.alertInformation(this.prisonerYZKDataResult)
+          Utils.alertParseResult(this.prisonerYZKDataResult)
         })
       }
     },
@@ -461,38 +462,6 @@ export default {
         }
       })
       return false
-    },
-    // 解析文件成功后执行的方法
-    alertInformation(information) {
-      if (this.notify) {
-        this.notify.close()
-      }
-      let message = ''
-      if (information.error_total !== 0 && information.success_total === 0) {
-        message = `<div style="line-height: 30px; margin-top: 10px;">
-                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ information.errors.length }条
-                    <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
-                  </div>`
-      }
-      if (information.error_total !== 0 && information.success_total !== 0) {
-        message = `<div style="line-height: 30px; margin-top: 10px;">
-                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ information.errors.length }条
-                    <p style="padding-left: 30px">原因：数据内容格式有误，请检查导入失败记录，仔细对照下载的模版数据。</p>
-                  </div>`
-      }
-      if (information.success_total !== 0) {
-        message += `<div style="line-height: 30px; margin-top: 10px;">
-                      <i class="el-icon-success green" style="font-size: 20px; margin-right: 10px;"></i>成功：${ information.success_total }条
-                      <p style="padding-left: 30px">其中：新增${ information.add_total }条&nbsp;&nbsp;&nbsp;修改${ information.update_total }条</p>
-                    </div>`
-      }
-      this.notify = this.$notify({
-        title: '解析结果提示',
-        dangerouslyUseHTMLString: true,
-        message: message,
-        duration: 0,
-        offset: 100
-      })
     }
   }
 }

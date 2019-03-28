@@ -67,9 +67,10 @@ export default {
         this.hidden = false
       }
     }
-  }
+  },
   // watch: {
   //   '$route' (to, from) {
+  //     console.log(to, from)
   //     let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
   //     if (to.meta.hidden || (routes && routes.indexOf(to.matched[to.matched.length - 1].path) < 0)) this.$router.replace({ path: '/dashboard'})
   //   }
