@@ -71,7 +71,7 @@
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           format="yyyy-MM-dd HH:mm:ss"
-          value-format="yyyy-MM-dd HH:mm:ss"
+          :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
           :default-time="['00:00:00', '23:59:59']"/>
         <el-date-picker
           :key="index"
@@ -88,6 +88,7 @@
           v-if="item.type === 'dateRange' && !item.miss"
           v-model="item.value"
           type="daterange"
+          :unlink-panels="item.unlinkPanels"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           format="yyyy-MM-dd"

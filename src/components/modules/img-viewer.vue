@@ -24,7 +24,7 @@ export default {
         title: false,
         navbar: false,
         url: `${ this.url }?token=${ this.$urls.token }`
-      })
+      });
     }
   }
 }

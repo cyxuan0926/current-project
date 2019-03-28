@@ -30,10 +30,11 @@ import meeting from '@/views/meeting/vuex'
 import meetingReport from '@/views/meeting-report/vuex'
 import noPage from './modules/no-page'
 import websocket from './modules/websocket'
-import layout from '@/views/common/vuex-and-service'
+import layout from '@/views/layout/vuex-and-service'
 import login from '@/views/login/vuex-and-service'
 import trade from '@/views/trade/vuex-and-service'
 import global from './modules/global'
+import checkPrisonerInsideJailsCosts from '@/views/check-prisoner-inside-jails-costs/vuex'
 
 import filter from './modules/filter'
 
@@ -80,7 +81,8 @@ merge(
   checkRegistration,
   checkVisit,
   noPage,
-  websocket
+  websocket,
+  checkPrisonerInsideJailsCosts
 )
 export default new Vuex.Store({
   actions,

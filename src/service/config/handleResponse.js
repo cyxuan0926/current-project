@@ -37,12 +37,13 @@ const codes = {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
       tips(params.msg || '身份验证失败，请重新登录')
-      router.push({ path: '/new-login', query: { redirect: router.currentRoute.fullPath } })
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   403: {
     next: params => {
       tips(typeof params === 'string' ? params : '权限不足，请重新登录')
+      router.replace({ path: '/dashboard' })
     }
   },
   404: {
@@ -90,7 +91,7 @@ const codes = {
       localStorage.removeItem('user')
       localStorage.removeItem('routes')
       tips(params.msg || '登录超时')
-      router.push({ path: '/new-login', query: { redirect: router.currentRoute.fullPath } })
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   99998: {

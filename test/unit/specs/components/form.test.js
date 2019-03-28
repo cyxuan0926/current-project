@@ -52,7 +52,7 @@ describe('components-form', () => {
     setTimeout(() => {
       expect(wrapper.vm.$route.path).toBe('/aaa')
       done()
-    }, 10)
+    }, 100)
   })
 
   it('methods-onSubmit', (done) => {

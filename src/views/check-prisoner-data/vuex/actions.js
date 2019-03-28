@@ -49,10 +49,11 @@ export default {
       return true
     })
   },
-  uploadPocketMoneyExcel: ({ commit }, params) => {
+  uploadAnalyticExcel: ({ commit }, params) => {
     let formData = new FormData()
-    params && formData.append('file', params)
-    return http.uploadPocketMoneyExcel(formData).then(res => {
+    params && formData.append('file', params.values)
+    params.values = formData
+    return http.uploadAnalyticExcel(params).then(res => {
       if (!res) return
       if (res.error_arrays && res.error_arrays.length) {
         res.error_arrays.forEach(error => {
@@ -66,14 +67,14 @@ export default {
           }
         })
       }
-      commit('uploadPocketMoneyExcel', res)
+      commit('uploadAnalyticExcel', res)
       return true
     })
   },
-  importPocketMoney: ({ commit }, params) => {
-    return http.importPocketMoney(params).then(res => {
+  importSuccessfulAnalysisExcel: ({ commit }, params) => {
+    return http.importSuccessfulAnalysisExcel(params).then(res => {
       if (!res) return
-      commit('importPocketMoney', res)
+      commit('importSuccessfulAnalysisExcel', res)
       return true
     })
   }
