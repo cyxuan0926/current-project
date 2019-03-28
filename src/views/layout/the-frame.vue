@@ -67,7 +67,7 @@ export default {
         this.hidden = false
       }
     }
-  },
+  }
   // watch: {
   //   '$route' (to, from) {
   //     let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
