@@ -129,16 +129,16 @@ export default {
   importPrisonerRewardPunishment: params => {
     return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
   },
-  // 数据管理-零花钱数据导入-上传并解析
-  uploadPocketMoneyExcel: params => {
-    return service.postFile('/pocket_money/examine', params).then(res => res && res.data)
-  },
-  // 数据管理-零花钱数据导入-导入解析成功的数据
-  importPocketMoney: params => {
-    return service.post('/pocket_money/upload', params).then(res => res && res.data)
-  },
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
+  },
+  // 数据管理-上传并解析
+  uploadAnalyticExcel: params => {
+    return service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type }))
+  },
+  // 数据管理-导入解析成功的数据
+  importSuccessfulAnalysisExcel: params => {
+    return service.post(params.url, { path: params.path }).then(res => res && Object.assign(res.data, { type: params.type }))
   },
   // 服刑人员零花钱管理-列表
   getPrisonersPocketMoney: params => {
@@ -151,5 +151,9 @@ export default {
   // 服刑人员信息管理 - 更换监区
   changePrisonArea: params => {
     return service.post('/prisoners/changePrisonArea', params).then(res => res)
+  },
+  // 服刑人员狱内消费情况 - 列表
+  getPrisonersInsideJailsCosts: params => {
+    return service.get('/prisonerConsume/page', params).then(res => res && res.data)
   }
 }

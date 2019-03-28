@@ -1,16 +1,6 @@
 import frame from '@/views/layout/the-frame'
 
 let common = [{
-  path: '/test',
-  name: '测试',
-  component: resolve => require(['@/views/test/test'], resolve)
-  // meta: { hidden: true }
-  // children: [{
-  //   path: '/test/test',
-  //   name: '测试表单',
-  //   component: resolve => require(['@/views/test/test'], resolve)
-  // }]
-}, {
   path: '/',
   meta: { hidden: true },
   component: frame,
@@ -28,11 +18,6 @@ let common = [{
   name: '登录',
   meta: { notLogin: true },
   component: resolve => require(['@/views/login/login'], resolve)
-}, {
-  path: '/new-login',
-  name: '新登录',
-  meta: { notLogin: true },
-  component: resolve => require(['@/views/login/new-login'], resolve)
 }, {
   path: '/app_preview',
   name: 'app下载',

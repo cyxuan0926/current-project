@@ -8,7 +8,9 @@ let state = {
   prisonerRewardPunishmentResult: {}, // 罪犯奖惩模板导入结果
   uploadPocketMoneyExcelResult: {},
   importPocketMoneyResult: {},
-  validatePrisonerResult: {}
+  validatePrisonerResult: {},
+  uploadInsideJailsCostsExcelResult: {},
+  importInsideJailsCostsResult: {}
 }
 
 export default {

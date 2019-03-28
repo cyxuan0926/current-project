@@ -17,6 +17,21 @@ let check = [{
     path: '/meeting/list',
     name: '会见申请列表',
     component: resolve => require(['@/views/check-meeting/meeting-list'], resolve)
+    // beforeRouteEnter(to, from, next) {
+    //   console.log(1)
+    //   console.log(to, from)
+    //   next()
+    // },
+    // beforeRouteUpdate(to, from, next) {
+    //   console.log(2)
+    //   console.log(to, from)
+    //   next()
+    // },
+    // beforeRouteLeave(to, from, next) {
+    //   console.log(3)
+    //   console.log(to, from)
+    //   next()
+    // }
   }, {
     path: '/meeting/adjust',
     name: '会见申请调整',
@@ -101,6 +116,10 @@ let check = [{
     path: '/prisoner-data/pocket-money',
     name: '零花钱数据导入',
     component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve)
+  }, {
+    path: '/prisoner-data/inside-jails-costs',
+    name: '狱内消费情况数据导入',
+    component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve)
   }]
 }, {
   path: '/prisoner-pocket-money',
@@ -110,6 +129,15 @@ let check = [{
     path: '/prisoner-pocket-money/list',
     name: '服刑人员零花钱列表',
     component: resolve => require(['@/views/check-prisoner-pocket-money/prisoner-pocket-money-list'], resolve)
+  }]
+}, {
+  path: '/prisoner-inside-jails-costs',
+  name: '服刑人员狱内消费情况',
+  meta: { hidden: true },
+  children: [{
+    path: '/prisoner-inside-jails-costs/list',
+    name: '服刑人员狱内消费情况列表',
+    component: resolve => require(['@/views/check-prisoner-inside-jails-costs/prisoner-inside-jails-costs-list'], resolve)
   }]
 }]
 
