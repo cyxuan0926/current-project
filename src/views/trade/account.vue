@@ -10,30 +10,58 @@
         label="手机号码" />
       <el-table-column
         prop="balance"
-        label="账户余额(元)" />
+        label="账户余额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.balance | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="recharge"
-        label="充值金额(元)" />
+        label="充值金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.recharge | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="consume"
-        label="消费金额(元)" />
+        label="消费金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.consume | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="preConsume"
-        label="预消费金额(元)" />
+        label="预消费金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.preConsume | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="refund"
-        label="已退款金额(元)" />
+        label="已退款金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.refund | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="refundable"
-        label="可退款金额(元)" />
+        label="可退款金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.refundable | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="transferMoney"
-        label="需转账金额(元)" />
+        label="需转账金额(元)">
+        <template slot-scope="scope">
+            {{ scope.row.transferMoney | fixedNumber }}
+        </template>
+      </el-table-column>  
       <el-table-column
         prop="contents"
         label="备注">
         <template slot-scope="scope">
-          {{ scope.row.remark ? (scope.row.remark > 0 ? '+' + scope.row.remark : scope.row.remark) : '' }}
+          {{ (scope.row.remark ? (scope.row.remark > 0 ? '+' + scope.row.remark : scope.row.remark) : '' ) | fixedNumber}}
         </template>
       </el-table-column>
     </el-table>
@@ -56,7 +84,11 @@
           label="监狱名称" />
         <el-table-column
           property="balance"
-          label="账户余额(元)" />
+          label="账户余额(元)">
+          <template slot-scope="scope">
+            {{ scope.row.balance | fixedNumber }}
+          </template>
+        </el-table-column>  
       </el-table>
     </el-dialog>
   </div>
@@ -86,9 +118,7 @@ export default {
   methods: {
     ...mapActions(['getAccountDetail']),
     handleClick(row, column) {
-      console.log(row, column)
       if (column.property !== 'balance') return
-      console.log()
       this.getAccountDetail({ phone: row.phone }).then(res => {
         if (!res) return
         this.accountDetail = res
