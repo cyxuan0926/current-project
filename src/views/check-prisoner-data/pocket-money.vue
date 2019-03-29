@@ -78,6 +78,7 @@
           prop="accountDate" />
         <el-table-column
           label="失败原因"
+          class-name="tips"
           min-width="160px">
           <template slot-scope="scope">
             <!-- <span v-html="scope.row.err"></span> -->
@@ -177,5 +178,10 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.tips{
+  color: #f56c6c;
+  font-weight: bold;
+  text-align: center;
 }
 </style>

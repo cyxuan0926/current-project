@@ -35,7 +35,11 @@
         <el-table-column
           label="汇款金额(元)"
           prop="money"
-          min-width="80"/>
+          min-width="80">
+          <template slot-scope="scope">
+            {{ scope.row.money | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="汇款时间"
           min-width="110">
