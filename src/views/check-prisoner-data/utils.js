@@ -1,11 +1,32 @@
 import Vue from 'vue'
 let that = new Vue()
 function alertParseResult(result) {
-  that.$notify({
+  let notify = null, message = ''
+  if (notify) notify.close()
+  if (result.error_total !== 0 && result.success_total === 0) {
+    message = `<div style="line-height: 30px; margin-top: 10px;">
+                    <i class="el-icon-success Success"style="font-size: 20px;margin-right: 10px;"></i>成功：${ result.success_total }条<br>
+                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ result.error_total }条
+                    <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
+                  </div>`
+  }
+  if (result.error_total !== 0 && result.success_total !== 0) {
+    message = `<div style="line-height: 30px; margin-top: 10px;">
+                    <i class="el-icon-success Success"style="font-size: 20px;margin-right: 10px;"></i>成功：${ result.success_total }条<br>
+                    <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ result.error_total }条
+                    <p style="padding-left: 30px">原因：数据内容格式有误，请检查导入失败记录，仔细对照下载的模版数据。</p>
+                  </div>`
+  }
+  if (result.error_total === 0 && result.success_total !== 0) {
+    message = `<div style="line-height: 30px; margin-top: 10px;">
+                <i class="el-icon-success Success"style="font-size: 20px;margin-right: 10px;"></i>成功：${ result.success_total }条<br>
+                <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ result.error_total }条
+              </div>`
+  }
+  notify = that.$notify({
     title: '解析结果提示',
     dangerouslyUseHTMLString: true,
-    message: `<p>成功：${ result.success_total }</p>
-              <p>失败：${ result.error_total }</p>`,
+    message: message,
     duration: 8000,
     offset: 100
   })

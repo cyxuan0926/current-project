@@ -71,7 +71,7 @@
           label="罪犯编号"
           prop="prisonerNumber" />
         <el-table-column
-          label="类型"
+          label="类别"
           prop="consumeType" />
         <el-table-column
           label="场地"
@@ -92,6 +92,7 @@
         </el-table-column>
         <el-table-column
           label="失败原因"
+          class-name="tips"
           min-width="120px">
           <template slot-scope="scope">
             <!-- <span v-html="scope.row.err"></span> -->
@@ -120,7 +121,7 @@
           label="罪犯编号"
           prop="prisonerNumber" />
         <el-table-column
-          label="类型"
+          label="类别"
           prop="consumeType" />
         <el-table-column
           label="场地"

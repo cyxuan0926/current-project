@@ -36,12 +36,21 @@
           prop="address" />
         <el-table-column
           label="交易金额"
-          prop="consume" />
+          prop="consume">
+          <template slot-scope="scope">
+            {{ scope.row.consume | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="余额"
-          prop="balance" />
+          prop="balance">
+          <template slot-scope="scope">
+            {{ scope.row.balance | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="操作时间"
+          min-width="100px"
           prop="consumeAt">
           <template slot-scope="scope">
             {{ scope.row.consumeAt | Date }}
