@@ -111,13 +111,9 @@ export default {
   position relative
   border 1px solid #dcdfe6
   box-sizing border-box
+  width 33% !important 
   &:hover
     border-color #c0c4cc
-  /*& > div:nth-child(2)*/
-    /*width 48%*/
-  & > span:first-child
-    width 10px
-    text-align center
 .close-icon
   width 15px !important
   cursor pointer

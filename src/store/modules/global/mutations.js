@@ -11,7 +11,8 @@ export default {
     }
     else {
       Object.keys(params).forEach(key => {
-        state[key] = params[key]
+        if (store.state[key] && store.state[key].contents && store.state[key].contents.length) store.state[key] = { contents: [], total: 0 }
+        else store.state[key] = params[key]
       })
     }
   },

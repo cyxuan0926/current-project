@@ -85,7 +85,7 @@ export default {
     ...mapState(['prisonersPocketMoney'])
   },
   methods: {
-    ...mapActions(['getPrisonersPocketMoney']),
+    ...mapActions(['getPrisonersPocketMoney','resetState']),
     getDatas() {
       this.getPrisonersPocketMoney({ ...this.filter, ...this.pagination })
     },
@@ -96,6 +96,10 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }
+  },
+  destroyed() {
+    let prisonersPocketMoney = this.prisonersPocketMoney
+    this.resetState({prisonersPocketMoney})
   }
 }
 </script>

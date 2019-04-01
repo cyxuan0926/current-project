@@ -81,7 +81,7 @@ export default {
     ...mapState(['prisonersInsideJailsCosts'])
   },
   methods: {
-    ...mapActions(['getPrisonersInsideJailsCosts']),
+    ...mapActions(['getPrisonersInsideJailsCosts', 'resetState']),
     getDatas() {
       this.getPrisonersInsideJailsCosts({ ...this.filter, ...this.pagination })
     },
@@ -92,6 +92,10 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }
+  },
+  destroyed() {
+    let prisonersInsideJailsCosts = this.prisonersInsideJailsCosts
+    this.resetState({prisonersInsideJailsCosts})
   }
 }
 </script>
