@@ -357,17 +357,25 @@ p{
 .m-range-picker .startMonthClass .el-input__inner{
   padding-left: 6px;
   padding-right: 0;
-  border: 0;
+  // border: none;
+  border: 1px solid #dcdfe6;
+  border-right: none;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
   text-align: center;
 }
 .m-range-picker .startMonthClass .el-input__suffix{
-  right: -3px !important
+  right: 0px !important
 }
 .m-range-picker .endMonthClass .el-input__inner{
   padding-right: 16px;
-  border: 0;
   text-align: center;
-  padding-left: 6px !important
+  padding-left: 6px !important;
+  // border: none;
+  border: 1px solid #dcdfe6;
+  border-left: none;
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
 }
 .m-range-picker .endMonthClass .el-input__prefix{
   display: none;
