@@ -4,6 +4,7 @@ export default {
     // 兼容数据类型是字符串和数字的
     // 兼容格式化之后的数据
     // 兼容负数
+    if (!money) return
     let result, temp = 1
     if (typeof money === 'number') money = money.toString()
     if (money.toString().includes(',')) money = money.replace(/,/g, '')

@@ -355,15 +355,19 @@ p{
   margin-left: -3px;
 }
 .m-range-picker .startMonthClass .el-input__inner{
-  padding-left: 2px;
+  padding-left: 6px;
   padding-right: 0;
   border: 0;
   text-align: center;
+}
+.m-range-picker .startMonthClass .el-input__suffix{
+  right: -3px !important
 }
 .m-range-picker .endMonthClass .el-input__inner{
   padding-right: 16px;
   border: 0;
   text-align: center;
+  padding-left: 6px !important
 }
 .m-range-picker .endMonthClass .el-input__prefix{
   display: none;
