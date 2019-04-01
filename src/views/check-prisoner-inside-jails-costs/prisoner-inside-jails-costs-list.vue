@@ -1,27 +1,27 @@
 <template>
-  <el-row
+<el-row
     class="row-container"
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
-      @search="onSearch"/>
+      @search="onSearch"
+      @sizeChange="sizeChange"/>
     <el-col :span="24">
       <el-tabs
         type="card"
         value="first">
         <el-tab-pane
-          label="服刑人员零花钱"
+          label="服刑人员狱内消费情况"
           name="first"/>
       </el-tabs>
       <el-table
         border
-        :data="prisonersPocketMoney.contents"
+        :data="prisonersInsideJailsCosts.contents"
         style="width: 100%"
         stripe>
         <el-table-column
           label="姓名"
-          prop="name" />
+          prop="prisonerName" />
         <el-table-column
           label="囚号"
           prop="prisonerNumber" />
@@ -29,65 +29,61 @@
           label="监区"
           prop="prisonArea" />
         <el-table-column
-          label="当前余额"
+          label="类别"
+          prop="consumeType" />
+        <el-table-column
+          label="场地"
+          prop="address" />
+        <el-table-column
+          label="交易金额"
+          prop="consume">
+          <template slot-scope="scope">
+            {{ scope.row.consume | fixedNumber }}
+          </template>
+        </el-table-column>  
+        <el-table-column
+          label="余额"
           prop="balance">
           <template slot-scope="scope">
             {{ scope.row.balance | fixedNumber }}
           </template>
         </el-table-column>  
         <el-table-column
-          label="收入总额"
-          prop="income">
+          label="操作时间"
+          min-width="100px"
+          prop="consumeAt">
           <template slot-scope="scope">
-            {{ scope.row.income | fixedNumber }}
-          </template>
-        </el-table-column>  
-        <el-table-column
-          label="支出总额"
-          prop="expenditure">
-          <template slot-scope="scope">
-            {{ scope.row.expenditure | fixedNumber }}
-          </template>
-        </el-table-column>  
-        <el-table-column
-          label="日期"
-          prop="accountDate" />
-        <el-table-column
-          label="创建时间"
-          prop="createdAt">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
+            {{ scope.row.consumeAt | Date }}
           </template>
         </el-table-column>
       </el-table>
     </el-col>
     <m-pagination
-      :total="prisonersPocketMoney.total"
-      ref="pagination"
-      @onPageChange="getDatas" />
+      :total="prisonersInsideJailsCosts.total"
+      ref="pagination" 
+      @onPageChange="getDatas"/>
   </el-row>
 </template>
-
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
-  data() {
+  data () {
     return {
       searchItems: {
         name: { type: 'input', label: '姓名' },
         prisonerNumber: { type: 'input', label: '囚号' },
-        time: { type: 'monthrange', start: 'start', end: 'end' },
-        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        time: { type: 'dateRange', start: 'startDate', end: 'endDate', unlinkPanels: true }
       }
     }
   },
   computed: {
-    ...mapState(['prisonersPocketMoney'])
+    ...mapState(['prisonersInsideJailsCosts'])
   },
   methods: {
-    ...mapActions(['getPrisonersPocketMoney']),
+    ...mapActions(['getPrisonersInsideJailsCosts']),
     getDatas() {
-      this.getPrisonersPocketMoney({ ...this.filter, ...this.pagination })
+      this.getPrisonersInsideJailsCosts({ ...this.filter, ...this.pagination })
     },
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)

@@ -2,6 +2,7 @@ import date from './modules/date'
 import switches from './modules/switches'
 import time from './modules/time'
 import storage from './modules/storage'
+import numberFixed from './modules/numberFixed'
 
 let filterObj = Object.assign({}, switches), filters = {}
 
@@ -21,5 +22,6 @@ export default {
   ...filters,
   ...date,
   ...time,
-  ...storage
+  ...storage,
+  ...numberFixed
 }

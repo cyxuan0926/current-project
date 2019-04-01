@@ -66,6 +66,7 @@
           prop="termFinish" />
         <el-table-column
           label="失败原因"
+          class-name="tips"
           show-overflow-tooltip
           prop="reason" />
       </el-table>
@@ -157,4 +158,8 @@ export default {
   .red
     color: #F56C6C;
     font-weight: bold;
+  .tips
+    color: #f56c6c;
+    font-weight: bold;
+    text-align: center;
 </style>

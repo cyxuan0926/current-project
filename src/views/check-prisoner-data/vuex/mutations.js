@@ -32,10 +32,30 @@ export default {
   importPrisonerRewardPunishment: (state, prisonerRewardPunishmentResult) => {
     state.prisonerRewardPunishmentResult = prisonerRewardPunishmentResult
   },
-  uploadPocketMoneyExcel: (state, params) => {
-    state.uploadPocketMoneyExcelResult = params
+  uploadAnalyticExcel: (state, params) => {
+    switch (params.type) {
+      case 0:
+        state.uploadPocketMoneyExcelResult = params
+        break
+      case 1:
+        state.uploadInsideJailsCostsExcelResult = params
+        break
+      default:
+        state.uploadPocketMoneyExcelResult = {}
+        state.uploadInsideJailsCostsExcelResult = {}
+    }
   },
-  importPocketMoney: (state, params) => {
-    state.importPocketMoneyResult = params
+  importSuccessfulAnalysisExcel: (state, params) => {
+    switch (params.type) {
+      case 0:
+        state.importPocketMoneyResult = params
+        break
+      case 1:
+        state.importInsideJailsCostsResult = params
+        break
+      default:
+        state.importPocketMoneyResult = {}
+        state.importInsideJailsCostsResult = {}
+    }
   }
 }
