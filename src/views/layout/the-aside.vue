@@ -116,7 +116,13 @@ export default {
   },
   methods: {
     getActiveMenu() {
-      let active = this.$route.path.replace(/(\/[A-z-]+)(\/[0-9A-z-]+)*/, '$1/list')
+      let active
+      if (this.$route.meta && this.$route.meta.activeMenu) {
+        active = this.$route.meta.activeMenu
+      }
+      else {
+        active = `${ this.$route.matched[0].path || this.$route.matched[1].path }/list`
+      }
       return active
     },
     handleSelect(e, keyPath) {

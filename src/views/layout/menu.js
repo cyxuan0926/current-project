@@ -19,7 +19,7 @@ let superAdminMenu = [{
     title: '家属汇款记录',
     icon: 'iconfont icon-jiashuhuikuanjilu'
   }, {
-    path: '/trade/account',
+    path: '/trade/list',
     title: '交易流水记录',
     icon: 'iconfont icon-jiaoyiliushuijilu'
   },
@@ -159,7 +159,7 @@ let superAdminMenu = [{
     ]
   }],
   infoMenu = [{
-    path: '/jails/detail',
+    path: '/jails/list',
     title: '监狱基本信息管理',
     icon: 'iconfont icon-jianyujibenxinxi'
   }, {

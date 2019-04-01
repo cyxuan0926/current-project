@@ -101,6 +101,7 @@ export default {
     '$route': {
       handler: function(val) {
         this.activeName = val.path.slice(val.path.lastIndexOf('/') + 1)
+        console.log(this.activeName)
         this.getSearchItems('clearFilter')
       },
       deep: true

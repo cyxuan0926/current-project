@@ -5,6 +5,9 @@ let infomation = [{
   name: '监狱基本信息管理',
   meta: { hidden: true },
   children: [{
+    path: '/jails/list',
+    redirect: '/jails/detail'
+  }, {
     path: '/jails/detail',
     name: '监狱基本信息',
     component: resolve => require(['@/views/jails-base-information/jails-base-information-detail'], resolve)
@@ -13,7 +16,8 @@ let infomation = [{
     name: '编辑监狱基本信息',
     meta: {
       permission: 'edit',
-      role: '3'
+      role: '3',
+      deep: true
     },
     component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }]
@@ -36,13 +40,13 @@ let infomation = [{
       {
         path: '/prison-affairs-public/prison-affairs-public/4/add',
         name: '新增减刑假释',
-        meta: { typeId: 4 },
+        meta: { typeId: 4, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/4' },
         component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
       },
       {
         path: '/prison-affairs-public/prison-affairs-public/4/edit/:id',
         name: '编辑减刑假释',
-        meta: { typeId: 4 },
+        meta: { typeId: 4, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/4' },
         component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
       },
       {
@@ -54,13 +58,13 @@ let infomation = [{
       {
         path: '/prison-affairs-public/prison-affairs-public/5/add',
         name: '新增暂予监外执行',
-        meta: { typeId: 5 },
+        meta: { typeId: 5, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/5' },
         component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
       },
       {
         path: '/prison-affairs-public/prison-affairs-public/5/edit/:id',
         name: '编辑暂予监外执行',
-        meta: { typeId: 5 },
+        meta: { typeId: 5, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/5' },
         component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
       },
       {
@@ -72,25 +76,25 @@ let infomation = [{
       {
         path: '/prison-affairs-public/prison-affairs-public/6/add',
         name: '新增社会帮教',
-        meta: { typeId: 6 },
+        meta: { typeId: 6, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/6' },
         component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
       },
       {
         path: '/prison-affairs-public/prison-affairs-public/6/edit/:id',
         name: '编辑社会帮教',
-        meta: { typeId: 6 },
+        meta: { typeId: 6, deep: true, activeMenu: '/prison-affairs-public/prison-affairs-public/6' },
         component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
       }
     ]
   }, {
     path: '/prison-affairs-public/prison-affairs-public/add',
     name: '新增狱务公开信息',
-    meta: { typeId: 1 },
+    meta: { typeId: 1, deep: true },
     component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
   }, {
     path: '/prison-affairs-public/prison-affairs-public/edit/:id',
     name: '编辑狱务公开信息',
-    meta: { typeId: 1 },
+    meta: { typeId: 1, deep: true },
     component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
   }, {
     path: '/prison-affairs-public/working-dynamics',
@@ -100,12 +104,12 @@ let infomation = [{
   }, {
     path: '/prison-affairs-public/working-dynamics/add',
     name: '新增工作动态',
-    meta: { typeId: 2 },
+    meta: { typeId: 2, deep: true, activeMenu: '/prison-affairs-public/working-dynamics' },
     component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
   }, {
     path: '/prison-affairs-public/working-dynamics/edit/:id',
     name: '编辑工作动态',
-    meta: { typeId: 2 },
+    meta: { typeId: 2, deep: true, activeMenu: '/prison-affairs-public/working-dynamics' },
     component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
   }, {
     path: '/prison-affairs-public/complaints-suggestions',
@@ -115,12 +119,12 @@ let infomation = [{
   }, {
     path: '/prison-affairs-public/complaints-suggestions/add',
     name: '新增投诉/建议',
-    meta: { typeId: 3 },
+    meta: { typeId: 3, deep: true, activeMenu: '/prison-affairs-public/complaints-suggestions' },
     component: resolve => require(['@/views/info-prison-affairs-public/add'], resolve)
   }, {
     path: '/prison-affairs-public/complaints-suggestions/edit/:id',
     name: '编辑投诉/建议',
-    meta: { typeId: 3 },
+    meta: { typeId: 3, deep: true, activeMenu: '/prison-affairs-public/complaints-suggestions' },
     component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
   }]
 }, {
