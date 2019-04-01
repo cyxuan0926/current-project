@@ -12,12 +12,12 @@ let admin = [{
   }, {
     path: '/account/add',
     name: '新增账户',
-    props: { role: '4' },
+    meta: { role: '4', deep: true },
     component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
   }, {
     path: '/account/edit/:id',
     name: '编辑账户',
-    props: { role: '4' },
+    meta: { role: '4', deep: true },
     component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
   }]
 }, {

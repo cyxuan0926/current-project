@@ -11,12 +11,12 @@ let superAdmin = [{
   }, {
     path: '/prison/add',
     name: '新增监狱',
-    meta: { role: '0', permission: 'add' },
+    meta: { role: '0', permission: 'add', deep: true },
     component: resolve => require(['@/views/sadmin-prison/prison-add'], resolve)
   }, {
     path: '/prison/visit/:id',
     name: '监狱实地会见配置',
-    meta: { role: '0' },
+    meta: { role: '0', deep: true },
     component: resolve => require(['@/views/meeting/visit-config'], resolve)
   // }, {
   //   path: '/prison/meeting-remote/:id',
@@ -26,7 +26,7 @@ let superAdmin = [{
   }, {
     path: '/remote/edit/:id',
     name: '监狱远程会见配置',
-    meta: { role: '0', permission: 'edit' },
+    meta: { role: '0', permission: 'edit', deep: true },
     component: resolve => require(['@/views/meeting/remote-edit'], resolve)
   }, {
     path: '/prison/edit/:id',
@@ -67,12 +67,12 @@ let superAdmin = [{
   }, {
     path: '/prison-user/edit/:id',
     name: '编辑监狱用户',
-    props: { role: '0' },
+    meta: { role: '0', deep: true },
     component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
   }, {
     path: '/prison-user/add',
     name: '新增监狱用户',
-    props: { role: '0' },
+    meta: { role: '0', deep: true },
     component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
   }]
 }, {
@@ -102,23 +102,31 @@ let superAdmin = [{
     component: resolve => require(['@/views/trade/list-router'], resolve),
     children: [
       {
+        path: '/trade/list',
+        redirect: '/trade/account'
+      },
+      {
         path: '/trade/account',
         name: '账户明细',
+        meta: { deep: true },
         component: resolve => require(['@/views/trade/account'], resolve)
       },
       {
         path: '/trade/recharge',
         name: '充值明细',
+        meta: { deep: true },
         component: resolve => require(['@/views/trade/recharge'], resolve)
       },
       {
         path: '/trade/consumption',
         name: '消费明细',
+        meta: { deep: true },
         component: resolve => require(['@/views/trade/consumption'], resolve)
       },
       {
         path: '/trade/refund',
         name: '退款明细',
+        meta: { deep: true },
         component: resolve => require(['@/views/trade/refund'], resolve)
       }
     ]
@@ -135,10 +143,12 @@ let superAdmin = [{
   }, {
     path: '/advertisement/add',
     name: '新增广告',
+    meta: { deep: true },
     component: resolve => require(['@/views/sadmin-advertisement/advertisement-add'], resolve)
   }, {
     path: '/advertisement/edit/:id',
     name: '编辑广告',
+    meta: { deep: true },
     component: resolve => require(['@/views/sadmin-advertisement/advertisement-edit'], resolve)
   }]
 }, {
@@ -161,10 +171,12 @@ let superAdmin = [{
   }, {
     path: '/terminal/add',
     name: '新增终端',
+    meta: { deep: true },
     component: resolve => require(['@/views/sadmin-terminal/terminal-add'], resolve)
   }, {
     path: '/terminal/edit/:id',
     name: '编辑终端',
+    meta: { deep: true },
     component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
   }]
 }, {
