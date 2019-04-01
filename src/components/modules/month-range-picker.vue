@@ -14,7 +14,7 @@
       @change="onChange"
       :picker-options="startObj"
     />
-    <span>-</span>
+    <span class="aa-span">-</span>
     <el-date-picker
       v-model="endDate"
       ref="end"
@@ -105,11 +105,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="stylus">
 .m-range-picker
-  display flex
+  display inline-flex
   justify-content space-between
   align-items center
   position relative
-  border 1px solid #dcdfe6
+  // border 1px solid #dcdfe6
   box-sizing border-box
   width 33% !important 
   &:hover
@@ -117,4 +117,10 @@ export default {
 .close-icon
   width 15px !important
   cursor pointer
+.aa-span
+  width 4%
+  position absolute
+  top 50%
+  left 50%
+  transform translate(-50%,-50%)
 </style>
