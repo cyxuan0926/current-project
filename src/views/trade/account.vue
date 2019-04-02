@@ -122,7 +122,6 @@ export default {
       this.getAccountDetail({ phone: row.phone }).then(res => {
         if (!res) return
         this.accountDetail = res
-        console.log(res)
         this.dialogTableVisible = true
       })
     }
