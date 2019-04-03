@@ -78,6 +78,7 @@
           prop="accountDate" />
         <el-table-column
           label="失败原因"
+          class-name="tips"
           min-width="160px">
           <template slot-scope="scope">
             <!-- <span v-html="scope.row.err"></span> -->
@@ -124,6 +125,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import Utils from './utils'
 export default {
   data() {
     return {
@@ -138,47 +140,25 @@ export default {
     this.resetState({ uploadPocketMoneyExcelResult: {} })
   },
   methods: {
-    ...mapActions(['importPocketMoney', 'uploadPocketMoneyExcel', 'resetState']),
+    ...mapActions(['importSuccessfulAnalysisExcel', 'uploadAnalyticExcel', 'resetState']),
     submitUpload() {
       this.$refs.upload.submit()
     },
     beforeUpload(file) {
       this.resetState({ uploadPocketMoneyExcelResult: {} })
-      this.uploadPocketMoneyExcel(file).then(res => {
+      let params = { url: '/pocket_money/examine', values: file, type: 0 }
+      this.uploadAnalyticExcel(params).then(res => {
         if (!res) return
-        this.alertParseResult(this.uploadPocketMoneyExcelResult)
+        Utils.alertParseResult(this.uploadPocketMoneyExcelResult)
       })
       return false
     },
     onSubmit() {
-      this.importPocketMoney({ path: this.uploadPocketMoneyExcelResult.path }).then(res => {
+      let params = { url: '/pocket_money/upload', path: this.uploadPocketMoneyExcelResult.path, type: 0 }
+      this.importSuccessfulAnalysisExcel(params).then(res => {
         if (!res) return
-        this.alertImportResult(this.importPocketMoneyResult)
+        Utils.alertImportResult(this.importPocketMoneyResult)
         this.uploadPocketMoneyExcelResult.path = ''
-      })
-    },
-    // 解析文件成功后执行的方法
-    alertParseResult(result) {
-      this.$notify({
-        title: '解析结果提示',
-        dangerouslyUseHTMLString: true,
-        message: `<p>成功：${ result.success_total }</p>
-                  <p>失败：${ result.error_total }</p>`,
-        duration: 8000,
-        offset: 100
-      })
-    },
-    // 上传文件成功后执行的方法
-    alertImportResult(result) {
-      this.$notify({
-        title: '导入结果提示',
-        dangerouslyUseHTMLString: true,
-        message: `<p>新增：${ result.insert }</p>
-                  <p>修改：${ result.update }</p>
-                  <p>失败：${ result.error }</p>
-                  <p>共计：${ result.total }</p>`,
-        duration: 8000,
-        offset: 100
       })
     }
   }
@@ -198,5 +178,10 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.tips{
+  color: #f56c6c;
+  font-weight: bold;
+  text-align: center;
 }
 </style>

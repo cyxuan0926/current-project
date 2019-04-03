@@ -30,13 +30,25 @@
           prop="prisonArea" />
         <el-table-column
           label="当前余额"
-          prop="balance" />
+          prop="balance">
+          <template slot-scope="scope">
+            {{ scope.row.balance | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="收入总额"
-          prop="income" />
+          prop="income">
+          <template slot-scope="scope">
+            {{ scope.row.income | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="支出总额"
-          prop="expenditure" />
+          prop="expenditure">
+          <template slot-scope="scope">
+            {{ scope.row.expenditure | fixedNumber }}
+          </template>
+        </el-table-column>  
         <el-table-column
           label="日期"
           prop="accountDate" />
@@ -73,7 +85,7 @@ export default {
     ...mapState(['prisonersPocketMoney'])
   },
   methods: {
-    ...mapActions(['getPrisonersPocketMoney']),
+    ...mapActions(['getPrisonersPocketMoney','resetState']),
     getDatas() {
       this.getPrisonersPocketMoney({ ...this.filter, ...this.pagination })
     },
@@ -84,6 +96,10 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }
+  },
+  destroyed() {
+    let prisonersPocketMoney = this.prisonersPocketMoney
+    this.resetState({prisonersPocketMoney})
   }
 }
 </script>

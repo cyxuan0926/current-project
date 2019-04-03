@@ -19,7 +19,7 @@ let superAdminMenu = [{
     title: '家属汇款记录',
     icon: 'iconfont icon-jiashuhuikuanjilu'
   }, {
-    path: '/trade/account',
+    path: '/trade/list',
     title: '交易流水记录',
     icon: 'iconfont icon-jiaoyiliushuijilu'
   },
@@ -105,6 +105,10 @@ let superAdminMenu = [{
     title: '服刑人员零花钱管理',
     icon: 'iconfont icon-linghuaqianguanli'
   }, {
+    path: '/prisoner-inside-jails-costs/list',
+    title: '服刑人员狱内消费情况',
+    icon: 'iconfont icon-yuneixiaofeiqingkuang'
+  }, {
     path: '/family/list',
     title: '家属信息管理',
     icon: 'iconfont icon-jiashu'
@@ -134,6 +138,10 @@ let superAdminMenu = [{
         path: '/prisoner-data/pocket-money',
         title: '零花钱数据导入',
         icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/prisoner-data/inside-jails-costs',
+        title: '狱内消费情况数据导入',
+        icon: 'iconfont icon-circle-o'
       }
     ]
   }],
@@ -159,7 +167,7 @@ let superAdminMenu = [{
     ]
   }],
   infoMenu = [{
-    path: '/jails/detail',
+    path: '/jails/list',
     title: '监狱基本信息管理',
     icon: 'iconfont icon-jianyujibenxinxi'
   }, {

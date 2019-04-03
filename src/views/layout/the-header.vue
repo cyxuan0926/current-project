@@ -58,7 +58,7 @@ export default {
           if (!res) return
           localStorage.removeItem('user')
           localStorage.removeItem('routes')
-          this.$router.replace('/new-login')
+          this.$router.replace('/login')
           this.resetState('logout')
         })
       }).catch(() => {})

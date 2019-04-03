@@ -65,12 +65,13 @@
             v-model="prisonUser.role"
             placeholder="请选择角色"
             clearable>
-            <el-option
-              v-for="item in $store.state.role"
-              v-if="item.value !== 0 && item.value != routeRole"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"/>
+            <template v-for="item in $store.state.role">
+              <el-option
+                v-if="item.value !== 0 && item.value != routeRole"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"/>
+              </template>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -107,13 +108,14 @@ export default {
       gettingPrisonArea: true,
       hasPrisonArea: false,
       prisonUser: { prisonConfigIds: [] },
-      routeRole: this.$route.matched[this.$route.matched.length - 1].props.default.role
+      routeRole: this.$route.meta.role
     }
   },
   computed: {
     ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
   },
   mounted() {
+    console.log(this.$route)
     if (this.routeRole === '0') {
       this.getPrisonAllWithBranchPrison().then(res => {
         this.gettingJails = false

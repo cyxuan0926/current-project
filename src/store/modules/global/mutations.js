@@ -1,16 +1,18 @@
+import store from '@/store'
 export default {
   setUser(state, params) {
     state.user = params || {}
   },
   resetState: (state, params) => {
     if (params === 'logout') {
-      Object.keys(state).forEach(key => {
-        if (state[key] && state[key].contents && state[key].contents.length) state[key] = { contents: [], total: 0 }
+      Object.keys(store.state).forEach(key => {
+        if (store.state[key] && store.state[key].contents && store.state[key].contents.length) store.state[key] = { contents: [], total: 0 }
       })
     }
     else {
       Object.keys(params).forEach(key => {
-        state[key] = params[key]
+        if (store.state[key] && store.state[key].contents && store.state[key].contents.length) store.state[key] = { contents: [], total: 0 }
+        else store.state[key] = params[key]
       })
     }
   },
