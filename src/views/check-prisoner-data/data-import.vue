@@ -366,7 +366,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'uploadResult', 'prisonerYZKDataResult'])
+    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'prisonerYZKDataResult']),
+    ...mapState({
+      uploadResult: state => state.global.uploadResult
+    })
   },
   watch: {
     tabs(val) {

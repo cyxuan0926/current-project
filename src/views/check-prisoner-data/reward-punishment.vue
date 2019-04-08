@@ -102,7 +102,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonerRewardPunishmentResult', 'uploadResult'])
+    ...mapState(['prisonerRewardPunishmentResult'],
+    ...mapState({
+      uploadResult: state => state.global.uploadResult
+    }))
   },
   methods: {
     ...mapActions(['importPrisonerRewardPunishment', 'uploadFile', 'resetState']),
