@@ -34,7 +34,7 @@ describe('views-页面布局', () => {
     wrapper.destroy()
   })
 
-  it('mounted正确', () => {
+  it('mounted', () => {
     let spyHandleResize = jest.fn()
     wrapper = shallowMount(component, {
       store,
