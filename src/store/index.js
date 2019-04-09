@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import jailsInformation from './modules/jails-information'
-import passwordModification from './modules/password-modification'
 import quillEditor from './modules/quill-editor'
-import downloadFile from './modules/download-file'
-import uploadFile from './modules/upload-file'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
 import adminFeedback from '@/views/sadmin-feedback/vuex'
@@ -30,6 +26,7 @@ import meeting from '@/views/meeting/vuex'
 import meetingReport from '@/views/meeting-report/vuex'
 import noPage from './modules/no-page'
 import websocket from './modules/websocket'
+import jail from '@/views/jail/vuex-and-service'
 import layout from '@/views/layout/vuex-and-service'
 import login from '@/views/login/vuex-and-service'
 import trade from '@/views/trade/vuex-and-service'
@@ -52,11 +49,7 @@ let actions = {}, mutations = {}, getters = {}, state = {}, merge = (...args) =>
 
 // 将对应的actions,mutations,getters,state 添加到声明的对象中
 merge(
-  jailsInformation,
-  passwordModification,
   quillEditor,
-  downloadFile,
-  uploadFile,
   adminLog,
   adminFeedback,
   adminPrisonUser,
@@ -90,6 +83,7 @@ export default new Vuex.Store({
   getters,
   state,
   modules: {
+    jail,
     layout,
     login,
     global,

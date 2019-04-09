@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
@@ -100,15 +100,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      modifyPasswordResult: 'modifyPasswordResult' // 修改用户名密码的结果
+    ...mapState({
+      modifyPasswordResult: state => state.global.modifyPasswordResult // 修改用户名密码的结果
     })
   },
   methods: {
-    ...mapActions({
-      modifyPassword: 'modifyPassword', // 修改用户密码的方法
-      logout: 'logout' // 修改用户密码成功以后重新登录
-    }),
+    ...mapActions(['modifyPassword', 'logout']),
     // 点击提交按钮执行的方法
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {

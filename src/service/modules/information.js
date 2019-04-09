@@ -1,10 +1,6 @@
 import * as service from '../config/service'
 
 export default {
-  // 监狱基本信息管理-详情
-  getJailInformation: () => {
-    return service.get('/jails/getJailsDetail').then(res => res && res.data)
-  },
   // 获取狱务公开信息
   getNewsList: params => {
     return service.get('/news/page', params).then(res => res && res.data)

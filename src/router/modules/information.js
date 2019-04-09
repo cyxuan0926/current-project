@@ -10,7 +10,7 @@ let infomation = [{
   }, {
     path: '/jails/detail',
     name: '监狱基本信息',
-    component: resolve => require(['@/views/jails-base-information/jails-base-information-detail'], resolve)
+    component: resolve => require(['@/views/jail/detail'], resolve)
   }, {
     path: '/jails/edit/:id',
     name: '编辑监狱基本信息',

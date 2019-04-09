@@ -14,7 +14,7 @@ describe.skip('components-audio', () => {
     wrapper.destroy()
   })
 
-  it.skip('mounted正确', () => {
+  it.skip('mounted', () => {
     wrapper = shallowMount(component, {
       localVue,
       propsData: {
@@ -28,7 +28,7 @@ describe.skip('components-audio', () => {
     expect(wrapper.vm.interval).toBeNull()
   })
 
-  it.skip('method-handlePlay', done => {
+  it.skip('methods-handlePlay', done => {
     wrapper = shallowMount(component, {
       localVue,
       propsData: {
