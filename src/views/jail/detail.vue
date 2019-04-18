@@ -118,7 +118,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['jailInformation'])
+    ...mapState({
+      jailInformation: state => state.jail.detail
+    })
   },
   mounted() {
     this.getJailInformation().then(() => {

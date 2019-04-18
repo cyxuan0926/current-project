@@ -9,11 +9,12 @@
         <el-checkbox-group
           v-model="config.days"
           :disabled="config.queue.length > 0 || disabled">
-          <el-checkbox
-            v-for="(w, i) in week"
-            :key="i"
-            v-if="showWeek(w, config, index)"
-            :label="w.value">{{ w.label }}</el-checkbox>
+          <template v-for="(w, i) in week">
+            <el-checkbox
+              :key="i"
+              v-if="showWeek(w, config, index)"
+              :label="w.value">{{ w.label }}</el-checkbox>
+            </template>
         </el-checkbox-group>
         <el-button
           type="primary"

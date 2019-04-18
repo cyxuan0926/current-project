@@ -18,7 +18,7 @@ describe('components-form', () => {
     wrapper.destroy()
   })
 
-  it('mounted-render', () => {
+  it('mounteds-render', () => {
     let spyRender = jest.fn()
     wrapper = shallowMount(component, {
       localVue,
