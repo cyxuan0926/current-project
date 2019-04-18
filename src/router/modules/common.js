@@ -45,9 +45,6 @@ let common = [{
     meta: { notLogin: true },
     component: resolve => require(['@/views/download/operation'], resolve)
   }]
-}, {
-  path: '*',
-  redirect: '/dashboard'
 }]
 
 export default common
