@@ -1,5 +1,4 @@
 import Vue from 'vue'
-// import VueWebsocket from 'vue-websocket'
 import App from '@/app'
 import router from './router'
 import ElementUI from 'element-ui'
@@ -7,15 +6,8 @@ import store from './store'
 import filters from './filters'
 import components from '@/components'
 import urls from '@/service/urls'
-// import config from '@/service/config/base'
-// import '../static/bootstrap/js/bootstrap.min.js'
-// import '../static/dist/js/app.min.js'
 
-// import '../static/bootstrap/css/bootstrap.min.css'
-// import '../static/dist/css/AdminLTE.min.css'
-// import '../static/dist/css/skins/_all-skins.min.css'
 import '@/assets/fonts/iconfont.css'
-// import '@/assets/icons/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
 import 'viewerjs/dist/viewer.css'
@@ -44,6 +36,7 @@ router.beforeEach((to, from, next) => {
       next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
     }
   }
+  if (to.meta.hidden) next({ path: '/dashboard', replace: true })
   next()
 })
 window.router = router
