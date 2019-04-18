@@ -2,7 +2,7 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
-  uploadResult: {}// 上传文件的结果
+  detail: {}
 }
 
 export default {

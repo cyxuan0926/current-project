@@ -111,7 +111,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonTermResult', 'uploadResult'])
+    ...mapState(['prisonTermResult']),
+    ...mapState({
+      uploadResult: state => state.global.uploadResult
+    })
   },
   methods: {
     ...mapActions(['importPrisonTerm', 'uploadFile', 'resetState']),
