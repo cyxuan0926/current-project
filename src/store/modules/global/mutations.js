@@ -18,5 +18,8 @@ export default {
   },
   setUrlStorage: (state, params) => {
     state.urlStorage = params
+  },
+  setDynamicRoutes: (state, routes) => {
+    state.dynamicRoutes = routes
   }
 }

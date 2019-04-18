@@ -1,4 +1,5 @@
 import api from './service'
+import { resetRouter } from '@/router/index'
 
 export default {
   login: ({ commit, dispatch }, params) => {
@@ -7,6 +8,7 @@ export default {
       if (res.users.role === '1') dispatch('getWebsocketResult', res.users.jailId)
       dispatch('setUser', res.users)
       commit('login', res)
+      resetRouter()
       return true
     })
   },
