@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'Vuex'
+import { mapState, mapActions } from 'vuex'
 import TheHeader from './the-header'
 import TheSidebar from './the-aside'
 import TheBreadcrumb from './the-breadcrumb'
