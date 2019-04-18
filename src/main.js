@@ -36,6 +36,7 @@ router.beforeEach((to, from, next) => {
       next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
     }
   }
+  if (to.meta.hidden) next({ path: '/dashboard', replace: true })
   next()
 })
 window.router = router
