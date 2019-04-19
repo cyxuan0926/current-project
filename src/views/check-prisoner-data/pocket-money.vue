@@ -14,8 +14,8 @@
       <el-col
         :span="22"
         :offset="2">
-        <p>上传数据文件：限制文件后缀名为
-          <span class="red">.xls</span>
+        <p>限制文件后缀名为
+          <span class="red">.xls</span>或<span class="red">.xlsx</span>
         </p>
       </el-col>
     </el-row>
@@ -31,7 +31,7 @@
           :file-list="fileList"
           :auto-upload="false"
           :limit="1"
-          accept=".xls">
+          accept=".xls, .xlsx">
           <el-button
             slot="trigger"
             size="small"
@@ -49,7 +49,7 @@
           </el-button>
           <div
             slot="tip"
-            class="el-upload__tip">只能上传.xls文件</div>
+            class="el-upload__tip">请上传.xls或.xlsx文件</div>
         </el-upload>
       </el-col>
     </el-row>
