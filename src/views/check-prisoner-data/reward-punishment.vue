@@ -15,7 +15,9 @@
         :span="22"
         :offset="2">
         <span>上传模板文件：</span>
-        <p>限制文件后缀名为<span class="red">.xls</span></p>
+        <p>限制文件后缀名为
+          <span class="red">.xls</span>或<span class="red">.xlsx</span>
+        </p>
       </el-col>
     </el-row>
     <el-row :gutter="0">
@@ -30,7 +32,7 @@
           :file-list="fileList"
           :auto-upload="false"
           :limit="1"
-          accept=".xls">
+          accept=".xls, .xlsx">
           <el-button
             slot="trigger"
             size="small"
@@ -41,7 +43,7 @@
             @click="submitUpload">上传到服务器</el-button>
           <div
             slot="tip"
-            class="el-upload__tip">只能上传.xls文件</div>
+            class="el-upload__tip">请上传.xls或.xlsx文件</div>
         </el-upload>
       </el-col>
     </el-row>
@@ -102,10 +104,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonerRewardPunishmentResult'],
+    ...mapState(['prisonerRewardPunishmentResult']),
     ...mapState({
       uploadResult: state => state.global.uploadResult
-    }))
+    })
   },
   methods: {
     ...mapActions(['importPrisonerRewardPunishment', 'uploadFile', 'resetState']),
