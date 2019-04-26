@@ -66,4 +66,3 @@ export default {
   ...config[env],
   ...option
 }
-console.log(config[env])
