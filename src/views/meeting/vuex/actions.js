@@ -1,6 +1,20 @@
 import http from './service'
 
 export default {
+  getRemoteAdvanceDayLimit: async({ commit }, params) => {
+    try {
+      const res = await http.getRemoteAdvanceDayLimit(params)
+      res && commit('setAdvanceDayLimit', res.advanceDayLimit)
+    }
+    catch (err) { console.log(err) }
+  },
+  updateRemoteAdvanceDayLimit: async({ commit }, params) => {
+    try {
+      await http.updateRemoteAdvanceDayLimit(params)
+      commit('setAdvanceDayLimit', params.advanceDayLimit)
+    }
+    catch (err) { console.log(err) }
+  },
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return

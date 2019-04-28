@@ -1,4 +1,7 @@
 export default {
+  setAdvanceDayLimit(state, advanceDayLimit) {
+    state.advanceDayLimit = advanceDayLimit
+  },
   getRemoteNormalConfig(state, params) {
     state.normalConfig = params
   },
