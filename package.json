@@ -5,12 +5,14 @@
   "author": "leelic07 <330314702@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env BUILD_ENV=test webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js",
     "e2e": "node test/e2e/runner.js",
     "test": "jest",
-    "build": "node build/build.js",
+    "build:dev": "cross-env BUILD_ENV=test node build/build.js",
+    "build:test": "cross-env BUILD_ENV=test node build/build.js",
+    "build:prod": "cross-env BUILD_ENV=production node build/build.js",
     "commit": "git-cz"
   },
   "config": {
@@ -47,7 +49,7 @@
     "chromedriver": "^2.27.2",
     "commitizen": "^3.1.1",
     "copy-webpack-plugin": "^4.0.1",
-    "cross-env": "^5.0.1",
+    "cross-env": "^5.2.0",
     "cross-spawn": "^5.0.1",
     "css": "^2.2.1",
     "css-loader": "^0.28.7",
