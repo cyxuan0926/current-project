@@ -24,14 +24,14 @@ const config = {
     videoUrl: `${ nodeUrl }/video-server/videos`,
     socketUrl: 'ws://120.78.190.101:8081/ywgk/websocket'
   },
-  auth: {
-    apiHost: 'http://120.78.190.101:8085',
+  development: {
+    apiHost: 'http://192.168.0.41:8085',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://120.78.190.101:8085/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
     apiHost: 'http://120.78.190.101:8083',

@@ -11,7 +11,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/ywgk-auth': {
-        target: 'http://120.78.190.101:8085/',
+        target: 'http://192.168.0.41:8085/',
         changeOrigin: true,
         pathRewrite: {
           '^/ywgk-auth': '/ywgk-auth'
