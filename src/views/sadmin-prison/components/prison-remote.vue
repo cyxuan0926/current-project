@@ -5,7 +5,10 @@
       label-width="140px"
       :model="meeting"
       :rules="rules">
-      <remote-visit-day v-model="meeting.advanceDayLimit" />
+      <remote-visit-day
+        v-model="meeting.advanceDayLimit"
+        :hasUpdateBtn="false"
+      />
       <el-form-item
         prop="dailyApplyLimit"
         label="每人日申请次数限制">
