@@ -16,6 +16,7 @@ let superAdmin = [{
   }, {
     path: '/prison/visit/:id',
     name: '监狱实地会见配置',
+    props: { role: 0 },
     meta: { role: '0', deep: true },
     component: resolve => require(['@/views/meeting/visit-config'], resolve)
   // }, {

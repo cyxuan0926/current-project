@@ -14,7 +14,7 @@
         <p v-if="!disabled" class="tip">
           *每位家属需提前预约远程探视天数（以自然日为单位）
         </p>
-        <div v-if="!disabled && hasChange" class="operate">
+        <div v-if="!disabled && hasUpdateBtn && hasChange" class="operate">
           <el-button
             type="primary"
             size="small"
@@ -32,7 +32,11 @@
 import { mapState } from 'vuex';
 export default {
   props: {
-    value: Number
+    value: Number,
+    hasUpdateBtn: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

@@ -134,13 +134,17 @@ export default {
         res.batchQueue.forEach(queue => {
           res.queue.push(queue.split('-'))
         })
-        res.canNotChange = true
+        // res.canNotChange = true
       }
       commit('getPrisonVisitConfigDetail', res)
       return true
     })
   },
-  updatePrisonVisitConfig: ({ commit }, params) => {
-    return http.updatePrisonVisitConfig(params).then(res => res)
+  updatePrisonVisitConfig: ({ state, commit }, params) => {
+    return http.updatePrisonVisitConfig(params).then(res => {
+      const config = Object.assign({}, state.prisonVisitConfigDetail, params)
+      commit('getPrisonVisitConfigDetail', config)
+      return res
+    })
   }
 }

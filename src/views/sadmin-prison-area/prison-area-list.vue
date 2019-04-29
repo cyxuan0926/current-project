@@ -25,9 +25,9 @@
         <el-table-column
           prop="name"
           label="监区名称" />
-        <el-table-column
+        <!-- <el-table-column
           prop="jailName"
-          label="所属监狱" />
+          label="所属监狱" /> -->
         <el-table-column
           prop="createdAt"
           label="创建时间">
