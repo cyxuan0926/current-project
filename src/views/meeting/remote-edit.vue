@@ -56,6 +56,13 @@ export default {
   },
   watch: {
     '$route': 'render',
+    '$route.query': {
+      handler(query) {
+        if (query.tag === 'usual') {
+          this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
+        }
+      }
+    },
     advanceDayLimit: {
       immediate: true,
       handler(val) {

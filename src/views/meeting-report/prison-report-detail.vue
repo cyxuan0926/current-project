@@ -1,0 +1,212 @@
+<template>
+  <el-row :gutter="0">
+    <el-col :span="24">
+      <el-table :data="prisonReportDetail.meetingDetails" border>
+        <el-table-column prop="prisonerName" label="姓名" />
+        <el-table-column prop="prisonerNumber" label="囚号" />
+        <el-table-column label="家属">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              @click="showFamilyDetail(scope.row.familyId)"
+            >
+              {{ scope.row.name }}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column prop="total_time" label="总会见时间段" min-width="120px" />
+        <el-table-column prop="duration" label="会见时长（分钟）">
+          <template slot-scope="scope">
+            {{ scope.row.duration | toMinutes }}
+          </template>
+        </el-table-column> 
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              v-if="scope.row.is_interrupt !== 0"
+              type="text"
+              @click="showCallRecords(scope.row.meeting_details)"
+            >
+              详细内容
+            </el-button>
+          </template>
+        </el-table-column>
+        <p v-if="showSummary" slot="append" class="table-footer">
+          <span>{{ prisonReportDetail.jailName }}</span>
+          <span>
+            总会见时长：{{ prisonReportDetail.totalDuration | toMinutes }} 分钟
+          </span>
+        </p>
+      </el-table>
+    </el-col>
+  
+    <el-dialog
+      title="家属信息"
+      :visible.sync="familyDetailVisible"
+      @close="clearFamilyData"
+    >
+      <!-- <el-table :data="[family]" border>
+        <el-table-column prop="familyName" label="姓名" />
+        <el-table-column prop="relationship" label="关系" />
+        <el-table-column width="148px" label="身份证正面">
+          <template slot-scope="scope">
+            <m-img-viewer
+              v-if="scope.row.familyIdCardFront"
+              :url="scope.row.familyIdCardFront"
+              title="身份证正面照" />
+          </template>
+        </el-table-column>
+        <el-table-column width="148px" label="身份证背面">
+          <template slot-scope="scope">
+            <m-img-viewer
+              v-if="scope.row.familyIdCardBack"
+              :url="scope.row.familyIdCardBack"
+              title="身份证背面照" />
+          </template>
+        </el-table-column>
+        <el-table-column width="148px" label="关系证明图">
+          <template slot-scope="scope">
+            <m-img-viewer
+            v-if="scope.row.familyRelationalProofUrl"
+            :url="scope.row.familyRelationalProofUrl"
+            title="关系证明图"/>
+          </template>
+        </el-table-column>
+      </el-table> -->
+      <el-row :gutter="0">
+        <el-col :span="12">
+          <el-col :span="24">
+            <label for="">姓名：</label>
+            <span>{{ family.familyName }}</span>
+          </el-col>
+          <el-col :span="24">
+            <label for="">关系：</label>
+            <span>{{ family.relationship }}</span>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证正面：</label>
+          <m-img-viewer
+            v-if="family.familyIdCardFront"
+            :url="family.familyIdCardFront"
+            title="身份证正面"/>
+        </el-col>
+        <el-col :span="12" class="img-idCard">
+          <label for="">身份证背面：</label>
+          <m-img-viewer
+            v-if="family.familyIdCardBack"
+            :url="family.familyIdCardBack"
+            title="身份证背面"/>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12" class="img-idCard">
+          <label for="">关系证明图：</label>
+          <m-img-viewer
+            v-if="family.familyRelationalProofUrl"
+            :url="family.familyRelationalProofUrl"
+            title="关系证明图"/>
+        </el-col>
+      </el-row>
+    </el-dialog>
+
+    <el-dialog
+      title="通话记录"
+      :visible.sync="callRecordsVisible"
+      @close="clearCallRecords"
+    >
+      <el-table :data="callRecords" border>
+        <el-table-column label="开始时间">
+          <template slot-scope="scope">
+            {{ scope.row.start_time | dateFormate('yyyy-MM-dd hh:mm:ss') }}
+          </template>
+        </el-table-column>
+        <el-table-column label="结束时间">
+          <template slot-scope="scope">
+            {{ scope.row.end_time | dateFormate('yyyy-MM-dd hh:mm:ss') }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="remarks" label="备注" />
+      </el-table>
+    </el-dialog>
+  </el-row>
+</template>
+
+<script>
+import { mapState, mapActions } from 'vuex'
+
+export default {
+  data(){
+    return {
+      family: {},
+      callRecords: [],
+      familyDetailVisible: false,
+      callRecordsVisible: false
+    }
+  },
+  computed: {
+    ...mapState({
+      prisonReportDetail: state => state.prisonReportDetail,
+      jailName: state => state.global.user.jailName
+    }),
+    showSummary() {
+      const rows = this.prisonReportDetail.meetingDetails
+      return rows && rows.length
+    }
+  },
+  filters: {
+    toMinutes(s) {
+      return (s / 60).toFixed(2)
+    }
+  },
+  methods: {
+    ...mapActions(['getMeetingsFamilyDetail']),
+    async showFamilyDetail(familyId) {
+      try {
+        const res = await this.getMeetingsFamilyDetail({ id: familyId })
+
+        if (res.family) {
+          this.family = res.family
+          this.familyDetailVisible = true
+        }
+      }
+      catch (err) {}
+    },
+    showCallRecords(records) {
+      this.callRecordsVisible = true
+      this.callRecords = records
+    },
+    clearFamilyData() {
+      this.family = {}
+    },
+    clearCallRecords() {
+      this.callRecords = []
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 10px;
+}
+
+/deep/ .el-table td {
+  padding: 4px 0;
+}
+
+/deep/ .el-dialog__body {
+  padding-top: 10px;
+
+  .el-table td{
+    padding: 12px 0;
+  }
+}
+</style>
+

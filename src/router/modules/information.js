@@ -144,6 +144,7 @@ let infomation = [{
   children: [{
     path: '/visit/config',
     name: '实地探监配置',
+    props: { role: 3 },
     meta: { role: '3' },
     component: resolve => require(['@/views/meeting/visit-config'], resolve)
   }]
