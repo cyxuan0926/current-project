@@ -291,7 +291,8 @@
     <el-dialog
       :visible.sync="visible"
       class="authorize-dialog"
-      width="640px">
+      width="640px"
+      @close="handleDialogClose">
       <span
         slot="title"
         class="tips-title">提醒注意</span>
@@ -468,6 +469,8 @@ export default {
     },
     handleCancelUpload() {
       this.visible = false
+    },
+    handleDialogClose() {
       this.onProgress = false
     }
   }
