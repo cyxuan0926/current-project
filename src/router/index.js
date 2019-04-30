@@ -54,7 +54,7 @@ router.beforeEach((to, form, next) => {
      * 信息管理员（role=3）
      * 监狱管理员（role=4）
      */
-    const routesMap = [superAdmin, check, null, information, admin]
+    const routesMap = [superAdmin, check, [], information, admin]
     const routes = routesMap[JSON.parse(role)]
 
     routes.push(notFoundRoute)
