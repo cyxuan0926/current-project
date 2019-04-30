@@ -15,7 +15,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="total_time" label="总会见时间段" min-width="120px" />
-        <el-table-column prop="duration" label="会见时长（分钟）">
+        <el-table-column label="会见时长（分钟）">
           <template slot-scope="scope">
             {{ scope.row.duration | toMinutes }}
           </template>
@@ -128,6 +128,11 @@
             {{ scope.row.end_time | dateFormate('yyyy-MM-dd hh:mm:ss') }}
           </template>
         </el-table-column>
+        <el-table-column label="会见时长（分钟）">
+          <template slot-scope="scope">
+            {{ scope.row.duration | toMinutes }}
+          </template>
+        </el-table-column> 
         <el-table-column prop="remarks" label="备注" />
       </el-table>
     </el-dialog>
@@ -158,7 +163,9 @@ export default {
   },
   filters: {
     toMinutes(s) {
-      return (s / 60).toFixed(2)
+      s = s && parseFloat(s)
+
+      return typeof s === 'number' ? (s / 60).toFixed(2) : ''
     }
   },
   methods: {
@@ -170,6 +177,8 @@ export default {
         if (res.family) {
           this.family = res.family
           this.familyDetailVisible = true
+        } else {
+          this.$message({ message: '无该家属信息', type: 'warning' })
         }
       }
       catch (err) {}
@@ -193,7 +202,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  height: 52px;
   padding: 0 10px;
 }
 
