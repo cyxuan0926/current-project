@@ -339,7 +339,7 @@
           type="danger"
           size="mini"
           :disabled="loading"
-          @click="visible = false">取消上传</el-button>
+          @click="handleCancelUpload">取消上传</el-button>
         <el-button
           type="primary"
           size="mini"
@@ -465,6 +465,10 @@ export default {
         }
       })
       return false
+    },
+    handleCancelUpload() {
+      this.visible = false
+      this.onProgress = false
     }
   }
 }
