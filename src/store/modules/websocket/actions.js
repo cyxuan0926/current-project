@@ -21,7 +21,6 @@ export default {
           if (socket.logout) return
           var self = this
           this.frontTimeout = setTimeout(function() {
-            socket.send('test')
             self.serverTimeout = setTimeout(function() {
               socket.close()
             }, self.timeout)
