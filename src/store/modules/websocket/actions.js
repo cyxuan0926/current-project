@@ -99,10 +99,8 @@ export default {
       reconnect = () => {
         if (lockReconnect) return
         lockReconnect = true
-        setTimeout(function() {
-          createWS()
-          lockReconnect = false
-        }, 2000)
+        createWS()
+        lockReconnect = false
       }
     createWS()
   }
