@@ -47,7 +47,7 @@
         :disabled="!(prisonVisitConfigDetail.windowSize && !errorMsg && prisonVisitConfigDetail.queue[0] !== null)"
         size="small"
         type="primary"
-        @click="onSubmit">确定</el-button>
+        @click="onSubmit">{{ submitBtnText }}</el-button>
     </div>
   </div>
 </template>
@@ -88,14 +88,17 @@ export default {
       validator.numberRange({ min: 1, max: 20 }, this.prisonVisitConfigDetail.windowSize, handleValid)
       return msg
     },
+    hasConfig() {
+      const batchQueue = this.prisonVisitConfigDetail.batchQueue
+      return batchQueue && batchQueue.length > 0
+    },
     // 是否可以编辑配置
     canEdit() {
-      if (this.role === 0) { // 超级管理员始终可编辑
-        return true
-      } else {
-        const batchQueue = this.prisonVisitConfigDetail.batchQueue
-        return !batchQueue || batchQueue.length === 0
-      }
+      // 超级管理员始终可编辑
+      return this.role === 0 ? true : !this.hasConfig
+    },
+    submitBtnText() {
+      return this.hasConfig ? '更新' : '保存'
     }
   },
   mounted() {
