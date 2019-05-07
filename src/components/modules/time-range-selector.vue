@@ -136,7 +136,7 @@ export default {
 
 <style lang="scss" scoped>
 .m-range-selector{
-  width: 160px;
+  width: 180px;
   height: 28px;
   margin-bottom: 10px;
   float: left;

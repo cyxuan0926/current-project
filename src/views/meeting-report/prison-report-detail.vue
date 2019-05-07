@@ -120,12 +120,12 @@
       <el-table :data="callRecords" border>
         <el-table-column label="开始时间">
           <template slot-scope="scope">
-            {{ scope.row.start_time | dateFormate('yyyy-MM-dd hh:mm:ss') }}
+            {{ scope.row.start_time }}
           </template>
         </el-table-column>
         <el-table-column label="结束时间">
           <template slot-scope="scope">
-            {{ scope.row.end_time | dateFormate('yyyy-MM-dd hh:mm:ss') }}
+            {{ scope.row.end_time }}
           </template>
         </el-table-column>
         <el-table-column label="会见时长（分钟）">
