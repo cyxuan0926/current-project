@@ -5,7 +5,7 @@ let state = {
   advanceDayLimit: 1, // 远程探视申请需提前天数
   normalConfig: [{ days: [], config: [] }], // new
   specialConfig: [], // new
-  prisonVisitConfigDetail: { queue: [null] }, // new
+  prisonVisitConfigDetail: { queue: [] }, // new
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },
   originSpecial: { effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false },
