@@ -114,7 +114,6 @@ export default {
     if (this.$route.meta.permission === 'edit') this.permission = 'edit'
     if (this.permission === 'edit') {
       this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
-        console.log(this.specialConfig)
         if (!res) return
         this.configs = [...this.specialConfig]
       })
