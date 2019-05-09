@@ -6,7 +6,7 @@
       v-for="(config, index) in configs"
       :key="index"
       class="config-box">
-      <div class="day-box" v-if="config.day">
+      <div class="day-box" >
         <label class="c-label">选择日期</label>
         <el-date-picker
           v-model="config.day"
