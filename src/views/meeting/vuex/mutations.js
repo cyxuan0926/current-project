@@ -11,6 +11,9 @@ export default {
   getPrisonVisitConfigDetail(state, params) {
     state.prisonVisitConfigDetail = Object.assign({}, params)
   },
+  resetPrisonVisitConfigDetail(state) {
+    state.prisonVisitConfigDetail = { queue: [] }
+  },
   getRemoteUsualConfig(state, params) {
     state.remoteUsualConfig = Object.assign({}, params)
   },

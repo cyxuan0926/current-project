@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 import Moment from 'moment'
 import validator from '@/utils'
 
@@ -109,7 +109,11 @@ export default {
   mounted() {
     this.getPrisonVisitConfigDetail({ jailId: this.jailId })
   },
+  beforeDestroy() {
+    this.resetPrisonVisitConfigDetail()
+  },
   methods: {
+    ...mapMutations(['resetPrisonVisitConfigDetail']),
     ...mapActions(['getPrisonVisitConfigDetail', 'updatePrisonVisitConfig']),
     onSubmit(e) {
       if (!this.prisonVisitConfigDetail.queue[0]) return
