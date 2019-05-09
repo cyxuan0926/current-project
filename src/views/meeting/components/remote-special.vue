@@ -6,7 +6,7 @@
       v-for="(config, index) in configs"
       :key="index"
       class="config-box">
-      <div class="day-box" >
+      <div class="day-box">
         <label class="c-label">选择日期</label>
         <el-date-picker
           v-model="config.day"
@@ -90,7 +90,7 @@ export default {
     return {
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
       configs: [
-        { day: '', config: [], queue: [], enabledMeeting: 1 }
+        // { day: '', config: [], queue: [], enabledMeeting: 1 }
       ],
       queue: ['09:00', '09:30'],
       show: true,
@@ -114,6 +114,7 @@ export default {
     if (this.$route.meta.permission === 'edit') this.permission = 'edit'
     if (this.permission === 'edit') {
       this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
+        console.log(this.specialConfig)
         if (!res) return
         this.configs = [...this.specialConfig]
       })
