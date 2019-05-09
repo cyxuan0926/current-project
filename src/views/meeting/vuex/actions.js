@@ -128,7 +128,7 @@ export default {
   getPrisonVisitConfigDetail({ commit }, params) {
     return http.getPrisonVisitConfigDetail(params).then(res => {
       if (!res) return
-      res.queue = [null]
+      res.queue = [[]]
       if (res.batchQueue && res.batchQueue.length) {
         res.queue = []
         res.batchQueue.forEach(queue => {

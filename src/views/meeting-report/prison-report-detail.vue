@@ -15,9 +15,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="total_time" label="总会见时间段" min-width="120px" />
-        <el-table-column label="会见时长（分钟）">
+        <el-table-column label="会见时长">
           <template slot-scope="scope">
-            {{ scope.row.duration | toMinutes }}
+            {{ scope.row.duration | time }}
           </template>
         </el-table-column> 
         <el-table-column label="操作">
@@ -34,7 +34,7 @@
         <p v-if="showSummary" slot="append" class="table-footer">
           <span>{{ prisonReportDetail.jailName }}</span>
           <span>
-            总会见时长：{{ prisonReportDetail.totalDuration | toMinutes }} 分钟
+            总会见时长：{{ prisonReportDetail.totalDuration | time }}
           </span>
         </p>
       </el-table>
@@ -128,9 +128,9 @@
             {{ scope.row.end_time }}
           </template>
         </el-table-column>
-        <el-table-column label="会见时长（分钟）">
+        <el-table-column label="会见时长">
           <template slot-scope="scope">
-            {{ scope.row.duration | toMinutes }}
+            {{ scope.row.duration | time }}
           </template>
         </el-table-column> 
         <el-table-column prop="remarks" label="备注" />
@@ -159,13 +159,6 @@ export default {
     showSummary() {
       const rows = this.prisonReportDetail.meetingDetails
       return rows && rows.length
-    }
-  },
-  filters: {
-    toMinutes(s) {
-      s = s && parseFloat(s)
-
-      return typeof s === 'number' ? (s / 60).toFixed(2) : ''
     }
   },
   methods: {
