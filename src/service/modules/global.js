@@ -1,4 +1,4 @@
-// import * as service from '../config/service'
+import * as service from '../config/service'
 import axios from 'axios'
 import { deleteMediaUrl, default as urls } from '../urls'
 
@@ -12,5 +12,12 @@ export default {
     }).catch(error => {
       console.log(error)
     })
+  },
+  // 修改用户名密码执行的方法
+  modifyPassword: userInfo =>
+    service.post('/users/resetPwd', userInfo).then(res => res).catch(err => err),
+  // 上传文件
+  uploadFile: file => {
+    return service.postFile('/upload/uploadfile', file).then(res => res && res.data)
   }
 }

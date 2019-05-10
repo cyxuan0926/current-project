@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'Vuex'
+import { mapState, mapActions } from 'vuex'
 import TheHeader from './the-header'
 import TheSidebar from './the-aside'
 import TheBreadcrumb from './the-breadcrumb'
@@ -70,9 +70,8 @@ export default {
   },
   // watch: {
   //   '$route' (to, from) {
-  //     console.log(to, from)
-  //     let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
-  //     if (to.meta.hidden || (routes && routes.indexOf(to.matched[to.matched.length - 1].path) < 0)) this.$router.replace({ path: '/dashboard'})
+  //     // let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
+  //     // if (to.meta.hidden || (routes && routes.indexOf(to.matched[to.matched.length - 1].path) < 0)) this.$router.replace({ path: '/dashboard'})
   //   }
   // }
 }

@@ -30,23 +30,19 @@
           prop="name"
           label="姓名" />
         <el-table-column
-          min-width="138px"
-          label="身份证正面">
+          min-width="90px"
+          label="身份证信息">
           <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.idCardFront"
-              :url="scope.row.idCardFront"
-              title="身份证正面"/>
-          </template>
-        </el-table-column>
-        <el-table-column
-          min-width="138px"
-          label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.idCardBack"
-              :url="scope.row.idCardBack"
-              title="身份证背面"/>
+            <div class="idcard-box">
+              <m-img-viewer
+                v-if="scope.row.idCardFront"
+                :url="scope.row.idCardFront"
+                title="身份证正面"/>
+              <m-img-viewer
+                v-if="scope.row.idCardBack"
+                :url="scope.row.idCardBack"
+                title="身份证背面"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -341,3 +337,12 @@ export default {
 .withdraw-box
   margin-bottom 20px;
 </style>
+
+<style lang="scss" scoped>
+.idcard-box {
+  img + img {
+    margin-top: 5px;
+  }
+}
+</style>
+

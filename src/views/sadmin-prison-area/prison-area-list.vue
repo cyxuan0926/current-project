@@ -14,6 +14,9 @@
           label="监区管理"
           name="first" />
       </el-tabs>
+      <h3 v-if="parseInt(roleType) === 0" class="prison-name">
+        {{ currentPrison && currentPrison.title }}
+      </h3>
       <el-table
         :data="prisonAreas.contents"
         border
@@ -22,9 +25,9 @@
         <el-table-column
           prop="name"
           label="监区名称" />
-        <el-table-column
+        <!-- <el-table-column
           prop="jailName"
-          label="所属监狱" />
+          label="所属监狱" /> -->
         <el-table-column
           prop="createdAt"
           label="创建时间">
@@ -88,27 +91,46 @@ export default {
           label: '监狱名称',
           getting: true,
           belong: { value: 'id', label: 'title' },
-          filterable: true
+          filterable: true,
+          value: null
         }
       },
       dialogVisible: false,
       prisonArea: {},
-      index: ''
+      index: '',
+      filter: {
+        jailId: ''
+      }
     }
   },
   computed: {
     ...mapState(['prisonAreas', 'prisonAll']),
     roleType() {
       if (localStorage['user']) return JSON.parse(localStorage['user']).role
+    },
+    currentPrison() {
+      return this.prisonAll.find(prison => this.filter.jailId === prison.id)
     }
   },
   mounted() {
-    this.getDatas()
     if (this.roleType !== '4') {
       this.getPrisonAll().then(() => {
         this.searchItems.jailId.options = this.prisonAll
         this.searchItems.jailId.getting = false
+
+        const firstPrison = this.prisonAll && this.prisonAll[0]
+
+        if (firstPrison) { // 超级管理员默认获取第一个监狱的监区数据
+          this.filter = Object.assign({}, this.filter, {
+            jailId: firstPrison.id
+          })
+          this.searchItems.jailId.value = firstPrison.id
+          this.getDatas()
+        }
       })
+    }
+    else { // 监狱管理员
+      this.getDatas()
     }
   },
   methods: {
@@ -118,8 +140,12 @@ export default {
       this.getDatas()
     },
     getDatas() {
-      if (this.roleType !== '4') this.getPrisonAreas({ ...this.filter, ...this.pagination })
-      else this.getPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination })
+      if (this.roleType !== '4') {
+        this.getPrisonAreas({ ...this.filter, ...this.pagination })
+      }
+      else { // 监狱管理员
+        this.getPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination })
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -161,5 +187,14 @@ export default {
   button+button{
     margin: 5px 6px 0 0;
   }
+}
+
+.prison-name {
+  margin: 0;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-weight: normal;
+  background-color: #e2e2e2;
 }
 </style>

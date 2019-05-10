@@ -5,6 +5,10 @@
       label-width="140px"
       :model="meeting"
       :rules="rules">
+      <remote-visit-day
+        v-model="meeting.advanceDayLimit"
+        :hasUpdateBtn="false"
+      />
       <el-form-item
         prop="dailyApplyLimit"
         label="每人日申请次数限制">
@@ -46,18 +50,22 @@
 import { mapActions, mapState } from 'vuex'
 // import Moment from 'moment'
 import validator from '@/utils/validate'
+import remoteVisitDay from '@/views/meeting/components/remote-visit-day'
 import remoteUsual from '@/views/meeting/components/remote-usual'
 import remoteSpecial from '@/views/meeting/components/remote-special'
 
 export default {
-  components: { remoteUsual, remoteSpecial },
+  components: { remoteVisitDay, remoteUsual, remoteSpecial },
   data() {
     return {
       canAdd: false,
       rules: {
         dailyApplyLimit: [{ validator: validator.isNumber }, { validator: validator.numberRange, min: 0 }]
       },
-      meeting: { dailyApplyLimit: '' }
+      meeting: {
+        dailyApplyLimit: '',
+        advanceDayLimit: 1 // 远程探视申请需提前天数
+      }
     }
   },
   computed: {

@@ -1,11 +1,14 @@
 import api from './service'
+import BigNumber from 'bignumber.js'
 
 export default {
   getAccountList: ({ commit }, params) => {
     return api.getAccountList(params).then(res => {
       if (!res) return
       res.accountLedgers.forEach(item => {
-        item.remark = (parseInt(100 * item.recharge) - parseInt(100 * item.consume) - parseInt(100 * item.preConsume) - parseInt(100 * item.refund) - parseInt(100 * item.balance)) / 100
+        item.remark = new BigNumber(item.recharge).minus(item.consume).minus(item.preConsume).minus(item.refund).minus(item.balance).toNumber()
+
+        // item.remark = (parseInt(100 * item.recharge) - parseInt(100 * item.consume) - parseInt(100 * item.preConsume) - parseInt(100 * item.refund) - parseInt(100 * item.balance)) / 100
       })
       commit('getAccountList', res)
       return true

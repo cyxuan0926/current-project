@@ -1,4 +1,7 @@
 export default {
+  setAdvanceDayLimit(state, advanceDayLimit) {
+    state.advanceDayLimit = advanceDayLimit
+  },
   getRemoteNormalConfig(state, params) {
     state.normalConfig = params
   },
@@ -7,6 +10,9 @@ export default {
   },
   getPrisonVisitConfigDetail(state, params) {
     state.prisonVisitConfigDetail = Object.assign({}, params)
+  },
+  resetPrisonVisitConfigDetail(state) {
+    state.prisonVisitConfigDetail = { queue: [] }
   },
   getRemoteUsualConfig(state, params) {
     state.remoteUsualConfig = Object.assign({}, params)

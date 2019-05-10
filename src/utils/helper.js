@@ -57,3 +57,8 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
     return `${ mm >= 100 ? mm : fillPre(mm) }:${ fillPre(ss) }`
   }
 }
+
+// 简单克隆
+export const deepCopy = (obj) => {
+  return JSON.parse(JSON.stringify(obj))
+}

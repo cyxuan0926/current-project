@@ -18,5 +18,16 @@ export default {
   },
   setUrlStorage: (state, params) => {
     state.urlStorage = params
+  },
+  setDynamicRoutes: (state, routes) => {
+    state.dynamicRoutes = routes
+  },
+  // 获取修改密码的结果
+  modifyPassword: (state, params) => {
+    state.modifyPasswordResult = params
+  },
+  // 上传文件
+  uploadFile: (state, uploadResult) => {
+    state.uploadResult = uploadResult
   }
 }

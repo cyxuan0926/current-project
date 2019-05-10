@@ -1,6 +1,20 @@
 import http from './service'
 
 export default {
+  getRemoteAdvanceDayLimit: async({ commit }, params) => {
+    try {
+      const res = await http.getRemoteAdvanceDayLimit(params)
+      res && commit('setAdvanceDayLimit', res.advanceDayLimit)
+    }
+    catch (err) { console.log(err) }
+  },
+  updateRemoteAdvanceDayLimit: async({ commit }, params) => {
+    try {
+      await http.updateRemoteAdvanceDayLimit(params)
+      commit('setAdvanceDayLimit', params.advanceDayLimit)
+    }
+    catch (err) { console.log(err) }
+  },
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return
@@ -114,19 +128,23 @@ export default {
   getPrisonVisitConfigDetail({ commit }, params) {
     return http.getPrisonVisitConfigDetail(params).then(res => {
       if (!res) return
-      res.queue = [null]
+      res.queue = [[]]
       if (res.batchQueue && res.batchQueue.length) {
         res.queue = []
         res.batchQueue.forEach(queue => {
           res.queue.push(queue.split('-'))
         })
-        res.canNotChange = true
+        // res.canNotChange = true
       }
       commit('getPrisonVisitConfigDetail', res)
       return true
     })
   },
-  updatePrisonVisitConfig: ({ commit }, params) => {
-    return http.updatePrisonVisitConfig(params).then(res => res)
+  updatePrisonVisitConfig: ({ state, commit }, params) => {
+    return http.updatePrisonVisitConfig(params).then(res => {
+      const config = Object.assign({}, state.prisonVisitConfigDetail, params)
+      commit('getPrisonVisitConfigDetail', config)
+      return res
+    })
   }
 }

@@ -291,7 +291,8 @@
     <el-dialog
       :visible.sync="visible"
       class="authorize-dialog"
-      width="640px">
+      width="640px"
+      @close="handleDialogClose">
       <span
         slot="title"
         class="tips-title">提醒注意</span>
@@ -339,7 +340,7 @@
           type="danger"
           size="mini"
           :disabled="loading"
-          @click="visible = false">取消上传</el-button>
+          @click="handleCancelUpload">取消上传</el-button>
         <el-button
           type="primary"
           size="mini"
@@ -366,7 +367,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'uploadResult', 'prisonerYZKDataResult'])
+    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'prisonerYZKDataResult']),
+    ...mapState({
+      uploadResult: state => state.global.uploadResult
+    })
   },
   watch: {
     tabs(val) {
@@ -462,6 +466,12 @@ export default {
         }
       })
       return false
+    },
+    handleCancelUpload() {
+      this.visible = false
+    },
+    handleDialogClose() {
+      this.onProgress = false
     }
   }
 }

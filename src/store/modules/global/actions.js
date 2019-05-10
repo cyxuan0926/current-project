@@ -86,5 +86,23 @@ export default {
       commit('setUrlStorage', false)
     }
     if (params.save) localStorage.setItem('save', JSON.stringify(urls))
+  },
+  // 上传文件
+  uploadFile({ commit }, params) {
+    let formData = new FormData()
+    params && formData.append('file', params)
+    return api.uploadFile(formData).then(res => {
+      if (!res) return
+      commit('uploadFile', res)
+      return true
+    })
+  },
+  // 修改用户名密码的方法
+  modifyPassword({ commit }, regs) {
+    let params = {
+      old_password: regs.password,
+      new_password: regs.new_password
+    }
+    api.modifyPassword(params).then(res => res.code === 200 && commit('modifyPassword', res)).catch(err => console.log(err))
   }
 }

@@ -112,7 +112,7 @@
           :end-value="item.endValue"
           @onEnsure="onEnsure" />
       </template>
-      <template>
+      <template v-if="items">
         <el-button
           v-if="buttonText"
           @click="onSearch">{{ buttonText }}</el-button>

@@ -90,7 +90,7 @@ export default {
     return {
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
       configs: [
-        { day: '', config: [], queue: [], enabledMeeting: 1 }
+        // { day: '', config: [], queue: [], enabledMeeting: 1 }
       ],
       queue: ['09:00', '09:30'],
       show: true,

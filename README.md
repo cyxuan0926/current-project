@@ -2,6 +2,12 @@
 
 > A Vue.js project
 
+## 提交代码
+```
+npm run commit
+```
+禁止使用 `git commit` 提交代码，[采用 Angular 团队的规范](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
+
 ## Build Setup
 
 ``` bash

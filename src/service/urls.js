@@ -4,6 +4,9 @@
 const env = 'master' // 正式环境
 const nodeUrl = 'http://120.78.190.101:1339'
 
+// eslint-disable-next-line
+const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
+
 // apiHost: 接口ip+端口,
 // apiPath: 接口的共同前缀,
 // audioUrl: 音频上传地址,
@@ -21,16 +24,16 @@ const config = {
     videoUrl: `${ nodeUrl }/video-server/videos`,
     socketUrl: 'ws://120.78.190.101:8081/ywgk/websocket'
   },
-  auth: {
-    apiHost: 'http://120.78.190.101:8085',
+  development: {
+    apiHost: 'http://192.168.0.41:8085',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://120.78.190.101:8085/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
-  demo: {
+  test: {
     apiHost: 'http://120.78.190.101:8083',
     apiPath: '/ywgk-demo',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -39,7 +42,7 @@ const config = {
     videoUrl: `${ nodeUrl }/video-server/videos`,
     socketUrl: 'ws://120.78.190.101:8083/ywgk-demo/websocket'
   },
-  master: {
+  production: {
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
@@ -55,7 +58,7 @@ const option = {
   token: '523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a'
 }
 
-export let deleteMediaUrl = env === 'master'
+export let deleteMediaUrl = env === 'production'
   ? 'https://www.yuwugongkai.com/image-server/delete/resources'
   : `${ nodeUrl }/delete/resources`
 

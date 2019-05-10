@@ -5,14 +5,23 @@
   "author": "leelic07 <330314702@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env BUILD_ENV=test webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js",
     "e2e": "node test/e2e/runner.js",
     "test": "jest",
-    "build": "node build/build.js"
+    "build:dev": "cross-env BUILD_ENV=test node build/build.js",
+    "build:test": "cross-env BUILD_ENV=test node build/build.js",
+    "build:prod": "cross-env BUILD_ENV=production node build/build.js",
+    "commit": "git-cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   },
   "dependencies": {
+    "bignumber.js": "^8.1.1",
     "element-ui": "^2.0.9",
     "viewerjs": "^1.2.0",
     "vue": "^2.5.2",
@@ -38,11 +47,13 @@
     "babel-register": "^6.22.0",
     "chalk": "^2.0.1",
     "chromedriver": "^2.27.2",
+    "commitizen": "^3.1.1",
     "copy-webpack-plugin": "^4.0.1",
-    "cross-env": "^5.0.1",
+    "cross-env": "^5.2.0",
     "cross-spawn": "^5.0.1",
     "css": "^2.2.1",
     "css-loader": "^0.28.7",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^3.0.0",
