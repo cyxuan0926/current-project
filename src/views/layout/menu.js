@@ -60,16 +60,16 @@ let superAdminMenu = [{
     children: [
       {
         path: '/meeting/list',
-        title: '会见申请列表',
+        title: '远程会见申请列表',
         icon: 'iconfont icon-circle-o'
       }, {
         path: '/meeting/adjust',
-        title: '会见申请调整',
+        title: '远程会见申请调整',
         icon: 'iconfont icon-circle-o'
       }, {
-        path: '/meeting/records',
-        title: '免费会见记录',
-        icon: 'iconfont icon-circle-o'
+        path: '/visit/list',
+        title: '实地探监管理',
+        icon: 'iconfont icon-shidihuijian'
       }
     ]
   }, {
@@ -86,12 +86,12 @@ let superAdminMenu = [{
         path: '/meeting-report/prison-area',
         title: '监区统计',
         icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/meeting/records',
+        title: '远程免费会见记录',
+        icon: 'iconfont icon-circle-o'
       }
     ]
-  }, {
-    path: '/visit/list',
-    title: '实地探监管理',
-    icon: 'iconfont icon-shidihuijian'
   }, {
     path: '/mailbox/list',
     title: '监狱长信箱',

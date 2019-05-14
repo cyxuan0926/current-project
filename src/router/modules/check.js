@@ -15,7 +15,7 @@ let check = [{
   meta: { hidden: true },
   children: [{
     path: '/meeting/list',
-    name: '会见申请列表',
+    name: '远程会见申请列表',
     component: resolve => require(['@/views/check-meeting/meeting-list'], resolve)
     // beforeRouteEnter(to, from, next) {
     //   console.log(1)
@@ -34,13 +34,9 @@ let check = [{
     // }
   }, {
     path: '/meeting/adjust',
-    name: '会见申请调整',
+    name: '远程会见申请调整',
     component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve)
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)
-  }, {
-    path: '/meeting/records',
-    name: '免费会见记录',
-    component: resolve => require(['@/views/check-meeting/meeting-records'], resolve)
   }]
 }, {
   path: '/meeting-report',
@@ -54,10 +50,14 @@ let check = [{
     path: '/meeting-report/prison-area',
     name: '监区统计',
     component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
+  }, {
+    path: '/meeting/records',
+    name: '远程免费会见记录',
+    component: resolve => require(['@/views/check-meeting/meeting-records'], resolve)
   }]
 }, {
   path: '/visit',
-  name: '实地探监管理',
+  name: '会见申请管理',
   meta: { hidden: true },
   children: [{
     path: '/visit/list',
