@@ -11,7 +11,7 @@
         value="first"
         type="card">
         <el-tab-pane
-          label="免费会见记录"
+          label="远程免费会见记录"
           name="first" />
       </el-tabs>
       <el-table
