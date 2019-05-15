@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default {
   computed: {
@@ -44,6 +44,7 @@ export default {
     })
   },
   methods: {
+    ...mapMutations(['setLoginState']),
     ...mapActions(['handleCollapse', 'logout', 'resetState']),
     handleNavigation(e) {
       this.$router.push(e)
@@ -60,6 +61,7 @@ export default {
           localStorage.removeItem('routes')
           this.$router.replace('/login')
           this.resetState('logout')
+          this.setLoginState()
         })
       }).catch(() => {})
     }

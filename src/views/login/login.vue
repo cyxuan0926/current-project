@@ -35,7 +35,7 @@
         <el-button
           class="width100"
           type="primary"
-          :loading="loading"
+          :loading="loginState.loading"
           @click="onSubmit">登录</el-button>
       </div>
     </div>
@@ -44,7 +44,7 @@
 
 <script>
 import { Base64 } from 'js-base64'
-import { mapActions } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -54,14 +54,17 @@ export default {
         prison: ''
       },
       isRember: false,
-      loading: false,
       rules: {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         prison: [{ required: true, message: '请输入监狱编号', trigger: 'blur' }]
-      },
-      loged: false
+      }
     }
+  },
+  computed: {
+    ...mapState({
+      loginState: state => state.global.loginState
+    })
   },
   mounted() {
     if (localStorage.getItem('user')) {
@@ -81,16 +84,17 @@ export default {
     })
   },
   methods: {
+    ...mapMutations(['setLoginState']),
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
     onSubmit() {
-      if (this.loged || this.loading) return false
+      if (this.loginState.loged || this.loginState.loading) return false
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.loading = true
+          this.setLoginState({ loading: true })
           this.login(this.formData).then(res => {
-            this.loading = false
+            this.setLoginState()
             if (!res) return
-            this.loged = true
+            this.setLoginState({ loged: true })
             let params = {
               password: Base64.encode(this.formData.password),
               username: this.formData.username,

@@ -5,6 +5,7 @@
     <el-row :gutter="0">
       <el-col :span="12">
         <video
+          ref="video"
           v-if="jailInformation.videoPath"
           controls
           poster="/static/images/video-cover.png"
