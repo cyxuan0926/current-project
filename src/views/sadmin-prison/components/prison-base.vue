@@ -10,6 +10,7 @@
 </template>
 
 <script>
+// 现在问题在于文件那些被删除了 但是没有同步到数据库 也就是没有掉更新接口
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
@@ -57,6 +58,7 @@ export default {
     }
   },
   destroyed() {
+    console.log(1111)
     this.removeUrlStorage()
   },
   methods: {
