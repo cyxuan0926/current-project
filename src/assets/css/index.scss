@@ -123,3 +123,8 @@ a{
     text-align: center;
   }
 }
+
+// 修复 table 组件表头不对齐的问题
+.el-table th.gutter{
+  display: table-cell !important;
+}

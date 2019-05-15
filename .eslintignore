@@ -4,3 +4,4 @@
 /src/assets/
 /*.js
 /test/unit/coverage/
+/deploy/

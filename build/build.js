@@ -3,6 +3,7 @@ require('./check-versions')()
 
 process.env.NODE_ENV = 'production'
 
+const del = require('del')
 const ora = require('ora')
 const rm = require('rimraf')
 const path = require('path')
@@ -10,6 +11,8 @@ const chalk = require('chalk')
 const webpack = require('webpack')
 const config = require('../config')
 const webpackConfig = require('./webpack.prod.conf')
+
+del.sync(path.resolve(__dirname, "../dist"));
 
 const spinner = ora('building for production...')
 spinner.start()
