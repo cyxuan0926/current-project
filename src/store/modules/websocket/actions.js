@@ -99,9 +99,7 @@ export default {
       reconnect = () => {
         if (lockReconnect) return
         lockReconnect = true
-        console.time()
         createWS()
-        console.timeEnd()
         lockReconnect = false
       }
     createWS()

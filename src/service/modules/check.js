@@ -140,7 +140,7 @@ export default {
   importSuccessfulAnalysisExcel: params => {
     return service.post(params.url, { path: params.path }).then(res => res && Object.assign(res.data, { type: params.type }))
   },
-  // 服刑人员零花钱管理-列表
+  //  导入数据详情列表-服刑人员零花钱管理列表
   getPrisonersPocketMoney: params => {
     return service.get('/pocket_money/page', params).then(res => res && res.data)
   },
@@ -152,8 +152,16 @@ export default {
   changePrisonArea: params => {
     return service.post('/prisoners/changePrisonArea', params).then(res => res)
   },
-  // 服刑人员狱内消费情况 - 列表
+  // 导入数据详情列表-服刑人员狱内消费情况列表
   getPrisonersInsideJailsCosts: params => {
     return service.get('/prisonerConsume/page', params).then(res => res && res.data)
+  },
+  //  导入数据详情列表-罪犯刑期变动信息列表
+  getPrisonTerms: params => {
+    return service.get('/prison_terms/page', params).then(res => res && res.data)
+  },
+  // 导入数据详情列表-罪犯奖励惩罚信息列表
+  getPrisonerRewardPunishments: params => {
+    return service.get('/prisoner_reward_punishments/page', params).then(res => res && res.data)
   }
 }

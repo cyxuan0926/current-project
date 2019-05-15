@@ -47,6 +47,7 @@ export default {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
       switch (res.code) {
+        // 存储url 包括以前的 还有新的
         case 200:
           this.$message.success('音频上传成功')
           this.$emit('success', `${ res.url }?token=${ this.$urls.token }`)

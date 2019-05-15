@@ -19,7 +19,7 @@ import checkPrisoner from '@/views/check-prisoner/vuex'
 import checkPrisonDataManagement from '@/views/check-prisoner-data/vuex'
 import checkRegistration from '@/views/check-registration/vuex'
 import checkVisit from '@/views/check-visit/vuex'
-import checkPrisonerPocketMoney from '@/views/check-prisoner-pocket-money/vuex'
+// import checkPrisonerPocketMoney from '@/views/check-prisoner-pocket-money/vuex'
 import download from '@/views/download/vuex'
 import infoPrisonAffairsPublic from '@/views/info-prison-affairs-public/vuex'
 import meeting from '@/views/meeting/vuex'
@@ -31,7 +31,8 @@ import layout from '@/views/layout/vuex-and-service'
 import login from '@/views/login/vuex-and-service'
 import trade from '@/views/trade/vuex-and-service'
 import global from './modules/global'
-import checkPrisonerInsideJailsCosts from '@/views/check-prisoner-inside-jails-costs/vuex'
+// import checkPrisonerInsideJailsCosts from '@/views/check-prisoner-inside-jails-costs/vuex'
+import checkDataImportDetails from '@/views/check-data-import-details/vuex'
 
 import filter from './modules/filter'
 
@@ -70,12 +71,13 @@ merge(
   checkMeeting,
   checkPrisonDataManagement,
   checkPrisoner,
-  checkPrisonerPocketMoney,
+  // checkPrisonerPocketMoney,
   checkRegistration,
   checkVisit,
   noPage,
   websocket,
-  checkPrisonerInsideJailsCosts
+  // checkPrisonerInsideJailsCosts,
+  checkDataImportDetails
 )
 export default new Vuex.Store({
   actions,

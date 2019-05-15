@@ -142,7 +142,7 @@ export default {
   },
   data() {
     return {
-      selectItem: [1, 10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
+      selectItem: [ 1, 10, 20, 30, 40, 50 ], // 每页可以提供的显示页数的数组
       pageSize: 10,
       startValue: null,
       endValue: null,
