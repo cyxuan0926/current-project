@@ -8,6 +8,12 @@ npm run commit
 ```
 禁止使用 `git commit` 提交代码，[采用 Angular 团队的规范](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 
+## 部署
+```sh
+npm run deploy:test # 测试环境部署
+npm run deploy:prod # 生产环境部署
+```
+
 ## Build Setup
 
 ``` bash
