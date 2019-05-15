@@ -30,7 +30,7 @@
           prop="name"
           label="姓名" />
         <el-table-column
-          min-width="90px"
+          width="148px"
           label="身份证信息">
           <template slot-scope="scope">
             <div class="idcard-box">
