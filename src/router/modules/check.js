@@ -116,7 +116,7 @@ let check = [{
     component: resolve => require(['@/views/check-data-import-details/prisoner-term-change-list'], resolve)
   }, {
     path: '/import-data-details/prisoner-reward-punishment/list',
-    name: '服刑人员惩罚详情表',
+    name: '服刑人员奖惩详情表',
     component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve)
   }, {
     path: '/import-data-details/prisoner-pocket-money/list',

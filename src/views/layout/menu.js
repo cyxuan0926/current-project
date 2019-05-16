@@ -156,7 +156,7 @@ let superAdminMenu = [{
         icon: 'iconfont icon-circle-o'
       }, {
         path: '/import-data-details/prisoner-reward-punishment/list',
-        title: '服刑人员惩罚详情表',
+        title: '服刑人员奖惩详情表',
         icon: 'iconfont icon-circle-o'
       }, {
         path: '/import-data-details/prisoner-pocket-money/list',

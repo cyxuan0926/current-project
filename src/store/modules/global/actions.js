@@ -26,28 +26,23 @@ export default {
     if (!params) return
     commit('resetState', params)
   },
-  // 保存urls到localstorage
   setUrlStorage({ commit }, params) {
     let urls = getUrls(params),
       urlStorage = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : [],
-      u = Array.from(new Set([...urls, ...urlStorage])) // 去重之后 转换为纯数组
+      u = Array.from(new Set([...urls, ...urlStorage]))
     localStorage.setItem('urls', JSON.stringify(u))
   },
-  // 把新的urls保存的localstorage
   setNewUrlStorage({ commit }, params) {
     let urls = getUrls(params),
       urlStorage = localStorage.getItem('newUrls') ? JSON.parse(localStorage.getItem('newUrls')) : [],
       u = Array.from(new Set([...urls, ...urlStorage]))
     localStorage.setItem('newUrls', JSON.stringify(u))
   },
-  // 删除url state.urlStorage
   removeUrlStorage({ state, dispatch }) {
     if (state.urlStorage && localStorage.getItem('newUrls')) {
-      console.log(1)
       localStorage.removeItem('newUrls')
     }
     else if (!state.urlStorage && localStorage.getItem('newUrls')) {
-      console.log(2)
       dispatch('deleteUrls', { urls: JSON.parse(localStorage.getItem('newUrls')), destroyed: true })
     }
     else if (!state.urlStorage) {
@@ -55,7 +50,6 @@ export default {
       localStorage.removeItem('save')
     }
   },
-  // 删除图片
   deleteUrls({ commit }, params) {
     let deleteUrls, urls, urlStorage = JSON.parse(localStorage.getItem('urls')) || JSON.parse(localStorage.getItem('save')) || []
     if (JSON.parse(localStorage.getItem('save'))) {
@@ -77,7 +71,7 @@ export default {
     deleteUrls = localStorage.getItem('delete') ? JSON.parse(localStorage.getItem('delete')) : []
     urlStorage = [...urlStorage, ...deleteUrls]
     if (urlStorage.length) {
-      api.deleteUrls(urlStorage).then(res => {
+      return api.deleteUrls(urlStorage).then(res => {
         if (!res) {
           localStorage.setItem('delete', JSON.stringify(urlStorage))
         }
