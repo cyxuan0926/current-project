@@ -58,7 +58,6 @@ export default {
     }
   },
   destroyed() {
-    console.log(1111)
     this.removeUrlStorage()
   },
   methods: {
