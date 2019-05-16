@@ -36,7 +36,7 @@
           prop="ndry"/> 
         <el-table-column
           label="数据导入人员"
-          prop="real_name"/>
+          prop="realName"/>
         <el-table-column label="数据导入时间">
           <template slot-scope="scope">
             {{ scope.row.createdAt | Date }}
