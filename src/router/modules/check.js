@@ -57,7 +57,7 @@ let check = [{
   }]
 }, {
   path: '/visit',
-  name: '会见申请管理',
+  name: '实地探监管理',
   meta: { hidden: true },
   children: [{
     path: '/visit/list',
