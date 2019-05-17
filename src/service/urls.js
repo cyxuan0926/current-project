@@ -51,6 +51,15 @@ const config = {
     // fileUrl: 'https://www.yuwugongkai.com/image-server',
     videoUrl: 'https://www.yuwugongkai.com/video-server/videos',
     socketUrl: 'wss://www.yuwugongkai.com/ws'
+  },
+  ybDevelopment: {
+    apiHost: 'http://192.168.0.54:8083',
+    apiPath: '/ywgk-yb',
+    audioUrl: `${ nodeUrl }/audio-server/audios`,
+    imageUrl: `${ nodeUrl }/image-server/avatars`,
+    // fileUrl: `${ nodeUrl }/image-server`,
+    videoUrl: `${ nodeUrl }/video-server/videos`,
+    socketUrl: 'ws://192.168.0.54:8083/websocket'
   }
 }
 
@@ -63,6 +72,7 @@ export let deleteMediaUrl = env === 'production'
   : `${ nodeUrl }/delete/resources`
 
 export default {
+  imageUrl: `${ nodeUrl }/image-server/avatars`,
   ...config[env],
   ...option
 }
