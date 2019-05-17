@@ -43,6 +43,7 @@ export default {
       localStorage.removeItem('newUrls')
     }
     else if (!state.urlStorage && localStorage.getItem('newUrls')) {
+      console.log(22)
       dispatch('deleteUrls', { urls: JSON.parse(localStorage.getItem('newUrls')), destroyed: true })
     }
     else if (!state.urlStorage) {
@@ -51,6 +52,7 @@ export default {
     }
   },
   deleteUrls({ commit }, params) {
+    console.log(params)
     let deleteUrls, urls, urlStorage = JSON.parse(localStorage.getItem('urls')) || JSON.parse(localStorage.getItem('save')) || []
     if (JSON.parse(localStorage.getItem('save'))) {
       urlStorage = Array.from(new Set(urlStorage.concat(JSON.parse(localStorage.getItem('save')))))
@@ -61,7 +63,7 @@ export default {
     }
     else {
       urls = getUrls(params)
-      urls.forEach((url) => {
+      urls.forEach(url => {
         if (urlStorage.includes(url)) {
           urlStorage.splice(urlStorage.findIndex(u => u === url), 1)
         }
@@ -70,6 +72,7 @@ export default {
     localStorage.removeItem('newUrls')
     deleteUrls = localStorage.getItem('delete') ? JSON.parse(localStorage.getItem('delete')) : []
     urlStorage = [...urlStorage, ...deleteUrls]
+    console.log(deleteUrls, urls, urlStorage)
     if (urlStorage.length) {
       return api.deleteUrls(urlStorage).then(res => {
         if (!res) {
