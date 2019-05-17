@@ -34,7 +34,7 @@
         <el-table-column
           label="减刑时间"
           min-width="110"
-          prop="term_start" />
+          prop="termStart" />
         <el-table-column
           label="变动类型"
           prop="changetype" />
@@ -46,7 +46,7 @@
         <el-table-column
           label="变动后刑期止日"
           min-width="110"
-          prop="term_finish" />  
+          prop="termFinish" />  
         <el-table-column
           label="数据导入人员"
           min-width="95"
