@@ -30,6 +30,13 @@ module.exports = {
         pathRewrite: {
           '^/ywgk': '/ywgk'
         }
+      },
+      '/ywgk-yb': {
+        target: 'http://192.168.0.54:8083/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ywgk-yb': '/'
+        }
       }
     },
     // Various Dev Server settings

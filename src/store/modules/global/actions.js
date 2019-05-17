@@ -61,7 +61,7 @@ export default {
     }
     else {
       urls = getUrls(params)
-      urls.forEach((url) => {
+      urls.forEach(url => {
         if (urlStorage.includes(url)) {
           urlStorage.splice(urlStorage.findIndex(u => u === url), 1)
         }
@@ -71,7 +71,7 @@ export default {
     deleteUrls = localStorage.getItem('delete') ? JSON.parse(localStorage.getItem('delete')) : []
     urlStorage = [...urlStorage, ...deleteUrls]
     if (urlStorage.length) {
-      return api.deleteUrls(urlStorage).then(res => {
+      api.deleteUrls(urlStorage).then(res => {
         if (!res) {
           localStorage.setItem('delete', JSON.stringify(urlStorage))
         }
