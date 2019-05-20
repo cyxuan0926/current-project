@@ -24,10 +24,7 @@ export default {
           if (socket.logout) return
           var self = this
           this.frontTimeout = setTimeout(function() {
-<<<<<<< HEAD
             socket.send('PING')
-=======
->>>>>>> auth
             self.serverTimeout = setTimeout(function() {
               socket.close()
             }, 0.2 * ONE_MINUTES)
