@@ -115,7 +115,6 @@ export default {
     ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
   },
   mounted() {
-    console.log(this.$route)
     if (this.routeRole === '0') {
       this.getPrisonAllWithBranchPrison().then(res => {
         this.gettingJails = false

@@ -1,5 +1,6 @@
 import api from '@/service/modules/global'
 
+// 获取解析url
 const getUrls = (params) => {
   let { urls, contents } = params
   for (var i = 0; i < urls.length; i++) {
@@ -60,7 +61,7 @@ export default {
     }
     else {
       urls = getUrls(params)
-      urls.forEach((url) => {
+      urls.forEach(url => {
         if (urlStorage.includes(url)) {
           urlStorage.splice(urlStorage.findIndex(u => u === url), 1)
         }

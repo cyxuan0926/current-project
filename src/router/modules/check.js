@@ -17,21 +17,6 @@ let check = [{
     path: '/meeting/list',
     name: '远程会见申请列表',
     component: resolve => require(['@/views/check-meeting/meeting-list'], resolve)
-    // beforeRouteEnter(to, from, next) {
-    //   console.log(1)
-    //   console.log(to, from)
-    //   next()
-    // },
-    // beforeRouteUpdate(to, from, next) {
-    //   console.log(2)
-    //   console.log(to, from)
-    //   next()
-    // },
-    // beforeRouteLeave(to, from, next) {
-    //   console.log(3)
-    //   console.log(to, from)
-    //   next()
-    // }
   }, {
     path: '/meeting/adjust',
     name: '远程会见申请调整',
@@ -122,22 +107,25 @@ let check = [{
     component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve)
   }]
 }, {
-  path: '/prisoner-pocket-money',
-  name: '服刑人员零花钱管理',
+  path: '/import-data-details',
+  name: '导入数据详情列表',
   meta: { hidden: true },
   children: [{
-    path: '/prisoner-pocket-money/list',
-    name: '服刑人员零花钱列表',
-    component: resolve => require(['@/views/check-prisoner-pocket-money/prisoner-pocket-money-list'], resolve)
-  }]
-}, {
-  path: '/prisoner-inside-jails-costs',
-  name: '服刑人员狱内消费情况',
-  meta: { hidden: true },
-  children: [{
-    path: '/prisoner-inside-jails-costs/list',
-    name: '服刑人员狱内消费情况列表',
-    component: resolve => require(['@/views/check-prisoner-inside-jails-costs/prisoner-inside-jails-costs-list'], resolve)
+    path: '/import-data-details/prisoner-term-change/list',
+    name: '服刑人员刑期变动详情表',
+    component: resolve => require(['@/views/check-data-import-details/prisoner-term-change-list'], resolve)
+  }, {
+    path: '/import-data-details/prisoner-reward-punishment/list',
+    name: '服刑人员奖惩详情表',
+    component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve)
+  }, {
+    path: '/import-data-details/prisoner-pocket-money/list',
+    name: '服刑人员零花钱详情表',
+    component: resolve => require(['@/views/check-data-import-details/prisoner-pocket-money-list'], resolve)
+  }, {
+    path: '/import-data-details/inside-jails-costs/list',
+    name: '服刑人员狱内消费详情表',
+    component: resolve => require(['@/views/check-data-import-details/prisoner-inside-jails-costs-list'], resolve)
   }]
 }]
 

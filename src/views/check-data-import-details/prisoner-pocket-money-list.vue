@@ -11,7 +11,7 @@
         type="card"
         value="first">
         <el-tab-pane
-          label="服刑人员零花钱"
+          label="服刑人员零花钱详情表"
           name="first"/>
       </el-tabs>
       <el-table
@@ -53,7 +53,11 @@
           label="日期"
           prop="accountDate" />
         <el-table-column
-          label="创建时间"
+          label="数据导入人员"
+          prop="realName"/>  
+        <el-table-column
+          label="数据导入时间"
+          width="140"
           prop="createdAt">
           <template slot-scope="scope">
             {{ scope.row.createdAt | Date }}
@@ -85,8 +89,9 @@ export default {
     ...mapState(['prisonersPocketMoney'])
   },
   methods: {
-    ...mapActions(['getPrisonersPocketMoney','resetState']),
+    ...mapActions(['getPrisonersPocketMoney']),
     getDatas() {
+      if (JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
       this.getPrisonersPocketMoney({ ...this.filter, ...this.pagination })
     },
     sizeChange(rows) {
@@ -97,9 +102,8 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     }
   },
-  destroyed() {
-    let prisonersPocketMoney = this.prisonersPocketMoney
-    this.resetState({prisonersPocketMoney})
+  mounted () {
+    this.getDatas()
   }
 }
 </script>
