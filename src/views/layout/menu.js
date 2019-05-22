@@ -60,16 +60,16 @@ let superAdminMenu = [{
     children: [
       {
         path: '/meeting/list',
-        title: '会见申请列表',
+        title: '远程会见申请列表',
         icon: 'iconfont icon-circle-o'
       }, {
         path: '/meeting/adjust',
-        title: '会见申请调整',
+        title: '远程会见申请调整',
         icon: 'iconfont icon-circle-o'
       }, {
-        path: '/meeting/records',
-        title: '免费会见记录',
-        icon: 'iconfont icon-circle-o'
+        path: '/visit/list',
+        title: '实地探监管理',
+        icon: 'iconfont icon-shidihuijian'
       }
     ]
   }, {
@@ -86,12 +86,12 @@ let superAdminMenu = [{
         path: '/meeting-report/prison-area',
         title: '监区统计',
         icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/meeting/records',
+        title: '远程免费会见记录',
+        icon: 'iconfont icon-circle-o'
       }
     ]
-  }, {
-    path: '/visit/list',
-    title: '实地探监管理',
-    icon: 'iconfont icon-shidihuijian'
   }, {
     path: '/mailbox/list',
     title: '监狱长信箱',
@@ -100,14 +100,14 @@ let superAdminMenu = [{
     path: '/prisoner/list',
     title: '服刑人员信息管理',
     icon: 'iconfont icon-fuxingrenyuan'
-  }, {
-    path: '/prisoner-pocket-money/list',
-    title: '服刑人员零花钱管理',
-    icon: 'iconfont icon-linghuaqianguanli'
-  }, {
-    path: '/prisoner-inside-jails-costs/list',
-    title: '服刑人员狱内消费情况',
-    icon: 'iconfont icon-yuneixiaofeiqingkuang'
+  // }, {
+  //   path: '/prisoner-pocket-money/list',
+  //   title: '服刑人员零花钱管理',
+  //   icon: 'iconfont icon-linghuaqianguanli'
+  // }, {
+  //   path: '/prisoner-inside-jails-costs/list',
+  //   title: '服刑人员狱内消费情况',
+  //   icon: 'iconfont icon-yuneixiaofeiqingkuang'
   }, {
     path: '/family/list',
     title: '家属信息管理',
@@ -141,6 +141,30 @@ let superAdminMenu = [{
       }, {
         path: '/prisoner-data/inside-jails-costs',
         title: '狱内消费情况数据导入',
+        icon: 'iconfont icon-circle-o'
+      }
+    ]
+  }, {
+    path: '/import-data-details',
+    title: '导入数据详情列表',
+    icon: 'iconfont icon-shujubaobiao',
+    active: false,
+    children: [
+      {
+        path: '/import-data-details/prisoner-term-change/list',
+        title: '服刑人员刑期变动详情表',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/import-data-details/prisoner-reward-punishment/list',
+        title: '服刑人员奖惩详情表',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/import-data-details/prisoner-pocket-money/list',
+        title: '服刑人员零花钱详情表',
+        icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/import-data-details/inside-jails-costs/list',
+        title: '服刑人员狱内消费详情表',
         icon: 'iconfont icon-circle-o'
       }
     ]

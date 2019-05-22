@@ -19,9 +19,9 @@
     <div class="el-form-item is-required">
       <label class="el-form-item__label">配置</label>
       <div style="float: left; width: calc(100% - 150px); overflow: hidden;">
+        <!-- v-if="queue" -->
         <m-time-range-selector
-          v-for="(queue, o) in prisonVisitConfigDetail.queue"
-          v-if="queue"
+          v-for="(queue, o) in prisonVisitConfigDetail.queue"   
           :key="o"
           :val="queue"
           :disabled="!canEdit"
