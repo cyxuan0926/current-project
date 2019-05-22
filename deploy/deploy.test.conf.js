@@ -1,12 +1,13 @@
-const path = require("path");
-const sourceDir = path.resolve(__dirname, "../dist");
-
 module.exports = {
-  sourceDir,
-  outputDir: process.cwd(),
-  deployDir: "/mnt/projects/nginx/www",
+  buildCommands: ["npm install", "npm run build:test"],
+  buildOutputPath: "dist",
+  repository: {
+    name: "prison-web",
+    branch: "release",
+    url: "https://git.dev.tencent.com/cyxuan0926/prison-web.git"
+  },
+  remotePath: "/mnt/projects/nginx/www",
   sourcePatterns: ["static", "index.html"],
-  // generateFileName,
   server: {
     host: "120.78.190.101",
     port: 22,
