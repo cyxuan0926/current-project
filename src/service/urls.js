@@ -72,7 +72,6 @@ export let deleteMediaUrl = env === 'production'
   : `${ nodeUrl }/delete/resources`
 
 export default {
-  imageUrl: `${ nodeUrl }/image-server/avatars`,
   ...config[env],
   ...option
 }

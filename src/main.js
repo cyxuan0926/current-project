@@ -34,10 +34,18 @@ router.beforeEach((to, from, next) => {
     let isLogin = localStorage.getItem('user')
     if (!isLogin) {
       next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+      store.commit('setLoginState')
     }
   }
   if (to.meta.hidden) next({ path: '/dashboard', replace: true })
   next()
+})
+
+router.onError(error => {
+  const pattern = /Loading chunk (\d)+ failed/g
+  const isChunkLoadFailed = error.message.match(pattern)
+  const targetPath = router.history.pending.fullPath
+  if (isChunkLoadFailed) router.replace(targetPath)
 })
 window.router = router
 /* eslint-disable no-new */
