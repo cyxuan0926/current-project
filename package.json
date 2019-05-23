@@ -14,8 +14,10 @@
     "build:test": "cross-env BUILD_ENV=test node build/build.js",
     "build:prod": "cross-env BUILD_ENV=production node build/build.js",
     "commit": "git-cz",
-    "deploy:test": "npm run build:test && node deploy/index.js --config deploy/deploy.test.conf.js",
-    "deploy:prod": "npm run build:prod && node deploy/index.js --config deploy/deploy.prod.conf.js"
+    "deploy:test": "npx deployment-cli deploy deploy/deploy.test.conf.js",
+    "deploy:prod": "npx deployment-cli deploy deploy/deploy.prod.conf.js",
+    "rollback:test": "npx deployment-cli rollback deploy/deploy.test.conf.js",
+    "rollback:prod": "npx deployment-cli rollback deploy/deploy.prod.conf.js"
   },
   "config": {
     "commitizen": {
@@ -25,6 +27,7 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "element-ui": "^2.0.9",
+    "lodash": "^4.17.11",
     "viewerjs": "^1.2.0",
     "vue": "^2.5.2",
     "vue-quill-editor": "^3.0.4",
@@ -49,7 +52,6 @@
     "babel-preset-stage-2": "^6.22.0",
     "babel-register": "^6.22.0",
     "chalk": "^2.4.2",
-    "chromedriver": "^2.27.2",
     "commander": "^2.20.0",
     "commitizen": "^3.1.1",
     "copy-webpack-plugin": "^4.0.1",
@@ -59,6 +61,7 @@
     "css-loader": "^0.28.7",
     "cz-conventional-changelog": "^2.1.0",
     "del": "^4.1.1",
+    "deployment-cli": "^0.1.0",
     "eslint": "^4.19.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^3.0.0",

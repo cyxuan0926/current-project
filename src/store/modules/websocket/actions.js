@@ -1,15 +1,18 @@
 // import { Notification, Message } from 'element-ui'
 import { Notification } from 'element-ui'
 import urls from '@/service/urls'
+import throttle from 'lodash/throttle'
 
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
+
 let socket
+const ONE_MINUTES = 60 * 1000
 
 export default {
   getWebsocketResult: ({ commit, state, dispatch }, params) => {
     let lockReconnect = false,
       heartCheck = {
-        timeout: 10000,
+        heartInterval: 5 * ONE_MINUTES,
         frontTimeout: null,
         serverTimeout: null,
         reset: function() {
@@ -21,10 +24,11 @@ export default {
           if (socket.logout) return
           var self = this
           this.frontTimeout = setTimeout(function() {
+            socket.send('PING')
             self.serverTimeout = setTimeout(function() {
               socket.close()
-            }, self.timeout)
-          }, this.timeout)
+            }, 0.2 * ONE_MINUTES)
+          }, this.heartInterval)
         }
       },
       createWS = () => {
@@ -38,7 +42,7 @@ export default {
           }
         }
         catch (e) {
-          console.log(999, e)
+          console.log(e)
           reconnect()
         }
       },
@@ -48,7 +52,13 @@ export default {
         }
         socket.onmessage = response => {
           heartCheck.reset().start()
+
+          if (response.data === 'PONG') {
+            return
+          }
+
           let res = JSON.parse(response.data)
+
           if (res.code === 200 && res.data && res.data.meetings) {
             dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
             Notification({
@@ -96,12 +106,12 @@ export default {
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }
       },
-      reconnect = () => {
+      reconnect = throttle(() => {
         if (lockReconnect) return
         lockReconnect = true
         createWS()
         lockReconnect = false
-      }
+      }, ONE_MINUTES)
     createWS()
   }
 }
