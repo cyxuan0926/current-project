@@ -17,20 +17,21 @@ module.exports = {
           '^/ywgk-auth': '/ywgk-auth'
         }
       },
-      '/ywgk-demo': {
-        target: 'http://120.78.190.101:8083/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/ywgk-demo': '/ywgk-demo'
-        }
-      },
       '/ywgk': {
-        target: 'https://www.yuwugongkai.com/',
+        target: 'http://120.79.251.238:8021/',
         changeOrigin: true,
         pathRewrite: {
           '^/ywgk': '/ywgk'
         }
       },
+      // '/ywgk': {
+      //   target: 'https://www.yuwugongkai.com/',
+      //   secure: true,
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/ywgk': '/ywgk'
+      //   }
+      // },
       '/ywgk-yb': {
         target: 'http://192.168.0.54:8083/',
         changeOrigin: true,

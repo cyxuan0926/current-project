@@ -1,6 +1,5 @@
 import api from '@/service/modules/global'
 
-// 获取解析url
 const getUrls = (params) => {
   let { urls, contents } = params
   for (var i = 0; i < urls.length; i++) {
@@ -50,12 +49,12 @@ export default {
       localStorage.removeItem('save')
     }
   },
-  deleteUrls({ commit }, params) {
+  deleteUrls({ commit, state }, params) {
     let deleteUrls, urls, urlStorage = JSON.parse(localStorage.getItem('urls')) || JSON.parse(localStorage.getItem('save')) || []
     if (JSON.parse(localStorage.getItem('save'))) {
       urlStorage = Array.from(new Set(urlStorage.concat(JSON.parse(localStorage.getItem('save')))))
     }
-    commit('setUrlStorage', true)
+    if (!state.urlStorage) commit('setUrlStorage', true)
     if (params.destroyed) {
       urlStorage = params.urls
     }
@@ -67,7 +66,7 @@ export default {
         }
       })
     }
-    localStorage.removeItem('newUrls')
+    if (localStorage.getItem('newUrls')) localStorage.removeItem('newUrls')
     deleteUrls = localStorage.getItem('delete') ? JSON.parse(localStorage.getItem('delete')) : []
     urlStorage = [...urlStorage, ...deleteUrls]
     if (urlStorage.length) {

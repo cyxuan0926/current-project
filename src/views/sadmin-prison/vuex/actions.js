@@ -20,6 +20,7 @@ export default {
     })
   },
   updatePrison: ({ commit, dispatch }, params) => {
+    commit('setUrlStorage', true)
     return http.updatePrison(params).then(res => {
       let excpt = []
       params.imageUrl && excpt.push(params.imageUrl)

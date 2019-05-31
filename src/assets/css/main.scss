@@ -394,26 +394,11 @@ p{
 .rememberPSW, .rememberPSW .el-checkbox__input.is-checked+.el-checkbox__label{
   color: #fff;
 }
-.viewer-prev::before {
-  content: '' !important;
-}
-.viewer-prev {
-  width: 0px !important;
-}
-.viewer-next::before {
-  content: '' !important;
-}
-.viewer-next {
-  width: 0px !important;
-}
 .viewer-footer {
   bottom: 4%;
 }
 .viewer-backdrop {
   background: rgba(0,0,0,.4) !important;
-}
-div.viewer-container {
-  z-index: 100000000000 !important;
 }
 div.el-tooltip__popper {
   max-width: 60% !important;
