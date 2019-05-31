@@ -28,7 +28,6 @@ Object.keys(components).forEach((key) => {
   let name = key.replace(/(\w)/, (v) => v.toUpperCase())
   Vue.component(`m${ name }`, components[key])
 })
-
 router.beforeEach((to, from, next) => {
   if (!to.meta.notLogin) {
     let isLogin = localStorage.getItem('user')
@@ -41,12 +40,12 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-router.onError(error => {
-  const pattern = /Loading chunk (\d)+ failed/g
-  const isChunkLoadFailed = error.message.match(pattern)
-  const targetPath = router.history.pending.fullPath
-  if (isChunkLoadFailed) router.replace(targetPath)
-})
+// router.onError(error => {
+//   const pattern = /Loading chunk (\d)+ failed/g
+//   const isChunkLoadFailed = error.message.match(pattern)
+//   const targetPath = router.history.pending.fullPath
+//   if (isChunkLoadFailed) router.replace(targetPath)
+// })
 window.router = router
 /* eslint-disable no-new */
 new Vue({
