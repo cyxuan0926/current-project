@@ -61,7 +61,7 @@ export default {
         },
         prisonerNumber: {
           type: 'input',
-          label: '囚号',
+          label: '罪犯编号',
           miss: true
         }
       },

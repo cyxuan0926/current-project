@@ -28,7 +28,7 @@
         style="width: 100%">
         <el-table-column
           prop="name"
-          label="姓名" />
+          label="家属姓名" />
         <el-table-column
           width="148px"
           label="身份证信息">
@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
-          label="囚号" />
+          label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
           label="监区" />
@@ -208,7 +208,7 @@ export default {
     return {
       tabs: 'first',
       searchItems: {
-        // prisonerNumber: { type: 'input', label: '囚号' },
+        // prisonerNumber: { type: 'input', label: '罪犯编号' },
         name: { type: 'input', label: '家属姓名' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       },

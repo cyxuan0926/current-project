@@ -2,9 +2,7 @@
   <el-row :gutter="0">
     <el-col :span="24">
       <el-table :data="prisonReportDetail.meetingDetails" border>
-        <el-table-column prop="prisonerName" label="姓名" />
-        <el-table-column prop="prisonerNumber" label="囚号" />
-        <el-table-column label="家属">
+        <el-table-column label="家属姓名">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -14,6 +12,8 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column prop="prisonerName" label="罪犯姓名" />
+        <el-table-column prop="prisonerNumber" label="罪犯编号" />
         <el-table-column prop="total_time" label="总会见时间段" min-width="120px" />
         <el-table-column label="会见时长">
           <template slot-scope="scope">
@@ -31,6 +31,8 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column prop="province" label="家属所在省" />
+        <el-table-column prop="city" label="家属所在市" />
         <p v-if="showSummary" slot="append" class="table-footer">
           <span>{{ prisonReportDetail.jailName }}</span>
           <span>
@@ -45,34 +47,6 @@
       :visible.sync="familyDetailVisible"
       @close="clearFamilyData"
     >
-      <!-- <el-table :data="[family]" border>
-        <el-table-column prop="familyName" label="姓名" />
-        <el-table-column prop="relationship" label="关系" />
-        <el-table-column width="148px" label="身份证正面">
-          <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.familyIdCardFront"
-              :url="scope.row.familyIdCardFront"
-              title="身份证正面照" />
-          </template>
-        </el-table-column>
-        <el-table-column width="148px" label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.familyIdCardBack"
-              :url="scope.row.familyIdCardBack"
-              title="身份证背面照" />
-          </template>
-        </el-table-column>
-        <el-table-column width="148px" label="关系证明图">
-          <template slot-scope="scope">
-            <m-img-viewer
-            v-if="scope.row.familyRelationalProofUrl"
-            :url="scope.row.familyRelationalProofUrl"
-            title="关系证明图"/>
-          </template>
-        </el-table-column>
-      </el-table> -->
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">

@@ -24,10 +24,10 @@
           prop="remitNum"
           min-width="120"/>
         <el-table-column
-          label="服刑人员姓名"
+          label="罪犯姓名"
           prop="prisonerName"/>
         <el-table-column
-          label="囚号"
+          label="罪犯编号"
           prop="prisonerNumber"/>
         <el-table-column
           label="汇款家属"
@@ -77,8 +77,8 @@ export default {
           value: '',
           belong: { label: 'title', value: 'id' }
         },
-        prisonerName: { type: 'input', label: '服刑人员姓名' },
-        prisonerNumber: { type: 'input', label: '囚号' },
+        prisonerName: { type: 'input', label: '罪犯姓名' },
+        prisonerNumber: { type: 'input', label: '罪犯编号' },
         familyName: { type: 'input', label: '汇款家属' },
         remitTime: { type: 'date', label: '汇款时间' }
       }
