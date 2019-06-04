@@ -21,7 +21,7 @@
         style="width: 100%">
         <el-table-column
           prop="name"
-          label="姓名" />
+          label="家属姓名" />
         <el-table-column label="身份证正面">
           <template slot-scope="scope">
             <m-img-viewer
@@ -105,7 +105,7 @@
       </el-row>
       <el-row :gutter="0">
         <el-col :span="12">
-          <label for="">囚号：</label>
+          <label for="">罪犯编号：</label>
           <span>{{ prisoner.prisonerNumber }}</span>
         </el-col>
         <el-col :span="12">
