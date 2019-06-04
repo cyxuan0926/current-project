@@ -3,7 +3,7 @@ module.exports = {
   buildOutputPath: "dist",
   repository: {
     name: "prison-web",
-    branch: "release",
+    branch: "auth",
     url: "https://git.dev.tencent.com/cyxuan0926/prison-web.git"
   },
   remotePath: "/mnt/projects/nginx/www",
