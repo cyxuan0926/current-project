@@ -31,6 +31,7 @@
           label="罪犯编号" />
         <el-table-column
           label="会见时间"
+          min-width="140px"
           prop="meetingTime"
           show-overflow-tooltip/>
         <el-table-column
