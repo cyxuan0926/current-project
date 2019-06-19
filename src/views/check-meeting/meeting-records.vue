@@ -39,7 +39,7 @@
           min-width="92px"
           label="监区" />
         <el-table-column
-          min-width="64px"
+          min-width="110px"
           label="会见时长"
           show-overflow-tooltip>
           <template slot-scope="props">
