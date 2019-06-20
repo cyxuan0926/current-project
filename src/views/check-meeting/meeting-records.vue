@@ -21,21 +21,25 @@
         style="width: 100%">
         <el-table-column
           prop="name"
-          label="姓名" />
+          label="家属姓名" />
         <el-table-column
-          label="会见时间"
-          prop="meetingTime"
-          show-overflow-tooltip/>
+          prop="prisonerName"
+          label="罪犯姓名" />
         <el-table-column
           prop="prisonerNumber"
           min-width="92px"
-          label="囚号" />
+          label="罪犯编号" />
+        <el-table-column
+          label="会见时间"
+          min-width="140px"
+          prop="meetingTime"
+          show-overflow-tooltip/>
         <el-table-column
           prop="prisonArea"
           min-width="92px"
           label="监区" />
         <el-table-column
-          min-width="64px"
+          min-width="110px"
           label="会见时长"
           show-overflow-tooltip>
           <template slot-scope="props">
@@ -45,6 +49,12 @@
         <el-table-column
           prop="terminalNumber"
           label="终端号" />
+        <el-table-column
+          prop="province"
+          label="家属所在省" />
+        <el-table-column
+          prop="city"
+          label="家属所在市" />
       </el-table>
     </el-col>
     <m-pagination
@@ -62,7 +72,7 @@ export default {
     return {
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
-        prisonerNumber: { type: 'input', label: '囚号' },
+        prisonerNumber: { type: 'input', label: '罪犯编号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       }
     }

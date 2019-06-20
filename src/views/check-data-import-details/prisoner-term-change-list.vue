@@ -71,7 +71,7 @@ export default {
   data() {
     return {
       searchItems: {
-        name: { type: 'input', label: '姓名' },
+        name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
         operateName: { type: 'input', label: '数据导入人员姓名' },
         time: { type: 'dateRange', start: 'start', end: 'end', unlinkPanels: true }

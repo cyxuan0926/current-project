@@ -2,7 +2,7 @@
 // const env = 'demo' // 演示环境
 // const env = 'auth' // 认证授权
 // const env = 'master' // 正式环境
-const nodeUrl = 'http://120.78.190.101:1339'
+const nodeUrl = 'http://120.79.251.238:1339'
 
 // eslint-disable-next-line
 const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
@@ -34,13 +34,13 @@ const config = {
     socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
-    apiHost: 'http://120.78.190.101:8083',
-    apiPath: '/ywgk-demo',
+    apiHost: 'http://120.79.251.238:8021',
+    apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://120.78.190.101:8083/ywgk-demo/websocket'
+    socketUrl: 'ws://120.79.251.238:8021/ywgk/websocket'
   },
   production: {
     apiHost: 'https://www.yuwugongkai.com',
@@ -72,7 +72,6 @@ export let deleteMediaUrl = env === 'production'
   : `${ nodeUrl }/delete/resources`
 
 export default {
-  imageUrl: `${ nodeUrl }/image-server/avatars`,
   ...config[env],
   ...option
 }

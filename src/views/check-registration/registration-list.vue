@@ -25,7 +25,7 @@
         style="width: 100%">
         <el-table-column
           prop="name"
-          label="姓名" />
+          label="家属姓名" />
         <el-table-column
           width="148px"
           label="身份证信息">
@@ -56,7 +56,7 @@
         <el-table-column
           prop="prisonerNumber"
           min-width="92px"
-          label="囚号" />
+          label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
           min-width="88px"
@@ -283,7 +283,7 @@ export default {
     return {
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
-        prisonerNumber: { type: 'input', label: '囚号' },
+        prisonerNumber: { type: 'input', label: '罪犯编号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         auditName: { type: 'input', label: '审核人', miss: true },
         status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'], value: '' },

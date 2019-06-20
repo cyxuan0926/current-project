@@ -23,10 +23,10 @@
         style="width: 100%">
         <el-table-column
           prop="prisonerName"
-          label="姓名" />
+          label="罪犯姓名" />
         <el-table-column
           prop="prisonerNumber"
-          label="囚号" />
+          label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
           label="监区" />
@@ -112,11 +112,11 @@ export default {
         },
         prisonerName: {
           type: 'input',
-          label: '服刑人员姓名'
+          label: '罪犯姓名'
         },
         prisonerNumber: {
           type: 'input',
-          label: '服刑人员囚号'
+          label: '罪犯编号'
         }
       },
       prisonArea: {}

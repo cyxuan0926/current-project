@@ -28,7 +28,7 @@
         <el-table-column
           prop="prisonerNumber"
           min-width="68px"
-          label="囚号" />
+          label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
           min-width="84px"
@@ -51,7 +51,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="服刑人员姓名"
+          label="罪犯姓名"
           min-width="92"
           prop="prisonerName" />
         <el-table-column
@@ -311,7 +311,7 @@ export default {
       tabs: 'PENDING',
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
-        prisonerNumber: { type: 'input', label: '囚号' },
+        prisonerNumber: { type: 'input', label: '罪犯编号' },
         prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         applicationDate: { type: 'date', label: '会见时间' },
         auditName: { type: 'input', label: '审核人', miss: true },

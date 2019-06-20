@@ -305,7 +305,7 @@
         border>
         <el-table-column
           prop="prisonerNumber"
-          label="囚号" />
+          label="罪犯编号" />
         <el-table-column
           prop="name"
           label="姓名" />
