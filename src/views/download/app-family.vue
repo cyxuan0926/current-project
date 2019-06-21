@@ -71,7 +71,8 @@ export default {
 
       if (browser.versions.mobile) {
         let ua = navigator.userAgent.toLowerCase()
-        if (ua.match(/MicroMessenger/i)[0] === 'micromessenger') {
+        let result = ua.match(/MicroMessenger/i)
+        if (result && (result[0] === 'micromessenger')) {
           this.isMobile = true
         }
         else {
