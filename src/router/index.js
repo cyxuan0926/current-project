@@ -42,7 +42,7 @@ export function resetRouter() {
 }
 
 // 动态添加路由
-router.beforeEach((to, form, next) => {
+router.beforeEach((to, from, next) => {
   const role = store.state.global.user.role
   const hasDynamicRoutes = store.state.global.dynamicRoutes.length > 0
 
@@ -57,12 +57,11 @@ router.beforeEach((to, form, next) => {
     const routesMap = [superAdmin, check, [], information, admin]
     const routes = routesMap[JSON.parse(role)]
 
-    routes.push(notFoundRoute)
+    if (!routes.includes(notFoundRoute))routes.push(notFoundRoute)
     router.addRoutes(routes)
     store.commit('setDynamicRoutes', routes)
     next({ ...to, replace: true })
   }
-
   next()
 })
 
