@@ -27,6 +27,8 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "element-ui": "^2.0.9",
+    "js-cookie": "^2.2.0",
+    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "viewerjs": "^1.2.0",
     "vue": "^2.5.2",
