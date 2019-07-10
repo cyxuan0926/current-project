@@ -39,12 +39,18 @@
           @click="onSubmit">登录</el-button>
       </div>
     </div>
+    <div class="copyright">
+      Copyright © 2006-2019
+      <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
+      <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
+    </div>
   </div>
 </template>
 
 <script>
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations } from 'vuex'
+
 export default {
   data() {
     return {
@@ -113,4 +119,28 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/css/login";
+
+.center {
+  position: relative;
+
+  .copyright {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    border-top: 1px solid #d2d6de;
+    text-align: center;
+    background: #fff;
+    color: #444;
+
+    a {
+      color: #444;
+
+      &:last-child {
+        margin-left: 20px;
+      }
+    }
+  }
+}
 </style>
