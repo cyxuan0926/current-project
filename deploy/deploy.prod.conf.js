@@ -4,7 +4,7 @@ module.exports = {
   repository: {
     name: "prison-web",
     branch: "master",
-    url: "https://git.dev.tencent.com/cyxuan0926/prison-web.git"
+    url: "https://github.com/sinog2c/ywgk-fe.git"
   },
   remotePath: "/mnt/projects/nginx/www",
   sourcePatterns: ["static", "index.html"],
