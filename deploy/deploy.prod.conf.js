@@ -12,6 +12,6 @@ module.exports = {
     host: "39.108.185.51",
     port: 22,
     username: "root",
-    password: "Nihaoccj123"
+    password: "GKYT!ssj##"
   }
 };

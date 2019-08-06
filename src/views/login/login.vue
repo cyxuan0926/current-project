@@ -35,6 +35,11 @@
           @click="handleLogin">登录</el-button>
       </div>
     </div>
+    <div class="copyright">
+      Copyright © 2006-2019
+      <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
+      <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
+    </div>
   </div>
 </template>
 
@@ -42,11 +47,7 @@
 import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations } from 'vuex'
-// import jwtDecode from 'jwt-decode'
 import { helper } from '@/utils'
-import information from '@/router/modules/information'
-import admin from '@/router/modules/admin'
-import check from '@/router/modules/check'
 
 export default {
   data() {
@@ -64,9 +65,6 @@ export default {
     }
   },
   computed: {
-    // ...mapState({
-    //   loginState: state => state.global.loginState
-    // }),
     ...mapState('account', {
       accountInfo: state => state.accountInfo,
       menus: state => state. menus,
@@ -84,14 +82,12 @@ export default {
       }
       else {
         this.$router.replace('/login')
-        // this.$router.replace('/dashboard')
       }
       return
     }
     this.resolveAccount()
   },
   methods: {
-    // ...mapMutations(['setLoginState']),
     ...mapMutations(['setUser']),
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
     ...mapActions('account', ['login']),
@@ -172,4 +168,28 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/css/login";
+
+.center {
+  position: relative;
+
+  .copyright {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    border-top: 1px solid #d2d6de;
+    text-align: center;
+    background: #fff;
+    color: #444;
+
+    a {
+      color: #444;
+
+      &:last-child {
+        margin-left: 20px;
+      }
+    }
+  }
+}
 </style>
