@@ -43,7 +43,7 @@ export default {
   },
   watch: {
     value(val) {
-      if (!this.hasChange && this.hasInit) {
+      if (!this.hasChange && this.hasInit && val) {
         let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = val.replace(pattern, `src="${ this.$urls.imageUrl }`)
         this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(c))
       }

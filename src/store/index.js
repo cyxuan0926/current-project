@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import account from './modules/account'
 import quillEditor from './modules/quill-editor'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
@@ -85,6 +86,7 @@ export default new Vuex.Store({
   getters,
   state,
   modules: {
+    account,
     jail,
     layout,
     login,

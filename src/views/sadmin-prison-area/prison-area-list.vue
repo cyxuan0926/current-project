@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
-      :items="roleType !== '4' ? searchItems: null "
+      :items="roleType !== '4' && roleType !=='-1' ? searchItems: null "
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -113,7 +113,7 @@ export default {
     }
   },
   mounted() {
-    if (this.roleType !== '4') {
+    if (this.roleType !== '4' && this.roleType !== '-1') {
       this.getPrisonAll().then(() => {
         this.searchItems.jailId.options = this.prisonAll
         this.searchItems.jailId.getting = false
@@ -129,7 +129,7 @@ export default {
         }
       })
     }
-    else { // 监狱管理员
+    else { // 监狱管理员或者租户管理员
       this.getDatas()
     }
   },
@@ -140,10 +140,10 @@ export default {
       this.getDatas()
     },
     getDatas() {
-      if (this.roleType !== '4') {
+      if (this.roleType !== '4' && this.roleType !== '-1') {
         this.getPrisonAreas({ ...this.filter, ...this.pagination })
       }
-      else { // 监狱管理员
+      else { // 监狱管理员或者租户管理员
         this.getPrisonAreas({ ...{ jailId: JSON.parse(localStorage['user']).jailId }, ...this.pagination })
       }
     },

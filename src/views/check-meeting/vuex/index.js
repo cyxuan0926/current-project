@@ -6,7 +6,8 @@ let state = {
   meetingAdjustment: { meetingQueue: [], terminals: [], meetings: [], config: {} },
   freeMeetings: { contents: [], total: 0 },
   meetingRefresh: false,
-  meetingAdjustRefresh: false
+  meetingAdjustRefresh: false,
+  visits: { contents: [], total: 0 }
 }
 
 export default {

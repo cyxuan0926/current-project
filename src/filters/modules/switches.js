@@ -46,6 +46,14 @@ let switches = {
   payType: [
     { value: 'alipay', label: '支付宝' },
     { value: 'weixin', label: '微信' }
+  ],
+  status: [
+    { value: 'ENABLED', label: '启用' },
+    { value: 'DISABLED', label: '禁用' }
+  ],
+  isJailCreated: [
+    { value: 1, label: '已创建' },
+    { value: 0, label: '未创建' }
   ]
 }
 

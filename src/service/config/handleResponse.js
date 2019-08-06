@@ -1,6 +1,7 @@
 import { Message } from 'element-ui'
 import router from '@/router'
-import store from '@/store'
+import logout from '@/utils/logout'
+// import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
   Message({
@@ -35,10 +36,8 @@ const codes = {
   },
   401: {
     next: params => {
-      localStorage.removeItem('user')
-      localStorage.removeItem('routes')
       tips(params.msg || '身份验证失败，请重新登录')
-      store.commit('setLoginState')
+      logout()
       router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
@@ -70,7 +69,7 @@ const codes = {
   },
   500: {
     next: params => {
-      tips('服务器内部错误！')
+      tips(params.msg || '服务器内部错误！')
     }
   },
   502: {
@@ -90,10 +89,8 @@ const codes = {
   },
   20002: {
     next: params => {
-      localStorage.removeItem('user')
-      localStorage.removeItem('routes')
       tips(params.msg || '登录超时')
-      store.commit('setLoginState')
+      logout()
       router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },

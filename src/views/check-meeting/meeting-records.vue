@@ -73,7 +73,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       }
     }
   },

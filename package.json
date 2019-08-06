@@ -5,7 +5,7 @@
   "author": "leelic07 <330314702@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env BUILD_ENV=test webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env BUILD_ENV=auth webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js",
     "e2e": "node test/e2e/runner.js",
@@ -13,11 +13,14 @@
     "build:dev": "cross-env BUILD_ENV=test node build/build.js",
     "build:test": "cross-env BUILD_ENV=test node build/build.js",
     "build:prod": "cross-env BUILD_ENV=production node build/build.js",
+    "build:auth": "cross-env BUILD_ENV=auth node build/build.js",
     "commit": "git-cz",
     "deploy:test": "npx deployment-cli deploy deploy/deploy.test.conf.js",
     "deploy:prod": "npx deployment-cli deploy deploy/deploy.prod.conf.js",
+    "deploy:auth": "npx deployment-cli deploy deploy/deploy.auth.conf.js",
     "rollback:test": "npx deployment-cli rollback deploy/deploy.test.conf.js",
-    "rollback:prod": "npx deployment-cli rollback deploy/deploy.prod.conf.js"
+    "rollback:prod": "npx deployment-cli rollback deploy/deploy.prod.conf.js",
+    "rollback:auth": "npx deployment-cli rollback deploy/deploy.auth.conf.js"
   },
   "config": {
     "commitizen": {
@@ -27,6 +30,8 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "element-ui": "^2.0.9",
+    "js-cookie": "^2.2.0",
+    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "viewerjs": "^1.2.0",
     "vue": "^2.5.2",

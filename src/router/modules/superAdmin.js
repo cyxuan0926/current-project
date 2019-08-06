@@ -1,52 +1,83 @@
 import frame from '@/views/layout/the-frame'
+// eslint-disable-next-line
+import { helper } from '@/utils'
 
 let superAdmin = [{
-  path: '/prison',
-  name: '监狱管理',
+  path: '/',
   meta: { hidden: true },
   children: [{
-    path: '/prison/list',
-    name: '监狱列表',
-    component: resolve => require(['@/views/sadmin-prison/prison-list'], resolve)
-  }, {
-    path: '/prison/add',
-    name: '新增监狱',
-    meta: { role: '0', permission: 'add', deep: true },
-    component: resolve => require(['@/views/sadmin-prison/prison-add'], resolve)
-  }, {
-    path: '/prison/visit/:id',
-    name: '监狱实地会见配置',
-    props: { role: 0 },
-    meta: { role: '0', deep: true },
-    component: resolve => require(['@/views/meeting/visit-config'], resolve)
-  // }, {
-  //   path: '/prison/meeting-remote/:id',
-  //   name: '监狱远程会见配置',
-  //   meta: { role: '0' },
-  //   component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
-  }, {
-    path: '/remote/edit/:id',
-    name: '监狱远程会见配置',
-    meta: { role: '0', permission: 'edit', deep: true },
-    component: resolve => require(['@/views/meeting/remote-edit'], resolve)
-  }, {
-    path: '/prison/edit/:id',
-    name: '编辑监狱',
-    meta: {
-      permission: 'edit',
-      role: '0',
-      deep: true
-    },
-    component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
+    path: '/prison',
+    name: 'prison-manage-first',
+    meta: { breadcrumbName: '监狱管理' },
+    component: helper.loadView('sadmin-prison/prison-tab'),
+    // component: resolve => require(['@/views/sadmin-prison/prison-tab'], resolve),
+    children: [{
+      path: '/prison/list',
+      name: 'prison-list',
+      meta: { permission: 'visit.prison.search', breadcrumbName: '监狱列表' },
+      component: helper.loadView('sadmin-prison/prison-list')
+      // component: resolve => require(['@/views/sadmin-prison/prison-list'], resolve)
+    }, {
+      path: '/tenant/list',
+      name: 'tenant-list',
+      meta: { permission: 'visit.prison.tenant.search', breadcrumbName: '租户列表' },
+      // component: resolve => require(['@/views/sadmin-prison/tenant-list'], resolve)
+      component: helper.loadView('sadmin-prison/tenant-list')
+    }]
   }]
 }, {
+  path: '/prison',
+  name: 'prison-manage',
+  meta: { hidden: true, breadcrumbName: '监狱管理' },
+  children: [
+  //   {
+  //   path: '/prison/add',
+  //   name: 'prison-add',
+  //   meta: { role: '0', permission: 'visit.prison.add', deep: true, breadcrumbName: '新增监狱' },
+  //   component: loadView('sadmin-prison/prison-add')
+  // },
+    {
+      path: '/prison/visit/:id',
+      name: 'prison-visit',
+      props: { role: 0 },
+      meta: { role: '0', deep: true, permission: 'visit.prison.filed-visit-config.search', breadcrumbName: '监狱实地会见配置' },
+      // component: resolve => require(['@/views/meeting/visit-config'], resolve)
+      component: helper.loadView('meeting/visit-config')
+      // }, {
+      //   path: '/prison/meeting-remote/:id',
+      //   name: '监狱远程会见配置',
+      //   meta: { role: '0' },
+      //   component: resolve => require(['@/views/meeting/meeting-remote-edit'], resolve)
+    }, {
+      path: '/remote/edit/:id',
+      name: 'remote-edit-super-admin',
+      // permssion: 'edit'
+      meta: { role: '0', permission: 'visit.prison.visit-config.search', deep: true, breadcrumbName: '监狱远程会见配置' },
+      // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
+      component: helper.loadView('meeting/remote-edit')
+    }, {
+      path: '/prison/edit/:id',
+      name: 'prison-edit',
+      meta: {
+      // premission: 'edit'
+        permission: 'visit.prison.update',
+        role: '0',
+        deep: true,
+        breadcrumbName: '编辑监狱'
+      },
+      // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
+      component: helper.loadView('sadmin-prison/prison-edit')
+    }]
+}, {
   path: '/prison-area',
-  name: '监区管理',
-  meta: { hidden: true },
+  name: 'prison-area-manage',
+  meta: { hidden: true, breadcrumbName: '监区管理' },
   children: [{
     path: '/prison-area/list',
-    name: '监区列表',
-    component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
+    name: 'prison-area-list',
+    meta: { permission: 'visit.prison-area.all-prison.search', breadcrumbName: '监区列表' },
+    // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
+    component: helper.loadView('sadmin-prison-area/prison-area-list')
   // }, {
   //   path: '/prison-area/add',
   //   name: '新增监狱',
@@ -58,49 +89,59 @@ let superAdmin = [{
   }]
 }, {
   path: '/prison-user',
-  name: '监狱用户管理',
-  meta: { hidden: true },
+  name: 'prison-user-manage',
+  meta: { hidden: true, breadcrumbName: '监狱用户管理' },
   children: [{
     path: '/prison-user/list',
-    name: '监狱用户列表',
+    name: 'prison-user-list',
     props: { role: '0' },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
+    meta: { permission: 'visit.account.all-prison.search', breadcrumbName: '监狱用户列表' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-list')
   }, {
     path: '/prison-user/edit/:id',
-    name: '编辑监狱用户',
-    meta: { role: '0', deep: true },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
+    name: 'prison-user-edit',
+    meta: { role: '0', deep: true, breadcrumbName: '编辑监狱用户' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-edit')
   }, {
     path: '/prison-user/add',
-    name: '新增监狱用户',
-    meta: { role: '0', deep: true },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
+    name: 'prison-user-add',
+    meta: { role: '0', deep: true, breadcrumbName: '新增监狱用户' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-add')
   }]
 }, {
   path: '/feedback',
-  name: '意见反馈',
-  meta: { hidden: true },
+  name: 'feedback',
+  meta: { hidden: true, breadcrumbName: '意见反馈' },
   children: [{
     path: '/feedback/list',
-    name: '意见列表',
-    component: resolve => require(['@/views/sadmin-feedback/feedback-list'], resolve)
+    name: 'feedback-list',
+    meta: { permission: 'visit.feedback.search', breadcrumbName: '意见列表' },
+    // component: resolve => require(['@/views/sadmin-feedback/feedback-list'], resolve)
+    component: helper.loadView('sadmin-feedback/feedback-list')
   }]
 }, {
   path: '/family-remittance',
-  name: '家属汇款记录',
-  meta: { hidden: true },
+  name: 'family-remittance',
+  meta: { hidden: true, breadcrumbName: '家属汇款记录' },
   children: [{
     path: '/family-remittance/list',
-    name: '家属汇款',
-    component: resolve => require(['@/views/sadmin-remittance-record/family-remittance-list'], resolve)
+    name: 'family-remittance-list',
+    meta: { permission: 'visit.family-remittance.search', breadcrumbName: '家属汇款' },
+    // component: resolve => require(['@/views/sadmin-remittance-record/family-remittance-list'], resolve)
+    component: helper.loadView('sadmin-remittance-record/family-remittance-list')
   }]
 }, {
   path: '/',
   meta: { hidden: true },
   children: [{
     path: '/trade',
-    name: '交易流水记录',
-    component: resolve => require(['@/views/trade/list-router'], resolve),
+    name: 'trade',
+    meta: { breadcrumbName: '交易流水记录' },
+    // component: resolve => require(['@/views/trade/list-router'], resolve),
+    component: helper.loadView('trade/list-router'),
     children: [
       {
         path: '/trade/list',
@@ -108,95 +149,113 @@ let superAdmin = [{
       },
       {
         path: '/trade/account',
-        name: '账户明细',
-        meta: { deep: true },
-        component: resolve => require(['@/views/trade/account'], resolve)
+        name: 'trade-account',
+        meta: { deep: true, permission: 'visit.transaction-record.search', breadcrumbName: '账户明细' },
+        // component: resolve => require(['@/views/trade/account'], resolve)
+        component: helper.loadView('trade/account')
       },
       {
         path: '/trade/recharge',
-        name: '充值明细',
-        meta: { deep: true },
-        component: resolve => require(['@/views/trade/recharge'], resolve)
+        name: 'trade-rechange',
+        meta: { deep: true, permission: 'visit.transaction-record.recharge.view', breadcrumbName: '充值明细' },
+        // component: resolve => require(['@/views/trade/recharge'], resolve)
+        component: helper.loadView('trade/recharge')
       },
       {
         path: '/trade/consumption',
-        name: '消费明细',
-        meta: { deep: true },
-        component: resolve => require(['@/views/trade/consumption'], resolve)
+        name: 'trade-consumption',
+        meta: { deep: true, permission: 'visit.transaction-record.consumption.view', breadcrumbName: '消费明细' },
+        // component: resolve => require(['@/views/trade/consumption'], resolve)
+        component: helper.loadView('trade/consumption')
       },
       {
         path: '/trade/refund',
-        name: '退款明细',
-        meta: { deep: true },
-        component: resolve => require(['@/views/trade/refund'], resolve)
+        name: 'trade-refund',
+        meta: { deep: true, permission: 'visit.transaction-record.refund.view', breadcrumbName: '退款明细' },
+        // component: resolve => require(['@/views/trade/refund'], resolve)
+        component: helper.loadView('trade/refund')
       }
     ]
   }]
 },
 {
   path: '/advertisement',
-  name: '广告管理',
-  meta: { hidden: true },
+  name: 'advertisement-manage',
+  meta: { hidden: true, breadcrumbName: '广告管理' },
   children: [{
     path: '/advertisement/list',
-    name: '广告列表',
-    component: resolve => require(['@/views/sadmin-advertisement/advertisement-list'], resolve)
+    name: 'advertisement-list',
+    meta: { permission: 'visit.advertisement.search', breadcrumbName: '广告列表' },
+    // component: resolve => require(['@/views/sadmin-advertisement/advertisement-list'], resolve)
+    component: helper.loadView('sadmin-advertisement/advertisement-list')
   }, {
     path: '/advertisement/add',
-    name: '新增广告',
-    meta: { deep: true },
-    component: resolve => require(['@/views/sadmin-advertisement/advertisement-add'], resolve)
+    name: 'advertisement-add',
+    meta: { deep: true, permission: 'visit.advertisement.add', breadcrumbName: '新增广告' },
+    // component: resolve => require(['@/views/sadmin-advertisement/advertisement-add'], resolve)
+    component: helper.loadView('sadmin-advertisement/advertisement-add')
   }, {
     path: '/advertisement/edit/:id',
-    name: '编辑广告',
-    meta: { deep: true },
-    component: resolve => require(['@/views/sadmin-advertisement/advertisement-edit'], resolve)
+    name: 'advertisement-edit',
+    meta: { deep: true, permission: 'visit.advertisement.update', breadcrumbName: '编辑广告' },
+    // component: resolve => require(['@/views/sadmin-advertisement/advertisement-edit'], resolve)
+    component: helper.loadView('sadmin-advertisement/advertisement-edit')
   }]
 }, {
   path: '/whitemember',
-  name: '白名单管理',
-  meta: { hidden: true },
+  name: 'whitemember',
+  meta: { hidden: true, breadcrumbName: '白名单管理' },
   children: [{
     path: '/whitemember/list',
-    name: '白名单列表',
-    component: resolve => require(['@/views/sadmin-whitemember/whitemember-list'], resolve)
+    name: 'whitemember-list',
+    meta: { permission: 'visit.white-list.search', breadcrumbName: '白名单列表' },
+    // component: resolve => require(['@/views/sadmin-whitemember/whitemember-list'], resolve)
+    component: helper.loadView('sadmin-whitemember/whitemember-list')
   }]
 }, {
   path: '/terminal',
-  name: '终端管理',
-  meta: { hidden: true },
+  name: 'terminal',
+  meta: { hidden: true, breadcrumbName: '终端管理' },
   children: [{
     path: '/terminal/list',
-    name: '终端列表',
-    component: resolve => require(['@/views/sadmin-terminal/terminal-list'], resolve)
+    name: 'terminal-list',
+    meta: { permission: 'visit.terminal.search', breadcrumbName: '终端列表' },
+    // component: resolve => require(['@/views/sadmin-terminal/terminal-list'], resolve)
+    component: helper.loadView('sadmin-terminal/terminal-list')
   }, {
     path: '/terminal/add',
-    name: '新增终端',
-    meta: { deep: true },
-    component: resolve => require(['@/views/sadmin-terminal/terminal-add'], resolve)
+    name: 'terminal-add',
+    meta: { deep: true, permission: 'visit.terminal.add', breadcrumbName: '新增终端' },
+    // component: resolve => require(['@/views/sadmin-terminal/terminal-add'], resolve)
+    component: helper.loadView('sadmin-terminal/terminal-add')
   }, {
     path: '/terminal/edit/:id',
-    name: '编辑终端',
-    meta: { deep: true },
-    component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
+    name: 'terminal-edit',
+    meta: { deep: true, permission: 'visit.terminal.update', breadcrumbName: '编辑终端' },
+    // component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
+    component: helper.loadView('sadmin-terminal/terminal-edit')
   }]
 }, {
   path: '/version',
-  name: '版本管理',
-  meta: { hidden: true },
+  name: 'version',
+  meta: { hidden: true, breadcrumbName: '版本管理' },
   children: [{
     path: '/version/list',
-    name: '版本列表',
-    component: resolve => require(['@/views/sadmin-version/version-list'], resolve)
+    name: 'version-list',
+    meta: { permission: 'visit.version.search', breadcrumbName: '版本列表' },
+    // component: resolve => require(['@/views/sadmin-version/version-list'], resolve)
+    component: helper.loadView('sadmin-version/version-list')
   }]
 }, {
   path: '/log',
-  name: '日志',
-  meta: { hidden: true },
+  name: 'log',
+  meta: { hidden: true, breadcrumbName: '日志' },
   children: [{
     path: '/log/app-error',
-    name: 'APP崩溃日志',
-    component: resolve => require(['@/views/sadmin-log/app-error-list'], resolve)
+    name: 'log-app-error',
+    meta: { permission: 'visit.app-crash-log.search', breadcrumbName: 'APP崩溃日志' },
+    // component: resolve => require(['@/views/sadmin-log/app-error-list'], resolve)
+    component: helper.loadView('sadmin-log/app-error-list')
   }]
 }]
 

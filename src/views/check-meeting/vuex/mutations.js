@@ -30,5 +30,9 @@ export default {
   },
   meetingAdjustDealing(state, params) {
     state.meetingAdjustRefresh = params
+  },
+  getVisits(state, params) {
+    state.visits.contents = params.visits
+    state.visits.total = params.total
   }
 }

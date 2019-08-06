@@ -10,7 +10,11 @@
       prev-text="上一页"
       next-text="下一页"
       @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"/>
+      @current-change="handleCurrentChange">
+      <!-- <el-button class="button_go">
+        <slot name="go">跳转</slot>jumper, slot
+      </el-button> -->
+    </el-pagination>   
   </div>
 </template>
 
@@ -53,4 +57,8 @@ export default {
 </script>
 
 <style lang="css" scoped>
+/* .button_go {
+  border: 1px solid #dcdfe6 !important;
+  margin-left: 10px;
+} */
 </style>

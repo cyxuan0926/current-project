@@ -34,5 +34,12 @@ export default {
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=; expires=${ time.toGMTString() }`
     })
+  },
+  getBaseInfo: ({ commit, dispatch }) => {
+    return api.getBaseInfo().then(res => {
+      if (!res) return false
+      dispatch('setUser', res.user)
+      return true
+    })
   }
 }

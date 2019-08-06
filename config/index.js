@@ -11,7 +11,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/ywgk-auth': {
-        target: 'http://192.168.0.41:8085/',
+        target: 'http://192.168.0.230:8088/',
         changeOrigin: true,
         pathRewrite: {
           '^/ywgk-auth': '/ywgk-auth'
@@ -32,13 +32,13 @@ module.exports = {
       //     '^/ywgk': '/ywgk'
       //   }
       // },
-      '/ywgk-yb': {
-        target: 'http://192.168.0.54:8083/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/ywgk-yb': '/'
-        }
-      }
+      // '/ywgk': {
+      //   target: 'http://192.168.0.54:8083/',
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/ywgk': '/'
+      //   }
+      // }
     },
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

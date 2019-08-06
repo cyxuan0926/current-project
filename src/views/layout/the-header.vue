@@ -19,7 +19,7 @@
             <img
               src="/static/images/user2-160x160.jpg"
               class="avatar circle">
-            <span class="hidden-xs-only">{{ user.username }}</span>
+            <span class="hidden-xs-only">{{ publicUserInfo.username }}</span>
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="{ path: '/password/edit' }">修改用户密码</el-dropdown-item>
@@ -34,18 +34,18 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import logout from '@/utils/logout'
 
 export default {
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
-      user: state => state.global.user
+      publicUserInfo: state => state.account.publicUserInfo
     })
   },
   methods: {
-    ...mapMutations(['setLoginState']),
-    ...mapActions(['handleCollapse', 'logout', 'resetState']),
+    ...mapActions(['handleCollapse']),
     handleNavigation(e) {
       this.$router.push(e)
     },
@@ -55,15 +55,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.logout().then(res => {
-          if (!res) return
-          localStorage.removeItem('user')
-          localStorage.removeItem('routes')
+          logout()
           this.$router.replace('/login')
-          this.resetState('logout')
-          this.setLoginState()
-        })
-      }).catch(() => {})
+      }).catch(() =>{})
     }
   }
 }
