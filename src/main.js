@@ -28,24 +28,7 @@ Object.keys(components).forEach((key) => {
   let name = key.replace(/(\w)/, (v) => v.toUpperCase())
   Vue.component(`m${ name }`, components[key])
 })
-router.beforeEach((to, from, next) => {
-  if (!to.meta.notLogin) {
-    let isLogin = localStorage.getItem('user')
-    if (!isLogin) {
-      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
-      store.commit('setLoginState')
-    }
-  }
-  if (to.meta.hidden) next({ path: '/dashboard', replace: true })
-  next()
-})
 
-// router.onError(error => {
-//   const pattern = /Loading chunk (\d)+ failed/g
-//   const isChunkLoadFailed = error.message.match(pattern)
-//   const targetPath = router.history.pending.fullPath
-//   if (isChunkLoadFailed) router.replace(targetPath)
-// })
 window.router = router
 /* eslint-disable no-new */
 new Vue({

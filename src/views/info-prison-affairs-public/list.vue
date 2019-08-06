@@ -200,7 +200,7 @@ export default {
   computed: {
     ...mapState(['newsList']),
     routeName() {
-      return this.$route.name
+      return this.$route.meta.breadcrumbName
     }
   },
   watch: {

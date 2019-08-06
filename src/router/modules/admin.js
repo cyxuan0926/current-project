@@ -1,47 +1,59 @@
 import frame from '@/views/layout/the-frame'
+// eslint-disable-next-line
+import { helper } from '@/utils'
 
 let admin = [{
   path: '/account',
-  name: '账户管理',
-  meta: { hidden: true },
+  name: 'account-manage',
+  meta: { hidden: true, breadcrumbName: '账户管理' },
   children: [{
     path: '/account/list',
-    name: '账户列表',
+    name: 'account-list',
     props: { role: '4' },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
+    meta: { permission: 'visit.account.current-prison.search', breadcrumbName: '账户列表' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-list')
   }, {
     path: '/account/add',
-    name: '新增账户',
-    meta: { role: '4', deep: true },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
+    name: 'account-add',
+    meta: { role: '4', deep: true, permission: 'visit.account.add', breadcrumbName: '新增账户' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-add')
   }, {
     path: '/account/edit/:id',
-    name: '编辑账户',
-    meta: { role: '4', deep: true },
-    component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
+    name: 'account-edit',
+    meta: { role: '4', deep: true, permission: 'visit.account.update', breadcrumbName: '编辑账户' },
+    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
+    component: helper.loadView('sadmin-prison-user/prison-user-edit')
   }]
 }, {
   path: '/adminPrison-area',
-  name: '监狱监区管理',
-  meta: { hidden: true },
+  name: 'adminPrison-area',
+  meta: { hidden: true, breadcrumbName: '监狱监区管理' },
   children: [{
     path: '/adminPrison-area/list',
-    name: '监狱监区列表',
+    name: 'adminPrison-area-list',
+    meta: { permission: 'visit.prison-area.current-prison.search', breadcrumbName: '监狱监区列表' },
     props: { role: '4' },
-    component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
+    // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
+    component: helper.loadView('sadmin-prison-area/prison-area-list')
   }]
 }, {
   path: '/meeting-report',
-  name: '会见统计',
-  meta: { hidden: true },
+  name: 'meeting-report-admin',
+  meta: { hidden: true, breadcrumbName: '会见统计' },
   children: [{
     path: '/meeting-report/prison',
-    name: '监狱统计',
-    component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
+    name: 'prison-report-admin',
+    meta: { breadcrumbName: '监狱统计', permission: 'visit.visit-statistic.prison.search' },
+    // component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
+    component: helper.loadView('meeting-report/prison-report')
   }, {
     path: '/meeting-report/prison-area',
-    name: '监区统计',
-    component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
+    name: 'prison-area-report-admin',
+    meta: { breadcrumbName: '监区统计', permission: 'visit.visit-statistic.prison-area.search' },
+    // component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
+    component: helper.loadView('meeting-report/prison-area-report')
   }]
 }]
 

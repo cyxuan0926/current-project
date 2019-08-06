@@ -62,3 +62,70 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
 export const deepCopy = (obj) => {
   return JSON.parse(JSON.stringify(obj))
 }
+
+// 角色名称转化角色信息对象(理想的情况下)
+export const transitionRolesList = (val) => {
+  let { name, id } = val, result = { value: id }
+  if (name.includes('监狱管理')) Object.assign(result, { label: '监狱管理员', role: '4' })
+  else if (name.includes('信息')) Object.assign(result, { label: '信息管理人员', role: '3' })
+  else if (name.includes('审核')) Object.assign(result, { label: '审核人员', role: '1' })
+  else Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
+  return result
+}
+
+/**
+ * 角色名称列表转角色id 现在的用户都只有单个角色
+ * -1 租户管理员
+ * 0 狱务通管理员
+ * 1 审核人员
+ * 3 信息人员
+ * 4 监狱管理
+ * -9999 其余角色人员(暂时)
+ * arr 角色数组 roles 角色列表对应的角色id
+ * controlArg
+ */
+export const transitionRoleId = (val) => {
+  if (!val.length) return { role: '-1' } // 租户管理员
+  let arr = [], result = {}, roles = [
+      { roleList: [0], role: '0' },
+      { roleList: [1], role: '1' },
+      { roleList: [3], role: '3' },
+      { roleList: [4], role: '4' }
+    ], controlArg = true
+  for (let value of val) {
+    let { roleName } = value
+    if (roleName.includes('监狱管理')) arr.push(4)
+    else if (roleName.includes('信息')) arr.push(3)
+    else if (roleName.includes('审核')) arr.push(1)
+    else if (roleName.includes('狱务通管理')) arr.push(0)
+    // else arr.push(-1) // 别的角色
+  }
+  arr = Array.from(new Set(arr))
+  for (let index in roles) {
+    if (roles[index].roleList.length !== arr.length) {
+      controlArg = false
+      continue
+    }
+    else {
+      controlArg = true
+      for (let value of roles[index].roleList) {
+        if (arr.some((item, index) => value === item)) continue
+        else {
+          controlArg = false
+          break
+        }
+      }
+    }
+    if (controlArg) {
+      result = { role: roles[index].role }
+      break
+    }
+    else result = { role: '-9999' } // 没有对应的角色列表 暂时的角色id
+  }
+  return result
+}
+
+// 懒加载路由
+export function loadView(path) {
+  return resovle => require([`@/views/${ path }`], resovle)
+}

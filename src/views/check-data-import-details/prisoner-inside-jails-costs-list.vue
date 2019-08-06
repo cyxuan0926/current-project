@@ -88,7 +88,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         time: { type: 'dateRange', start: 'startDate', end: 'endDate', unlinkPanels: true }
       }
     }

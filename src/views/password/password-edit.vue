@@ -20,6 +20,7 @@
             label-width="0"
             prop="password">
             <el-input
+              show-password
               type="password"
               v-model="ruleForm2.password"
               auto-complete="off"
@@ -29,6 +30,7 @@
             label-width="0"
             prop="new_password">
             <el-input
+              show-password
               type="password"
               v-model="ruleForm2.new_password"
               auto-complete="off"
@@ -38,6 +40,7 @@
             label-width="0"
             prop="passwordReview">
             <el-input
+              show-password
               type="password"
               v-model="ruleForm2.passwordReview"
               auto-complete="off"
@@ -59,6 +62,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import logout from '@/utils/logout'
 
 export default {
   data() {
@@ -88,29 +92,26 @@ export default {
     }
   },
   watch: {
+    // 修改用户密码成功以后重新登录
     modifyPasswordResult() {
       setTimeout(() => {
-        this.logout().then(res => {
-          if (!res) return
-          localStorage.removeItem('user')
-          localStorage.removeItem('routes')
+          logout()
           this.$router.replace('/login')
-        }) // 修改用户密码成功以后重新登录
       }, 1000)
     }
   },
   computed: {
     ...mapState({
-      modifyPasswordResult: state => state.global.modifyPasswordResult // 修改用户名密码的结果
+      modifyPasswordResult: state => state.account.modifyMyPasswordResult // 修改用户名密码的结果
     })
   },
   methods: {
-    ...mapActions(['modifyPassword', 'logout']),
+    ...mapActions('account', ['modifyMyPassword']),
     // 点击提交按钮执行的方法
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.modifyPassword(this.ruleForm2)
+          this.modifyMyPassword({ oldPassword:this.ruleForm2.password, newPassword: this.ruleForm2.new_password })
         }
         else {
           console.log('error submit!!')

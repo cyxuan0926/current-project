@@ -2,7 +2,7 @@ module.exports = {
   buildCommands: ["npm install", "npm run build:prod"],
   buildOutputPath: "dist",
   repository: {
-    name: "prison-web",
+    name: "ywgk-fe",
     branch: "master",
     url: "https://github.com/sinog2c/ywgk-fe.git"
   },

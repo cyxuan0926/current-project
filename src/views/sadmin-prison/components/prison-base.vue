@@ -13,21 +13,17 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
-    let formButton = { buttons: ['next'] }, permission = 'add'
-    if (this.$route.meta.permission === 'edit') {
-      formButton.buttons = [{ update: { loading: false } }]
-      permission = 'edit'
-    }
+    let formButton = { buttons: [{ update: { loading: false } }] }, permission = 'edit'
     return {
       show: false,
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '140px' },
-        title: { type: 'input', label: '监狱名称', rules: ['required'] },
-        provincesId: { type: 'select', label: '所在省', rely: 'citysId', func: this.onProvinceChange, loading: true, rules: ['required'], action: 'getProvincesAll' },
+        title: { type: 'input', label: '监狱名称', rules: ['required'], disabled: true },
+        provincesId: { type: 'select', label: '所在省', rely: 'citysId', func: this.onProvinceChange, loading: true, rules: ['required'], action: 'getProvincesAll', disabled: true },
         citysId: { type: 'select', label: '所在市', rules: ['required'], defer: true, disabled: true, loading: true },
-        street: { type: 'input', label: '街道' },
+        street: { type: 'input', label: '街道', disabled: true },
         visitAddress: { type: 'textarea', label: '探监路线', autosize: { minRows: 2, maxRows: 6 } },
-        zipcode: { type: 'input', label: '监狱编号', rules: ['required', 'isNumber', 'lengthRange-6'] },
+        zipcode: { type: 'input', label: '监狱编号', rules: ['required'], disabled: true },
         description: { type: 'jaileditor', label: '监狱简介', rules: ['required'] },
         audioPath: { type: 'uploadAudio', label: '监狱音频' },
         videoPath: { type: 'uploadVideo', label: '监狱视频' },
@@ -66,12 +62,7 @@ export default {
         this.$message.warning('正在上传文件')
         return false
       }
-      if (this.permission !== 'edit') {
-        sessionStorage.setItem('base', JSON.stringify(e))
-        sessionStorage.setItem('step', 1)
-        this.$router.push({ query: Object.assign({}, { tag: 'prisonConfig' }) })
-      }
-      else if (this.permission === 'edit') {
+      if (this.permission === 'edit') {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
         this.formItems.buttons[0].update.loading = true
         this.updatePrison(params).then(res => {
@@ -88,7 +79,7 @@ export default {
       this.formItems.citysId.disabled = false
       this.getCities(e).then(res => {
         if (!res) return
-        this.formItems.citysId = Object.assign({}, this.formItems.citysId, { options: res.options, props: { label: res.label, value: res.value }, loading: false, value: '' })
+        this.formItems.citysId = Object.assign({}, this.formItems.citysId, { options: res.options, props: { label: res.label, value: res.value }, loading: false, value: '', disabled: true })
       })
     }
   }
