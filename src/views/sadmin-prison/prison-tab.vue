@@ -66,7 +66,7 @@ export default {
         this.total = this.$store.state[`${tabName}s`]['total']
       })
     },
-    sizeChange() {
+    sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas('sizeChange')
     },
