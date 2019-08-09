@@ -4,32 +4,19 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>狱务通</title>
-  <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-</head>
-<body>
-  <script src='/static/tinymce/tinymce.min.js'></script>
-  <div id='ie' style='display: none;'>
-    您的浏览器太旧,请使用chrome等高级浏览器或者升级
-    <style>
-    #ie {
-        position: absolute;
-        top: 50%;
-        font-size: 20px;
-        text-align: center;
-        color: #1F2D3D;
-        width: 100%;
-        background: #fff;
-    }
-    </style>
-  </div>
-  <div id="layout" class="wrapper">加载中...</div>
-  <script type="text/javascript">
-    if (navigator.appVersion.indexOf('Trident') > -1 && navigator.userAgent.indexOf('MSIE') > -1) {
-      document.getElementById('ie').style.display = 'block'
-      document.getElementById('layout').style.display = 'none'
+  <script src="https://cdn.bootcss.com/bowser/1.9.4/bowser.min.js"></script>
+  <script>
+    /* eslint-disable no-undef */
+    if (bowser.name === 'Internet Explorer' && parseInt(bowser.version) < 11) {
+      /* eslint-disable semi */
+      location.href = '/static/browser.html';
     }
   </script>
-<!-- built files will be auto injected -->
+</head>
+<body>
+  <div id="layout" class="wrapper">加载中...</div>
+  <script src='/static/tinymce/tinymce.min.js'></script>
+  <!-- built files will be auto injected -->
 </body>
 </html>
