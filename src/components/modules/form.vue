@@ -16,6 +16,7 @@
           :prop="key"
           :item="item"
           :fields="fields"
+          @resetFieldValue= "resetFieldValue"
           @validateField="validateField" />
       </template>
     </el-form>
@@ -166,6 +167,23 @@ export default {
         default:
           return {}
       }
+    },
+    resetFieldValue(...arg) {
+      const [status, prop] = arg
+      const fields = this.$refs.form.fields
+      const relevantFields = []
+      for(let key in this.items) {
+        if(this.items[key].disableDependingProp === prop) relevantFields.push(key)
+      }
+      if(!relevantFields.length) return
+      fields.map(val => {
+        relevantFields.map(value => {
+          if(val.prop === value) {
+            val.resetField()
+            return true
+          }
+        })
+      })
     }
   }
 }

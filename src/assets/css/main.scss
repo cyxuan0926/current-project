@@ -464,3 +464,11 @@ body .el-table th.gutter{
 body .el-table colgroup.gutter{
   display: table-cell!important;
 }
+.unused-form__item {
+  .el-form-item__label {
+    color: #c0c4cc !important;
+    &::before {
+      color: #c0c4cc !important;
+    }
+  }
+}

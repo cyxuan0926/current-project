@@ -1,5 +1,6 @@
 <template>
   <el-form-item
+    :class="(item.disableDependingProp ? (item.dependingRelation ? Boolean(fields[item.disableDependingProp]) : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '' "
     :label="item.noLabel ? '' : item.label"
     :prop="prop">
     <el-input
@@ -7,8 +8,8 @@
       :type="item.type"
       :autosize="item.autosize"
       v-model="fields[prop]"
-      :disabled="item.disabled"
-      :placeholder="'请输入' + item.label">
+      :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? Boolean(fields[item.disableDependingProp]) : !fields[item.disableDependingProp] ) : false)"  
+      :placeholder="item.placeholder || '请输入' + item.label">
       <template
         v-if="item.append"
         slot="append">{{ item.append }}</template>
@@ -43,6 +44,7 @@
       :active-value="1"
       :inactive-value="0"
       :disabled="item.disabled"
+      @change="handleChange"
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
@@ -126,6 +128,9 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
+    },
+    handleChange(status) {
+      if(this.item.controlTheOther) this.$emit('resetFieldValue', status, this.prop)
     }
   }
 }
