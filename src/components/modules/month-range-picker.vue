@@ -111,7 +111,7 @@ export default {
   position relative
   // border 1px solid #dcdfe6
   box-sizing border-box
-  width 33% !important 
+  // width 33% !important 
   &:hover
     border-color #c0c4cc
 .close-icon

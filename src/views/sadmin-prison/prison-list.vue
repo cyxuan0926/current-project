@@ -2,7 +2,6 @@
   <el-table
     :data="prisons.contents"
     border
-    stripe
     style="width: 100%">
     <el-table-column
       prop="title"
@@ -33,23 +32,20 @@
     </el-table-column>
     <el-table-column
       label="操作"
-      width="170px"
-      align="center">
+      width="260px">
       <template slot-scope="scope">
         <el-button
           type="primary"
           size="mini"
-          @click="onEdit(scope.row.id)">编辑</el-button><br>
+          @click="onEdit(scope.row.id)">编辑</el-button>
         <el-button
           type="text"
           size="mini"
-          style="margin-top: 7px;"
           @click="onVisit(scope.row.id, 'remote')">远程会见配置</el-button>
         <el-button
           type="text"
           size="mini"
-          style="margin-left: 0;"
-          @click="onVisit(scope.row.id, 'visit')">实地会见配置</el-button><br>
+          @click="onVisit(scope.row.id, 'visit')">实地会见配置</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -78,8 +74,8 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
-.row-container .cell img
-  width: 91px;
-  height: 91px;
-</style>
+// <style type="text/stylus" lang="stylus" scoped>
+// .row-container .cell img
+//   width: 91px;
+//   height: 91px;
+// </style>

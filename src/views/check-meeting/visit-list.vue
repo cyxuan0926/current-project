@@ -24,13 +24,13 @@
       <el-table
         :data="visits.contents"
         border
-        stripe
+        class="mini-td-padding td"
         style="width: 100%">
         <el-table-column
           prop="name"
           label="家属姓名" />
         <el-table-column
-          width="148px"
+          width="156px"
           label="身份证信息">
           <template slot-scope="scope">
             <div class="idcard-box">
@@ -57,14 +57,14 @@
         <el-table-column
           label="申请时间"
           prop="applicationDate" />
-        <el-table-column label="批次(窗口号)">
+        <el-table-column label="批次(窗口号)" width="136px">
           <template slot-scope="scope">
-            <span v-if="scope.row.window">{{ scope.row.batch }}({{ scope.row.window }}窗口)</span>
+            <span v-if="scope.row.window">
+              {{ scope.row.batch }} ({{ scope.row.window }}窗口)
+            </span>
           </template>
         </el-table-column>
-        <el-table-column
-          class-name="orange"
-          label="申请状态">
+        <el-table-column class-name="orange" label="申请状态">
           <template slot-scope="scope">
             <span v-if="!scope.row.remarks">{{ scope.row.status | applyStatus }}</span>
             <el-tooltip
@@ -75,7 +75,11 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column :label="tabs === 'CANCELED' ? '取消原因' : '操作'">
+        <el-table-column
+          :label="tabs === 'CANCELED' ? '取消原因' : '操作'"
+          min-width="100px"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span v-if="tabs === 'CANCELED'">{{ scope.row.cause }}</span>
             <template v-else>
@@ -330,19 +334,17 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.el-table /deep/ td {
+  padding: 7px 0;
+}
+</style>
+
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width: 126.8px;
   cursor: pointer;
 .withdraw-box
   margin-bottom 20px;
-</style>
-
-<style lang="scss" scoped>
-.idcard-box {
-  img + img {
-    margin-top: 5px;
-  }
-}
 </style>
 

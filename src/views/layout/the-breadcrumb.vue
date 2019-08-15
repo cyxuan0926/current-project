@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb separator="/">
+  <el-breadcrumb separator-class="el-icon-arrow-right">
     <el-breadcrumb-item :to="{ path: '/dashboard' }">主页</el-breadcrumb-item>
     <el-breadcrumb-item
       v-for="(item, index) in breadcrumb"

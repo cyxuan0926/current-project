@@ -24,7 +24,6 @@
       <el-table
         :data="visits.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

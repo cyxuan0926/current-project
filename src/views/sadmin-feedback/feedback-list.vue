@@ -25,7 +25,6 @@
       <el-table
         :data="feedbacks.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -57,9 +56,7 @@
             {{ scope.row.isReply | isTrue }}
           </template>
         </el-table-column>
-        <el-table-column
-          align="center"
-          label="操作">
+        <el-table-column label="操作" width="250px">
           <template slot-scope="scope">
             <el-button
               v-if="!scope.row.isReply"
@@ -77,7 +74,6 @@
               type="primary">
               已答复
             </el-button>
-            <br>
             <el-button
               size="mini"
               class="button-column"
@@ -85,7 +81,6 @@
               type="danger">
               删除
             </el-button>
-            <br>
             <el-button
               size="mini"
               type="text"

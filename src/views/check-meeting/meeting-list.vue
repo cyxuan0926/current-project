@@ -22,29 +22,28 @@
         ref="meetingTable"
         :data="meetings.contents"
         border
-        stripe
+        class="mini-td-padding"
         style="width: 100%"
         @sort-change="sortChange">
         <el-table-column
           prop="prisonerNumber"
-          min-width="68px"
           label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
-          min-width="84px"
           label="监区"
           :sortable="'custom'" />
         <el-table-column
           label="申请时间"
-          min-width="124px">
+          width="150px"
+        >
           <template slot-scope="scope">
             <span >{{ scope.row.createdAt }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="会见时间"
-          min-width="138px"
           :sortable="'custom'"
+          width="150px"
           prop="meetingTime">
           <template slot-scope="scope">
             <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
@@ -52,11 +51,10 @@
         </el-table-column>
         <el-table-column
           label="罪犯姓名"
-          min-width="92"
           prop="prisonerName" />
         <el-table-column
           label="家属"
-          min-width="116">
+        >
           <template slot-scope="scope">
             <div v-if="scope.row.families && scope.row.families.length">
               <el-button
@@ -81,7 +79,7 @@
         </el-table-column>
         <el-table-column
           class-name="orange"
-          min-width="78px"
+          width="110px"
           label="申请状态">
           <template slot-scope="scope">
             <span v-if="!scope.row.content">
@@ -97,10 +95,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column
-          label="操作"
-          align="center"
-          width="76px">
+        <el-table-column label="操作" width="140px">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
@@ -521,7 +516,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/css/list";
+.el-table /deep/ {
+  th {
+    padding: 5px 0 3px !important;
+  }
+}
 </style>
+
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width: 126.8px;

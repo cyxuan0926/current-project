@@ -6,7 +6,7 @@
       size="small"
       type="primary"
       plain
-      class="button-add"
+      class="button-add button-shift-down"
       @click="onAdd">添加白名单</el-button>
     <m-search
       :items="searchItems"
@@ -23,7 +23,6 @@
       <el-table
         :data="whitemembers.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="phone"

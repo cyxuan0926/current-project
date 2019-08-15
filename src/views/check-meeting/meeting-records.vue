@@ -17,7 +17,6 @@
       <el-table
         :data="freeMeetings.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

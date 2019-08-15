@@ -20,7 +20,6 @@
       <el-table
         :data="prisonAreas.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -180,14 +179,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cell{
-  button{
-    margin-right: 6px;
-  }
-  button+button{
-    margin: 5px 6px 0 0;
-  }
-}
+// .cell{
+//   button{
+//     margin-right: 6px;
+//   }
+//   button+button{
+//     margin: 5px 6px 0 0;
+//   }
+// }
 
 .prison-name {
   margin: 0;
@@ -195,6 +194,8 @@ export default {
   line-height: 40px;
   text-align: center;
   font-weight: normal;
-  background-color: #e2e2e2;
+  // background-color: #e2e2e2;
+  color: #fff;
+  background-color: #3c8dbc;
 }
 </style>

@@ -4,7 +4,7 @@
     :gutter="0">
     <el-button
       size="small"
-      class="button-add"
+      class="button-add button-shift-down"
       type="primary"
       plain
       @click="onAdd">添加终端信息</el-button>
@@ -23,7 +23,6 @@
       <el-table
         :data="terminals.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="terminalNumber"
