@@ -8,6 +8,11 @@
         :summary-method="getSummaries"
         style="width: 100%">
         <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
+        <el-table-column
           prop="prisonArea"
           label="监区" />
         <el-table-column
@@ -54,6 +59,9 @@
 import { mapState } from 'vuex'
 
 export default {
+  props: {
+    hasAllPrisonQueryAuth: Boolean
+  },
   computed: {
     ...mapState({
       prisonReportList: state => state.prisonReportList,

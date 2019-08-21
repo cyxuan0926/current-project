@@ -18,6 +18,7 @@
         </el-tab-pane>
       </template>
     </el-tabs>
+    <m-excel-download path="/download/exportJails" :params="filter"/>
     <router-view />
     <m-pagination
       ref="pagination"
@@ -39,7 +40,8 @@ export default {
         title: { type: 'input', label: '监狱名称', miss: false },
         name: { type: 'input', label: '租户名称', miss: true }
       },
-      total: 0
+      total: 0,
+      filter: {}
     }
   },
   mounted() {

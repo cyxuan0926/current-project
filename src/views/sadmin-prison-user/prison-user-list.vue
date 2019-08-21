@@ -22,6 +22,7 @@
           label="监狱用户"
           name="first" />
       </el-tabs>
+      <m-excel-download path="/download/exportPrisonuser" :params="filter"/>
       <el-table
         :data="prisonUsers.contents"
         border
@@ -103,7 +104,8 @@ export default {
         },
         options
       ),
-      routeRole: routeRole
+      routeRole: routeRole,
+      filter: {}
     }
   },
   computed: {

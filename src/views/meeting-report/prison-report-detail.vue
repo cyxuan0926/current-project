@@ -2,6 +2,11 @@
   <el-row :gutter="0">
     <el-col :span="24">
       <el-table :data="prisonReportDetail.meetingDetails" border>
+        <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
         <el-table-column label="家属姓名">
           <template slot-scope="scope">
             <el-button
@@ -117,6 +122,9 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  props: {
+    hasAllPrisonQueryAuth: Boolean
+  },
   data(){
     return {
       family: {},

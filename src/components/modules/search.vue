@@ -1,6 +1,6 @@
 <template>
   <div class="filter-container">
-    <div class="filter-left">
+    <!-- <div class="filter-left">
       <el-select
         v-model="pageSize"
         placeholder="请选择"
@@ -12,7 +12,7 @@
           :value="item"/>
       </el-select>
       条记录
-    </div>
+    </div> -->
     <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
@@ -142,8 +142,8 @@ export default {
   },
   data() {
     return {
-      selectItem: [10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
-      pageSize: 10,
+      // selectItem: [10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
+      // pageSize: 10,
       startValue: null,
       endValue: null,
       pickerOptions: {
@@ -174,9 +174,9 @@ export default {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
-    sizeChange(e) {
-      this.$emit('sizeChange', this.pageSize)
-    },
+    // sizeChange(e) {
+    //   this.$emit('sizeChange', this.pageSize)
+    // },
     onSearch(e) {
       if (this.items) {
         let params = {}

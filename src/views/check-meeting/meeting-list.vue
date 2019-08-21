@@ -7,6 +7,11 @@
       ref="search"
       @sizeChange="sizeChange"
       @search="onSearch" />
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportMettings"
+      :params="filter"
+    />
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -25,6 +30,11 @@
         stripe
         style="width: 100%"
         @sort-change="sortChange">
+        <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
         <el-table-column
           prop="prisonerNumber"
           min-width="68px"
@@ -98,6 +108,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="!hasAllPrisonQueryAuth"
           label="操作"
           align="center"
           width="76px">
@@ -305,7 +316,10 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       tabs: 'PENDING',
@@ -386,17 +400,23 @@ export default {
     this.getDatas('mounted')
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
+    ...mapActions(['getMeetings', 'getMeetingsAll', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas('sizeChange')
     },
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
-        if (!res) return
-        if (this.meetingRefresh) this.meetingApplyDealing()
-      })
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getMeetingsAll(params)
+      } else {
+        this.getMeetings(params).then(res => {
+          if (!res) return
+          if (this.meetingRefresh) this.meetingApplyDealing()
+        })
+      }
     },
     onSearch() {
       if (helper.isEmptyObject(this.sortObj)) {

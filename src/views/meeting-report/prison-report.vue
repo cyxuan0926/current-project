@@ -8,12 +8,19 @@
       @sizeChange="sizeChange"
       @search="onSearch"
     />
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      :path="excelDownloadPath"
+      :params="filter"
+    />
     <el-col :span="24">
       <el-tabs v-model="activeComponentName" type="card">
         <template v-for="item in tabOptions">
           <el-tab-pane :label="item.label" :name="item.name" :key="item.name">
             <keep-alive>
-              <component :is="activeComponentName" />
+              <component
+                :is="activeComponentName" :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth"
+              />
             </keep-alive>
           </el-tab-pane>
         </template>
@@ -32,11 +39,13 @@ import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
 import profile from './prison-report-profile'
 import detail from './prison-report-detail'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
 const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
 
 export default {
+  mixins: [prisonFilterCreator],
   components: { profile, detail },
   data() {
     return {
@@ -66,8 +75,16 @@ export default {
         }
       },
       tabOptions: [
-        { label: '监狱会见统计', name: 'profile' },
-        { label: '会见统计详情', name: 'detail' }
+        {
+          label: '监狱会见统计',
+          name: 'profile',
+          excelDownloadPath: '/download/findPage'
+        },
+        {
+          label: '会见统计详情',
+          name: 'detail',
+          excelDownloadPath: ''
+        }
       ],
       filterInit: { // 默认查询上一个月的，筛选框初始化
         startDate: startDate,
@@ -83,6 +100,13 @@ export default {
       } else {
         return this.prisonReportDetail.total
       }
+    },
+    excelDownloadPath() {
+      const activeTab = this.tabOptions.find(tab => {
+        return tab.name === this.activeComponentName
+      })
+
+      return activeTab && activeTab.excelDownloadPath
     }
   },
   watch: {
@@ -105,7 +129,7 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisonReportList', 'getPrisonReportDetail']),
+    ...mapActions(['getPrisonReportList', 'getPrisonReportListAll', 'getPrisonReportDetail', 'getPrisonReportDetailAll']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -114,9 +138,17 @@ export default {
       const params = { ...this.filter, ...this.pagination }
 
       if (this.activeComponentName === 'profile') {
-        this.getPrisonReportList(params)
+        if (this.hasAllPrisonQueryAuth) {
+          this.getPrisonReportListAll(params)
+        } else {
+          this.getPrisonReportList(params)
+        }
       } else {
-        this.getPrisonReportDetail(params)
+        if (this.hasAllPrisonQueryAuth) {
+          this.getPrisonReportDetailAll(params)
+        } else {
+          this.getPrisonReportDetail(params)
+        }
       }
     },
     onSearch() {

@@ -7,6 +7,18 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
+      <m-excel-export
+        v-if="hasAllPrisonQueryAuth && dataToExportExcel.length > 0"
+        :filename="prisonerExcelConfig.filename"
+        :jsonData="dataToExportExcel"
+        :header="prisonerExcelConfig.header"
+        :filterFields="prisonerExcelConfig.filterFields"
+      />
+      <m-excel-download
+        v-if="hasAllPrisonQueryAuth && dataToExportExcel.length === 0"
+        path="/download/exportPrisoners"
+        :params="filter"
+      />
       <el-tabs
         value="first"
         type="card">
@@ -19,6 +31,11 @@
         border
         stripe
         style="width: 100%">
+        <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
         <el-table-column
           prop="name"
           label="罪犯姓名" />
@@ -38,6 +55,7 @@
             <div>
               {{ scope.row.accessTime }}
               <el-button
+                v-if="!hasAllPrisonQueryAuth"
                 size="small"
                 type="text"
                 style="margin-left: 5px;"
@@ -72,7 +90,7 @@
               @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="家属会见告知书">
+        <el-table-column v-if="!hasAllPrisonQueryAuth" label="家属会见告知书">
           <template slot-scope="scope">
             <span
               :class="[
@@ -86,7 +104,7 @@
               @click="handleSign(scope.row.notifyId, scope.row)">{{ scope.row.notifyId ? '点击查看' : '点击签约' }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column v-if="!hasAllPrisonQueryAuth" label="操作">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -304,7 +322,11 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import { prisonerExcelConfig } from '@/common/excel-config'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       searchItems: {
@@ -353,11 +375,16 @@ export default {
       changePrisonConfigName: false,
       prisonConfigName: '',
       prisonConfigData: [],
-      prisonConfigs: []
+      prisonConfigs: [],
+      prisonerExcelConfig
     }
   },
   computed: {
-    ...mapState(['prisoners', 'notification', 'notificationFamilies'])
+    ...mapState(['prisoners', 'notification', 'notificationFamilies']),
+    dataToExportExcel() {
+      // TODO：选中的数据才导出
+      return this.prisoners.contents
+    }
   },
   watch: {
     notificationFamily: {
@@ -406,13 +433,19 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist']),
+    ...mapActions(['getPrisoners', 'getPrisonersAll', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getPrisoners({ ...this.filter, ...this.pagination })
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getPrisonersAll(params)
+      } else {
+        this.getPrisoners(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)

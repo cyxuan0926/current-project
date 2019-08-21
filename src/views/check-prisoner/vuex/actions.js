@@ -4,6 +4,9 @@ export default {
   getPrisoners({ commit }, params) {
     http.getPrisoners(params).then(res => res && commit('getPrisoners', res))
   },
+  getPrisonersAll({ commit }, params) {
+    http.getPrisonersAll(params).then(res => res && commit('getPrisoners', res))
+  },
   updateAccessTime({ commit }, params) {
     return http.updateAccessTime(params).then(res => res)
   },

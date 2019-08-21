@@ -7,6 +7,11 @@
       ref="search"
       @sizeChange="sizeChange"
       @search="onSearch" />
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportRegistrations"
+      :params="filter"
+    />
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -23,6 +28,11 @@
         border
         stripe
         style="width: 100%">
+        <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
         <el-table-column
           prop="name"
           label="家属姓名" />
@@ -94,8 +104,7 @@
             v-if="scope.row.auditAt"
             slot-scope="scope">{{ scope.row.auditRealName }}<br >{{ scope.row.auditUserName }}<br >({{ scope.row.auditAt | Date }})</template>
         </el-table-column>
-        <el-table-column
-          label="操作">
+        <el-table-column v-if="!hasAllPrisonQueryAuth" label="操作">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING'"
@@ -278,7 +287,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       searchItems: {
@@ -341,14 +353,21 @@ export default {
     ...mapState(['registrations', 'registRemarks', 'notification'])
   },
   methods: {
-    ...mapActions(['getRegistrations', 'authorizeRegistrations', 'getNotification']),
+    ...mapActions(['getRegistrations', 'getRegistrationsAll', 'authorizeRegistrations', 'getNotification']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getRegistrations({ ...this.filter, ...this.pagination })
+
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getRegistrationsAll(params)
+      } else {
+        this.getRegistrations(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)

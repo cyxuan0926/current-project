@@ -257,6 +257,34 @@ let superAdmin = [{
     // component: resolve => require(['@/views/sadmin-log/app-error-list'], resolve)
     component: helper.loadView('sadmin-log/app-error-list')
   }]
+}, {
+  path: '/prison-data',
+  meta: { hidden: true, breadcrumbName: '监狱数据查询' },
+  children: [{
+    path: '/prison-data/registrations',
+    props: { hasAllPrisonQueryAuth: true },
+    meta: { permission: 'visit.family-registration.all-prison.search', breadcrumbName: '家属注册信息' },
+    component: helper.loadView('check-registration/registration-list')
+  }, {
+    path: '/prison-data/meeting-applications',
+    props: { hasAllPrisonQueryAuth: true },
+    meta: { permission: 'visit.visit-statistic.all-prison.remote-visit.search', breadcrumbName: '远程会见申请' },
+    component: helper.loadView('check-meeting/meeting-list')
+  }, {
+    path: '/prison-data/meeting-statistics',
+    props: { hasAllPrisonQueryAuth: true },
+    meta: { permission: 'visit.visit-statistic.all-prison.search', breadcrumbName: '监狱会见统计' },
+    component: helper.loadView('meeting-report/prison-report')
+  }, {
+    path: '/prison-data/meeting-statistics/prison-area',
+    meta: { permission: 'visit.visit-statistic.all-prison-area.search', breadcrumbName: '监区会见统计' },
+    component: helper.loadView('meeting-report/prison-area-report')
+  }, {
+    path: '/prison-data/prisoners',
+    props: { hasAllPrisonQueryAuth: true },
+    meta: { permission: 'visit.prisoner.all-prison.search', breadcrumbName: '服刑人员信息' },
+    component: helper.loadView('check-prisoner/prisoner-list')
+  }]
 }]
 
 superAdmin.forEach(item => {

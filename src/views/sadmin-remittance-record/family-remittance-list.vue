@@ -14,6 +14,7 @@
           label="家属汇款记录"
           name="first" />
       </el-tabs>
+      <m-excel-download path="/download/exportFamilyRemit" :params="filter"/>
       <el-table
         :data="familyRemittanceRecords.contents"
         border
@@ -81,7 +82,8 @@ export default {
         prisonerNumber: { type: 'input', label: '罪犯编号' },
         familyName: { type: 'input', label: '汇款家属' },
         remitTime: { type: 'date', label: '汇款时间' }
-      }
+      },
+      filter: {}
     }
   },
   computed: {

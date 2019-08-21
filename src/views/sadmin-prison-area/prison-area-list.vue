@@ -14,6 +14,7 @@
           label="监区管理"
           name="first" />
       </el-tabs>
+      <m-excel-download path="/download/exportPrison" :params="filter"/>
       <h3 v-if="parseInt(roleType) === 0" class="prison-name">
         {{ currentPrison && currentPrison.title }}
       </h3>
