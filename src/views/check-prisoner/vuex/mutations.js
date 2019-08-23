@@ -8,5 +8,8 @@ export default {
   },
   getNotificationFamilies(state, params) {
     state.notificationFamilies = params.families
+  },
+  getPrisonConfigs(state, params) {
+    state.prisonConfigs = params.prisonConfigs
   }
 }

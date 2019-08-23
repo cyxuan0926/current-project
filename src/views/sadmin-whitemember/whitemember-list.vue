@@ -13,13 +13,6 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="白名单"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="whitemembers.contents"
         border

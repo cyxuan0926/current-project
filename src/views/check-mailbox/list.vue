@@ -6,14 +6,9 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监狱长信箱"
-          name="first" />
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         :data="mailboxes.contents"
         border

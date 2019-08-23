@@ -9,7 +9,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { helper } from '@/utils'
+import validator, { helper } from '@/utils'
 export default {
   data() {
     let formButton = { buttons: [] }, permission
@@ -24,8 +24,8 @@ export default {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '150px' },
         cost: { type: 'input', label: '单次会见费用', disabled: this.$route.meta.role === '3', rules: ['required', 'isFee'], append: '/元', value: 0 },
-        branchPrison: { type: 'switch', label: '是否需要分监区', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1, tips: '开启监狱分监区，请及时通知该监狱人员，为监狱审核人员分配监区权限', controlTheOther: true },
-        prsionAreaList: {type: 'input', label: '监区名称', rules: ['required'], placeholder: '请输入各监区名称，以逗号隔开', disableDependingProp: 'branchPrison', dependingRelation: false},
+        branchPrison: { type: 'switch', label: '是否需要分监区', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1, tips: '开启监狱分监区，请及时通知该监狱人员，为监狱审核人员分配监区权限', controlTheOther: true},
+        prisonAreaList: {type: 'input', label: '监区名称', disabled: this.$route.meta.role === '3', placeholder: '请输入各监区名称，以逗号隔开', disableDependingProp: 'branchPrison', dependingRelation: false, changeRules: [{message: '请输入监区名称', required: true, validator: validator.required}]},
         meeting: { type: 'switch', label: '会见模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
         // dailyApplyLimit: { type: 'input', label: '每人日申请次数限制', disabled: this.$route.meta.role === '3', rules: ['isNumber', 'numberRange0'], append: '次/人', value: null },
         rewards: { type: 'switch', label: '奖励模块开放', disabled: this.$route.meta.role === '3', rules: ['required'], value: 1 },
@@ -47,6 +47,7 @@ export default {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
         this.values = this.prison
+        if(this.prison.prisonAreaList && this.prison.prisonAreaList.length) this.values.prisonAreaList = (this.prison.prisonAreaList.map(val => val.name)).join(',')
       })
     }
   },
@@ -61,29 +62,17 @@ export default {
     ...mapActions(['getPrisonDetail', 'updatePrison']),
     onSubmit(e) {
       if (this.permission === 'edit') {
-        if(e.prsionAreaList && e.prsionAreaList.length) {
-          const temp = [...new Set(e.prsionAreaList.replace(/；/g, ';').split(';'))]
-          const prsionAreaList = []
-          for(let val of temp) {
-            if(!val) continue
-            console.log(JSON.stringify({name: val}))
-            JSON.stringify(prsionAreaList.push({name: val}))
-          }
+        if(e.prisonAreaList && e.prisonAreaList.length) {
+          let prisonAreas = [...new Set(e.prisonAreaList.replace(/，/g, ',').split(','))]
+          e.prisonAreaList = prisonAreas.map(val => val && ({name: helper.trimString(val)}))
         }
-        const temp = [...new Set(e.prsionAreaList.replace(/；/g, ';').split(';'))]
-          const prsionAreaList = []
-          for(let val of temp) {
-            if(!val) continue
-            console.log(JSON.stringify({name: val}))
-            JSON.stringify(prsionAreaList.push({name: val}))
-        }
-        console.log(prsionAreaList)
-        // let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        // this.updatePrison(params).then(res => {
-        //   if (!res) return
-        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-        //   // else this.$router.push('/jails/detail')
-        // })
+        else e.prisonAreaList = []
+        let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
+        this.updatePrison(params).then(res => {
+          if (!res) return
+          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+          // else this.$router.push('/jails/detail')
+        })
       }
     }
   }

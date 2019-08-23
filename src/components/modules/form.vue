@@ -14,9 +14,10 @@
           :ref="key"
           :key="key"
           :prop="key"
+          :rule="item.rule"
           :item="item"
           :fields="fields"
-          @resetFieldValue= "resetFieldValue"
+          @resetFieldValue="resetFieldValue"
           @validateField="validateField" />
       </template>
     </el-form>
@@ -49,7 +50,13 @@
           size="small"
           type="primary"
           :loading="button.add && button.add.loading"
-          @click="onSubmit">新增</el-button>
+          @click="onSubmit">{{ button.text || '新增'}}</el-button>
+        <el-button
+          v-if="button === 'cancel' || button.cancel"
+          :key="index"
+          size="small"
+          @click="onCancel"
+          :type="button.type || 'primary'">取消</el-button>  
         <el-button
           v-if="button === 'back'"
           :key="index"
@@ -62,6 +69,7 @@
 <script>
 import formItem from './form-item'
 import validator, { helper } from '@/utils'
+import Monent from 'moment'
 export default {
   components: { formItem },
   props: {
@@ -84,7 +92,13 @@ export default {
         this.fields = Object.assign({}, this.fields, val)
       },
       deep: true
-    }
+    },
+    items: {
+      handler: function(val) {
+        val && this.render()
+      }
+    },
+    deep: true
   },
   data() {
     return {
@@ -95,7 +109,7 @@ export default {
       destroyed: false
     }
   },
-  mounted() {
+  created() {
     this.render()
   },
   beforeDestroy() {
@@ -112,6 +126,13 @@ export default {
         }
       })
     },
+    onCancel() {
+      this.$refs.form.resetFields()
+      this.$emit('cancel')
+    },
+    handleResetField() {
+      this.$refs.form.resetFields()
+    },
     render() {
       let fields = {}
       Object.keys(this.items).forEach(key => {
@@ -120,6 +141,7 @@ export default {
         this.initRules(this.items[key])
         this.items[key].rule && (this.rules[key] = this.items[key].rule)
         if (this.items[key].type === 'select') this.initSelect(this.items[key], key)
+        if (this.items[key].type === 'date' && this.items[key].pickerOptions) this.initDate(this.items[key], this.items[key].pickerOptions)
       })
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
       this.flag = true
@@ -131,7 +153,8 @@ export default {
     initSelect(item, key) {
       if (item.action && !item.defer) {
         item.loading = true
-        this.$store.dispatch(item.action).then(res => {
+        const actionArgs = item.actionArgs || {}
+        this.$store.dispatch(item.action, actionArgs).then(res => {
           if (!res) return
           item.options = res.options
           item.props = { label: res.label, value: res.value }
@@ -147,6 +170,21 @@ export default {
       })
       delete item.rules
     },
+    // 暂时就只初始化禁用日期
+    initDate(item, pickerOptions) {
+      let disabledDate
+      if(pickerOptions.disabledDate && Object.prototype.toString.call(pickerOptions.disabledDate) === "[object Object]") {
+        disabledDate = (time) => {
+          if(pickerOptions.disabledDate.name === 'start') {
+            if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() < time.getTime()
+          }
+          if(pickerOptions.disabledDate.name === 'end') {
+            if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() > time.getTime()
+          }
+        }
+        item['pickerOptions'] = {disabledDate}
+      }
+    },
     ruleSwitch(rule, label, type) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
@@ -154,7 +192,7 @@ export default {
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
         return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
       }
-      let plea = ['input', 'editor', 'jaileditor'].indexOf(type) > -1 ? '请输入' : '请选择'
+      let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
         case 'required':
           return { message: `${ plea }${ label }`, required: true, validator: validator.required }
@@ -169,21 +207,12 @@ export default {
       }
     },
     resetFieldValue(...arg) {
-      const [status, prop] = arg
-      const fields = this.$refs.form.fields
-      const relevantFields = []
-      for(let key in this.items) {
-        if(this.items[key].disableDependingProp === prop) relevantFields.push(key)
+      let [status, prop] = arg, fields = this.$refs.form.fields, relevantFields = []
+      for(let [key, value] of Object.entries(this.items)) {
+        if(value.disableDependingProp === prop) relevantFields.push(key)
       }
       if(!relevantFields.length) return
-      fields.map(val => {
-        relevantFields.map(value => {
-          if(val.prop === value) {
-            val.resetField()
-            return true
-          }
-        })
-      })
+      fields.map(val => relevantFields.map(value => val.prop === value && val.resetField()))
     }
   }
 }

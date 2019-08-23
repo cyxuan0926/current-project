@@ -29,12 +29,9 @@ export const trimObject = (options, query = []) => {
 }
 
 export const trimString = (str) => {
-  if ([undefined, null, ''].indexOf(str) > -1) return str
-  else if (typeof str === 'string') {
-    let reSpace = /^\s*(.*?)\s*$/
-    return str.replace(reSpace, '$1')
-  }
-  return str
+  if ([undefined, null].indexOf(str) > -1) return str
+  else if (String.prototype.trim) return str.trim()
+  else return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
 }
 
 export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) => {

@@ -4,7 +4,8 @@ import mutations from './mutations'
 let state = {
   prisoners: { contents: [], total: 0 },
   notification: {},
-  notificationFamilies: []
+  notificationFamilies: [],
+  prisonConfigs: []
 }
 
 export default {

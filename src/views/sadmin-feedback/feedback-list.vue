@@ -14,14 +14,9 @@
         :loading="downloading"
         @click="handleDownload">下载</el-button>
     </m-search>
-    <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="意见反馈"
-          name="first" />
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         :data="feedbacks.contents"
         border

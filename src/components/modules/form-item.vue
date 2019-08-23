@@ -1,14 +1,16 @@
 <template>
   <el-form-item
-    :class="(item.disableDependingProp ? (item.dependingRelation ? Boolean(fields[item.disableDependingProp]) : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '' "
+    :rules="(rule && rule.length) ? rule : (((item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? [] : item.changeRules))"
+    :class="[(item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '', (item.customClass ? item.customClass : '')]"
     :label="item.noLabel ? '' : item.label"
     :prop="prop">
     <el-input
       v-if="item.type === 'input' || item.type === 'textarea'"
       :type="item.type"
+      :clearable="item.clearable"
       :autosize="item.autosize"
       v-model="fields[prop]"
-      :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? Boolean(fields[item.disableDependingProp]) : !fields[item.disableDependingProp] ) : false)"  
+      :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
       :placeholder="item.placeholder || '请输入' + item.label">
       <template
         v-if="item.append"
@@ -19,7 +21,7 @@
       :placeholder="'请选择' + item.label"
       v-model="fields[prop]"
       :loading="item.loading"
-      filterable
+      :filterable="!!(item.filterable)"
       :disabled="item.disabled"
       @change="item.func && item.func($event, prop)">
       <el-option
@@ -102,6 +104,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    rule: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

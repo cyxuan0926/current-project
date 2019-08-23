@@ -15,13 +15,6 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监狱用户"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="prisonUsers.contents"
         border

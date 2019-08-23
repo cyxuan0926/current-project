@@ -6,14 +6,9 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch"/>
-    <el-col :span="24">
-      <el-tabs
-        type="card"
-        value="first">
-        <el-tab-pane
-          label="刑期变动详情表"
-          name="first"/>
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         border
         :data="prisonTerms.contents"

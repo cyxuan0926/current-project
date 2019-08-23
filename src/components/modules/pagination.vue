@@ -1,5 +1,7 @@
 <template>
-  <div class="m-pagination showTotal-pagination">
+  <div
+    class="m-pagination showTotal-pagination"
+    v-if="total">
     <span>共{{ total }}条记录</span>
     <el-pagination
       background
@@ -52,6 +54,7 @@ export default {
     handleCurrentChange(e) {
       this.$parent.$parent.pagination.page = e
       this.$emit('onPageChange')
+      this.currentPage = e
     },
     handleGo() {
       this.handleCurrentChange(this.currentPage)

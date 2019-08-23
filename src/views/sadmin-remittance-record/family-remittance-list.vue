@@ -7,13 +7,6 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="家属汇款记录"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="familyRemittanceRecords.contents"
         border

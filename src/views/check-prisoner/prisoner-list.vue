@@ -6,19 +6,56 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="服刑人员信息"
-          name="first" />
-      </el-tabs>
+    <el-row type="flex" justify="end">
+      <el-col
+        :span="4"
+        style="text-align:right">
+        <el-button
+          type="primary"
+          size="medium"
+          @click="showAddPrisoner"
+          style="width:65%">新 增</el-button>
+      </el-col>
+      <el-col
+        :span="4"
+        style="text-align:right">
+        <el-button
+          type="primary"
+          size="medium"
+          @click="showDelPrionser"
+          style="width:60%">删 除</el-button>
+      </el-col>
+    </el-row>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         :data="prisoners.contents"
         border
         stripe
+        @selection-change="handleSelectionChange"
         style="width: 100%">
+        <!-- EL自身的 -->
+        <el-table-column
+          type="selection"
+          :selectable="handleControlSelect"/>
+        <!-- 自己手写的 不要删了-->
+        <!-- <el-table-column>
+          <template
+            slot="header"
+            slot-scope="scope">
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="allSelectionvalue"
+              :key="scope.$index"
+              @change="handleCheckAllChange"/>
+          </template>
+          <template slot-scope="scope">
+              <el-checkbox 
+                v-model="multipleSelection[scope.$index]"
+                @change="handleCheckedChange($event, scope)"/>
+          </template>
+        </el-table-column> -->
         <el-table-column
           prop="name"
           label="罪犯姓名" />
@@ -38,6 +75,7 @@
             <div>
               {{ scope.row.accessTime }}
               <el-button
+                :disabled="!scope.row.sysFlag"
                 size="small"
                 type="text"
                 style="margin-left: 5px;"
@@ -52,14 +90,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="黑名单原因"
-          prop="reason"
-          show-overflow-tooltip>
-          <!-- <template slot-scope="scope">
-            <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
-              <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
-            </el-tooltip>
-          </template> -->
+          show-overflow-tooltip
+          label="服刑人员状态">
+          <template slot-scope="scope">
+            <span v-if="!scope.row.sysFlag">删除原因：{{ scope.row.deleteReason }}</span>
+            <span v-else-if="scope.row.isBlacklist">黑名单原因：{{ scope.row.reason }}</span>
+          </template>
         </el-table-column>
         <el-table-column label="对应家属">
           <template slot-scope="scope">
@@ -83,6 +119,7 @@
             <el-button
               type="text"
               size="small"
+              :disabled="!scope.row.sysFlag"
               @click="handleSign(scope.row.notifyId, scope.row)">{{ scope.row.notifyId ? '点击查看' : '点击签约' }}</el-button>
           </template>
         </el-table-column>
@@ -91,21 +128,24 @@
             <el-button
               type="text"
               size="small"
+              :disabled="!scope.row.sysFlag"
               v-if="!scope.row.isBlacklist"
-              @click="showBlackList(scope.row, scope.$index)">
+              @click="showBlackList(scope.row)">
               加入黑名单
             </el-button>
             <el-button
               type="text"
               size="small"
+              :disabled="!scope.row.sysFlag"
               v-else
-              @click="removeBlackList(scope.row, scope.$index)">
+              @click="removeBlackList(scope.row)">
               移出黑名单
             </el-button>
             <el-button
               type="text"
               size="small"
-              @click="showPrisonConfig(scope.row, scope.$index)">
+              :disabled="!scope.row.sysFlag"
+              @click="showPrisonConfig(scope.row)">
               更换监区
             </el-button>
           </template>
@@ -199,36 +239,6 @@
       </el-row>
     </el-dialog>
     <el-dialog
-      :visible.sync="blackTableShow"
-      @close="closeBlackTable"
-      class="authorize-dialog"
-      title="加入黑名单"
-      width="530px">
-      <el-form
-        :model="blackTable"
-        ref="blackTableForm"
-        :rules="rule">
-        <el-form-item prop="blackListReason">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 5 }"
-            placeholder="请输入加入黑名单理由"
-            v-model="blackTable.blackListReason"/>
-        </el-form-item>
-      </el-form>
-      <el-row :gutter="0">
-        <el-button
-          class="button-add"
-          size="mini"
-          type="danger"
-          @click="blackTableShow = false">取消</el-button>
-        <el-button
-          class="button-add"
-          size="mini"
-          @click="handleBlackListReason">确定</el-button>
-      </el-row>
-    </el-dialog>
-    <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
       :title="'会见告知书-' + notificationPrisoner.name"
@@ -277,23 +287,18 @@
       </el-row>
     </el-dialog>
     <el-dialog
-      :visible.sync="changePrisonConfigName"
-      @close="closePrisonConfig"
-      ref="prisonConfigDialog"
-      title="更换监区"
-      class="authorize-dialog"
+      @close="handleCloseDialog"
+      :visible.sync="visible"    
+      ref="allDialog"
+      :title="dialogContent['title']"
+      class="authorize-dialog all-dialog__style"
       width="530px">
-      <el-select
-        class="only-select"
-        v-model="prisonConfigName"
-        placeholder="请选择监区"
-        v-if="prisonConfigs.length > 1">
-        <el-option
-          v-for="item of prisonConfigData"
-          :value="item.id"
-          :label="item.name"
-          :key="item.id" />
-      </el-select>
+      <m-form
+        v-if=" !(operationType === 2 && prisonConfigs.length < 1)"
+        :items="dialogContent['items']"
+        @submit="handleSubmit"
+        ref="dialogForm"
+        @cancel="visible = false" />
       <div
         v-else
         style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
@@ -306,12 +311,13 @@ import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 export default {
   data() {
+    const prisonerStatus = [{ label: '正常状态', value: 1 }, { label: '黑名单', value: 2 }, { label: '已删除', value: 3 }]
     return {
       searchItems: {
         prisonerNumber: { type: 'input', label: '罪犯编号' },
         prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '罪犯姓名' },
-        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] },
+        status: { type: 'select', label: '服刑人员状态', options: prisonerStatus, value: 1 },
         isNotify: { type: 'select', label: '是否录入会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
         familyName: { type: 'input', label: '家属姓名' }
       },
@@ -336,28 +342,79 @@ export default {
       isEditAccessTime: false,
       prisoner: {},
       thePrisoner: {},
-      blackTableShow: false,
-      index: '',
-      blackTable: {
-        blackListReason: ''
-      },
-      rule: {
-        blackListReason: [ { required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 200 } ]
-      },
       notificationShow: false,
       notificationPrisoner: {},
       notificationForm: {},
       notificationFamily: {},
       selectLoading: true,
       submitting: false,
-      changePrisonConfigName: false,
-      prisonConfigName: '',
-      prisonConfigData: [],
-      prisonConfigs: []
+      prisonConfigData: [], // 可更换的监区数据
+      visible: false, // 对话框的显示
+      showReasonValue: '刑满释放', // 删除框的value
+      // allSelectionvalue: false, 删除罪犯全选的控制 不要删掉
+      deletePrisoners: [], // 删除的罪犯数据
+      // isIndeterminate: false, // 单选框的样式控制 不要删掉
+      // multipleSelection: [], // 多选数据 不要删掉
+      operationType: 0 // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
     }
   },
   computed: {
-    ...mapState(['prisoners', 'notification', 'notificationFamilies'])
+    ...mapState(['prisoners', 'notification', 'notificationFamilies', 'prisonConfigs']),
+    dialogContent() {
+      let title,
+        delReason = [{ label: '刑满释放', value: '刑满释放' }, { label: '已被执行', value: '已被执行' }, { label: '其他', value: '其他' }],
+        items = {}, formButton = { buttons: [] },
+        otherDelReasonDetail = { contents: { type: 'input', label: '删除原因', noLabel: true, placeholder: '请输入删除原因', rules: ['required'] }}
+      switch(this.operationType) {
+        case 1:
+          title = '加入黑名单'
+          formButton.buttons = [ { add: 'add', text: '确认' }, { cancel: 'cancel', type: 'danger' } ]
+          items = Object.assign({},{
+            reason: { type: 'textarea', noLabel: true, placeholder: '请输入加入黑名单理由', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-200'], label: '加入黑名单的原因', showWordLimit: true }
+          }, formButton)
+          break
+        case 2:
+          title = '更换监区'
+          formButton.buttons = []
+          items = Object.assign({}, {
+            prisonAreaId: { type: 'select', noLabel: true, placeholder: '请选择监区', options: this.prisonConfigData, label: '监区', props: { label: 'name', value: 'id' }, func: this.handleChangePrisonConfig }
+          }, formButton)
+          break
+        case 3:
+          title = '新增服刑人员'
+          formButton.buttons = [ 'add', 'cancel' ]
+          items = Object.assign({}, {
+            formConfigs: { labelWidth: '120px' },
+            name: { type: 'input', label: '服刑人员姓名', rules: ['required'], clearable: true },
+            prisonerNumber: { type: 'input', label: '服刑人员编号', rules: ['required'], clearable: true },
+            prisonConfigId: { type: 'select', label: '监区', rules: !JSON.parse(localStorage.getItem('user')).branch_prison ? [] : ['required'], disabled: !JSON.parse(localStorage.getItem('user')).branch_prison, options: JSON.parse(localStorage.getItem('user')).prisonConfigList, props: { label: 'prisonConfigName', value: 'prisonConfigId' }, customClass: !JSON.parse(localStorage.getItem('user')).branch_prison ? 'input_required__show' : '' },
+            gender: { type: 'select', label: '性别', rules: ['required'], options: [{ label: '男', value: 'm' }, { label: '女', value: 'f' }], props: { label: 'label', value: 'value' }, value:'m'  },
+            crimes: { type: 'input', label: '犯罪事实', clearable: true },
+            additionalPunishment: { type: 'input', label: '附加刑', clearable: true },
+            prisonTermStartedAt: { type: 'date', label: '刑期起日', clearable: true, pickerOptions: {
+              disabledDate: { prop: 'prisonTermEndedAt', name: 'start' }
+            } },
+            prisonTermEndedAt: { type: 'date', label: '刑期止日', clearable: true, pickerOptions: {
+               disabledDate: { prop: 'prisonTermStartedAt', name: 'end' }
+            } },
+            originalSentence: { type: 'input', label: '原判刑期', clearable: true }
+          }, formButton)
+          break
+        case 4:
+          title = '请选择删除原因'
+          formButton.buttons = [ { add: 'add', text: '确认' }, 'cancel' ]
+          items = Object.assign({}, {
+            formConfigs: { labelWidth: '110px' },
+            deleteReason: { type: 'select', options: delReason, label: '原因', props: { label: 'label', value: 'label' }, value: this.showReasonValue, func: this.handleChangeDelReason }
+          }, formButton)
+          if(this.showReasonValue === '其他') items = Object.assign({}, items, otherDelReasonDetail)
+          else Reflect.deleteProperty(items, 'content')
+          break
+        default:
+          break
+      }
+      return { title, items }
+    }
   },
   watch: {
     notificationFamily: {
@@ -375,44 +432,25 @@ export default {
       },
       deep: true
     },
-    prisonConfigName(val) {
-      if (val) {
-        this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消相关会见申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          customClass: 'prisonConfigMessage'
-        }).then(() => {
-          let params = {
-            prisonerId: this.prisoner.id,
-            jailId: this.prisoner.jailId,
-            prisonAreaId: val
-          }
-          this.changePrisonArea(params).then(res => {
-            if (res.code !== 200) return
-            setTimeout(() => {
-              this.closePrisonConfig()
-              this.onSearch()
-            }, 500)
-          })
-        }).catch(() => {
-          this.prisonConfigName = ''
-        })
-      }
-    }
   },
-  mounted() {
-    this.getPrisonConfigInform(JSON.parse(localStorage['user']))
-    this.getDatas()
+  async mounted() {
+    await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+    this.filter = Object.assign({}, this.filter, {
+      status: 1
+    })
+    await this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist']),
+    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist', 'deletePrisonerData', 'addPrionser']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
-    getDatas() {
-      this.getPrisoners({ ...this.filter, ...this.pagination })
+    async getDatas() {
+      // this.allSelectionvalue = false // 不要删除
+      await this.getPrisoners({ ...this.filter, ...this.pagination })
+      // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
+      // this.isIndeterminate = false 不要删除
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -444,30 +482,13 @@ export default {
       this.family = family
       this.dialogTableVisible = true
     },
-    showBlackList(e, index) {
+    // 展示黑名单对话框
+    showBlackList(e) {
       this.prisoner = Object.assign({}, e)
-      this.blackTableShow = true
-      this.index = index
+      this.operationType = 1
+      this.visible = true
     },
-    closeBlackTable() {
-      this.$refs.blackTableForm.resetFields()
-    },
-    handleBlackListReason() {
-      this.$refs['blackTableForm'].validate(valid => {
-        if (valid) {
-          let params = new FormData()
-          params.append('prisonerId', this.prisoner.id)
-          params.append('reason', this.blackTable.blackListReason)
-          this.addPrisonerBlacklist(params).then(res => {
-            if (!res) return
-            this.prisoners.contents[this.index].reason = this.blackTable.blackListReason
-            this.prisoners.contents[this.index].isBlacklist = 1
-            this.blackTableShow = false
-          })
-        }
-      })
-    },
-    removeBlackList(e, index) {
+    removeBlackList(e) {
       this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -477,8 +498,7 @@ export default {
         params.append('prisonerId', e.id)
         this.removePrisonerBlacklist(params).then(res => {
           if (!res) return
-          this.prisoners.contents[index].reason = ''
-          this.prisoners.contents[index].isBlacklist = 0
+          this.onSearch()
         })
       }).catch(() => {})
     },
@@ -537,25 +557,136 @@ export default {
         })
       }
     },
-    getPrisonConfigInform(arg) {
-      let parmas = { jailId: arg.jailId }
-      this.getPrisonConfigs(parmas).then(res => {
-        if (!res || res.code !== 200) return
-        this.prisonConfigs = res.data.prisonConfigs
-      })
-    },
-    showPrisonConfig(e, index) {
+    // 展示更换监区对话框
+    showPrisonConfig(e) {
       this.prisoner = Object.assign({}, e)
-      this.index = index
-      this.changePrisonConfigName = true
+      this.operationType = 2
+      this.visible = true
       this.prisonConfigData = this.prisonConfigs.filter(val => {
         return e.prisonArea !== val.name
       })
     },
-    closePrisonConfig() {
-      this.changePrisonConfigName = false
-      this.prisonConfigName = ''
+    // 展示删除罪犯对话框
+    showDelPrionser() {
+      if(!this.deletePrisoners.length) {
+        this.$message({
+          showClose: true,
+          message: '请选择需要删除的数据！',
+          type: 'warning'
+        })
+      }
+      else {
+        this.operationType = 4
+        this.visible = true
+      }
+    },
+    // 展示新增罪犯对话框
+    showAddPrisoner() {
+      this.operationType = 3
+      this.visible = true
+    },
+    // 关闭对话框
+    handleCloseDialog() {
+     if(this.showReasonValue !== '刑满释放') this.showReasonValue = '刑满释放'
+     this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
+    },
+    // 加入黑名单 新增罪犯 删除罪犯的确认操作
+    handleSubmit(val) {
+      // 加入黑名单
+      if(this.operationType === 1) {
+          let params = new FormData()
+          params.append('prisonerId', this.prisoner.id)
+          params.append('reason', val.reason)
+          this.addPrisonerBlacklist(params).then(res => {
+            if (!res) return
+            this.onSearch()
+            this.handleCloseDialog()
+          })
+      }
+      // 删除罪犯
+      if(this.operationType === 4) {
+        let deleteReason = val.contents || val.deleteReason, prisonerId = (this.deletePrisoners.map(val => val.id)).join(',')
+        this.deletePrisonerData({deleteReason, prisonerId}).then(res => {
+          if(!res) return
+          this.onSearch()
+          this.handleCloseDialog()
+        })
+      }
+      // 新增罪犯
+      if(this.operationType === 3) {
+        let prisonArea, jailId = JSON.parse(localStorage.getItem('user')).jailId, temp = { jailId }
+        if(JSON.parse(localStorage.getItem('user')).branch_prison) {
+          prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonConfigId))[0].prisonConfigName
+          temp = { jailId, prisonArea }
+        }
+        val = Object.assign({}, val, temp)
+        this.addPrionser(val).then(res => {
+          if(!res) return
+          this.onSearch()
+          this.handleCloseDialog()
+        })
+      }
+    },
+    // 更换监区
+    handleChangePrisonConfig(e, prop) {
+      if (e) {
+        this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消相关会见申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          customClass: 'prisonConfigMessage'
+        }).then(() => {
+          let params = {
+            prisonerId: this.prisoner.id,
+            jailId: this.prisoner.jailId,
+            prisonAreaId: e
+          }
+          this.changePrisonArea(params).then(res => {
+            if (res.code !== 200) return
+            setTimeout(() => {
+              this.handleCloseDialog()
+              this.onSearch()
+            }, 500)
+          })
+        }).catch(() => {
+          this.$refs.dialogForm && this.$refs.dialogForm.handleResetField()
+        })
+      }
+    },
+    // 更换删除原因
+    handleChangeDelReason(e) {
+      this.showReasonValue = e
+    },
+    // 筛选已经删除的罪犯不可选择
+    handleControlSelect(row, index) {
+      return row.sysFlag
+    },
+    // 选择删除的罪犯
+    handleSelectionChange(val) {
+      this.deletePrisoners = val
     }
+    // 自定义的全选操作 不要删除
+    // handleCheckAllChange(val) {
+    //   if(!val) {
+    //     this.deletePrisoners = []
+    //     this.multipleSelection = new Array(this.prisoners.contents.length).fill(false)
+    //   }
+    //   else {
+    //     this.multipleSelection = new Array(this.prisoners.contents.length).fill(true)
+    //     this.deletePrisoners = this.prisoners.contents
+    //   }
+    //   this.isIndeterminate = false
+    // },
+    // 自定义的单选操作 不要删除
+    // handleCheckedChange(value, scope) {
+    //   const { $index, row } = scope
+    //   this.$set(this.multipleSelection, $index, value)
+    //   if(value) this.deletePrisoners.push(row)
+    //   else this.deletePrisoners.splice(this.deletePrisoners.indexOf(row), 1)
+    //   if([...new Set(this.multipleSelection)].length === 1 && [...new Set(this.multipleSelection)][0]) this.allSelectionvalue = true
+    //   else this.allSelectionvalue = false
+    //   this.isIndeterminate = this.deletePrisoners.length > 0 && this.deletePrisoners.length < this.prisoners.contents.length
+    // }
   }
 }
 </script>
