@@ -10,7 +10,6 @@
       <el-table
         :data="appLogs.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="phone"
@@ -30,9 +29,11 @@
         <el-table-column
           prop="contents"
           width="380px"
+          show-overflow-tooltip
           label="内容" />
         <el-table-column
-          label="创建时间">
+          label="创建时间"
+          width="166px">
           <template slot-scope="scope">
             {{ scope.row.createdAt | Date }}
           </template>

@@ -11,7 +11,7 @@
         border
         :data="prisonersPocketMoney.contents"
         style="width: 100%"
-        stripe>
+      >
         <el-table-column
           label="罪犯姓名"
           prop="name" />

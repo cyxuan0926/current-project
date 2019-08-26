@@ -12,7 +12,6 @@
       <el-table
         :data="mailboxes.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -45,8 +44,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          align="center"
-          label="操作">
+          label="操作"
+          width="240px"  
+        >
           <template slot-scope="scope">
             <el-button
               v-if="!scope.row.isReply"
@@ -64,7 +64,6 @@
               type="primary">
               已答复
             </el-button>
-            <br>
             <el-button
               size="mini"
               class="button-column"
@@ -72,7 +71,6 @@
               type="danger">
               删除
             </el-button>
-            <br>
             <el-button
               size="mini"
               type="text"
@@ -244,10 +242,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.button-column{
-  margin-bottom: 4px;
-  width: 68px;
-}
+// .button-column{
+//   margin-bottom: 4px;
+//   width: 68px;
+// }
 .tips-title{
   display: block;
   text-align: center;

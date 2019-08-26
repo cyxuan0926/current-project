@@ -44,8 +44,8 @@
       <el-table
         :data="prisoners.contents"
         border
-        stripe
         @selection-change="handleSelectionChange"
+        class="mini-td-padding"
         style="width: 100%">
         <!-- EL自身的 -->
         <el-table-column
@@ -84,9 +84,10 @@
           label="监区" />
         <el-table-column
           prop="crimes"
+          show-overflow-tooltip
           label="罪名" />
         <el-table-column
-          width="96px"
+          width="92px"
           label="会见次数/月">
           <template slot-scope="scope">
             <div>
@@ -101,7 +102,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="刑期起止">
+        <el-table-column label="刑期起止" width="146px">
           <template slot-scope="scope">
             <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
             <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
@@ -126,7 +127,11 @@
               @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column v-if="!hasAllPrisonQueryAuth" label="家属会见告知书">
+        <el-table-column
+          v-if="!hasAllPrisonQueryAuth"
+          label="家属会见告知书"
+          min-width="110px"
+        >
           <template slot-scope="scope">
             <span
               :class="[
@@ -141,7 +146,11 @@
               @click="handleSign(scope.row.notifyId, scope.row)">{{ scope.row.notifyId ? '点击查看' : '点击签约' }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column v-if="!hasAllPrisonQueryAuth" label="操作">
+        <el-table-column 
+          v-if="!hasAllPrisonQueryAuth" 
+          label="操作" 
+          width="140px"
+        >
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -340,7 +349,7 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '罪犯姓名' },
         status: { type: 'select', label: '服刑人员状态', options: prisonerStatus, value: 1 },
-        isNotify: { type: 'select', label: '是否录入会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
+        isNotify: { type: 'select', label: '会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
         familyName: { type: 'input', label: '家属姓名' }
       },
       formItems: {

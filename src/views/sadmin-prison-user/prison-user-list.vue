@@ -8,7 +8,7 @@
       size="small"
       type="primary"
       plain
-      class="button-add"
+      class="button-add button-shift-down"
       @click="onAdd">添加账户</el-button>
     <m-search
       :items="searchItems"
@@ -19,10 +19,10 @@
       <el-table
         :data="prisonUsers.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="username"
+          width="260px"
           label="用户名" />
         <el-table-column
           prop="roles"
@@ -32,6 +32,7 @@
           label="监狱名称" />
         <el-table-column
           prop="prisonAreas"
+          show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="policeNumber"

@@ -20,7 +20,6 @@
         <el-table
           :data="versions[type.typeId]"
           border
-          stripe
           style="width: 100%;">
           <el-table-column label="版本名">
             <template slot-scope="scope">

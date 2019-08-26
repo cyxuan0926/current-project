@@ -8,7 +8,7 @@ import components from '@/components'
 import urls from '@/service/urls'
 
 import '@/assets/fonts/iconfont.css'
-import 'element-ui/lib/theme-chalk/index.css'
+// import 'element-ui/lib/theme-chalk/index.css'
 import 'quill/dist/quill.snow.css'
 import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'

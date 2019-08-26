@@ -8,31 +8,36 @@
       label="手机号码" />
     <el-table-column
       prop="trade_no"
-      label="订单编号" />
+      label="订单编号"
+      width="166px" />
     <el-table-column
       prop="refund_no"
-      label="退款编号" />
+      label="退款编号"
+      width="166px" />
     <el-table-column
-      label="退款方式">
+      label="退款方式"
+      width="70px">
       <template slot-scope="scope">
         {{ scope.row.refund_type | payType }}
       </template>
     </el-table-column>
     <el-table-column
-      label="退款时间">
+      label="退款时间"
+      width="126px">
       <template slot-scope="scope">
         {{ scope.row.refund_date | Date }}
       </template>
     </el-table-column>
     <el-table-column
       prop="amount"
-      label="订单总金额(元)" />
+      label="订单总金额" />
     <el-table-column
       prop="refund_money"
-      label="退款申请金额(元)" />
+      label="退款申请金额" />
     <el-table-column
       prop="remark"
-      label="退款状态" />
+      label="退款状态"
+      width="70px" />
     <el-table-column
       show-overflow-tooltip
       label="备注">

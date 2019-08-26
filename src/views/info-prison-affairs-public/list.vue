@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <el-button
-      class="button-add"
+      class="button-add button-shift-down"
       size="small"
       type="primary"
       plain
@@ -16,7 +16,7 @@
       <el-table
         :data="newsList.contents"
         border
-        stripe
+        class="mini-td-padding"
         style="width: 100%">
         <el-table-column
           prop="title"
@@ -24,7 +24,6 @@
           label="新闻标题"/>
         <el-table-column
           label="新闻内容"
-          width="160px"
           :resizable="false">
           <template slot-scope="scope">
             <p :class="['summary', { 'three-line': scope.row.ellipsis }]">{{ scope.row.summary }}</p>
@@ -32,14 +31,14 @@
         </el-table-column>
         <el-table-column
           label="新闻视频"
-          width="212px">
+          width="222px">
           <template
             slot-scope="scope"
             v-if="showTable && scope.row.videoPath">
             <video
               controls
               poster="/static/images/video-background.png"
-              style="width: 192px; height: 108px;">
+              style="width: 198px; height: 112px;">
               <source
                 :src="scope.row.videoPath + '?token=' + $urls.token"
                 type='video/mp4'>
@@ -54,7 +53,7 @@
         </el-table-column>
         <el-table-column
           label="新闻图片"
-          min-width="100px">
+          width="86px">
           <template
             slot-scope="scope"
             v-if="scope.row.imageUrl">
@@ -72,12 +71,12 @@
             <m-audio :value="scope.row.audioPath + '?token=' + $urls.token" />
           </template>
         </el-table-column>
-        <el-table-column label="焦点">
+        <el-table-column label="焦点" width="62px">
           <template slot-scope="scope">
             {{ scope.row.isFocus ? '是' : '否' }}
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="230px">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -86,7 +85,6 @@
               type="primary">
               编辑
             </el-button>
-            <br>
             <el-button
               size="mini"
               class="button-column"
@@ -94,7 +92,6 @@
               type="danger">
               删除
             </el-button>
-            <br>
             <el-button
               size="mini"
               type="text"
@@ -298,9 +295,7 @@ export default {
     padding-left: 5px;
   }
 }
-.button-column{
-  margin-bottom: 4px;
-}
+
 .tips-title{
   display: block;
   text-align: center;
