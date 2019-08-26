@@ -7,13 +7,6 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="家属信息"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="families.contents"
         border

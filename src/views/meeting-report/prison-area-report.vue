@@ -6,15 +6,7 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-col
-      :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监区会见统计"
-          name="first" />
-      </el-tabs>
+    <el-col :span="24">
       <el-table
         :data="prisonAreaReportList.contents"
         border

@@ -158,11 +158,19 @@ export default {
   },
   // 服刑人员信息管理 - 监区配置
   getPrisonConfigs: params => {
-    return service.get('/prison_config/getPrisonConfigs', params).then(res => res)
+    return service.get('/prison_config/getPrisonConfigs', params).then(res => res && res.data)
   },
   // 服刑人员信息管理 - 更换监区
   changePrisonArea: params => {
     return service.post('/prisoners/changePrisonArea', params).then(res => res)
+  },
+  // 服刑人员信息管理 - 删除罪犯
+  deletePrisoners: params => {
+    return service.post('/prisoners/deletePrison', params).then(res => res && res.code === 200)
+  },
+  // 服刑人员信息管理 - 新增罪犯
+  addPrionser: params => {
+    return service.postObj('/prisoners/addPrison', params).then(res => res && res.code === 200)
   },
   // 导入数据详情列表-服刑人员狱内消费情况列表
   getPrisonersInsideJailsCosts: params => {

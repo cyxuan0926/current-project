@@ -15,13 +15,6 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监狱用户"
-          name="first" />
-      </el-tabs>
       <m-excel-download path="/download/exportPrisonuser" :params="filter"/>
       <el-table
         :data="prisonUsers.contents"

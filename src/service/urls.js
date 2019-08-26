@@ -56,9 +56,19 @@ const config = {
     socketUrl: 'wss://www.yuwugongkai.com/ws'
   },
   ybDevelopment: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
-    apiHost: 'http://120.79.251.238:8085',
-    apiPath: '/ywgk',
+    publicApiHost: 'http://192.168.0.230:8081',
+    apiHost: 'http://192.168.0.124:8088',
+    apiPath: '',
+    audioUrl: `${ nodeUrl }/audio-server/audios`,
+    imageUrl: `${ nodeUrl }/image-server/avatars`,
+    // fileUrl: `${ nodeUrl }/image-server`,
+    videoUrl: `${ nodeUrl }/video-server/videos`
+    // socketUrl: 'ws://192.168.0.54:8083/websocket'
+  },
+  xzyDev: {
+    publicApiHost: 'http://192.168.0.230:8081',
+    apiHost: 'http://192.168.0.108:8088',
+    apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,

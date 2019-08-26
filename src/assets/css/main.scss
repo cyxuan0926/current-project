@@ -104,6 +104,10 @@ p{
   margin-left: 0;
   margin-bottom: 10px;
 }
+.authorize-dialog .button-box button {
+  width: 20% !important;
+  margin-left: 10px !important;
+}
 .notification-dialog .el-form-item{
   width: calc(50% - 20px);
 }
@@ -463,4 +467,36 @@ body .el-table th.gutter{
 }
 body .el-table colgroup.gutter{
   display: table-cell!important;
+}
+.unused-form__item {
+  .el-form-item__label {
+    color: #c0c4cc !important;
+    &::before {
+      color: #c0c4cc !important;
+      content: '*';
+      margin-right: 4px;
+    }
+  }
+}
+.input_required__show {
+  .el-form-item__label {
+    &::before {
+      color: #f56c6c !important;
+      content: '*';
+      margin-right: 4px;
+    }
+  }
+}
+.el-col__no-tabs__margin {
+  margin-top: 10px;
+}
+.input__error {
+  .el-input__inner {
+    border-color: #f56c6c !important;
+  } 
+}
+.alert-parse-result__notify {
+  .new-prison__areas {
+    display: none !important;
+  }
 }

@@ -22,6 +22,9 @@ export default {
   setDynamicRoutes: (state, routes) => {
     state.dynamicRoutes = routes
   },
+  setMemoryDynamicRoutes: (state, { routes, memoryId }) => {
+    state.memoryDynamicRoutes = { ...state.memoryDynamicRoutes, ...{ [memoryId]: routes } }
+  },
   // 获取修改密码的结果
   // modifyPassword: (state, params) => {
   //   state.modifyPasswordResult = params

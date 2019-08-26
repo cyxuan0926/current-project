@@ -7,13 +7,6 @@
       @sizeChange="sizeChange"
       @search="onSearch"/>
     <el-col :span="24">
-      <el-tabs
-        type="card"
-        value="first">
-        <el-tab-pane
-          label="服刑人员零花钱详情表"
-          name="first"/>
-      </el-tabs>
       <el-table
         border
         :data="prisonersPocketMoney.contents"

@@ -7,6 +7,7 @@ import check from './modules/check'
 import common from './modules/common'
 import information from './modules/information'
 import superAdmin from './modules/superAdmin'
+import md5 from 'js-md5'
 
 // 重置路由: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
@@ -71,14 +72,30 @@ const mapChildren = (auth, permission) => {
     }
   }
 }
+const md5RoleId = (userRoles) => md5(userRoles.map(val => val.roleId).join(''))
 
-// 动态添加路由 这里
+// 动态添加路由
 router.beforeEach((to, from, next) => {
   // const role = store.state.global.user.role
   const hasDynamicRoutes = store.state.global.dynamicRoutes.length > 0
+  const memoryDynamicRoutes = store.state.global.memoryDynamicRoutes
   const permission = store.state.account.authorities
+  // if (permission && permission.length && !hasDynamicRoutes) {
+  //   const routes = dynamicAddRoutes(permission, [...superAdmin, ...information, ...admin, ...check])
+  //   router.addRoutes(routes)
+  //   store.commit('setDynamicRoutes', routes)
+  //   next({ ...to, replace: true })
+  // }
   if (permission && permission.length && !hasDynamicRoutes) {
-    const routes = dynamicAddRoutes(permission, [...superAdmin, ...information, ...admin, ...check])
+    // 函数记忆 受限的地方很多 不同监狱的同一角色相同权限的roleId不一样 因为sessiStorage只能存储字符串 所有对象里面的函数也存不了 所有只能是在不刷新的情况下才有限
+    let routes, { userRoles } = store.state.account.publicUserInfo, keys = md5RoleId(userRoles)
+    if (memoryDynamicRoutes.hasOwnProperty(keys)) {
+      routes = memoryDynamicRoutes[keys]
+    }
+    else {
+      routes = dynamicAddRoutes(permission, [...superAdmin, ...information, ...admin, ...check])
+      store.commit('setMemoryDynamicRoutes', { routes, memoryId: keys })
+    }
     router.addRoutes(routes)
     store.commit('setDynamicRoutes', routes)
     next({ ...to, replace: true })

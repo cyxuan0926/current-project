@@ -2,7 +2,7 @@ import http from '@/service'
 
 export default {
   getPrisoners({ commit }, params) {
-    http.getPrisoners(params).then(res => res && commit('getPrisoners', res))
+    return http.getPrisoners(params).then(res => res && commit('getPrisoners', res))
   },
   getPrisonersAll({ commit }, params) {
     http.getPrisonersAll(params).then(res => res && commit('getPrisoners', res))
@@ -34,12 +34,22 @@ export default {
     })
   },
   getPrisonConfigs({ commit }, params) {
-    return http.getPrisonConfigs(params).then(res => res)
+    return http.getPrisonConfigs(params).then(res => {
+      if (!res) return
+      commit('getPrisonConfigs', res)
+      return true
+    })
   },
   changePrisonArea({ commit }, params) {
     return http.changePrisonArea(params).then(res => res)
   },
   removePrisonerBlacklist({ commit }, params) {
     return http.removePrisonerBlacklist(params).then(res => res)
+  },
+  deletePrisonerData({ commit }, params) {
+    return http.deletePrisoners(params).then(res => res)
+  },
+  addPrionser({ commit }, params) {
+    return http.addPrionser(params).then(res => res)
   }
 }
