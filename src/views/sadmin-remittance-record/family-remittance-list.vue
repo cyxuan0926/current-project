@@ -2,12 +2,12 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download path="/download/exportFamilyRemit" :params="filter"/>
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <m-excel-download path="/download/exportFamilyRemit" :params="filter"/>
       <el-table
         :data="familyRemittanceRecords.contents"
         border

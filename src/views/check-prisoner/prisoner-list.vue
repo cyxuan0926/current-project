@@ -6,7 +6,7 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
-    <el-row type="flex" justify="end">
+    <el-row type="flex" style="margin-bottom: 10px">
       <m-excel-export
         v-if="hasAllPrisonQueryAuth && dataToExportExcel.length > 0"
         :filename="prisonerExcelConfig.filename"
@@ -19,7 +19,9 @@
         path="/download/exportPrisoners"
         :params="filter"
       />
-      <el-col
+      <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+      <el-button type="primary" @click="showDelPrionser">删除</el-button>
+      <!-- <el-col
         :span="4"
         style="text-align:right">
         <el-button
@@ -36,7 +38,7 @@
           size="medium"
           @click="showDelPrionser"
           style="width:60%">删 除</el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
     <el-col
       :span="24"
@@ -45,7 +47,6 @@
         :data="prisoners.contents"
         border
         @selection-change="handleSelectionChange"
-        class="mini-td-padding"
         style="width: 100%">
         <!-- EL自身的 -->
         <el-table-column
@@ -149,7 +150,7 @@
         <el-table-column 
           v-if="!hasAllPrisonQueryAuth" 
           label="操作" 
-          width="140px"
+          min-width="140px"
         >
           <template slot-scope="scope">
             <el-button
@@ -386,7 +387,8 @@ export default {
       deletePrisoners: [], // 删除的罪犯数据
       // isIndeterminate: false, // 单选框的样式控制 不要删掉
       // multipleSelection: [], // 多选数据 不要删掉
-      operationType: 0 // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
+      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
+      prisonerExcelConfig
     }
   },
   computed: {
@@ -746,9 +748,9 @@ export default {
   min-width: 350px;
 .row-flex
   flex-wrap: wrap;
-.el-button
-  &+.el-button
-    margin-left 0px !important
+// .el-button
+//   &+.el-button
+//     margin-left 0px !important
 .only-select
   width 100%
 .el-dialog__body

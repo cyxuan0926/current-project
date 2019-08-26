@@ -2,16 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-search
-      :items="searchItems"
-      ref="search"
-      @sizeChange="sizeChange"
-      @search="onSearch" />
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
       :params="filter"
     />
+    <m-search
+      :items="searchItems"
+      ref="search"
+      @sizeChange="sizeChange"
+      @search="onSearch" />
     <el-col :span="24">
       <el-tabs
         v-model="tabs"

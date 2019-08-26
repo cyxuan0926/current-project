@@ -2,15 +2,15 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-search
-      :items="searchItems"
-      @sizeChange="sizeChange"
-      @search="onSearch" />
     <m-excel-download 
       v-if="excelDownloadPath" 
       :path="excelDownloadPath" 
       :params="filter"
     />
+    <m-search
+      :items="searchItems"
+      @sizeChange="sizeChange"
+      @search="onSearch" />
     <el-tabs
       v-model="activeName"
       type="card"

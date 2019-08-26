@@ -218,7 +218,7 @@ export default {
 
 .filter-container{
   // line-height: 40px;
-  width: 100%;
+  // width: 100%;
   overflow: hidden;
   padding-bottom: 10px;
   

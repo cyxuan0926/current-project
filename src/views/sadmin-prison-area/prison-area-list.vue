@@ -9,15 +9,16 @@
       plain
       class="button-add"
       @click="handleAdd">新增监区</el-button>
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportPrison"
+      :params="filter"
+    />
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <m-excel-download path="/download/exportPrison" :params="filter"/>
-      <h3 v-if="parseInt(roleType) === 0" class="prison-name">
-        {{ currentPrison && currentPrison.title }}
-      </h3>
       <el-table
         :data="prisonAreas.contents"
         border
@@ -95,6 +96,10 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  props: {
+    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+    hasAllPrisonQueryAuth: Boolean
+  },
   data() {
     return {
       searchItems: {
@@ -111,7 +116,8 @@ export default {
       allPrisonAreas: [],
       index: '',
       dialogPermission: '',
-      validatingRepetition: false
+      validatingRepetition: false,
+      filter: {}
     }
   },
   computed: {

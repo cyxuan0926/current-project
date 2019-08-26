@@ -2,16 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-search
-      :items="searchItems"
-      ref="search"
-      @sizeChange="sizeChange"
-      @search="onSearch" />
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportMettings"
       :params="filter"
     />
+    <m-search
+      :items="searchItems"
+      ref="search"
+      @sizeChange="sizeChange"
+      @search="onSearch" />
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -109,7 +109,7 @@
           v-if="!hasAllPrisonQueryAuth"
           label="操作"
           align="center"
-          width="76px">
+          min-width="76px">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"

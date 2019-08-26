@@ -10,12 +10,16 @@
       plain
       class="button-add button-shift-down"
       @click="onAdd">添加账户</el-button>
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportPrisonuser"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <m-excel-download path="/download/exportPrisonuser" :params="filter"/>
       <el-table
         :data="prisonUsers.contents"
         border
@@ -85,6 +89,10 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  props: {
+    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+    hasAllPrisonQueryAuth: Boolean
+  },
   data() {
     let options = { roleId: { type: 'select', label: '角色', getting: false }, jail: { type: 'select', label: '监狱名称', getting: true, belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role

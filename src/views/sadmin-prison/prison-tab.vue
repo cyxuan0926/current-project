@@ -2,6 +2,7 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download path="/download/exportJails" :params="filter"/>
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -18,7 +19,6 @@
         </el-tab-pane>
       </template>
     </el-tabs>
-    <m-excel-download path="/download/exportJails" :params="filter"/>
     <router-view />
     <m-pagination
       ref="pagination"
