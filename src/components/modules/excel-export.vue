@@ -22,7 +22,7 @@ export default {
     },
     bookType: {
       type: String,
-      default: 'xls'
+      default: 'xlsx'
     },
     autoWidth: {
       type: Boolean,

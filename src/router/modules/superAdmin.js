@@ -283,6 +283,7 @@ let superAdmin = [{
   }, {
     path: '/prison-data/meeting-statistics/prison-area',
     name: 'prison-data_meeting-statistics_prison-area',
+    props: { hasAllPrisonQueryAuth: true },
     meta: { permission: 'visit.visit-statistic.all-prison-area.search', breadcrumbName: '监区会见统计' },
     component: helper.loadView('meeting-report/prison-area-report')
   }, {

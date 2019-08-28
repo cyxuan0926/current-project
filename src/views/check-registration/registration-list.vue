@@ -11,6 +11,7 @@
       :items="searchItems"
       ref="search"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs

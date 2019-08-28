@@ -2,7 +2,11 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-excel-download path="/download/exportJails" :params="filter"/>
+    <m-excel-download
+      v-if="activeName === 'prison'"
+      path="/download/exportJails" 
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"

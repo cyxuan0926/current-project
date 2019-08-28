@@ -19,5 +19,12 @@ export default {
       commit('getPrisonAreaReportList', res)
       return true
     })
+  },
+  getPrisonAreaReportListAll: ({ commit }, params) => {
+    return http.getPrisonAreaReportListAll(params).then(res => {
+      if (!res) return
+      commit('getPrisonAreaReportList', res)
+      return true
+    })
   }
 }

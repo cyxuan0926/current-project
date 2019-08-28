@@ -11,6 +11,7 @@
       ref="search"
       :items="searchItems"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
     <el-col :span="24">
@@ -78,12 +79,12 @@ export default {
         {
           label: '监狱会见统计',
           name: 'profile',
-          excelDownloadPath: '/download/findPage'
+          excelDownloadPath: '/download/exportJailStatical'
         },
         {
           label: '会见统计详情',
           name: 'detail',
-          excelDownloadPath: ''
+          excelDownloadPath: '/download/exportDetailsStatical'
         }
       ],
       filterInit: { // 默认查询上一个月的，筛选框初始化

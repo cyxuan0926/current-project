@@ -2,9 +2,9 @@ import { formatTime } from '@/utils/helper'
 
 const prisonerExcelConfig = {
   filename: '服刑人员信息',
-  header: ['服刑人员姓名', '服刑人员编号', '监区', '罪名', '每月会见次数', '刑期起止', '黑名单原因', '对应家属'],
+  header: ['监狱名称', '服刑人员编号', '监区', '罪名', '每月会见次数', '刑期起止', '黑名单原因', '对应家属'],
   filterFields: [
-    { key: 'name' },
+    { key: 'jailName' },
     { key: 'prisonerNumber' },
     { key: 'prisonArea' },
     { key: 'crimes' },

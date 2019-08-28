@@ -11,6 +11,7 @@
       :items="searchItems"
       ref="search"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -109,7 +110,7 @@
           v-if="!hasAllPrisonQueryAuth"
           label="操作"
           align="center"
-          min-width="76px">
+          width="160px">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"

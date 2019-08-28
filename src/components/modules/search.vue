@@ -29,7 +29,9 @@
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
-          :filterable="item.filterable">
+          :filterable="item.filterable"
+          @change="onSelectChange(item.selectKey, item.value)"
+        >
           <template v-for="option in item.options">
             <el-option
               v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
@@ -209,6 +211,9 @@ export default {
         if (key === 'prop') return
         this.items[prop][key] = e[key]
       })
+    },
+    onSelectChange(selectKey, value) {
+      this.$emit('searchSelectChange', selectKey, value)
     }
   }
 }

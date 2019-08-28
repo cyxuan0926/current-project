@@ -2,25 +2,28 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-export
+      v-if="hasAllPrisonQueryAuth && deletePrisoners.length > 0"
+      :filename="prisonerExcelConfig.filename"
+      :jsonData="deletePrisoners"
+      :header="prisonerExcelConfig.header"
+      :filterFields="prisonerExcelConfig.filterFields"
+    />
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth && deletePrisoners.length === 0 && filter.jailId"
+      path="/download/exportPrisoners"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-row type="flex" style="margin-bottom: 10px">
-      <m-excel-export
-        v-if="hasAllPrisonQueryAuth && dataToExportExcel.length > 0"
-        :filename="prisonerExcelConfig.filename"
-        :jsonData="dataToExportExcel"
-        :header="prisonerExcelConfig.header"
-        :filterFields="prisonerExcelConfig.filterFields"
-      />
-      <m-excel-download
-        v-if="hasAllPrisonQueryAuth && dataToExportExcel.length === 0"
-        path="/download/exportPrisoners"
-        :params="filter"
-      />
-      <el-button type="primary" @click="showAddPrisoner">新增</el-button>
-      <el-button type="primary" @click="showDelPrionser">删除</el-button>
+      <template v-if="!hasAllPrisonQueryAuth">
+        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+        <el-button type="primary" @click="showDelPrionser">删除</el-button>
+      </template>
       <!-- <el-col
         :span="4"
         style="text-align:right">
@@ -393,10 +396,6 @@ export default {
   },
   computed: {
     ...mapState(['prisoners', 'notification', 'notificationFamilies', 'prisonConfigs']),
-    dataToExportExcel() {
-      // TODO：选中的数据才导出
-      return this.prisoners.contents
-    },
     dialogContent() {
       let title,
         delReason = [{ label: '刑满释放', value: '刑满释放' }, { label: '已被执行', value: '已被执行' }, { label: '其他', value: '其他' }],
@@ -704,7 +703,7 @@ export default {
     },
     // 筛选已经删除的罪犯不可选择
     handleControlSelect(row, index) {
-      return row.sysFlag
+      return this.hasAllPrisonQueryAuth ? true : row.sysFlag
     },
     // 选择删除的罪犯
     handleSelectionChange(val) {
