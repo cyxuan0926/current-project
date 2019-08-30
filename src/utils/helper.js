@@ -1,4 +1,4 @@
-// import moment from 'moment'
+import Moment from 'moment'
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -125,4 +125,14 @@ export const transitionRoleId = (val) => {
 // 懒加载路由
 export function loadView(path) {
   return resovle => require([`@/views/${ path }`], resovle)
+}
+
+// 日期格式化
+export function DateFormat(date, format = 'YYYY-MM-DD HH:mm:ss') {
+  if (!date) return ''
+  return Moment(date).format(format)
+}
+// 兼容URL
+export function createObjectURL(object) {
+  return window.URL ? window.URL.createObjectURL(object) : window.webkitURL.createObjectURL(object)
 }

@@ -1,11 +1,11 @@
-import urls from '@/service/urls'
+// import urls from '@/service/urls'
 export default {
   // 请求地址
   // url: '/',
   // 请求方式
   // method: 'get',
   // 基础url前缀urls.apiHost http://120.79.251.238:8085'http://120.79.251.238:8085/ywgk''http://192.168.0.53:8083'
-  baseURL: urls.apiHost,
+  // baseURL: urls.apiHost,
   // 请求发送之前对出参进行处理
   // transformRequest: [data => data],
   // 请求发送之后对入参进行处理
