@@ -5,6 +5,10 @@ export default {
   getRegistrations: params => {
     return service.get('/registrations/page', params).then(res => res && res.data)
   },
+  // 家属注册管理-列表-所有监狱
+  getRegistrationsAll: params => {
+    return service.get('/registrations/findPage', params).then(res => res && res.data)
+  },
   // 家属注册管理-授权
   authorizeRegistrations: params => {
     return service.post('/registrations/authorize', params).then(res => res && res.code === 200)
@@ -12,6 +16,10 @@ export default {
   // 家属会见申请-列表
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
+  },
+  // 家属会见申请-列表-所有监狱
+  getMeetingsAll: params => {
+    return service.get('/meetings/findPage', params).then(res => res && res.data)
   },
   // 家属会见申请-家属详情
   getMeetingsFamilyDetail: params => {
@@ -68,6 +76,10 @@ export default {
   // 服刑人员信息管理-列表
   getPrisoners: params => {
     return service.get('/prisoners/page', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理-列表-所有监狱
+  getPrisonersAll: params => {
+    return service.get('/prisoners/findPage', params).then(res => res && res.data)
   },
   // 服刑人员信息管理-修改会见次数
   updateAccessTime: params => {

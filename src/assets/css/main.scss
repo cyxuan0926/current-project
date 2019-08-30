@@ -1,3 +1,5 @@
+@import "./custom-element";
+
 html{
   background: #ecf0f5;
 }
@@ -56,17 +58,21 @@ p{
 .row-container{
   padding: 20px 20px 0 20px;
 }
-.row-container .el-tabs__item{
-  background: #fff;
-}
+// .row-container .el-tabs__item{
+//   background: #fff;
+// }
 .row-container .cell .el-button--default{
     float: left;
     color: #3C8DBC;
     font-weight: bold;
 }
-.row-container .cell img{
-  height: 80px;
-  width: 80px;
+body .row-container .cell img{
+  height: 40px;
+  width: 60px;
+
+  + img {
+    margin-left: 3px;
+  }
 }
 .orange:not(.is-leaf){
   color: orange;
@@ -487,9 +493,9 @@ body .el-table colgroup.gutter{
     }
   }
 }
-.el-col__no-tabs__margin {
-  margin-top: 10px;
-}
+// .el-col__no-tabs__margin {
+//   margin-top: 10px;
+// }
 .input__error {
   .el-input__inner {
     border-color: #f56c6c !important;

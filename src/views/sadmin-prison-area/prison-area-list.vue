@@ -9,6 +9,11 @@
       plain
       class="button-add"
       @click="handleAdd">新增监区</el-button>
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportPrison"
+      :params="filter"
+    />
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
       @sizeChange="sizeChange"
@@ -17,7 +22,6 @@
       <el-table
         :data="prisonAreas.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="jailName"
@@ -92,6 +96,10 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  props: {
+    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+    hasAllPrisonQueryAuth: Boolean
+  },
   data() {
     return {
       searchItems: {
@@ -108,7 +116,8 @@ export default {
       allPrisonAreas: [],
       index: '',
       dialogPermission: '',
-      validatingRepetition: false
+      validatingRepetition: false,
+      filter: {}
     }
   },
   computed: {
@@ -220,14 +229,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cell{
-  button{
-    margin-right: 6px;
-  }
-  button+button{
-    margin: 5px 6px 0 0;
-  }
-}
+// .cell{
+//   button{
+//     margin-right: 6px;
+//   }
+//   button+button{
+//     margin: 5px 6px 0 0;
+//   }
+// }
 
 .prison-name {
   margin: 0;
@@ -235,7 +244,9 @@ export default {
   line-height: 40px;
   text-align: center;
   font-weight: normal;
-  background-color: #e2e2e2;
+  // background-color: #e2e2e2;
+  color: #fff;
+  background-color: #3c8dbc;
 }
 .el-input-div__error {
   font-size: 12px;

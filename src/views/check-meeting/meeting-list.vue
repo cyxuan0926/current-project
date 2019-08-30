@@ -2,10 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportMettings"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       ref="search"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -22,29 +28,33 @@
         ref="meetingTable"
         :data="meetings.contents"
         border
-        stripe
+        class="mini-td-padding"
         style="width: 100%"
         @sort-change="sortChange">
         <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
+        <el-table-column
           prop="prisonerNumber"
-          min-width="68px"
           label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
-          min-width="84px"
           label="监区"
           :sortable="'custom'" />
         <el-table-column
           label="申请时间"
-          min-width="124px">
+          width="150px"
+        >
           <template slot-scope="scope">
             <span >{{ scope.row.createdAt }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="会见时间"
-          min-width="138px"
           :sortable="'custom'"
+          width="150px"
           prop="meetingTime">
           <template slot-scope="scope">
             <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
@@ -52,11 +62,10 @@
         </el-table-column>
         <el-table-column
           label="罪犯姓名"
-          min-width="92"
           prop="prisonerName" />
         <el-table-column
           label="家属"
-          min-width="116">
+        >
           <template slot-scope="scope">
             <div v-if="scope.row.families && scope.row.families.length">
               <el-button
@@ -81,7 +90,7 @@
         </el-table-column>
         <el-table-column
           class-name="orange"
-          min-width="78px"
+          width="110px"
           label="申请状态">
           <template slot-scope="scope">
             <span v-if="!scope.row.content">
@@ -98,9 +107,10 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="!hasAllPrisonQueryAuth"
           label="操作"
           align="center"
-          width="76px">
+          width="160px">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
@@ -305,7 +315,10 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       tabs: 'PENDING',
@@ -386,17 +399,23 @@ export default {
     this.getDatas('mounted')
   },
   methods: {
-    ...mapActions(['getMeetings', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
+    ...mapActions(['getMeetings', 'getMeetingsAll', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas('sizeChange')
     },
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getMeetings({ ...this.filter, ...this.pagination }).then(res => {
-        if (!res) return
-        if (this.meetingRefresh) this.meetingApplyDealing()
-      })
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getMeetingsAll(params)
+      } else {
+        this.getMeetings(params).then(res => {
+          if (!res) return
+          if (this.meetingRefresh) this.meetingApplyDealing()
+        })
+      }
     },
     onSearch() {
       if (helper.isEmptyObject(this.sortObj)) {
@@ -521,7 +540,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/css/list";
+.el-table /deep/ {
+  th {
+    padding: 5px 0 3px !important;
+  }
+}
 </style>
+
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width: 126.8px;

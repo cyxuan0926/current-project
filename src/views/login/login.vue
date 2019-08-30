@@ -22,7 +22,7 @@
               placeholder="密码">
             </el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="keep-password">
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
@@ -173,11 +173,12 @@ export default {
   position: relative;
 
   .copyright {
-    position: absolute;
+    position: fixed;
+    left: 0;
     bottom: 0;
     width: 100%;
-    height: 40px;
-    line-height: 40px;
+    height: 36px;
+    line-height: 36px;
     border-top: 1px solid #d2d6de;
     text-align: center;
     background: #fff;
@@ -190,6 +191,10 @@ export default {
         margin-left: 20px;
       }
     }
+  }
+
+  /deep/ .el-input {
+    width: 100% !important;
   }
 }
 </style>

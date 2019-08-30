@@ -2,6 +2,7 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download path="/download/exportFamilyRemit" :params="filter"/>
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -10,7 +11,6 @@
       <el-table
         :data="familyRemittanceRecords.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           label="汇款单号"
@@ -74,7 +74,8 @@ export default {
         prisonerNumber: { type: 'input', label: '罪犯编号' },
         familyName: { type: 'input', label: '汇款家属' },
         remitTime: { type: 'date', label: '汇款时间' }
-      }
+      },
+      filter: {}
     }
   },
   computed: {

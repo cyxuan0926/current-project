@@ -13,7 +13,7 @@
         border
         :data="prisonerRewardPunishments.contents"
         style="width: 100%"
-        stripe>
+      >
         <el-table-column
           label="罪犯姓名"
           prop="name"/>
@@ -54,7 +54,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        operateName: { type: 'input', label: '数据导入人员姓名' },
+        operateName: { type: 'input', label: '数据导入人员姓名', noPlaceholder: true },
         time: { type: 'dateRange', start: 'start', end: 'end', unlinkPanels: true }
       }
     }

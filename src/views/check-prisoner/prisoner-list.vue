@@ -2,12 +2,29 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-export
+      v-if="hasAllPrisonQueryAuth && deletePrisoners.length > 0"
+      :filename="prisonerExcelConfig.filename"
+      :jsonData="deletePrisoners"
+      :header="prisonerExcelConfig.header"
+      :filterFields="prisonerExcelConfig.filterFields"
+    />
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth && deletePrisoners.length === 0 && filter.jailId"
+      path="/download/exportPrisoners"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
-    <el-row type="flex" justify="end">
-      <el-col
+    <el-row type="flex" style="margin-bottom: 10px">
+      <template v-if="!hasAllPrisonQueryAuth">
+        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+        <el-button type="primary" @click="showDelPrionser">删除</el-button>
+      </template>
+      <!-- <el-col
         :span="4"
         style="text-align:right">
         <el-button
@@ -24,7 +41,7 @@
           size="medium"
           @click="showDelPrionser"
           style="width:60%">删 除</el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
     <el-col
       :span="24"
@@ -32,7 +49,6 @@
       <el-table
         :data="prisoners.contents"
         border
-        stripe
         @selection-change="handleSelectionChange"
         style="width: 100%">
         <!-- EL自身的 -->
@@ -57,6 +73,11 @@
           </template>
         </el-table-column> -->
         <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
+        <el-table-column
           prop="name"
           label="罪犯姓名" />
         <el-table-column
@@ -67,14 +88,16 @@
           label="监区" />
         <el-table-column
           prop="crimes"
+          show-overflow-tooltip
           label="罪名" />
         <el-table-column
-          width="96px"
+          width="92px"
           label="会见次数/月">
           <template slot-scope="scope">
             <div>
               {{ scope.row.accessTime }}
               <el-button
+                v-if="!hasAllPrisonQueryAuth"
                 :disabled="!scope.row.sysFlag"
                 size="small"
                 type="text"
@@ -83,7 +106,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="刑期起止">
+        <el-table-column label="刑期起止" width="146px">
           <template slot-scope="scope">
             <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
             <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
@@ -108,7 +131,11 @@
               @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="家属会见告知书">
+        <el-table-column
+          v-if="!hasAllPrisonQueryAuth"
+          label="家属会见告知书"
+          min-width="110px"
+        >
           <template slot-scope="scope">
             <span
               :class="[
@@ -123,7 +150,11 @@
               @click="handleSign(scope.row.notifyId, scope.row)">{{ scope.row.notifyId ? '点击查看' : '点击签约' }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column 
+          v-if="!hasAllPrisonQueryAuth" 
+          label="操作" 
+          min-width="140px"
+        >
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -309,7 +340,11 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import { prisonerExcelConfig } from '@/common/excel-config'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     const prisonerStatus = [{ label: '正常状态', value: 1 }, { label: '黑名单', value: 2 }, { label: '已删除', value: 3 }]
     return {
@@ -318,7 +353,7 @@ export default {
         prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         name: { type: 'input', label: '罪犯姓名' },
         status: { type: 'select', label: '服刑人员状态', options: prisonerStatus, value: 1 },
-        isNotify: { type: 'select', label: '是否录入会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
+        isNotify: { type: 'select', label: '会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
         familyName: { type: 'input', label: '家属姓名' }
       },
       formItems: {
@@ -355,7 +390,8 @@ export default {
       deletePrisoners: [], // 删除的罪犯数据
       // isIndeterminate: false, // 单选框的样式控制 不要删掉
       // multipleSelection: [], // 多选数据 不要删掉
-      operationType: 0 // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
+      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
+      prisonerExcelConfig
     }
   },
   computed: {
@@ -441,16 +477,24 @@ export default {
     await this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist', 'deletePrisonerData', 'addPrionser']),
+    ...mapActions(['getPrisoners', 'getPrisonersAll', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist', 'deletePrisonerData', 'addPrionser']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
-      await this.getPrisoners({ ...this.filter, ...this.pagination })
+      // await this.getPrisoners({ ...this.filter, ...this.pagination })
       // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
       // this.isIndeterminate = false 不要删除
+
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getPrisonersAll(params)
+      } else {
+        this.getPrisoners(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -659,7 +703,7 @@ export default {
     },
     // 筛选已经删除的罪犯不可选择
     handleControlSelect(row, index) {
-      return row.sysFlag
+      return this.hasAllPrisonQueryAuth ? true : row.sysFlag
     },
     // 选择删除的罪犯
     handleSelectionChange(val) {
@@ -703,9 +747,9 @@ export default {
   min-width: 350px;
 .row-flex
   flex-wrap: wrap;
-.el-button
-  &+.el-button
-    margin-left 0px !important
+// .el-button
+//   &+.el-button
+//     margin-left 0px !important
 .only-select
   width 100%
 .el-dialog__body

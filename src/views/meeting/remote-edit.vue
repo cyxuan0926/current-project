@@ -117,4 +117,8 @@ export default {
     margin-bottom: 10px;
   }
 }
+
+.el-tabs--border-card > /deep/ .el-tabs__content {
+  padding-top: 0;
+}
 </style>

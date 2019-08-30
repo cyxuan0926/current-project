@@ -2,6 +2,11 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download 
+      v-if="excelDownloadPath" 
+      :path="excelDownloadPath" 
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -33,10 +38,26 @@ export default {
     return {
       activeName: this.$route.path.slice(this.$route.path.lastIndexOf('/') + 1),
       tabMapOptions: [
-        { label: '账户明细', key: 'account' },
-        { label: '充值明细', key: 'recharge' },
-        { label: '消费明细', key: 'consumption' },
-        { label: '退款明细', key: 'refund' }
+        {
+          label: '账户明细',
+          key: 'account',
+          excelDownloadPath: '/download/exportLedger'
+        },
+        {
+          label: '充值明细',
+          key: 'recharge',
+          excelDownloadPath: '/download/exportChargeRecords'
+        },
+        {
+          label: '消费明细',
+          key: 'consumption',
+          excelDownloadPath: '/download/exportConsumeRecords'
+        },
+        {
+          label: '退款明细',
+          key: 'refund',
+          excelDownloadPath: '/download/exportRefundRecords'
+        }
       ],
       list: { total: 0, contents: [] },
       searchItems: {
@@ -94,7 +115,17 @@ export default {
         recharge: ['paymentType', 'tradeNo', 'phone', 'range'],
         consumption: ['phone', 'range'],
         refund: ['refundType', 'tradeNo', 'phone', 'range']
-      }
+      },
+      filter: {}
+    }
+  },
+  computed: {
+    excelDownloadPath() {
+      const activeTab = this.tabMapOptions.find(tab => {
+        return tab.key === this.activeName
+      })
+
+      return activeTab && activeTab.excelDownloadPath
     }
   },
   watch: {

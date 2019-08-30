@@ -2,10 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportRegistrations"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       ref="search"
       @sizeChange="sizeChange"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -21,13 +27,20 @@
       <el-table
         :data="registrations.contents"
         border
-        stripe
+        class="mini-td-padding"
         style="width: 100%">
         <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
+        <el-table-column
           prop="name"
+          min-width="80px"
+          show-overflow-tooltip
           label="家属姓名" />
         <el-table-column
-          width="148px"
+          width="150px"
           label="身份证信息">
           <template slot-scope="scope">
             <m-img-viewer
@@ -37,8 +50,7 @@
             <m-img-viewer
               v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
-              title="身份证背面照"
-              style="margin-top: 5px;" />
+              title="身份证背面照" />
           </template>
         </el-table-column>
         <!-- <el-table-column
@@ -49,23 +61,25 @@
           </template>
         </el-table-column> -->
         <el-table-column
-          min-width="86px"
+          width="122px"
           label="申请时间">
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
-          min-width="92px"
+          min-width="88px"
+          show-overflow-tooltip
           label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
-          min-width="88px"
+          min-width="80px"
+          show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="relationship"
-          min-width="64px"
+          width="70px"
           label="关系" />
-        <el-table-column label="家属会见告知书">
+        <el-table-column label="家属会见告知书" width="110px">
           <template slot-scope="scope">
             <span
               :class="[
@@ -82,20 +96,21 @@
         </el-table-column>
         <el-table-column
           label="申请状态"
-          min-width="74px"
+          width="74px"
           class-name="orange">
           <template slot-scope="scope"> {{ scope.row.status | registStatus }} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
-          min-width="150px"
+          min-width="140px"
           label="审核信息">
           <template
             v-if="scope.row.auditAt"
-            slot-scope="scope">{{ scope.row.auditRealName }}<br >{{ scope.row.auditUserName }}<br >({{ scope.row.auditAt | Date }})</template>
+            slot-scope="scope">
+            {{ scope.row.auditRealName }} ({{ scope.row.auditUserName }})<br >
+            {{ scope.row.auditAt | Date }}</template>
         </el-table-column>
-        <el-table-column
-          label="操作">
+        <el-table-column v-if="!hasAllPrisonQueryAuth" label="操作">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING'"
@@ -278,7 +293,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       searchItems: {
@@ -341,14 +359,21 @@ export default {
     ...mapState(['registrations', 'registRemarks', 'notification'])
   },
   methods: {
-    ...mapActions(['getRegistrations', 'authorizeRegistrations', 'getNotification']),
+    ...mapActions(['getRegistrations', 'getRegistrationsAll', 'authorizeRegistrations', 'getNotification']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      this.getRegistrations({ ...this.filter, ...this.pagination })
+
+      const params = { ...this.filter, ...this.pagination }
+
+      if (this.hasAllPrisonQueryAuth) {
+        this.getRegistrationsAll(params)
+      } else {
+        this.getRegistrations(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)

@@ -1,7 +1,16 @@
 <template>
   <el-row :gutter="0">
     <el-col :span="24">
-      <el-table :data="prisonReportDetail.meetingDetails" border>
+      <el-table 
+        :data="prisonReportDetail.meetingDetails"
+        border
+        class="mini-td-padding td"
+      >
+        <el-table-column
+          v-if="hasAllPrisonQueryAuth"
+          prop="jailName" 
+          label="监狱名称"
+        />
         <el-table-column label="家属姓名">
           <template slot-scope="scope">
             <el-button
@@ -14,7 +23,7 @@
         </el-table-column>
         <el-table-column prop="prisonerName" label="罪犯姓名" />
         <el-table-column prop="prisonerNumber" label="罪犯编号" />
-        <el-table-column prop="total_time" label="总会见时间段" min-width="120px" />
+        <el-table-column prop="total_time" label="总会见时间段" width="236px" />
         <el-table-column label="会见时长">
           <template slot-scope="scope">
             {{ scope.row.duration | time }}
@@ -117,6 +126,9 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  props: {
+    hasAllPrisonQueryAuth: Boolean
+  },
   data(){
     return {
       family: {},
@@ -170,7 +182,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   height: 52px;
-  padding: 0 10px;
+  padding: 0 12px;
 }
 
 /deep/ .el-table td {
