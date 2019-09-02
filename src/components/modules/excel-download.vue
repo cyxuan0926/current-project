@@ -5,7 +5,6 @@
 </template>
 
 <script>
-// import globalApi from '@/service/modules/global'
 import qs from 'qs';
 import urls from '@/service/urls';
 
@@ -16,11 +15,9 @@ export default {
   },
   methods: {
     async onDownloadExcel() {
-      // await globalApi.downloadExcel(this.path, this.params)
       const query = qs.stringify(this.params)
-      console.log(urls.apiHost + this.path + (query && '?' + query))
-      location.href = urls.apiHost + this.path + (query && '?' + query)
-      // window.open(urls.apiHost + this.path + (query && '?' + query))
+      const { apiHost, apiPath } = urls
+      location.href = apiHost + apiPath + this.path + (query && '?' + query)
     }
   }
 }
