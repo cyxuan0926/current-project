@@ -66,7 +66,7 @@ instance.interceptors.response.use(
  */
 export const get = (url, params = {}, config = {}) => {
   params.t = new Date().getTime()
-  return instance.get(getUrl(url), { params: params, config }).then(res => res)
+  return instance.get(getUrl(url), { params: params, ...config }).then(res => res)
 }
 /**
  * 封装post请求

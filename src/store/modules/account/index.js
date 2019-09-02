@@ -8,7 +8,7 @@ const state = {
   menus: (localStorage.getItem('menus') && JSON.parse(localStorage.getItem('menus'))) || [],
   authorities: (localStorage.getItem('authorities') && JSON.parse(localStorage.getItem('authorities'))) || [],
   publicUserInfo: (localStorage.getItem('publicUserInfo') && JSON.parse(localStorage.getItem('publicUserInfo'))) || {},
-  rolesList: (localStorage.getItem('rolesList') && JSON.parse(localStorage.getItem('rolesList'))) || [], // 监狱超级管理员的角色列表
+  rolesList: [], // 监狱超级管理员的角色列表
   modifyMyPasswordResult: false,
   allTenants: []
 }
@@ -88,7 +88,6 @@ const actions = {
           result.push(helper.transitionRolesList(val))
         }
         commit('setRolesList', result)
-        localStorage.setItem('rolesList', JSON.stringify(result))
       }
       return res
     }

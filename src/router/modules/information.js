@@ -14,7 +14,7 @@ let infomation = [{
     name: 'jails-list',
     component: helper.loadView('jail/detail'),
     // component: resolve => require(['@/views/jail/detail'], resolve),
-    meta: { permission: 'visit.prison-profile.view', breadcrumbName: '监狱基本信息' }
+    meta: { permission: 'visit.prison-profile.search', breadcrumbName: '监狱基本信息' }
   }, {
     path: '/jails/edit/:id',
     name: 'jails-edit',

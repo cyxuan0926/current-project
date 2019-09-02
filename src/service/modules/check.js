@@ -152,6 +152,10 @@ export default {
   importSuccessfulAnalysisExcel: params => {
     return service.post(params.url, { path: params.path }).then(res => res && Object.assign(res.data, { type: params.type }))
   },
+  // 数据管理 - 下载罪犯信息导入Excel模板
+  // downloadPrisonTemplate: params => {
+  //   return service.get('/download/downloadfile', params, { responseType: 'blob' }).then(res => res.status === 200 && res)
+  // },
   //  导入数据详情列表-服刑人员零花钱管理列表
   getPrisonersPocketMoney: params => {
     return service.get('/pocket_money/page', params).then(res => res && res.data)

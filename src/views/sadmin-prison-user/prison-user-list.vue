@@ -1,6 +1,5 @@
 <template>
   <el-row
-    :syn="rolesList"
     class="row-container"
     :gutter="0">
     <el-button
@@ -127,12 +126,12 @@ export default {
       }
     }
     await this.getDatas()
-    if(this.rolesList && !this.rolesList.length && this.user.role === '-1') {
+    if (this.user.role === '-1') {
       this.$set(this.searchItems.roleId, 'getting', true)
       await this.getRolesList()
+      this.$set(this.searchItems.roleId, 'options', this.rolesList)
       this.$set(this.searchItems.roleId, 'getting', false)
     }
-    if( this.searchItems.roleId) this.$set(this.searchItems.roleId, 'options', this.rolesList)
   },
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),

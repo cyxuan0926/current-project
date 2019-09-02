@@ -99,18 +99,6 @@ let superAdmin = [{
     meta: { permission: 'visit.account.all-prison.search', breadcrumbName: '监狱用户列表' },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
     component: helper.loadView('sadmin-prison-user/prison-user-list')
-  }, {
-    path: '/prison-user/edit/:id',
-    name: 'prison-user-edit',
-    meta: { role: '0', deep: true, breadcrumbName: '编辑监狱用户' },
-    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
-    component: helper.loadView('sadmin-prison-user/prison-user-edit')
-  }, {
-    path: '/prison-user/add',
-    name: 'prison-user-add',
-    meta: { role: '0', deep: true, breadcrumbName: '新增监狱用户' },
-    // component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
-    component: helper.loadView('sadmin-prison-user/prison-user-add')
   }]
 }, {
   path: '/feedback',

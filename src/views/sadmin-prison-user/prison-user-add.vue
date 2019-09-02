@@ -31,14 +31,16 @@
           label="狱警号"
           prop="policeNumber">
           <el-input
-            v-model="prisonUser.policeNumber"
+            clearable
+            v-model.trim="prisonUser.policeNumber"
             placeholder="请填写狱警号"/>
         </el-form-item>
         <el-form-item
           label="真实姓名"
           prop="realName">
           <el-input
-            v-model="prisonUser.realName"
+            clearable
+            v-model.trim="prisonUser.realName"
             placeholder="请填写真实姓名"/>
         </el-form-item>
         <el-form-item
@@ -60,7 +62,8 @@
           label="用户名"
           prop="username">
           <el-input
-            v-model="prisonUser.username"
+            clearable
+            v-model.trim="prisonUser.username"
             placeholder="请填写用户名"/>
         </el-form-item>
       </el-form>
@@ -75,6 +78,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import validator from '@/utils'
 
 export default {
   data() {
@@ -82,7 +86,7 @@ export default {
       rules: {
         policeNumber: [{ required: true, message: '请填写狱警号' }],
         realName: [{ required: true, message: '请填写真实姓名' }],
-        username: [{ required: true, message: '请填写用户名' }],
+        username: [{ validator: validator.containerLetter }],
         roleIds: [{ required: true, message: '请选择角色' }]
       },
       gettingPrisonArea: true,
@@ -107,10 +111,11 @@ export default {
       }
       this.gettingPrisonArea = false
     })
+    this.getRolesList()
   },
   methods: {
     ...mapActions(['addPrisonUser', 'getJailPrisonAreas']),
-    ...mapActions('account', ['getRolesList', 'estimateUsername']),
+    ...mapActions('account', ['estimateUsername', 'getRolesList']),
     onSubmit() {
       this.$refs.prisonUser.validate(async valid => {
         if (valid) {
