@@ -10,11 +10,12 @@
         :class="['transition', { 'collapsed': isCollapsed }]">
         <the-sidebar />
       </el-aside>
-      <el-container>
+      <el-container
+        v-loading="loading"
+        element-loading-background="rgba(255, 255, 255, 0.5)"
+      >
         <the-breadcrumb v-if="!$route.meta.notLogin" />
-        <el-main
-          v-loading="loading"
-          element-loading-background="rgba(255, 255, 255, 0.5)">
+        <el-main>
           <transition
             name="router-fade"
             mode="out-in">

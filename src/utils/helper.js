@@ -122,10 +122,16 @@ export const transitionRoleId = (val) => {
   return result
 }
 
-// 懒加载路由
-export function loadView(path) {
-  return resovle => require([`@/views/${ path }`], resovle)
-}
+// // 懒加载路由
+// export function loadView(path) {
+//   return resolve => require([`@/views/${ path }`], resolve)
+// }
+
+/**
+ * 动态加载组件
+ * @param {String} path 组件相对于@/views目录的路径
+ */
+export const loadView = path => () => import(`@/views/${ path }`)
 
 // 日期格式化
 export function DateFormat(date, format = 'YYYY-MM-DD HH:mm:ss') {

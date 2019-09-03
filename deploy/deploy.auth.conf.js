@@ -1,4 +1,5 @@
 module.exports = {
+  local: true,
   buildCommands: ["npm install", "npm run build:auth"],
   buildOutputPath: "dist",
   repository: {

@@ -34,8 +34,13 @@ const prisonerExcelConfig = {
       formater: (families) => {
         if (families instanceof Array && families.length > 0) {
           return families.reduce((previous, current) => {
-            return `${ previous } ${ current.familyName }`
-          }, families[0].familyName)
+            if (previous === 'START') {
+              return `${ current.familyName }`
+            }
+            else {
+              return `${ previous } ${ current.familyName }`
+            }
+          }, 'START')
         }
         else {
           return ''
