@@ -63,13 +63,22 @@ export default {
     onSubmit(e) {
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
-          let prisonAreas = [...new Set(e.prisonAreaList.replace(/，/g, ',').split(','))]
-          e.prisonAreaList = prisonAreas.map(val => val && ({name: helper.trimString(val)}))
+          const prisonAreas = e.prisonAreaList.replace(/，/g, ',').split(',')
+          let uniquePrisonAreas = [...new Set(prisonAreas)]
+
+          if (prisonAreas.length !== uniquePrisonAreas.length && !(this.prison.prisonAreaList && this.prison.prisonAreaList.length)) {
+            this.$message.error('监区名不能重复');
+            return
+          }
+
+          e.prisonAreaList = uniquePrisonAreas.map(val => val && ({name: helper.trimString(val)}))
         }
         else e.prisonAreaList = []
+
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
         this.updatePrison(params).then(res => {
           if (!res) return
+          this.getPrisonDetail({ id: this.$route.params.id })
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
           // else this.$router.push('/jails/detail')
         })
