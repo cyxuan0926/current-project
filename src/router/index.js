@@ -99,6 +99,7 @@ const mapChildren = (permission = '', router = []) => {
  */
 const getCurrenRouter = (permission = '', routes = []) => {
   let currentRouter = routes.filter(route => {
+      if (route.meta && route.meta.permission && route.meta.permission === permission) return true
       if (route.children && route.children.length) return mapChildren(permission, route.children)
     }), filterRoutes = new Set(routes)
   if (filterRoutes.has(...currentRouter)) filterRoutes.delete(...currentRouter)
