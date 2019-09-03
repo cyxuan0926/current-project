@@ -51,13 +51,13 @@
           v-if="user.role !== '0' ">
           <template slot-scope="scope">
             <el-button
-              :disabled="!user.branch_prison || scope.row.prisonerNum !== 0"
+              :disabled=" scope.row.id === '-1' || scope.row.prisonerNum !== 0 "
               size="mini"
-              :type=" !user.branch_prison || scope.row.prisonerNum !== 0 ? 'info' : 'danger' "
+              :type=" scope.row.id === '-1' || scope.row.prisonerNum !== 0  ? 'info' : 'danger' "
               @click="onDelete(scope.row.id)">删除</el-button>
             <el-button
-              :disabled="!user.branch_prison"
-              :type=" !user.branch_prison ? 'info' : 'primary' "
+              :disabled="scope.row.id === '-1'"
+              :type=" scope.row.id === '-1' ? 'info' : 'primary' "
               size="mini"
               @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
           </template>
