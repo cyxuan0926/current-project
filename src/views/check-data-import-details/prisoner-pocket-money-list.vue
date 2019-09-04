@@ -7,18 +7,11 @@
       @sizeChange="sizeChange"
       @search="onSearch"/>
     <el-col :span="24">
-      <el-tabs
-        type="card"
-        value="first">
-        <el-tab-pane
-          label="服刑人员零花钱详情表"
-          name="first"/>
-      </el-tabs>
       <el-table
         border
         :data="prisonersPocketMoney.contents"
         style="width: 100%"
-        stripe>
+      >
         <el-table-column
           label="罪犯姓名"
           prop="name" />
@@ -81,7 +74,7 @@ export default {
         name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
         time: { type: 'monthrange', start: 'start', end: 'end' },
-        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       }
     }
   },
@@ -91,7 +84,7 @@ export default {
   methods: {
     ...mapActions(['getPrisonersPocketMoney']),
     getDatas() {
-      if (JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
+      if (JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
       this.getPrisonersPocketMoney({ ...this.filter, ...this.pagination })
     },
     sizeChange(rows) {

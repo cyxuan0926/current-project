@@ -1,11 +1,11 @@
-// import urls from '@/service/urls'
+import urls from '@/service/urls'
 export default {
   // 请求地址
   // url: '/',
   // 请求方式
   // method: 'get',
-  // 基础url前缀
-  // baseURL: urls.apiHost,
+  // 基础url前缀urls.apiHost http://120.79.251.238:8085'http://120.79.251.238:8085/ywgk''http://192.168.0.53:8083'
+  baseURL: urls.apiHost,
   // 请求发送之前对出参进行处理
   // transformRequest: [data => data],
   // 请求发送之后对入参进行处理
@@ -21,7 +21,7 @@ export default {
   // get 请求参数
   // params: {},
   // 设置请求超时时间
-  timeout: 20000,
+  timeout: 50000,
   // 请求数据返回类型
   // responseType: 'json',
   // 设置跨域请求的令牌

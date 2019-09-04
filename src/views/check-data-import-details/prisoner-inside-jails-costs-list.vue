@@ -6,19 +6,14 @@
       :items="searchItems"
       @search="onSearch"
       @sizeChange="sizeChange"/>
-    <el-col :span="24">
-      <el-tabs
-        type="card"
-        value="first">
-        <el-tab-pane
-          label="服刑人员狱内消费详情表"
-          name="first"/>
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         border
         :data="prisonersInsideJailsCosts.contents"
         style="width: 100%"
-        stripe>
+      >
         <el-table-column
           label="罪犯姓名"
           min-width="80"
@@ -88,7 +83,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1 ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true } : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         time: { type: 'dateRange', start: 'startDate', end: 'endDate', unlinkPanels: true }
       }
     }

@@ -10,23 +10,6 @@
         label-position="right"
         label-width="100px">
         <el-form-item
-          v-if="routeRole !== '4'"
-          label="监狱名称"
-          prop="jailId">
-          <el-select
-            v-model="prisonUser.jailId"
-            placeholder="请选择监狱"
-            filterable
-            :loading="gettingJails"
-            @change="onPrisonChange">
-            <el-option
-              v-for="item in prisonAllWithBranchPrison"
-              :key="item.id"
-              :label="item.title"
-              :value="item.id"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item
           v-if="hasPrisonArea"
           label="监区"
           prop="prisonConfigIds">
@@ -48,26 +31,27 @@
           label="狱警号"
           prop="policeNumber">
           <el-input
-            v-model="prisonUser.policeNumber"
+            clearable
+            v-model.trim="prisonUser.policeNumber"
             placeholder="请填写狱警号"/>
         </el-form-item>
         <el-form-item
           label="真实姓名"
           prop="realName">
           <el-input
-            v-model="prisonUser.realName"
+            clearable
+            v-model.trim="prisonUser.realName"
             placeholder="请填写真实姓名"/>
         </el-form-item>
         <el-form-item
           label="角色"
-          prop="role">
+          prop="roleIds">
           <el-select
-            v-model="prisonUser.role"
+            v-model="prisonUser.roleIds"
             placeholder="请选择角色"
             clearable>
-            <template v-for="item in $store.state.role">
-              <el-option
-                v-if="item.value !== 0 && item.value != routeRole"
+            <template v-for="item in rolesList">
+              <el-option               
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"/>
@@ -78,7 +62,8 @@
           label="用户名"
           prop="username">
           <el-input
-            v-model="prisonUser.username"
+            clearable
+            v-model.trim="prisonUser.username"
             placeholder="请填写用户名"/>
         </el-form-item>
       </el-form>
@@ -93,74 +78,56 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import validator from '@/utils'
 
 export default {
   data() {
     return {
       rules: {
-        jailId: [{ required: true, message: '请选择监狱名称' }],
         policeNumber: [{ required: true, message: '请填写狱警号' }],
         realName: [{ required: true, message: '请填写真实姓名' }],
-        username: [{ required: true, message: '请填写用户名' }],
-        role: [{ required: true, message: '请选择角色' }]
+        username: [{ validator: validator.containerLetter }],
+        roleIds: [{ required: true, message: '请选择角色' }]
       },
-      gettingJails: true,
       gettingPrisonArea: true,
       hasPrisonArea: false,
-      prisonUser: { prisonConfigIds: [] },
-      routeRole: this.$route.meta.role
+      prisonUser: { prisonConfigIds: [] }
     }
   },
   computed: {
+    ...mapState({
+      rolesList: state => state.account.rolesList
+    }),
     ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
   },
   mounted() {
-    if (this.routeRole === '0') {
-      this.getPrisonAllWithBranchPrison().then(res => {
-        this.gettingJails = false
-      })
-    }
-    else if (this.routeRole === '4') {
-      this.getJailPrisonAreas().then(res => {
-        if (!res) return
-        if (this.jailPrisonAreas.length === 0) {
-          this.hasPrisonArea = false
-        }
-        else {
-          this.hasPrisonArea = true
-        }
-        this.gettingPrisonArea = false
-      })
-    }
+    this.getJailPrisonAreas().then(res => {
+      if (!res) return
+      if (this.jailPrisonAreas.length === 0) {
+        this.hasPrisonArea = false
+      }
+      else {
+        this.hasPrisonArea = true
+      }
+      this.gettingPrisonArea = false
+    })
+    this.getRolesList()
   },
   methods: {
-    ...mapActions(['addPrisonUser', 'getPrisonAllWithBranchPrison', 'getJailPrisonAreas']),
+    ...mapActions(['addPrisonUser', 'getJailPrisonAreas']),
+    ...mapActions('account', ['estimateUsername', 'getRolesList']),
     onSubmit() {
-      this.$refs.prisonUser.validate(valid => {
+      this.$refs.prisonUser.validate(async valid => {
         if (valid) {
-          let params = Object.assign({}, this.prisonUser)
+          const res = await this.estimateUsername({username: this.prisonUser.username})
+          if(!res) return
+          let params = Object.assign({}, this.prisonUser, {roleIds: [this.prisonUser.roleIds]})
           if (!this.hasPrisonArea) delete params.prisonConfigIds
           this.addPrisonUser(params).then(res => {
             if (!res) return
-            if (this.routeRole === '0') this.$router.push('/prison-user/list')
-            else if (this.routeRole === '4') this.$router.push('/account/list')
+            this.$router.push('/account/list')
           })
         }
-      })
-    },
-    onPrisonChange(e) {
-      this.prisonUser.prisonConfigIds = []
-      this.hasPrisonArea = false
-      this.gettingPrisonArea = true
-      this.getJailPrisonAreas({ jailId: e }).then(res => {
-        if (!res) return
-        if (this.jailPrisonAreas.length === 0) {
-          this.hasPrisonArea = false
-        }
-        else {
-          this.hasPrisonArea = true
-        }
-        this.gettingPrisonArea = false
       })
     }
   }

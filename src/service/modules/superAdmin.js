@@ -8,25 +8,25 @@ export default {
   getAppLogs: params => {
     return service.get('/app_logs/page', params).then(res => res && res.data)
   },
-  // 监狱用户管理-列表
+  // 监狱用户管理-列表 需要修改page初始值为0
   getPrisonUsers: params => {
     return service.get('/users/page', params).then(res => res && res.data)
   },
-  // 监狱用户管理-删除
+  // 监狱用户管理-删除 租户管理员
   deletePrisonUser: params => {
-    return service.post('/users/delete', params).then(res => res && res.code === 200)
+    return service.remove(`/users/delete?id=${ params.id }`).then(res => res && res.code === 200)
   },
-  // 监狱用户管理-新增
+  // 监狱用户管理-新增 租户管理员
   addPrisonUser: params => {
     return service.postObj('/users/add', params).then(res => res && res.code === 200)
   },
-  // 监狱用户管理-详情
+  // 监狱用户管理-详情 租户管理员
   getPrisonUserDetail: params => {
-    return service.get(`/users/to_edit?id=${ params }`).then(res => res && res.data)
+    return service.get(`/users/edit?id=${ params }`).then(res => res && res.data)
   },
-  // 监狱用户管理-启用禁用
+  // 监狱用户管理-启用禁用 租户管理员
   enableOrDisablePrisonUser: params => {
-    return service.get(`/users/enableOrDisable`, params).then(res => res && res.code === 200)
+    return service.put(`/users/enableOrDisable?id=${ params.id }&status=${ params.status }`).then(res => res && res.code === 200)
   },
   // 家属汇款记录-列表
   getFamilyRemittance: params => {
@@ -34,11 +34,19 @@ export default {
   },
   // 监狱用户管理-编辑
   updatePrisonUser: params => {
-    return service.postObj('/users/edit', params).then(res => res && res.code === 200)
+    return service.putObj('/users/update', params).then(res => res && res.code === 200)
   },
-  // 监狱管理-列表
+  // 监狱管理-监狱列表
   getPrisons: params => {
     return service.get('/jails/page', params).then(res => res && res.data)
+  },
+  // 监狱管理-租户列表
+  getTenants: params => {
+    return service.get('/jails/tenants', params).then(res => res && res.data)
+  },
+  // 监狱管理-租户列表-绑定监狱
+  createJailByBindTenant: params => {
+    return service.postObj('/jails/createJailByBindTenant', params).then(res => res && res.code === 200)
   },
   // 监狱管理-新增
   addPrison: params => {
@@ -55,6 +63,10 @@ export default {
   // 意见反馈-列表
   getFeedbacks: params => {
     return service.get('/feedbacks/page', params).then(res => res && res.data)
+  },
+  // 意见反馈-下载
+  downloadFeedbacks: params => {
+    return service.get('/feedbacks/download', params, { responseType: 'blob' }).then(res => res)
   },
   // 广告管理-列表
   getAdvertisements: params => {
@@ -135,5 +147,9 @@ export default {
   // 监区管理-删除
   deletePrisonArea: params => {
     return service.post('/prison_config/delete', params).then(res => res && res.code === 200)
+  },
+  // 监区管理-新增
+  addPrisonArea: params => {
+    return service.post('/prison_config/add', params).then(res => res && res.code === 200)
   }
 }

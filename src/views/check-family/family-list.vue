@@ -7,37 +7,34 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="家属信息"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="families.contents"
         border
-        stripe
+        class="mini-td-padding"
         style="width: 100%">
         <el-table-column
           prop="name"
           label="家属姓名" />
-        <el-table-column label="身份证正面">
+        <el-table-column label="身份证信息">
           <template slot-scope="scope">
             <m-img-viewer
               v-if="scope.row.idCardFront"
               :url="scope.row.idCardFront"
               title="身份证正面照"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="身份证背面">
-          <template slot-scope="scope">
             <m-img-viewer
               v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
               title="身份证背面照"/>
           </template>
         </el-table-column>
+        <!-- <el-table-column label="身份证背面">
+          <template slot-scope="scope">
+            <m-img-viewer
+              v-if="scope.row.idCardBack"
+              :url="scope.row.idCardBack"
+              title="身份证背面照"/>
+          </template>
+        </el-table-column> -->
         <el-table-column
           label="黑名单原因"
           prop="reason"
@@ -165,7 +162,7 @@ export default {
     return {
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
         isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
       },
       dialogTableVisible: false,

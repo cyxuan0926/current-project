@@ -14,8 +14,8 @@ export default {
     })
   },
   // 修改用户名密码执行的方法
-  modifyPassword: userInfo =>
-    service.post('/users/resetPwd', userInfo).then(res => res).catch(err => err),
+  // modifyPassword: userInfo =>
+  //   service.post('/users/resetPwd', userInfo).then(res => res).catch(err => err),
   // 上传文件
   uploadFile: file => {
     return service.postFile('/upload/uploadfile', file).then(res => res && res.data)

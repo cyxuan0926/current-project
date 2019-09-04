@@ -14,9 +14,6 @@
         <el-tab-pane
           label="实地探监"
           name="first" />
-        <!-- <el-tab-pane
-          label="未授权"
-          name="PENDING" /> -->
         <el-tab-pane
           label="已取消"
           name="CANCELED" />
@@ -24,7 +21,6 @@
       <el-table
         :data="visits.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -210,7 +206,7 @@ export default {
       searchItems: {
         // prisonerNumber: { type: 'input', label: '罪犯编号' },
         name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       },
       show: {
         authorize: false,

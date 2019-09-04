@@ -8,6 +8,13 @@ export default {
       return true
     })
   },
+  getMeetingsAll({ commit }, params) {
+    return http.getMeetingsAll(params).then(res => {
+      if (!res) return
+      commit('getMeetings', res)
+      return true
+    })
+  },
   authorizeMeeting({ commit }, params) {
     return http.authorizeMeeting(params).then(res => res)
   },
@@ -38,5 +45,17 @@ export default {
   },
   meetingAdjustDealing({ commit }, params) {
     commit('meetingAdjustDealing', params)
+  },
+  getVisits({ commit }, params) {
+    http.getVisits(params).then(res => res && commit('getVisits', res))
+  },
+  getCanceledVisit({ commit }, params) {
+    http.getCanceledVisit(params).then(res => res && commit('getVisits', res))
+  },
+  authorizeVisit({ commit }, params) {
+    return http.authorizeVisit(params).then(res => res)
+  },
+  withdrawVisit({ commit }, params) {
+    return http.withdrawVisit(params).then(res => res)
   }
 }

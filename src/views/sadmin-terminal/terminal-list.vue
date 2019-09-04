@@ -4,7 +4,7 @@
     :gutter="0">
     <el-button
       size="small"
-      class="button-add"
+      class="button-add button-shift-down"
       type="primary"
       plain
       @click="onAdd">添加终端信息</el-button>
@@ -13,17 +13,9 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="终端管理"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="terminals.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="terminalNumber"

@@ -111,7 +111,7 @@ export default {
   },
   activated() {
     if (this.$route.meta.role === '0') this.disabled = false
-    if (this.$route.meta.permission === 'edit') this.permission = 'edit'
+    if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
     if (this.permission === 'edit') {
       this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
         if (!res) return

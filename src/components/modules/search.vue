@@ -1,6 +1,6 @@
 <template>
   <div class="filter-container">
-    <div class="filter-left">
+    <!-- <div class="filter-left">
       <el-select
         v-model="pageSize"
         placeholder="请选择"
@@ -12,7 +12,7 @@
           :value="item"/>
       </el-select>
       条记录
-    </div>
+    </div> -->
     <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
@@ -21,7 +21,7 @@
           :disabled="item.disabled"
           v-if="item.type === 'input' && !item.miss"
           v-model="item.value"
-          :placeholder="'请输入' + item.label" />
+          :placeholder="item.noPlaceholder ? item.label : '请输入' + item.label" />
         <el-select
           :key="index"
           v-if="item.type === 'select' && !item.miss"
@@ -29,7 +29,9 @@
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
-          :filterable="item.filterable">
+          :filterable="item.filterable"
+          @change="onSelectChange(item.selectKey, item.value)"
+        >
           <template v-for="option in item.options">
             <el-option
               v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
@@ -142,8 +144,8 @@ export default {
   },
   data() {
     return {
-      selectItem: [10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
-      pageSize: 10,
+      // selectItem: [10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
+      // pageSize: 10,
       startValue: null,
       endValue: null,
       pickerOptions: {
@@ -174,9 +176,9 @@ export default {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
-    sizeChange(e) {
-      this.$emit('sizeChange', this.pageSize)
-    },
+    // sizeChange(e) {
+    //   this.$emit('sizeChange', this.pageSize)
+    // },
     onSearch(e) {
       if (this.items) {
         let params = {}
@@ -209,45 +211,74 @@ export default {
         if (key === 'prop') return
         this.items[prop][key] = e[key]
       })
+    },
+    onSelectChange(selectKey, value) {
+      this.$emit('searchSelectChange', selectKey, value)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+@import "../../assets/css/custom-element.scss";
+
 .filter-container{
-  line-height: 40px;
-  width: 100%;
+  // line-height: 40px;
+  // width: 100%;
   overflow: hidden;
-  .filter-left{
-    width: 170px;
-    float: left;
-    z-index: 10;
-    margin-bottom: 10px;
-    div:first-child{
-      float: left;
-      width: 120px;
-      margin-right: 5px;
-    }
-  }
-  .filter-right{
-    width: calc(100% - 170px);
-    min-width: 128px;
-    float: right;
+  padding-bottom: 10px;
+  
+  // .filter-left{
+  //   width: 170px;
+  //   float: left;
+  //   z-index: 10;
+  //   margin-bottom: 10px;
+  //   div:first-child{
+  //     float: left;
+  //     width: 120px;
+  //     margin-right: 5px;
+  //   }
+  // }
+  .filter-right /deep/ {
+    // width: calc(100% - 170px);
+    // min-width: 128px;
+    // float: right;
     z-index: 10;
     display: flex;
-    justify-content: flex-end;
+    // justify-content: flex-end;
     flex-wrap: wrap;
-    &>*:not(button){
+    & > *:not(button){
       // float: left;
-      width: 20%;
-      max-width: 200px;
-      min-width: 100px;
-      margin-left: 10px;
+      // width: 20%;
+      // width: $--input-width;
+      // max-width: 200px;
+      // min-width: 100px;
+      // margin-left: 10px;
       margin-bottom: 10px;
+      margin-right: 10px;
     }
     button{
-      height: 40px;
-      margin-left: 10px;
+      min-width: 50px;
+      margin-bottom: 10px;
+      // height: 40px;
+      // margin-left: 10px;
+    }
+
+    .el-input {
+      width: $--input-width;
+    }
+
+    .el-date-editor--datetimerange {
+      width: 315px;
+    }
+
+    .m-range-picker,
+    .el-date-editor--month,
+    .el-date-editor--daterange {
+      width: 210px !important;
+    }
+
+    .el-range-separator {
+      padding: 0 5px 0 3px;
     }
   }
 }
@@ -255,18 +286,18 @@ export default {
 <style type="text/stylus" lang="stylus">
 .filter-container .filter-right
   .monthRangeSelector
-    min-width: 170px;
+    // min-width: 170px;
     .el-date-editor--daterange.el-popover__reference
       width: 100%;
       padding-left: 9px;
       padding-right: 9px;
-  .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
-    width: 320px;
-    max-width: 320px;
-  .monthrange
-    width: 230px;
-    max-width: 230px;
-  &>.el-date-editor.el-input, &>.el-date-editor.el-input__inner
-      max-width: 230px;
-      min-width: 230px;
+  // .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner
+  //   width: 320px;
+  //   max-width: 320px;
+  // .monthrange
+  //   width: 230px;
+  //   max-width: 230px;
+  // &>.el-date-editor.el-input, &>.el-date-editor.el-input__inner
+  //     max-width: 230px;
+  //     min-width: 230px;
 </style>

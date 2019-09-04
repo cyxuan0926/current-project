@@ -21,6 +21,7 @@
     </el-table-column>
     <el-table-column
       prop="reason"
+      show-overflow-tooltip
       label="交易场景" />
     <el-table-column
       prop="meetingId"

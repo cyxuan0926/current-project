@@ -43,5 +43,8 @@ export default {
   },
   replyFeedback: ({ commit }, params) => {
     return api.replyFeedback(params).then(res => res)
+  },
+  downloadFeedbacks: ({ commit }, params) => {
+    return http.downloadFeedbacks(params).then(res => res.data)
   }
 }

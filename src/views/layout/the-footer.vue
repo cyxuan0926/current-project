@@ -22,23 +22,24 @@ export default {
 <style lang="scss" scoped>
 .m-footer {
   height: 100%;
-  font-size: 13px;
-  font-weight: bold;
+  // font-size: 13px;
+  // font-weight: bold;
   background: #fff;
-  color: #444;
+  // color: #444;
   border-top: 1px solid #d2d6de;
-  line-height: 40px;
+  line-height: 36px;
   padding: 0 15px;
   overflow: hidden;
   .hidden-xs-only{
     float: right;
   }
-  a{
-    color: #444;
-    // color: #3c8dbc;
-  }
+  // a{
+  //   color: #444;
+  //   // color: #3c8dbc;
+  // }
   b{
-    font-weight: 700;
+    font-weight: normal;
+    // font-weight: 700;
   }
 }
 </style>

@@ -4,8 +4,9 @@ html, body{
   height: 100%;
   padding: 0;
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;;
+  // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 ul{
   list-style: none;
@@ -69,8 +70,8 @@ a{
 }
 .el-breadcrumb{
   padding: 0 20px;
-  line-height: 40px;
-  height: 40px;
+  line-height: 36px;
+  height: 36px;
   word-break: break-all;
   font-size: 12px;
   width: 100%;
@@ -127,4 +128,9 @@ a{
 // 修复 table 组件表头不对齐的问题
 .el-table th.gutter{
   display: table-cell !important;
+}
+
+.m-excel-download,
+.m-excel-export {
+  float: right;
 }

@@ -3,44 +3,39 @@
     class="row-container"
     :gutter="0">
     <el-button
+      v-if="user.role === '-1'"
       size="small"
       type="primary"
       plain
-      class="button-add"
+      class="button-add button-shift-down"
       @click="onAdd">添加账户</el-button>
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportPrisonuser"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监狱用户"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="prisonUsers.contents"
         border
-        stripe
-        v-loading="loading"
         style="width: 100%">
         <el-table-column
           prop="username"
+          width="260px"
           label="用户名" />
         <el-table-column
-          prop="role"
-          label="角色">
-          <template slot-scope="scope">
-            {{ scope.row.role | role }}
-          </template>
-        </el-table-column>
+          prop="roles"
+          label="角色" />
         <el-table-column
-          prop="jail"
+          prop="jailName"
           label="监狱名称" />
         <el-table-column
           prop="prisonAreas"
+          show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="policeNumber"
@@ -49,29 +44,31 @@
           prop="realName"
           label="真实姓名" />
         <el-table-column
+          v-if="user.role === '-1'"
           width="210px"
           label="操作">
+          <!-- v-if="routeRole != scope.row.role && scope.row.role !== 0" -->
           <template
-            v-if="routeRole != scope.row.role && scope.row.role !== 0"
-            slot-scope="scope">
+            slot-scope="scope"
+            v-if="!scope.row.isAdministrator">
             <el-button
               type="primary"
               size="mini"
               @click="onEdit(scope.row.id)">编辑</el-button>
             <el-button
-              v-if="scope.row.sysFlag == 0"
+              v-if="scope.row.status == 'DISABLED'"
               size="mini"
               type="success"
               style="margin-left: 5px;"
-              @click="onChangeStatus(scope.row, 1)">启用</el-button>
+              @click="onChangeStatus(scope.row, 1, 'ENABLED')">启用</el-button>
             <el-button
-              v-if="scope.row.sysFlag == 1"
+              v-if="scope.row.status == 'ENABLED'"
               size="mini"
               type="info"
               style="margin-left: 5px;"
-              @click="onChangeStatus(scope.row, 0)">禁用</el-button>
+              @click="onChangeStatus(scope.row, 0, 'DISABLED')">禁用</el-button>
+            <!--  v-if="routeRole === '0'" -->
             <el-button
-              v-if="routeRole === '0'"
               type="danger"
               size="mini"
               style="margin-left: 5px;"
@@ -91,71 +88,96 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  props: {
+    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+    hasAllPrisonQueryAuth: Boolean
+  },
   data() {
-    let optionObj = require('@/filters/modules/switches'),
-      jail = {}, no = {},
+    let options = { roleId: { type: 'select', label: '角色', getting: false }, jail: { type: 'select', label: '监狱名称', getting: true, belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
-    if (routeRole === '0') jail = { jail: { type: 'input', label: '监狱名称' } }
-    if (routeRole === '4') no = { no: [0] }
+    if (routeRole === '0') delete options.roleId
+    if (role === '-1') delete options.jail
+    if (routeRole === '4' && role !== '-1') options = {}
     return {
       searchItems: Object.assign(
         {
-          username: { type: 'input', label: '用户名' },
-          role: Object.assign({ type: 'select', label: '角色', options: optionObj.default.role }, no)
+          username: { type: 'input', label: '用户名' }
         },
-        jail
+        options
       ),
       routeRole: routeRole,
-      loading: true
+      filter: {}
     }
   },
   computed: {
-    ...mapState(['prisonUsers'])
+    ...mapState(['prisonUsers']),
+    ...mapState({
+      user: state => state.global.user,
+      rolesList: state => state.account.rolesList,
+      allTenants: state => state.account.allTenants
+    })
   },
-  mounted() {
-    this.getDatas()
+  async mounted() {
+    if (this.routeRole === '0') {
+      const res = await this.getAllTenants()
+      if (res) {
+        this.searchItems.jail.getting = false
+        this.searchItems.jail.options = this.allTenants
+      }
+    }
+    await this.getDatas()
+    if (this.user.role === '-1') {
+      this.$set(this.searchItems.roleId, 'getting', true)
+      await this.getRolesList()
+      this.$set(this.searchItems.roleId, 'options', this.rolesList)
+      this.$set(this.searchItems.roleId, 'getting', false)
+    }
   },
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),
+    ...mapActions('account', ['getRolesList', 'getAllTenants']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
-    getDatas() {
-      this.loading = true
-      this.getPrisonUsers({ ...this.filter, ...this.pagination }).then(res => {
-        if (!res) return
-        this.loading = false
-      })
+    async getDatas() {
+      let { page } = this.pagination
+      this.$set(this.pagination, 'page', page-1)
+      await this.getPrisonUsers({ ...this.filter, ...this.pagination })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
     onEdit(e) {
-      if (this.routeRole === '0') this.$router.push(`/prison-user/edit/${ e }`)
-      else if (this.routeRole === '4') this.$router.push(`/account/edit/${ e }`)
+      this.$router.push(`/account/edit/${ e }`)
     },
-    onDelete(e) {
+    onDelete(id) {
       this.$confirm('是否确认删除？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.deletePrisonUser({ id: e }).then(res => {
+        this.deletePrisonUser({ id }).then(res => {
           if (!res) return
           this.getDatas()
         })
       }).catch(() => {})
     },
-    onChangeStatus(row, sysFlag) {
-      this.enableOrDisablePrisonUser({ id: row.id, status: sysFlag }).then(res => {
-        if (!res) return
-        row.sysFlag = sysFlag
-      })
+    onChangeStatus(row, status, sysFlag) {
+      const text = status ? '启用' : '禁用'
+      this.$confirm(`您确认${text}该用户吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.enableOrDisablePrisonUser({ id: row.id, status }).then(res => {
+          if (!res) return
+          row.status = sysFlag
+        })
+      }).catch(() => {})
     },
     onAdd() {
-      if (this.routeRole === '0') this.$router.push(`/prison-user/add`)
-      else if (this.routeRole === '4') this.$router.push(`/account/add`)
+      this.$router.push(`/account/add`)
     }
   }
 }

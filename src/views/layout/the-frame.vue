@@ -2,7 +2,7 @@
   <el-container :class="['height100', { 'no-login': $route.meta.notLogin }]">
     <el-header
       v-if="!$route.meta.notLogin"
-      height="50px"><the-header /></el-header>
+      height="46px"><the-header /></el-header>
     <el-container class="main-container">
       <el-aside
         v-if="!$route.meta.notLogin"
@@ -10,11 +10,12 @@
         :class="['transition', { 'collapsed': isCollapsed }]">
         <the-sidebar />
       </el-aside>
-      <el-container>
+      <el-container
+        v-loading="loading"
+        element-loading-background="rgba(255, 255, 255, 0.5)"
+      >
         <the-breadcrumb v-if="!$route.meta.notLogin" />
-        <el-main
-          v-loading="loading"
-          element-loading-background="rgba(255, 255, 255, 0.5)">
+        <el-main>
           <transition
             name="router-fade"
             mode="out-in">
@@ -22,7 +23,7 @@
           </transition>
         </el-main>
         <el-footer
-          height="40px"><the-footer /></el-footer>
+          height="36px"><the-footer /></el-footer>
       </el-container>
     </el-container>
   </el-container>

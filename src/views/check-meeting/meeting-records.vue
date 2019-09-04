@@ -7,17 +7,9 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="远程免费会见记录"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="freeMeetings.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -73,7 +65,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '家属姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: { type: 'select', label: '监区', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
       }
     }
   },

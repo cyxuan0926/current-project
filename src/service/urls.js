@@ -15,15 +15,6 @@ const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
 // socketUrl: websocket地址
 
 const config = {
-  dev: {
-    apiHost: 'http://120.78.190.101:8081',
-    apiPath: '/ywgk',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://120.78.190.101:8081/ywgk/websocket'
-  },
   development: {
     apiHost: 'http://192.168.0.41:8085',
     apiPath: '/ywgk-auth',
@@ -34,6 +25,7 @@ const config = {
     socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
+    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
     apiHost: 'http://120.79.251.238:8021',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -42,7 +34,18 @@ const config = {
     videoUrl: `${ nodeUrl }/video-server/videos`,
     socketUrl: 'ws://120.79.251.238:8021/ywgk/websocket'
   },
+  auth: {
+    publicApiHost: 'http://192.168.0.230:8081',
+    apiHost: 'http://192.168.0.230:8088',
+    apiPath: '/ywgk-auth',
+    audioUrl: `${ nodeUrl }/audio-server/audios`,
+    imageUrl: `${ nodeUrl }/image-server/avatars`,
+    // fileUrl: `${ nodeUrl }/image-server`,
+    videoUrl: `${ nodeUrl }/video-server/videos`,
+    socketUrl: 'ws://192.168.0.230:8088/ywgk-auth/websocket'
+  },
   production: {
+    publicApiHost: 'https://api.auth.prisonpublic.com',
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
@@ -53,13 +56,24 @@ const config = {
     socketUrl: 'wss://www.yuwugongkai.com/ws'
   },
   ybDevelopment: {
-    apiHost: 'http://192.168.0.54:8083',
-    apiPath: '/ywgk-yb',
+    publicApiHost: 'http://192.168.0.230:8081',
+    apiHost: 'http://192.168.0.124:8088',
+    apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.54:8083/websocket'
+    videoUrl: `${ nodeUrl }/video-server/videos`
+    // socketUrl: 'ws://192.168.0.54:8083/websocket'
+  },
+  xzyDev: {
+    publicApiHost: 'http://192.168.0.230:8081',
+    apiHost: 'http://192.168.0.108:8088',
+    apiPath: '',
+    audioUrl: `${ nodeUrl }/audio-server/audios`,
+    imageUrl: `${ nodeUrl }/image-server/avatars`,
+    // fileUrl: `${ nodeUrl }/image-server`,
+    videoUrl: `${ nodeUrl }/video-server/videos`
+    // socketUrl: 'ws://192.168.0.54:8083/websocket'
   }
 }
 

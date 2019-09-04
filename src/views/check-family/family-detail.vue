@@ -36,7 +36,7 @@ export default {
   methods: {
     ...mapActions(['getFamilyDetail']),
     goBack() {
-      this.$router.go(-1)
+      this.$router.push({path: '/family/list'})
     }
   }
 }

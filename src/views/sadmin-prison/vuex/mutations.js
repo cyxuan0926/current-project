@@ -6,5 +6,9 @@ export default {
   },
   getPrisonDetail(state, params) {
     state.prison = Object.assign({}, params)
+  },
+  getTenants(state, params) {
+    state.tenants.contents = params.tenants
+    state.tenants.total = params.tenantsSize
   }
 }

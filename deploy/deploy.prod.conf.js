@@ -1,8 +1,9 @@
 module.exports = {
+  local: true,
   buildCommands: ["npm install", "npm run build:prod"],
   buildOutputPath: "dist",
   repository: {
-    name: "prison-web",
+    name: "ywgk-fe",
     branch: "master",
     url: "https://github.com/sinog2c/ywgk-fe.git"
   },
@@ -12,6 +13,6 @@ module.exports = {
     host: "39.108.185.51",
     port: 22,
     username: "root",
-    password: "Nihaoccj123"
+    password: "GKYT!ssj##"
   }
 };

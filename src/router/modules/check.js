@@ -1,131 +1,168 @@
 import frame from '@/views/layout/the-frame'
+// eslint-disable-next-line
+import { helper } from '@/utils'
 
 let check = [{
   path: '/registration',
-  name: '家属注册管理',
-  meta: { hidden: true },
+  name: 'registration-manage',
+  meta: { hidden: true, breadcrumbName: '家属注册管理' },
   children: [{
     path: '/registration/list',
-    name: '家属注册列表',
-    component: resolve => require(['@/views/check-registration/registration-list'], resolve)
+    name: 'registration-list',
+    meta: { permission: 'visit.family-registration.search', breadcrumbName: '家属注册列表' },
+    // component: resolve => require(['@/views/check-registration/registration-list'], resolve)
+    component: helper.loadView('check-registration/registration-list')
   }]
 }, {
   path: '/meeting',
-  name: '会见申请管理',
-  meta: { hidden: true },
+  name: 'meeting-manage',
+  meta: { hidden: true, breadcrumbName: '会见申请管理' },
   children: [{
     path: '/meeting/list',
-    name: '远程会见申请列表',
-    component: resolve => require(['@/views/check-meeting/meeting-list'], resolve)
+    name: 'meeting-list',
+    component: helper.loadView('check-meeting/meeting-list'),
+    // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '远程会见申请列表' }
   }, {
     path: '/meeting/adjust',
-    name: '远程会见申请调整',
-    component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve)
+    name: 'meeting-adjust',
+    component: helper.loadView('check-meeting/meeting-adjust'),
+    // component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve),
+    meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '远程会见申请调整' }
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)
+  }, {
+    path: '/visit/list',
+    name: 'visit-list',
+    component: helper.loadView('check-meeting/visit-list'),
+    // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
+    meta: { permission: 'visit.field-visit.search', breadcrumbName: '实地探监列表' }
   }]
 }, {
   path: '/meeting-report',
-  name: '会见统计',
-  meta: { hidden: true },
+  name: 'meeting-report-check',
+  meta: { hidden: true, breadcrumbName: '会见统计' },
   children: [{
     path: '/meeting-report/prison',
-    name: '监狱统计',
-    component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
+    name: 'prison-report-check',
+    component: helper.loadView('meeting-report/prison-report'),
+    // component: resolve => require(['@/views/meeting-report/prison-report'], resolve),
+    meta: { permission: 'visit.visit-statistic.prison.search', breadcrumbName: '监狱统计' }
   }, {
     path: '/meeting-report/prison-area',
-    name: '监区统计',
-    component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
+    name: 'prison-area-report-check',
+    component: helper.loadView('meeting-report/prison-area-report'),
+    // component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve),
+    meta: { permission: 'visit.visit-statistic.prison-area.search', breadcrumbName: '监区统计' }
   }, {
     path: '/meeting/records',
-    name: '远程免费会见记录',
-    component: resolve => require(['@/views/check-meeting/meeting-records'], resolve)
-  }]
-}, {
-  path: '/visit',
-  name: '实地探监管理',
-  meta: { hidden: true },
-  children: [{
-    path: '/visit/list',
-    name: '实地探监列表',
-    component: resolve => require(['@/views/check-visit/visit-list'], resolve)
+    name: 'meeting-records',
+    component: helper.loadView('check-meeting/meeting-records'),
+    // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
+    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '远程免费会见纪录' }
   }]
 }, {
   path: '/mailbox',
-  name: '监狱长信箱',
-  meta: { hidden: true },
+  name: 'mailbox',
+  meta: { hidden: true, breadcrumbName: '监狱长信箱' },
   children: [{
     path: '/mailbox/list',
-    name: '信件列表',
-    component: resolve => require(['@/views/check-mailbox/list'], resolve)
+    name: 'mailbox-list',
+    component: helper.loadView('check-mailbox/list'),
+    // component: resolve => require(['@/views/check-mailbox/list'], resolve),
+    meta: { permission: 'visit.warden-mail.search', breadcrumbName: '信件列表' }
   }]
 }, {
   path: '/prisoner',
-  name: '服刑人员信息管理',
-  meta: { hidden: true },
+  name: 'prisoner-manage',
+  meta: { hidden: true, breadcrumbName: '服刑人员信息管理' },
   children: [{
     path: '/prisoner/list',
-    name: '服刑人员列表',
-    component: resolve => require(['@/views/check-prisoner/prisoner-list'], resolve)
+    name: 'prisoner-list',
+    component: helper.loadView('check-prisoner/prisoner-list'),
+    // component: resolve => require(['@/views/check-prisoner/prisoner-list'], resolve),
+    meta: { permission: 'visit.prisoner.search', breadcrumbName: '服刑人员列表' }
   }]
 }, {
   path: '/family',
-  name: '家属信息管理',
-  meta: { hidden: true },
+  name: 'family-manage',
+  meta: { hidden: true, breadcrumbName: '家属信息管理' },
   children: [{
     path: '/family/list',
-    name: '家属列表',
-    component: resolve => require(['@/views/check-family/family-list'], resolve)
+    name: 'family-list',
+    component: helper.loadView('check-family/family-list'),
+    // component: resolve => require(['@/views/check-family/family-list'], resolve),
+    meta: { permission: 'visit.family.search', breadcrumbName: '家属列表' }
   },
   {
     path: '/family/detail/:id',
-    name: '家属账户详情',
-    component: resolve => require(['@/views/check-family/family-detail'], resolve)
+    name: 'family-detail',
+    component: helper.loadView('check-family/family-detail'),
+    // component: resolve => require(['@/views/check-family/family-detail'], resolve),
+    meta: { permission: 'visit.family.view', breadcrumbName: '家属账户详情' }
   }]
 }, {
   path: '/prisoner-data',
-  name: '数据管理',
-  meta: { hidden: true },
+  name: 'prisoner-data',
+  meta: { hidden: true, breadcrumbName: '数据管理' },
   children: [{
     path: '/prisoner-data/data-import',
-    name: '罪犯数据导入',
-    component: resolve => require(['@/views/check-prisoner-data/data-import'], resolve)
+    name: 'prisoner-data-import',
+    component: helper.loadView('check-prisoner-data/data-import'),
+    // component: resolve => require(['@/views/check-prisoner-data/data-import'], resolve),
+    meta: { permission: 'visit.data-import.prisoner.import', breadcrumbName: '罪犯数据导入' }
   }, {
     path: '/prisoner-data/term-change',
-    name: '刑期变动数据导入',
-    component: resolve => require(['@/views/check-prisoner-data/term-change'], resolve)
+    name: 'prisoner-term-change',
+    component: helper.loadView('check-prisoner-data/term-change'),
+    // component: resolve => require(['@/views/check-prisoner-data/term-change'], resolve),
+    meta: { permission: 'visit.data-import.sentence-change.import', breadcrumbName: '刑期变动数据导入' }
   }, {
     path: '/prisoner-data/reward-punishment',
-    name: '罪犯奖惩数据导入',
-    component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve)
+    name: 'prisoner-reward-punishment',
+    component: helper.loadView('check-prisoner-data/reward-punishment'),
+    // component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve),
+    meta: { permission: 'visit.data-import.reward-punishment.import', breadcrumbName: '罪犯奖惩数据导入' }
   }, {
     path: '/prisoner-data/pocket-money',
-    name: '零花钱数据导入',
-    component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve)
+    name: 'prisoner-pocket-money',
+    component: helper.loadView('check-prisoner-data/pocket-money'),
+    // component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve),
+    meta: { permission: 'visit.data-import.pocket-money.import', breadcrumbName: '零花钱数据导入' }
   }, {
     path: '/prisoner-data/inside-jails-costs',
-    name: '狱内消费情况数据导入',
-    component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve)
+    name: 'prisoner-inside-jails-costs',
+    component: helper.loadView('check-prisoner-data/inside-jails-costs'),
+    // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
+    meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '狱内消费情况数据导入' }
   }]
 }, {
   path: '/import-data-details',
-  name: '导入数据详情列表',
-  meta: { hidden: true },
+  name: 'import-data-details',
+  meta: { hidden: true, breadcrumbName: '导入数据详情列表' },
   children: [{
     path: '/import-data-details/prisoner-term-change/list',
-    name: '服刑人员刑期变动详情表',
-    component: resolve => require(['@/views/check-data-import-details/prisoner-term-change-list'], resolve)
+    name: 'prisoner-term-change-list',
+    component: helper.loadView('check-data-import-details/prisoner-term-change-list'),
+    // component: resolve => require(['@/views/check-data-import-details/prisoner-term-change-list'], resolve),
+    meta: { permission: 'visit.data-search.sentence-change.search', breadcrumbName: '服刑人员刑期变动详情表' }
   }, {
     path: '/import-data-details/prisoner-reward-punishment/list',
-    name: '服刑人员奖惩详情表',
-    component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve)
+    name: 'prisoner-reward-punishment-list',
+    component: helper.loadView('check-data-import-details/prisoner-reward-punishment-list'),
+    // component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve),
+    meta: { permission: 'visit.data-search.reward-punishment.search', breadcrumbName: '服刑人员奖惩详情表' }
   }, {
     path: '/import-data-details/prisoner-pocket-money/list',
-    name: '服刑人员零花钱详情表',
-    component: resolve => require(['@/views/check-data-import-details/prisoner-pocket-money-list'], resolve)
+    name: 'prisoner-pocket-money-list',
+    component: helper.loadView('check-data-import-details/prisoner-pocket-money-list'),
+    // component: resolve => require(['@/views/check-data-import-details/prisoner-pocket-money-list'], resolve),
+    meta: { permission: 'visit.data-search.pocket-money.search', breadcrumbName: '服刑人员零花钱详情表' }
   }, {
     path: '/import-data-details/inside-jails-costs/list',
-    name: '服刑人员狱内消费详情表',
-    component: resolve => require(['@/views/check-data-import-details/prisoner-inside-jails-costs-list'], resolve)
+    name: 'inside-jails-costs-list',
+    component: helper.loadView('check-data-import-details/prisoner-inside-jails-costs-list'),
+    // component: resolve => require(['@/views/check-data-import-details/prisoner-inside-jails-costs-list'], resolve),
+    meta: { permission: 'visit.data-search.prison-consumption.search', breadcrumbName: '服刑人员狱内消费详情表' }
   }]
 }]
 

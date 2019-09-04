@@ -5,11 +5,14 @@
         src="/static/images/user2-160x160.jpg"
         class="avatar circle">
       <div class="info">
+        <!-- v-if="Number(user.role)"  {{ user.role | role }}-->
         <span
           class="bold ellipsis"
-          v-if="Number(user.role)">{{ user.jailName }}</span>
+          >{{ publicUserInfo.tenantName }}</span>
         <div class="ellipsis">
-          <span class="bold1">{{ user.role | role }}</span>
+          <span
+            class="bold1"
+            v-if="user.role !== '-1'">{{ publicUserInfo.userRoles[0].roleName }}</span>
           <el-popover
             placement="bottom"
             width="260"
@@ -32,45 +35,43 @@
       class="first-level"
       unique-opened
       @select="handleSelect">
-      <template v-for="(item) in menu">
+      <template v-for="(item) in menus">
         <el-menu-item
-          v-if="!item.children"
+          v-if="!item.children.length"
           class="border-bottom"
           :popper-append-to-body="false"
           :key="item.path"
           :index="item.path">
-          <i :class="item.icon" />
-          <span slot="title">{{ item.title }}</span>
+          <i :class="['iconfont', `${item.icon}`]" />
+          <span slot="title">{{ item.name }}</span>
         </el-menu-item>
         <el-submenu
-          v-if="item.children"
+          v-if="item.children.length"
           :class="[
             'border-bottom',
             'second-level',
-            { 'is-active': item.children.indexOf(r => r.path === $route.path) > -1 }
           ]"
           :key="item.path"
           :index="item.path">
           <template slot="title">
-            <i :class="item.icon" />
-            <span>{{ item.title }}</span>
+            <i :class="['iconfont', `${item.icon}`]" />
+            <span>{{ item.name }}</span>
           </template>
           <template v-for="second in item.children">
             <el-menu-item
-              v-if="!second.hidden && !second.children"
+              v-if="!second.hidden && !second.children.length"
               :key="second.path"
-              :index="second.path">{{ second.title }}</el-menu-item>
+              :index="second.path">{{ second.name }}</el-menu-item>
             <el-submenu
               v-else
               :class="[
                 'border-bottom',
                 'third-level',
-                { 'is-active': second.children.indexOf(r => r.path === $route.path) > -1 }
               ]"
               :key="second.path"
               :index="second.path">
               <template slot="title">
-                <span>{{ second.title }}</span>
+                <span>{{ second.name }}</span>
               </template>
               <template v-for="third in second.children">
                 <el-menu-item
@@ -78,7 +79,7 @@
                   :key="third.path"
                   :index="third.path">
                   <!-- <i :class="third.icon" /> -->
-                  {{ third.title }}
+                  {{ third.name }}
                 </el-menu-item>
               </template>
             </el-submenu>
@@ -91,19 +92,21 @@
 
 <script>
 import { mapState } from 'vuex'
-import menu from './menu.js'
+// import menu from './menu.js'
 
 export default {
   data() {
     return {
-      menu: [],
+      // menu: [],
       prisonerAreas: []
     }
   },
   computed: {
     ...mapState({
       user: state => state.global.user,
-      isCollapsed: state => state.layout.isCollapsed
+      isCollapsed: state => state.layout.isCollapsed,
+      menus: state => state.account.menus,
+      publicUserInfo: state => state.account.publicUserInfo
     })
   },
   mounted() {
@@ -112,7 +115,7 @@ export default {
         return pre.concat([cur.prisonConfigName])
       }, [])
     }
-    this.menu = menu[Number(this.user.role)]
+    // this.menu = menu[Number(this.user.role)]
   },
   methods: {
     getActiveMenu() {

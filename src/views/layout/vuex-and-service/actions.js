@@ -1,5 +1,5 @@
 import api from './service'
-import { resetRouter } from '@/router/index'
+// import { resetRouter } from '@/router/index'
 
 export default {
   handleCollapse({ commit }, params) {
@@ -7,7 +7,7 @@ export default {
   },
   logout: ({ commit }) => {
     return api.logout().then(res => {
-      resetRouter()
+      // resetRouter()
       return res
     })
   }

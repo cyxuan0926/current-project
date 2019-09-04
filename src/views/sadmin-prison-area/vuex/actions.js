@@ -1,8 +1,13 @@
 import http from '@/service'
 
 export default {
-  getPrisonAreas({ commit }, params) {
-    http.getPrisonAreas(params).then(res => res && commit('getPrisonAreas', res))
+  getPrisonAreas({ commit }, { params, defaultMode = 'page' }) {
+    return http.getPrisonAreas(params).then(res => {
+      if (res && res.prisonConfigs && res.prisonConfigs.length) {
+        if (defaultMode === 'page') return commit('getPrisonAreas', res)
+        else if (defaultMode === 'all') return res.prisonConfigs
+      }
+    })
   },
   updatePrisonArea({ commit }, params) {
     return http.updatePrisonArea(params).then(res => res)
@@ -12,5 +17,8 @@ export default {
   },
   deletePrisonArea({ commit }, params) {
     return http.deletePrisonArea(params).then(res => res)
+  },
+  addPrisonArea({ commit }, params) {
+    return http.addPrisonArea(params).then(res => res)
   }
 }

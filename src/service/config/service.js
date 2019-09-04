@@ -2,12 +2,13 @@ import base from './base'
 import axios from 'axios'
 import store from '@/store'
 import handleResponse from './handleResponse'
+import publicHandleResponse from '@/service-public/request/handleResponse'
 import qs from 'qs'
 import urls from '../urls'
-const instance = axios.create(base)
+export const instance = axios.create(base)
 
 let state = ''
-
+// urls.apiPath
 export const agency = urls.apiPath
 
 // 获取异步请求的url
@@ -15,24 +16,43 @@ const getUrl = (url) => `${ agency }${ url }`
 // http request 拦截器
 instance.interceptors.request.use(
   config => {
+    /* eslint-disable camelcase */
+    const { access_token, token_type } = store.state.account.accountInfo
     store.commit('showLoading')
     state = history.state
+
+    if (access_token) {
+      config.headers.Authorization = `${ token_type } ${ access_token }`
+    }
+
     return config
   },
   error => Promise.reject(error)
 )
+// instance.interceptors.request.use(
+//   config => {
+//     store.commit('showLoading')
+//     state = history.state
+//     return config
+//   },
+//   error => Promise.reject(error)
+// )
 // http response 拦截器
 instance.interceptors.response.use(
   response => {
     store.commit('hideLoading')
     if (state && history.state.key !== state.key) return
+    // 这是公共服务的请求 做特别的响应处理
+    if (response.config && response.config.baseURL && response.config.baseURL === urls.publicApiHost) return publicHandleResponse(response)
     return handleResponse(response)
   },
   error => {
-    store.commit('setLoginState')
+    // store.commit('setLoginState')
     store.commit('hideLoading')
     if (error.response) {
       if (state && history.state.key !== state.key) return
+      // 公共服务错误码处理 不一定是错误
+      if (error.response.config && error.response.config.baseURL && error.response.config.baseURL === urls.publicApiHost) return publicHandleResponse(error.response)
       return handleResponse(error.response)
     }
     return handleResponse(error)
@@ -46,7 +66,7 @@ instance.interceptors.response.use(
  */
 export const get = (url, params = {}, config = {}) => {
   params.t = new Date().getTime()
-  return instance.get(getUrl(url), { params: params, config }).then(res => res)
+  return instance.get(getUrl(url), { params: params, ...config }).then(res => res)
 }
 /**
  * 封装post请求
@@ -110,6 +130,12 @@ export const patch = (url, data = {}, config = {}) =>
  */
 export const put = (url, data = {}) =>
   instance.put(getUrl(url), qs.stringify(data)).then(res => res)
+
+export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 /**
  * 封装delete请求
  * @param url
