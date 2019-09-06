@@ -45,7 +45,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['handleCollapse']),
+    ...mapActions(['handleCollapse', 'closeWebsocket']),
     handleNavigation(e) {
       this.$router.push(e)
     },
@@ -56,6 +56,7 @@ export default {
         type: 'warning'
       }).then(() => {
           logout()
+          this.closeWebsocket()
           this.$router.replace('/login')
       }).catch(() =>{})
     }

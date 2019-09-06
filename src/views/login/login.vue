@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setUser']),
-    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie']),
+    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie', 'getWebsocketResult']),
     ...mapActions('account', ['login']),
     handleLogin() {
       if (this.loading) return
@@ -109,6 +109,12 @@ export default {
             localStorage.setItem('menus', JSON.stringify(this.menus))
             this.setUser(Object.assign({}, this.user, {...helper.transitionRoleId(this.publicUserInfo.userRoles)}))
             localStorage.setItem('user', JSON.stringify(this.user))
+
+            const { role, jailId } = this.user
+            if (role === '1') {
+              this.getWebsocketResult(jailId)
+            }
+
             this.isRememberAccount
             ? this.storeAccount(username, password)
             : this.removeAccount()
