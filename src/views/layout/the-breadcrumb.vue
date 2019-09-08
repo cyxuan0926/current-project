@@ -26,9 +26,10 @@ export default {
     render(route) {
       if (!route || !route.path) return
       let breadcrumb = [], getBreadcrumb = (rt, arr) => {
-        if (!rt || !rt.name) return
-        const name = rt.meta.breadcrumbName || rt.name
-        arr.push({ name: name.replace(/[a-z]/g, ''), path: rt.path })
+        if (!rt) return
+        if (rt.meta.breadcrumbName) {
+          arr.push({ name: rt.meta.breadcrumbName, path: rt.path })
+        }
         getBreadcrumb(rt.parent, arr)
       }
       getBreadcrumb(route.matched[route.matched.length - 1], breadcrumb)
