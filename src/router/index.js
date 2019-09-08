@@ -7,6 +7,8 @@ import check from './modules/check'
 import common from './modules/common'
 import information from './modules/information'
 import superAdmin from './modules/superAdmin'
+import literatureFamily from './modules/literature-family'
+import literaturePrison from './modules/literature-prison'
 import md5 from 'js-md5'
 import lodash from 'lodash'
 
@@ -24,7 +26,8 @@ Vue.use(Router)
 const createRouter = () => new Router({
   mode: 'history',
   // routes: [...common, ...check, ...admin, ...information, ...superAdmin],
-  routes: common,
+  routes: [...common, ...literatureFamily, ...literaturePrison],
+  // routes: common,
   linkActiveClass: 'active-menu',
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -178,21 +181,22 @@ router.beforeEach((to, from, next) => {
     store.commit('setDynamicRoutes', routes)
     next({ ...to, replace: true })
   }
-  if (!to.meta.notLogin) {
-    let isLogin = localStorage.getItem('accountInfo')
-    if (!isLogin) {
-      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
-      return
-    }
-  }
+
+  // if (!to.meta.notLogin) {
+  //   let isLogin = localStorage.getItem('accountInfo')
+  //   if (!isLogin) {
+  //     next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+  //     return
+  //   }
+  // }
   if (to.meta.hidden) {
     next({ path: '/dashboard', replace: true })
     return
   }
-  if (permission.includes(to.meta.permission)) {
-    next()
-    return
-  }
+  // if (permission.includes(to.meta.permission)) {
+  //   next()
+  //   return
+  // }
   // if (!menusPermissions.includes(to.meta.permission) && !noAuthRoute.includes(to.path)) {
   //   next({ path: '/dashboard', replace: true })
   //   return
