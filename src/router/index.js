@@ -26,7 +26,7 @@ Vue.use(Router)
 const createRouter = () => new Router({
   mode: 'history',
   // routes: [...common, ...check, ...admin, ...information, ...superAdmin],
-  routes: [...common, ...literatureFamily, ...literaturePrison],
+  routes: [...common, literatureFamily, literaturePrison],
   // routes: common,
   linkActiveClass: 'active-menu',
   scrollBehavior(to, from, savedPosition) {

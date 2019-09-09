@@ -1,54 +1,54 @@
-import frame from '@/views/layout/the-frame'
 import { helper } from '@/utils'
 
 const routes = [
   {
-    path: '/literature-check-prison',
-    redirect: { path: '/literature-check-prison/literatures' },
+    path: '/prison/literature-check',
+    redirect: { path: '/prison/literature-check/literatures' },
     children: [{
-      path: '/literature-check-prison/literatures',
+      path: '/prison/literature-check/literatures',
+      props: { role: '5', jailId: 2 },
       meta: { permission: '', breadcrumbName: '作品审核' },
       component: helper.loadView('literature/literature-check/literature-check')
     }]
   },
   {
-    path: '/literature-management-prison',
-    redirect: { path: '/literature-management-prison/literatures' },
+    path: '/prison/literature-management',
+    redirect: { path: '/prison/literature-management/literatures' },
     children: [{
-      path: '/literature-management-prison/literatures',
+      path: '/prison/literature-management/literatures',
+      props: { role: '5', jailId: 2 },
       meta: { permission: '', breadcrumbName: '作品管理' },
       component: helper.loadView('literature/literature-management/literature-management')
     }]
   },
   {
-    path: '/literature-account-management-prison',
-    redirect: { path: '/literature-account-management-prison/accounts' },
+    path: '/prison/literature-account-management',
+    redirect: { path: '/prison/literature-account-management/accounts' },
     children: [{
-      path: '/literature-account-management-prison/accounts',
+      path: '/prison/literature-account-management/accounts',
+      props: { role: '5', jailId: 2 },
       meta: { permission: '', breadcrumbName: '账户管理' },
       component: helper.loadView('literature/literature-account-management/literature-account-management')
     }]
   },
   {
-    path: '/literature-my-prison',
-    redirect: { path: '/literature-my-prison/literatures' },
+    path: '/prison/literature-my',
+    redirect: { path: '/prison/literature-my/literatures' },
     children: [{
-      path: '/literature-my-prison/literatures',
+      path: '/prison/literature-my/literatures',
+      props: { role: '5', jailId: 2 },
       meta: { permission: '', breadcrumbName: '我的作品' },
       component: helper.loadView('literature/literature-my/literature-my')
-    }]
-  },
-  {
-    path: '/literature-sensitive-characters-prison',
-    redirect: { path: '/literature-sensitive-characters-prison/characters' },
-    children: [{
-      path: '/literature-sensitive-characters-prison/characters',
-      meta: { permission: '', breadcrumbName: '敏感字符集' },
-      component: helper.loadView('literature/literature-sensitive-characters/literature-sensitive-characters')
     }]
   }
 ]
 
-routes.forEach(item => (item.component = frame))
+// routes.forEach(item => (item.component = helper.loadView('layout/the-frame')))
+routes.forEach(item => (item.component = helper.loadView('common/router-view')))
 
-export default routes
+export default {
+  path: '/prison/literature',
+  redirect: { path: '/prison/literature-check/literatures' },
+  component: helper.loadView('layout/the-frame'),
+  children: routes
+}

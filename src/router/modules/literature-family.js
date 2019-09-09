@@ -1,54 +1,54 @@
-import frame from '@/views/layout/the-frame'
 import { helper } from '@/utils'
 
 const routes = [
   {
-    path: '/literature-check',
-    redirect: { path: '/literature-check/literatures' },
+    path: '/family/literature-check',
+    redirect: { path: '/family/literature-check/literatures' },
     children: [{
-      path: '/literature-check/literatures',
+      path: '/family/literature-check/literatures',
+      props: { role: '6' },
       meta: { permission: '', breadcrumbName: '作品审核' },
       component: helper.loadView('literature/literature-check/literature-check')
     }]
   },
   {
-    path: '/literature-management',
-    redirect: { path: '/literature-management/literatures' },
+    path: '/family/literature-management',
+    redirect: { path: '/family/literature-management/literatures' },
     children: [{
-      path: '/literature-management/literatures',
+      path: '/family/literature-management/literatures',
+      props: { role: '6' },
       meta: { permission: '', breadcrumbName: '作品管理' },
       component: helper.loadView('literature/literature-management/literature-management')
     }]
   },
   {
-    path: '/literature-account-management',
-    redirect: { path: '/literature-account-management/accounts' },
+    path: '/family/literature-account-management',
+    redirect: { path: '/family/literature-account-management/accounts' },
     children: [{
-      path: '/literature-account-management/accounts',
+      path: '/family/literature-account-management/accounts',
+      props: { role: '6' },
       meta: { permission: '', breadcrumbName: '账户管理' },
       component: helper.loadView('literature/literature-account-management/literature-account-management')
     }]
   },
   {
-    path: '/literature-my',
-    redirect: { path: '/literature-my/literatures' },
+    path: '/family/literature-sensitive-characters',
+    redirect: { path: '/family/literature-sensitive-characters/characters' },
     children: [{
-      path: '/literature-my/literatures',
-      meta: { permission: '', breadcrumbName: '我的作品' },
-      component: helper.loadView('literature/literature-my/literature-my')
-    }]
-  },
-  {
-    path: '/literature-sensitive-characters',
-    redirect: { path: '/literature-sensitive-characters/characters' },
-    children: [{
-      path: '/literature-sensitive-characters/characters',
+      path: '/family/literature-sensitive-characters/characters',
+      props: { role: '6' },
       meta: { permission: '', breadcrumbName: '敏感字符集' },
       component: helper.loadView('literature/literature-sensitive-characters/literature-sensitive-characters')
     }]
   }
 ]
 
-routes.forEach(item => (item.component = frame))
+// routes.forEach(item => (item.component = helper.loadView('layout/the-frame')))
+routes.forEach(item => (item.component = helper.loadView('common/router-view')))
 
-export default routes
+export default {
+  path: '/family/literature',
+  redirect: { path: '/family/literature-check/literatures' },
+  component: helper.loadView('layout/the-frame'),
+  children: routes
+}
