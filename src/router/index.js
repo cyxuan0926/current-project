@@ -25,7 +25,6 @@ Vue.use(Router)
 
 const createRouter = () => new Router({
   mode: 'history',
-  // routes: [...common, ...check, ...admin, ...information, ...superAdmin],
   routes: [...common, literatureFamily, literaturePrison],
   // routes: common,
   linkActiveClass: 'active-menu',
@@ -182,21 +181,21 @@ router.beforeEach((to, from, next) => {
     next({ ...to, replace: true })
   }
 
-  // if (!to.meta.notLogin) {
-  //   let isLogin = localStorage.getItem('accountInfo')
-  //   if (!isLogin) {
-  //     next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
-  //     return
-  //   }
-  // }
+  if (!to.meta.notLogin) {
+    let isLogin = localStorage.getItem('accountInfo')
+    if (!isLogin) {
+      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+      return
+    }
+  }
   if (to.meta.hidden) {
     next({ path: '/dashboard', replace: true })
     return
   }
-  // if (permission.includes(to.meta.permission)) {
-  //   next()
-  //   return
-  // }
+  if (permission.includes(to.meta.permission)) {
+    next()
+    return
+  }
   // if (!menusPermissions.includes(to.meta.permission) && !noAuthRoute.includes(to.path)) {
   //   next({ path: '/dashboard', replace: true })
   //   return

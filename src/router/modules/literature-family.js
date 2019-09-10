@@ -19,6 +19,11 @@ const routes = [
       props: { role: '6' },
       meta: { permission: '', breadcrumbName: '作品管理' },
       component: helper.loadView('literature/literature-management/literature-management')
+    }, {
+      // TODO：临时方案，等公共服务添加角色之后，这个路由要往上移动一级
+      path: '/family/literature-management/literature-preview/:id',
+      meta: { breadcrumbName: '作品详情' },
+      component: helper.loadView('literature/literature-preview/literature-preview')
     }]
   },
   {
