@@ -12,8 +12,8 @@ let state = {
   //   loading: false,
   //   loged: false
   // }
-  // 需要缓存的组件名列表
-  componentsKeepAlive: ['literatureManagement']
+  // 需要缓存的组件名列表（后期如需扩展，可动态修改该列表）
+  componentsKeepAlive: ['LiteratureManagement', 'LiteratureCheck']
 }
 
 export default {

@@ -7,10 +7,48 @@
       <span>更新于：{{ literatureDetail.updatedAt }}</span>
     </div>
     <p class="literature-content">{{ literatureDetail.content }}</p>
-    <p v-if="literatureDetail.shelfReason">
-      下架原因：{{ literatureDetail.shelfReason }}
-    </p>
+
+    <template v-if="!isCheckNeeded">
+      <p v-if="literatureDetail.rejectReason" class="reason">
+        审核不通过原因：{{ literatureDetail.rejectReason }}
+      </p>
+      <p v-if="literatureDetail.shelfReason" class="reason">
+        下架原因：{{ literatureDetail.shelfReason }}
+      </p>
+    </template>
+
+    <el-form
+      ref="rejectForm"
+      v-if="isCheckNeeded"
+      :model="rejectForm"
+      :rules="rules"
+    >
+      <el-form-item prop="checkResult">
+        <el-select v-model="rejectForm.checkResult">
+          <el-option label="通过" value="pass"></el-option>
+          <el-option label="不通过" value="reject"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        v-if="rejectForm.checkResult === 'reject'"
+        prop="rejectReason"
+      >
+        <el-input
+          v-model="rejectForm.rejectReason"
+          :autosize="{ minRows: 6 }"
+          type="textarea"
+          placeholder="请填写不通过原因"
+        />
+      </el-form-item>
+      <p v-if="literatureDetail.shelfReason" class="reason">
+        下架原因：{{ literatureDetail.shelfReason }}
+      </p>
+    </el-form>
+
     <div class="operate">
+      <el-button v-if="isCheckNeeded" type="primary" @click="onConfirm">
+        确定
+      </el-button>
       <el-button type="primary" @click="back">返回</el-button>
     </div>
   </div>
@@ -19,14 +57,69 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 export default {
+  data() {
+    return {
+      rejectForm: { rejectReason: '', checkResult: 'pass' },
+      rules: {
+        rejectReason: [
+          { required: true, message: '请填写不通过原因', trigger: 'blur' }
+        ]
+      },
+    }
+  },
   computed: {
-    ...mapState('literature', ['literatureDetail'])
+    ...mapState('literature', ['literatureDetail']),
+    // 是否需要进行审核（只有待审核的作品需要进行审核）
+    isCheckNeeded() {
+      return this.$route.query.status === 'publish'
+    }
   },
   created() {
-    this.getLiteratureDetail({ id: this.$route.params.id })
+    this.initStatus()
   },
   methods: {
-    ...mapActions('literature', ['getLiteratureDetail']),
+    ...mapActions('literature', ['getLiteratureDetail', 'passLiterature', 'rejectLiterature']),
+    async initStatus() {
+      await this.getLiteratureDetail({ id: this.$route.params.id })
+
+      if (this.literatureDetail.rejectReason) {
+        this.rejectForm.checkResult = 'reject'
+        this.rejectForm.rejectReason = this.literatureDetail.rejectReason
+      }
+    },
+    onConfirm() {
+      if (this.rejectForm.checkResult === 'pass') {
+        this.onConfirmPass()
+      } else {
+        this.onConfirmReject()
+      }
+    },
+    async onConfirmPass() {
+      try {
+        await this.$confirm("确认通过审核吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+
+        await this.passLiterature({ id: this.$route.params.id })
+        this.back()
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    onConfirmReject() {
+      this.$refs.rejectForm.validate(async valid => {
+        if (valid) {
+          const isSuccess = await this.rejectLiterature({
+            id: this.$route.params.id,
+            rejectReason: this.rejectForm.rejectReason
+          })
+
+          isSuccess && this.back()
+        }
+      })
+    },
     back() {
       this.$router.back()
     }
@@ -56,13 +149,21 @@ export default {
   }
 
   .literature-content {
-    margin-bottom: 30px;
+    margin-bottom: 62px;
     font-size: 13px;
     line-height: 18px;
   }
 
+  p.reason {
+    margin-bottom: 20px;
+  }
+
+  .el-form {
+    width: 260px;
+  }
+
   .operate {
-    text-align: right;
+    text-align: left;
   }
 }
 </style>

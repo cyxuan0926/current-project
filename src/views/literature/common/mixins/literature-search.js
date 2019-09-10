@@ -32,7 +32,8 @@ export default {
           start: 'publishStartDate',
           end: 'publishEndDate'
         },
-        title: { type: 'input', label: '作品标题' }
+        title: { type: 'input', label: '作品标题' },
+        penName: { type: 'input', label: '笔名' }
       },
       /**
        * 作品状态
@@ -50,22 +51,8 @@ export default {
   },
   watch: {
     activeTabName(val) {
-      switch (val) {
-        // 审核通过的作品（上架状态）
-        case 'ONLINE':
-          this.literatureStatus = 'pass'
-          break
-
-        // 已下架的作品
-        case 'OFFLINE':
-          this.literatureStatus = 'shelf'
-          break
-
-        default:
-          this.literatureStatus = ''
-          break
-      }
-
+      console.log('mixin activeTabName', val)
+      this.literatureStatus = val
       this.pagination.page = 1
       this.getTableData()
     }

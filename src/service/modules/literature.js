@@ -9,6 +9,14 @@ export default {
   getLiteratureDetail: params => {
     return service.get('/article/findDetail', params)
   },
+  // 审核通过作品
+  passLiterature: params => {
+    return service.post('/article/passAricle', params)
+  },
+  // 审核拒绝作品
+  rejectLiterature: params => {
+    return service.post('/article/rejectAricle', params)
+  },
   // 下架作品
   offlineLiterature: params => {
     return service.post('/article/shelfAricle', params)

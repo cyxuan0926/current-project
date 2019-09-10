@@ -3,8 +3,8 @@
     <m-search ref="search" :items="searchItems" @search="onSearch" clearable />
 
     <el-tabs v-model="activeTabName" type="card">
-      <el-tab-pane name="ONLINE" label="作品管理"/>
-      <el-tab-pane name="OFFLINE" label="已下架作品"/>
+      <el-tab-pane name="pass" label="作品管理"/>
+      <el-tab-pane name="shelf" label="已下架作品"/>
     </el-tabs>
 
     <m-table :data="literatures" :cols="tableCols" class="mini-td-padding">
@@ -66,29 +66,20 @@ import { mapActions, mapState } from 'vuex';
 import literatureSearchMixin from '../common/mixins/literature-search'
 
 export default {
-  name: 'literatureManagement',
+  name: 'LiteratureManagement',
   mixins: [literatureSearchMixin],
   data() {
     return {
       offlineDialogVisible: false,
-      activeTabName: 'ONLINE',
+      activeTabName: 'pass',
       searchItems: {
         articleType: {
           type: 'select',
           label: '作品类型',
           options: [
-            {
-              articleType: '',
-              articleTypeName: '全部'
-            },
-            {
-              articleType: 1,
-              articleTypeName: '互动文章'
-            },
-            {
-              articleType: 2,
-              articleTypeName: '连载小说'
-            }
+            { articleType: '', articleTypeName: '全部' },
+            { articleType: 1, articleTypeName: '互动文章' },
+            { articleType: 2, articleTypeName: '连载小说' }
           ],
           belong: { value: 'articleType', label: 'articleTypeName' },
           value: ''
@@ -102,39 +93,14 @@ export default {
         penName: { type: 'input', label: '笔名' }
       },
       tableCols: [
-        {
-          type: 'index',
-          label: '序号'
-        },
-        {
-          slotName: 'title',
-          label: '作品标题'
-        },
-        {
-          prop: 'articleTypeName',
-          label: '作品类型'
-        },
-        {
-          prop: 'penName',
-          label: '作者笔名'
-        },
-        {
-          prop: 'publishAt',
-          width: '126px',
-          label: '发布时间'
-        },
-        {
-          prop: 'clientNum',
-          label: '点击数量'
-        },
-        {
-          prop: 'praiseNum',
-          label: '点赞数量'
-        },
-        {
-          prop: 'collectNum',
-          label: '收藏数量'
-        },
+        { type: 'index', label: '序号' },
+        { slotName: 'title', label: '作品标题' },
+        { prop: 'articleTypeName', label: '作品类型' },
+        { prop: 'penName', label: '作者笔名' },
+        { prop: 'publishAt', width: '126px', label: '发布时间' },
+        { prop: 'clientNum', label: '点击数量' },
+        { prop: 'praiseNum', label: '点赞数量' },
+        { prop: 'collectNum', label: '收藏数量' },
         // {
         //   prop: '',
         //   label: '打赏金额（元）'
@@ -143,18 +109,10 @@ export default {
         //   prop: '',
         //   label: '是否置顶'
         // },
-        {
-          prop: 'finishName',
-          label: '是否完结'
-        },
-        {
-          slotName: 'operate',
-          label: '操作',
-        },
+        { prop: 'finishName', label: '是否完结' },
+        { slotName: 'operate', label: '操作', },
       ],
-      offlineForm: {
-        offlineReason: ''
-      },
+      offlineForm: { offlineReason: '' },
       rules: {
         offlineReason: [
           { required: true, message: '请填写下架原因', trigger: 'blur' }
@@ -173,7 +131,7 @@ export default {
   methods: {
     ...mapActions('literature', ['getFamilyLiteratures', 'offlineLiterature']),
     initSearchStatus() {
-      // 家属作品审核人员，默认查看家属发布的已审核通过（上架状态）文章
+      // 家属作品审核人员，默认查看家属发布的已审核通过（上架状态）作品
       if (this.isFamilyLiteratureChecker) {
         this.literatureStatus = 'pass'
         this.publisher = 1
@@ -220,7 +178,7 @@ export default {
     },
     async getTableData () {
       const params = {
-        type: this.publisher,
+        // type: this.publisher,
         status: this.literatureStatus,
         ...this.filter,
         ...this.pagination

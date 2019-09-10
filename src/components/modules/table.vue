@@ -1,9 +1,14 @@
 <template>
-  <el-table :data="data" class="com-table" border>
+  <el-table
+    :data="data"
+    @selection-change="selectionChange"
+    class="com-table"
+    border
+  >
     <template v-for="(col, i) in cols">
       <el-table-column
         v-if="col.slotName"
-        :key="i"
+        :key="i + '1'"
         :type="col.type"
         :prop="col.prop"
         :label="col.label"
@@ -17,7 +22,7 @@
       </el-table-column>
       <el-table-column
         v-else
-        :key="i"
+        :key="i + '2'"
         :type="col.type"
         :prop="col.prop"
         :label="col.label"
@@ -37,6 +42,10 @@ export default {
     },
     cols: {
       type: Array
+    },
+    'selection-change': {
+      type: Function,
+      default: () => () => {}
     }
   }
 }

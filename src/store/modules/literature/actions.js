@@ -21,6 +21,26 @@ export default {
       throw err
     }
   },
+  async passLiterature({ dispatch }, params) {
+    try {
+      const isSuccess = await literatureApi.passLiterature(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async rejectLiterature({ dispatch }, params) {
+    try {
+      const isSuccess = await literatureApi.rejectLiterature(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async offlineLiterature({ dispatch }, params) {
     try {
       const isSuccess = await literatureApi.offlineLiterature(params)
