@@ -62,7 +62,8 @@ export default {
       rejectForm: { rejectReason: '', checkResult: 'pass' },
       rules: {
         rejectReason: [
-          { required: true, message: '请填写不通过原因', trigger: 'blur' }
+          { required: true, message: '请填写不通过原因', trigger: 'blur' },
+          { max: 200, message: '不通过原因不能超过 200 个字符', trigger: 'blur' }
         ]
       },
     }

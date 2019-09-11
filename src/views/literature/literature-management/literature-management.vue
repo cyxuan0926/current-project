@@ -93,30 +93,11 @@ export default {
         title: { type: 'input', label: '作品标题' },
         penName: { type: 'input', label: '笔名' }
       },
-      tableCols: [
-        { type: 'index', label: '序号' },
-        { slotName: 'title', label: '作品标题' },
-        { prop: 'articleTypeName', label: '作品类型' },
-        { prop: 'penName', label: '作者笔名' },
-        { prop: 'publishAt', width: '126px', label: '发布时间' },
-        { prop: 'clientNum', label: '点击数量' },
-        { prop: 'praiseNum', label: '点赞数量' },
-        { prop: 'collectNum', label: '收藏数量' },
-        // {
-        //   prop: '',
-        //   label: '打赏金额（元）'
-        // },
-        // {
-        //   prop: '',
-        //   label: '是否置顶'
-        // },
-        { prop: 'finishName', label: '是否完结' },
-        { slotName: 'operate', label: '操作', },
-      ],
       offlineForm: { offlineReason: '' },
       rules: {
         offlineReason: [
-          { required: true, message: '请填写下架原因', trigger: 'blur' }
+          { required: true, message: '请填写下架原因', trigger: 'blur' },
+          { max: 200, message: '下架原因不能超过 200 个字符', trigger: 'blur' }
         ]
       },
       // 当前点击下架的文章
@@ -127,7 +108,37 @@ export default {
     ...mapState('literature', ['literatures']),
     isFamilyLiteratureChecker() {
       return parseInt(this.role) === 6
-    }
+    },
+    tableCols() {
+      const cols = {
+        baseCols: [
+          { type: 'index', label: '序号' },
+          { slotName: 'title', label: '作品标题' },
+          { prop: 'articleTypeName', label: '作品类型' },
+          { prop: 'penName', label: '作者笔名' },
+          { prop: 'publishAt', width: '124px', label: '发布时间' },
+          { prop: 'clientNum', label: '点击数量' },
+          { prop: 'praiseNum', label: '点赞数量' },
+          { prop: 'collectNum', label: '收藏数量' },
+          // {
+          //   prop: '',
+          //   label: '打赏金额（元）'
+          // },
+          // {
+          //   prop: '',
+          //   label: '是否置顶'
+          // },
+          { prop: 'finishName', label: '是否完结' }
+        ],
+        passCols: [{ slotName: 'operate', label: '操作', }],
+        shelfCols: [
+          { prop: 'shelfAt', label: '下架时间', width: '124px' },
+          { prop: 'shelfReason', label: '下架原因', showOverflowTooltip: true }
+        ]
+      }
+
+      return cols.baseCols.concat(cols[this.activeTabName + 'Cols'] || [])
+    },
   },
   methods: {
     ...mapActions('literature', ['getFamilyLiteratures', 'offlineLiterature']),
