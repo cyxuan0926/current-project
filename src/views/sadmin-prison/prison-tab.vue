@@ -2,6 +2,11 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <m-excel-download
+      v-if="activeName === 'prison'"
+      path="/download/exportJails" 
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
@@ -39,7 +44,8 @@ export default {
         title: { type: 'input', label: '监狱名称', miss: false },
         name: { type: 'input', label: '租户名称', miss: true }
       },
-      total: 0
+      total: 0,
+      filter: {}
     }
   },
   mounted() {

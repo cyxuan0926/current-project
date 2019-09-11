@@ -11,6 +11,10 @@ import monthRangeSelector from './modules/month-range-selector'
 import monthRangePicker from './modules/month-range-picker'
 import imgViewer from './modules/img-viewer'
 import audio from './modules/audio'
+import excelExport from './modules/excel-export'
+import excelDownload from './modules/excel-download'
+import table from './modules/table'
+import excelUpload from './modules/excel-upload'
 export default {
   audio,
   Form,
@@ -24,5 +28,9 @@ export default {
   tinymce,
   UploadAudio,
   UploadImg,
-  UploadVideo
+  UploadVideo,
+  excelExport,
+  excelDownload,
+  table,
+  excelUpload
 }

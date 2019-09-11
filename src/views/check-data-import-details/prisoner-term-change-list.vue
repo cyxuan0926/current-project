@@ -6,19 +6,14 @@
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch"/>
-    <el-col :span="24">
-      <el-tabs
-        type="card"
-        value="first">
-        <el-tab-pane
-          label="刑期变动详情表"
-          name="first"/>
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         border
         :data="prisonTerms.contents"
         style="width: 100%"
-        stripe>
+      >
         <el-table-column
           label="罪犯姓名"
           min-width="65"
@@ -45,7 +40,7 @@
         </el-table-column>
         <el-table-column
           label="变动后刑期止日"
-          min-width="110"
+          min-width="120px"
           prop="termFinish" />  
         <el-table-column
           label="数据导入人员"
@@ -73,7 +68,7 @@ export default {
       searchItems: {
         name: { type: 'input', label: '罪犯姓名' },
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        operateName: { type: 'input', label: '数据导入人员姓名' },
+        operateName: { type: 'input', label: '数据导入人员姓名', noPlaceholder: true },
         time: { type: 'dateRange', start: 'start', end: 'end', unlinkPanels: true }
       }
     }

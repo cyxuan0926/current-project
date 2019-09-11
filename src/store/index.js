@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import account from './modules/account'
 import quillEditor from './modules/quill-editor'
+import literature from './modules/literature'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
 import adminFeedback from '@/views/sadmin-feedback/vuex'
@@ -89,6 +90,7 @@ export default new Vuex.Store({
     account,
     jail,
     layout,
+    literature,
     login,
     global,
     trade

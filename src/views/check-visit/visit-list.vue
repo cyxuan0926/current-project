@@ -14,9 +14,6 @@
         <el-tab-pane
           label="实地探监"
           name="first" />
-        <!-- <el-tab-pane
-          label="未授权"
-          name="PENDING" /> -->
         <el-tab-pane
           label="已取消"
           name="CANCELED" />
@@ -24,7 +21,6 @@
       <el-table
         :data="visits.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

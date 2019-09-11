@@ -1,0 +1,153 @@
+$form-height-base: 36px !default;
+
+/* Element Chalk Variables */
+
+/* Colors
+-------------------------- */
+$--color-text-regular: #606266 !default;
+
+/* Font
+-------------------------- */
+$--font-size-base: 12px !default;
+$--font-size-small: 12px !default;
+$--font-size-medium: 14px !default;
+$--font-size-large: 16px !default;
+
+/* Border
+-------------------------- */
+// $--border-radius-base: 2px !default;
+// $--border-radius-small: 2px !default;
+
+
+/* Input
+-------------------------- */
+$--input-width: 146px !default;
+$--input-height: $form-height-base !default;
+
+/* Checkbox
+-------------------------- */
+$--checkbox-font-size: $--font-size-base !default;
+
+/* Radio
+-------------------------- */
+$--radio-font-size: $--font-size-base !default;
+
+/* Select
+-------------------------- */
+$--select-input-font-size: $--font-size-base !default;
+
+/* Button
+-------------------------- */
+$--button-font-size: $--font-size-base !default;
+$--button-padding-vertical: 11px !default;
+$--button-padding-horizontal: 12px !default;
+
+/* Message
+-------------------------- */
+$--message-min-width: 300px !default;
+
+/* Message Box
+-------------------------- */
+$--msgbox-font-size: $--font-size-base !default;
+
+/* Table
+-------------------------- */
+$--table-border-color: #e6e6e6 !default;
+// $--table-text-color: $--color-text-regular !default;
+$--table-header-color: $--color-text-regular !default;
+// $--table-row-hover-background: $--background-color-base !default;
+// $--table-current-row-background: $--color-primary-light-9 !default;
+$--table-header-background: #f2f2f2 !default;
+// $--table-footer-background: $--color-text-placeholder !default;
+
+/* Dialog
+-------------------------- */
+$--dialog-font-size: $--font-size-base !default;
+$--dialog-title-font-size: $--font-size-medium !default;
+
+/* Pagination
+-------------------------- */
+$--pagination-font-size: $--font-size-base !default;
+
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
+#body {
+  // .el-main {
+  //   margin: 15px;
+  // }
+  
+  .el-menu-item,
+  .aside-top .bold1 {
+    font-size: 12px;
+  }
+
+  .el-form-item__label,
+  .el-message__content,
+  .el-submenu__title,
+  .el-tabs__item,
+  .el-table {
+    font-size: $--font-size-base;
+  }
+
+  .el-tabs__header {
+    margin-bottom: 20px;
+  }
+
+  .el-tabs__item {
+    height: $form-height-base;
+    line-height: $form-height-base;
+  }
+
+  .el-table {
+    th {
+      font-weight: normal;
+    }
+
+    th, td {
+      padding: 9px 0;
+    }
+    
+    // .cell {
+    //   padding: 0 12px;
+    // }
+
+    &.mini-td-padding {
+      td {
+        padding: 4px 0;
+      }
+    }
+  }
+
+  .el-input__icon {
+    line-height: 28px;
+  }
+
+  // .el-input {
+  //   width: $--input-width;
+  // }
+
+  .el-date-editor {
+    
+    .el-range__icon,
+    .el-range-separator {
+      line-height: 28px;
+    }
+  }
+
+  // .el-input--mini .el-input__inner {
+  //   height: 26px;
+  //   line-height: 26px;
+  // }
+
+  .el-form-item__content {
+    font-size: $--font-size-base;
+  }
+
+  .button-shift-down {
+    margin-bottom: -32px;
+  }
+}

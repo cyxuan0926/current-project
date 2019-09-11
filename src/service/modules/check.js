@@ -5,6 +5,10 @@ export default {
   getRegistrations: params => {
     return service.get('/registrations/page', params).then(res => res && res.data)
   },
+  // 家属注册管理-列表-所有监狱
+  getRegistrationsAll: params => {
+    return service.get('/registrations/findPage', params).then(res => res && res.data)
+  },
   // 家属注册管理-授权
   authorizeRegistrations: params => {
     return service.post('/registrations/authorize', params).then(res => res && res.code === 200)
@@ -12,6 +16,10 @@ export default {
   // 家属会见申请-列表
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
+  },
+  // 家属会见申请-列表-所有监狱
+  getMeetingsAll: params => {
+    return service.get('/meetings/findPage', params).then(res => res && res.data)
   },
   // 家属会见申请-家属详情
   getMeetingsFamilyDetail: params => {
@@ -68,6 +76,10 @@ export default {
   // 服刑人员信息管理-列表
   getPrisoners: params => {
     return service.get('/prisoners/page', params).then(res => res && res.data)
+  },
+  // 服刑人员信息管理-列表-所有监狱
+  getPrisonersAll: params => {
+    return service.get('/prisoners/findPage', params).then(res => res && res.data)
   },
   // 服刑人员信息管理-修改会见次数
   updateAccessTime: params => {
@@ -140,17 +152,29 @@ export default {
   importSuccessfulAnalysisExcel: params => {
     return service.post(params.url, { path: params.path }).then(res => res && Object.assign(res.data, { type: params.type }))
   },
+  // 数据管理 - 下载罪犯信息导入Excel模板
+  // downloadPrisonTemplate: params => {
+  //   return service.get('/download/downloadfile', params, { responseType: 'blob' }).then(res => res.status === 200 && res)
+  // },
   //  导入数据详情列表-服刑人员零花钱管理列表
   getPrisonersPocketMoney: params => {
     return service.get('/pocket_money/page', params).then(res => res && res.data)
   },
   // 服刑人员信息管理 - 监区配置
   getPrisonConfigs: params => {
-    return service.get('/prison_config/getPrisonConfigs', params).then(res => res)
+    return service.get('/prison_config/getPrisonConfigs', params).then(res => res && res.data)
   },
   // 服刑人员信息管理 - 更换监区
   changePrisonArea: params => {
     return service.post('/prisoners/changePrisonArea', params).then(res => res)
+  },
+  // 服刑人员信息管理 - 删除罪犯
+  deletePrisoners: params => {
+    return service.post('/prisoners/deletePrison', params).then(res => res && res.code === 200)
+  },
+  // 服刑人员信息管理 - 新增罪犯
+  addPrionser: params => {
+    return service.postObj('/prisoners/addPrison', params).then(res => res && res.code === 200)
   },
   // 导入数据详情列表-服刑人员狱内消费情况列表
   getPrisonersInsideJailsCosts: params => {

@@ -3,7 +3,7 @@
     class="row-container"
     :gutter="0">
     <el-col :span="24">
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 20px;">
         <label class="el-form-item__label">调整日期</label>
         <el-date-picker
           v-model="adjustDate"
@@ -308,5 +308,8 @@ export default {
 }
 .adjustTable .is-choosed, .occupied.is-choosed, .occupied.is-choosed-occupied{
   background: #C0C4CC;
+}
+.el-date-editor.el-input {
+  width: 160px;
 }
 </style>

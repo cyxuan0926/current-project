@@ -14,18 +14,12 @@
         :loading="downloading"
         @click="handleDownload">下载</el-button>
     </m-search>
-    <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="意见反馈"
-          name="first" />
-      </el-tabs>
+    <el-col
+      :span="24"
+      class="el-col__no-tabs__margin">
       <el-table
         :data="feedbacks.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -57,9 +51,7 @@
             {{ scope.row.isReply | isTrue }}
           </template>
         </el-table-column>
-        <el-table-column
-          align="center"
-          label="操作">
+        <el-table-column label="操作" width="250px">
           <template slot-scope="scope">
             <el-button
               v-if="!scope.row.isReply"
@@ -77,7 +69,6 @@
               type="primary">
               已答复
             </el-button>
-            <br>
             <el-button
               size="mini"
               class="button-column"
@@ -85,7 +76,6 @@
               type="danger">
               删除
             </el-button>
-            <br>
             <el-button
               size="mini"
               type="text"
@@ -160,6 +150,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { helper } from '@/utils'
 export default {
   data() {
     return {
@@ -192,7 +183,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail']),
+    ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail', 'downloadFeedbacks']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -203,20 +194,28 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    handleDownload(e) {
+    async handleDownload(e) {
       this.downloading = true
-      let link = document.createElement('a'), params = ''
-      Object.keys(this.filter).forEach((key, index) => {
-        params = `${ params }${ index === 0 ? '?' : '&' }${ key }=${ this.filter[key] }`
-      })
-      link.href = `${ this.$urls.apiHost }${ this.$urls.apiPath }/feedbacks/download${ params }`
+      // 带token的下载Excel
+      let link = document.createElement('a'), params = Object.assign({}, this.filter),
+        res = await this.downloadFeedbacks(params),
+        url = helper.createObjectURL(res),
+        dateNow = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss'),
+        fileName = `家属反馈意见${dateNow}`
+      link.href = url
       link.id = 'linkId'
+      link.setAttribute('download', `${fileName}.xls`)
       document.body.appendChild(link)
       document.getElementById('linkId').click()
       document.body.removeChild(document.getElementById('linkId'))
       setTimeout(() => {
         this.downloading = false
       }, 300)
+      // 直接a标签的写法 家属反馈意见20190828225650
+      // Object.keys(this.filter).forEach((key, index) => {
+      //   params = `${ params }${ index === 0 ? '?' : '&' }${ key }=${ this.filter[key] }`
+      // })
+      // link.href = `${ this.$urls.apiHost }${ this.$urls.apiPath }/feedbacks/download${ params }`
     },
     handleReply(e) {
       this.feedback = e

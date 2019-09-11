@@ -65,9 +65,9 @@ export default {
     return service.get('/feedbacks/page', params).then(res => res && res.data)
   },
   // 意见反馈-下载
-  // downloadFeedbacks: params => {
-  //   return service.get('/feedbacks/download', params, { responseType: 'blob' }).then(res => res)
-  // },
+  downloadFeedbacks: params => {
+    return service.get('/feedbacks/download', params, { responseType: 'blob' }).then(res => res)
+  },
   // 广告管理-列表
   getAdvertisements: params => {
     return service.get('/advertisements/page', params).then(res => res && res.data)
@@ -147,5 +147,9 @@ export default {
   // 监区管理-删除
   deletePrisonArea: params => {
     return service.post('/prison_config/delete', params).then(res => res && res.code === 200)
+  },
+  // 监区管理-新增
+  addPrisonArea: params => {
+    return service.post('/prison_config/add', params).then(res => res && res.code === 200)
   }
 }

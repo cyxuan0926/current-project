@@ -127,5 +127,11 @@ export default {
       rule.flag[rule.prop] = true
       callback()
     }
+  },
+  containerLetter: (rule, value, callback) => {
+    let pattern = /^(?=.*[A-Za-z])[a-zA-Z\d_.-]{0,100}$/
+    if (isEmpty(value)) callback(new Error('请填写用户名'))
+    else if (!pattern.test(value)) callback(new Error('格式不对，用户名是含有长度为100以内、必须含有字母、不能含有汉字'))
+    else callback()
   }
 }

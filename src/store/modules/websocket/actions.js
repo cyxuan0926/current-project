@@ -7,30 +7,30 @@ const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
 
 let socket
 const ONE_MINUTES = 60 * 1000
+const heartCheck = {
+  heartInterval: 5 * ONE_MINUTES,
+  frontTimeout: null,
+  serverTimeout: null,
+  reset: function() {
+    clearTimeout(this.serverTimeout)
+    clearTimeout(this.frontTimeout)
+    return this
+  },
+  start: function() {
+    if (socket.logout) return
+    var self = this
+    this.frontTimeout = setTimeout(function() {
+      socket.send('PING')
+      self.serverTimeout = setTimeout(function() {
+        socket.close()
+      }, 0.2 * ONE_MINUTES)
+    }, this.heartInterval)
+  }
+}
 
 export default {
   getWebsocketResult: ({ commit, state, dispatch }, params) => {
     let lockReconnect = false,
-      heartCheck = {
-        heartInterval: 5 * ONE_MINUTES,
-        frontTimeout: null,
-        serverTimeout: null,
-        reset: function() {
-          clearTimeout(this.serverTimeout)
-          clearTimeout(this.frontTimeout)
-          return this
-        },
-        start: function() {
-          if (socket.logout) return
-          var self = this
-          this.frontTimeout = setTimeout(function() {
-            socket.send('PING')
-            self.serverTimeout = setTimeout(function() {
-              socket.close()
-            }, 0.2 * ONE_MINUTES)
-          }, this.heartInterval)
-        }
-      },
       createWS = () => {
         try {
           if (socket && socket.readyState !== 3) {
@@ -113,5 +113,11 @@ export default {
         lockReconnect = false
       }, ONE_MINUTES)
     createWS()
+  },
+  closeWebsocket() {
+    if (socket) {
+      socket.close()
+      heartCheck.reset()
+    }
   }
 }

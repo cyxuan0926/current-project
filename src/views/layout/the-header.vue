@@ -45,7 +45,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['handleCollapse']),
+    ...mapActions(['handleCollapse', 'closeWebsocket']),
     handleNavigation(e) {
       this.$router.push(e)
     },
@@ -55,8 +55,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-          logout()
+          this.closeWebsocket()
           this.$router.replace('/login')
+          logout()
       }).catch(() =>{})
     }
   }

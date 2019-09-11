@@ -31,14 +31,16 @@
           label="狱警号"
           prop="policeNumber">
           <el-input
-            v-model="prisonUser.policeNumber"
+            clearable
+            v-model.trim="prisonUser.policeNumber"
             placeholder="请填写狱警号"/>
         </el-form-item>
         <el-form-item
           label="真实姓名"
           prop="realName">
           <el-input
-            v-model="prisonUser.realName"
+            clearable
+            v-model.trim="prisonUser.realName"
             placeholder="请填写真实姓名"/>
         </el-form-item>
         <el-form-item
@@ -61,7 +63,7 @@
           prop="username">
           <el-input
             disabled
-            v-model="prisonUser.username"
+            v-model.trim="prisonUser.username"
             placeholder="请填写用户名"/>
         </el-form-item>
       </el-form>
@@ -96,7 +98,8 @@ export default {
       rolesList: state => state.account.rolesList
     })
   },
-  mounted() {
+  async mounted() {
+    await this.getRolesList()
     this.getJailPrisonAreas().then(res => {
       if (!res) return
       this.getPrisonUserDetail(this.$route.params.id).then(res => {

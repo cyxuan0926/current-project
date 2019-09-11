@@ -38,23 +38,6 @@ let admin = [{
     // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
     component: helper.loadView('sadmin-prison-area/prison-area-list')
   }]
-}, {
-  path: '/meeting-report',
-  name: 'meeting-report-admin',
-  meta: { hidden: true, breadcrumbName: '会见统计' },
-  children: [{
-    path: '/meeting-report/prison',
-    name: 'prison-report-admin',
-    meta: { breadcrumbName: '监狱统计', permission: 'visit.visit-statistic.prison.search' },
-    // component: resolve => require(['@/views/meeting-report/prison-report'], resolve)
-    component: helper.loadView('meeting-report/prison-report')
-  }, {
-    path: '/meeting-report/prison-area',
-    name: 'prison-area-report-admin',
-    meta: { breadcrumbName: '监区统计', permission: 'visit.visit-statistic.prison-area.search' },
-    // component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve)
-    component: helper.loadView('meeting-report/prison-area-report')
-  }]
 }]
 
 admin.forEach(item => {

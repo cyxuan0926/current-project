@@ -1,14 +1,17 @@
 <template>
   <el-form-item
+    :rules="(rule && rule.length) ? rule : (((item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? [] : item.changeRules))"
+    :class="[(item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '', (item.customClass ? item.customClass : '')]"
     :label="item.noLabel ? '' : item.label"
     :prop="prop">
     <el-input
       v-if="item.type === 'input' || item.type === 'textarea'"
       :type="item.type"
+      :clearable="item.clearable"
       :autosize="item.autosize"
       v-model="fields[prop]"
-      :disabled="item.disabled"
-      :placeholder="'请输入' + item.label">
+      :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
+      :placeholder="item.placeholder || '请输入' + item.label">
       <template
         v-if="item.append"
         slot="append">{{ item.append }}</template>
@@ -18,7 +21,7 @@
       :placeholder="'请选择' + item.label"
       v-model="fields[prop]"
       :loading="item.loading"
-      filterable
+      :filterable="!!(item.filterable)"
       :disabled="item.disabled"
       @change="item.func && item.func($event, prop)">
       <el-option
@@ -43,6 +46,7 @@
       :active-value="1"
       :inactive-value="0"
       :disabled="item.disabled"
+      @change="handleChange"
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
@@ -100,6 +104,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    rule: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -126,6 +134,9 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
+    },
+    handleChange(status) {
+      if(this.item.controlTheOther) this.$emit('resetFieldValue', status, this.prop)
     }
   }
 }

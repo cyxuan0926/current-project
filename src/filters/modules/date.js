@@ -1,8 +1,9 @@
+import { helper } from '@/utils'
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
 export default {
-  // 日期过滤器
+  // 日期过滤器 特定格式化的
   Date(time) {
     if (!time) return ''
     else if (time < 0) return ''
@@ -15,6 +16,7 @@ export default {
       second = fillPre(date.getSeconds())
     return `${ year }-${ month }-${ day } ${ hour }:${ minute }:${ second }`
   },
+  // 日期格式化 原生的 可能不全面的
   dateFormate(date, fmt = 'yyyy-MM-dd') {
     if (!date) return
     if (date instanceof Date === false) date = new Date(date)
@@ -32,5 +34,9 @@ export default {
       if (new RegExp(`(${ k })`).test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : ((`00${ o[k] }`).substr((`${ o[k] }`).length)))
     }
     return fmt
+  },
+  // 通过Moment库来封装的日期格式化
+  momentDateFormate(date, formate) {
+    return helper.DateFormat(date, formate)
   }
 }

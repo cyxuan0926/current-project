@@ -7,17 +7,9 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="远程免费会见记录"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="freeMeetings.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

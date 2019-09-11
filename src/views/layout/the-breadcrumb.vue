@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb separator="/">
+  <el-breadcrumb separator-class="el-icon-arrow-right">
     <el-breadcrumb-item :to="{ path: '/dashboard' }">主页</el-breadcrumb-item>
     <el-breadcrumb-item
       v-for="(item, index) in breadcrumb"
@@ -26,9 +26,10 @@ export default {
     render(route) {
       if (!route || !route.path) return
       let breadcrumb = [], getBreadcrumb = (rt, arr) => {
-        if (!rt || !rt.name) return
-        const name = rt.meta.breadcrumbName || rt.name
-        arr.push({ name: name.replace(/[a-z]/g, ''), path: rt.path })
+        if (!rt) return
+        if (rt.meta.breadcrumbName) {
+          arr.push({ name: rt.meta.breadcrumbName, path: rt.path })
+        }
         getBreadcrumb(rt.parent, arr)
       }
       getBreadcrumb(route.matched[route.matched.length - 1], breadcrumb)

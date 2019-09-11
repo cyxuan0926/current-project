@@ -1,6 +1,5 @@
 <template>
   <el-row
-    :syn="rolesList"
     class="row-container"
     :gutter="0">
     <el-button
@@ -8,27 +7,25 @@
       size="small"
       type="primary"
       plain
-      class="button-add"
+      class="button-add button-shift-down"
       @click="onAdd">添加账户</el-button>
+    <m-excel-download
+      v-if="hasAllPrisonQueryAuth"
+      path="/download/exportPrisonuser"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        value="first"
-        type="card">
-        <el-tab-pane
-          label="监狱用户"
-          name="first" />
-      </el-tabs>
       <el-table
         :data="prisonUsers.contents"
         border
-        stripe
         style="width: 100%">
         <el-table-column
           prop="username"
+          width="260px"
           label="用户名" />
         <el-table-column
           prop="roles"
@@ -38,6 +35,7 @@
           label="监狱名称" />
         <el-table-column
           prop="prisonAreas"
+          show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="policeNumber"
@@ -90,6 +88,10 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  props: {
+    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+    hasAllPrisonQueryAuth: Boolean
+  },
   data() {
     let options = { roleId: { type: 'select', label: '角色', getting: false }, jail: { type: 'select', label: '监狱名称', getting: true, belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
@@ -103,7 +105,8 @@ export default {
         },
         options
       ),
-      routeRole: routeRole
+      routeRole: routeRole,
+      filter: {}
     }
   },
   computed: {
@@ -123,12 +126,12 @@ export default {
       }
     }
     await this.getDatas()
-    if(this.rolesList && !this.rolesList.length && this.user.role === '-1') {
+    if (this.user.role === '-1') {
       this.$set(this.searchItems.roleId, 'getting', true)
       await this.getRolesList()
+      this.$set(this.searchItems.roleId, 'options', this.rolesList)
       this.$set(this.searchItems.roleId, 'getting', false)
     }
-    if( this.searchItems.roleId) this.$set(this.searchItems.roleId, 'options', this.rolesList)
   },
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),
