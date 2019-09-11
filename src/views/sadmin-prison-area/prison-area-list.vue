@@ -145,12 +145,12 @@ export default {
     }
   },
   async mounted() {
+    this.getDatas()
     if (this.user.role !== '4' && this.user.role !== '-1') {
       await this.getPrisonAll()
       this.searchItems.jailId.options = this.prisonAll
       this.searchItems.jailId.getting = false
     }
-    await this.getDatas()
   },
   methods: {
     ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea', 'deletePrisonArea', 'addPrisonArea']),

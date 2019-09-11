@@ -1,6 +1,6 @@
 <template>
   <el-button class="m-excel-download" type="primary" @click="onDownloadExcel">
-    导出 Excel
+    {{ text }}
   </el-button>
 </template>
 
@@ -11,7 +11,11 @@ import urls from '@/service/urls';
 export default {
   props: {
     path: String,
-    params: Object
+    params: Object,
+    text: {
+      type: String,
+      default: '导出 Excel'
+    }
   },
   methods: {
     async onDownloadExcel() {

@@ -14,6 +14,7 @@ import audio from './modules/audio'
 import excelExport from './modules/excel-export'
 import excelDownload from './modules/excel-download'
 import table from './modules/table'
+import excelUpload from './modules/excel-upload'
 export default {
   audio,
   Form,
@@ -30,5 +31,6 @@ export default {
   UploadVideo,
   excelExport,
   excelDownload,
-  table
+  table,
+  excelUpload
 }

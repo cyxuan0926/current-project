@@ -24,24 +24,6 @@
         <el-button type="primary" @click="showAddPrisoner">新增</el-button>
         <el-button type="primary" @click="showDelPrionser">删除</el-button>
       </template>
-      <!-- <el-col
-        :span="4"
-        style="text-align:right">
-        <el-button
-          type="primary"
-          size="medium"
-          @click="showAddPrisoner"
-          style="width:65%">新 增</el-button>
-      </el-col>
-      <el-col
-        :span="4"
-        style="text-align:right">
-        <el-button
-          type="primary"
-          size="medium"
-          @click="showDelPrionser"
-          style="width:60%">删 除</el-button>
-      </el-col> -->
     </el-row>
     <el-col
       :span="24"
@@ -406,7 +388,7 @@ export default {
           title = '加入黑名单'
           formButton.buttons = [ { add: 'add', text: '确认' }, { cancel: 'cancel', type: 'danger' } ]
           items = Object.assign({},{
-            reason: { type: 'textarea', noLabel: true, placeholder: '请输入加入黑名单理由', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-200'], label: '加入黑名单的原因', showWordLimit: true }
+            reason: { type: 'textarea', noLabel: true, placeholder: '请输入加入黑名单理由', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-200'], label: '加入黑名单的原因' }
           }, formButton)
           break
         case 2:
