@@ -7,15 +7,16 @@
       <el-tab-pane name="shelf" label="已下架作品"/>
     </el-tabs>
 
-    <m-table :data="literatures" :cols="tableCols" class="mini-td-padding">
-      <el-button
-        type="text"
+    <m-table :data="literatures" :cols="tableCols">
+      <span
+        class="title-cell"
         slot="title"
         slot-scope="scope"
         @click="onPreview(scope.row)"
       >
         {{ scope.row.title }}
-      </el-button>
+      </span>
+
       <el-button
         v-if="scope.row.status === 'pass'"
         type="primary"
@@ -207,5 +208,15 @@ export default {
   margin-top: -5px;
   margin-bottom: 15px;
   text-align: right;
+}
+
+.title-cell {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #409eff;
+  cursor: pointer;
 }
 </style>

@@ -22,16 +22,15 @@
       :data="literatures"
       :cols="tableCols"
       :selection-change="onLiteratureSelectionChange"
-      class="mini-td-padding"
     >
-      <el-button
-        type="text"
+      <span
+        class="title-cell"
         slot="title"
         slot-scope="scope"
         @click="onPreview(scope.row)"
       >
         {{ scope.row.title }}
-      </el-button>
+      </span>
 
       <template
         v-if="scope.row.status === 'publish'"
@@ -128,7 +127,11 @@ export default {
         ],
         rejectCols: [
           { prop: 'auditAt', label: '审核时间' },
-          { prop: 'rejectReason', label: '不通过原因' }
+          {
+            prop: 'rejectReason',
+            label: '不通过原因',
+            showOverflowTooltip: true
+          }
         ],
         publishCols: [
           { prop: 'publishTypeName', label: '待审核作品状态' },
@@ -266,5 +269,15 @@ export default {
 
 .check-batch {
   float: right;
+}
+
+.title-cell {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #409eff;
+  cursor: pointer;
 }
 </style>
