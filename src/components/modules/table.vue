@@ -8,6 +8,7 @@
     <template v-for="(col, i) in cols">
       <el-table-column
         v-if="col.slotName"
+        :align="col.align"
         :key="i + '1'"
         :type="col.type"
         :prop="col.prop"
@@ -17,12 +18,17 @@
         :show-overflow-tooltip="col.showOverflowTooltip"
       >
         <template slot-scope="scope">
-          <slot :name="col.slotName" :row="scope.row" />
+          <slot
+            :name="col.slotName"
+            :row="scope.row"
+            :$index="scope.$index"/>
         </template>
       </el-table-column>
       <el-table-column
         v-else
         :key="i + '2'"
+        :align="col.align"
+        :index="col.index"
         :type="col.type"
         :prop="col.prop"
         :label="col.label"

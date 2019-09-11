@@ -92,12 +92,10 @@
 
 <script>
 import { mapState } from 'vuex'
-// import menu from './menu.js'
 
 export default {
   data() {
     return {
-      // menu: [],
       prisonerAreas: []
     }
   },
@@ -115,7 +113,6 @@ export default {
         return pre.concat([cur.prisonConfigName])
       }, [])
     }
-    // this.menu = menu[Number(this.user.role)]
   },
   methods: {
     getActiveMenu() {

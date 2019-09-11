@@ -4,5 +4,8 @@ export default {
   },
   setLiteratureDetail: (state, literatureDetail) => {
     state.literatureDetail = literatureDetail
+  },
+  setSensitivewords: (state, sensitiveWords) => {
+    state.sensitiveWords = sensitiveWords
   }
 }

@@ -57,8 +57,8 @@ const config = {
   },
   ybDevelopment: {
     publicApiHost: 'http://192.168.0.230:8081',
-    apiHost: 'http://192.168.0.124:8088',
-    apiPath: '',
+    apiHost: 'http://192.168.0.124:8083',
+    apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,

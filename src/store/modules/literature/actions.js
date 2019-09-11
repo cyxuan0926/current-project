@@ -50,5 +50,42 @@ export default {
     catch (err) {
       throw err
     }
+  },
+  async getSensitivewords({ commit }, params) {
+    try {
+      const res = await literatureApi.getSensitivewords(params)
+      commit('setSensitivewords', res.data.words)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async addSensitiveword({ commit }, params) {
+    try {
+      const res = await literatureApi.addSensitiveword(params)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async delSensitiveword({ commit }, params) {
+    try {
+      const res = await literatureApi.delSensitiveword(params)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async editSensitiveword({ commit }, params) {
+    try {
+      const res = await literatureApi.editSensitiveword(params)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
   }
 }
