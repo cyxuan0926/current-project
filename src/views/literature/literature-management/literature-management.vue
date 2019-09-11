@@ -96,8 +96,8 @@ export default {
       offlineForm: { offlineReason: '' },
       rules: {
         offlineReason: [
-          { required: true, message: '请填写下架原因', trigger: 'blur' },
-          { max: 200, message: '下架原因不能超过 200 个字符', trigger: 'blur' }
+          { required: true, message: '请填写下架原因', trigger: 'change' },
+          { max: 200, message: '下架原因不能超过 200 个字符', trigger: 'change' }
         ]
       },
       // 当前点击下架的文章
