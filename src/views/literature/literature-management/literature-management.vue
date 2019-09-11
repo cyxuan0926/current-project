@@ -52,7 +52,7 @@
           />
         </el-form-item>
         <el-form-item class="operate">
-          <el-button @click="onCancelOffline">取消</el-button>
+          <el-button @click="hideOfflineDialog">取消</el-button>
           <el-button type="danger" @click="onConfirmOffline">
             确定
           </el-button>
@@ -174,12 +174,7 @@ export default {
         }
       })
     },
-    onCancelOffline() {
-      this.hideOfflineDialog()
-      this.$refs.offlineForm.resetFields()
-    },
     onCloseDialog() {
-      this.hideOfflineDialog()
       this.$refs.offlineForm.resetFields()
     },
     showOfflineDialog() {

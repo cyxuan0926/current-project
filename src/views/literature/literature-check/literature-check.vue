@@ -77,7 +77,7 @@
           />
         </el-form-item>
         <el-form-item class="operate">
-          <el-button @click="onCancelReject">取消</el-button>
+          <el-button @click="hideOfflineDialog">取消</el-button>
           <el-button type="danger" @click="onConfirmReject">
             确定
           </el-button>
@@ -222,12 +222,8 @@ export default {
         }
       })
     },
-    onCancelReject() {
-      this.hideOfflineDialog()
-      this.$refs.rejectForm.resetFields()
-    },
     onCloseDialog() {
-      this.hideOfflineDialog()
+      this.selectedLiteratures = []
       this.$refs.rejectForm.resetFields()
     },
     onLiteratureSelectionChange(selectedLiteratures) {
