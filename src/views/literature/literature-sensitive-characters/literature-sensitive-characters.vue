@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" >
       <template slot="append">
         <el-button
@@ -28,7 +27,7 @@
     </m-search>  
     <el-col :span="24">
       <m-table
-        @onSelectChange="handleSelectChange"
+        :selection-change="handleSelectChange"
         :data="sensitiveWords"
         :cols="test"
         class="mini-td-padding">
@@ -173,10 +172,6 @@ export default {
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
-    },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
     },
     // 列表的操作
     async handleOperate(data) {

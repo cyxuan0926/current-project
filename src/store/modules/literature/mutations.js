@@ -7,5 +7,8 @@ export default {
   },
   setSensitivewords: (state, sensitiveWords) => {
     state.sensitiveWords = sensitiveWords
+  },
+  setAuthorFamiles: (state, authorFamiles) => {
+    state.authorFamiles = authorFamiles
   }
 }

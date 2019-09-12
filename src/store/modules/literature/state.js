@@ -4,5 +4,7 @@ export default {
   // 作品详情
   literatureDetail: { content: '' },
   // 敏感字符集
-  sensitiveWords: []
+  sensitiveWords: [],
+  // 家属账户
+  authorFamiles: []
 }
