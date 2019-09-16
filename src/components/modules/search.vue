@@ -217,7 +217,7 @@ export default {
         }
         // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
         if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
-          this.items[key].value && this.items[key].value.splice(0, 2, '', '')
+          this.items[key].value = null
           // params[this.items[key].start] = this.items[key].value[0]
           // params[this.items[key].end] = this.items[key].value[1]
         }

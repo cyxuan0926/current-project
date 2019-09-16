@@ -31,7 +31,7 @@
 
     <m-pagination
       ref="pagination"
-      :total="totalPage"
+      :total="total"
       @onPageChange="onPageChange"
     />
 

@@ -34,7 +34,7 @@ export default {
         title: { type: 'input', label: '作品标题' },
         penName: { type: 'input', label: '笔名' }
       },
-      totalPage: 1, // 分页数据总页数
+      total: 1, // 分页数据总条数
       filter: {},
       pagination: { page: 1, rows: 10 }
     }
@@ -95,7 +95,7 @@ export default {
         res = await this.getPoliceLiteratures(params)
       }
 
-      this.totalPage = res.data.total
+      this.total = res.data.total
       this.isGettingTableData = false
     }
   }
