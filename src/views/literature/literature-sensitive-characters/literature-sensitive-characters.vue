@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" >
       <template slot="append">
         <el-button
@@ -23,12 +22,12 @@
         </el-button>
         <m-excel-upload
           url="/sensitiveword/upload"
-          @onGetUploadResults="handleGetUploadResults" />
+          :get-results="handleGetUploadResults" />
       </template>
     </m-search>  
     <el-col :span="24">
       <m-table
-        @onSelectChange="handleSelectChange"
+        :selection-change="handleSelectChange"
         :data="sensitiveWords"
         :cols="test"
         class="mini-td-padding">
@@ -174,10 +173,6 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     // 列表的操作
     async handleOperate(data) {
       const { row, $index } = data
@@ -233,12 +228,20 @@ export default {
         }).catch(() => {})
       }
     },
-    handleGetUploadResults(result) {
-      setTimeout(() => {
-        this.dialogOperationStatus = 1
-        this.visible = true
-        this.uploadResults = result
-      }, 1000)
+    handleGetUploadResults(response) {
+      this.$message({
+        showClose: true,
+        message: response.msg,
+        duration: 3000,
+        type: response.code === 200 ? 'success' : 'error'
+      })
+      if (response.code === 200) {
+        setTimeout(() => {
+          this.dialogOperationStatus = 1
+          this.visible = true
+          this.uploadResults = response.data
+        }, 1000)
+      }
     }
   },
   computed: {

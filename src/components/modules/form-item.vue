@@ -101,17 +101,11 @@ export default {
     },
     fields: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => {}
     },
     rule: {
       type: Array,
       default: () => []
-    }
-  },
-  data() {
-    return {
     }
   },
   methods: {

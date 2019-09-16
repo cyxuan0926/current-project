@@ -4,7 +4,7 @@
     class="el-upload__excel"
     :multiple="false"
     accept=".xls,.xlsx"
-    :on-success="handleSuccess"
+    :on-success="getResults"
     :on-error="handleError"
     :action="actionsUrl">
   <el-button
@@ -14,7 +14,6 @@
 </el-upload>
 </template>
 <script>
-import { Message } from 'element-ui'
 export default {
   props: {
     text: {
@@ -24,6 +23,14 @@ export default {
     url: {
       type: String,
       default: ''
+    },
+    'get-results': {
+      type: Function,
+      default: () => () => {}
+    },
+    'handle-error': {
+      type: Function,
+      default: () => () => {}
     },
     headers: {
       type: Object,
@@ -38,24 +45,6 @@ export default {
   computed: {
     actionsUrl() {
       return `${this.$urls.apiHost}${this.$urls.apiPath}${this.url}`
-    }
-  },
-  methods: {
-    tips(msg = '操作失败！', type = 'error') {
-      Message({
-        showClose: true,
-        message: msg,
-        duration: 3000,
-        type: type
-      })
-    },
-    handleSuccess(response) {
-      const type = response.code === 200 ? 'success' : 'error'
-      this.tips(response.msg, type)
-      if (response.code === 200) this.$emit('onGetUploadResults', response.data)
-    },
-    handleError(error) {
-      this.tips(error.message)
     }
   }
 }

@@ -40,5 +40,17 @@ export default {
   // 编辑敏感关键字
   editSensitiveword: params => {
     return service.post('/sensitiveword/edit', params)
+  },
+  // 家属-分页查询账户管理
+  getAuthorFamily: params => {
+    return service.get('/authorFamily/page', params)
+  },
+  // 家属-启用/禁用用户
+  enableAuthorFamily: params => {
+    return service.post('/authorFamily/enabled', params)
+  },
+  // 家属-导出
+  exportAuthorFamily: () => {
+    return service.get('/authorFamily/export', {}, { responseType: 'blob' })
   }
 }

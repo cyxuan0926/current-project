@@ -202,6 +202,8 @@ export default {
           return { validator: validator.isFee }
         case 'noChinese':
           return { validator: validator.noChinese }
+        case 'phone':
+          return { validator: validator.phone }
         default:
           return {}
       }
