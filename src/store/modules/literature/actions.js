@@ -97,5 +97,23 @@ export default {
     catch (err) {
       throw err
     }
+  },
+  async enableAuthorFamily({ commit }, params) {
+    try {
+      const res = await literatureApi.enableAuthorFamily(params)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async exportAuthorFamily({ commit }) {
+    try {
+      const res = await literatureApi.exportAuthorFamily()
+      return res.data
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

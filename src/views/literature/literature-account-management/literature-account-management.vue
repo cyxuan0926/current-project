@@ -7,7 +7,9 @@
       :items="searchItems"
       clearable
       @search="onSearch">
-      <template slot="append">
+      <template
+        slot="append"
+        v-if=" role === '5' ">
         <el-button
           type="primary"
           @click="() => {
@@ -18,8 +20,18 @@
         </el-button>
         <m-excel-download
           path="/"
+          :params="{ filepath: '' }"
           text="模板" />
-        <el-button type="primary">导入</el-button>
+        <m-excel-upload
+          :get-results="handleGetUploadResults"
+          url=""/>
+      </template>
+      <template
+        slot="append"
+        v-if=" role === '6' ">
+        <el-button type="primary" :loading="downloading" @click="handleExport">
+          导出
+        </el-button>
       </template>
     </m-search> 
     <el-col :span="24">
@@ -34,6 +46,7 @@
               @click="() => {
                 scope.row.isEnabled ? operationType = 2 : operationType = 3
                 visible = true
+                currentAccount = scope.row
               }"
               type="primary"
               plain>{{ scope.row.isEnabled ? '禁用' : '启用'}}</el-button>
@@ -72,7 +85,9 @@
         </el-col>
       </el-row>
       <template v-else>
-        <el-row v-if=" operationType === 3 ">
+        <el-row
+          v-if=" operationType === 3 "
+          style="margin-bottom: 5px">
           <el-col>确定启用该用户吗？</el-col>
           <el-col>禁用的原因：</el-col>
         </el-row>
@@ -87,33 +102,35 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
+import { helper } from '@/utils'
 export default {
   data () {
-    console.log(this.role)
-    let searchItems
+    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '是', userStatus: 1 }, {userLable: '否', userStatus: 0 } ],
+    commonItems = {
+      accountName: { type: 'input', label: '账户' },
+      isEnabled: {
+        type: 'select',
+        label: '用户状态',
+        options,
+        belong: { value: 'userStatus', label: 'userLable' },
+        value: ''}}
     if ( this.role === '5') {
       searchItems = {
-        ...{zhanghu: { type: 'input', label: '账户' },
-        yujinghao: { type: 'input', label: '狱警号' },
-        zhengshixingming: { type: 'input', label: '真实姓名' },
-        yonghuzhuangtai: { type: 'select', label: '用户状态', options: [], belong: { value: 'value',  label: 'label' } }}
+        ...commonItems,
+        ...{
+          yujinghao: { type: 'input', label: '狱警号' },
+          zhengshixingming: { type: 'input', label: '真实姓名' },
+        }
       }
     }
-    if (this.role === '6') {
-      searchItems = {
-        ...{accountName: { type: 'input', label: '账户' },
-        isEnabled: {
-          type: 'select',
-          label: '用户状态',
-          options: [ {userLable: '全部', userStatus: '' }, {userLable: '是', userStatus: 1 }, {userLable: '否', userStatus: 0 } ],
-          belong: { value: 'userStatus', label: 'userLable' },
-          value: '' }}
-      }
-    }
+    if (this.role === '6') searchItems = { ...commonItems }
     return {
       searchItems,
       totalPage: 0,
       visible: false,
+      uploadResults: {},
+      currentAccount: {},
+      downloading: false,
       operationType: 0 // 0：无操作 1：新增账户 2：禁用 3：启用 4：账户导入
     }
   },
@@ -121,7 +138,8 @@ export default {
     this.getDatas()
   },
   props: {
-    role: String
+    role: String,
+    jailId: Number
   },
   computed: {
     ...mapState('literature', ['authorFamiles']),
@@ -132,24 +150,24 @@ export default {
           title = '新增账户'
           items = {...{
             formConfigs: { labelWidth: '90px' },
-            zhanghu: { type: 'input', label: '账户', rules: ['required'], clearable: true, placeholder: '请输入手机号码' },
-            yujinghao: { type: 'input', label: '狱警号', rules: ['required'], clearable: true },
-            zhengshixingming: { type: 'input', label: '真实姓名', rules: ['required'], clearable: true },
-            xingbie: { type: 'select', label: '性别', rules: ['required'], clearable: true, options: [{ label: '男', value: 'm' }, { label: '女', value: 'f' }], props: { label: 'label', value: 'value' }, value: 'm' }
+            accountName: { type: 'input', label: '账户', rules: ['required'], clearable: true, placeholder: '请输入手机号码' },
+            policeNumber: { type: 'input', label: '狱警号', rules: ['required'], clearable: true },
+            realName: { type: 'input', label: '真实姓名', rules: ['required'], clearable: true },
+            sex: { type: 'select', label: '性别', rules: ['required'], clearable: true, options: [{ label: '男', value: 'm' }, { label: '女', value: 'f' }], props: { label: 'label', value: 'value' }, value: 'm' }
           }, ...{
             buttons: ['add', 'cancel']
           }}
           break
         case 2:
-          title = ''
+          title = '禁用用户'
           items = {...{
-            yuanyin: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required'] }
+            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required'] }
           }, ...formButton}
           break
         case 3:
-          title = ''
+          title = '启用用户'
           items = {...{
-            yuanyin: { type: 'textarea', noLabel: true, disabled: true, label: '用户被禁用时的原因' }
+            showReason: { type: 'textarea', noLabel: true, disabled: true, label: '用户被禁用时的原因', autosize: { minRows: 5 }, value: this.currentAccount['disabledReason'] }
           }, ...formButton}
           break
         case 4:
@@ -162,7 +180,7 @@ export default {
       return { items, title }
     },
     roleContents() {
-      let cols, searchItems, tableData
+      let cols, tableData
       switch(this.role) {
         case '5':
           cols = [
@@ -217,37 +235,24 @@ export default {
               prop: 'pseudonym'
             },
             {
-              label: '被禁用原因',
-              prop: 'disabledReason'
-            },
-            {
               label: '操作',
               slotName: 'operate',
               align: "center"
             }
           ]
-          searchItems = {...{
-            accountName: { type: 'input', label: '账户' },
-            isEnabled: {
-              type: 'select',
-              label: '用户状态',
-              options: [ {userLable: '全部', userStatus: '' }, {userLable: '是', userStatus: 1 }, {userLable: '否', userStatus: 0 } ],
-              belong: { value: 'userStatus', label: 'userLable' },
-              value: '' }
-          }}
           tableData = this.authorFamiles
           break
         default:
           break
       }
-      return { cols, searchItems, tableData }
+      return { cols, tableData }
     }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions('literature', ['getAuthorFamily']),
+    ...mapActions('literature', ['getAuthorFamily', 'enableAuthorFamily', 'exportAuthorFamily']),
     async getDatas() {
       let res
       const params = { ...this.filter, ...this.pagination }
@@ -263,11 +268,56 @@ export default {
     handleGetIndex(index) {
       return this.pagination.rows * (this.pagination.page - 1) + index + 1
     },
-    handleSubmit(params) {
-      console.log(params)
+    async handleSubmit(params) {
+      const { id } = this.currentAccount
+      if(this.operationType === 2 || this.operationType === 3) {
+        let disabledReason, isEnabled
+        if (this.operationType === 2) {
+          disabledReason = params['disabledReason']
+          isEnabled = 0
+        }
+        if (this.operationType === 3) {
+          disabledReason = ''
+          isEnabled = 1
+        }
+        await this.enableAuthorFamily({ id, disabledReason, isEnabled })
+        this.handleCloseDialog()
+        this.getDatas()
+      }
     },
     handleCloseDialog() {
       this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
+      this.currentAccount = {}
+    },
+    handleGetUploadResults(response) {
+      this.$message({
+        showClose: true,
+        message: response.msg,
+        duration: 3000,
+        type: response.code === 200 ? 'success' : 'error'
+      })
+      if (response.code === 200) {
+        setTimeout(() => {
+          this.operationType = 4
+          this.visible = true
+          this.uploadResults = response.data
+        }, 1000)
+      }
+    },
+    async handleExport() {
+      this.downloading = true
+      let link = document.createElement('a'),
+        res = await this.exportAuthorFamily(),
+        url = helper.createObjectURL(res)
+      link.href = url
+      link.id = 'linkId'
+      link.setAttribute('download', '账户管理记录.xls')
+      document.body.appendChild(link)
+      document.getElementById('linkId').click()
+      document.body.removeChild(document.getElementById('linkId'))
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
     }
   }
 }

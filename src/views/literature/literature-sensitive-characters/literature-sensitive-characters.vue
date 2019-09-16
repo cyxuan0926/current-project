@@ -22,7 +22,7 @@
         </el-button>
         <m-excel-upload
           url="/sensitiveword/upload"
-          @onGetUploadResults="handleGetUploadResults" />
+          :get-results="handleGetUploadResults" />
       </template>
     </m-search>  
     <el-col :span="24">
@@ -228,12 +228,20 @@ export default {
         }).catch(() => {})
       }
     },
-    handleGetUploadResults(result) {
-      setTimeout(() => {
-        this.dialogOperationStatus = 1
-        this.visible = true
-        this.uploadResults = result
-      }, 1000)
+    handleGetUploadResults(response) {
+      this.$message({
+        showClose: true,
+        message: response.msg,
+        duration: 3000,
+        type: response.code === 200 ? 'success' : 'error'
+      })
+      if (response.code === 200) {
+        setTimeout(() => {
+          this.dialogOperationStatus = 1
+          this.visible = true
+          this.uploadResults = response.data
+        }, 1000)
+      }
     }
   },
   computed: {

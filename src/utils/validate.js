@@ -23,8 +23,9 @@ export default {
       callback()
     }
   },
+  // 和公共服务的正则统一
   phone: (rule, value, callback) => {
-    var pattern = /^1\d{10}$/
+    var pattern = /^[1][3456789][0-9]{9}$/
     if (value && (pattern.test(value))) {
       callback()
     }

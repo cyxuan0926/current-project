@@ -44,5 +44,9 @@ export default {
   // 家属-启用/禁用用户
   enableAuthorFamily: params => {
     return service.post('/authorFamily/enabled', params)
+  },
+  // 家属-导出
+  exportAuthorFamily: () => {
+    return service.get('/authorFamily/export', {}, { responseType: 'blob' })
   }
 }
