@@ -74,7 +74,7 @@
                 v-for="family in scope.row.families"
                 :key="family.familyId"
                 style="margin-left: 0px; margin-right: 8px;"
-                @click="showFamilyDetail(family.familyId)">
+                @click="showFamilyDetail(family.familyId, scope.row.id)">
                 {{ family.familyName }}
               </el-button>
             </div>
@@ -83,7 +83,7 @@
               size="small"
               v-else
               style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(scope.row.familyId)">
+              @click="showFamilyDetail(scope.row.familyId, scope.row.id)">
               {{ scope.row.name }}
             </el-button>
           </template>
@@ -513,10 +513,10 @@ export default {
       if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       this.$refs['withdrawForm'].resetFields()
     },
-    showFamilyDetail(e) {
-      let params = { id: e }
+    showFamilyDetail(...args) {
+      const [ familyId, meetingId ] = args
       this.show.familiesDetialInform = true
-      this.getMeetingsFamilyDetail(params).then(res => {
+      this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
         if (!res.family) return
         this.family = Object.assign({}, res.family)
       })
