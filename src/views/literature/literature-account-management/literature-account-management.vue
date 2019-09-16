@@ -105,7 +105,7 @@ import { mapActions, mapState } from 'vuex';
 import { helper } from '@/utils'
 export default {
   data () {
-    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '是', userStatus: 1 }, {userLable: '否', userStatus: 0 } ],
+    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '启用', userStatus: 1 }, {userLable: '禁用', userStatus: 0 } ],
     commonItems = {
       accountName: { type: 'input', label: '账户' },
       isEnabled: {
@@ -118,8 +118,8 @@ export default {
       searchItems = {
         ...commonItems,
         ...{
-          yujinghao: { type: 'input', label: '狱警号' },
-          zhengshixingming: { type: 'input', label: '真实姓名' },
+          policeNumber: { type: 'input', label: '狱警号' },
+          realName: { type: 'input', label: '真实姓名' },
         }
       }
     }
@@ -161,7 +161,7 @@ export default {
         case 2:
           title = '禁用用户'
           items = {...{
-            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required'] }
+            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-100'] }
           }, ...formButton}
           break
         case 3:

@@ -15,7 +15,7 @@
           <template slot-scope="scope">
             <el-button
               type="text"
-              @click="showFamilyDetail(scope.row.familyId)"
+              @click="showFamilyDetail(scope.row.familyId, scope.row.id)"
             >
               {{ scope.row.name }}
             </el-button>
@@ -149,9 +149,10 @@ export default {
   },
   methods: {
     ...mapActions(['getMeetingsFamilyDetail']),
-    async showFamilyDetail(familyId) {
+    async showFamilyDetail(...args) {
+      const [ familyId, meetingId ] = args
       try {
-        const res = await this.getMeetingsFamilyDetail({ id: familyId })
+        const res = await this.getMeetingsFamilyDetail({ familyId, meetingId })
 
         if (res.family) {
           this.family = res.family
