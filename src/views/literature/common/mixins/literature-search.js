@@ -1,7 +1,6 @@
 export default {
   props: {
-    role: String,
-    jailId: Number
+    role: String
   },
   data() {
     return {
@@ -35,47 +34,69 @@ export default {
         title: { type: 'input', label: '作品标题' },
         penName: { type: 'input', label: '笔名' }
       },
-      /**
-       * 作品状态
-       * publish 已发布待审核
-       * pass 已通过审核
-       * reject 未通过审核
-       * shelf 已下架
-       */
-      literatureStatus: '',
-      publisher: '', // 作品发布者，1 家属发的，2 预警发的，3 审核人员发的
       totalPage: 1, // 分页数据总页数
       filter: {},
-      pagination: {}
+      pagination: { page: 1, rows: 10 }
+    }
+  },
+  computed: {
+    isFamilyLiteratureChecker() {
+      return parseInt(this.role) === 6
+    },
+    isPoliceLiteratureChecker() {
+      return parseInt(this.role) === 5
+    },
+    /**
+     * 作品状态
+     * publish 已发布待审核
+     * pass 已通过审核
+     * reject 未通过审核
+     * shelf 已下架
+     */
+    literatureStatus() {
+      return this.activeTabName
     }
   },
   watch: {
-    activeTabName(val) {
-      console.log('mixin activeTabName', val)
-      this.literatureStatus = val
+    activeTabName() {
       this.pagination.page = 1
       this.getTableData()
     }
   },
   created() {
-    this.initSearchStatus()
     this.getTableData()
   },
   activated() {
     !this.isGettingTableData && this.getTableData()
   },
   methods: {
-    initSearchStatus() {
-      console.error('组件未覆盖 initSearchStatus 方法')
-    },
     onSearch() {
       this.getTableData()
     },
     onPageChange() {
       this.getTableData()
     },
-    getTableData() {
-      console.error('组件未覆盖 getTableData 方法')
+    async getTableData() {
+      let res = {}
+      const params = {
+        status: this.literatureStatus,
+        ...this.filter,
+        ...this.pagination
+      }
+
+      this.isGettingTableData = true
+
+      if (this.isFamilyLiteratureChecker) {
+        res = await this.getFamilyLiteratures(params)
+      }
+
+      if (this.isPoliceLiteratureChecker) {
+        params.jailId = 2 // TODO：临时方案
+        res = await this.getPoliceLiteratures(params)
+      }
+
+      this.totalPage = res.data.total
+      this.isGettingTableData = false
     }
   }
 }

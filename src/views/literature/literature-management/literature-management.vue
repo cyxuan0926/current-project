@@ -106,14 +106,11 @@ export default {
   },
   computed: {
     ...mapState('literature', ['literatures']),
-    isFamilyLiteratureChecker() {
-      return parseInt(this.role) === 6
-    },
     tableCols() {
       const cols = {
         baseCols: [
           { type: 'index', label: '序号' },
-          { slotName: 'title', label: '作品标题' },
+          { slotName: 'title', label: '作品标题', showOverflowTooltip: true },
           { prop: 'articleTypeName', label: '作品类型' },
           { prop: 'penName', label: '作者笔名' },
           { prop: 'publishAt', width: '124px', label: '发布时间' },
@@ -141,14 +138,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('literature', ['getFamilyLiteratures', 'offlineLiterature']),
-    initSearchStatus() {
-      // 家属作品审核人员，默认查看家属发布的已审核通过（上架状态）作品
-      if (this.isFamilyLiteratureChecker) {
-        this.literatureStatus = 'pass'
-        this.publisher = 1
-      }
-    },
+    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature']),
     onPreview(literature) {
       this.$router.push(
         `/family/literature-management/literature-preview/${literature.id}`
@@ -182,24 +172,6 @@ export default {
     },
     hideOfflineDialog() {
       this.offlineDialogVisible = false
-    },
-    async getTableData () {
-      const params = {
-        // type: this.publisher,
-        status: this.literatureStatus,
-        ...this.filter,
-        ...this.pagination
-      }
-
-      this.isGettingTableData = true
-
-      if (this.isFamilyLiteratureChecker) {
-        const res = await this.getFamilyLiteratures(params)
-        console.log(params)
-        this.totalPage = res.data.total
-        this.isGettingTableData = false
-      }
-
     }
   }
 }
@@ -217,11 +189,6 @@ export default {
 }
 
 .title-cell {
-  display: block;
-  overflow: hidden;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   color: #409eff;
   cursor: pointer;
 }

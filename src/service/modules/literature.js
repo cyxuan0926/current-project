@@ -5,6 +5,10 @@ export default {
   getFamilyLiteratures: params => {
     return service.get('/article/findFamilyPage', params)
   },
+  // 获取狱警作品列表
+  getPoliceLiteratures: params => {
+    return service.get('/article/findPolicePage', params)
+  },
   // 获取作品详情
   getLiteratureDetail: params => {
     return service.get('/article/findDetail', params)

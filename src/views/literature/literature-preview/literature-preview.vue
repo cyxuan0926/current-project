@@ -55,7 +55,9 @@
 </template>
 
 <script>
+import store from '@/store'
 import { mapActions, mapState } from 'vuex';
+
 export default {
   data() {
     return {
@@ -79,14 +81,16 @@ export default {
       return this.$route.query.status === 'publish'
     }
   },
+  async beforeRouteEnter (to, from, next) {
+    await store.dispatch('literature/getLiteratureDetail', { id: to.params.id })
+    next()
+  },
   created() {
     this.initStatus()
   },
   methods: {
-    ...mapActions('literature', ['getLiteratureDetail', 'passLiterature', 'rejectLiterature']),
-    async initStatus() {
-      await this.getLiteratureDetail({ id: this.$route.params.id })
-
+    ...mapActions('literature', ['passLiterature', 'rejectLiterature']),
+    initStatus() {
       if (this.literatureDetail.rejectReason) {
         this.rejectForm.checkResult = 'reject'
         this.rejectForm.rejectReason = this.literatureDetail.rejectReason

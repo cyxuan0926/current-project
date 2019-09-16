@@ -65,7 +65,7 @@
       :visible.sync="rejectDialogVisible"
       title="不通过审核"
       width="530px"
-      @close="onCloseDialog"
+      @close="onCloseRejectDialog"
     >
       <el-form ref="rejectForm" :model="rejectForm" :rules="rules">
         <el-form-item prop="rejectReason">
@@ -77,7 +77,7 @@
           />
         </el-form-item>
         <el-form-item class="operate">
-          <el-button @click="hideOfflineDialog">取消</el-button>
+          <el-button @click="hideRejectDialog">取消</el-button>
           <el-button type="danger" @click="onConfirmReject">
             确定
           </el-button>
@@ -115,14 +115,11 @@ export default {
   },
   computed: {
     ...mapState('literature', ['literatures']),
-    isFamilyLiteratureChecker() {
-      return parseInt(this.role) === 6
-    },
     tableCols() {
       const cols = {
         selectCols: [{ type: 'selection' }],
         baseCols: [
-          { slotName: 'title', label: '作品标题' },
+          { slotName: 'title', label: '作品标题', showOverflowTooltip: true },
           { prop: 'articleTypeName', label: '作品类型' },
           { prop: 'penName', label: '作者笔名' },
           { prop: 'publishAt', label: '发布时间' }
@@ -158,14 +155,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('literature', ['getFamilyLiteratures', 'passLiterature', 'rejectLiterature']),
-    initSearchStatus() {
-      // 家属作品审核人员，默认查看家属发布的待审核作品
-      if (this.isFamilyLiteratureChecker) {
-        this.literatureStatus = 'publish'
-        this.publisher = 1
-      }
-    },
+    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'passLiterature', 'rejectLiterature']),
     onPreview(literature) {
       this.$router.push({
         path: `/family/literature-management/literature-preview/${literature.id}`,
@@ -194,7 +184,7 @@ export default {
     },
     // 不通过审核
     onReject(literature) {
-      this.showOfflineDialog()
+      this.showRejectDialog()
       this.selectedLiteratures = [literature]
     },
     // 批量不通过审核
@@ -204,7 +194,7 @@ export default {
         return
       }
 
-      this.showOfflineDialog()
+      this.showRejectDialog()
     },
     onConfirmReject() {
       this.$refs.rejectForm.validate(async valid => {
@@ -216,42 +206,24 @@ export default {
 
           if(isSuccess) {
             this.getTableData()
-            this.hideOfflineDialog()
+            this.hideRejectDialog()
             this.$refs.rejectForm.resetFields()
           }
         }
       })
     },
-    onCloseDialog() {
+    onCloseRejectDialog() {
       this.selectedLiteratures = []
       this.$refs.rejectForm.resetFields()
     },
     onLiteratureSelectionChange(selectedLiteratures) {
       this.selectedLiteratures = selectedLiteratures
     },
-    showOfflineDialog() {
+    showRejectDialog() {
       this.rejectDialogVisible = true
     },
-    hideOfflineDialog() {
+    hideRejectDialog() {
       this.rejectDialogVisible = false
-    },
-    async getTableData () {
-      const params = {
-        // type: this.publisher,
-        status: this.literatureStatus,
-        ...this.filter,
-        ...this.pagination
-      }
-
-      this.isGettingTableData = true
-
-      if (this.isFamilyLiteratureChecker) {
-        const res = await this.getFamilyLiteratures(params)
-        console.log(params)
-        this.totalPage = res.data.total
-        this.isGettingTableData = false
-      }
-
     }
   }
 }
@@ -273,11 +245,6 @@ export default {
 }
 
 .title-cell {
-  display: block;
-  overflow: hidden;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   color: #409eff;
   cursor: pointer;
 }
