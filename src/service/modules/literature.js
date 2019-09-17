@@ -9,6 +9,10 @@ export default {
   getPoliceLiteratures: params => {
     return service.get('/article/findPolicePage', params)
   },
+  // 获取我的作品列表
+  getMyLiteratures: params => {
+    return service.get('/article/getMyArticle', params)
+  },
   // 获取作品详情
   getLiteratureDetail: params => {
     return service.get('/article/findDetail', params)

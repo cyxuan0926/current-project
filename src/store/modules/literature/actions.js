@@ -21,6 +21,16 @@ export default {
       throw err
     }
   },
+  async getMyLiteratures({ commit }, params) {
+    try {
+      const res = await literatureApi.getMyLiteratures(params)
+      commit('setLiteratures', res.data.articles)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async getLiteratureDetail({ commit }, params) {
     try {
       const res = await literatureApi.getLiteratureDetail(params)
