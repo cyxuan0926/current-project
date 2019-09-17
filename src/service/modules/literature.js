@@ -45,16 +45,20 @@ export default {
   editSensitiveword: params => {
     return service.post('/sensitiveword/edit', params)
   },
-  // 家属-分页查询账户管理
-  getAuthorFamily: params => {
-    return service.get('/authorFamily/page', params)
-  },
-  // 家属-启用/禁用用户
-  enableAuthorFamily: params => {
-    return service.post('/authorFamily/enabled', params)
-  },
   // 家属-导出
   exportAuthorFamily: () => {
     return service.get('/authorFamily/export', {}, { responseType: 'blob' })
+  },
+  // 狱警-新增账户
+  addAuthorPolice: params => {
+    return service.post('/authorPolice/add', params)
+  },
+  // 分页查询家属/狱警账户信息
+  getAuthors: (url, params) => {
+    return service.get(url, params)
+  },
+  // 启用/禁用账户
+  enableAuthor: (url, params) => {
+    return service.post(url, params)
   }
 }
