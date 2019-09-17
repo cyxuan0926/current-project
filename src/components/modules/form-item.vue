@@ -46,7 +46,7 @@
       :active-value="1"
       :inactive-value="0"
       :disabled="item.disabled"
-      @change="handleChange"
+      @change="resetFieldValue($event, prop, item.controlTheOther) "
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
@@ -106,6 +106,10 @@ export default {
     rule: {
       type: Array,
       default: () => []
+    },
+    'reset-field-value': {
+      type: Function,
+      default: () => () => {}
     }
   },
   methods: {
@@ -128,9 +132,6 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
-    },
-    handleChange(status) {
-      if(this.item.controlTheOther) this.$emit('resetFieldValue', status, this.prop)
     }
   }
 }

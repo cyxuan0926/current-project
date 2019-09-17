@@ -17,7 +17,7 @@
           :rule="item.rule"
           :item="item"
           :fields="fields"
-          @resetFieldValue="resetFieldValue"
+          :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
     </el-form>
@@ -209,7 +209,9 @@ export default {
       }
     },
     resetFieldValue(...arg) {
-      let [status, prop] = arg, fields = this.$refs.form.fields, relevantFields = []
+      const [status, prop, controlTheOther] = arg
+      if (!controlTheOther) return
+      let fields = this.$refs.form.fields, relevantFields = []
       for(let [key, value] of Object.entries(this.items)) {
         if(value.disableDependingProp === prop) relevantFields.push(key)
       }
