@@ -124,9 +124,8 @@ export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      } },
+      default: () => {}
+    },
     buttonText: {
       type: String,
       default: ''

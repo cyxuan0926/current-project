@@ -19,12 +19,12 @@
           新增
         </el-button>
         <m-excel-download
-          path="/"
-          :params="{ filepath: '' }"
+          path="/download/downloadfile"
+          :params="{ filepath: 'author_police_template.xls' }"
           text="模板" />
         <m-excel-upload
           :get-results="handleGetUploadResults"
-          url=""/>
+          url="/authorPolice/upload"/>
       </template>
       <template
         slot="append"
@@ -36,9 +36,15 @@
     </m-search> 
     <el-col :span="24">
       <m-table
-        :data="roleContents['tableData']"
+        :data="authors"
         :cols="roleContents['cols']"
         class="mini-td-padding">
+        <template
+          v-if=" role === '5' "
+          slot-scope="scope"
+          slot="pseudonym">
+          <span>{{ scope.row.pseudonym ? scope.row.jailName + '-' + scope.row.pseudonym : '' }}</span>
+        </template>
         <template
           slot-scope="scope"
           slot="operate">
@@ -61,24 +67,27 @@
       :visible.sync="visible"
       :title="dialogConent['title']"
       class="authorize-dialog"
+      :close-on-press-escape="false"
       width="530px"
       @close="handleCloseDialog">
       <el-row v-if=" operationType === 4 ">
         <el-col style="line-height: 30px">
           <i
             class="el-icon-success green"
-            style="font-size: 20px;margin-right: 10px;" />成功：条<br>
-          <i
+            style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+          <template v-if="!!uploadResults.error_total">
+            <i
             class="el-icon-error red"
-            style="font-size: 20px; margin-right: 10px;" />失败：条
-          <p style="padding-left: 30px">
-            原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据
-          </p>
+            style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
+            <p style="padding-left: 30px">
+              原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据
+            </p>
+          </template>
         </el-col>
         <el-col class="button-box">
           <el-button
             size="small"
-            @click="visible = false"
+            @click="onExcelSure"
             type="primary">
             确定
           </el-button>
@@ -142,7 +151,10 @@ export default {
     jailId: Number
   },
   computed: {
-    ...mapState('literature', ['authorFamiles']),
+    ...mapState('literature', ['authors']),
+    ...mapState({
+      user: state => state.global.user
+    }),
     dialogConent() {
       let title, items = {}, formButton = { buttons: [{ add: 'add', text: '确认' }, 'cancel'] }
       switch(this.operationType) {
@@ -150,10 +162,12 @@ export default {
           title = '新增账户'
           items = {...{
             formConfigs: { labelWidth: '90px' },
-            accountName: { type: 'input', label: '账户', rules: ['required'], clearable: true, placeholder: '请输入手机号码' },
+            accountName: { type: 'input', label: '账户(手机号)', rules: ['required', 'phone'], clearable: true, placeholder: '请输入手机号码' },
             policeNumber: { type: 'input', label: '狱警号', rules: ['required'], clearable: true },
             realName: { type: 'input', label: '真实姓名', rules: ['required'], clearable: true },
-            sex: { type: 'select', label: '性别', rules: ['required'], clearable: true, options: [{ label: '男', value: 'm' }, { label: '女', value: 'f' }], props: { label: 'label', value: 'value' }, value: 'm' }
+            sex: { type: 'select', label: '性别', rules: ['required'], clearable: true,
+              options: [{ label: '男', value: '男' }, { label: '女', value: '女' }],
+              props: { label: 'label', value: 'value' }, value: '男' }
           }, ...{
             buttons: ['add', 'cancel']
           }}
@@ -180,7 +194,7 @@ export default {
       return { items, title }
     },
     roleContents() {
-      let cols, tableData
+      let cols
       switch(this.role) {
         case '5':
           cols = [
@@ -190,32 +204,38 @@ export default {
               index: this.handleGetIndex
             },
             {
-              label: '账户'
+              label: '账户',
+              prop: 'accountName'
 
             },
             {
-              label: '真实姓名'
+              label: '真实姓名',
+              prop: 'realName'
             },
             {
-              label: '笔名'
+              label: '笔名',
+              slotName: 'pseudonym',
             },
             {
-              label: '狱警号'
+              label: '狱警号',
+              prop: 'policeNumber'
             },
             {
-              label: '性别'
+              label: '性别',
+              prop: 'sex'
             },
             {
-              label: '监狱名称'
+              label: '监狱名称',
+              prop: 'jailName'
             },
             {
-              label: '省'
+              label: '省',
+              prop: 'provinceName'
             },
             {
-              label: '头像'
-            },
-            {
-              label: '操作'
+              label: '操作',
+              slotName: 'operate',
+              align: "center"
             }
           ]
           break
@@ -240,27 +260,25 @@ export default {
               align: "center"
             }
           ]
-          tableData = this.authorFamiles
           break
         default:
           break
       }
-      return { cols, tableData }
+      return { cols }
     }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions('literature', ['getAuthorFamily', 'enableAuthorFamily', 'exportAuthorFamily']),
+    ...mapActions('literature', [ 'exportAuthorFamily',  'addAuthorPolice', 'getAuthors', 'enableAuthor' ]),
     async getDatas() {
-      let res
+      let url
       const params = { ...this.filter, ...this.pagination }
-      if (this.role === '6') {
-        res = await this.getAuthorFamily(params)
-        this.totalPage = res.data.authorsSize
-      }
-      if (this.role === '5') res = 2
+      if (this.role === '6') url = '/authorFamily/page'
+      if (this.role === '5') url = '/authorPolice/page'
+      const res = await this.getAuthors({url, params})
+      this.totalPage = res.data.authorsSize
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -269,18 +287,27 @@ export default {
       return this.pagination.rows * (this.pagination.page - 1) + index + 1
     },
     async handleSubmit(params) {
-      const { id } = this.currentAccount
-      if(this.operationType === 2 || this.operationType === 3) {
-        let disabledReason, isEnabled
-        if (this.operationType === 2) {
-          disabledReason = params['disabledReason']
-          isEnabled = 0
+      if (this.operationType === 4) {
+      }
+      else {
+          if(this.operationType === 2 || this.operationType === 3) {
+          const { id } = this.currentAccount
+          let disabledReason = '', isEnabled, url
+          if (this.operationType === 2) {
+            disabledReason = params['disabledReason']
+            isEnabled = 0
+          }
+          if (this.operationType === 3) isEnabled = 1
+          if(this.role === '6') url = '/authorFamily/enabled'
+          if(this.role === '5') url = '/authorPolice/enabled'
+          await this.enableAuthor({ url, params: { id, disabledReason, isEnabled } })
         }
-        if (this.operationType === 3) {
-          disabledReason = ''
-          isEnabled = 1
+        if (this.operationType === 1) {
+          const { jailId } = this.user
+          const isEnabled = 1
+          params = { jailId, ...params, isEnabled }
+          await this.addAuthorPolice(params)
         }
-        await this.enableAuthorFamily({ id, disabledReason, isEnabled })
         this.handleCloseDialog()
         this.getDatas()
       }
@@ -318,6 +345,10 @@ export default {
       setTimeout(() => {
         this.downloading = false
       }, 300)
+    },
+    onExcelSure() {
+      this.visible = false
+      if(this.uploadResults.success_total) this.getDatas()
     }
   }
 }

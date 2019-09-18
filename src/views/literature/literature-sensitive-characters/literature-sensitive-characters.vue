@@ -88,7 +88,7 @@
         <el-col class="button-box">
           <el-button
             size="small"
-            @click="visible = false"
+            @click="onExcelSure"
             type="primary">
             确定
           </el-button>
@@ -242,6 +242,10 @@ export default {
           this.uploadResults = response.data
         }, 1000)
       }
+    },
+    onExcelSure() {
+      this.visible = false
+      if(this.uploadResults.success_total) this.getDatas()
     }
   },
   computed: {

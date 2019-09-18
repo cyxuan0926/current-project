@@ -5,6 +5,6 @@ export default {
   literatureDetail: { content: '' },
   // 敏感字符集
   sensitiveWords: [],
-  // 家属账户
-  authorFamiles: []
+  // 家属/狱警账户
+  authors: []
 }

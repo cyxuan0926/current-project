@@ -118,29 +118,40 @@ export default {
       throw err
     }
   },
-  async getAuthorFamily({ commit }, params) {
-    try {
-      const res = await literatureApi.getAuthorFamily(params)
-      commit('setAuthorFamiles', res.data.authors)
-      return res
-    }
-    catch (err) {
-      throw err
-    }
-  },
-  async enableAuthorFamily({ commit }, params) {
-    try {
-      const res = await literatureApi.enableAuthorFamily(params)
-      return res
-    }
-    catch (err) {
-      throw err
-    }
-  },
   async exportAuthorFamily({ commit }) {
     try {
       const res = await literatureApi.exportAuthorFamily()
       return res.data
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async addAuthorPolice({ commit }, params) {
+    try {
+      const res = await literatureApi.addAuthorPolice(params)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getAuthors({ commit }, data) {
+    const { url, params } = data
+    try {
+      const res = await literatureApi.getAuthors(url, params)
+      commit('setAuthors', res.data.authors)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async enableAuthor({ commit }, data) {
+    const { url, params } = data
+    try {
+      const res = await literatureApi.enableAuthor(url, params)
+      return res
     }
     catch (err) {
       throw err

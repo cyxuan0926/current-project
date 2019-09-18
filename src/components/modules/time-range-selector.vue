@@ -88,6 +88,11 @@ export default {
       else {
         this.startTime = this.val[0]
         this.endTime = this.val[1]
+        let start = Moment(new Date(2000, 0, 1, this.val[0].split(':')[0], this.val[0].split(':')[1])).add(1, 'm').format('HH:mm')
+        this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
+        if (this.prev.length) {
+          this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
+        }
       }
     }
   },
