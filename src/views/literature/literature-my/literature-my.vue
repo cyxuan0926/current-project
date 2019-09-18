@@ -3,7 +3,7 @@
     <div class="header">
       <h3>作品列表</h3>
       <span>共 {{ total }} 部作品</span>
-      <el-button type="primary">发表作品</el-button>
+      <el-button type="primary" @click="onCreateArticle">发表作品</el-button>
     </div>
 
     <m-table :data="literatures" :cols="tableCols">
@@ -36,7 +36,12 @@
       </span>
 
       <template slot="operate" slot-scope="scope">
-        <el-button type="primary" size="small">
+        <el-button
+          v-if="parseInt(scope.row.articleType) === 1"
+          type="primary"
+          size="small"
+          @click="onUpdateArticle(scope.row.id)"
+        >
           文章管理
         </el-button>
         <!-- <el-button type="primary" size="small" plain>
@@ -90,6 +95,12 @@ export default {
   },
   methods: {
     ...mapActions('literature', ['getMyLiteratures']),
+    onCreateArticle() {
+      this.$router.push('/prison/literature-my/literature-create')
+    },
+    onUpdateArticle(id) {
+      this.$router.push(`/prison/literature-my/literature-update/${id}`)
+    },
     async getTableData() {
       const res = await this.getMyLiteratures(this.pagination)
 

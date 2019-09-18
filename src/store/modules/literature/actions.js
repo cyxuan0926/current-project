@@ -41,6 +41,16 @@ export default {
       throw err
     }
   },
+  async publishLiterature({ dispatch }, params) {
+    try {
+      const isSuccess = await literatureApi.publishLiterature(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async passLiterature({ dispatch }, params) {
     try {
       const isSuccess = await literatureApi.passLiterature(params)

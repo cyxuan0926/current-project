@@ -39,6 +39,16 @@ const routes = [
       props: { role: '5', jailId: 2 },
       meta: { permission: 'visit.prison.search', breadcrumbName: '我的作品' },
       component: helper.loadView('literature/literature-my/literature-my')
+    }, {
+      path: '/prison/literature-my/literature-create',
+      props: { role: '5', jailId: 2 },
+      meta: { permission: 'visit.prison.search', breadcrumbName: '发表作品' },
+      component: helper.loadView('literature/literature-detail/literature-detail')
+    }, {
+      path: '/prison/literature-my/literature-update/:id',
+      props: { role: '5', jailId: 2 },
+      meta: { permission: 'visit.prison.search', breadcrumbName: '修改作品' },
+      component: helper.loadView('literature/literature-detail/literature-detail')
     }]
   }
 ]

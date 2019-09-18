@@ -17,6 +17,10 @@ export default {
   getLiteratureDetail: params => {
     return service.get('/article/findDetail', params)
   },
+  // 发布作品
+  publishLiterature: params => {
+    return service.post('/article/publishJailArticle', params)
+  },
   // 审核通过作品
   passLiterature: params => {
     return service.post('/article/passAricle', params)
