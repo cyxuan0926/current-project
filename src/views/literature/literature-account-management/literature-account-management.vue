@@ -47,6 +47,16 @@
         </template>
         <template
           slot-scope="scope"
+          slot="jailName">
+          <span>{{ scope.row.jailName === '平台' ? '' : scope.row.jailName }}</span>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="provinceName">
+          <span>{{ scope.row.jailName === '平台' ? '' : scope.row.provinceName }}</span>
+        </template>
+        <template
+          slot-scope="scope"
           slot="operate">
             <el-button
               @click="() => {
@@ -226,11 +236,13 @@ export default {
             },
             {
               label: '监狱名称',
-              prop: 'jailName'
+              prop: 'jailName',
+              slotName: 'jailName'
             },
             {
               label: '省',
-              prop: 'provinceName'
+              prop: 'provinceName',
+              slotName: 'provinceName'
             },
             {
               label: '操作',
