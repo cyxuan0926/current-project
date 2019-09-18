@@ -8,7 +8,12 @@
         <span>{{ updateTime }}</span>
       </div>
     </div>
-    <el-input type="textarea" :value="article.content" />
+    <el-input
+      type="textarea"
+      :value="article.content"
+      :autosize="{ minRows: 2, maxRows: 18 }"
+      disabled
+    />
   </el-dialog>
 </template>
 
@@ -46,7 +51,7 @@ export default {
 }
 
 /deep/ .el-dialog__body {
-  padding: 10px 25px 20px;
+  padding: 10px 25px 60px;
 
   h3, h4 {
     padding: 0;
@@ -74,14 +79,18 @@ export default {
 }
 
 /deep/ textarea {
-  overflow-y: auto;
-  height: 460px;
   padding: 0;
   border: none;
   font-size: 13px;
   font-family: 'PingFang-SC', 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 26px;
+  line-height: 24px;
   appearance: none;
   resize: none;
+}
+
+/deep/ .el-textarea.is-disabled .el-textarea__inner {
+  color: #333;
+  background-color: #fff;
+  cursor: text;
 }
 </style>

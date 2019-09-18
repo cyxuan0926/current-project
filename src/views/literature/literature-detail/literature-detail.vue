@@ -22,7 +22,12 @@
         <el-input v-model="articleForm.title"></el-input>
       </el-form-item>
       <el-form-item label="作品内容" prop="content">
-        <el-input type="textarea" v-model="articleForm.content" rows="20"></el-input>
+        <el-input
+          v-model="articleForm.content"
+          type="textarea"
+          rows="20"
+          maxlength="20000"
+        />
       </el-form-item>
       <el-form-item align="right">
         <el-button
@@ -76,7 +81,9 @@ export default {
         ],
         content: [
           {
-            validator: debounce(this.sensitiveWordValidator, 62),
+            validator: debounce(this.sensitiveWordValidator, 500, {
+              maxWait: 60 * 1000
+            }),
             trigger: 'change'
           },
           { required: true, message: '请输入作品内容', trigger: 'blur' },
@@ -132,31 +139,34 @@ export default {
     onSubmit() {
       this.$refs.articleForm.validate(async valid => {
         if (valid) {
-          await this.publishLiterature({
+          const res = await this.publishLiterature({
             id: this.$route.params.id,
             ...this.articleForm
           })
-          this.$router.push('/prison/literature-my/literatures')
+          res && this.$router.push('/prison/literature-my/literatures')
         }
       })
     },
     sensitiveWordValidator(rule, value, callback) {
+      const sensitiveWords = this._sensitiveWords
+      const length = sensitiveWords.length
+      const content = this.articleForm.content
       const st = Date.now()
-      console.log('start at', st)
-      for (let i = 0; i < this._sensitiveWords.length; i++) {
-        const word = this._sensitiveWords[i];
 
-        if (this.articleForm.content.includes(word)) {
+      for (let i = 0; i < length; i++) {
+        const word = sensitiveWords[i];
+
+        if (content.includes(word)) {
           console.log('sensitiveWordValidator', i, word)
           const message = `内容不能包含敏感词 “${word}”`
 
           callback(new Error(message));
           this.$message.error(message)
-          return
+          break
         }
       }
+
       const et = Date.now()
-      console.log('end at', et)
       console.log('检查共花费了：' + (et - st) / 1000 + '秒')
       callback()
     },
