@@ -76,12 +76,18 @@ export default {
           { required: true, message: '请输入笔名', trigger: 'change' }
         ],
         title: [
+          {
+            validator: debounce(this.titleValidator, 300, {
+              maxWait: 60 * 1000
+            }),
+            trigger: 'change'
+          },
           { required: true, message: '请输入标题', trigger: 'change' },
           { min: 1, max: 18, message: '标题不能超过 18 个字', trigger: 'change' }
         ],
         content: [
           {
-            validator: debounce(this.sensitiveWordValidator, 500, {
+            validator: debounce(this.contentValidator, 300, {
               maxWait: 60 * 1000
             }),
             trigger: 'change'
@@ -147,10 +153,26 @@ export default {
         }
       })
     },
-    sensitiveWordValidator(rule, value, callback) {
+    titleValidator(rule, value, callback) {
+      this.sensitiveWordValidator(
+        rule,
+        value,
+        callback,
+        this.articleForm.title
+      )
+    },
+    contentValidator(rule, value, callback) {
+      this.sensitiveWordValidator(
+        rule,
+        value,
+        callback,
+        this.articleForm.content
+      )
+    },
+    sensitiveWordValidator(rule, value, callback, content) {
       const sensitiveWords = this._sensitiveWords
       const length = sensitiveWords.length
-      const content = this.articleForm.content
+      content = content.replace(/\s/g, '')
       const st = Date.now()
 
       for (let i = 0; i < length; i++) {
@@ -158,7 +180,7 @@ export default {
 
         if (content.includes(word)) {
           console.log('sensitiveWordValidator', i, word)
-          const message = `内容不能包含敏感词 “${word}”`
+          const message = `不能包含敏感词 “${word}”`
 
           callback(new Error(message));
           this.$message.error(message)
@@ -169,8 +191,7 @@ export default {
       const et = Date.now()
       console.log('检查共花费了：' + (et - st) / 1000 + '秒')
       callback()
-    },
-
+    }
   }
 }
 </script>
