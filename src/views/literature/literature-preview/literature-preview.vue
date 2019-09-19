@@ -4,7 +4,7 @@
     <div class="literature-info">
       <span>{{ literatureDetail.penName }}/著</span>
       <span>本章共{{ literatureDetail.content.length }}字</span>
-      <span>更新于：{{ literatureDetail.updatedAt }}</span>
+      <span>更新于：{{ literatureDetail.publishAt }}</span>
     </div>
     <p class="literature-content">
       <el-input
@@ -74,8 +74,8 @@ export default {
         rejectReason: [
           { required: true, message: '请填写不通过原因', trigger: 'change' },
           {
-            max: 200,
-            message: '不通过原因不能超过 200 个字符',
+            max: 20,
+            message: '不通过原因不能超过 20 个字符',
             trigger: 'change'
           }
         ]

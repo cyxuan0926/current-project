@@ -119,10 +119,10 @@ export default {
           penName,
           title,
           content,
-          updatedAt
+          publishAt
         } = vm.literatureDetail
 
-        vm.articleUpdateTime = updatedAt
+        vm.articleUpdateTime = publishAt
         vm.articleForm = {
           articleType: parseInt(articleType),
           penName,
