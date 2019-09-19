@@ -299,30 +299,27 @@ export default {
       return this.pagination.rows * (this.pagination.page - 1) + index + 1
     },
     async handleSubmit(params) {
-      if (this.operationType === 4) {
+      let res
+      if(this.operationType === 2 || this.operationType === 3) {
+      const { id } = this.currentAccount
+      let disabledReason = '', isEnabled, url
+      if (this.operationType === 2) {
+        disabledReason = params['disabledReason']
+        isEnabled = 0
       }
-      else {
-          if(this.operationType === 2 || this.operationType === 3) {
-          const { id } = this.currentAccount
-          let disabledReason = '', isEnabled, url
-          if (this.operationType === 2) {
-            disabledReason = params['disabledReason']
-            isEnabled = 0
-          }
-          if (this.operationType === 3) isEnabled = 1
-          if(this.role === '6') url = '/authorFamily/enabled'
-          if(this.role === '5') url = '/authorPolice/enabled'
-          await this.enableAuthor({ url, params: { id, disabledReason, isEnabled } })
-        }
-        if (this.operationType === 1) {
-          const { jailId } = this.user
-          const isEnabled = 1
-          params = { jailId, ...params, isEnabled }
-          await this.addAuthorPolice(params)
-        }
-        this.handleCloseDialog()
-        this.getDatas()
+      if (this.operationType === 3) isEnabled = 1
+      if(this.role === '6') url = '/authorFamily/enabled'
+      if(this.role === '5') url = '/authorPolice/enabled'
+        res = await this.enableAuthor({ url, params: { id, disabledReason, isEnabled } })
       }
+      if (this.operationType === 1) {
+        const { jailId } = this.user
+        const isEnabled = 1
+        params = { jailId, ...params, isEnabled }
+        res = await this.addAuthorPolice(params)
+      }
+      this.handleCloseDialog()
+      if (res) this.getDatas()
     },
     handleCloseDialog() {
       this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
