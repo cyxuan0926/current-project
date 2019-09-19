@@ -6,7 +6,15 @@
       <span>本章共{{ literatureDetail.content.length }}字</span>
       <span>更新于：{{ literatureDetail.updatedAt }}</span>
     </div>
-    <p class="literature-content">{{ literatureDetail.content }}</p>
+    <p class="literature-content">
+      <el-input
+        type="textarea"
+        :value="literatureDetail.content"
+        :autosize="{ minRows: 2 }"
+        disabled
+      />
+    </p>
+    <!-- <p class="literature-content">{{ literatureDetail.content }}</p> -->
 
     <template v-if="!isCheckNeeded">
       <p v-if="literatureDetail.rejectReason" class="reason">
@@ -173,6 +181,24 @@ export default {
 
   .operate {
     text-align: left;
+  }
+}
+
+.literature-content {
+  /deep/ textarea {
+    padding: 0;
+    border: none;
+    font-size: 13px;
+    font-family: 'PingFang-SC', 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 24px;
+    appearance: none;
+    resize: none;
+  }
+
+  /deep/ .el-textarea.is-disabled .el-textarea__inner {
+    color: #333;
+    background-color: #fff;
+    cursor: text;
   }
 }
 </style>
