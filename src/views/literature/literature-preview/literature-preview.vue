@@ -6,14 +6,14 @@
       <span>本章共{{ literatureDetail.content.length }}字</span>
       <span>更新于：{{ literatureDetail.publishAt }}</span>
     </div>
-    <p class="literature-content">
+    <div class="literature-content">
       <el-input
         type="textarea"
         :value="literatureDetail.content"
         :autosize="{ minRows: 2 }"
         disabled
       />
-    </p>
+    </div>
     <!-- <p class="literature-content">{{ literatureDetail.content }}</p> -->
 
     <template v-if="!isCheckNeeded">
@@ -43,8 +43,8 @@
       >
         <el-input
           v-model="rejectForm.rejectReason"
-          :autosize="{ minRows: 6 }"
           type="textarea"
+          rows="6"
           placeholder="请填写不通过原因"
         />
       </el-form-item>
@@ -188,6 +188,7 @@ export default {
 
 .literature-content {
   /deep/ textarea {
+    overflow-y: auto;
     padding: 0;
     border: none;
     font-size: 13px;
