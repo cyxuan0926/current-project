@@ -202,28 +202,29 @@ export default {
     },
     onClear() {
       Object.keys(this.items).forEach(key => {
-        // if (this.items[key].miss) return
-        if (this.items[key].type === 'monthRangeSelector') {
-          this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
-          // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
-          this.items[key][this.items[key].endKey] = this.items[key].endValue || ''
-          // params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
-        }
-        if (this.items[key].type === 'monthrange') {
-          this.startValue = this.endValue = ''
-          // params[this.items[key].start] = this.startValue
-          // params[this.items[key].end] = this.endValue
-        }
-        // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-        if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
-          this.items[key].value = null
-          // params[this.items[key].start] = this.items[key].value[0]
-          // params[this.items[key].end] = this.items[key].value[1]
-        }
-        else {
-          this.items[key].value = ''
-          // params[key] = this.items[key].value
-        }
+        if (this.items[key].miss) return
+        // if (this.items[key].type === 'monthRangeSelector') {
+        //   this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
+        //   // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+        //   this.items[key][this.items[key].endKey] = this.items[key].endValue || ''
+        //   // params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
+        // }
+        // if (this.items[key].type === 'monthrange') {
+        //   this.startValue = this.endValue = ''
+        //   // params[this.items[key].start] = this.startValue
+        //   // params[this.items[key].end] = this.endValue
+        // }
+        // // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+        // if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
+        //   this.items[key].value = null
+        //   // params[this.items[key].start] = this.items[key].value[0]
+        //   // params[this.items[key].end] = this.items[key].value[1]
+        // }
+        // else {
+        //   this.items[key].value = ''
+        //   // params[key] = this.items[key].value
+        // }
+        this.$set(this.items[key], 'value', '')
       })
 
       this.$parent.$parent.filter = {}

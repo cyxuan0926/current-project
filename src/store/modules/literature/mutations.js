@@ -5,6 +5,9 @@ export default {
   setLiteratureDetail: (state, literatureDetail) => {
     state.literatureDetail = literatureDetail
   },
+  setCurrentOperateRows: (state, currentOperateRows) => {
+    state.currentOperateRows = currentOperateRows
+  },
   setSensitivewords: (state, sensitiveWords) => {
     state.sensitiveWords = sensitiveWords
   },

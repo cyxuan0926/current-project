@@ -77,6 +77,16 @@ export default {
       this.getTableData()
     },
     async getTableData() {
+      const currentOperateRows = this.$store.state.literature.currentOperateRows
+      const currentTableRows = this.$store.getters['literature/currentTableRows']
+
+      const { page, rows } = this.pagination
+      const hasNextPage = this.total - page * rows > 0
+
+      if (currentOperateRows === currentTableRows && !hasNextPage) {
+        this.pagination.page = page > 1 ? page - 1 : 1
+      }
+
       let res = {}
       const params = {
         status: this.literatureStatus,
