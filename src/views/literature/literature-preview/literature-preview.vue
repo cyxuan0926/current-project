@@ -119,8 +119,10 @@ export default {
           type: "warning"
         });
 
-        await this.passLiterature({ id: this.$route.params.id })
-        this.back()
+        const isSuccess = await this.passLiterature({
+          id: this.$route.params.id
+        })
+        isSuccess && this.back()
       } catch (err) {
         console.log(err);
       }

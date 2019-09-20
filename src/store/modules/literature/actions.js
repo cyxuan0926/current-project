@@ -60,7 +60,7 @@ export default {
   async passLiterature({ commit }, params) {
     try {
       const isSuccess = await literatureApi.passLiterature(params)
-      setCurrentOperateRows(params.id, commit)
+      isSuccess && setCurrentOperateRows(params.id, commit)
 
       return isSuccess
     }
@@ -71,7 +71,7 @@ export default {
   async rejectLiterature({ commit }, params) {
     try {
       const isSuccess = await literatureApi.rejectLiterature(params)
-      setCurrentOperateRows(params.id, commit)
+      isSuccess && setCurrentOperateRows(params.id, commit)
 
       return isSuccess
     }
@@ -82,7 +82,7 @@ export default {
   async offlineLiterature({ commit }, params) {
     try {
       const isSuccess = await literatureApi.offlineLiterature(params)
-      setCurrentOperateRows(params.id, commit)
+      isSuccess && setCurrentOperateRows(params.id, commit)
 
       return isSuccess
     }

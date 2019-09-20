@@ -176,8 +176,8 @@ export default {
           type: "warning"
         });
 
-        await this.passLiterature({ id: literaturesId })
-        this.getTableData()
+        const isSuccess = await this.passLiterature({ id: literaturesId })
+        isSuccess && this.getTableData()
       } catch (err) {
         console.log(err);
       }

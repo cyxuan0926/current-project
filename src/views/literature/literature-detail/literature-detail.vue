@@ -145,11 +145,11 @@ export default {
     onSubmit() {
       this.$refs.articleForm.validate(async valid => {
         if (valid) {
-          const res = await this.publishLiterature({
+          const isSuccess = await this.publishLiterature({
             id: this.$route.params.id,
             ...this.articleForm
           })
-          res && this.$router.push('/prison/literature-my/literatures')
+          isSuccess && this.$router.push('/prison/literature-my/literatures')
         }
       })
     },
