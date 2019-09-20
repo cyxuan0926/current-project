@@ -23,6 +23,7 @@ let infomation = [{
       permission: 'visit.prison-profile.update',
       role: '3',
       deep: true,
+      activeMenu: '/jails/detail',
       breadcrumbName: '编辑监狱基本信息'
     },
     component: helper.loadView('sadmin-prison/prison-edit')

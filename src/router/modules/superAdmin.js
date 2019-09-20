@@ -40,7 +40,7 @@ let superAdmin = [{
       path: '/prison/visit/:id',
       name: 'prison-visit',
       props: { role: 0 },
-      meta: { role: '0', deep: true, permission: 'visit.prison.filed-visit-config.search', breadcrumbName: '监狱实地会见配置' },
+      meta: { role: '0', deep: true, permission: 'visit.prison.filed-visit-config.search', breadcrumbName: '监狱实地会见配置', activeMenu: '/prison/list' },
       // component: resolve => require(['@/views/meeting/visit-config'], resolve)
       component: helper.loadView('meeting/visit-config')
       // }, {
@@ -52,7 +52,7 @@ let superAdmin = [{
       path: '/remote/edit/:id',
       name: 'remote-edit-super-admin',
       // permssion: 'edit'
-      meta: { role: '0', permission: 'visit.prison.visit-config.search', deep: true, breadcrumbName: '监狱远程会见配置' },
+      meta: { role: '0', permission: 'visit.prison.visit-config.search', deep: true, breadcrumbName: '监狱远程会见配置', activeMenu: '/prison/list' },
       // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
       component: helper.loadView('meeting/remote-edit')
     }, {
@@ -63,6 +63,7 @@ let superAdmin = [{
         permission: 'visit.prison.update',
         role: '0',
         deep: true,
+        activeMenu: '/prison/list',
         breadcrumbName: '编辑监狱'
       },
       // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)

@@ -26,8 +26,9 @@
         </div>
       </div>
     </div>
+    <!-- $route.meta.deep ? getActiveMenu() : $route.path -->
     <el-menu
-      :default-active="$route.meta.deep ? getActiveMenu() : $route.path"
+      :default-active=" active "
       background-color="#222d32"
       text-color="#b8c7ce"
       active-text-color="#fff"
@@ -57,11 +58,13 @@
             <i :class="['iconfont', `${item.icon}`]" />
             <span>{{ item.name }}</span>
           </template>
+          <!-- !second.hidden && -->
           <template v-for="second in item.children">
             <el-menu-item
-              v-if="!second.hidden && !second.children.length"
+              v-if=" !second.children.length "
               :key="second.path"
-              :index="second.path">{{ second.name }}</el-menu-item>
+              :index="second.path">{{ second.name }}
+              </el-menu-item>    
             <el-submenu
               v-else
               :class="[
@@ -74,8 +77,8 @@
                 <span>{{ second.name }}</span>
               </template>
               <template v-for="third in second.children">
+                <!-- v-if="!third.hidden" -->
                 <el-menu-item
-                  v-if="!third.hidden"
                   :key="third.path"
                   :index="third.path">
                   <!-- <i :class="third.icon" /> -->
@@ -92,6 +95,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { helper } from '@/utils'
 
 export default {
   data() {
@@ -105,7 +109,27 @@ export default {
       isCollapsed: state => state.layout.isCollapsed,
       menus: state => state.account.menus,
       publicUserInfo: state => state.account.publicUserInfo
-    })
+    }),
+    active() {
+      let val
+      // 自我定义了激活菜单的情况
+      if (this.$route.meta && this.$route.meta.activeMenu) val = this.$route.meta.activeMenu
+      // 这是特殊情况 一个页面多个不同路由的tab页面
+      else if (this.$route.matched[this.$route.matched.length - 1].path.includes('trade')) val = '/trade/account'
+      // 通过重定向导航到子路由的情况
+      else if (this.$route.redirectedFrom) val = this.$route.redirectedFrom
+      // 重定向页面刷新情况
+      else if (this.$route.matched[this.$route.matched.length - 2].redirect && this.$route.matched[this.$route.matched.length - 2].redirect.path) val = this.$route.matched[this.$route.matched.length - 2].path
+      // 一些编辑页面
+      else if (helper.isEmptyObject(this.$route.params)) {
+        let temp = new Set(this.$route.matched[this.$route.matched.length - 1].path.split('/'))
+        for (let key of Object.keys(this.$route.params)) temp.delete(`:${key}`)
+        val = [...temp].join('/')
+      }
+      // 这就是普通情况
+      else val = this.$route.matched[this.$route.matched.length - 1].path
+      return val
+    }
   },
   mounted() {
     if (this.user.prisonConfigList && this.user.prisonConfigList.length) {
@@ -115,16 +139,16 @@ export default {
     }
   },
   methods: {
-    getActiveMenu() {
-      let active
-      if (this.$route.meta && this.$route.meta.activeMenu) {
-        active = this.$route.meta.activeMenu
-      }
-      else {
-        active = `${ this.$route.matched[0].path || this.$route.matched[1].path }/list`
-      }
-      return active
-    },
+    // getActiveMenu() {
+    //   let active
+    //   if (this.$route.meta && this.$route.meta.activeMenu) {
+    //     active = this.$route.meta.activeMenu
+    //   }
+    //   else {
+    //     active = `${ this.$route.matched[0].path || this.$route.matched[1].path }/list`
+    //   }
+    //   return active
+    // },
     handleSelect(e, keyPath) {
       this.$router.push(e)
     }

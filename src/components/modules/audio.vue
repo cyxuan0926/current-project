@@ -2,7 +2,7 @@
   <div
     class="audio-container"
     :style="'width:' + width"
-    v-show="show">
+    v-show="leastTime">
     <img
       v-if="audioImg === 3"
       src="@/assets/images/audio-icon.png"
@@ -62,7 +62,6 @@ export default {
   },
   data() {
     return {
-      show: false,
       leastTime: null,
       progressBarVal: 0,
       audioImg: 3,
@@ -102,8 +101,7 @@ export default {
       }
     },
     getTotalDuration(e) {
-      this.leastTime = durationFormat(parseInt(this.$refs.audio.duration), { format: 'mm:ss' })
-      if (!this.show) this.show = true
+      if (this.$refs.audio && this.$refs.audio.duration && !isNaN(this.$refs.audio.duration)) this.leastTime = durationFormat(parseInt(this.$refs.audio.duration), { format: 'mm:ss' })
     }
   }
 }
