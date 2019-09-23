@@ -10,7 +10,8 @@ import superAdmin from './modules/superAdmin'
 import literatureFamily from './modules/literature-family'
 import literaturePrison from './modules/literature-prison'
 import md5 from 'js-md5'
-// import lodash from 'lodash'
+import lodash from 'lodash'
+import { helper } from '@/utils'
 
 // 重置路由: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
@@ -21,13 +22,13 @@ export function resetRouter() {
 
 Vue.use(Router)
 
-const noAuthRoute = ['/dashboard', '/password/edit', '/app_preview/family_download', '/app_preview/prison_download', '/download/operation', '/login']
+// const noAuthRoute = ['/dashboard', '/password/edit', '/app_preview/family_download', '/app_preview/prison_download', '/download/operation', '/login']
 
 const createRouter = () => new Router({
   mode: 'history',
-  // routes: common,
+  routes: common,
   // routes: [...common, literatureFamily, literaturePrison],
-  routes: [...common, literatureFamily, literaturePrison, ...check, ...admin, ...information, ...superAdmin],
+  // routes: [...common, literatureFamily, literaturePrison, ...check, ...admin, ...information, ...superAdmin, { path: '*', redirect: '/dashboard' }],
   linkActiveClass: 'active-menu',
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -78,6 +79,7 @@ const dynamicAddRoutes = (rootmenusAuthorities = [], routes = [], currentUsersAu
       let currentRouterAuth = handlePermissions(currentRouter),
         { menusAuthorities, authorities, ownRouterAuthorities } = filterAuthorities(currentUsersAuth, currentRouterAuth, rootmenusAuthorities)
       getExactCurrentRouter(currentRouter, ownRouterAuthorities)
+      mapLoadComponet(currentRouter)
       result.push(...currentRouter)
       return dynamicAddRoutes(menusAuthorities, filterRoutes, authorities, result)
     }
@@ -170,49 +172,63 @@ const filterRoutes = (filterResult, routes) => {
     }
   })
 }
+/**
+ *
+ * @param {*} routes:当前的路由数组
+ * 为了修复动态添加路由之后重复挂载frame组件
+ */
+// eslint-disable-next-line
+const mapLoadComponet = (routes) => {
+  return routes.map(childRouter => {
+    if (childRouter.component) childRouter.component = helper.loadView(childRouter.component)
+    if (childRouter.children) return mapLoadComponet(childRouter.children)
+  })
+}
+
 // eslint-disable-next-line
 const md5RoleId = (userRoles) => md5(userRoles.map(val => val.roleId).join(''))
 
 // 动态添加路由
 router.beforeEach((to, from, next) => {
-  // const hasDynamicRoutes = store.state.global.dynamicRoutes.length > 0
-  // const memoryDynamicRoutes = store.state.global.memoryDynamicRoutes
+  const hasDynamicRoutes = store.state.global.dynamicRoutes.length > 0
+  const memoryDynamicRoutes = store.state.global.memoryDynamicRoutes
   const permission = store.state.account.authorities
-  // if (permission && permission.length && !hasDynamicRoutes) {
-  //   // 函数记忆 受限的地方很多 不同监狱的同一角色相同权限的roleId不一样 因为sessiStorage只能存储字符串 所有对象里面的函数也存不了 所有只能是在不刷新的情况下才有限
-  //   let routes, { userRoles } = store.state.account.publicUserInfo, keys = md5RoleId(userRoles), clonePermission = permission.slice(0),
-  //     cloneDeepRoutes = lodash.cloneDeep([...superAdmin, ...information, ...admin, ...check, literatureFamily, literaturePrison]), testmenusAuth = handlePermissions(store.state.account.menus)
-  //   if (memoryDynamicRoutes.hasOwnProperty(keys)) {
-  //     routes = memoryDynamicRoutes[keys]
-  //   }
-  //   else {
-  //     routes = dynamicAddRoutes(testmenusAuth, cloneDeepRoutes, clonePermission)
-  //     store.commit('setMemoryDynamicRoutes', { routes, memoryId: keys })
-  //   }
-  //   router.addRoutes(routes)
-  //   store.commit('setDynamicRoutes', routes)
-  //   next({ ...to, replace: true })
-  // }
+  if (permission && permission.length && !hasDynamicRoutes) {
+    // 函数记忆 受限的地方很多 不同监狱的同一角色相同权限的roleId不一样 因为sessiStorage只能存储字符串 所有对象里面的函数也存不了 所有只能是在不刷新的情况下才有限
+    let routes, { userRoles } = store.state.account.publicUserInfo, keys = md5RoleId(userRoles), clonePermission = permission.slice(0),
+      cloneDeepRoutes = lodash.cloneDeep([...superAdmin, ...information, ...admin, ...check, literatureFamily, literaturePrison]), testmenusAuth = handlePermissions(store.state.account.menus)
+    if (memoryDynamicRoutes.hasOwnProperty(keys)) {
+      routes = memoryDynamicRoutes[keys]
+    }
+    else {
+      routes = dynamicAddRoutes(testmenusAuth, cloneDeepRoutes, clonePermission)
+      store.commit('setMemoryDynamicRoutes', { routes, memoryId: keys })
+    }
+    router.addRoutes(routes)
+    store.commit('setDynamicRoutes', routes)
+    next({ ...to, replace: true })
+    return
+  }
 
   if (!to.meta.notLogin) {
     let isLogin = localStorage.getItem('accountInfo')
     if (!isLogin) {
       next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
-      // return
+      return
     }
   }
   if (to.meta.hidden) {
     next({ path: '/dashboard', replace: true })
-    // return
+    return
   }
-  // if (permission.includes(to.meta.permission)) {
-  //   next()
-  //   return
+  if (permission.includes(to.meta.permission)) {
+    next()
+    return
+  }
+  // if (!permission.includes(to.meta.permission) && !noAuthRoute.includes(to.path)) {
+  //   next({ path: '/dashboard', replace: true })
+  //   // return
   // }
-  if (!permission.includes(to.meta.permission) && !noAuthRoute.includes(to.path)) {
-    next({ path: '/dashboard', replace: true })
-    // return
-  }
   next()
 })
 

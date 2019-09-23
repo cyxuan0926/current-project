@@ -120,7 +120,9 @@ export default {
       else if (this.$route.redirectedFrom) val = this.$route.redirectedFrom
       // 重定向页面刷新情况
       else if (this.$route.matched[this.$route.matched.length - 2].redirect && this.$route.matched[this.$route.matched.length - 2].redirect.path) val = this.$route.matched[this.$route.matched.length - 2].path
-      // 一些编辑页面
+      // 一些新增/编辑页面 active是list路径的 暂定为deep为true的情况
+      else if (this.$route.meta && this.$route.meta.deep) val = `${this.$route.matched[0].path}/list`
+      // 一些可能会出现的编辑页面
       else if (helper.isEmptyObject(this.$route.params)) {
         let temp = new Set(this.$route.matched[this.$route.matched.length - 1].path.split('/'))
         for (let key of Object.keys(this.$route.params)) temp.delete(`:${key}`)
