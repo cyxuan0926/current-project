@@ -141,7 +141,7 @@ export default {
     ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature']),
     onPreview(literature) {
       this.$router.push(
-        `/family/literature-management/literature-preview/${literature.id}`
+        `/literature-management/literature-preview/${literature.id}`
       )
     },
     onOffline(literature) {

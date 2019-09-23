@@ -1,7 +1,4 @@
 export default {
-  props: {
-    role: String
-  },
   data() {
     return {
       isGettingTableData: false,
@@ -41,10 +38,13 @@ export default {
   },
   computed: {
     isFamilyLiteratureChecker() {
-      return parseInt(this.role) === 6
+      return this.role === 6
     },
     isPoliceLiteratureChecker() {
-      return parseInt(this.role) === 5
+      return this.role === 5
+    },
+    role() {
+      return parseInt(this.$store.state.global.user.role)
     },
     /**
      * 作品状态
@@ -101,11 +101,11 @@ export default {
       }
 
       if (this.isPoliceLiteratureChecker) {
-        params.jailId = 2 // TODO：临时方案
+        params.jailId = this.$store.state.global.user.jailId
         res = await this.getPoliceLiteratures(params)
       }
 
-      this.total = res.data.total
+      this.total = res.data && res.data.total
       this.isGettingTableData = false
     }
   }

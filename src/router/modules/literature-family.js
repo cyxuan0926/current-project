@@ -22,7 +22,6 @@ const routes = [
       component: 'literature/literature-management/literature-management'
       // component: helper.loadView('literature/literature-management/literature-management')
     }, {
-      // TODO：临时方案，等公共服务添加角色之后，这个路由要往上移动一级
       path: '/family/literature-management/literature-preview/:id',
       meta: { permission: 'visit.prison.search', breadcrumbName: '作品详情' },
       component: 'literature/literature-preview/literature-preview'

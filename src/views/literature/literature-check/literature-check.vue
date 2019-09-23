@@ -158,7 +158,7 @@ export default {
     ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'passLiterature', 'rejectLiterature']),
     onPreview(literature) {
       this.$router.push({
-        path: `/family/literature-management/literature-preview/${literature.id}`,
+        path: `/literature-management/literature-preview/${literature.id}`,
         query: { status: this.literatureStatus }
       })
     },

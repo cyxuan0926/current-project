@@ -63,7 +63,7 @@ export default {
       literaturePreviewVisible: false,
       articleForm: {
         articleType: 1,
-        penName: '演示监狱（临时方案）', // TODO: 临时方案
+        penName: '',
         title: '',
         content: ''
       },
@@ -136,6 +136,7 @@ export default {
   },
   created() {
     this.getSensitivewords({ page: 1, rows: 100 * 10000, isEnabled: 1 })
+    this.articleForm.penName = this.$store.state.global.user.jailName
   },
   methods: {
     ...mapActions('literature', ['getSensitivewords', 'publishLiterature']),
@@ -149,7 +150,7 @@ export default {
             id: this.$route.params.id,
             ...this.articleForm
           })
-          isSuccess && this.$router.push('/prison/literature-my/literatures')
+          isSuccess && this.$router.push('/literature-my/literatures')
         }
       })
     },

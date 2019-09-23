@@ -96,10 +96,10 @@ export default {
   methods: {
     ...mapActions('literature', ['getMyLiteratures']),
     onCreateArticle() {
-      this.$router.push('/prison/literature-my/literature-create')
+      this.$router.push('/literature-my/literature-create')
     },
     onUpdateArticle(id) {
-      this.$router.push(`/prison/literature-my/literature-update/${id}`)
+      this.$router.push(`/literature-my/literature-update/${id}`)
     },
     async getTableData() {
       const res = await this.getMyLiteratures(this.pagination)
