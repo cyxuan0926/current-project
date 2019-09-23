@@ -41,7 +41,7 @@ export default {
       return this.role === 6
     },
     isPoliceLiteratureChecker() {
-      return this.role === 5
+      return [-1, 5].includes(this.role)
     },
     role() {
       return parseInt(this.$store.state.global.user.role)
