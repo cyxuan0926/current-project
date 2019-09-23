@@ -9,7 +9,7 @@
       @search="onSearch">
       <template
         slot="append"
-        v-if=" role === '5' ">
+        v-if=" user.role === '5' ">
         <el-button
           type="primary"
           @click="() => {
@@ -28,8 +28,11 @@
       </template>
       <template
         slot="append"
-        v-if=" role === '6' ">
-        <el-button type="primary" :loading="downloading" @click="handleExport">
+        v-if=" user.role === '6' ">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="handleExport">
           导出
         </el-button>
       </template>
@@ -40,7 +43,7 @@
         :cols="roleContents['cols']"
         class="mini-td-padding">
         <template
-          v-if=" role === '5' "
+          v-if=" user.role === '5' "
           slot-scope="scope"
           slot="pseudonym">
           <span>{{ scope.row.pseudonym ? scope.row.jailName + '-' + scope.row.pseudonym : '' }}</span>
@@ -124,27 +127,8 @@ import { mapActions, mapState } from 'vuex';
 import { helper } from '@/utils'
 export default {
   data () {
-    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '启用', userStatus: 1 }, {userLable: '禁用', userStatus: 0 } ],
-    commonItems = {
-      accountName: { type: 'input', label: '账户' },
-      isEnabled: {
-        type: 'select',
-        label: '用户状态',
-        options,
-        belong: { value: 'userStatus', label: 'userLable' },
-        value: ''}}
-    if ( this.role === '5') {
-      searchItems = {
-        ...commonItems,
-        ...{
-          policeNumber: { type: 'input', label: '狱警号' },
-          realName: { type: 'input', label: '真实姓名' },
-        }
-      }
-    }
-    if (this.role === '6') searchItems = { ...commonItems }
     return {
-      searchItems,
+      searchItems: {},
       totalPage: 0,
       visible: false,
       uploadResults: {},
@@ -152,13 +136,6 @@ export default {
       downloading: false,
       operationType: 0 // 0：无操作 1：新增账户 2：禁用 3：启用 4：账户导入
     }
-  },
-  mounted() {
-    this.getDatas()
-  },
-  props: {
-    role: String,
-    jailId: Number
   },
   computed: {
     ...mapState('literature', ['authors']),
@@ -205,7 +182,7 @@ export default {
     },
     roleContents() {
       let cols
-      switch(this.role) {
+      switch(this.user.role) {
         case '5':
           cols = [
             {
@@ -279,16 +256,35 @@ export default {
       return { cols }
     }
   },
-  mounted() {
-    this.getDatas()
+  async mounted() {
+    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '启用', userStatus: 1 }, {userLable: '禁用', userStatus: 0 } ],
+    commonItems = {
+      accountName: { type: 'input', label: '账户' },
+      isEnabled: {
+        type: 'select',
+        label: '用户状态',
+        options,
+        belong: { value: 'userStatus', label: 'userLable' },
+        value: ''}}
+    if (this.user.role === '5') {
+      this.searchItems = {
+        ...commonItems,
+        ...{
+          policeNumber: { type: 'input', label: '狱警号' },
+          realName: { type: 'input', label: '真实姓名' },
+        }
+      }
+    }
+    if (this.user.role === '6') this.searchItems = { ...commonItems }
+    await this.getDatas()
   },
   methods: {
     ...mapActions('literature', [ 'exportAuthorFamily',  'addAuthorPolice', 'getAuthors', 'enableAuthor' ]),
     async getDatas() {
       let url
       const params = { ...this.filter, ...this.pagination }
-      if (this.role === '6') url = '/authorFamily/page'
-      if (this.role === '5') url = '/authorPolice/page'
+      if (this.user.role === '6') url = '/authorFamily/page'
+      if (this.user.role === '5') url = '/authorPolice/page'
       const res = await this.getAuthors({url, params})
       this.totalPage = res.data.authorsSize
     },
@@ -308,8 +304,8 @@ export default {
         isEnabled = 0
       }
       if (this.operationType === 3) isEnabled = 1
-      if(this.role === '6') url = '/authorFamily/enabled'
-      if(this.role === '5') url = '/authorPolice/enabled'
+      if(this.user.role === '6') url = '/authorFamily/enabled'
+      if(this.user.role === '5') url = '/authorPolice/enabled'
         res = await this.enableAuthor({ url, params: { id, disabledReason, isEnabled } })
       }
       if (this.operationType === 1) {
