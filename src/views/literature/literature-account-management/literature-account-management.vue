@@ -9,7 +9,7 @@
       @search="onSearch">
       <template
         slot="append"
-        v-if=" user.role === '5' ">
+        v-if=" ['5', '-1'].includes(user.role) ">
         <el-button
           type="primary"
           @click="() => {
@@ -43,7 +43,7 @@
         :cols="roleContents['cols']"
         class="mini-td-padding">
         <template
-          v-if=" user.role === '5' "
+          v-if="['5', '-1'].includes(user.role)"
           slot-scope="scope"
           slot="pseudonym">
           <span>{{ scope.row.pseudonym ? scope.row.jailName + '-' + scope.row.pseudonym : '' }}</span>
@@ -181,9 +181,11 @@ export default {
       return { items, title }
     },
     roleContents() {
-      let cols
-      switch(this.user.role) {
-        case '5':
+      let cols, role
+      if (['5', '-1'].includes(this.user.role)) role = '0'
+      if (this.user.role === '6') role = '6'
+      switch(role) {
+        case '0':
           cols = [
             {
               label: '序号',
@@ -266,7 +268,7 @@ export default {
         options,
         belong: { value: 'userStatus', label: 'userLable' },
         value: ''}}
-    if (this.user.role === '5') {
+    if (['5', '-1'].includes(this.user.role)) {
       this.searchItems = {
         ...commonItems,
         ...{
@@ -284,7 +286,7 @@ export default {
       let url
       const params = { ...this.filter, ...this.pagination }
       if (this.user.role === '6') url = '/authorFamily/page'
-      if (this.user.role === '5') url = '/authorPolice/page'
+      if (['5', '-1'].includes(this.user.role)) url = '/authorPolice/page'
       const res = await this.getAuthors({url, params})
       this.totalPage = res.data.authorsSize
     },
@@ -305,7 +307,7 @@ export default {
       }
       if (this.operationType === 3) isEnabled = 1
       if(this.user.role === '6') url = '/authorFamily/enabled'
-      if(this.user.role === '5') url = '/authorPolice/enabled'
+      if(['5', '-1'].includes(this.user.role)) url = '/authorPolice/enabled'
         res = await this.enableAuthor({ url, params: { id, disabledReason, isEnabled } })
       }
       if (this.operationType === 1) {
