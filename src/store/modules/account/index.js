@@ -29,7 +29,7 @@ const actions = {
       let loginRes = await login({ username, password }), userInfoRes = false, MenusRes = false, baseInfoRes = false
       if (loginRes) {
         commit('setAccountInfo', loginRes)
-        commit('setAuthorities', jwtDecode(loginRes.access_token).authorities)
+        commit('setAuthorities', (jwtDecode(loginRes.access_token).authorities || []))
         userInfoRes = await dispatch('getPublicUserInfo')
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })

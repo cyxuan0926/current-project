@@ -70,8 +70,8 @@ export const transitionRolesList = (val) => {
         return true
       }
     })
-  if (isOwn) Object.assign(result, data)
-  else Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
+  if (isOwn) result = Object.assign(result, data)
+  else result = Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
   return result
 }
 
@@ -97,9 +97,9 @@ export const transitionRoleId = (val) => {
       { roleList: [6], role: '6' }
     ], controlArg = true
   for (let value of val) {
-    let { roleName } = value, roleId, isOwn = switches['role'].filter(role => {
-      if (role.label === roleName) {
-        roleId = role.value
+    let { roleName } = value, roleId, isOwn = switches['role'].filter(roles => {
+      if (roles.label === roleName) {
+        roleId = roles.role
         return true
       }
     })

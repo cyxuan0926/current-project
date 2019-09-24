@@ -104,7 +104,7 @@ export default {
           const res = await this.login({ username, password })
           if(res) {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
-            localStorage.setItem('authorities', JSON.stringify(this.authorities))
+            localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
             localStorage.setItem('publicUserInfo', JSON.stringify(this.publicUserInfo))
             localStorage.setItem('menus', JSON.stringify(this.menus))
             this.setUser(Object.assign({}, this.user, {...helper.transitionRoleId(this.publicUserInfo.userRoles)}))
