@@ -36,7 +36,7 @@ const config = {
   },
   auth: {
     publicApiHost: 'http://192.168.0.230:8081',
-    apiHost: 'http://192.168.0.230:8088',
+    apiHost: 'http://192.168.0.182:8088',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,

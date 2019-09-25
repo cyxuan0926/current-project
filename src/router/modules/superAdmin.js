@@ -21,7 +21,7 @@ let superAdmin = [{
     }, {
       path: '/tenant/list',
       name: 'tenant-list',
-      meta: { permission: 'visit.prison.tenant.search', breadcrumbName: '租户列表' },
+      meta: { permission: 'visit.prison.tenant.search', breadcrumbName: '租户列表', activeMenu: '/prison/list' },
       component: 'sadmin-prison/tenant-list'
       // component: resolve => require(['@/views/sadmin-prison/tenant-list'], resolve)
       // component: helper.loadView('sadmin-prison/tenant-list')

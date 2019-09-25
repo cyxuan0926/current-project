@@ -45,9 +45,7 @@ const actions = {
   async getPublicUserInfo({ commit, dispatch }) {
     try {
       const res = await getPublicUserInfo()
-      if (res) {
-        commit('setPublicUserInfo', res)
-      }
+      if (res) commit('setPublicUserInfo', res)
       return res
     }
     catch (err) {
@@ -58,9 +56,7 @@ const actions = {
   async getMenus({ commit, dispatch }) {
     try {
       const res = await getMenus()
-      if (res) {
-        commit('setMenus', res)
-      }
+      if (res) commit('setMenus', res)
       return res
     }
     catch (err) {
@@ -109,8 +105,8 @@ const actions = {
   async getAllTenants({ commit }) {
     try {
       const res = await getAllTenants()
-      if (res && res.content) commit('setAllTenants', res.content)
-      return res
+      if (res && res.content && res.content.length) commit('setAllTenants', res.content)
+      return res && res.content && res.content.length
     }
     catch (err) {
       throw err

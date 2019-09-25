@@ -15,7 +15,7 @@
       </el-col>
       <el-col
         :span="24"
-        :key="type.id + type.versionCode"
+        :key="index + type.title"
         style="margin-bottom: 10px;">
         <el-table
           :data="[versions[index]]"
