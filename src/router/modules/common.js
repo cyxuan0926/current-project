@@ -36,6 +36,12 @@ let common = [{
     meta: { notLogin: true },
     // component: resolve => require(['@/views/download/app-prison'], resolve)
     component: 'download/app-prison'
+    // component: helper.loadView('download/app-prison')
+  }, {
+    path: '/app_preview/police_download',
+    name: '狱警版app',
+    meta: { notLogin: true },
+    component: 'download/app-police'
   }]
 }, {
   path: '/download',
