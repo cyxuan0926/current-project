@@ -1,4 +1,3 @@
-import { resetRouter } from '@/router/index'
 import store from '@/store'
 import { Message } from 'element-ui'
 
@@ -10,7 +9,6 @@ const logout = () => {
   // store.commit('account/setAuthorities', [])
   // store.commit('account/setMenus', [])
   // store.commit('account/setPublicUserInfo', {})
-  resetRouter()
   Message({
     showClose: true,
     message: '退出登陆成功',

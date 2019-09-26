@@ -1,5 +1,4 @@
 import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants } from '@/service-public/api/account'
-import { resetRouter } from '@/router/index'
 import { helper } from '@/utils'
 import jwtDecode from 'jwt-decode'
 
@@ -33,7 +32,6 @@ const actions = {
         userInfoRes = await dispatch('getPublicUserInfo')
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })
-        resetRouter()
       }
       return loginRes && userInfoRes && MenusRes && baseInfoRes
     }
