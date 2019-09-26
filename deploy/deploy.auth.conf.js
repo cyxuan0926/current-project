@@ -10,7 +10,7 @@ module.exports = {
   remotePath: "/mnt/projects/nginx/www",
   sourcePatterns: ["static", "index.html"],
   server: {
-    host: "192.168.0.230",
+    host: "192.168.0.180",
     port: 22,
     username: "root",
     password: "Nihaoccj123"
