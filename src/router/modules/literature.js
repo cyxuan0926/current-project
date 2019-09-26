@@ -6,10 +6,20 @@ const routes = [
       {
         path: '/literature-check/literatures',
         meta: {
+          componentsToKeepAlive: ['LiteratureCheck'],
           permission: 'visit.literature-check.search',
           breadcrumbName: '作品审核'
         },
         component: 'literature/literature-check/literature-check'
+      },
+      {
+        path: '/literature-check/literature-preview/:id',
+        meta: {
+          componentsUnRemoveKeepAlive: ['LiteratureCheck'],
+          permission: 'visit.literature-check.search',
+          breadcrumbName: '作品详情'
+        },
+        component: 'literature/literature-preview/literature-preview'
       }
     ]
   },
@@ -20,6 +30,7 @@ const routes = [
       {
         path: '/literature-management/literatures',
         meta: {
+          componentsToKeepAlive: ['LiteratureManagement'],
           permission: 'visit.literature-management.search',
           breadcrumbName: '作品管理'
         },
@@ -28,7 +39,7 @@ const routes = [
       {
         path: '/literature-management/literature-preview/:id',
         meta: {
-          // 公共平台未添加该权限，用 visit.literature-management.search 代替
+          componentsUnRemoveKeepAlive: ['LiteratureManagement'],
           permission: 'visit.literature-management.search',
           breadcrumbName: '作品详情'
         },

@@ -241,4 +241,34 @@ router.beforeEach((to, from, next) => {
 //   if (isChunkLoadFailed) router.replace(targetPath)
 // })
 
+// 动态缓存组件
+router.beforeEach((to, from, next) => {
+  // 移除缓存组件
+  if (to.meta.componentsUnRemoveKeepAlive) {
+    const componentsKeepAlive = [...new Set([
+      ...store.state.global.componentsKeepAlive
+    ])]
+    const components = componentsKeepAlive.filter(comp => {
+      return to.meta.componentsUnRemoveKeepAlive.includes(comp)
+    })
+
+    store.commit('setComponentsKeepAlive', components)
+  }
+  else {
+    store.commit('setComponentsKeepAlive', [])
+  }
+
+  // 缓存组件
+  if (to.meta.componentsToKeepAlive) {
+    const components = new Set([
+      ...to.meta.componentsToKeepAlive,
+      ...store.state.global.componentsKeepAlive
+    ])
+
+    store.commit('setComponentsKeepAlive', [...components])
+  }
+
+  next()
+})
+
 export default router
