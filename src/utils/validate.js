@@ -134,5 +134,15 @@ export default {
     if (isEmpty(value)) callback(new Error('请填写用户名'))
     else if (!pattern.test(value)) callback(new Error('格式不对，用户名是含有长度为100以内、必须含有字母、不能含有汉字'))
     else callback()
+  },
+  // (暂时)狱警账户管理-狱警号限制
+  tempNumber: (rule, value, callback) => {
+    let pattern = /^[0-9]{1,10}$/
+    if (isEmpty(value)) {
+      callback()
+      return
+    }
+    else if (!pattern.test(value)) callback(new Error('格式不对，狱警号是10位以内的数字'))
+    else callback()
   }
 }

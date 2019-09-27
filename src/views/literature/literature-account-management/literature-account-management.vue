@@ -150,7 +150,7 @@ export default {
           items = {...{
             formConfigs: { labelWidth: '90px' },
             accountName: { type: 'input', label: '账户(手机号)', rules: ['required', 'phone'], clearable: true, placeholder: '请输入手机号码' },
-            policeNumber: { type: 'input', label: '狱警号', rules: ['required'], clearable: true },
+            policeNumber: { type: 'input', label: '狱警号', rules: ['required', 'tempNumber'], clearable: true, placeholder: '请输入狱警号(格式为10位以内数字)' },
             realName: { type: 'input', label: '真实姓名', rules: ['required'], clearable: true },
             sex: { type: 'select', label: '性别', rules: ['required'], clearable: true,
               options: [{ label: '男', value: '男' }, { label: '女', value: '女' }],

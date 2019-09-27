@@ -204,6 +204,8 @@ export default {
           return { validator: validator.noChinese }
         case 'phone':
           return { validator: validator.phone }
+        case 'tempNumber':
+          return { validator: validator.tempNumber }
         default:
           return {}
       }
