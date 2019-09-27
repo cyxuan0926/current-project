@@ -11,12 +11,12 @@
         <div class="download-box">
           <h3>狱警版</h3>
           <div class="download android">
-            <!--这个地址是预定的 还不能下 到时候要修改-->
-            <a href="https://www.fushuile.com/app/yuwutong_j.apk">
+            <!--这个地址是预定的 还不能下 到时候要修改 生产：https://www.yuwugongkai.com/app/yuwutong_j.apk-->
+            <a href="https://www.yuwugongkai.com/app/yuwutong_j.apk">
               <el-button><i class="iconfont icon-android" />Android下载</el-button>
             </a>
             <img
-              src="../../assets/images/test_code.png"
+              src="../../assets/images/yujing_code.png"
               alt="">
           </div>
           <!-- <div class="download ios">
