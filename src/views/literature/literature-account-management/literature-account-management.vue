@@ -355,7 +355,7 @@ export default {
     },
     onExcelSure() {
       this.visible = false
-      if(this.uploadResults.success_total) this.getDatas()
+      if(this.uploadResults.success_total) this.onSearch()
     }
   }
 }
