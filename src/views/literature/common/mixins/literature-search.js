@@ -60,6 +60,7 @@ export default {
   watch: {
     activeTabName() {
       this.pagination.page = 1
+      this.$refs.pagination.updateCurrentPage(1)
       this.getTableData()
     }
   },
