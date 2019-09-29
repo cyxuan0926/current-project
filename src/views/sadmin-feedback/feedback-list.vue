@@ -33,10 +33,11 @@
           label="反馈内容" />
         <el-table-column
           label="反馈图片">
+          <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
           <template slot-scope="scope">
             <m-img-viewer
               v-if="scope.row.imageUrls.length"
-              :src="scope.row.imageUrls[0] + '?token=' + $urls.token" />
+              :src="!!scope.row.isCo ? (scope.row.imageUrls[0] + '?token=' + $urls.token) : scope.row.imageUrls[0]" />
           </template>
         </el-table-column>
         <el-table-column
@@ -113,7 +114,7 @@
               <m-img-viewer
                 :key="index"
                 v-if="img"
-                :src="img + '?token=' + $urls.token" />
+                :src="feedback.isCo ? (img + '?token=' + $urls.token) : img" />
             </template>
           </div>
         </div>
@@ -261,6 +262,7 @@ export default {
       else {
         this.getFeedbackDetail({ id: e.id }).then(res => {
           if (!res) return
+          console.log(res)
           this.feedback = res
           this.answer = ''
           this.visible = true
