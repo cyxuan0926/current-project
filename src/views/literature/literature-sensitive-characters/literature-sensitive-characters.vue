@@ -223,7 +223,7 @@ export default {
         type: 'warning'
         }).then(async () => {
           await this.delSensitiveword({ ids })
-          if(this.delSensitiveCharacters.length === this.sensitiveWords.length) this.$refs.pagination.handleCurrentChange(this.pagination.page - 1)
+          if(this.delSensitiveCharacters.length === this.sensitiveWords.length) this.$refs.pagination.handleCurrentChange((this.pagination.page - 1 || 1))
           else this.getDatas()
         }).catch(() => {})
       }
@@ -245,7 +245,7 @@ export default {
     },
     onExcelSure() {
       this.visible = false
-      if(this.uploadResults.success_total) this.getDatas()
+      if(this.uploadResults.success_total) this.onSearch()
     }
   },
   computed: {
