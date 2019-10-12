@@ -108,7 +108,7 @@ let check = [{
     // component: helper.loadView('check-family/family-detail'),
     component: 'check-family/family-detail',
     // component: resolve => require(['@/views/check-family/family-detail'], resolve),
-    meta: { permission: 'visit.family.view', breadcrumbName: '家属账户详情' }
+    meta: { permission: 'visit.family.view', breadcrumbName: '家属账户详情', activeMenu: '/family/list' }
   }]
 }, {
   path: '/prisoner-data',

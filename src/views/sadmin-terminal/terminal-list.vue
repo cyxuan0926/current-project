@@ -24,24 +24,32 @@
           prop="roomNumber"
           label="会议室号" />
         <el-table-column
+          min-width="100"
           prop="jailName"
           label="所属监狱" />
         <el-table-column
           prop="prisonConfigName"
           label="分监区" />
         <el-table-column
+          min-width="60"
           prop="hostPassword"
           label="主持人密码" />
         <el-table-column
+          min-width="60"
           prop="mettingPassword"
           label="参与密码" />
         <el-table-column
+          min-width="90"
           label="操作">
           <template slot-scope="scope">
             <el-button
               type="primary"
               size="mini"
               @click="onEdit(scope.row.id)">编辑</el-button>
+            <el-button
+              :type="scope.row.isEnabled ? 'danger': 'primary'"
+              size="mini"
+              @click="onEnable(scope.row)">{{ scope.row.isEnabled ? '停用' : '启用' }}</el-button>  
           </template>
         </el-table-column>
       </el-table>
@@ -80,7 +88,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getTerminals', 'getPrisonAll']),
+    ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -96,6 +104,20 @@ export default {
     },
     onEdit(id) {
       this.$router.push(`/terminal/edit/${ id }`)
+    },
+    onEnable(row) {
+      const { id, isEnabled } = row
+      const message = isEnabled ? '停用后终端不可用，确认停用吗？' : '确定启用吗？'
+      this.$confirm(message, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        const status = isEnabled ? 0 : 1
+        const res = await this.updateTerminal({ id, isEnabled: status })
+        if (!res) return
+        row.isEnabled = status
+      }).catch(() => {})
     }
   }
 }

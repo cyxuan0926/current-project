@@ -1,4 +1,5 @@
-import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants } from '@/service-public/api/account'
+import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
+  getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers } from '@/service-public/api/account'
 import { helper } from '@/utils'
 import jwtDecode from 'jwt-decode'
 
@@ -9,7 +10,8 @@ const state = {
   publicUserInfo: (localStorage.getItem('publicUserInfo') && JSON.parse(localStorage.getItem('publicUserInfo'))) || {},
   rolesList: [], // 监狱超级管理员的角色列表
   modifyMyPasswordResult: false,
-  allTenants: []
+  allTenants: [],
+  securityQuestions: [] // 所有的安全问题
 }
 
 const mutations = {
@@ -19,7 +21,8 @@ const mutations = {
   setPublicUserInfo: (state, publicUserInfo) => { state.publicUserInfo = publicUserInfo },
   setRolesList: (state, rolesList) => { state.rolesList = rolesList },
   setAllTenants: (state, allTenants) => { state.allTenants = allTenants },
-  setAuthorities: (state, authorities) => { state.authorities = authorities }
+  setAuthorities: (state, authorities) => { state.authorities = authorities },
+  setSecurityQuestions: (state, securityQuestions) => { state.securityQuestions = securityQuestions }
 }
 
 const actions = {
@@ -105,6 +108,48 @@ const actions = {
       const res = await getAllTenants()
       if (res && res.content && res.content.length) commit('setAllTenants', res.content)
       return res && res.content && res.content.length
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 获取所有的安全问题
+  async getSecurityQuestions({ commit }) {
+    try {
+      const res = await getSecurityQuestions()
+      res.unshift({ name: '请选择', id: '' })
+      if (res) commit('setSecurityQuestions', res)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 获取用户的安全问题
+  async getUserSecurityQuestions({ commit }, { username }) {
+    try {
+      const res = await getUserSecurityQuestions({ username })
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 设置用户的安全问题答案
+  async setUserSecurityQuestionAnswers({ commit }, questionAnswers) {
+    try {
+      const res = await setUserSecurityQuestionAnswers(questionAnswers)
+      return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 获取用户安全问题答案
+  async getUserSecurityQuestionAnswers({ commit }) {
+    try {
+      const res = await getUserSecurityQuestionAnswers()
+      return res
     }
     catch (err) {
       throw err

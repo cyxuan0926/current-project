@@ -30,6 +30,10 @@ const responseHandlers = {
       tip('该用户已经存在，请另选用户名', 'success')
       return false
     }
+    else if (url.includes('/users/security-question-answers/my')) {
+      tip('设置安全问题答案成功', 'success')
+      return true
+    }
   },
   // 请求失败 有错误返回体
   400: res => {
