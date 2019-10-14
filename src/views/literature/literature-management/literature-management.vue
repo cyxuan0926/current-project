@@ -19,13 +19,25 @@
 
       <el-button
         v-if="scope.row.status === 'pass'"
-        type="primary"
+        type="danger"
         size="mini"
-        slot="operate"
+        slot="shelf"
         slot-scope="scope"
+        plain
         @click="onOffline(scope.row)"
       >
         下架
+      </el-button>
+      <el-button
+        v-if="scope.row.status === 'shelf'"
+        type="primary"
+        size="mini"
+        slot="pass"
+        slot-scope="scope"
+        plain
+        @click="onShelf(scope.row)"
+      >
+        上架
       </el-button>
     </m-table>
 
@@ -114,9 +126,9 @@ export default {
           { prop: 'articleTypeName', label: '作品类型' },
           { prop: 'penName', label: '作者笔名' },
           { prop: 'publishAt', width: '124px', label: '发布时间' },
-          { prop: 'clientNum', label: '点击数量' },
-          { prop: 'praiseNum', label: '点赞数量' },
-          { prop: 'collectNum', label: '收藏数量' },
+          { prop: 'clientNum', label: '点击数量', width: '80px' },
+          { prop: 'praiseNum', label: '点赞数量', width: '80px' },
+          { prop: 'collectNum', label: '收藏数量', width: '80px' },
           // {
           //   prop: '',
           //   label: '打赏金额（元）'
@@ -125,12 +137,16 @@ export default {
           //   prop: '',
           //   label: '是否置顶'
           // },
-          { prop: 'finishName', label: '是否完结' }
+          { prop: 'finishName', label: '是否完结', width: '80px' }
         ],
-        passCols: [{ slotName: 'operate', label: '操作', }],
+        passCols: [
+          { prop: 'auditAt', label: '审核时间' },
+          { slotName: 'shelf', label: '操作' }
+        ],
         shelfCols: [
           { prop: 'shelfAt', label: '下架时间', width: '124px' },
-          { prop: 'shelfReason', label: '下架原因', showOverflowTooltip: true }
+          { prop: 'shelfReason', label: '下架原因', showOverflowTooltip: true },
+          { slotName: 'pass', label: '操作' }
         ]
       }
 
@@ -138,7 +154,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature']),
+    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature', 'onlineLiterature']),
     onPreview(literature) {
       this.$router.push(
         `/literature-management/literature-preview/${literature.id}`
@@ -147,6 +163,21 @@ export default {
     onOffline(literature) {
       this.showOfflineDialog()
       this.selectedLiterature = literature
+    },
+    async onShelf(literature) {
+      const content = `下架原因：${literature.shelfReason}`
+
+      try {
+        const pass = await this.$confirm(content, '该作品确定上架吗？')
+
+        if (pass) {
+          const isSuccess = await this.onlineLiterature({ id: literature.id })
+
+          isSuccess && this.getTableData()
+        }
+      } catch (err) {
+        console.log(err)
+      }
     },
     onConfirmOffline() {
       this.$refs.offlineForm.validate(async valid => {

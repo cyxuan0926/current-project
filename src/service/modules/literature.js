@@ -33,6 +33,10 @@ export default {
   offlineLiterature: params => {
     return service.post('/article/shelfAricle', params)
   },
+  // 上架作品
+  onlineLiterature: params => {
+    return service.post('/article/upperShelfAricle', params)
+  },
   // 分页查询敏感字符集
   getSensitivewords: params => {
     return service.get('/sensitiveword/page', params)

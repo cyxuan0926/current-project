@@ -90,6 +90,17 @@ export default {
       throw err
     }
   },
+  async onlineLiterature({ commit }, params) {
+    try {
+      const isSuccess = await literatureApi.onlineLiterature(params)
+      isSuccess && setCurrentOperateRows(params.id, commit)
+
+      return isSuccess
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async getSensitivewords({ commit }, params) {
     try {
       const res = await literatureApi.getSensitivewords(params)
