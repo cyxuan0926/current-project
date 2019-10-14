@@ -61,7 +61,7 @@ const router = new Router({
 // eslint-disable-next-line
 const noAuthRoute = ['/dashboard', '/password/edit', '/app_preview/family_download', '/app_preview/prison_download',
   '/download/operation', '/login', '/app_preview/police_download', '/password_retrieve/step_one', '/password_retrieve/step_two', '/password_retrieve/step_three']
-// noAuthRoute.includes(to.path) || (to.matched.length && to.matched[0].path === '/password_retrieve/step_one/:username')
+
 // 登录校验
 router.beforeEach((to, from, next) => {
   // console.log(to)

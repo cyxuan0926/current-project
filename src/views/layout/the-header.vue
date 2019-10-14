@@ -132,7 +132,8 @@ export default {
           logout()
       }).catch(() =>{})
     },
-    onSecurityQuestionsChange(e, field, props) {
+    onSecurityQuestionsChange(e, field, item) {
+      const { controlProps } = item
       this.$set(this.isChoose, field, e)
       const fields = ['questionOne', 'questionTwo', 'questionThree']
       const filterFields = fields.filter(val => val && val !== field)
@@ -143,7 +144,7 @@ export default {
         this.$set(this.questions, fullField, this.securityQuestions.filter(val => val && !temp.includes(val.id)))
         this.$set(this.dialogFormItems[fullField], 'options', this.questions[fullField])
       })
-      props.map(prop => this.$set(this.values, prop, ''))
+      controlProps.map(prop => this.$set(this.values, prop, ''))
       this.$set(this.values, field, e)
     },
     async handleSubmit(val) {
