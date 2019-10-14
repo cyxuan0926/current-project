@@ -1,5 +1,6 @@
 import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
-  getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers } from '@/service-public/api/account'
+  getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
+  modifyMyPasswordByToken } from '@/service-public/api/account'
 import { helper } from '@/utils'
 import jwtDecode from 'jwt-decode'
 
@@ -150,6 +151,26 @@ const actions = {
     try {
       const res = await getUserSecurityQuestionAnswers()
       return res
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 检验用户安全问题答案
+  async verificateSecurityQuestionAnswers({ commit }, { username, questionAnswers }) {
+    try {
+      const res = await verificateSecurityQuestionAnswers({ username, questionAnswers })
+      console.log(res)
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  // 根据用户安全问题校验码重置用户密码
+  async modifyMyPasswordByToken({ commit }, { token, newPassword }) {
+    try {
+      const res = await modifyMyPasswordByToken({ token, newPassword })
+      console.log(res)
     }
     catch (err) {
       throw err

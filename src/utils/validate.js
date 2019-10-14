@@ -93,13 +93,13 @@ export default {
   },
   lengthRange: (rule, value, callback) => {
     if (!isEmpty(rule.min) && !isEmpty(rule.max) && (helper.trimString(value).length < rule.min || helper.trimString(value).length > rule.max)) {
-      callback(new Error(`请输入${ rule.min }到${ rule.max }个字符`))
+      callback(new Error(rule['lengthRange'] || `请输入${ rule.min }到${ rule.max }个字符`))
     }
     else if (!isEmpty(rule.min) && isEmpty(rule.max) && helper.trimString(value).length < rule.min) {
-      callback(new Error(`请输入${ rule.min }以上个字符`))
+      callback(new Error(rule['lengthRange'] || `请输入${ rule.min }以上个字符`))
     }
     else if (isEmpty(rule.min) && !isEmpty(rule.max) && helper.trimString(value).length > rule.max) {
-      callback(new Error(`请输入${ rule.max }以下个字符`))
+      callback(new Error(rule['lengthRange'] || `请输入${ rule.max }以下个字符`))
     }
     else {
       callback()

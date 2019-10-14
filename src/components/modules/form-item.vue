@@ -24,7 +24,7 @@
       :loading="item.loading"
       :filterable="!!(item.filterable)"
       :disabled="item.disabled"
-      @change="item.func && item.func($event, prop)">
+      @change="item.func && item.func($event, prop, item.controlProps)">
       <el-option
         v-for="(option) in item.options"
         :key="item.props ? option[item.props.value] : option.value"

@@ -166,7 +166,7 @@ export default {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
-        item.rule.push(this.ruleSwitch(rule, item.label, item.type))
+        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages))
       })
       delete item.rules
     },
@@ -185,12 +185,12 @@ export default {
         item['pickerOptions'] = { disabledDate }
       }
     },
-    ruleSwitch(rule, label, type) {
+    ruleSwitch(rule, label, type, ruleMessages) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
-        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
+        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate, ruleMessages)
       }
       let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
