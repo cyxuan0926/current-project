@@ -26,6 +26,9 @@
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
+            <el-button
+              type="text"
+              class="white forget-password">忘记密码</el-button>  
           </el-form-item>
         </el-form>
         <el-button
@@ -201,6 +204,13 @@ export default {
 
   /deep/ .el-input {
     width: 100% !important;
+  }
+  .forget-password {
+    margin-left: 61%;
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  .el-checkbox {
+    margin-left: 1px;
   }
 }
 </style>

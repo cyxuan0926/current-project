@@ -150,16 +150,16 @@ export default {
       if (this.destroyed) return
       this.$refs.form.validateField(e)
     },
-    initSelect(item, key) {
+    async initSelect(item, key) {
       if (item.action && !item.defer) {
         item.loading = true
         const actionArgs = item.actionArgs || {}
-        this.$store.dispatch(item.action, actionArgs).then(res => {
-          if (!res) return
-          item.options = res.options
-          item.props = { label: res.label, value: res.value }
-          item.loading = false
-        })
+        const action = item.namespaced ? `${item.namespaced}/${item.action}` : item.action
+        const res = await this.$store.dispatch(action, actionArgs)
+        if (!res) return
+        this.$set(item, 'options', res.options)
+        this.$set(item, 'props', { label: res.label, value: res.value })
+        this.$set(item, 'loading', false)
       }
     },
     initRules(item) {
@@ -182,7 +182,7 @@ export default {
             if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() > time.getTime()
           }
         }
-        item['pickerOptions'] = {disabledDate}
+        item['pickerOptions'] = { disabledDate }
       }
     },
     ruleSwitch(rule, label, type) {

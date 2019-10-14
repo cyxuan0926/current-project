@@ -7,6 +7,7 @@
     <el-input
       v-if="item.type === 'input' || item.type === 'textarea'"
       :type="item.type"
+      :maxlength="item.maxlength"
       :clearable="item.clearable"
       :autosize="item.autosize"
       v-model="fields[prop]"
