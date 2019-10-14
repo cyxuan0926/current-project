@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.28",
+    "address": "^1.1.2",
     "archiver": "^3.0.0",
     "autoprefixer": "^7.1.2",
     "axios": "^0.17.1",
@@ -67,6 +68,7 @@
     "css": "^2.2.1",
     "css-loader": "^0.28.7",
     "cz-conventional-changelog": "^2.1.0",
+    "default-gateway": "^5.0.3",
     "del": "^4.1.1",
     "deployment-cli": "^0.1.3",
     "eslint": "^4.19.0",
@@ -86,7 +88,6 @@
     "html-webpack-plugin": "^2.30.1",
     "inject-loader": "^3.0.0",
     "inquirer": "^6.3.1",
-    "internal-ip": "^4.3.0",
     "jest": "^23.6.0",
     "jest-html-reporter": "^2.4.3",
     "jest-serializer-vue": "^2.0.2",
