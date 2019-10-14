@@ -88,7 +88,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal']),
+    ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal', 'enableTerminal']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -106,7 +106,7 @@ export default {
       this.$router.push(`/terminal/edit/${ id }`)
     },
     onEnable(row) {
-      const { id, isEnabled } = row
+      const { id, isEnabled, terminalNumber } = row
       const message = isEnabled ? '停用后终端不可用，确认停用吗？' : '确定启用吗？'
       this.$confirm(message, '提示', {
         confirmButtonText: '确定',
@@ -114,7 +114,7 @@ export default {
         type: 'warning',
       }).then(async () => {
         const status = isEnabled ? 0 : 1
-        const res = await this.updateTerminal({ id, isEnabled: status })
+        const res = await this.enableTerminal({ id, isEnabled: status, terminalNumber })
         if (!res) return
         row.isEnabled = status
       }).catch(() => {})
