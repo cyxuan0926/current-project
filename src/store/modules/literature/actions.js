@@ -11,6 +11,7 @@ export default {
     try {
       const res = await literatureApi.getFamilyLiteratures(params)
       commit('setLiteratures', res.data.articles)
+      commit('setCurrentOperateRows', 0)
       return res
     }
     catch (err) {
@@ -21,6 +22,7 @@ export default {
     try {
       const res = await literatureApi.getPoliceLiteratures(params)
       commit('setLiteratures', res.data.articles)
+      commit('setCurrentOperateRows', 0)
       return res
     }
     catch (err) {
@@ -31,6 +33,7 @@ export default {
     try {
       const res = await literatureApi.getMyLiteratures(params)
       commit('setLiteratures', res.data.articles)
+      commit('setCurrentOperateRows', 0)
       return res
     }
     catch (err) {
@@ -47,9 +50,10 @@ export default {
       throw err
     }
   },
-  async publishLiterature({ dispatch }, params) {
+  async publishLiterature({ commit }, params) {
     try {
       const isSuccess = await literatureApi.publishLiterature(params)
+      isSuccess && params.id && setCurrentOperateRows(params.id, commit)
 
       return isSuccess
     }

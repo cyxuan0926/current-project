@@ -35,7 +35,7 @@
         slot="pass"
         slot-scope="scope"
         plain
-        @click="onShelf(scope.row)"
+        @click="onOnline(scope.row)"
       >
         上架
       </el-button>
@@ -164,7 +164,7 @@ export default {
       this.showOfflineDialog()
       this.selectedLiterature = literature
     },
-    async onShelf(literature) {
+    async onOnline(literature) {
       const content = `下架原因：${literature.shelfReason}`
 
       try {

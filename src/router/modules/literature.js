@@ -84,6 +84,7 @@ const routes = [
       {
         path: '/literature-my/literatures',
         meta: {
+          componentsToKeepAlive: ['LiteratureMy'],
           permission: 'visit.literature-my.search',
           breadcrumbName: '我的作品'
         },
@@ -92,6 +93,7 @@ const routes = [
       {
         path: '/literature-my/literature-create',
         meta: {
+          componentsUnRemoveKeepAlive: ['LiteratureMy'],
           permission: 'visit.literature-my.add',
           breadcrumbName: '发表作品'
         },
@@ -100,6 +102,7 @@ const routes = [
       {
         path: '/literature-my/literature-update/:id',
         meta: {
+          componentsUnRemoveKeepAlive: ['LiteratureMy'],
           permission: 'visit.literature-my.update',
           breadcrumbName: '修改作品'
         },

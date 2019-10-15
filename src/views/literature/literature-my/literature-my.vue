@@ -6,6 +6,11 @@
       <el-button type="primary" @click="onCreateArticle">发表作品</el-button>
     </div>
 
+    <el-tabs v-model="activeTabName" type="card">
+      <el-tab-pane name="pass" label="我的作品"/>
+      <el-tab-pane name="shelf" label="已下架作品"/>
+    </el-tabs>
+
     <m-table :data="literatures" :cols="tableCols">
       <div class="literature-info-cell" slot="title" slot-scope="scope">
         <div class="cover">
@@ -40,15 +45,60 @@
           v-if="parseInt(scope.row.articleType) === 1"
           type="primary"
           size="small"
-          @click="onUpdateArticle(scope.row.id)"
+          plain
+          @click="onUpdate(scope.row.id)"
         >
           文章管理
+        </el-button>
+  
+        <el-button
+          v-if="scope.row.status === 'pass'"
+          type="danger"
+          size="small"
+          plain
+          @click="onOffline(scope.row)"
+        >
+          下架
+        </el-button>
+        <el-button
+          v-else
+          type="primary"
+          size="small"
+          plain
+          @click="onOnline(scope.row)"
+        >
+          上架
         </el-button>
         <!-- <el-button type="primary" size="small" plain>
           修改作品
         </el-button> -->
       </template>
     </m-table>
+
+    <!-- 下架原因弹窗 -->
+    <el-dialog
+      :visible.sync="offlineDialogVisible"
+      title="下架"
+      width="530px"
+      @close="onCloseDialog"
+    >
+      <el-form ref="offlineForm" :model="offlineForm" :rules="rules">
+        <el-form-item prop="offlineReason">
+          <el-input
+            v-model="offlineForm.offlineReason"
+            :autosize="{ minRows: 6 }"
+            type="textarea"
+            placeholder="请填写下架原因"
+          />
+        </el-form-item>
+        <el-form-item class="operate">
+          <el-button @click="hideOfflineDialog">取消</el-button>
+          <el-button type="danger" @click="onConfirmOffline">
+            确定
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
 
     <m-pagination
       ref="pagination"
@@ -60,21 +110,30 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import store from '@/store'
+import literatureSearchMixin from '../common/mixins/literature-search'
 
 export default {
+  name: 'LiteratureMy',
+  mixins: [literatureSearchMixin],
   data() {
     return {
+      offlineDialogVisible: false,
+      activeTabName: 'pass',
       tableCols: [
         { slotName: 'title', label: '作品名称' },
         { prop: 'articleTypeName', label: '作品类型' },
         { prop: '', label: '最新发布章节' },
         { slotName: 'finish', label: '作品状态' },
-        { prop: 'publishAt', label: '发布时间' },
+        { prop: 'auditAt', label: '发布时间' },
         { slotName: 'operate', label: '操作', align: 'center' }
       ],
-      total: 0,
-      pagination: { page: 1, rows: 10 }
+      offlineForm: { offlineReason: '' },
+      rules: {
+        offlineReason: [
+          { required: true, message: '请填写下架原因', trigger: 'change' },
+          { max: 20, message: '下架原因不能超过 20 个字符', trigger: 'change' }
+        ]
+      }
     }
   },
   computed: {
@@ -85,32 +144,73 @@ export default {
       return parseInt(finish) === 1 ? '已完结' : ''
     }
   },
-  async beforeRouteEnter(to, from, next) {
-    const res = await store.dispatch(
-      'literature/getMyLiteratures',
-      { page: 1, rows: 10 }
-    )
-
-    next(vm => vm.total = res.data.total)
-  },
   methods: {
-    ...mapActions('literature', ['getMyLiteratures']),
+    ...mapActions('literature', ['getMyLiteratures', 'offlineLiterature', 'onlineLiterature']),
     onCreateArticle() {
       this.$router.push('/literature-my/literature-create')
     },
-    onUpdateArticle(id) {
+    onUpdate(id) {
       this.$router.push(`/literature-my/literature-update/${id}`)
     },
-    async getTableData() {
-      const res = await this.getMyLiteratures(this.pagination)
+    onOffline(literature) {
+      this.showOfflineDialog()
+      this.selectedLiterature = literature
+    },
+    async onOnline(literature) {
+      const content = `下架原因：${literature.shelfReason}`
 
-      this.total = res.data.total
+      try {
+        const pass = await this.$confirm(content, '该作品确定上架吗？')
+
+        if (pass) {
+          const isSuccess = await this.onlineLiterature({ id: literature.id })
+
+          isSuccess && this.getTableData()
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    onConfirmOffline() {
+      this.$refs.offlineForm.validate(async valid => {
+        if (valid) {
+          const isSuccess = await this.offlineLiterature({
+            id: this.selectedLiterature.id,
+            shelfReason: this.offlineForm.offlineReason
+          })
+
+          if(isSuccess) {
+            this.getTableData()
+            this.hideOfflineDialog()
+            this.$refs.offlineForm.resetFields()
+          }
+        }
+      })
+    },
+    onCloseDialog() {
+      this.$refs.offlineForm.resetFields()
+    },
+    showOfflineDialog() {
+      this.offlineDialogVisible = true
+    },
+    hideOfflineDialog() {
+      this.offlineDialogVisible = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-dialog__body {
+  padding: 10px 20px;
+}
+
+.operate {
+  margin-top: -5px;
+  margin-bottom: 15px;
+  text-align: right;
+}
+
 h3 {
   margin: 0;
   font-size: 14px;

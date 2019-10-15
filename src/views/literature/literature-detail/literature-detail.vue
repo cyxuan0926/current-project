@@ -134,6 +134,14 @@ export default {
       next()
     }
   },
+  // async beforeRouteLeave (to, from, next) {
+  //   try {
+  //     await this.$confirm('确定离开当前页面吗？', '提示', { type: 'warning' })
+  //     next()
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // },
   created() {
     this.getSensitivewords({ page: 1, rows: 100 * 10000, isEnabled: 1 })
     this.articleForm.penName = this.$store.state.global.user.jailName
