@@ -55,6 +55,9 @@ let common = [{
     // component: resolve => require(['@/views/download/operation'], resolve)
     component: 'download/operation'
   }]
+}, {
+  path: '*',
+  redirect: '/dashboard'
 }]
 
 export default common

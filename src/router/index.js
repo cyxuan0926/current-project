@@ -11,12 +11,12 @@ import information from './modules/information'
 import literature from './modules/literature'
 
 const routes = [
-  ...common,
   ...superAdmin,
   ...admin,
   ...check,
   ...information,
-  ...literature
+  ...literature,
+  ...common
 ]
 
 /**
