@@ -61,18 +61,18 @@ let common = [{
   meta: { hidden: true },
   component: 'password/password-retrieve',
   children: [{
-    path: '/password_retrieve/step_one/:username?',
+    path: '/password_retrieve/step_one',
     name: 'password-retrieve-one',
     meta: { notLogin: true, step: 1 },
     component: 'password/password-retrieve-step-one'
   }, {
-    path: '/password_retrieve/step_two/:username',
+    path: '/password_retrieve/step_two',
     name: 'password-retrieve-two',
     props: { step: 2 },
     meta: { notLogin: true, step: 2 },
     component: 'password/password-retrieve-step-two'
   }, {
-    path: '/password_retrieve/step_three/:username',
+    path: '/password_retrieve/step_three',
     name: 'password-retrieve-three',
     meta: { notLogin: true, step: 3 },
     component: 'password/password-retrieve-step-three'

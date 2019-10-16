@@ -20,6 +20,7 @@
           :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
+      <slot></slot>
     </el-form>
     <div
       v-if="items.buttons && Object.keys(items.buttons).length"
@@ -89,10 +90,6 @@ export default {
   watch: {
     values: {
       handler: function(val) {
-        // 这里是如果清空之后需要重置的情况
-        // for(let [key, value] of Object.entries(val)) {
-        //   if (!value) this.$refs.form.fields.map(field => field.prop === key && field.resetField())
-        // }
         this.fields = Object.assign({}, this.fields, val)
       },
       deep: true
@@ -101,8 +98,7 @@ export default {
       handler: function(val) {
         val && this.render()
       }
-    },
-    deep: true
+    }
   },
   data() {
     return {

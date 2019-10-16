@@ -34,11 +34,24 @@ const responseHandlers = {
       tip('设置安全问题答案成功', 'success')
       return true
     }
+    else if (url.includes('/users/password/by-token')) {
+      tip('密码重置成功，请登录狱务通系统！', 'success')
+      return true
+    }
   },
   // 请求失败 有错误返回体
   400: res => {
-    res.data && tip(res.data.message)
-    return false
+    const { url } = res.config
+    if (url.includes('/users/security-question-answers/by-username')) {
+      return 'user.CanNotRecoverDisabledUserPassword'
+    }
+    else if (url.includes('/users/security-question-answers/verification')) {
+      return false
+    }
+    else {
+      res.data && tip(res.data.message)
+      return false
+    }
   },
   // 未授权
   401: res => {
@@ -58,6 +71,9 @@ const responseHandlers = {
     if (url.includes('/users/usernames')) {
       tip('该用户没有被注册，可以使用', 'success')
       return true
+    }
+    else if (url.includes('/users/security-question-answers/by-username')) {
+      return false
     }
     // tip('请求的资源不存在')
     // res.data && tip(res.data.message)

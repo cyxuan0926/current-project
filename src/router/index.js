@@ -57,14 +57,8 @@ const router = new Router({
   }
 })
 
-// 路由白名单
-// eslint-disable-next-line
-const noAuthRoute = ['/dashboard', '/password/edit', '/app_preview/family_download', '/app_preview/prison_download',
-  '/download/operation', '/login', '/app_preview/police_download', '/password_retrieve/step_one', '/password_retrieve/step_two', '/password_retrieve/step_three']
-
 // 登录校验
 router.beforeEach((to, from, next) => {
-  // console.log(to)
   const isLogin = localStorage.getItem('accountInfo')
 
   if (!to.meta.notLogin && !isLogin) {
@@ -77,7 +71,6 @@ router.beforeEach((to, from, next) => {
 
 // 路由权限校验
 router.beforeEach((to, from, next) => {
-  // const permission = [...store.state.account.authorities, 'password-retrieve-one']
   const permission = store.state.account.authorities
   if (permission.includes(to.meta.permission) || !to.meta.permission) {
     next()
