@@ -10,7 +10,7 @@
 export default {
   data () {
     let formButton = { buttons: [ { add: 'add', text: '确定' }, 'cancel' ] },
-      inputItem = { type: 'input', label: '答案', placeholder: '请输入你的答案，控制在10个字符以内',
+      inputItem = { type: 'input', label: '答案', placeholder: '请输入你的答案，控制在10个字数以内',
         rules: ['required'], clearable: true, maxlength: 10 },
       selectItem = { type: 'select', props: { label: 'name', value: 'id' },
         rules: ['required'], value: '' }

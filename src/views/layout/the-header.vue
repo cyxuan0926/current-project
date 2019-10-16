@@ -52,24 +52,24 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import logout from '@/utils/logout'
-// action: 'getSecurityQuestions', namespaced: 'account' customClass: 'el-form-item__margin-bottom-0','lengthRange-10'
+// action: 'getSecurityQuestions', namespaced: 'account' customClass: 'el-form-item__margin-bottom-0'
 export default {
   data() {
     let formButton = { buttons: [ { add: 'add', text: '确定' }, 'cancel' ] },
-      inputItem = { type: 'input', label: '答案', placeholder: '请输入你的答案，控制在10个字符以内',
-        rules: ['required'], clearable: true, maxlength: 10 },
+      inputItem = { type: 'input', label: '答案', placeholder: '请输入你的答案，控制在10个字数以内',
+        rules: ['required', 'lengthRange-10'], clearable: true, value: '', ruleMessages: { lengthRange: '不要超过字数限定数' } },
       selectItem = { type: 'select', props: { label: 'name', value: 'id' },
-        func: this.onSecurityQuestionsChange, rules: ['required'], value: '' }
+        func: this.onSecurityQuestionsChange, rules: ['required'] }
     return {
       visible: false,
       filterData: [],
       dialogFormItems: Object.assign({}, {
         formConfigs: { labelWidth: '100px' },
-        questionOne: Object.assign({}, selectItem, { label: '问题1' }),
+        questionOne: Object.assign({}, selectItem, { label: '问题1', controlProps: [ 'answerOne' ] }),
         answerOne: inputItem,
-        questionTwo: Object.assign({}, selectItem, { label: '问题2' }),
+        questionTwo: Object.assign({}, selectItem, { label: '问题2', controlProps: [ 'answerTwo' ] }),
         answerTwo: inputItem,
-        questionThree: Object.assign({}, selectItem, { label: '问题3' }),
+        questionThree: Object.assign({}, selectItem, { label: '问题3', controlProps: [ 'aneswrThree' ] }),
         aneswrThree: inputItem
       }, formButton),
       values: {},
@@ -108,6 +108,9 @@ export default {
             this.$set(this.questions, 'questionOne', this.securityQuestions.filter(question => question && !noOne.includes(question.id)))
             this.$set(this.questions, 'questionTwo', this.securityQuestions.filter(question => question && !noTwo.includes(question.id)))
             this.$set(this.questions, 'questionThree', this.securityQuestions.filter(question => question && !noThree.includes(question.id)))
+            this.$set(this.isChoose, 'questionOne', questionAnswers[0]['One'][0])
+            this.$set(this.isChoose, 'questionTwo', questionAnswers[1]['Two'][0])
+            this.$set(this.isChoose, 'questionThree', questionAnswers[2]['Three'][0])
             fields.map(val => this.$set(this.dialogFormItems[val], 'options', this.questions[val]))
             this.values = { questionOne: questionAnswers[0]['One'][0], questionTwo: questionAnswers[1]['Two'][0], questionThree: questionAnswers[2]['Three'][0],
               answerOne: questionAnswers[0]['One'][1], answerTwo: questionAnswers[1]['Two'][1], aneswrThree: questionAnswers[2]['Three'][1] }
@@ -129,18 +132,20 @@ export default {
           logout()
       }).catch(() =>{})
     },
-    onSecurityQuestionsChange(e, field) {
+    onSecurityQuestionsChange(e, field, item) {
+      const { controlProps } = item
       this.$set(this.isChoose, field, e)
       const fields = ['questionOne', 'questionTwo', 'questionThree']
       const filterFields = fields.filter(val => val && val !== field)
       // 这里是处理没有触发change事件的select
       filterFields.map(fullField => {
-        // 如果这个这个select已经选择过了那么这个筛选条件就要去除掉选择的那个值
-        const temp = this.isChoose[fullField] ? Object.values(this.isChoose).filter(question => question && question !== this.isChoose[fullField])
-          : Object.values(this.isChoose)
+        // 如果这个这个select已经选择过了那么这个筛选条件就要去除掉选择的那个值 这里在已经设置好问题时有bug
+        const temp = Object.values(this.isChoose).filter(question => question && question !== this.isChoose[fullField])
         this.$set(this.questions, fullField, this.securityQuestions.filter(val => val && !temp.includes(val.id)))
         this.$set(this.dialogFormItems[fullField], 'options', this.questions[fullField])
       })
+      controlProps.map(prop => this.$set(this.values, prop, ''))
+      this.$set(this.values, field, e)
     },
     async handleSubmit(val) {
       const mapArray = [ 'One', 'Two', 'Three' ]

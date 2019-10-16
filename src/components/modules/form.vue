@@ -89,6 +89,10 @@ export default {
   watch: {
     values: {
       handler: function(val) {
+        // 这里是如果清空之后需要重置的情况
+        // for(let [key, value] of Object.entries(val)) {
+        //   if (!value) this.$refs.form.fields.map(field => field.prop === key && field.resetField())
+        // }
         this.fields = Object.assign({}, this.fields, val)
       },
       deep: true
@@ -166,7 +170,7 @@ export default {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
-        item.rule.push(this.ruleSwitch(rule, item.label, item.type))
+        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages))
       })
       delete item.rules
     },
@@ -185,12 +189,12 @@ export default {
         item['pickerOptions'] = { disabledDate }
       }
     },
-    ruleSwitch(rule, label, type) {
+    ruleSwitch(rule, label, type, ruleMessages) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
-        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
+        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate, ruleMessages)
       }
       let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
@@ -211,14 +215,12 @@ export default {
       }
     },
     resetFieldValue(...arg) {
-      const [status, prop, controlTheOther] = arg
+      const [status, prop, { controlTheOther }] = arg
       if (!controlTheOther) return
-      let fields = this.$refs.form.fields, relevantFields = []
+      const fields = this.$refs.form.fields
       for(let [key, value] of Object.entries(this.items)) {
-        if(value.disableDependingProp === prop) relevantFields.push(key)
+        if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }
-      if(!relevantFields.length) return
-      fields.map(val => relevantFields.map(value => val.prop === value && val.resetField()))
     }
   }
 }

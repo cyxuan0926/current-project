@@ -24,7 +24,7 @@
       :loading="item.loading"
       :filterable="!!(item.filterable)"
       :disabled="item.disabled"
-      @change="item.func && item.func($event, prop)">
+      @change="item.func && item.func($event, prop, item)">
       <el-option
         v-for="(option) in item.options"
         :key="item.props ? option[item.props.value] : option.value"
@@ -47,7 +47,7 @@
       :active-value="1"
       :inactive-value="0"
       :disabled="item.disabled"
-      @change="resetFieldValue($event, prop, item.controlTheOther) "
+      @change="(item.func && item.func($event, prop, item)) || resetFieldValue($event, prop, item) "
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"

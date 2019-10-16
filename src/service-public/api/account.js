@@ -1,4 +1,4 @@
-import { get, postForm, put } from '../request'
+import { get, postForm, put, post } from '../request'
 
 export function login({ username, password }) {
   return postForm('/oauth/token', {
@@ -52,4 +52,12 @@ export function getUserSecurityQuestionAnswers() {
 
 export function setUserSecurityQuestionAnswers(questionAnswers) {
   return put('/users/security-question-answers/my', questionAnswers)
+}
+
+export function verificateSecurityQuestionAnswers({ username, questionAnswers }) {
+  return post('/users/security-question-answers/verification', { username, questionAnswers })
+}
+
+export function modifyMyPasswordByToken({ token, newPassword }) {
+  return put('/users/password/by-token', { token, newPassword })
 }

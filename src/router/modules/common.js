@@ -56,6 +56,28 @@ let common = [{
     component: 'download/operation'
   }]
 }, {
+  path: '/password_retrieve',
+  name: 'password-retrieve',
+  meta: { hidden: true },
+  component: 'password/password-retrieve',
+  children: [{
+    path: '/password_retrieve/step_one/:username?',
+    name: 'password-retrieve-one',
+    meta: { notLogin: true, step: 1 },
+    component: 'password/password-retrieve-step-one'
+  }, {
+    path: '/password_retrieve/step_two/:username',
+    name: 'password-retrieve-two',
+    props: { step: 2 },
+    meta: { notLogin: true, step: 2 },
+    component: 'password/password-retrieve-step-two'
+  }, {
+    path: '/password_retrieve/step_three/:username',
+    name: 'password-retrieve-three',
+    meta: { notLogin: true, step: 3 },
+    component: 'password/password-retrieve-step-three'
+  }]
+}, {
   path: '*',
   redirect: '/dashboard'
 }]

@@ -11,14 +11,14 @@
           @keyup.enter.native="handleLogin">
           <el-form-item prop="username">
             <el-input
-              v-model="formData.username"
+              v-model.trim="formData.username"
               placeholder="用户名">
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
               type="password"
-              v-model="formData.password"
+              v-model.trim="formData.password"
               placeholder="密码">
             </el-input>
           </el-form-item>
@@ -26,9 +26,10 @@
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
-            <el-button
+            <!-- <el-button
               type="text"
-              class="white forget-password">忘记密码</el-button>  
+              class="white forget-password"
+              @click="handleGoPasswordRetrieve">忘记密码</el-button>   -->
           </el-form-item>
         </el-form>
         <el-button
@@ -150,6 +151,11 @@ export default {
       this.formData = { username, password: Base64.decode(password) }
       this.isRememberAccount = true
     },
+    handleGoPasswordRetrieve() {
+      const { username } = this.formData
+      if (username) this.$router.push({ path: `/password_retrieve/step_one/${ username }` })
+      else this.$router.push({ path: `/password_retrieve/step_one` })
+    }
     // handleLogin() {
     //   if (this.loginState.loged || this.loginState.loading) return false
     //   this.$refs.form.validate(valid => {
