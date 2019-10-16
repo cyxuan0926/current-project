@@ -6,7 +6,7 @@
         :items="questionAnswersFormItems"
         ref="dialogForm">
         <el-form-item v-if="isPass">
-          <div class="el-form-item__error">找回问题问题答案错误，请重新输入，或联系厂家维护人员协助处理，谢谢！</div>
+          <div class="el-form-item__error">找回密码问题答案错误，请重新输入，或联系厂家维护人员协助处理，谢谢！</div>
         </el-form-item>
     </m-form>    
   </div>
@@ -27,17 +27,13 @@ export default {
         questionTwo: Object.assign({}, disabled),
         answerTwo: {},
         questionThree:  Object.assign({}, disabled),
-        buttons: [ 'next', 'prev' ]
+        buttons: [ 'next', { prev: '上一步', func: this.handleSetStepAndRouter } ]
       },
       isPass: false
     }
   },
   async mounted() {
-    if (!this.isStep || !this.findPasswordUsername) {
-      this.setIsStep(1)
-      localStorage.setItem('isStep', JSON.stringify(1))
-      this.$router.push('/password_retrieve/step_one')
-    }
+    if (!this.isStep || !this.findPasswordUsername) this.handleSetStepAndRouter()
     else {
       const data = await this.getUserSecurityQuestions({ username: this.findPasswordUsername })
       const questions = data.map(item => ({ id: item.securityQuestionId, name: item.securityQuestionName }))
@@ -56,11 +52,7 @@ export default {
       const params = mapArray.map(val => ({ securityQuestionId: this.questionAnswers[val][0], answer: this.questionAnswers[val][1] }))
       const res = await this.verificateSecurityQuestionAnswers({ username, questionAnswers: params })
       this.isPass = !res
-      if (res) {
-        this.setIsStep(2)
-        localStorage.setItem('isStep', JSON.stringify(2))
-        this.$router.push({ path: `/password_retrieve/step_three` })
-      }
+      if (res) this.handleSetStepAndRouter({ step: 2, path: '/password_retrieve/step_three' })
     }
   }
 }

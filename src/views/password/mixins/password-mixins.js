@@ -8,6 +8,11 @@ export default {
     })
   },
   methods: {
-    ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep'])
+    ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
+    handleSetStepAndRouter({ step = 0, path = '/password_retrieve/step_one' } = {}) {
+      this.setIsStep(step)
+      localStorage.setItem('isStep', JSON.stringify(step))
+      this.$router.push({ path: `${ path }` })
+    }
   }
 }

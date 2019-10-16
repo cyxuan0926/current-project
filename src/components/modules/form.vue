@@ -17,6 +17,7 @@
           :rule="item.rule"
           :item="item"
           :fields="fields"
+          :select-change-event="selectChangeEvent"
           :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
@@ -31,7 +32,7 @@
           :key="index"
           size="small"
           type="primary"
-          @click="onPrevClick">上一步</el-button>
+          @click="button.func && button.func() || onPrevClick">上一步</el-button>
         <el-button
           v-if="button === 'next' || button.next"
           :key="index"
@@ -217,6 +218,17 @@ export default {
       for(let [key, value] of Object.entries(this.items)) {
         if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }
+    },
+    selectChangeEvent(e, prop, item) {
+      const { controlProps } = item
+      if (Array.isArray(controlProps)) {
+        this.$nextTick(function() {
+          controlProps.map(prop => {
+          if (this.fields[prop]) this.$set(this.fields, prop, '')
+          })
+        })
+      }
+      item.func && item.func(e, prop, item)
     }
   }
 }

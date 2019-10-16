@@ -29,7 +29,7 @@
           @click="handleSubmit">确定</el-button>
         <el-button
           type="primary"
-          @click="handleGoBack">上一步</el-button>
+          @click="handleSetStepAndRouter({ step: 1, path: '/password_retrieve/step_two' })">上一步</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -63,28 +63,20 @@ export default {
     }
   },
   mounted() {
-    if (this.isStep !== 2) {
-      this.setIsStep(1)
-      localStorage.setItem('isStep', JSON.stringify(1))
-      this.$router.push('/password_retrieve/step_one')
-    }
+    if (this.isStep !== 2) this.handleSetStepAndRouter()
   },
   methods: {
     ...mapActions('account', ['modifyMyPasswordByToken']),
-    handleGoBack() {
-      this.$router.back()
-    },
     handleSubmit() {
       this.$refs.passwordByTokenForm.validate( async valid => {
         if (valid) {
           const { newPassword } = this.passwords
           const res = await this.modifyMyPasswordByToken({ token: this.passwordToken, newPassword })
           if (res) {
-            this.setIsStep(0)
+            this.handleSetStepAndRouter({ path: '/login' })
             localStorage.clear('isStep')
             localStorage.clear('findPasswordUsername')
             localStorage.clear('passwordToken')
-            this.$router.push({ path: '/login' })
           }
         }
       })

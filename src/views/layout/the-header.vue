@@ -90,8 +90,7 @@ export default {
           logout()
       }).catch(() =>{})
     },
-    onSecurityQuestionsChange(e, field, item) {
-      const { controlProps } = item
+    onSecurityQuestionsChange(e, field) {
       this.$set(this.isChoose, field, e)
       const filterFields = this.fields.filter(val => val && val !== field)
       // 这里是处理没有触发change事件的select
@@ -101,10 +100,6 @@ export default {
         this.$set(this.questions, fullField, this.securityQuestions.filter(val => val && !temp.includes(val.id)))
         this.$set(this.questionAnswersFormItems[fullField], 'options', this.questions[fullField])
       })
-      controlProps.map(val => {
-        if (this.values[field]) this.$set(this.values, val, '')
-      })
-      this.$set(this.values, field, e)
     },
     async handleSubmit(val) {
       const mapArray = [ 'One', 'Two', 'Three' ]
