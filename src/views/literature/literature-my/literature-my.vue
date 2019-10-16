@@ -62,6 +62,7 @@
         </el-button>
         <el-button
           v-else
+          :id="'onlineButton' + scope.row.id"
           type="primary"
           size="small"
           plain
@@ -125,7 +126,7 @@ export default {
         { prop: '', label: '最新发布章节' },
         { slotName: 'finish', label: '作品状态' },
         { prop: 'auditAt', label: '发布时间' },
-        { slotName: 'operate', label: '操作', align: 'center' }
+        { slotName: 'operate', label: '操作', align: 'center', width: '180px' }
       ],
       offlineForm: { offlineReason: '' },
       rules: {
@@ -170,6 +171,8 @@ export default {
       } catch (err) {
         console.log(err)
       }
+
+      document.querySelector(`#onlineButton${literature.id}`).blur()
     },
     onConfirmOffline() {
       this.$refs.offlineForm.validate(async valid => {

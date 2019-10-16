@@ -30,6 +30,7 @@
       </el-button>
       <el-button
         v-if="scope.row.status === 'shelf'"
+        :id="'onlineButton' + scope.row.id"
         type="primary"
         size="mini"
         slot="pass"
@@ -178,6 +179,8 @@ export default {
       } catch (err) {
         console.log(err)
       }
+
+      document.querySelector(`#onlineButton${literature.id}`).blur()
     },
     onConfirmOffline() {
       this.$refs.offlineForm.validate(async valid => {
