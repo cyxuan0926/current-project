@@ -40,7 +40,7 @@
       width="530px">
       <m-form
         class="security-question__form"
-        :items="dialogFormItems"
+        :items="questionAnswersFormItems"
         @submit="handleSubmit"
         :values='values'
         ref="dialogForm"
@@ -50,72 +50,30 @@
 </template>
 
 <script>
+import questionAnswersSetter from '@/mixins/question-answers-setter'
 import { mapActions, mapState } from 'vuex'
 import logout from '@/utils/logout'
-// action: 'getSecurityQuestions', namespaced: 'account' customClass: 'el-form-item__margin-bottom-0'
 export default {
+  mixins: [questionAnswersSetter],
   data() {
-    let formButton = { buttons: [ { add: 'add', text: '确定' }, 'cancel' ] },
-      inputItem = { type: 'input', label: '答案', placeholder: '请输入你的答案，控制在10个字数以内',
-        rules: ['required', 'lengthRange-10'], clearable: true, value: '', ruleMessages: { lengthRange: '不要超过字数限定数' } },
-      selectItem = { type: 'select', props: { label: 'name', value: 'id' },
-        func: this.onSecurityQuestionsChange, rules: ['required'] }
     return {
-      visible: false,
-      filterData: [],
-      dialogFormItems: Object.assign({}, {
-        formConfigs: { labelWidth: '100px' },
-        questionOne: Object.assign({}, selectItem, { label: '问题1', controlProps: [ 'answerOne' ] }),
-        answerOne: inputItem,
-        questionTwo: Object.assign({}, selectItem, { label: '问题2', controlProps: [ 'answerTwo' ] }),
-        answerTwo: inputItem,
-        questionThree: Object.assign({}, selectItem, { label: '问题3', controlProps: [ 'aneswrThree' ] }),
-        aneswrThree: inputItem
-      }, formButton),
-      values: {},
-      isChoose: {},
-      questions: {},
-      questionAnswers: {}
+      visible: false
     }
   },
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
       publicUserInfo: state => state.account.publicUserInfo
-    }),
-    ...mapState('account', {
-      securityQuestions: state => state.securityQuestions
-    }),
+    })
   },
   methods: {
     ...mapActions(['handleCollapse', 'closeWebsocket']),
-    ...mapActions('account', ['getSecurityQuestions', 'setUserSecurityQuestionAnswers', 'getUserSecurityQuestionAnswers']),
+    ...mapActions('account', ['setUserSecurityQuestionAnswers', 'getUserSecurityQuestionAnswers']),
     handleCommand(e) {
       if (e === 'setSecurityQuestions') {
         (async () => {
-          const fields = ['questionOne', 'questionTwo', 'questionThree']
-          await this.getSecurityQuestions()
           const res = await this.getUserSecurityQuestionAnswers()
-          if (res && res.length) {
-            const questionAnswers = res.map(val => {
-              if (val.ordinal === 0) return { 'One': [ val.securityQuestionId, val.answer ] }
-              if (val.ordinal === 1) return { 'Two': [ val.securityQuestionId, val.answer ] }
-              if (val.ordinal === 2) return { 'Three': [ val.securityQuestionId, val.answer ] }
-            })
-            const noOne = [questionAnswers[1]['Two'][0], questionAnswers[2]['Three'][0]]
-            const noTwo = [questionAnswers[0]['One'][0], questionAnswers[2]['Three'][0]]
-            const noThree = [questionAnswers[0]['One'][0], questionAnswers[1]['Two'][0]]
-            this.$set(this.questions, 'questionOne', this.securityQuestions.filter(question => question && !noOne.includes(question.id)))
-            this.$set(this.questions, 'questionTwo', this.securityQuestions.filter(question => question && !noTwo.includes(question.id)))
-            this.$set(this.questions, 'questionThree', this.securityQuestions.filter(question => question && !noThree.includes(question.id)))
-            this.$set(this.isChoose, 'questionOne', questionAnswers[0]['One'][0])
-            this.$set(this.isChoose, 'questionTwo', questionAnswers[1]['Two'][0])
-            this.$set(this.isChoose, 'questionThree', questionAnswers[2]['Three'][0])
-            fields.map(val => this.$set(this.dialogFormItems[val], 'options', this.questions[val]))
-            this.values = { questionOne: questionAnswers[0]['One'][0], questionTwo: questionAnswers[1]['Two'][0], questionThree: questionAnswers[2]['Three'][0],
-              answerOne: questionAnswers[0]['One'][1], answerTwo: questionAnswers[1]['Two'][1], aneswrThree: questionAnswers[2]['Three'][1] }
-          }
-          else fields.map(val => this.$set(this.dialogFormItems[val], 'options', this.securityQuestions))
+          await this.onRenderData(res)
           this.visible = true
         })()
       }
@@ -135,27 +93,22 @@ export default {
     onSecurityQuestionsChange(e, field, item) {
       const { controlProps } = item
       this.$set(this.isChoose, field, e)
-      const fields = ['questionOne', 'questionTwo', 'questionThree']
-      const filterFields = fields.filter(val => val && val !== field)
+      const filterFields = this.fields.filter(val => val && val !== field)
       // 这里是处理没有触发change事件的select
       filterFields.map(fullField => {
         // 如果这个这个select已经选择过了那么这个筛选条件就要去除掉选择的那个值 这里在已经设置好问题时有bug
         const temp = Object.values(this.isChoose).filter(question => question && question !== this.isChoose[fullField])
         this.$set(this.questions, fullField, this.securityQuestions.filter(val => val && !temp.includes(val.id)))
-        this.$set(this.dialogFormItems[fullField], 'options', this.questions[fullField])
+        this.$set(this.questionAnswersFormItems[fullField], 'options', this.questions[fullField])
       })
-      controlProps.map(prop => this.$set(this.values, prop, ''))
+      controlProps.map(val => {
+        if (this.values[field]) this.$set(this.values, val, '')
+      })
       this.$set(this.values, field, e)
     },
     async handleSubmit(val) {
       const mapArray = [ 'One', 'Two', 'Three' ]
-      const { questionOne, questionTwo, questionThree, answerOne, answerTwo, aneswrThree } = val
-      const One = [ questionOne, answerOne ]
-      const Two = [ questionTwo, answerTwo ]
-      const Three = [ questionThree, aneswrThree ]
-      this.$set(this.questionAnswers, 'One', One)
-      this.$set(this.questionAnswers, 'Two', Two)
-      this.$set(this.questionAnswers, 'Three', Three)
+      this.onProcesseData(val)
       const params = mapArray.map((val,index) => ({ securityQuestionId: this.questionAnswers[val][0], answer: this.questionAnswers[val][1], ordinal: index }))
       await this.setUserSecurityQuestionAnswers(params)
       this.handleCloseDialog()
@@ -171,9 +124,4 @@ export default {
 .all-dialog__style {
   line-height: 24px;
 }
-// .security-question__form {
-//   /deep/ .el-form-item__margin-bottom-0 {
-//     // margin-bottom: 0px;
-//   }
-// }
 </style>

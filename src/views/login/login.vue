@@ -26,10 +26,10 @@
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
-            <!-- <el-button
+            <el-button
               type="text"
               class="white forget-password"
-              @click="handleGoPasswordRetrieve">忘记密码</el-button>   -->
+              @click="handleGoPasswordRetrieve">忘记密码</el-button>  
           </el-form-item>
         </el-form>
         <el-button
@@ -93,6 +93,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setUser']),
+    ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie', 'getWebsocketResult']),
     ...mapActions('account', ['login']),
     handleLogin() {
@@ -153,8 +154,9 @@ export default {
     },
     handleGoPasswordRetrieve() {
       const { username } = this.formData
-      if (username) this.$router.push({ path: `/password_retrieve/step_one/${ username }` })
-      else this.$router.push({ path: `/password_retrieve/step_one` })
+      this.setFindPasswordUsername(username)
+      localStorage.setItem('findPasswordUsername', JSON.stringify(username))
+      this.$router.push({ path: `/password_retrieve/step_one` })
     }
     // handleLogin() {
     //   if (this.loginState.loged || this.loginState.loading) return false

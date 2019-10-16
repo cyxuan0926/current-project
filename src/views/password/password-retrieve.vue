@@ -12,18 +12,15 @@
   </el-card>
 </template>
 <script>
+import passwordMixins from './mixins/password-mixins'
 export default {
-  data () {
-    return {
-    }
-  },
+  mixins: [passwordMixins],
   methods: {
     handleGoLogin() {
+      this.setIsStep(0)
+      localStorage.setItem('isStep', JSON.stringify(0))
       this.$router.push({ path: '/login' })
     }
-  },
-  mounted() {
-    console.log(1111)
   }
 }
 </script>

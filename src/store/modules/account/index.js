@@ -12,7 +12,10 @@ const state = {
   rolesList: [], // 监狱超级管理员的角色列表
   modifyMyPasswordResult: false,
   allTenants: [],
-  securityQuestions: [] // 所有的安全问题
+  securityQuestions: [], // 所有的安全问题,
+  passwordToken: (localStorage.getItem('passwordToken') && JSON.parse(localStorage.getItem('passwordToken'))) || '', // 安全问题密码重置的token
+  findPasswordUsername: (localStorage.getItem('findPasswordUsername') && JSON.parse(localStorage.getItem('findPasswordUsername'))) || '', // 找回密码的用户名
+  isStep: (localStorage.getItem('isStep') && JSON.parse(localStorage.getItem('isStep'))) || 0 // 找回密码当前的步数 0表示别的页面 1 第一页 2 第二页 3 第三页
 }
 
 const mutations = {
@@ -23,7 +26,10 @@ const mutations = {
   setRolesList: (state, rolesList) => { state.rolesList = rolesList },
   setAllTenants: (state, allTenants) => { state.allTenants = allTenants },
   setAuthorities: (state, authorities) => { state.authorities = authorities },
-  setSecurityQuestions: (state, securityQuestions) => { state.securityQuestions = securityQuestions }
+  setSecurityQuestions: (state, securityQuestions) => { state.securityQuestions = securityQuestions },
+  setPasswordToken: (state, passwordToken) => { state.passwordToken = passwordToken },
+  setFindPasswordUsername: (state, findPasswordUsername) => { state.findPasswordUsername = findPasswordUsername },
+  setIsStep: (state, isStep) => { state.isStep = isStep }
 }
 
 const actions = {
@@ -160,7 +166,11 @@ const actions = {
   async verificateSecurityQuestionAnswers({ commit }, { username, questionAnswers }) {
     try {
       const res = await verificateSecurityQuestionAnswers({ username, questionAnswers })
-      console.log(res)
+      if (res && res.token) {
+        commit('setPasswordToken', res.token)
+        localStorage.setItem('passwordToken', JSON.stringify(res.token))
+      }
+      return res
     }
     catch (err) {
       throw err
@@ -170,7 +180,7 @@ const actions = {
   async modifyMyPasswordByToken({ commit }, { token, newPassword }) {
     try {
       const res = await modifyMyPasswordByToken({ token, newPassword })
-      console.log(res)
+      return res
     }
     catch (err) {
       throw err
