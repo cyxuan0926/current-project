@@ -83,8 +83,8 @@ export default {
   border: none;
   min-height: 430px !important;
   font-size: 13px;
-  font-family: 'PingFang-SC', 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 24px;
+  // font-family: 'PingFang-SC', 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 22px;
   appearance: none;
   resize: none;
 }

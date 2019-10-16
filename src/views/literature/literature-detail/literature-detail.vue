@@ -19,7 +19,10 @@
         <el-input v-model="articleForm.penName" disabled></el-input>
       </el-form-item>
       <el-form-item label="作品标题" prop="title">
-        <el-input v-model="articleForm.title"></el-input>
+        <el-input v-model="articleForm.title" maxlength="18"></el-input>
+        <p class="title font-num-tip">
+          你还可以输入 {{ 18 - articleForm.title.length }} 个字符
+        </p>
       </el-form-item>
       <el-form-item label="作品内容" prop="content">
         <el-input
@@ -28,8 +31,12 @@
           rows="20"
           maxlength="20000"
         />
+        <p class="content font-num-tip">
+          你还可以输入 {{ 20000 - articleForm.content.length }} 个字符
+        </p>
       </el-form-item>
       <el-form-item align="right">
+        <el-button type="primary" @click="onFormat">自动排版</el-button>
         <el-button
           v-if="this.articleForm.articleType === 1"
           type="primary"
@@ -151,7 +158,24 @@ export default {
     onPreview() {
       this.literaturePreviewVisible = true
     },
+    onFormat() {
+      const indent = '    '
+      let content = this.articleForm.content
+
+      content = indent + content.trim().replace(/\n\s*/g, '\n\n' + indent)
+
+      if (content.length > 20000) {
+        this.$message.error('作品内容字数过多，请精简内容后再进行排版');
+      } else {
+        this.articleForm.content = content
+      }
+    },
     onSubmit() {
+      if (this.articleForm.content.length < 100) {
+        this.$message.error('正文内容不能少于 100 字')
+        return
+      }
+
       this.$refs.articleForm.validate(async valid => {
         if (valid) {
           const isSuccess = await this.publishLiterature({
@@ -209,5 +233,25 @@ export default {
 .el-form {
   width: 960px;
   margin: 0 auto;
+}
+
+.font-num-tip {
+  font-size: 12px;
+  color: #bbb;
+
+  &.title {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    line-height: 40px;
+  }
+
+  &.content {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-top: 5px;
+    line-height: 1;
+  }
 }
 </style>
