@@ -61,9 +61,7 @@ export default {
         if(valid) {
           this.setFindPasswordUsername(username)
           localStorage.setItem('findPasswordUsername', JSON.stringify(username))
-          this.setIsStep(1)
-          localStorage.setItem('isStep', JSON.stringify(1))
-          this.$router.push({ path: `/password_retrieve/step_two` })
+          this.handleSetStepAndRouter({ step: 1, path: '/password_retrieve/step_two' })
         }
       })
     }

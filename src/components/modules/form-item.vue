@@ -24,7 +24,7 @@
       :loading="item.loading"
       :filterable="!!(item.filterable)"
       :disabled="item.disabled"
-      @change="item.func && item.func($event, prop, item)">
+      @change="selectChangeEvent($event, prop, item)">
       <el-option
         v-for="(option) in item.options"
         :key="item.props ? option[item.props.value] : option.value"
@@ -109,6 +109,10 @@ export default {
       default: () => []
     },
     'reset-field-value': {
+      type: Function,
+      default: () => () => {}
+    },
+    'select-change-event': {
       type: Function,
       default: () => () => {}
     }

@@ -5,7 +5,7 @@
     <div slot="header">
       <el-button
         type="text"
-        @click="handleGoLogin">狱务通</el-button>
+        @click="handleSetStepAndRouter({ path: '/login' })">狱务通</el-button>
       <span>{{ $route.meta.step === 3 ? '设置新密码' : '找回密码' }}</span>
     </div>
     <router-view />
@@ -14,14 +14,7 @@
 <script>
 import passwordMixins from './mixins/password-mixins'
 export default {
-  mixins: [passwordMixins],
-  methods: {
-    handleGoLogin() {
-      this.setIsStep(0)
-      localStorage.setItem('isStep', JSON.stringify(0))
-      this.$router.push({ path: '/login' })
-    }
-  }
+  mixins: [passwordMixins]
 }
 </script>
 
