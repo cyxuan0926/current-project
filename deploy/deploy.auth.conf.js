@@ -1,6 +1,6 @@
 module.exports = {
   local: true,
-  buildCommands: ["npm install", "npm run build:auth"],
+  buildCommands: ["npm ci", "npm run build:auth"],
   buildOutputPath: "dist",
   repository: {
     name: "ywgk-fe",
