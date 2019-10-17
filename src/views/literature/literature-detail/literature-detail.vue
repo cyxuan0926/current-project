@@ -35,7 +35,7 @@
           你还可以输入 {{ 20000 - articleForm.content.length }} 个字符
         </p>
       </el-form-item>
-      <el-form-item align="right">
+      <el-form-item align="right" style="margin-top: 30px">
         <el-button type="primary" @click="onFormat">自动排版</el-button>
         <el-button
           v-if="this.articleForm.articleType === 1"
@@ -162,7 +162,7 @@ export default {
       const indent = '    '
       let content = this.articleForm.content
 
-      content = indent + content.trim().replace(/\n\s*/g, '\n\n' + indent)
+      content = indent + content.trim().replace(/\n\s*/g, '\n' + indent)
 
       if (content.length > 20000) {
         this.$message.error('作品内容字数过多，请精简内容后再进行排版');

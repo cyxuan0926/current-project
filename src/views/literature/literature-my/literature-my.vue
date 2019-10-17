@@ -14,8 +14,8 @@
     <m-table :data="literatures" :cols="tableCols">
       <div class="literature-info-cell" slot="title" slot-scope="scope">
         <div class="cover">
-          <img v-if="scope.cover" src="">
-          <span v-else>{{ scope.row.title }}</span>
+          <img src="/static/images/book-cover.jpg">
+          <!-- <span v-else>{{ scope.row.title }}</span> -->
         </div>
         <div class="literature-info">
           <el-tooltip :content="scope.row.title" placement="top">
@@ -121,7 +121,7 @@ export default {
       offlineDialogVisible: false,
       activeTabName: 'pass',
       tableCols: [
-        { slotName: 'title', label: '作品名称' },
+        { slotName: 'title', label: '作品名称', width: '292px' },
         { prop: 'articleTypeName', label: '作品类型' },
         { prop: '', label: '最新发布章节' },
         { slotName: 'finish', label: '作品状态' },
@@ -238,16 +238,22 @@ h3 {
   .cover {
     display: flex;
     align-items: center;
-    width: 62px;
+    width: 70px;
     max-height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .literature-info {
-    margin-left: 10px;
+    width: 150px;
+    margin-left: 20px;
+    padding-bottom: 3px;
 
     h3 {
       overflow: hidden;
-      width: 100px;
       white-space: nowrap;
       text-overflow: ellipsis;
       margin-bottom: 8px;
@@ -256,6 +262,7 @@ h3 {
     dl {
       display: flex;
       align-items: center;
+      // justify-content: space-between;
       margin: 0;
       line-height: 18px;
     }
