@@ -116,7 +116,7 @@ export default {
             localStorage.setItem('user', JSON.stringify(this.user))
 
             const { role, jailId } = this.user
-            if (role === '1') {
+            if ([1, -1].includes(parseInt(role))) {
               this.getWebsocketResult(jailId)
             }
 
