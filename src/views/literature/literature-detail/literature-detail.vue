@@ -89,8 +89,8 @@ export default {
             }),
             trigger: 'change'
           },
-          { required: true, message: '请输入标题', trigger: 'change' },
-          { min: 1, max: 18, message: '标题不能超过 18 个字', trigger: 'change' }
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { max: 18, message: '标题不能超过 18 个字', trigger: 'change' }
         ],
         content: [
           {
