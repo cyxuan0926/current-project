@@ -121,7 +121,7 @@ export default {
         baseCols: [
           { slotName: 'title', label: '作品标题', showOverflowTooltip: true },
           { prop: 'articleTypeName', label: '作品类型' },
-          { prop: 'penName', label: '作者笔名' },
+          { prop: 'penName', label: '作者笔名', showOverflowTooltip: true },
           { prop: 'publishAt', label: '发布时间' }
         ],
         passCols: [

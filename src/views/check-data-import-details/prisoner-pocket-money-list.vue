@@ -8,7 +8,7 @@
       @search="onSearch"/>
     <el-col :span="24">
       <el-table
-        border
+        stripe
         :data="prisonersPocketMoney.contents"
         style="width: 100%"
       >

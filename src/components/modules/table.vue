@@ -3,7 +3,7 @@
     :data="data"
     @selection-change="selectionChange"
     class="com-table"
-    border
+    stripe
   >
     <template v-for="(col, i) in cols">
       <el-table-column

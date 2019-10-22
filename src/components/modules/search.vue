@@ -273,8 +273,12 @@ export default {
     button{
       min-width: 50px;
       margin-bottom: 10px;
+      margin-right: 10px;
       // height: 40px;
       // margin-left: 10px;
+      + button {
+        margin-left: 0;
+      }
     }
 
     .el-input {
@@ -282,7 +286,7 @@ export default {
     }
 
     .el-date-editor--datetimerange {
-      width: 326px;
+      width: 318px;
     }
 
     .m-range-picker,

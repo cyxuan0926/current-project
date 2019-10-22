@@ -15,7 +15,7 @@
     <el-col :span="24">
       <el-table
         :data="whitemembers.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="phone"

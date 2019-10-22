@@ -19,7 +19,7 @@
       class="el-col__no-tabs__margin">
       <el-table
         :data="feedbacks.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

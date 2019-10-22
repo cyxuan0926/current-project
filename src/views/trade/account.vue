@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="contents"
-      border
+      stripe
       @cell-click="handleClick"
       :row-class-name="rowClass">
       <el-table-column
@@ -75,7 +75,7 @@
       <el-table
         :data="accountDetail"
         max-height="400"
-        border>
+        stripe>
         <el-table-column
           property="phone"
           label="手机号码" />

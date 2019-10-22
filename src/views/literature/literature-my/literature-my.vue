@@ -12,10 +12,9 @@
     </el-tabs>
 
     <m-table :data="literatures" :cols="tableCols">
-      <div class="literature-info-cell" slot="title" slot-scope="scope">
+      <!-- <div class="literature-info-cell" slot="title" slot-scope="scope">
         <div class="cover">
           <img src="/static/images/book-cover.jpg">
-          <!-- <span v-else>{{ scope.row.title }}</span> -->
         </div>
         <div class="literature-info">
           <el-tooltip :content="scope.row.title" placement="top">
@@ -34,7 +33,7 @@
             <dd>{{ scope.row.collectNum }}</dd>
           </dl>
         </div>
-      </div>
+      </div> -->
 
       <span slot="finish" slot-scope="scope">
         {{ scope.row.finish | literatureStatus }}
@@ -121,12 +120,17 @@ export default {
       offlineDialogVisible: false,
       activeTabName: 'pass',
       tableCols: [
-        { slotName: 'title', label: '作品名称', width: '292px' },
-        { prop: 'articleTypeName', label: '作品类型' },
-        { prop: '', label: '最新发布章节' },
-        { slotName: 'finish', label: '作品状态' },
-        { prop: 'auditAt', label: '发布时间' },
-        { slotName: 'operate', label: '操作', align: 'center', width: '180px' }
+        // { slotName: 'title', label: '作品名称', width: '292px' },
+        { prop: 'title', label: '作品标题', showOverflowTooltip: true,  minWidth: '130px' },
+        { prop: '', label: '封面图', minWidth: '80px' },
+        { prop: 'articleTypeName', label: '作品类型', minWidth: '76px' },
+        { prop: '', label: '最新发布章节', minWidth: '120px' },
+        { slotName: 'finish', label: '作品状态', minWidth: '76px' },
+        { prop: 'clientNum', label: '点击数量', minWidth: '70px' },
+        { prop: 'praiseNum', label: '点赞数量', minWidth: '70px' },
+        { prop: 'collectNum', label: '收藏数量', minWidth: '70px' },
+        { prop: 'auditAt', label: '发布时间', minWidth: '124px' },
+        { slotName: 'operate', label: '操作', minWidth: '150px' }
       ],
       offlineForm: { offlineReason: '' },
       rules: {

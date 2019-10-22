@@ -68,6 +68,7 @@
                 currentAccount = scope.row
               }"
               type="primary"
+              size="small"
               plain>{{ scope.row.isEnabled ? '禁用' : '启用'}}</el-button>
           </template>
       </m-table>

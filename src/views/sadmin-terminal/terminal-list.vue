@@ -15,7 +15,7 @@
     <el-col :span="24">
       <el-table
         :data="terminals.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="terminalNumber"

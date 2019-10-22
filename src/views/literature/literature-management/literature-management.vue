@@ -123,13 +123,13 @@ export default {
       const cols = {
         baseCols: [
           { type: 'index', label: '序号' },
-          { slotName: 'title', label: '作品标题', showOverflowTooltip: true },
-          { prop: 'articleTypeName', label: '作品类型' },
-          { prop: 'penName', label: '作者笔名' },
-          { prop: 'publishAt', width: '124px', label: '发布时间' },
-          { prop: 'clientNum', label: '点击数量', width: '80px' },
-          { prop: 'praiseNum', label: '点赞数量', width: '80px' },
-          { prop: 'collectNum', label: '收藏数量', width: '80px' },
+          { slotName: 'title', label: '作品标题', showOverflowTooltip: true},
+          { prop: 'articleTypeName', label: '作品类型', minWidth: '76px' },
+          { prop: 'penName', label: '作者笔名', showOverflowTooltip: true, minWidth: '100px' },
+          { prop: 'publishAt', label: '发布时间', minWidth: '124px' },
+          { prop: 'clientNum', label: '点击数量', minWidth: '70px' },
+          { prop: 'praiseNum', label: '点赞数量', minWidth: '70px' },
+          { prop: 'collectNum', label: '收藏数量', minWidth: '70px' },
           // {
           //   prop: '',
           //   label: '打赏金额（元）'
@@ -138,16 +138,16 @@ export default {
           //   prop: '',
           //   label: '是否置顶'
           // },
-          { prop: 'finishName', label: '是否完结', width: '80px' }
+          { prop: 'finishName', label: '是否完结', minWidth: '70px' }
         ],
         passCols: [
-          { prop: 'auditAt', label: '审核时间' },
+          { prop: 'auditAt', label: '审核时间', minWidth: '124px' },
           { slotName: 'shelf', label: '操作' }
         ],
         shelfCols: [
-          { prop: 'shelfAt', label: '下架时间', width: '124px' },
+          { prop: 'shelfAt', label: '下架时间', minWidth: '124px' },
           { prop: 'shelfReason', label: '下架原因', showOverflowTooltip: true },
-          { slotName: 'pass', label: '操作' }
+          { slotName: 'pass', label: '操作', minWidth: '70px' }
         ]
       }
 

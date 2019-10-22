@@ -43,7 +43,7 @@ const config = {
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.230:8088/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket'
   },
   production: {
     publicApiHost: 'https://api.auth.prisonpublic.com',

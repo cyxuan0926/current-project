@@ -4,7 +4,6 @@
     :gutter="0">
     <el-button
       v-if="user.role === '-1'"
-      size="small"
       type="primary"
       plain
       class="button-add button-shift-down"
@@ -21,7 +20,7 @@
     <el-col :span="24">
       <el-table
         :data="prisonUsers.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="username"

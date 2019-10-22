@@ -26,7 +26,7 @@
       </el-tabs>
       <el-table
         :data="registrations.contents"
-        border
+        stripe
         class="mini-td-padding"
         style="width: 100%">
         <el-table-column

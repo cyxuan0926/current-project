@@ -50,7 +50,7 @@
     <el-row v-if="prisonerRewardPunishmentResult.errors && prisonerRewardPunishmentResult.errors.length">
       <!--上传模板文件的结果-->
       <el-tag type="danger">失败信息:</el-tag>
-      <el-table :data="prisonerRewardPunishmentResult.errors">
+      <el-table :data="prisonerRewardPunishmentResult.errors" stripe>
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber" />
@@ -70,7 +70,7 @@
     <el-row v-if="prisonerRewardPunishmentResult.prisonerRewardPunishments && prisonerRewardPunishmentResult.prisonerRewardPunishments.length">
       <!--上传模板文件的结果-->
       <el-tag type="success">成功信息:</el-tag>
-      <el-table :data="prisonerRewardPunishmentResult.prisonerRewardPunishments">
+      <el-table :data="prisonerRewardPunishmentResult.prisonerRewardPunishments" stripe>
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber" />

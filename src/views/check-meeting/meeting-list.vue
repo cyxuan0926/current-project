@@ -27,8 +27,7 @@
       <el-table
         ref="meetingTable"
         :data="meetings.contents"
-        border
-        class="mini-td-padding"
+        stripe
         style="width: 100%"
         @sort-change="sortChange">
         <el-table-column

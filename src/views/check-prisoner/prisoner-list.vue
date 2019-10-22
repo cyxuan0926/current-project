@@ -30,7 +30,7 @@
       class="el-col__no-tabs__margin">
       <el-table
         :data="prisoners.contents"
-        border
+        stripe
         @selection-change="handleSelectionChange"
         style="width: 100%">
         <!-- EL自身的 -->
