@@ -3,7 +3,7 @@ export default {
   computed: {
     ...mapState('account', {
       passwordToken: state => state.passwordToken,
-      isStep: state => state.isStep, // 表示当前步数已经检验通过了
+      isStep: state => state.isStep,
       findPasswordUsername: state => state.findPasswordUsername
     })
   },
