@@ -52,7 +52,7 @@ export default {
       const params = mapArray.map(val => ({ securityQuestionId: this.questionAnswers[val][0], answer: this.questionAnswers[val][1] }))
       const res = await this.verificateSecurityQuestionAnswers({ username, questionAnswers: params })
       this.isPass = !res
-      if (res) this.handleSetStepAndRouter({ step: 2, path: '/password_retrieve/step_three' })
+      if (res) this.handleSetStepAndRouter({ step: 2, path: '/password_retrieve/step_three', type: 'push' })
     }
   }
 }

@@ -7,7 +7,7 @@
     <el-form
       ref="user"
       @submit.native.prevent
-      :label-width="'30%'"
+      label-width="30%"
       :model="user"
       :rules="userRules">
       <el-form-item
@@ -61,7 +61,7 @@ export default {
         if(valid) {
           this.setFindPasswordUsername(username)
           localStorage.setItem('findPasswordUsername', JSON.stringify(username))
-          this.handleSetStepAndRouter({ step: 1, path: '/password_retrieve/step_two' })
+          this.handleSetStepAndRouter({ step: 1, path: '/password_retrieve/step_two', type: 'push' })
         }
       })
     }

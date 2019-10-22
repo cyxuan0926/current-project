@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :label-width="'30%'"
+    <el-form label-width="30%"
       ref="passwordByTokenForm"
       :model="passwords"
       :rules="passwordsRules">
@@ -23,7 +23,9 @@
           clearable
           v-model.trim="passwords.checkPassword" />
       </el-form-item>
-      <el-form-item size="large">
+      <el-form-item
+        size="large"
+        label-width="28%">
         <el-button
           type="primary"
           @click="handleSubmit">确定</el-button>
