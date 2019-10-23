@@ -43,7 +43,7 @@ export default {
       .el-button--primary {
           padding: 11px 6%;
           &:nth-last-child(1):first-child{
-            margin-left: 43%;
+            margin-left: 41%;
           }
           &:first-child {
             margin-left: 23%;
@@ -54,7 +54,7 @@ export default {
         }
       }
       .button-box {
-        width: 73%;
+        width: 72%;
         .el-button--primary {
           padding: 11px 6%;
           &:first-child {
