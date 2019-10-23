@@ -85,7 +85,7 @@ export default {
             validator: debounce(this.titleValidator, 300, {
               maxWait: 60 * 1000
             }),
-            trigger: 'change'
+            trigger: ['change', 'blur']
           },
           { required: true, message: '请输入标题', trigger: 'blur' }
         ],
@@ -94,7 +94,7 @@ export default {
             validator: debounce(this.contentValidator, 300, {
               maxWait: 60 * 1000
             }),
-            trigger: 'change'
+            trigger: ['change', 'blur']
           },
           { required: true, message: '请输入作品内容', trigger: 'blur' }
         ]
