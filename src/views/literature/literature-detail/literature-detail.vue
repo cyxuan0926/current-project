@@ -19,24 +19,19 @@
         <el-input v-model="articleForm.penName" disabled></el-input>
       </el-form-item>
       <el-form-item label="作品标题" prop="title">
-        <el-input v-model="articleForm.title" maxlength="18"></el-input>
+        <el-input v-model="articleForm.title"></el-input>
         <p class="title font-num-tip">
-          你还可以输入 {{ 18 - articleForm.title.length }} 个字符
+          你还可以输入 {{ TITLE_MAX_LENGTH - titleLength > 0 ? TITLE_MAX_LENGTH - titleLength : 0 }} 个字符
         </p>
       </el-form-item>
       <el-form-item label="作品内容" prop="content">
-        <el-input
-          v-model="articleForm.content"
-          type="textarea"
-          rows="20"
-          maxlength="20000"
-        />
+        <el-input v-model="articleForm.content" type="textarea" rows="20" />
         <p class="content font-num-tip">
-          你还可以输入 {{ 20000 - articleForm.content.length }} 个字符
+          你还可以输入 {{ CONTENT_MAX_LENGTH - contentLength > 0 ? CONTENT_MAX_LENGTH - contentLength : 0 }} 个字符
         </p>
       </el-form-item>
       <el-form-item align="right" style="margin-top: 30px">
-        <el-button type="primary" @click="onFormat">自动排版</el-button>
+        <el-button type="primary" @click="onFormatContent">自动排版</el-button>
         <el-button
           v-if="this.articleForm.articleType === 1"
           type="primary"
@@ -67,6 +62,9 @@ export default {
   components: { literaturePreview },
   data() {
     return {
+      TITLE_MAX_LENGTH: 20,
+      CONTENT_MIN_LENGTH: 100,
+      CONTENT_MAX_LENGTH: 20000,
       literaturePreviewVisible: false,
       articleForm: {
         articleType: 1,
@@ -89,8 +87,7 @@ export default {
             }),
             trigger: 'change'
           },
-          { required: true, message: '请输入标题', trigger: 'blur' },
-          { max: 18, message: '标题不能超过 18 个字', trigger: 'change' }
+          { required: true, message: '请输入标题', trigger: 'blur' }
         ],
         content: [
           {
@@ -99,8 +96,7 @@ export default {
             }),
             trigger: 'change'
           },
-          { required: true, message: '请输入作品内容', trigger: 'blur' },
-          { min: 100, max: 20000, message: '作品内容为 100-20000 字', trigger: 'blur' },
+          { required: true, message: '请输入作品内容', trigger: 'blur' }
         ]
       }
     }
@@ -112,6 +108,12 @@ export default {
     },
     _sensitiveWords() {
       return this.sensitiveWords.map(item => item.keyWord)
+    },
+    titleLength() {
+      return this.articleForm.title.replace(/\s*/g, '').length
+    },
+    contentLength() {
+      return this.articleForm.content.replace(/\s*/g, '').length
     }
   },
   async beforeRouteEnter(to, from, next) {
@@ -158,25 +160,24 @@ export default {
     onPreview() {
       this.literaturePreviewVisible = true
     },
-    onFormat() {
+    onFormatContent() {
       const indent = '    '
       let content = this.articleForm.content
 
-      content = indent + content.trim().replace(/\n\s*/g, '\n' + indent)
-
-      if (content.length > 20000) {
-        this.$message.error('作品内容字数过多，请精简内容后再进行排版');
-      } else {
-        this.articleForm.content = content
-      }
+      this.articleForm.content = indent + content.trim().replace(/\n\s*/g, '\n' + indent)
     },
     onSubmit() {
-      if (this.articleForm.content.length < 100) {
-        this.$message.error('正文内容不能少于 100 字')
+      this.onFormatContent()
+      this.articleForm.title = this.articleForm.title.replace(/\s*/g, '')
+
+      if (this.contentLength < this.CONTENT_MIN_LENGTH) {
+        this.$message.error(`正文内容不能少于 ${this.CONTENT_MIN_LENGTH} 字`)
         return
       }
 
-      this.$refs.articleForm.validate(async valid => {
+      setTimeout(() => {
+        this.$refs.articleForm.validate(async valid => {
+
         if (valid) {
           const isSuccess = await this.publishLiterature({
             id: this.$route.params.id,
@@ -185,8 +186,14 @@ export default {
           isSuccess && this.$router.push('/literature-my/literatures')
         }
       })
+      }, 20)
     },
     titleValidator(rule, value, callback) {
+      if (this.titleLength > this.TITLE_MAX_LENGTH) {
+        callback(new Error(`标题不能超过 ${this.TITLE_MAX_LENGTH} 个字`));
+        return
+      }
+
       this.sensitiveWordValidator(
         rule,
         value,
@@ -195,6 +202,11 @@ export default {
       )
     },
     contentValidator(rule, value, callback) {
+      if (this.contentLength > this.CONTENT_MAX_LENGTH) {
+        callback(new Error(`作品内容不能超过 ${this.CONTENT_MAX_LENGTH} 字`));
+        return
+      }
+
       this.sensitiveWordValidator(
         rule,
         value,
@@ -212,7 +224,6 @@ export default {
         const word = sensitiveWords[i];
 
         if (content.includes(word)) {
-          console.log('sensitiveWordValidator', i, word)
           const message = `不能包含敏感词 “${word}”`
 
           callback(new Error(message));

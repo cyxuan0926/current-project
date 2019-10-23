@@ -130,7 +130,7 @@ export default {
         { prop: 'praiseNum', label: '点赞数量', minWidth: '70px' },
         { prop: 'collectNum', label: '收藏数量', minWidth: '70px' },
         { prop: 'auditAt', label: '发布时间', minWidth: '124px' },
-        { slotName: 'operate', label: '操作', minWidth: '150px' }
+        { slotName: 'operate', label: '操作', minWidth: '160px' }
       ],
       offlineForm: { offlineReason: '' },
       rules: {
