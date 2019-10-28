@@ -1,12 +1,12 @@
 export default {
   // 获取狱务通版本信息
   getVersions(state, versionList) {
-    let versions = {}
-    versionList.versions.forEach(version => {
-      versions[version.typeId] = versions[version.typeId] ? versions[version.typeId] : []
-      versions[version.typeId].push({ ...version, isCheck: true })
-    })
-    state.versions = versions
+    // let versions = {}
+    // versionList.versions.forEach(version => {
+    //   versions[version.typeId] = versions[version.typeId] ? versions[version.typeId] : []
+    //   versions[version.typeId].push({ ...version, isCheck: true })
+    // })
+    state.versions = versionList.versions
     // let prisonVersions = [],
     //   familyVersions = []
     // for (let version of versionList.versions) {

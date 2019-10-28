@@ -1,4 +1,5 @@
 import Moment from 'moment'
+import switches from '@/filters/modules/switches'
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -62,11 +63,15 @@ export const deepCopy = (obj) => {
 
 // 角色名称转化角色信息对象(理想的情况下)
 export const transitionRolesList = (val) => {
-  let { name, id } = val, result = { value: id }
-  if (name.includes('监狱管理')) Object.assign(result, { label: '监狱管理员', role: '4' })
-  else if (name.includes('信息')) Object.assign(result, { label: '信息管理人员', role: '3' })
-  else if (name.includes('审核')) Object.assign(result, { label: '审核人员', role: '1' })
-  else Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
+  let { name, id } = val, result = { value: id }, data = {},
+    isOwn = switches['role'].some(role => {
+      if (role.label === name) {
+        data = role
+        return true
+      }
+    })
+  if (isOwn) result = Object.assign(result, data)
+  else result = Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
   return result
 }
 
@@ -87,15 +92,18 @@ export const transitionRoleId = (val) => {
       { roleList: [0], role: '0' },
       { roleList: [1], role: '1' },
       { roleList: [3], role: '3' },
-      { roleList: [4], role: '4' }
+      { roleList: [4], role: '4' },
+      { roleList: [5], role: '5' },
+      { roleList: [6], role: '6' }
     ], controlArg = true
   for (let value of val) {
-    let { roleName } = value
-    if (roleName.includes('监狱管理')) arr.push(4)
-    else if (roleName.includes('信息')) arr.push(3)
-    else if (roleName.includes('审核')) arr.push(1)
-    else if (roleName.includes('狱务通管理')) arr.push(0)
-    // else arr.push(-1) // 别的角色
+    let { roleName } = value, roleId, isOwn = switches['role'].filter(roles => {
+      if (roles.label === roleName) {
+        roleId = roles.role
+        return true
+      }
+    })
+    if (isOwn) arr.push(Number(roleId))
   }
   arr = Array.from(new Set(arr))
   for (let index in roles) {

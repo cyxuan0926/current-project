@@ -20,7 +20,7 @@
       </el-tabs>
       <el-table
         :data="visits.contents"
-        border
+        stripe
         class="mini-td-padding td"
         style="width: 100%">
         <el-table-column

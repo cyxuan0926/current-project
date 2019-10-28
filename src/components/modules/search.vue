@@ -1,18 +1,5 @@
 <template>
   <div class="filter-container">
-    <!-- <div class="filter-left">
-      <el-select
-        v-model="pageSize"
-        placeholder="请选择"
-        @change="sizeChange">
-        <el-option
-          v-for="item in selectItem"
-          :key="item"
-          :label="item"
-          :value="item"/>
-      </el-select>
-      条记录
-    </div> -->
     <div class="filter-right">
       <template v-for="(item, index) in items">
         <el-input
@@ -122,6 +109,9 @@
           v-else
           icon="el-icon-search"
           @click="onSearch" />
+        <el-button v-if="clearable" type="warning" @click="onClear">
+          清空
+        </el-button>
         <slot name="append" />
       </template>
     </div>
@@ -134,18 +124,16 @@ export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      } },
+      default: () => {}
+    },
     buttonText: {
       type: String,
       default: ''
-    }
+    },
+    clearable: Boolean
   },
   data() {
     return {
-      // selectItem: [10, 20, 30, 40, 50], // 每页可以提供的显示页数的数组
-      // pageSize: 10,
       startValue: null,
       endValue: null,
       pickerOptions: {
@@ -176,9 +164,6 @@ export default {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
-    // sizeChange(e) {
-    //   this.$emit('sizeChange', this.pageSize)
-    // },
     onSearch(e) {
       if (this.items) {
         let params = {}
@@ -214,6 +199,35 @@ export default {
     },
     onSelectChange(selectKey, value) {
       this.$emit('searchSelectChange', selectKey, value)
+    },
+    onClear() {
+      Object.keys(this.items).forEach(key => {
+        if (this.items[key].miss) return
+        // if (this.items[key].type === 'monthRangeSelector') {
+        //   this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
+        //   // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+        //   this.items[key][this.items[key].endKey] = this.items[key].endValue || ''
+        //   // params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
+        // }
+        // if (this.items[key].type === 'monthrange') {
+        //   this.startValue = this.endValue = ''
+        //   // params[this.items[key].start] = this.startValue
+        //   // params[this.items[key].end] = this.endValue
+        // }
+        // // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+        // if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
+        //   this.items[key].value = null
+        //   // params[this.items[key].start] = this.items[key].value[0]
+        //   // params[this.items[key].end] = this.items[key].value[1]
+        // }
+        // else {
+        //   this.items[key].value = ''
+        //   // params[key] = this.items[key].value
+        // }
+        this.$set(this.items[key], 'value', '')
+      })
+
+      this.$parent.$parent.filter = {}
     }
   }
 }
@@ -259,8 +273,12 @@ export default {
     button{
       min-width: 50px;
       margin-bottom: 10px;
+      margin-right: 10px;
       // height: 40px;
       // margin-left: 10px;
+      + button {
+        margin-left: 0;
+      }
     }
 
     .el-input {
@@ -268,7 +286,7 @@ export default {
     }
 
     .el-date-editor--datetimerange {
-      width: 315px;
+      width: 318px;
     }
 
     .m-range-picker,

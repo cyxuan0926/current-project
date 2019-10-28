@@ -71,7 +71,7 @@
         class="submit"
         type="primary"
         @click="onSubmit"
-        size="small">新增</el-button>
+        >新增</el-button>
     </el-col>
   </el-row>
 </template>

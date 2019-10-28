@@ -19,7 +19,9 @@
           <transition
             name="router-fade"
             mode="out-in">
-            <router-view />
+            <keep-alive :include="$store.state.global.componentsKeepAlive">
+              <router-view />
+            </keep-alive>
           </transition>
         </el-main>
         <el-footer
@@ -68,9 +70,10 @@ export default {
         this.hidden = false
       }
     }
-  },
+  }
   // watch: {
   //   '$route' (to, from) {
+  //     console.log(to, from)
   //     // let routes = localStorage.getItem('routes') && JSON.parse(localStorage.getItem('routes'))
   //     // if (to.meta.hidden || (routes && routes.indexOf(to.matched[to.matched.length - 1].path) < 0)) this.$router.replace({ path: '/dashboard'})
   //   }

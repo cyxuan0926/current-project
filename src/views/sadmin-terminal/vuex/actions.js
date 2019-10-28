@@ -16,5 +16,8 @@ export default {
   },
   updateTerminal: ({ commit }, params) => {
     return http.updateTerminal(params).then(res => res)
+  },
+  enableTerminal: ({ commit }, params) => {
+    return http.enableTerminal(params).then(res => res)
   }
 }

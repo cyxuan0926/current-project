@@ -2,10 +2,11 @@
 // const env = 'demo' // 演示环境
 // const env = 'auth' // 认证授权
 // const env = 'master' // 正式环境
-const nodeUrl = 'http://120.79.251.238:1339'
 
 // eslint-disable-next-line
 const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
+
+const nodeUrl = env === 'test' ? 'http://120.79.251.238:1339' : 'http://192.168.0.180:1339'
 
 // apiHost: 接口ip+端口,
 // apiPath: 接口的共同前缀,
@@ -36,13 +37,13 @@ const config = {
   },
   auth: {
     publicApiHost: 'http://192.168.0.230:8081',
-    apiHost: 'http://192.168.0.230:8088',
+    apiHost: 'http://192.168.0.182:8088',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.230:8088/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket'
   },
   production: {
     publicApiHost: 'https://api.auth.prisonpublic.com',

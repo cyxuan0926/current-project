@@ -1,5 +1,6 @@
 import http from '@/service'
 import api from './service'
+import urls from '@/service/urls'
 
 export default {
   getFeedbacks: ({ commit }, params) => {
@@ -8,11 +9,10 @@ export default {
       res.feedbacks.forEach(feedback => {
         if (feedback.imageUrls) {
           feedback.imageUrls = feedback.imageUrls.split(';')
+          if (!feedback.isCo) feedback.imageUrls = feedback.imageUrls.map(item => `${ urls.publicApiHost }/files/${ item }`)
           if (!feedback.imageUrls[feedback.imageUrls.length - 1]) feedback.imageUrls.pop()
         }
-        else {
-          feedback.imageUrls = []
-        }
+        else feedback.imageUrls = []
       })
       commit('getFeedbacks', res)
       return true
@@ -23,11 +23,10 @@ export default {
       if (!res) return
       if (res.detail.imageUrls) {
         res.detail.imageUrls = res.detail.imageUrls.split(';')
+        if (!res.detail.isCo) res.detail.imageUrls = res.detail.imageUrls.map(item => `${ urls.publicApiHost }/files/${ item }`)
         if (!res.detail.imageUrls[res.detail.imageUrls.length - 1]) res.detail.imageUrls.pop()
       }
-      else {
-        res.detail.imageUrls = []
-      }
+      else res.detail.imageUrls = []
       return res.detail
     })
   },

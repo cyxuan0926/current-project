@@ -7,26 +7,26 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <!--监狱版本-->
-    <template v-for="type in versionTypes">
+    <template v-for="(type, index) in versions">
       <el-col
         :span="24"
         :key="type.id">
-        <p>{{ type.label }}</p>
+        <p>{{ type.title }}</p>
       </el-col>
       <el-col
         :span="24"
-        :key="type.id"
+        :key="index + type.title"
         style="margin-bottom: 10px;">
         <el-table
-          :data="versions[type.typeId]"
-          border
+          :data="[versions[index]]"
+          stripe
           style="width: 100%;">
           <el-table-column label="版本名">
             <template slot-scope="scope">
               <el-input
                 type="text"
                 v-model="scope.row.versionCode"
-                :disabled="scope.row.isCheck" />
+                :disabled="!scope.row.isCheck" />
             </template>
           </el-table-column>
           <el-table-column label="版本号">
@@ -34,7 +34,7 @@
               <el-input
                 type="text"
                 v-model="scope.row.versionNumber"
-                :disabled="scope.row.isCheck" />
+                :disabled="!scope.row.isCheck" />
             </template>
           </el-table-column>
           <el-table-column label="是否强制更新">
@@ -42,7 +42,7 @@
               <el-select
                 v-model="scope.row.isForce"
                 placeholder="请选择"
-                :disabled="scope.row.isCheck">
+                :disabled="!scope.row.isCheck">
                 <el-option
                   v-for="(item,$key) in {'是':1,'否':0}"
                   :key="item"
@@ -56,16 +56,16 @@
               <el-input
                 type="text"
                 v-model="scope.row.description"
-                :disabled="scope.row.isCheck" />
+                :disabled="!scope.row.isCheck" />
             </template>
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.isCheck"
+                v-if="!scope.row.isCheck"
                 type="primary"
                 size="mini"
-                @click="scope.row.isCheck = false">修改</el-button>
+                @click="$set(scope.row, 'isCheck', true)">修改</el-button>
               <el-button
                 v-else
                 type="primary"
@@ -170,7 +170,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['versionsTotal', 'versions', 'versionTypes'])
+    ...mapState(['versionsTotal', 'versions'])
   },
   mounted() {
     this.getDatas()
@@ -210,7 +210,7 @@ export default {
       }
       this.updateVersion(params).then(res => {
         if (!res) return
-        row.isCheck = true
+        this.$set(row, 'isCheck', false)
       })
     }
     // 点击登录按钮执行的方法

@@ -71,7 +71,7 @@
       v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
-      <el-table :data="prisonerDataResult.errors">
+      <el-table :data="prisonerDataResult.errors" stripe>
         <el-table-column
           label="所在行"
           prop="rowNum"
@@ -129,7 +129,7 @@
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
-      <el-table :data="prisonerDataResult.prisoners">
+      <el-table :data="prisonerDataResult.prisoners" stripe>
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber"
@@ -182,7 +182,7 @@
       v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
       <el-tag type="danger">失败信息:</el-tag>
       <!--上传模板失败的结果-->
-      <el-table :data="prisonerYZKDataResult.errors">
+      <el-table :data="prisonerYZKDataResult.errors" stripe>
         <el-table-column
           label="所在行"
           prop="rowNum"
@@ -240,7 +240,7 @@
       style="margin-top: 10px;">
       <el-tag type="success">成功信息:</el-tag>
       <!--上传模板文件的结果-->
-      <el-table :data="prisonerYZKDataResult.prisoners">
+      <el-table :data="prisonerYZKDataResult.prisoners" stripe>
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber"
@@ -302,7 +302,7 @@
         :data="validatePrisonerResult.prisoners"
         size="small"
         max-height="400"
-        border>
+        stripe>
         <el-table-column
           prop="prisonerNumber"
           label="罪犯编号" />

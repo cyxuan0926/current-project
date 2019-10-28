@@ -26,7 +26,7 @@
       </el-tabs>
       <el-table
         :data="registrations.contents"
-        border
+        stripe
         class="mini-td-padding"
         style="width: 100%">
         <el-table-column
@@ -53,13 +53,6 @@
               title="身份证背面照" />
           </template>
         </el-table-column>
-        <!-- <el-table-column
-          width="148px"
-          label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer v-if="scope.row.idCardBack" :url="scope.row.idCardBack" title="身份证背面照"/>
-          </template>
-        </el-table-column> -->
         <el-table-column
           width="122px"
           label="申请时间">

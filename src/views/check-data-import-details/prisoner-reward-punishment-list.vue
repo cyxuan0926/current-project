@@ -10,7 +10,7 @@
       :span="24"
       class="el-col__no-tabs__margin">
       <el-table
-        border
+        stripe
         :data="prisonerRewardPunishments.contents"
         style="width: 100%"
       >

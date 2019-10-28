@@ -33,14 +33,14 @@ export function put(url = '', data = {}, config = {}) {
   })
 }
 
-// export function post(url = '', data = {}, config = {}) {
-//   Object.assign(config, basicConfig)
-//   return instance.request({
-//     url,
-//     data,
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     ...config
-//   })
-// }
+export function post(url = '', data = {}, config = {}) {
+  Object.assign(config, basicConfig)
+  return instance.request({
+    url,
+    data,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    ...config
+  })
+}
 

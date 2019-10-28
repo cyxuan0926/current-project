@@ -56,7 +56,7 @@
     <el-row v-if="uploadPocketMoneyExcelResult.error_arrays && uploadPocketMoneyExcelResult.error_arrays.length">
       <el-tag type="danger">解析失败的信息:</el-tag>
       <!--上传模板失败的结果-->
-      <el-table :data="uploadPocketMoneyExcelResult.error_arrays">
+      <el-table :data="uploadPocketMoneyExcelResult.error_arrays" stripe>
         <el-table-column
           label="所在行"
           prop="row"
@@ -98,7 +98,7 @@
     <el-row v-if="uploadPocketMoneyExcelResult.success_arrays && uploadPocketMoneyExcelResult.success_arrays.length">
       <el-tag type="success">解析成功的信息:</el-tag>
       <!--上传模板文件的结果-->
-      <el-table :data="uploadPocketMoneyExcelResult.success_arrays">
+      <el-table :data="uploadPocketMoneyExcelResult.success_arrays" stripe>
         <el-table-column
           label="所在行"
           prop="row"

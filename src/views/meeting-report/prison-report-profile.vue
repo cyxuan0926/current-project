@@ -3,7 +3,7 @@
     <el-col :span="24">
       <el-table
         :data="prisonReportList.contents"
-        border
+        stripe
         show-summary
         :summary-method="summaryMethod"
         style="width: 100%">

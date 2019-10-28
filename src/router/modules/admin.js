@@ -1,6 +1,5 @@
-import frame from '@/views/layout/the-frame'
-// eslint-disable-next-line
-import { helper } from '@/utils'
+// import frame from '@/views/layout/the-frame'
+// import { helper } from '@/utils'
 
 let admin = [{
   path: '/account',
@@ -12,19 +11,22 @@ let admin = [{
     props: { role: '4' },
     meta: { permission: 'visit.account.current-prison.search', breadcrumbName: '账户列表' },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
-    component: helper.loadView('sadmin-prison-user/prison-user-list')
+    // component: helper.loadView('sadmin-prison-user/prison-user-list')
+    component: 'sadmin-prison-user/prison-user-list'
   }, {
     path: '/account/add',
     name: 'account-add',
     meta: { role: '4', deep: true, permission: 'visit.account.add', breadcrumbName: '新增账户' },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
-    component: helper.loadView('sadmin-prison-user/prison-user-add')
+    // component: helper.loadView('sadmin-prison-user/prison-user-add')
+    component: 'sadmin-prison-user/prison-user-add'
   }, {
     path: '/account/edit/:id',
     name: 'account-edit',
     meta: { role: '4', deep: true, permission: 'visit.account.update', breadcrumbName: '编辑账户' },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
-    component: helper.loadView('sadmin-prison-user/prison-user-edit')
+    // component: helper.loadView('sadmin-prison-user/prison-user-edit')
+    component: 'sadmin-prison-user/prison-user-edit'
   }]
 }, {
   path: '/adminPrison-area',
@@ -36,12 +38,13 @@ let admin = [{
     meta: { permission: 'visit.prison-area.current-prison.search', breadcrumbName: '监狱监区列表' },
     props: { role: '4' },
     // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
-    component: helper.loadView('sadmin-prison-area/prison-area-list')
+    // component: helper.loadView('sadmin-prison-area/prison-area-list')
+    component: 'sadmin-prison-area/prison-area-list'
   }]
 }]
 
 admin.forEach(item => {
-  item.component = frame
+  item.component = 'layout/the-frame'
 })
 
 export default admin

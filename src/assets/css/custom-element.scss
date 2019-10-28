@@ -1,4 +1,4 @@
-$form-height-base: 36px !default;
+$form-height-base: 34px !default;
 
 /* Element Chalk Variables */
 
@@ -39,8 +39,8 @@ $--select-input-font-size: $--font-size-base !default;
 /* Button
 -------------------------- */
 $--button-font-size: $--font-size-base !default;
-$--button-padding-vertical: 11px !default;
-$--button-padding-horizontal: 12px !default;
+$--button-padding-vertical: 10px !default;
+$--button-padding-horizontal: 13px !default;
 
 /* Message
 -------------------------- */
@@ -55,7 +55,7 @@ $--msgbox-font-size: $--font-size-base !default;
 $--table-border-color: #e6e6e6 !default;
 // $--table-text-color: $--color-text-regular !default;
 $--table-header-color: $--color-text-regular !default;
-// $--table-row-hover-background: $--background-color-base !default;
+// $--table-row-hover-background: #e6e6e6 !default;
 // $--table-current-row-background: $--color-primary-light-9 !default;
 $--table-header-background: #f2f2f2 !default;
 // $--table-footer-background: $--color-text-placeholder !default;
@@ -76,9 +76,18 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 @import "~element-ui/packages/theme-chalk/src/index";
 
 #body {
-  // .el-main {
-  //   margin: 15px;
-  // }
+  .el-button--small {
+    padding: 8px 12px;
+  }
+
+  .el-button--mini {
+    padding: 7px 11px;
+  }
+
+  .el-button--text {
+    padding-left: 0;
+    padding-right: 0;
+  }
   
   .el-menu-item,
   .aside-top .bold1 {
@@ -103,21 +112,21 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
   }
 
   .el-table {
+    border: 1px solid $--table-border-color;
+    border-bottom: none;
+
+    th, td {
+      padding: 8px 0;
+      border-bottom: none;
+    }
+
     th {
       font-weight: normal;
     }
 
-    th, td {
-      padding: 9px 0;
-    }
-    
-    // .cell {
-    //   padding: 0 12px;
-    // }
-
     &.mini-td-padding {
       td {
-        padding: 6px 0;
+        padding: 4px 0;
       }
     }
   }
@@ -149,5 +158,13 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 
   .button-shift-down {
     margin-bottom: -32px;
+  }
+
+  .el-message-box__title {
+    font-size: 13px;
+  }
+
+  .el-pagination {
+    padding: 0;
   }
 }

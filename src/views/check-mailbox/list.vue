@@ -11,7 +11,7 @@
       class="el-col__no-tabs__margin">
       <el-table
         :data="mailboxes.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="name"

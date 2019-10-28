@@ -9,7 +9,7 @@
     <el-col :span="24">
       <el-table
         :data="families.contents"
-        border
+        stripe
         class="mini-td-padding"
         style="width: 100%">
         <el-table-column

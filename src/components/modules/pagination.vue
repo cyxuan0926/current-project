@@ -58,6 +58,9 @@ export default {
     },
     handleGo() {
       this.handleCurrentChange(this.currentPage)
+    },
+    updateCurrentPage(page) {
+      this.currentPage = page
     }
   }
 }

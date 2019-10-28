@@ -4,7 +4,6 @@
     :gutter="0">
     <el-button
       v-if="user.role === '-1'"
-      size="small"
       type="primary"
       plain
       class="button-add button-shift-down"
@@ -21,7 +20,7 @@
     <el-col :span="24">
       <el-table
         :data="prisonUsers.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="username"
@@ -93,7 +92,7 @@ export default {
     hasAllPrisonQueryAuth: Boolean
   },
   data() {
-    let options = { roleId: { type: 'select', label: '角色', getting: false }, jail: { type: 'select', label: '监狱名称', getting: true, belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
+    let options = { roleId: { type: 'select', label: '角色' }, jail: { type: 'select', label: '监狱名称', belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
     if (routeRole === '0') delete options.roleId
     if (role === '-1') delete options.jail
@@ -121,8 +120,9 @@ export default {
     if (this.routeRole === '0') {
       const res = await this.getAllTenants()
       if (res) {
-        this.searchItems.jail.getting = false
-        this.searchItems.jail.options = this.allTenants
+        this.$set(this.searchItems.jail, 'getting', true)
+        this.$set(this.searchItems.jail, 'options', this.allTenants)
+        this.$set(this.searchItems.jail, 'getting', false)
       }
     }
     await this.getDatas()
