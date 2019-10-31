@@ -7,12 +7,15 @@ export default {
     return http.getFeedbacks(params).then(res => {
       if (!res) return
       res.feedbacks.forEach(feedback => {
-        if (feedback.imageUrls) {
-          feedback.imageUrls = feedback.imageUrls.split(';')
-          if (!feedback.isCo) feedback.imageUrls = feedback.imageUrls.map(item => `${ urls.publicApiHost }/files/${ item }`)
-          if (!feedback.imageUrls[feedback.imageUrls.length - 1]) feedback.imageUrls.pop()
+        if (Object.prototype.toString.call(feedback.imageUrls) === '[object String]') {
+          if (feedback.imageUrls) {
+            const imageUrls = new Set(feedback.imageUrls.split(';'))
+            if (imageUrls.has('')) imageUrls.delete('')
+            if (!feedback.isCo) feedback.imageUrls = [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
+            else feedback.imageUrls = [ ...imageUrls ]
+          }
+          else feedback.imageUrls = []
         }
-        else feedback.imageUrls = []
       })
       commit('getFeedbacks', res)
       return true
@@ -21,12 +24,15 @@ export default {
   getFeedbackDetail: ({ commit }, params) => {
     return api.getFeedbackDetail(params).then(res => {
       if (!res) return
-      if (res.detail.imageUrls) {
-        res.detail.imageUrls = res.detail.imageUrls.split(';')
-        if (!res.detail.isCo) res.detail.imageUrls = res.detail.imageUrls.map(item => `${ urls.publicApiHost }/files/${ item }`)
-        if (!res.detail.imageUrls[res.detail.imageUrls.length - 1]) res.detail.imageUrls.pop()
+      if (Object.prototype.toString.call(res.detail.imageUrls) === '[object String]') {
+        if (res.detail.imageUrls) {
+          const imageUrls = new Set(res.detail.imageUrls.split(';'))
+          if (imageUrls.has('')) imageUrls.delete('')
+          if (!res.detail.isCo) res.detail.imageUrls = [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
+          else res.detail.imageUrls = [ ...imageUrls ]
+        }
+        else res.detail.imageUrls = []
       }
-      else res.detail.imageUrls = []
       return res.detail
     })
   },

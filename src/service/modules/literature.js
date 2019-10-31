@@ -68,5 +68,13 @@ export default {
   // 启用/禁用账户
   enableAuthor: (url, params) => {
     return service.post(url, params)
+  },
+  // 家属/狱警 作品管理-作品管理-举报详情 / 家属作品管理-举报管理-分页列表
+  getReportLiteratures: (url, params) => {
+    return service.get(url, params)
+  },
+  // 家属/狱警 作品管理-作品管理/举报管理-忽略
+  ignoreReportArticles: (url, params) => {
+    return service.post(url, params)
   }
 }

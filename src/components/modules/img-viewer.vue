@@ -1,6 +1,6 @@
 <template>
   <img
-    :src="url+'?token=' + $urls.token"
+    :src="publicUrl || url+'?token=' + $urls.token"
     @click="showImg"
     :alt="title">
 </template>
@@ -9,11 +9,17 @@
 import Viewer from 'viewerjs'
 export default {
   props: {
+    // 狱务通的图片
     url: {
       type: String,
       default: ''
     },
     title: {
+      type: String,
+      default: ''
+    },
+    // 公共服务公有类型的图片
+    publicUrl: {
       type: String,
       default: ''
     }
@@ -41,7 +47,7 @@ export default {
         hidden: function() {
           this.viewer.destroy()
         },
-        url: `${ this.url }?token=${ this.$urls.token }`
+        url: this.publicUrl || `${ this.url }?token=${ this.$urls.token }`
       });
     }
   }
