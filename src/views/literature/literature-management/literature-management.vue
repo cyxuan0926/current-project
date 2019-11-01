@@ -194,9 +194,9 @@ export default {
       tipOffDialogVisible: false,
       // 举报对话框表格的列字段
       tipOffDialogTableCols: [
-        { prop: 'reportName', label: '举报人', minWidth: '25%' },
-        { prop: 'createdAt', label: '举报时间', minWidth: '25%' },
-        { prop: 'reportReason', label: '举报内容', minWidth: '50%' }
+        { prop: 'reportName', label: '举报人', minWidth: '30%' },
+        { prop: 'createdAt', label: '举报时间', minWidth: '30%' },
+        { prop: 'reportReason', label: '举报内容', minWidth: '40%' }
       ],
       tipOffDialogTableData: []
     }
