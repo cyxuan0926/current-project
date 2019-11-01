@@ -22,21 +22,25 @@
         v-if="activeTabName !== 'shelf'"
         slot-scope="scope"
         slot="operate">
-        <el-button
-          type="danger"
-          size="mini"
-          plain
-          @click="onOffline(scope.row)"
-        >
+        <el-row>
+          <el-button
+            type="danger"
+            size="mini"
+            plain
+            @click="onOffline(scope.row)"
+          >
           下架
-        </el-button>
-        <el-button
-          v-if="scope.row.reportStatus || activeTabName === 'tipOff'"
-          size="mini"
-          class="button--neglect"
-          @click="onNeglect(scope.row)">
+          </el-button>
+        </el-row>
+        <el-row>
+          <el-button
+            v-if="scope.row.reportStatus || activeTabName === 'tipOff'"
+            size="mini"
+            class="button--neglect"
+            @click="onNeglect(scope.row)">
           忽略
-        </el-button>
+          </el-button>
+        </el-row>
       </template>
       <el-button
         v-if="scope.row.status === 'shelf'"
@@ -125,31 +129,27 @@ export default {
           type: 'select',
           label: '作品类型',
           options: [
-            { articleType: '', articleTypeName: '全部' },
             { articleType: 1, articleTypeName: '互动文章' },
             { articleType: 2, articleTypeName: '连载小说' }
           ],
           belong: { value: 'articleType', label: 'articleTypeName' },
-          value: '',
           miss: false
         },
         reportStatus: {
           type: 'select',
           label: '是否被举报',
+          noPlaceholder: true,
           options: [
-            { type: '', typeName: '全部' },
             { type: 1, typeName: '是' },
             { type: 0, typeName: '否' }
           ],
           belong: { value: 'type', label: 'typeName' },
-          value: '',
           miss: false
         },
         reportReason: {
           type: 'select',
           label: '举报内容',
           options: [
-            { tipOffContent: '', tipOffName: '全部' },
             { tipOffContent: '色情污秽', tipOffName: '色情污秽' },
             { tipOffContent: '垃圾营销', tipOffName: '垃圾营销' },
             { tipOffContent: '谣言', tipOffName: '谣言' },
@@ -160,17 +160,20 @@ export default {
             { tipOffContent: '其他', tipOffName: '其他' }
           ],
           belong: { value: 'tipOffContent', label: 'tipOffName' },
-          value: '',
           miss: true
         },
         reportTime: {
           type: 'datetimerange',
+          startPlaceholder: '被举报开始时间',
+          endPlaceholder: '被举报结束时间',
           start: 'reportStartDate',
           end: 'reportEndDate',
           miss: true
         },
         time: {
           type: 'datetimerange',
+          startPlaceholder: '发布开始时间',
+          endPlaceholder: '发布结束时间',
           start: 'publishStartDate',
           end: 'publishEndDate',
           miss: false
@@ -280,8 +283,9 @@ export default {
     onConfirmOffline() {
       this.$refs.offlineForm.validate(async valid => {
         if (valid) {
+          const articleId = this.activeTabName === 'tipOff' ? this.selectedLiterature.articleId : this.selectedLiterature.id
           const isSuccess = await this.offlineLiterature({
-            id: this.selectedLiterature.id,
+            id: articleId,
             shelfReason: this.offlineForm.offlineReason
           })
 

@@ -57,8 +57,8 @@
           v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :start-placeholder=" item.startPlaceholder || '开始时间' "
+          :end-placeholder=" item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd HH:mm:ss"
           :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
           :default-time="['00:00:00', '23:59:59']"/>
