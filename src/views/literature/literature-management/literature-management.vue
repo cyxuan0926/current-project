@@ -251,8 +251,9 @@ export default {
   methods: {
     ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature', 'onlineLiterature', 'getReportLiteratures', 'ignoreReportArticles']),
     onPreview(literature) {
+      const articleId = this.activeTabName === 'tipOff' ? literature.articleId : literature.id
       this.$router.push(
-        `/literature-management/literature-preview/${literature.id}`
+        `/literature-management/literature-preview/${ articleId }`
       )
     },
     onOffline(literature) {
