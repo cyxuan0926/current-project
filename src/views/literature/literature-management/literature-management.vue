@@ -242,7 +242,7 @@ export default {
           { slotName: 'pass', label: '操作', minWidth: '70px' }
         ],
         tipOffCols: [
-          { prop: 'reportName', label: '举报人' },
+          { prop: 'reportName', label: '举报人', showOverflowTooltip: true },
           { prop: 'createdAt', label: '被举报时间', minWidth: '124px' },
           { prop: 'reportReason', label: '举报内容', showOverflowTooltip: true },
           ...operateCol
