@@ -5,7 +5,6 @@
     <m-search
       :items="searchItems"
       ref="search"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -250,10 +249,6 @@ export default {
   },
   methods: {
     ...mapActions(['getVisits', 'getCanceledVisit', 'authorizeVisit', 'withdrawVisit']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       if (this.tabs === 'CANCELED') this.getCanceledVisit({ ...this.filter, ...this.pagination })
       else if (this.tabs !== 'CANCELED') this.getVisits({ ...this.filter, ...this.pagination })

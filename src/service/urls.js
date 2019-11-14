@@ -75,6 +75,16 @@ const config = {
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`
     // socketUrl: 'ws://192.168.0.54:8083/websocket'
+  },
+  phl: {
+    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    apiHost: 'http://192.168.0.188:8088',
+    apiPath: '',
+    audioUrl: `${ nodeUrl }/audio-server/audios`,
+    imageUrl: `${ nodeUrl }/image-server/avatars`,
+    // fileUrl: `${ nodeUrl }/image-server`,
+    videoUrl: `${ nodeUrl }/video-server/videos`
+    // socketUrl: 'ws://192.168.0.54:8083/websocket'
   }
 }
 

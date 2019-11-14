@@ -10,7 +10,6 @@
     <m-search
       :items="searchItems"
       ref="search"
-      @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -399,10 +398,6 @@ export default {
   },
   methods: {
     ...mapActions(['getMeetings', 'getMeetingsAll', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas('sizeChange')
-    },
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
       const params = { ...this.filter, ...this.pagination }

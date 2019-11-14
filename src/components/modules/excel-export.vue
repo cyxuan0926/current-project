@@ -17,8 +17,8 @@ export default {
     header: Array,
     filterFields: Array,
     filename: {
-      type: String,
-      default: '导出 Excel'
+      type: Object,
+      default: () => ({ value: '导出 Excel' })
     },
     bookType: {
       type: String,
@@ -46,13 +46,13 @@ export default {
           formatData,
           filename,
           bookType,
-          autoWidth
+          autoWidth,
         } = this;
 
         excel.export_json_to_excel({
           header,
           data: formatData(jsonData, filterFields),
-          filename,
+          filename: filename.formater ? filename.formater(filename.value) : filename.value ,
           bookType,
           autoWidth
         })

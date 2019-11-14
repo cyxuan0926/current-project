@@ -29,7 +29,7 @@
       <m-table
         :selection-change="handleSelectChange"
         :data="sensitiveWords"
-        :cols="test"
+        :cols="tableCols"
         class="mini-td-padding">
         <template
           slot="keyWord"
@@ -127,7 +127,7 @@ export default {
       operationInput: [],
       dialogOperationStatus: 0,
       uploadResults: {},
-      test: [
+      tableCols: [
         {
           type: 'selection'
         },

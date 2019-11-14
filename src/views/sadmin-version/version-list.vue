@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <!--监狱版本-->
     <template v-for="(type, index) in versions">
@@ -177,10 +176,6 @@ export default {
   },
   methods: {
     ...mapActions(['getVersions', 'updateVersion']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getVersions({ ...this.filter, ...this.pagination })
     },

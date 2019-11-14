@@ -16,13 +16,18 @@
     />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
-    <el-row type="flex" style="margin-bottom: 10px">
+    <el-row
+      type="flex"
+      style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth">
-        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
-        <el-button type="primary" @click="showDelPrionser">删除</el-button>
+        <el-button
+          type="primary"
+          @click="showAddPrisoner">新增</el-button>
+        <el-button
+          type="primary"
+          @click="showDelPrionser">删除</el-button>
       </template>
     </el-row>
     <el-col
@@ -332,7 +337,7 @@ export default {
     return {
       searchItems: {
         prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
+        prisonArea: { type: 'select', label: '监区' },
         name: { type: 'input', label: '罪犯姓名' },
         status: { type: 'select', label: '服刑人员状态', options: prisonerStatus, value: 1 },
         isNotify: { type: 'select', label: '会见告知书', noPlaceholder: true, options: [{ label: '已签订', value: 1 }, { label: '未签订', value: 0 }] },
@@ -378,6 +383,9 @@ export default {
   },
   computed: {
     ...mapState(['prisoners', 'notification', 'notificationFamilies', 'prisonConfigs']),
+    ...mapState({
+      user: state => state.global.user
+    }),
     dialogContent() {
       let title,
         delReason = [{ label: '刑满释放', value: '刑满释放' }, { label: '已被执行', value: '已被执行' }, { label: '其他', value: '其他' }],
@@ -395,7 +403,8 @@ export default {
           title = '更换监区'
           formButton.buttons = []
           items = Object.assign({}, {
-            prisonAreaId: { type: 'select', noLabel: true, placeholder: '请选择监区', options: this.prisonConfigData, label: '监区', props: { label: 'name', value: 'id' }, func: this.handleChangePrisonConfig }
+            prisonAreaId: { type: 'select', noLabel: true, placeholder: '请选择监区', options: this.prisonConfigData, label: '监区', props: { label: 'name', value: 'id' },
+              func: this.handleChangePrisonConfig }
           }, formButton)
           break
         case 3:
@@ -405,7 +414,8 @@ export default {
             formConfigs: { labelWidth: '120px' },
             name: { type: 'input', label: '服刑人员姓名', rules: ['required'], clearable: true },
             prisonerNumber: { type: 'input', label: '服刑人员编号', rules: ['required'], clearable: true },
-            prisonConfigId: { type: 'select', label: '监区', rules: !JSON.parse(localStorage.getItem('user')).branch_prison ? [] : ['required'], disabled: !JSON.parse(localStorage.getItem('user')).branch_prison, options: JSON.parse(localStorage.getItem('user')).prisonConfigList, props: { label: 'prisonConfigName', value: 'prisonConfigId' }, customClass: !JSON.parse(localStorage.getItem('user')).branch_prison ? 'input_required__show' : '' },
+            prisonConfigId: { type: 'select', label: '监区', rules: !JSON.parse(localStorage.getItem('user')).branch_prison ? [] : ['required'],
+              disabled: !JSON.parse(localStorage.getItem('user')).branch_prison, customClass: !JSON.parse(localStorage.getItem('user')).branch_prison ? 'input_required__show' : '' },
             gender: { type: 'select', label: '性别', rules: ['required'], options: [{ label: '男', value: 'm' }, { label: '女', value: 'f' }], props: { label: 'label', value: 'value' }, value:'m'  },
             crimes: { type: 'input', label: '犯罪事实', clearable: true },
             additionalPunishment: { type: 'input', label: '附加刑', clearable: true },
@@ -452,18 +462,15 @@ export default {
     },
   },
   async mounted() {
-    await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+    await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
     this.filter = Object.assign({}, this.filter, {
       status: 1
     })
     await this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisoners', 'getPrisonersAll', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification', 'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist', 'deletePrisonerData', 'addPrionser']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
+    ...mapActions(['getPrisoners', 'getPrisonersAll', 'updateAccessTime', 'addPrisonerBlacklist', 'getNotification', 'updateNotification', 'addNotification',
+      'getNotificationFamilies', 'getPrisonConfigs', 'changePrisonArea', 'removePrisonerBlacklist', 'deletePrisonerData', 'addPrionser']),
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
@@ -584,13 +591,14 @@ export default {
       }
     },
     // 展示更换监区对话框
-    showPrisonConfig(e) {
+    async showPrisonConfig(e) {
       this.prisoner = Object.assign({}, e)
       this.operationType = 2
-      this.visible = true
+      await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
       this.prisonConfigData = this.prisonConfigs.filter(val => {
         return e.prisonArea !== val.name
       })
+      this.visible = true
     },
     // 展示删除罪犯对话框
     showDelPrionser() {
@@ -607,8 +615,9 @@ export default {
       }
     },
     // 展示新增罪犯对话框
-    showAddPrisoner() {
+    async showAddPrisoner() {
       this.operationType = 3
+      await this.handleRolePrisonArea(this.dialogContent['items'], 'prisonConfigId')
       this.visible = true
     },
     // 关闭对话框
@@ -690,6 +699,20 @@ export default {
     // 选择删除的罪犯
     handleSelectionChange(val) {
       this.deletePrisoners = val
+    },
+    // 根据角色来区分监区数据
+    async handleRolePrisonArea(element, prop, type = 'props', role = this.user.role) {
+      if (role === '-1') {
+        // 租户管理员
+        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+        this.$set(element[prop], 'options', this.prisonConfigs)
+        this.$set(element[prop], type, { value: 'id', label: 'name' })
+      }
+      if (role === '1') {
+        // 监狱审核人员
+        this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
+        this.$set(element[prop], type, { label: 'prisonConfigName', value: 'prisonConfigId' })
+      }
     }
     // 自定义的全选操作 不要删除
     // handleCheckAllChange(val) {

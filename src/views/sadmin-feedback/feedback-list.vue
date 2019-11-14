@@ -6,7 +6,6 @@
       :items="searchItems"
       append-btn="下载"
       @appendHandler="handleDownload"
-      @sizeChange="sizeChange"
       @search="onSearch">
       <el-button
         slot="append"
@@ -196,10 +195,6 @@ export default {
   },
   methods: {
     ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail', 'downloadFeedbacks']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getFeedbacks({ ...this.filter, ...this.pagination })
     },
