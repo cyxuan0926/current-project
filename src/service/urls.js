@@ -27,13 +27,13 @@ const config = {
   },
   test: {
     publicApiHost: 'http://qa.api.auth.prisonpublic.com',
-    apiHost: 'http://120.79.251.238:8021',
+    apiHost: 'http://47.107.245.151:8021',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://120.79.251.238:8021/ywgk/websocket'
+    socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
     publicApiHost: 'http://192.168.0.230:8081',
