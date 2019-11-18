@@ -126,7 +126,8 @@ export default {
         day: config.day,
         enabledMeeting: config.enabledMeeting,
         jailId: Number(this.jailId),
-        config: null
+        // config: null
+        config: []
       }
       if (config.enabledMeeting) {
         params.config = []
@@ -138,7 +139,8 @@ export default {
         this.updateSpecialConfig(params).then(res => {
           if (!res) return
           config.oldDay = params.day
-          config.config = params.config
+          // config.config = params.config
+          config.config = params.config ? params.config : []
         })
       }
       else {
