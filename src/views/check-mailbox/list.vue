@@ -24,10 +24,14 @@
         :cols="tableCols" >
         <template
           slot="imageUrls"
-          slot-scope="scope">
+          slot-scope="scope"
+          v-if="scope.row.imageUrls.length">
           <m-img-viewer
-            v-if="scope.row.imageUrls.length"
-            :src="scope.row.imageUrls[0] + '?token=' + $urls.token" />
+            v-for=" (url,index) of scope.row.imageUrls"
+            v-show="!index"
+            :key="url"
+            :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
+            :url="url" />
         </template>
         <template
           slot="isReply"
@@ -151,7 +155,11 @@ export default {
       replying: false,
       mailbox: {},
       answer: '',
-      wardenMailboxExcelConfig
+      wardenMailboxExcelConfig,
+      toolbar: {
+        prev: 1,
+        next: 1
+      }
     }
   },
   computed: {

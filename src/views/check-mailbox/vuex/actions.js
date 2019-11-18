@@ -1,4 +1,5 @@
 import api from './service'
+import urls from '@/service/urls'
 
 export default {
   getMailboxes: ({ commit }, params) => {
@@ -6,12 +7,14 @@ export default {
       if (!res) return
       res.mailBoxes.forEach(mail => {
         if (mail.imageUrls) {
-          mail.imageUrls = mail.imageUrls.split(';')
-          if (!mail.imageUrls[mail.imageUrls.length - 1]) mail.imageUrls.pop()
+          const imageUrls = new Set(mail.imageUrls.split(';'))
+          if (imageUrls.has('')) imageUrls.delete('')
+          mail.imageUrls = [ ...imageUrls ].map(url => {
+            if (url.includes('https://') || url.includes('http://')) return url
+            else return `${ urls.publicApiHost }/files/${ url }`
+          })
         }
-        else {
-          mail.imageUrls = []
-        }
+        else mail.imageUrls = []
       })
       commit('getMailboxes', res)
       return true
@@ -21,12 +24,14 @@ export default {
     return api.getMailboxDetail(params).then(res => {
       if (!res) return
       if (res.detail.imageUrls) {
-        res.detail.imageUrls = res.detail.imageUrls.split(';')
-        if (!res.detail.imageUrls[res.detail.imageUrls.length - 1]) res.detail.imageUrls.pop()
+        const imageUrls = new Set(res.detail.imageUrls.split(';'))
+        if (imageUrls.has('')) imageUrls.delete('')
+        res.detail.imageUrls = [ ...imageUrls ].map(url => {
+          if (url.includes('https://') || url.includes('http://')) return url
+          else return `${ urls.publicApiHost }/files/${ url }`
+        })
       }
-      else {
-        res.detail.imageUrls = []
-      }
+      else res.detail.imageUrls = []
       return res.detail
     })
   },

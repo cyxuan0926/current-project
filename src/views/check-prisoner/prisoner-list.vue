@@ -649,9 +649,11 @@ export default {
       }
       // 新增罪犯
       if(this.operationType === 3) {
-        let prisonArea, jailId = JSON.parse(localStorage.getItem('user')).jailId, temp = { jailId }
+        const { jailId } = JSON.parse(localStorage.getItem('user'))
+        let prisonArea, temp = { jailId }
         if(JSON.parse(localStorage.getItem('user')).branch_prison) {
-          prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonConfigId))[0].prisonConfigName
+          if (this.user.role === '1') prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonConfigId))[0].prisonConfigName
+          if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonConfigId))[0].name
           temp = { jailId, prisonArea }
         }
         val = Object.assign({}, val, temp)
