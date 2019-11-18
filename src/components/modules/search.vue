@@ -13,6 +13,7 @@
           :key="index"
           v-if="item.type === 'select' && !item.miss"
           v-model="item.value"
+          v-autowidth:8="item.value"
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
@@ -119,7 +120,9 @@
 </template>
 
 <script>
+import autowidth from '@/common/directives/autowidth'
 import { helper } from '@/utils'
+
 export default {
   props: {
     items: {
@@ -160,6 +163,7 @@ export default {
       }
     }
   },
+  directives: { autowidth },
   mounted() {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
@@ -285,7 +289,8 @@ export default {
     }
 
     .el-input {
-      width: $--input-width;
+      width: 13em;
+      // width: $--input-width;
     }
 
     .el-date-editor--datetimerange {
