@@ -67,7 +67,7 @@
           <el-button
             size="mini"
             type="text"
-            style="width: 56px;"
+            style="width: 20%;"
             @click="getDetail(scope.row)">
             详细内容
           </el-button>
@@ -295,10 +295,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .button-column{
-//   margin-bottom: 4px;
-//   width: 68px;
-// }
+.button-column{
+  width: 30%;
+}
 .tips-title{
   display: block;
   text-align: center;
