@@ -18,7 +18,7 @@ export default {
       type: String,
       default: ''
     },
-    // 公共服务公有类型的图片
+    // 公共服务公有类型的图片或者不需要拼接token处理的图片
     publicUrl: {
       type: String,
       default: ''

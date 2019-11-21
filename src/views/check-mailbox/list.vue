@@ -32,7 +32,7 @@
             v-show="!index"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
-            :url="url" />
+            :publicUrl="url" />
         </template>
         <template
           slot="isReply"
@@ -68,7 +68,7 @@
           <el-button
             size="mini"
             type="text"
-            style="width: 56px;"
+            style="width: 20%;"
             @click="getDetail(scope.row)">
             详细内容
           </el-button>
@@ -100,7 +100,7 @@
               <m-img-viewer
                 :key="index"
                 v-if="img"
-                :src="img + '?token=' + $urls.token" />
+                :publicUrl="img" />
             </template>
           </div>
         </div>
@@ -296,10 +296,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .button-column{
-//   margin-bottom: 4px;
-//   width: 68px;
-// }
+.button-column{
+  width: 30%;
+}
 .tips-title{
   display: block;
   text-align: center;

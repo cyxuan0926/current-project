@@ -10,7 +10,7 @@ export default {
           const imageUrls = new Set(mail.imageUrls.split(';'))
           if (imageUrls.has('')) imageUrls.delete('')
           mail.imageUrls = [ ...imageUrls ].map(url => {
-            if (url.includes('https://') || url.includes('http://')) return url
+            if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
             else return `${ urls.publicApiHost }/files/${ url }`
           })
         }
@@ -27,7 +27,7 @@ export default {
         const imageUrls = new Set(res.detail.imageUrls.split(';'))
         if (imageUrls.has('')) imageUrls.delete('')
         res.detail.imageUrls = [ ...imageUrls ].map(url => {
-          if (url.includes('https://') || url.includes('http://')) return url
+          if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
           else return `${ urls.publicApiHost }/files/${ url }`
         })
       }
