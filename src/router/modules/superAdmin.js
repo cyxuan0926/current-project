@@ -314,6 +314,12 @@ let superAdmin = [{
     meta: { permission: 'visit.prisoner.all-prison.search', breadcrumbName: '服刑人员信息' },
     component: 'check-prisoner/prisoner-list'
     // component: helper.loadView('check-prisoner/prisoner-list')
+  }, {
+    path: '/prison-data/warden-mailbox',
+    name: 'prison-data_warden-mailbox',
+    props: { hasOnlyAllPrisonQueryAuth: true },
+    meta: { breadcrumbName: '监狱长信箱查询', permission: 'visit.prisoner.all-prison.search' },
+    component: 'check-mailbox/list'
   }]
 }]
 

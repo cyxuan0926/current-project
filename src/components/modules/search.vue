@@ -13,6 +13,7 @@
           :key="index"
           v-if="item.type === 'select' && !item.miss"
           v-model="item.value"
+          v-autowidth:8="item.value"
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
@@ -57,8 +58,8 @@
           v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :start-placeholder=" item.startPlaceholder || '开始时间' "
+          :end-placeholder=" item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd HH:mm:ss"
           :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
           :default-time="['00:00:00', '23:59:59']"/>
@@ -119,7 +120,9 @@
 </template>
 
 <script>
+import autowidth from '@/common/directives/autowidth'
 import { helper } from '@/utils'
+
 export default {
   props: {
     items: {
@@ -160,34 +163,13 @@ export default {
       }
     }
   },
+  directives: { autowidth },
   mounted() {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
     onSearch(e) {
-      if (this.items) {
-        let params = {}
-        Object.keys(this.items).forEach(key => {
-          if (this.items[key].miss) return
-          if (this.items[key].type === 'monthRangeSelector') {
-            params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
-            params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
-          }
-          if (this.items[key].type === 'monthrange') {
-            params[this.items[key].start] = this.startValue
-            params[this.items[key].end] = this.endValue
-          }
-          if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-          if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
-            params[this.items[key].start] = this.items[key].value[0]
-            params[this.items[key].end] = this.items[key].value[1]
-          }
-          else {
-            params[key] = this.items[key].value
-          }
-        })
-        this.$parent.$parent.filter = helper.trimObject(params) || params
-      }
+      this.onGetFilter()
       if (e !== 'tabs') this.$emit('search')
     },
     onEnsure(e) {
@@ -228,6 +210,31 @@ export default {
       })
 
       this.$parent.$parent.filter = {}
+    },
+    onGetFilter() {
+      if (this.items) {
+        let params = {}
+        Object.keys(this.items).forEach(key => {
+          if (this.items[key].miss) return
+          if (this.items[key].type === 'monthRangeSelector') {
+            params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+            params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
+          }
+          if (this.items[key].type === 'monthrange') {
+            params[this.items[key].start] = this.startValue
+            params[this.items[key].end] = this.endValue
+          }
+          if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+          if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
+            params[this.items[key].start] = this.items[key].value[0]
+            params[this.items[key].end] = this.items[key].value[1]
+          }
+          else {
+            params[key] = this.items[key].value
+          }
+        })
+        this.$parent.$parent.filter = helper.trimObject(params) || params
+      }
     }
   }
 }
@@ -282,7 +289,8 @@ export default {
     }
 
     .el-input {
-      width: $--input-width;
+      width: 13em;
+      // width: $--input-width;
     }
 
     .el-date-editor--datetimerange {

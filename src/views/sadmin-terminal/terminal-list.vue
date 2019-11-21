@@ -10,7 +10,6 @@
       @click="onAdd">添加终端信息</el-button>
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
@@ -37,7 +36,7 @@
         <el-table-column
           min-width="60"
           prop="mettingPassword"
-          label="参与密码" />
+          label="参会密码" />
         <el-table-column
           min-width="90"
           label="操作">
@@ -89,10 +88,6 @@ export default {
   },
   methods: {
     ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal', 'enableTerminal']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getTerminals({ ...this.filter, ...this.pagination })
     },

@@ -61,7 +61,31 @@ export default {
     }
   },
   watch: {
-    activeTabName() {
+    activeTabName(activeTab) {
+      if (this.$route.path === '/literature-management/literatures') {
+        if (activeTab === 'pass') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportReason', 'reportTime'])
+          this.$set(this.searchItems.reportReason, 'miss', true)
+          this.$set(this.searchItems.reportTime, 'miss', true)
+        }
+        if (activeTab === 'shelf') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportReason', 'reportTime', 'reportStatus'])
+          this.$set(this.searchItems.reportReason, 'miss', true)
+          this.$set(this.searchItems.reportTime, 'miss', true)
+          this.$set(this.searchItems.reportStatus, 'miss', true)
+        }
+        if (activeTab === 'tipOff') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportStatus', 'time', 'title', 'penName'])
+          this.$set(this.searchItems.reportStatus, 'miss', true)
+          this.$set(this.searchItems.time, 'miss', true)
+          this.$set(this.searchItems.title, 'miss', true)
+          this.$set(this.searchItems.penName, 'miss', true)
+        }
+        this.$refs.search.onGetFilter()
+      }
       this.pagination.page = 1
       this.$refs.pagination.updateCurrentPage(1)
       this.getTableData()
@@ -100,17 +124,29 @@ export default {
 
       this.isGettingTableData = true
 
-      if (this.isFamilyLiteratureChecker) {
-        res = await this.getFamilyLiteratures(params)
+      if (this.activeTabName === 'tipOff') {
+        delete params.status
+        let url
+        if (this.isPoliceLiteratureChecker) {
+          url = '/article/findPoliceReportPage'
+          params.jailId = this.$store.state.global.user.jailId
+        }
+        if (this.isFamilyLiteratureChecker) url = '/article/findReportPage'
+        res = await this.getReportLiteratures({ url, params })
       }
+      else {
+        if (this.isFamilyLiteratureChecker) {
+          res = await this.getFamilyLiteratures(params)
+        }
 
-      if (this.isPoliceLiteratureChecker && !this.isMyLiteratureChecker) {
-        params.jailId = this.$store.state.global.user.jailId
-        res = await this.getPoliceLiteratures(params)
-      }
+        if (this.isPoliceLiteratureChecker && !this.isMyLiteratureChecker) {
+          params.jailId = this.$store.state.global.user.jailId
+          res = await this.getPoliceLiteratures(params)
+        }
 
-      if (this.isMyLiteratureChecker) {
-        res = await this.getMyLiteratures(params)
+        if (this.isMyLiteratureChecker) {
+          res = await this.getMyLiteratures(params)
+        }
       }
 
       this.total = res.data && res.data.total

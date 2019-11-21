@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
@@ -67,10 +66,6 @@ export default {
   },
   methods: {
     ...mapActions(['getAppLogs']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getAppLogs({ ...this.filter, ...this.pagination })
     },

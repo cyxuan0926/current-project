@@ -15,7 +15,6 @@
     />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
@@ -24,7 +23,7 @@
         style="width: 100%">
         <el-table-column
           prop="username"
-          width="260px"
+          min-width="180px"
           label="用户名" />
         <el-table-column
           prop="roles"
@@ -136,10 +135,6 @@ export default {
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),
     ...mapActions('account', ['getRolesList', 'getAllTenants']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     async getDatas() {
       let { page } = this.pagination
       this.$set(this.pagination, 'page', page-1)

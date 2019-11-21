@@ -6,7 +6,6 @@
       :items="searchItems"
       append-btn="下载"
       @appendHandler="handleDownload"
-      @sizeChange="sizeChange"
       @search="onSearch">
       <el-button
         slot="append"
@@ -34,10 +33,15 @@
         <el-table-column
           label="反馈图片">
           <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
-          <template slot-scope="scope">
+          <template
+            slot-scope="scope"
+            v-if="scope.row.imageUrls.length">
             <m-img-viewer
-              v-if="scope.row.imageUrls.length"
-              :src="!!scope.row.isCo ? (scope.row.imageUrls[0] + '?token=' + $urls.token) : scope.row.imageUrls[0]" />
+              v-if="scope.row.isCo"
+              :url="scope.row.imageUrls[0]" />
+            <m-img-viewer
+              v-else
+              :publicUrl="scope.row.imageUrls[0]" /> 
           </template>
         </el-table-column>
         <el-table-column
@@ -110,11 +114,17 @@
           v-if="feedback.imageUrls.length">
           <label>反馈图片</label>
           <div class="img-box">
-            <template v-for="(img, index) in feedback.imageUrls">
+            <template v-if="feedback.isCo">
               <m-img-viewer
+                v-for="(img, index) in feedback.imageUrls"
                 :key="index"
-                v-if="img"
-                :src="feedback.isCo ? (img + '?token=' + $urls.token) : img" />
+                :url="img" />
+            </template>
+            <template v-else>
+              <m-img-viewer
+                v-for="(img, index) in feedback.imageUrls"
+                :key="index"
+                :publicUrl="img" />
             </template>
           </div>
         </div>
@@ -185,10 +195,6 @@ export default {
   },
   methods: {
     ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail', 'downloadFeedbacks']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getFeedbacks({ ...this.filter, ...this.pagination })
     },
@@ -262,7 +268,6 @@ export default {
       else {
         this.getFeedbackDetail({ id: e.id }).then(res => {
           if (!res) return
-          console.log(res)
           this.feedback = res
           this.answer = ''
           this.visible = true

@@ -2,85 +2,78 @@
   <el-row
     class="row-container"
     :gutter="0">
+    <!-- <m-excel-export
+      v-if="hasOnlyAllPrisonQueryAuth"
+      :jsonData="mailboxes.contents"
+      :header="wardenMailboxExcelConfig.header"
+      :filterFields="wardenMailboxExcelConfig.filterFields"
+      :filename="wardenMailboxExcelConfig.filename" /> -->
+    <m-excel-download
+      v-if="hasOnlyAllPrisonQueryAuth"
+      path="/download/exportMailboxes"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
-      <el-table
+      <m-table
+        class="has-img"
         :data="mailboxes.contents"
-        stripe
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="用户" />
-        <el-table-column
-          prop="typeName"
-          label="信件类别" />
-        <el-table-column
-          prop="contents"
-          show-overflow-tooltip
-          label="信件内容" />
-        <el-table-column
-          label="图片">
-          <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.imageUrls.length"
-              :src="scope.row.imageUrls[0] + '?token=' + $urls.token" />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="发件时间">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="是否答复">
-          <template slot-scope="scope">
-            {{ scope.row.isReply | isTrue }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          width="240px"  
-        >
-          <template slot-scope="scope">
-            <el-button
-              v-if="!scope.row.isReply"
-              size="mini"
-              class="button-column"
-              @click="handleReply(scope.row)"
-              type="primary">
-              答复
-            </el-button>
-            <el-button
-              v-else
-              size="mini"
-              class="button-column"
-              disabled
-              type="primary">
-              已答复
-            </el-button>
-            <el-button
-              size="mini"
-              class="button-column"
-              @click="onDelete(scope.row.id)"
-              type="danger">
-              删除
-            </el-button>
-            <el-button
-              size="mini"
-              type="text"
-              style="width: 56px;"
-              @click="getDetail(scope.row)">
-              详细内容
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        :cols="tableCols" >
+        <template
+          slot="imageUrls"
+          slot-scope="scope"
+          v-if="scope.row.imageUrls.length">
+          <m-img-viewer
+            v-for=" (url,index) of scope.row.imageUrls"
+            v-show="!index"
+            :key="url"
+            :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
+            :publicUrl="url" />
+        </template>
+        <template
+          slot="isReply"
+          slot-scope="scope">
+          {{ scope.row.isReply | isTrue }}
+        </template>
+        <template
+          slot="operate"
+          slot-scope="scope">
+          <el-button
+            v-if="!scope.row.isReply"
+            size="mini"
+            class="button-column"
+            @click="handleReply(scope.row)"
+            type="primary">
+            答复
+          </el-button>
+          <el-button
+            v-else
+            size="mini"
+            class="button-column"
+            disabled
+            type="primary">
+            已答复
+          </el-button>
+          <el-button
+            size="mini"
+            class="button-column"
+            @click="onDelete(scope.row.id)"
+            type="danger">
+            删除
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            style="width: 20%;"
+            @click="getDetail(scope.row)">
+            详细内容
+          </el-button>
+        </template>
+      </m-table>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -88,7 +81,6 @@
       @onPageChange="getDatas" />
     <el-dialog
       :visible.sync="visible"
-      v-if="visible"
       width="600px"
       class="authorize-dialog">
       <span
@@ -101,14 +93,14 @@
         <div class="detail-item"><label>信件内容</label><span>{{ mailbox.contents }}</span></div>
         <div
           class="detail-item"
-          v-if="mailbox.imageUrls.length">
+          v-if="mailbox.imageUrls && mailbox.imageUrls.length">
           <label>图片</label>
           <div class="img-box">
             <template v-for="(img, index) in mailbox.imageUrls">
               <m-img-viewer
                 :key="index"
                 v-if="img"
-                :src="img + '?token=' + $urls.token" />
+                :publicUrl="img" />
             </template>
           </div>
         </div>
@@ -148,7 +140,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     return {
       searchItems: {
@@ -160,11 +155,74 @@ export default {
       visible: false,
       replying: false,
       mailbox: {},
-      answer: ''
+      answer: '',
+      wardenMailboxExcelConfig,
+      toolbar: {
+        prev: 1,
+        next: 1
+      }
     }
   },
   computed: {
     ...mapState(['mailboxes', 'mailboxTypes']),
+    tableCols() {
+      const commonCols = [
+        {
+          label: '用户',
+          prop: 'name'
+        },
+        {
+          label: '信件类别',
+          prop: 'typeName'
+        },
+        {
+          label: '信件内容',
+          prop: 'contents',
+          showOverflowTooltip: true
+        },
+        {
+          label: '图片',
+          slotName: 'imageUrls'
+        },
+        {
+          label: '发件时间',
+          prop: 'createdAt',
+          minWidth: '95px'
+        },
+        {
+          label: '是否答复',
+          minWidth: '50px',
+          slotName: 'isReply'
+        }
+      ]
+      const onlyHasAllPrisonQueryAuthHeadersCols = [
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '监区',
+          prop: 'prisonArea'
+        }
+      ]
+      const onlyHasAllPrisonQueryAuthEndCols = [
+        {
+          label: '答复内容',
+          prop: 'reply',
+          showOverflowTooltip: true
+        }
+      ]
+      const onlyWardenEndCols = [
+        {
+          label: '操作',
+          slotName: 'operate',
+          width: '240px'
+        }
+      ]
+      let cols = [ ...commonCols, ...onlyWardenEndCols ]
+      if (this.hasOnlyAllPrisonQueryAuth) cols = [ ...onlyHasAllPrisonQueryAuthHeadersCols, ...commonCols, ...onlyHasAllPrisonQueryAuthEndCols ]
+      return cols
+    },
     disabled() {
       let pattern = /^\s*(.*?)\s*$/
       return this.answer.replace(pattern, '$1').length > 300 || this.answer.replace(pattern, '$1').length === 0
@@ -184,10 +242,6 @@ export default {
   },
   methods: {
     ...mapActions(['getMailboxes', 'getMailboxTypes', 'deleteMailbox', 'replyMailbox', 'getMailboxDetail']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getMailboxes({ ...this.filter, ...this.pagination })
     },
@@ -242,10 +296,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .button-column{
-//   margin-bottom: 4px;
-//   width: 68px;
-// }
+.button-column{
+  width: 30%;
+}
 .tips-title{
   display: block;
   text-align: center;

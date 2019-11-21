@@ -10,7 +10,6 @@
       @click="onAdd">添加{{ routeName }}</el-button>
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
@@ -216,10 +215,6 @@ export default {
         delete this.searchItems[key].value
         if (this.filter) delete this.filter[key]
       })
-      this.getDatas()
-    },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {

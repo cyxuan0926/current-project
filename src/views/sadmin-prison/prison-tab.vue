@@ -9,7 +9,6 @@
     />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-tabs
       v-model="activeName"
@@ -71,10 +70,6 @@ export default {
         if(!res) return
         this.total = this.$store.state[`${tabName}s`]['total']
       })
-    },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas('sizeChange')
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)

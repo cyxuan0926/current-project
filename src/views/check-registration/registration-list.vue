@@ -10,7 +10,6 @@
     <m-search
       :items="searchItems"
       ref="search"
-      @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -353,10 +352,6 @@ export default {
   },
   methods: {
     ...mapActions(['getRegistrations', 'getRegistrationsAll', 'authorizeRegistrations', 'getNotification']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
 

@@ -163,7 +163,7 @@ export default {
         case 2:
           title = '禁用用户'
           items = {...{
-            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-100'] }
+            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-20'] }
           }, ...formButton}
           break
         case 3:
