@@ -31,7 +31,7 @@
             v-show="!index"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
-            :url="url" />
+            :publicUrl="url" />
         </template>
         <template
           slot="isReply"
@@ -99,7 +99,7 @@
               <m-img-viewer
                 :key="index"
                 v-if="img"
-                :src="img + '?token=' + $urls.token" />
+                :publicUrl="img" />
             </template>
           </div>
         </div>
