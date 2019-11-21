@@ -36,7 +36,7 @@
         <el-table-column
           min-width="60"
           prop="mettingPassword"
-          label="参与密码" />
+          label="参会密码" />
         <el-table-column
           min-width="90"
           label="操作">
