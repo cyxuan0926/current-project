@@ -20,6 +20,7 @@
       :span="24"
       class="el-col__no-tabs__margin">
       <m-table
+        class="has-img"
         :data="mailboxes.contents"
         :cols="tableCols" >
         <template
