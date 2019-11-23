@@ -28,6 +28,10 @@
           slot-scope="scope"
           v-if="scope.row.imageUrls.length">
           <m-img-viewer
+            v-if="!hasOnlyAllPrisonQueryAuth"
+            :publicUrl="scope.row.imageUrls[0]" />
+          <m-img-viewer
+            v-else
             v-for=" (url,index) of scope.row.imageUrls"
             v-show="!index"
             :key="url"

@@ -1,21 +1,14 @@
 import http from '@/service'
 import api from './service'
-import urls from '@/service/urls'
+import { filterImages } from '@/utils/helper'
 
 export default {
   getFeedbacks: ({ commit }, params) => {
     return http.getFeedbacks(params).then(res => {
       if (!res) return
       res.feedbacks.forEach(feedback => {
-        if (Object.prototype.toString.call(feedback.imageUrls) === '[object String]') {
-          if (feedback.imageUrls) {
-            const imageUrls = new Set(feedback.imageUrls.split(';'))
-            if (imageUrls.has('')) imageUrls.delete('')
-            if (!feedback.isCo) feedback.imageUrls = [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
-            else feedback.imageUrls = [ ...imageUrls ]
-          }
-          else feedback.imageUrls = []
-        }
+        if (feedback.imageUrls) feedback.imageUrls = filterImages({ images: feedback.imageUrls, isIdentify: true, isPublic: !feedback.isCo })
+        else feedback.imageUrls = []
       })
       commit('getFeedbacks', res)
       return true
@@ -24,15 +17,8 @@ export default {
   getFeedbackDetail: ({ commit }, params) => {
     return api.getFeedbackDetail(params).then(res => {
       if (!res) return
-      if (Object.prototype.toString.call(res.detail.imageUrls) === '[object String]') {
-        if (res.detail.imageUrls) {
-          const imageUrls = new Set(res.detail.imageUrls.split(';'))
-          if (imageUrls.has('')) imageUrls.delete('')
-          if (!res.detail.isCo) res.detail.imageUrls = [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
-          else res.detail.imageUrls = [ ...imageUrls ]
-        }
-        else res.detail.imageUrls = []
-      }
+      if (res.detail.imageUrls) res.detail.imageUrls = filterImages({ images: res.detail.imageUrls, isIdentify: true, isPublic: !res.detail.isCo })
+      else res.detail.imageUrls = []
       return res.detail
     })
   },
