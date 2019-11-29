@@ -1,5 +1,7 @@
 import Moment from 'moment'
 import switches from '@/filters/modules/switches'
+import urls from '@/service/urls'
+
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -198,4 +200,30 @@ export function formatTime(
   }
 
   return format
+}
+
+/**
+ * 处理图片格式
+ * @param { Array || String } images 图片数组 || 图片字符串
+ * @param { Boolean } isIdentify 是否有字段来标识是哪种类型的图片
+ * @param { String } cutSymbol images是字符串的时候的切割符号
+ * @param { Boolean } isPublic isIdentify是有标识符的时候 公共服务图片的标识
+*/
+export const filterImages = ({ images, isIdentify = false, cutSymbol = ';', isPublic } = {}) => {
+  if (!images || !images.length) return
+  let imageUrls = images
+  if (Object.prototype.toString.call(images) === '[object String]') {
+    imageUrls = new Set(images.split(cutSymbol))
+    if (imageUrls.has('')) imageUrls.delete('')
+  }
+  if (!isIdentify) {
+    return [ ...imageUrls ].map(url => {
+      if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
+      else return `${ urls.publicApiHost }/files/${ url }`
+    })
+  }
+  if (isIdentify) {
+    if (isPublic) return [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
+    else return [ ...imageUrls ]
+  }
 }

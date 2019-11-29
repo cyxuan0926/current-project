@@ -1,19 +1,12 @@
 import api from './service'
-import urls from '@/service/urls'
+import { filterImages } from '@/utils/helper'
 
 export default {
   getMailboxes: ({ commit }, params) => {
     return api.getMailboxes(params).then(res => {
       if (!res) return
       res.mailBoxes.forEach(mail => {
-        if (mail.imageUrls) {
-          const imageUrls = new Set(mail.imageUrls.split(';'))
-          if (imageUrls.has('')) imageUrls.delete('')
-          mail.imageUrls = [ ...imageUrls ].map(url => {
-            if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
-            else return `${ urls.publicApiHost }/files/${ url }`
-          })
-        }
+        if (mail.imageUrls) mail.imageUrls = filterImages({ images: mail.imageUrls })
         else mail.imageUrls = []
       })
       commit('getMailboxes', res)
@@ -23,14 +16,7 @@ export default {
   getMailboxDetail: ({ commit }, params) => {
     return api.getMailboxDetail(params).then(res => {
       if (!res) return
-      if (res.detail.imageUrls) {
-        const imageUrls = new Set(res.detail.imageUrls.split(';'))
-        if (imageUrls.has('')) imageUrls.delete('')
-        res.detail.imageUrls = [ ...imageUrls ].map(url => {
-          if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
-          else return `${ urls.publicApiHost }/files/${ url }`
-        })
-      }
+      if (res.detail.imageUrls) res.detail.imageUrls = filterImages({ images: res.detail.imageUrls })
       else res.detail.imageUrls = []
       return res.detail
     })
