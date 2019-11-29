@@ -282,7 +282,7 @@ let superAdmin = [{
   children: [{
     path: '/prison-data/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
-    meta: { permission: '', breadcrumbName: '远程会见节约成本统计' }
+    meta: { permission: '', breadcrumbName: '远程会见节约成本统计表' }
   }, {
     path: '/prison-data/registrations',
     name: 'prison-data_registrations',
@@ -324,6 +324,10 @@ let superAdmin = [{
     props: { hasOnlyAllPrisonQueryAuth: true },
     meta: { breadcrumbName: '监狱长信箱查询', permission: 'visit.prisoner.all-prison.search' },
     component: 'check-mailbox/list'
+  }, {
+    path: '/prison-data/prison-meeting-statistics',
+    component: 'check-meeting/meeting-statistics',
+    meta: { permission: '', breadcrumbName: '监狱会见数据统计表' }
   }]
 }]
 
