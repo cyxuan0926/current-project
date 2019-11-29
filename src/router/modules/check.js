@@ -65,6 +65,10 @@ let check = [{
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
     meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '远程免费会见纪录' }
+  }, {
+    path: '/meeting-report/meeting-achievements',
+    component: 'check-meeting/meeting-achievements',
+    meta: { permission: '', breadcrumbName: '远程会见节约成本统计' }
   }]
 }, {
   path: '/mailbox',

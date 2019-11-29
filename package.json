@@ -5,7 +5,7 @@
   "author": "leelic07 <330314702@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env BUILD_ENV=auth webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env BUILD_ENV=test webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js",
     "e2e": "node test/e2e/runner.js",
@@ -28,6 +28,7 @@
     }
   },
   "dependencies": {
+    "@antv/g2plot": "^0.11.1",
     "bignumber.js": "^8.1.1",
     "element-ui": "^2.0.9",
     "file-saver": "^2.0.2",

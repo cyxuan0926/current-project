@@ -280,6 +280,10 @@ let superAdmin = [{
   name: 'prison-data',
   meta: { hidden: true, breadcrumbName: '监狱数据查询' },
   children: [{
+    path: '/prison-data/meeting-achievements',
+    component: 'check-meeting/meeting-achievements',
+    meta: { permission: '', breadcrumbName: '远程会见节约成本统计' }
+  }, {
     path: '/prison-data/registrations',
     name: 'prison-data_registrations',
     props: { hasAllPrisonQueryAuth: true },
