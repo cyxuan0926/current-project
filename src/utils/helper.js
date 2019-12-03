@@ -227,3 +227,46 @@ export const filterImages = ({ images, isIdentify = false, cutSymbol = ';', isPu
     else return [ ...imageUrls ]
   }
 }
+
+
+/**
+ * 判断是否有值
+ * @param val 待检测值
+ * @return 检测结果
+ *
+ * @example
+ *
+ * hasValue(0) // => true
+ * hasValue({}) // => true
+ * hasValue(null) // => false
+ * hasValue("") // => false
+ */
+export const hasValue = val => (val === 0 ? true : Boolean(val))
+
+/**
+ * 筛选对象中符合条件的项
+ * @param obj 目标对象
+ * @param fn 筛选函数，接受三个参数（val, k, obj）
+ *   @param val 属性值
+ *   @param k 属性名
+ *   @param obj 目标对象
+ * @return 筛选函数执行结果为 truthy 的项组成的对象
+ *
+ * @example
+ *
+ * filterObject({ a: '', b: 1, c: true, d: 'aa' }, val => typeof val === 'number')
+ * // => { b: 1 }
+ */
+export function filterObject(obj, predicate) {
+  obj = new Object(obj)
+
+  const result = {}
+
+  Object.keys(obj).forEach(k => {
+    if (predicate(obj[k], k, obj)) {
+      result[k] = obj[k]
+    }
+  })
+
+  return result
+}
