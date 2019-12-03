@@ -16,6 +16,7 @@ import excelDownload from './modules/excel-download'
 import table from './modules/table'
 import tableNew from './modules/table-new'
 import filter from './modules/filter'
+import charts from './modules/charts'
 import excelUpload from './modules/excel-upload'
 export default {
   audio,
@@ -36,5 +37,6 @@ export default {
   table,
   tableNew,
   filter,
+  charts,
   excelUpload
 }

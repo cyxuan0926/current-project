@@ -1,31 +1,32 @@
 <template>
   <el-row class="row-container">
     <m-filter :filterItems="filterItems" :on-filter="onFilter" />
-    <el-select v-model="chartTypeSelected">
-      <el-option label="柱形图" :value="chartTypes.COLUMN" />
+    <el-select v-model="chartType">
       <el-option label="折线图" :value="chartTypes.LINE" />
+      <el-option label="柱形图" :value="chartTypes.BAR" />
+      <el-option label="隐藏图形" :value="chartTypes.NONE" />
     </el-select>
 
-    <div id="container"></div>
+    <m-charts v-show="chartOptions" :loading="loading" :options="chartOptions"/>
   </el-row>
 </template>
 
 <script>
 import roles from '@/common/constants/roles'
-import { Column } from '@antv/g2plot';
-
-console.log('g2plot', Column)
 
 const chartTypes = {
   LINE: 'line',
-  COLUMN: 'column'
+  BAR: 'bar',
+  NONE: 'none'
 }
 
 export default {
   data() {
     return {
+      loading: true,
       chartTypes,
-      chartTypeSelected: chartTypes.COLUMN
+      chartType: chartTypes.LINE,
+      chartData: []
     }
   },
 
@@ -59,6 +60,35 @@ export default {
       return result
     },
 
+    chartOptions() {
+      if (this.chartType === chartTypes.NONE) {
+        return null
+      }
+
+      return {
+        // title: {
+        //     text: 'ECharts 入门示例'
+        // },
+        tooltip: {},
+        legend: {
+            data:['销量']
+        },
+        xAxis: {
+            data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+        },
+        yAxis: {},
+        series: [{
+            name: '销量',
+            type: this.chartType,
+            data: this.chartData
+        }]
+      }
+    },
+
+    // chartData() {
+    //   return [5, 20, 36, 10, 10, 20]
+    // },
+
     tableCols() {
       const result = []
 
@@ -71,69 +101,17 @@ export default {
   },
 
   watch: {
-    chartTypeSelected(val) {
-      console.log('chartTypeSelected', val)
+    chartType(val) {
+      console.log('chartType', val)
+      // this.chartOptions.series
     }
   },
 
-  mounted() {
-    const data = [
-  {
-    type: '家具家电',
-    sales: 38,
-  },
-  {
-    type: '粮油副食',
-    sales: 52,
-  },
-  {
-    type: '生鲜水果',
-    sales: 61,
-  },
-  {
-    type: '美容洗护',
-    sales: 145,
-  },
-  {
-    type: '母婴用品',
-    sales: 48,
-  },
-  {
-    type: '进口食品',
-    sales: 38,
-  },
-  {
-    type: '食品饮料',
-    sales: 38,
-  },
-  {
-    type: '家庭清洁',
-    sales: 38,
-  },
-];
-
-const columnPlot = new Column(document.getElementById('container'), {
-  title: {
-    visible: true,
-    text: '基础柱状图',
-  },
-  forceFit: true,
-  data,
-  padding: 'auto',
-  data,
-  xField: 'type',
-  yField: 'sales',
-  meta: {
-    type: {
-      alias: '类别',
-    },
-    sales: {
-      alias: '销售额(万)',
-    },
-  },
-});
-
-columnPlot.render();
+  created() {
+    setTimeout(() => {
+      this.chartData = [5, 20, 36, 10, 10, 20]
+      this.loading = false
+    }, 2000)
   },
 
   methods: {
