@@ -34,5 +34,11 @@ export default {
   getVisits(state, params) {
     state.visits.contents = params.visits
     state.visits.total = params.total
+  },
+  setMeetingStatistics: (state, meetingStatistics) => {
+    state.meetingStatistics = meetingStatistics
+  },
+  setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
+    state.meetingStatisticTotalItem = meetingStatisticTotalItem
   }
 }

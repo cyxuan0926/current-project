@@ -57,5 +57,17 @@ export default {
   },
   withdrawVisit({ commit }, params) {
     return http.withdrawVisit(params).then(res => res)
+  },
+  async getMeetingStatics({ commit }, params) {
+    try {
+      const res = await http.getMeetingStatics(params)
+      const { item, list, totalCount } = res.data
+      commit('setMeetingStatistics', list || [])
+      commit('setMeetingStatisticTotalItem', item || {})
+      return totalCount || 0
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

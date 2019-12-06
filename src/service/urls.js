@@ -57,8 +57,8 @@ const config = {
     socketUrl: 'wss://www.yuwugongkai.com/ws'
   },
   ybDevelopment: {
-    publicApiHost: 'http://192.168.0.230:8081',
-    apiHost: 'http://192.168.0.124:8088',
+    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    apiHost: 'http://192.168.0.150:8021',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,

@@ -7,7 +7,11 @@ let state = {
   freeMeetings: { contents: [], total: 0 },
   meetingRefresh: false,
   meetingAdjustRefresh: false,
-  visits: { contents: [], total: 0 }
+  visits: { contents: [], total: 0 },
+  // 会见统计数据
+  meetingStatistics: [],
+  // 总计项数据
+  meetingStatisticTotalItem: {}
 }
 
 export default {

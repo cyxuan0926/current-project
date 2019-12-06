@@ -85,14 +85,14 @@ const actions = {
   // 获取角色列表
   async getRolesList({ commit, dispatch }) {
     try {
+      let result = []
       const res = await getRoles()
       if (res && res.content && res.content.length) {
-        let result = []
         for (let val of res.content.values()) {
           result.push(helper.transitionRolesList(val))
         }
-        commit('setRolesList', result)
       }
+      commit('setRolesList', result)
       return res
     }
     catch (err) {
@@ -113,7 +113,7 @@ const actions = {
   async getAllTenants({ commit }) {
     try {
       const res = await getAllTenants()
-      if (res && res.content && res.content.length) commit('setAllTenants', res.content)
+      if (res && res.content) commit('setAllTenants', res.content)
       return res && res.content && res.content.length
     }
     catch (err) {

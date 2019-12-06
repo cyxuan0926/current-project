@@ -68,7 +68,7 @@ let check = [{
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
-    meta: { permission: '', breadcrumbName: '远程会见节约成本统计' }
+    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '远程会见节约成本统计' }
   }]
 }, {
   path: '/mailbox',
