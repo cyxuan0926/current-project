@@ -34,5 +34,9 @@ export default {
   getVisits(state, params) {
     state.visits.contents = params.visits
     state.visits.total = params.total
+  },
+  setMeetingCostSaving(state, payload) {
+    state.meetingCostSaving.total = payload.total || 0
+    state.meetingCostSaving.meetingDistances = payload.meetingDistances || []
   }
 }

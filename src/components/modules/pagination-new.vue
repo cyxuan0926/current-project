@@ -1,5 +1,5 @@
 <template>
-  <div class="m-pagination" v-if="total > 0">
+  <div class="m-pagination showTotal-pagination" v-if="total > 0">
     <span>共{{ total }}条记录</span>
     <el-pagination
       background
@@ -49,6 +49,10 @@ export default {
         this.pagination = Object.assign({}, this.pagination, val)
       }
     }
+  },
+
+  created() {
+    this.$emit('input', this.pagination)
   },
 
   methods: {

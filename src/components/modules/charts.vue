@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" :style="{ width, height }"></div>
+  <div v-show="visible" :id="id" :style="{ width, height }"></div>
 </template>
 
 <script>
@@ -8,6 +8,11 @@ import isPlainObject from 'lodash/isPlainObject'
 
 export default {
   props: {
+    visible: {
+      type: Boolean,
+      default: false
+    },
+
     loading: {
       type: Boolean,
       default: false
@@ -38,8 +43,16 @@ export default {
 
   watch: {
     loading(val) {
-      if (!val) {
+      if (val) {
+        this.instance.showLoading()
+      } else {
         this.instance.hideLoading()
+      }
+    },
+
+    visible(val) {
+      if (val) {
+        this.$nextTick(() => this.instance.resize())
       }
     },
 
@@ -47,7 +60,7 @@ export default {
       deep: true,
       handler(val) {
         if (isPlainObject(val)) {
-          this.instance.setOption(val)
+          this.instance.setOption(val, true)
         }
       }
     }

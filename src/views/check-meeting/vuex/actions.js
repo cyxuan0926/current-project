@@ -1,4 +1,5 @@
 import http from '@/service'
+import repeatAPI from '@/service/modules/repeat'
 
 export default {
   getMeetings({ commit }, params) {
@@ -57,5 +58,27 @@ export default {
   },
   withdrawVisit({ commit }, params) {
     return http.withdrawVisit(params).then(res => res)
+  },
+  async getMeetingCostSavingIndividual({ commit }, payload) {
+    const data = await repeatAPI.getMeetingCostSavingIndividual(payload)
+
+    data.meetingDistances = data.personalDimensions
+    commit('setMeetingCostSaving', data || {})
+
+    return data
+  },
+  async getMeetingCostSavingPrisonArea({ commit }, payload) {
+    const data = await repeatAPI.getMeetingCostSavingPrisonArea(payload)
+
+    commit('setMeetingCostSaving', data || {})
+
+    return data
+  },
+  async getMeetingCostSavingPrison({ commit }, payload) {
+    const data = await repeatAPI.getMeetingCostSavingPrison(payload)
+
+    commit('setMeetingCostSaving', data || {})
+
+    return data
   }
 }

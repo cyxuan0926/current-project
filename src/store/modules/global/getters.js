@@ -15,8 +15,6 @@ export default {
   },
 
   hasPrisonArea(state) {
-    const prisonAreas = state.user.prisonConfigList
-
-    return Array.isArray(prisonAreas) && prisonAreas.length > 0
+    return state.user.branch_prison === 1
   }
 }

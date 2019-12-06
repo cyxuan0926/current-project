@@ -36,13 +36,15 @@
     </el-form-item>
 
     <el-form-item class="operate">
+      <slot />
+
       <el-button
         type="primary"
         icon="el-icon-search"
         @click="onFilter(normalizedFilterParams)"
       />
 
-      <el-button v-if="clearable" type="warning" @click="onClear">
+      <el-button v-if="clearable" type="warning" @click="onClear" >
         清空
       </el-button>
     </el-form-item>
@@ -134,6 +136,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-form {
+  margin-bottom: 10px;
+}
+
 .el-form-item {
   margin-bottom: 10px;
 
@@ -153,5 +159,11 @@ export default {
 
 .el-date-editor--datetimerange {
   width: 318px;
+}
+
+.operate {
+  .el-button {
+    margin-left: 10px;
+  }
 }
 </style>

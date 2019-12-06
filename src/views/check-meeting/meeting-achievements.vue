@@ -1,123 +1,344 @@
 <template>
   <el-row class="row-container">
-    <m-filter :filterItems="filterItems" :on-filter="onFilter" />
-    <el-select v-model="chartType">
-      <el-option label="折线图" :value="chartTypes.LINE" />
-      <el-option label="柱形图" :value="chartTypes.BAR" />
-      <el-option label="隐藏图形" :value="chartTypes.NONE" />
-    </el-select>
+    <m-filter
+      v-model="filterParams"
+      :filterItems="filterItems"
+      :on-filter="onFilter"
+    >
+      <el-select v-if="chartSelectionVisible" v-model="chartType">
+        <el-option label="折线图" :value="chartTypes.LINE" />
+        <el-option label="柱形图" :value="chartTypes.BAR" />
+        <el-option label="隐藏图形" :value="chartTypes.NONE" />
+      </el-select>
+    </m-filter>
 
-    <m-charts v-show="chartOptions" :loading="loading" :options="chartOptions"/>
+    <!-- <transition name="fade"> -->
+    <m-charts :visible="chartVisible" :options="chartOptions" />
+    <!-- </transition> -->
+
+    <m-table-new
+      stripe 
+      :data="meetingCostSaving.meetingDistances"
+      :cols="tableCols"
+    />
+
+    <m-pagination-new
+      v-model="pagination"
+      :total="meetingCostSaving.total"
+      :on-change="onFilter"
+    />
   </el-row>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+import { toCurrencyString } from '@/utils/helper'
 import roles from '@/common/constants/roles'
 
 const chartTypes = {
+  // 折线图
   LINE: 'line',
+
+  // 柱状图
   BAR: 'bar',
+
+  // 隐藏图形
   NONE: 'none'
+}
+
+const dimensions = {
+  // 个人维度
+  INDIVIDUAL: 'INDIVIDUAL',
+
+  // 监区维度
+  PRISON_AREA: 'PRISON_AREA',
+
+  // 监狱维度
+  PRISON: 'PRISON'
 }
 
 export default {
   data() {
     return {
-      loading: true,
+      loading: false,
       chartTypes,
       chartType: chartTypes.LINE,
-      chartData: []
+      filterParams: {},
+      pagination: { page: 1, rows: 10 },
+      rankData: []
     }
   },
 
   computed: {
+    ...mapState(['meetingCostSaving']),
+
+    isSuperAdmin() {
+      return this.$store.getters.role === roles.SUPER_ADMIN
+    },
+
+    hasPrisonArea() {
+      return this.$store.getters.hasPrisonArea
+    },
+
     filterItems() {
-      const result = [
-        {
-          type: 'select',
-          name: 'status',
-          options: [{ value: 1, label: '个人维度' }],
-          defaultValue: 1
-        },
+      return [
+        this.filterItemDimension,
         {
           type: 'daterange',
           name: 'daterange',
-          valueFormat: 'yyyyMM',
+          valueFormat: 'yyyy-MM-dd',
           startPlaceholder: '开始时间',
           endPlaceholder: '结束时间'
         }
       ]
+    },
 
-      if (this.$store.getters.hasPrisonArea) {
-        result[0].options.push({ value: 2, label: '监区维度' })
+    filterItemDimension() {
+      const result = {
+        type: 'select',
+        name: 'dimension',
+        options: [{ value: dimensions.INDIVIDUAL, label: '个人维度' }],
+        defaultValue: dimensions.INDIVIDUAL
       }
 
-      if (this.$store.getters.role === roles.SUPER_ADMIN) {
-        result[0].options.push({ value: 2, label: '监区维度' })
-        result[0].options.push({ value: 3, label: '监狱维度' })
+      if (this.hasPrisonArea || this.isSuperAdmin) {
+        result.options.push({
+          value: dimensions.PRISON_AREA,
+          label: '监区维度'
+        })
+      }
+
+      if (this.isSuperAdmin) {
+        result.options.push({ value: dimensions.PRISON, label: '监狱维度' })
       }
 
       return result
     },
 
+    requetParams() {
+      const result = {}
+      const daterange = this.filterParams.daterange
+
+      if (daterange) {
+        result.meetingStartDate = daterange[0]
+        result.meetingEndDate = daterange[1]
+      }
+
+      if (!this.isSuperAdmin) {
+        result.jailId = this.$store.state.global.user.jailId
+      }
+
+      return Object.assign({}, result, this.pagination)
+    },
+
+    chartSelectionVisible() {
+      // 个人维度无图表选择
+      if (this.filterParams.dimension === dimensions.INDIVIDUAL) {
+        return false
+      }
+
+      // 监区维度统计表中，狱务通管理员不展示图形
+      if (
+        this.filterParams.dimension === dimensions.PRISON_AREA && this.isSuperAdmin
+      ) {
+        return false
+      }
+
+      return this.rankData.length > 0
+    },
+
+    chartVisible() {
+      return this.chartSelectionVisible && this.chartType !== chartTypes.NONE
+    },
+
     chartOptions() {
-      if (this.chartType === chartTypes.NONE) {
-        return null
+      if (!this.chartVisible) {
+        return {}
       }
 
       return {
         // title: {
         //     text: 'ECharts 入门示例'
         // },
-        tooltip: {},
+        tooltip: {
+          trigger: 'axis'
+        },
         legend: {
-            data:['销量']
+          data:['距离(km)', '节约开支(元)']
         },
         xAxis: {
-            data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+          data: this.xAxisData,
         },
         yAxis: {},
-        series: [{
-            name: '销量',
+        series: [
+          {
+            name: '距离(km)',
+            color: '#3398db',
+            barGap: 0,
+            barMaxWidth: 38.2,
             type: this.chartType,
-            data: this.chartData
-        }]
+            data: this.distanceData
+          },
+          {
+            name: '节约开支(元)',
+            color: '#d48265',
+            barMaxWidth: 38.2,
+            type: this.chartType,
+            data: this.costData
+          }
+        ],
+        // animationEasing: 'elasticOut',
+        // animationDurationUpdate: 2000
+        // grid: {
+        //   x: 40, //默认是80px
+        //   y: 20, //默认是60px
+        //   x2: 20, //默认80px
+        //   y2: 30 //默认60px
+        // }
       }
     },
 
-    // chartData() {
-    //   return [5, 20, 36, 10, 10, 20]
-    // },
+    prisonData() {
+      return this.rankData.map(item => item.jailName)
+    },
+
+    prisonAreaData() {
+      return this.rankData.map(item => item.prisonArea || item.jailName)
+    },
+
+    distanceData() {
+      return this.rankData.map(item => item.distance)
+    },
+
+    costData() {
+      return this.rankData.map(item => item.saveMoney)
+    },
+
+    xAxisData() {
+      switch (this.filterParams.dimension) {
+        case dimensions.PRISON_AREA:
+          return this.prisonAreaData
+
+        case dimensions.PRISON:
+          return this.prisonData
+      }
+    },
 
     tableCols() {
-      const result = []
+      const cols = {
+        [dimensions.INDIVIDUAL]: [
+          { prop: 'familyName', label: '家属姓名', minWidth: '80px' },
+          { prop: 'prisonerName', label: '服刑人员姓名', minWidth: '100px' },
+          { prop: 'prisonerNumber', label: '服刑人员编号', minWidth: '100px' },
+          { prop: 'meetingTime', label: '会见日期', minWidth: '130px' },
+          { prop: 'duration', label: '会见时长', minWidth: '90px' },
+          { prop: 'province', label: '家属会见所在省', minWidth: '110px' },
+          { prop: 'city', label: '家属会见所在市', minWidth: '110px' },
+          {
+            prop: 'distance',
+            label: '与监狱距离(km)',
+            minWidth: '110px',
+            formatter: this.distanceFormatter
+          },
+          {
+            prop: 'saveMoney',
+            label: '节约开支(元)',
+            minWidth: '96px',
+            formatter: this.currencyFormatter
+          }
+        ],
+        [dimensions.PRISON_AREA]: [
+          { prop: 'jailName', label: '监狱名称' },
+          { prop: 'prisonArea', label: '监区' },
+          {
+            prop: 'distance',
+            label: '与监狱距离(km)',
+            formatter: this.distanceFormatter
+          },
+          {
+            prop: 'saveMoney',
+            label: '节约开支(元)',
+            formatter: this.currencyFormatter
+          }
+        ],
+        [dimensions.PRISON]: [
+          { type: 'index', label: '排名', index: this.rank, width: '150px' },
+          { prop: 'jailName', label: '监狱名称' },
+          {
+            prop: 'distance',
+            label: '与监狱距离(km)',
+            formatter: this.distanceFormatter
+          },
+          {
+            prop: 'saveMoney',
+            label: '节约开支(元)',
+            formatter: this.currencyFormatter
+          }
+        ]
+      }
 
-      const baseCols = [{
+      if (this.isSuperAdmin) {
+        cols[dimensions.INDIVIDUAL].unshift({
+          prop: 'jailName',
+          label: '监狱名称',
+          showOverflowTooltip: true
+        })
+      }
 
-      }]
-
-      return result
+      return cols[this.filterParams.dimension]
     }
   },
 
   watch: {
-    chartType(val) {
-      console.log('chartType', val)
-      // this.chartOptions.series
+    filterParams: {
+      deep: true,
+      async handler(val) {
+        this.pagination.page = 1
+        await this.onFilter()
+        this.rankData = this.meetingCostSaving.meetingDistances.slice(0, 10)
+      }
     }
   },
 
-  created() {
-    setTimeout(() => {
-      this.chartData = [5, 20, 36, 10, 10, 20]
-      this.loading = false
-    }, 2000)
-  },
-
   methods: {
-    onFilter(filterParams) {
-      console.log("onFilter", filterParams)
-      this.filterParams = filterParams
+    ...mapActions([
+      'getMeetingCostSavingIndividual',
+      'getMeetingCostSavingPrisonArea',
+      'getMeetingCostSavingPrison'
+    ]),
+
+    async onFilter() {
+      console.log("onFilter", this.requetParams)
+      try {
+        switch (this.filterParams.dimension) {
+          case dimensions.INDIVIDUAL:
+            await this.getMeetingCostSavingIndividual(this.requetParams)
+            break
+
+          case dimensions.PRISON_AREA:
+            await this.getMeetingCostSavingPrisonArea(this.requetParams)
+            break
+
+          case dimensions.PRISON:
+            await this.getMeetingCostSavingPrison(this.requetParams)
+            break
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    rank(index) {
+      console.log('rank', this.pagination.page, this.pagination.rows)
+      return index + 1 + (this.pagination.page - 1) * this.pagination.rows
+    },
+
+    currencyFormatter(row, col, cellValue) {
+      return toCurrencyString(cellValue || 0)
+    },
+
+    distanceFormatter(row, col, cellValue, index) {
+      return toCurrencyString(cellValue || 0, 1)
     }
   }
 }
@@ -130,7 +351,7 @@ export default {
   vertical-align: top;
 }
 
-/deep/ .el-input {
+.el-select {
   width: 13em;
 }
 </style>
