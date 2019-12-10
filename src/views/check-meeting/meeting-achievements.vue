@@ -168,8 +168,26 @@ export default {
         },
         xAxis: {
           data: this.xAxisData,
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false,
+          },
+          axisLabel: {
+            rotate: 20,
+            margin: 32,
+            align: 'center'
+          }
         },
-        yAxis: {},
+        yAxis: {
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false,
+          }
+        },
         series: [
           {
             name: '距离(km)',
@@ -186,7 +204,7 @@ export default {
             type: this.chartType,
             data: this.costData
           }
-        ],
+        ]
         // animationEasing: 'elasticOut',
         // animationDurationUpdate: 2000
         // grid: {
@@ -353,5 +371,9 @@ export default {
 
 .el-select {
   width: 13em;
+}
+
+.el-table {
+  margin-top: 10px;
 }
 </style>

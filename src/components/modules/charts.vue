@@ -3,8 +3,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import echarts from 'echarts'
 import isPlainObject from 'lodash/isPlainObject'
+import debounce from 'lodash/debounce'
 
 export default {
   props: {
@@ -25,7 +27,7 @@ export default {
 
     width: {
       type: String,
-      default: 'auto'
+      default: '100%'
     },
 
     height: {
@@ -41,6 +43,12 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      isCollapsed: state => state.layout.isCollapsed
+    })
+  },
+
   watch: {
     loading(val) {
       if (val) {
@@ -54,6 +62,13 @@ export default {
       if (val) {
         this.$nextTick(() => this.instance.resize())
       }
+    },
+
+    isCollapsed(val) {
+      // 左侧菜单动画完成之后再调用 resize 方法，获取新的宽、高
+      setTimeout(() => {
+        this.resizeHandler()
+      }, 500)
     },
 
     options: {
@@ -83,6 +98,12 @@ export default {
       if (this.loading) {
         this.instance.showLoading()
       }
+
+      window.addEventListener('resize', debounce(this.resizeHandler, 300))
+    },
+
+    resizeHandler() {
+      this.instance.resize()
     }
   }
 }
