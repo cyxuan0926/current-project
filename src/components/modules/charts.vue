@@ -1,5 +1,11 @@
 <template>
-  <div v-show="visible" :id="id" :style="{ width, height }"></div>
+  <div
+    class="m-charts"
+    v-show="visible"
+    :id="id"
+    :style="{ width, height }"
+  >
+  </div>
 </template>
 
 <script>

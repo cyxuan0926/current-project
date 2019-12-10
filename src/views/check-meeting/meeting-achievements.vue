@@ -157,9 +157,6 @@ export default {
       }
 
       return {
-        // title: {
-        //     text: 'ECharts 入门示例'
-        // },
         tooltip: {
           trigger: 'axis'
         },
@@ -205,14 +202,6 @@ export default {
             data: this.costData
           }
         ]
-        // animationEasing: 'elasticOut',
-        // animationDurationUpdate: 2000
-        // grid: {
-        //   x: 40, //默认是80px
-        //   y: 20, //默认是60px
-        //   x2: 20, //默认80px
-        //   y2: 30 //默认60px
-        // }
       }
     },
 
@@ -245,23 +234,38 @@ export default {
     tableCols() {
       const cols = {
         [dimensions.INDIVIDUAL]: [
-          { prop: 'familyName', label: '家属姓名', minWidth: '80px' },
-          { prop: 'prisonerName', label: '服刑人员姓名', minWidth: '100px' },
-          { prop: 'prisonerNumber', label: '服刑人员编号', minWidth: '100px' },
+          {
+            prop: 'familyName',
+            label: '家属姓名',
+            minWidth: '70px',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'prisonerName',
+            label: '服刑人员姓名',
+            minWidth: '86px',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'prisonerNumber',
+            label: '服刑人员编号',
+            minWidth: '100px',
+            showOverflowTooltip: true
+          },
           { prop: 'meetingTime', label: '会见日期', minWidth: '130px' },
           { prop: 'duration', label: '会见时长', minWidth: '90px' },
-          { prop: 'province', label: '家属会见所在省', minWidth: '110px' },
-          { prop: 'city', label: '家属会见所在市', minWidth: '110px' },
+          { prop: 'province', label: '家属会见所在省', minWidth: '100px' },
+          { prop: 'city', label: '家属会见所在市', minWidth: '100px' },
           {
             prop: 'distance',
             label: '与监狱距离(km)',
-            minWidth: '110px',
+            minWidth: '100px',
             formatter: this.distanceFormatter
           },
           {
             prop: 'saveMoney',
             label: '节约开支(元)',
-            minWidth: '96px',
+            minWidth: '100px',
             formatter: this.currencyFormatter
           }
         ],
@@ -299,6 +303,7 @@ export default {
         cols[dimensions.INDIVIDUAL].unshift({
           prop: 'jailName',
           label: '监狱名称',
+          minWidth: '126px',
           showOverflowTooltip: true
         })
       }
@@ -374,6 +379,12 @@ export default {
 }
 
 .el-table {
-  margin-top: 10px;
+  /deep/ .cell {
+    padding: 0 5px;
+  }
+}
+
+.m-charts {
+  margin-bottom: 20px;
 }
 </style>
