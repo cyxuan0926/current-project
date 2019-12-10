@@ -327,7 +327,7 @@ let superAdmin = [{
   }, {
     path: '/prison-data/prison-meeting-statistics',
     component: 'check-meeting/meeting-statistics',
-    meta: { permission: '', breadcrumbName: '监狱会见数据统计表' }
+    meta: { permission: 'visit.visit-statistic.chart.all-prison.search', breadcrumbName: '监狱会见数据统计表' }
   }]
 }]
 

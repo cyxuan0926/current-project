@@ -103,9 +103,10 @@
           @onEnsure="onEnsure" />
       </template>
       <template v-if="items">
+        <slot name="pre" /> 
         <el-button
           v-if="buttonText"
-          @click="onSearch">{{ buttonText }}</el-button>
+          @click="onSearch">{{ buttonText }}</el-button> 
         <el-button
           v-else
           icon="el-icon-search"

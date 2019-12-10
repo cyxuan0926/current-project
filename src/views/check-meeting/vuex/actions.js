@@ -80,5 +80,17 @@ export default {
     commit('setMeetingCostSaving', data || {})
 
     return data
+  },
+  async getMeetingStatics({ commit }, params) {
+    try {
+      const res = await http.getMeetingStatics(params)
+      const { item, list, totalCount } = res.data
+      commit('setMeetingStatistics', list || [])
+      commit('setMeetingStatisticTotalItem', item || {})
+      return totalCount || 0
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

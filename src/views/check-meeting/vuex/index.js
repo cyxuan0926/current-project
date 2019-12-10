@@ -8,7 +8,11 @@ let state = {
   meetingRefresh: false,
   meetingAdjustRefresh: false,
   visits: { contents: [], total: 0 },
-  meetingCostSaving: { total: 0, meetingDistances: [] }
+  meetingCostSaving: { total: 0, meetingDistances: [] },
+  // 会见统计数据
+  meetingStatistics: [],
+  // 总计项数据
+  meetingStatisticTotalItem: {}
 }
 
 export default {

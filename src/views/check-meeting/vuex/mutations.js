@@ -38,5 +38,11 @@ export default {
   setMeetingCostSaving(state, payload) {
     state.meetingCostSaving.total = payload.total || 0
     state.meetingCostSaving.meetingDistances = payload.meetingDistances || []
+  },
+  setMeetingStatistics: (state, meetingStatistics) => {
+    state.meetingStatistics = meetingStatistics
+  },
+  setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
+    state.meetingStatisticTotalItem = meetingStatisticTotalItem
   }
 }

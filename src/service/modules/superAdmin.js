@@ -155,5 +155,9 @@ export default {
   // 监区管理-新增
   addPrisonArea: params => {
     return service.post('/prison_config/add', params).then(res => res && res.code === 200)
+  },
+  // 监狱数据查询-监狱会见数据统计表-列表
+  getMeetingStatics: params => {
+    return service.get('/report/meetings', params)
   }
 }
