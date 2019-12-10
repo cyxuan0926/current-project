@@ -21,7 +21,7 @@
         :params="filter" />
     </m-search>
     <m-charts
-      v-if="total"
+      :visible="!!total"
       :options="chartOptions"
       :loading="loading"/>
     <el-col :span="24">
@@ -183,8 +183,8 @@ export default {
             xAxis: {
               data: this.barXAxisData,
               axisLine: {
-                symbol: ['none', 'arrow'],
-                symbolSize: [8, 10]
+                // symbol: ['none', 'arrow'],
+                // symbolSize: [8, 10]
               },
               axisTick: {
                 show: false
@@ -192,15 +192,17 @@ export default {
               axisLabel: {
                 interval: 0,
                 fontStyle: 'italic',
-                rotate: 15,
+                margin: 32,
+                rotate: 20,
+                align: 'center'
               },
             },
             yAxis: {
               type: 'value',
               axisLine: {
-                symbol: ['none', 'arrow'],
-                symbolSize: [8, 10],
-                symbolOffset: 5
+                // symbol: ['none', 'arrow'],
+                // symbolSize: [8, 10],
+                // symbolOffset: 5
               },
               axisTick: {
                 show: false
