@@ -77,15 +77,11 @@ export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     },
     values: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     }
   },
   watch: {

@@ -306,8 +306,7 @@
     </el-dialog>
     <el-dialog
       @close="handleCloseDialog"
-      :visible.sync="visible"    
-      ref="allDialog"
+      :visible.sync="visible"
       :title="dialogContent['title']"
       class="authorize-dialog all-dialog__style"
       width="530px">

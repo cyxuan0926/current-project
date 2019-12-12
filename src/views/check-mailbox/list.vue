@@ -11,8 +11,7 @@
     <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
       path="/download/exportMailboxes"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       @search="onSearch" />
@@ -280,9 +279,7 @@ export default {
       }).then(() => {
         this.deleteMailbox({ id: id }).then(res => {
           if (!res) return
-          if (this.mailboxes.contents.length === 1) {
-            this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
-          }
+          if (this.mailboxes.contents.length === 1) this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
           else this.getDatas()
         })
       }).catch(() => {})
