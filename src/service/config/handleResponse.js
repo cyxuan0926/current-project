@@ -1,6 +1,7 @@
 import { Message } from 'element-ui'
 import router from '@/router'
 import logout from '@/utils/logout'
+import { showSuccessTip } from './helper'
 // import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
@@ -25,7 +26,9 @@ const codes = {
         tips('导入的Excel罪犯数据解析完成', 'success')
       }
       else {
-        tips(params.msg || '操作成功', 'success')
+        if (showSuccessTip(url)) {
+          tips(params.msg || '操作成功', 'success')
+        }
       }
     }
   },
