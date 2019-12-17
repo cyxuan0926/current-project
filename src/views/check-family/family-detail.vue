@@ -1,17 +1,12 @@
 <template>
   <div>
     <div class="detail-container">
-      <div class="detail-item">
-        <label>姓名：</label>
-        <span>{{ family.name }}</span>
-      </div>
-      <div class="detail-item">
-        <label>邮编：</label>
-        <span>{{ family.postalCode }}</span>
-      </div>
-      <div class="detail-item">
-        <label>家庭地址：</label>
-        <span>{{ family.homeAddress }}</span>
+      <div
+        class="detail-item"
+        v-for="(item, index) in detailItems"
+        :key="`id-family-detail-item-${ index + Math.random() }`">
+        <label>{{ item.label }}：</label>
+        <span>{{ family[item['prop']] }}</span>
       </div>
       <div class="button-box">
         <el-button
@@ -26,7 +21,14 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+const detailItems = [ { label: '姓名', prop: 'name' }, { label: '邮编', prop: 'postalCode' }, { label: '家庭地址', prop: 'homeAddress' } ]
+
 export default {
+  data() {
+    return {
+      detailItems
+    }
+  },
   computed: {
     ...mapState(['family'])
   },
@@ -36,7 +38,7 @@ export default {
   methods: {
     ...mapActions(['getFamilyDetail']),
     goBack() {
-      this.$router.push({path: '/family/list'})
+      this.$router.push({ path: '/family/list' })
     }
   }
 }

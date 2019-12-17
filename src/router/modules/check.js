@@ -1,5 +1,6 @@
 // import frame from '@/views/layout/the-frame'
 // import { helper } from '@/utils'
+import dataImportDetails from '@/common/constants/data-import-details'
 
 let check = [{
   path: '/registration',
@@ -161,6 +162,7 @@ let check = [{
   children: [{
     path: '/import-data-details/prisoner-term-change/list',
     name: 'prisoner-term-change-list',
+    props: { type: dataImportDetails.DATA_SENTENCE_CHANGE },
     // component: helper.loadView('check-data-import-details/prisoner-term-change-list'),
     component: 'check-data-import-details/prisoner-term-change-list',
     // component: resolve => require(['@/views/check-data-import-details/prisoner-term-change-list'], resolve),
@@ -168,6 +170,7 @@ let check = [{
   }, {
     path: '/import-data-details/prisoner-reward-punishment/list',
     name: 'prisoner-reward-punishment-list',
+    props: { type: dataImportDetails.DATA_REWARD_PUNISHMENT },
     // component: helper.loadView('check-data-import-details/prisoner-reward-punishment-list'),
     component: 'check-data-import-details/prisoner-reward-punishment-list',
     // component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve),
@@ -175,6 +178,7 @@ let check = [{
   }, {
     path: '/import-data-details/prisoner-pocket-money/list',
     name: 'prisoner-pocket-money-list',
+    props: { type: dataImportDetails.DATA_POCKET_MONEY },
     component: 'check-data-import-details/prisoner-pocket-money-list',
     // component: helper.loadView('check-data-import-details/prisoner-pocket-money-list'),
     // component: resolve => require(['@/views/check-data-import-details/prisoner-pocket-money-list'], resolve),
@@ -182,6 +186,7 @@ let check = [{
   }, {
     path: '/import-data-details/inside-jails-costs/list',
     name: 'inside-jails-costs-list',
+    props: { type: dataImportDetails.DATA_PRISON_CONSUMPTION },
     component: 'check-data-import-details/prisoner-inside-jails-costs-list',
     // component: helper.loadView('check-data-import-details/prisoner-inside-jails-costs-list'),
     // component: resolve => require(['@/views/check-data-import-details/prisoner-inside-jails-costs-list'], resolve),
