@@ -160,9 +160,7 @@ export default {
       const total = await this.getMeetingStatics({ ...this.filter, ...this.pagination })
       this.total = total ? total + 1 : 0
       this.tableDatas = this.meetingStatistics.slice(0)
-      if (total && Math.ceil(this.total / rows) === page) {
-        this.tableDatas.push(this.meetingStatisticTotalItem)
-      }
+      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
     }
   },
   async mounted() {

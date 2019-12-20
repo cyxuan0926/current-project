@@ -15,12 +15,9 @@
     "build:prod": "cross-env BUILD_ENV=production node build/build.js",
     "build:auth": "cross-env BUILD_ENV=auth node build/build.js",
     "commit": "git-cz",
-    "deploy:test": "npx deployment-cli deploy deploy/deploy.test.conf.js",
-    "deploy:prod": "npx deployment-cli deploy deploy/deploy.prod.conf.js",
-    "deploy:auth": "npx deployment-cli deploy deploy/deploy.auth.conf.js",
-    "rollback:test": "npx deployment-cli rollback deploy/deploy.test.conf.js",
-    "rollback:prod": "npx deployment-cli rollback deploy/deploy.prod.conf.js",
-    "rollback:auth": "npx deployment-cli rollback deploy/deploy.auth.conf.js"
+    "deploy:test": "npx deployment-cli deploy --config deploy/deploy.test.conf.js",
+    "deploy:prod": "npx deployment-cli deploy --config deploy/deploy.prod.conf.js",
+    "deploy:auth": "npx deployment-cli deploy --config deploy/deploy.auth.conf.js"
   },
   "config": {
     "commitizen": {
@@ -70,7 +67,7 @@
     "cz-conventional-changelog": "^2.1.0",
     "default-gateway": "^5.0.3",
     "del": "^4.1.1",
-    "deployment-cli": "^0.1.3",
+    "deployment-cli": "^0.2.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^3.0.0",

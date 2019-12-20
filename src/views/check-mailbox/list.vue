@@ -144,7 +144,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { wardenMailboxExcelConfig } from '@/common/excel-config'
+// import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -159,7 +159,7 @@ export default {
       replying: false,
       mailbox: {},
       answer: '',
-      wardenMailboxExcelConfig,
+      // wardenMailboxExcelConfig,
       toolbar: {
         prev: 1,
         next: 1

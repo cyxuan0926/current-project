@@ -1,6 +1,13 @@
 export default {
   getMeetings(state, params) {
-    state.meetings.contents = params.meetings
+    const { meetings } = params
+    const data = meetings.map(meeting => {
+      meeting.filterFamilies = []
+      if (meeting.families && meeting.families.length) meeting.filterFamilies = meeting.families.slice(0)
+      else meeting.filterFamilies = [{ familyId: meeting.familyId, familyName: meeting.name }]
+      return meeting
+    })
+    state.meetings.contents = data
     state.meetings.total = params.total
   },
   getMeetingConfigs(state, params) {
@@ -17,16 +24,10 @@ export default {
   },
   meetingApplyDealing(state, params) {
     if (params && state.meetings.contents.length) {
-      if (state.meetings.contents.find(m => m.id === parseInt(params))) {
-        state.meetingRefresh = parseInt(params)
-      }
-      else {
-        state.meetingRefresh = false
-      }
+      if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)
+      else state.meetingRefresh = false
     }
-    else {
-      state.meetingRefresh = false
-    }
+    else state.meetingRefresh = false
   },
   meetingAdjustDealing(state, params) {
     state.meetingAdjustRefresh = params

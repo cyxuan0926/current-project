@@ -7,13 +7,11 @@
       :filename="prisonerExcelConfig.filename"
       :jsonData="deletePrisoners"
       :header="prisonerExcelConfig.header"
-      :filterFields="prisonerExcelConfig.filterFields"
-    />
+      :filterFields="prisonerExcelConfig.filterFields" />
     <m-excel-download
       v-if="hasAllPrisonQueryAuth && deletePrisoners.length === 0 && filter.jailId"
       path="/download/exportPrisoners"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
@@ -78,7 +76,7 @@
           show-overflow-tooltip
           label="罪名" />
         <el-table-column
-          width="92px"
+          min-width="92"
           label="会见次数/月">
           <template slot-scope="scope">
             <div>
@@ -93,7 +91,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="刑期起止" width="146px">
+        <el-table-column
+          label="刑期起止"
+          min-width="146">
           <template slot-scope="scope">
             <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
             <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
@@ -101,7 +101,8 @@
         </el-table-column>
         <el-table-column
           show-overflow-tooltip
-          label="服刑人员状态">
+          label="服刑人员状态"
+          min-width="90">
           <template slot-scope="scope">
             <span v-if="!scope.row.sysFlag">删除原因：{{ scope.row.deleteReason }}</span>
             <span v-else-if="scope.row.isBlacklist">黑名单原因：{{ scope.row.reason }}</span>
@@ -121,15 +122,9 @@
         <el-table-column
           v-if="!hasAllPrisonQueryAuth"
           label="家属会见告知书"
-          min-width="110px"
-        >
+          min-width="105">
           <template slot-scope="scope">
-            <span
-              :class="[
-                'bold',
-                { 'red' : !scope.row.notifyId },
-                { 'green' : scope.row.notifyId }
-            ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
+            <span :class="['bold', { 'red' : !scope.row.notifyId }, { 'green' : scope.row.notifyId }]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
             <el-button
               type="text"
               size="small"
@@ -140,8 +135,7 @@
         <el-table-column 
           v-if="!hasAllPrisonQueryAuth" 
           label="操作" 
-          min-width="140px"
-        >
+          min-width="85">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -707,12 +701,12 @@ export default {
         // 租户管理员
         await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
         this.$set(element[prop], 'options', this.prisonConfigs)
-        this.$set(element[prop], type, { value: 'id', label: 'name' })
+        this.$set(element[prop], type, { value: 'name', label: 'name' })
       }
       if (role === '1') {
         // 监狱审核人员
         this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
-        this.$set(element[prop], type, { label: 'prisonConfigName', value: 'prisonConfigId' })
+        this.$set(element[prop], type, { label: 'prisonConfigName', value: 'prisonConfigName' })
       }
     }
     // 自定义的全选操作 不要删除
