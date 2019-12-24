@@ -3,9 +3,20 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     const basicSearchItems = {
-      name: { type: 'input', label: '罪犯姓名' },
-      prisonerNumber: { type: 'input', label: '罪犯编号' },
-      time: { type: 'dateRange', start: 'start', end: 'end', unlinkPanels: true }
+      name: {
+        type: 'input',
+        label: '罪犯姓名'
+      },
+      prisonerNumber: {
+        type: 'input',
+        label: '罪犯编号'
+      },
+      time: {
+        type: 'dateRange',
+        start: 'start',
+        end: 'end',
+        unlinkPanels: true
+      }
     }
     return {
       selfOwnSearchItems: {},
@@ -16,11 +27,18 @@ export default {
     type: String
   },
   mounted() {
-    this.searchItems = { ...this.searchItems, ...this.selfOwnSearchItems }
+    this.searchItems = {
+      ...this.searchItems,
+      ...this.selfOwnSearchItems
+    }
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisonersInsideJailsCosts', 'getPrisonersPocketMoney', 'getPrisonTerms', 'getPrisonerRewardPunishments']),
+    ...mapActions([
+      'getPrisonersInsideJailsCosts',
+      'getPrisonersPocketMoney',
+      'getPrisonTerms',
+      'getPrisonerRewardPunishments']),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -30,7 +48,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonersInsideJailsCosts', 'prisonersPocketMoney', 'prisonTerms', 'prisonerRewardPunishments']),
+    ...mapState([
+      'prisonersInsideJailsCosts',
+      'prisonersPocketMoney',
+      'prisonTerms',
+      'prisonerRewardPunishments']),
     tableCols() {
       const leadingCols = [
         {
@@ -150,7 +172,11 @@ export default {
         default:
           break
       }
-      return [ ...leadingCols, ...middleCols, ...trailingCols ]
+      return [
+        ...leadingCols,
+        ...middleCols,
+        ...trailingCols
+      ]
     }
   }
 }

@@ -188,6 +188,7 @@
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisons from '@/common/constants/prisons'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -218,6 +219,7 @@ export default {
              },
       events: { click: this.onCloseAuthorize }
     }
+    const { options, belong } = prisons.PRISONAREA
     return {
       tabsItems,
       tabs: 'PENDING',
@@ -233,11 +235,8 @@ export default {
         prisonArea: {
                       type: 'select',
                       label: '监区',
-                      options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []),
-                      belong: {
-                                value: 'prisonConfigName',
-                                label: 'prisonConfigName'
-                              }
+                      options,
+                      belong
                     },
         applicationDate: {
                            type: 'date',
@@ -454,7 +453,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['meetings', 'frontRemarks', 'meetingRefresh']),
+    ...mapState([
+      'meetings',
+      'frontRemarks',
+      'meetingRefresh'
+    ]),
     tableCols() {
       const basicCols = [
         {
@@ -505,8 +508,14 @@ export default {
             align: 'center'
           }
         ]
-        if (this.hasAllPrisonQueryAuth) return [ ...allPrisonQueryAuthLeadingCols, ...basicCols ]
-        else return [ ...basicCols, ...noAllPrisonQueryAuthLeadingCols ]
+        if (this.hasAllPrisonQueryAuth) return [
+          ...allPrisonQueryAuthLeadingCols,
+          ...basicCols
+        ]
+        else return [
+          ...basicCols,
+          ...noAllPrisonQueryAuthLeadingCols
+        ]
     }
   },
   watch: {
@@ -547,10 +556,21 @@ export default {
     this.getDatas('mounted')
   },
   methods: {
-    ...mapActions(['getMeetings', 'getMeetingsAll', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
+    ...mapActions([
+      'getMeetings',
+      'getMeetingsAll',
+      'authorizeMeeting',
+      'withdrawMeeting',
+      'getMeetingsFamilyDetail',
+      'getMeettingsDetail',
+      'meetingApplyDealing'
+    ]),
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      const params = { ...this.filter, ...this.pagination }
+      const params = {
+        ...this.filter,
+        ...this.pagination
+      }
 
       if (this.hasAllPrisonQueryAuth) this.getMeetingsAll(params)
       else {
@@ -693,7 +713,11 @@ export default {
     },
     onWithdraw(arg) {
       const { remarks } = arg
-      const params = { id: this.toAuthorize.id, status: 'DENIED', remarks }
+      const params = {
+        id: this.toAuthorize.id,
+        status: 'DENIED',
+        remarks
+      }
       this.withdrawMeeting(params).then(res => {
         if (!res) return
         this.closeWithdraw(true)

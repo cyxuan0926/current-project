@@ -9,7 +9,10 @@
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
-      <m-table-new stripe :data="prisonerRewardPunishments.contents" :cols="tableCols">
+      <m-table-new
+        stripe
+        :data="prisonerRewardPunishments.contents"
+        :cols="tableCols">
         <template slot="createdAt" slot-scope="scope">
           {{ scope.row.createdAt | Date }}
         </template>
@@ -29,13 +32,20 @@ export default {
   data() {
     return {
       selfOwnSearchItems: {
-        operateName: { type: 'input', label: '数据导入人员姓名', noPlaceholder: true }
+        operateName: {
+          type: 'input',
+          label: '数据导入人员姓名',
+          noPlaceholder: true
+        }
       }
     }
   },
   methods: {
     getDatas() {
-      this.getPrisonerRewardPunishments({ ...this.filter, ...this.pagination })
+      this.getPrisonerRewardPunishments({
+        ...this.filter,
+        ...this.pagination
+      })
     }
   }
 }

@@ -11,86 +11,64 @@
         v-model="tabs"
         type="card">
         <el-tab-pane
-          label="实地探监"
-          name="first" />
-        <el-tab-pane
-          label="已取消"
-          name="CANCELED" />
+          v-for="(pane, index) in tabPanes"
+          :key="`id-visit-pane-${ index + Math.random() }`"
+          :label="pane.label"
+          :name="pane.name"/>
       </el-tabs>
-      <el-table
-        :data="visits.contents"
+      <m-table-new
         stripe
+        :data="visits.contents"
         class="mini-td-padding td"
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="家属姓名" />
-        <el-table-column
-          width="156px"
-          label="身份证信息">
-          <template slot-scope="scope">
-            <div class="idcard-box">
-              <m-img-viewer
-                v-if="scope.row.idCardFront"
-                :url="scope.row.idCardFront"
-                title="身份证正面"/>
-              <m-img-viewer
-                v-if="scope.row.idCardBack"
-                :url="scope.row.idCardBack"
-                title="身份证背面"/>
-            </div>
+        :cols="tableCols">
+        <template
+          slot="idcards"
+          slot-scope="scope">
+          <div class="idcard-box">
+            <m-img-viewer
+              v-if="scope.row.idCardFront"
+              :url="scope.row.idCardFront"
+              title="身份证正面" />
+            <m-img-viewer
+              v-if="scope.row.idCardBack"
+              :url="scope.row.idCardBack"
+              title="身份证背面" />
+          </div>
+        </template>
+        <template
+          slot="window"
+          slot-scope="scope">
+          <span v-if="scope.row.window">
+            {{ scope.row.batch }} ({{ scope.row.window }}窗口)
+          </span>
+        </template>
+        <template
+          slot="status"
+          slot-scope="scope">
+          <span v-if="!scope.row.remarks">{{ scope.row.status | applyStatus }}</span>
+          <el-tooltip
+            v-else
+            :content="scope.row.remarks"
+            placement="top">
+            <span>{{ scope.row.status | applyStatus }}</span>
+          </el-tooltip>
+        </template>
+        <template
+          slot="lastCoiumn"
+          slot-scope="scope">
+          <span v-if="tabs === 'CANCELED'">{{ scope.row.cause }}</span>
+          <template v-else>
+            <el-button
+              v-if="scope.row.status == 'PENDING'"
+              size="mini"
+              @click="handleAuthorization(scope.row)">授权</el-button>
+            <el-button
+              v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
+              size="mini"
+              @click="handleWithdraw(scope.row)">撤回</el-button>
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="prisonerNumber"
-          label="罪犯编号" />
-        <el-table-column
-          prop="prisonArea"
-          label="监区" />
-        <el-table-column
-          prop="relationship"
-          label="关系" />
-        <el-table-column
-          label="申请时间"
-          prop="applicationDate" />
-        <el-table-column label="批次(窗口号)" width="136px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.window">
-              {{ scope.row.batch }} ({{ scope.row.window }}窗口)
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="orange" label="申请状态">
-          <template slot-scope="scope">
-            <span v-if="!scope.row.remarks">{{ scope.row.status | applyStatus }}</span>
-            <el-tooltip
-              v-else
-              :content="scope.row.remarks"
-              placement="top">
-              <span>{{ scope.row.status | applyStatus }}</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="tabs === 'CANCELED' ? '取消原因' : '操作'"
-          min-width="100px"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span v-if="tabs === 'CANCELED'">{{ scope.row.cause }}</span>
-            <template v-else>
-              <el-button
-                v-if="scope.row.status == 'PENDING'"
-                size="mini"
-                @click="handleAuthorization(scope.row)">授权</el-button>
-              <el-button
-                v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
-                size="mini"
-                @click="handleWithdraw(scope.row)">撤回</el-button>
-            </template>
-          </template>
-        </el-table-column>
-      </el-table>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -203,14 +181,35 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import prisons from '@/common/constants/prisons'
+
 export default {
   data() {
+    const { options, belong } = prisons.PRISONAREA
+    const tabPanes = [
+      {
+        label: '实地探监',
+        name: 'first'
+      },
+      {
+        label: '已取消',
+        name: 'CANCELED'
+      }
+    ]
     return {
       tabs: 'first',
       searchItems: {
         // prisonerNumber: { type: 'input', label: '罪犯编号' },
-        name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        }
       },
       show: {
         authorize: false,
@@ -222,16 +221,79 @@ export default {
       withdraw: {},
       remarks: '您的身份信息错误',
       rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [{ required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 }]
+        remarks: [
+          {
+            required: true,
+            message: '请填写撤回理由',
+            trigger: 'blur'
+          }
+        ],
+        refuseRemark: [
+          {
+            required: true,
+            message: '请填写驳回原因'
+          },
+          {
+            validator: validator.lengthRange,
+            max: 200
+          }
+        ]
       },
-      refuseForm: {}
+      refuseForm: {},
+      tabPanes,
+      tableCols: [
+        {
+          label: '家属姓名',
+          prop: 'name'
+        },
+        {
+          label: '身份证信息',
+          slotName: 'idcards',
+          width: 156
+        },
+        {
+          label: '罪犯编号',
+          prop: 'prisonerNumber'
+        },
+        {
+          label: '监区',
+          prop: 'prisonArea'
+        },
+        {
+          label: '关系',
+          prop: 'relationship'
+        },
+        {
+          label: '申请时间',
+          prop: 'applicationDate'
+        },
+        {
+          label: '批次(窗口号)',
+          slotName: 'window',
+          width: 136
+        },
+        {
+          label: '申请状态',
+          slotName: 'status',
+          className: 'orange'
+        },
+        {
+          label: '操作',
+          minWidth: 100,
+          slotName: 'lastCoiumn',
+          showOverflowTooltip: true
+        }
+      ]
     }
   },
   computed: {
     ...mapState({
       visits: state => state.visits,
-      frontRemarks: state => [...state.frontRemarks.slice(0, state.frontRemarks.length - 1), '当月会见次数已达上限，请下月再申请', '其他']
+      frontRemarks: state => [
+        ...state.frontRemarks.slice(0, state.frontRemarks.length - 1),
+        '当月会见次数已达上限，请下月再申请',
+        '其他'
+      ]
     })
   },
   watch: {
@@ -242,6 +304,8 @@ export default {
       // else {
       //   this.filter.status = val
       // }
+      if (val === 'CANCELED') this.$set(this.tableCols[this.tableCols.length - 1], 'label', '取消原因')
+      if (val === 'first') this.$set(this.tableCols[this.tableCols.length - 1], 'label', '操作')
       this.$refs.search.onSearch('tabs')
       this.onSearch()
     },
@@ -253,10 +317,20 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getVisits', 'getCanceledVisit', 'authorizeVisit', 'withdrawVisit']),
+    ...mapActions([
+      'getVisits',
+      'getCanceledVisit',
+      'authorizeVisit',
+      'withdrawVisit' ]),
     getDatas() {
-      if (this.tabs === 'CANCELED') this.getCanceledVisit({ ...this.filter, ...this.pagination })
-      else if (this.tabs !== 'CANCELED') this.getVisits({ ...this.filter, ...this.pagination })
+      if (this.tabs === 'CANCELED') this.getCanceledVisit({
+        ...this.filter,
+        ...this.pagination
+      })
+      else if (this.tabs !== 'CANCELED') this.getVisits({
+        ...this.filter,
+        ...this.pagination
+      })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -277,19 +351,13 @@ export default {
       if (e === 'DENIED') {
         if (this.remarks === '其他') {
           this.$refs['refuseForm'].validate(valid => {
-            if (valid) {
-              params.remarks = this.refuseForm.refuseRemark
-            }
+            if (valid) params.remarks = this.refuseForm.refuseRemark
           })
         }
-        else {
-          params.remarks = this.remarks
-        }
+        else params.remarks = this.remarks
         if (params.remarks) this.handleSubmit(params)
       }
-      else {
-        this.handleSubmit(params)
-      }
+      else this.handleSubmit(params)
     },
     handleSubmit(params) {
       this.authorizeVisit(params).then(res => {
@@ -302,7 +370,11 @@ export default {
     onWithdraw() {
       this.$refs['withdrawForm'].validate(valid => {
         if (valid) {
-          let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
+          const params = {
+            id: this.toAuthorize.id,
+            status: 'DENIED',
+            remarks: this.withdraw.remarks
+          }
           this.withdrawVisit(params).then(res => {
             if (!res) return
             this.closeWithdraw()

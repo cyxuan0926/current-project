@@ -60,7 +60,11 @@ export default {
       loading: true,
       filter: {},
       searchItems: {
-        time: { type: 'datetimerange', start: 'startDate', end: 'endDate' }
+        time: {
+          type: 'datetimerange',
+          start: 'startDate',
+          end: 'endDate'
+        }
       },
       tableCols: [
         {
@@ -157,7 +161,10 @@ export default {
     },
     async getDatas() {
       const { page, rows } = this.pagination
-      const total = await this.getMeetingStatics({ ...this.filter, ...this.pagination })
+      const total = await this.getMeetingStatics({
+        ...this.filter,
+        ...this.pagination
+      })
       this.total = total ? total + 1 : 0
       this.tableDatas = this.meetingStatistics.slice(0)
       if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
@@ -168,7 +175,10 @@ export default {
     this.filterBarData()
   },
   computed: {
-    ...mapState(['meetingStatistics', 'meetingStatisticTotalItem']),
+    ...mapState([
+      'meetingStatistics',
+      'meetingStatisticTotalItem'
+    ]),
     chartOptions() {
       let options
       switch(this.chartType) {
@@ -227,21 +237,53 @@ export default {
               orient: 'vertical',
               left: 'right',
               top: '16%',
-              data: ['未授权次数(未审核数)','已通过审核待见会见次数','审核被拒绝次数','狱警未审核过期次数','审核通过未会见过期次数', '会见完成次数', '审核通过后取消次数']
+              data: [
+                '未授权次数(未审核数)',
+                '已通过审核待见会见次数',
+                '审核被拒绝次数',
+                '狱警未审核过期次数',
+                '审核通过未会见过期次数',
+                '会见完成次数',
+                '审核通过后取消次数'
+              ]
             },
             series : [{
               type: 'pie',
               radius : '65%',
-              center: ['40%', '55%'],
+              center: [
+                '40%',
+                '55%'
+              ],
               data: this.pieData,
               data:[
-                { value: this.meetingStatisticTotalItem['pend'], name: '未授权次数(未审核数)' },
-                { value: this.meetingStatisticTotalItem['passed'], name: '已通过审核待见会见次数' },
-                { value: this.meetingStatisticTotalItem['denied'], name: '审核被拒绝次数' },
-                { value: this.meetingStatisticTotalItem['noAuthToExpired'], name: '狱警未审核过期次数' },
-                { value: this.meetingStatisticTotalItem['authedToExpired'], name: '审核通过未会见过期次数' },
-                { value: this.meetingStatisticTotalItem['finished'], name: '会见完成次数' },
-                { value: this.meetingStatisticTotalItem['canceled'], name: '审核通过后取消次数' }
+                {
+                  name: '未授权次数(未审核数)',
+                  value: this.meetingStatisticTotalItem['pend']
+                },
+                {
+                  name: '已通过审核待见会见次数',
+                  value: this.meetingStatisticTotalItem['passed']
+                },
+                {
+                  name: '审核被拒绝次数',
+                  value: this.meetingStatisticTotalItem['denied']
+                },
+                {
+                  name: '狱警未审核过期次数',
+                  value: this.meetingStatisticTotalItem['noAuthToExpired']
+                },
+                {
+                  name: '审核通过未会见过期次数',
+                  value: this.meetingStatisticTotalItem['authedToExpired']
+                },
+                {
+                  name: '会见完成次数',
+                  value: this.meetingStatisticTotalItem['finished']
+                },
+                {
+                  name: '审核通过后取消次数',
+                  value: this.meetingStatisticTotalItem['canceled']
+                }
               ],
               itemStyle: {
                 emphasis: {

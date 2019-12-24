@@ -98,10 +98,40 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import prisons from '@/common/constants/prisons'
 
-const prisonerDetailRows = [[ { label: '姓名', prop: 'name' }, { label: '罪名', prop: 'crimes' } ],
-          [ { label: '罪犯编号', prop: 'prisonerNumber' }, { label: '监区', prop: 'prisonArea' } ],
-          [ { label: '性别', prop: 'gender' }, { label: '关系', prop: 'relationship' } ]]
+const prisonerDetailRows = [
+  [
+    {
+      label: '姓名',
+      prop: 'name'
+    },
+    {
+      label: '罪名',
+      prop: 'crimes'
+    }
+  ],
+  [
+    {
+      label: '罪犯编号',
+      prop: 'prisonerNumber'
+    },
+    {
+      label: '监区',
+      prop: 'prisonArea'
+    }
+  ],
+  [
+    {
+      label: '性别',
+      prop: 'gender'
+    },
+    {
+      label: '关系',
+      prop: 'relationship'
+    }
+  ]
+]
 
 const dialogTypes = {
   // 罪犯详情
@@ -112,11 +142,34 @@ const dialogTypes = {
 
 export default {
   data() {
+    const { options, belong } = prisons.PRISONAREA
+    const isBlacklistOptions = [
+      {
+        label: '是',
+        value: 1
+      },
+      {
+        label: '否',
+        value: 0
+      }
+    ]
     return {
       searchItems: {
-        name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        },
+        isBlacklist: {
+          type: 'select',
+          label: '黑名单',
+          options: isBlacklistOptions
+        }
       },
       prisoner: {},
       family: {},
@@ -154,37 +207,67 @@ export default {
   computed: {
     ...mapState(['families']),
     dialogContent() {
-      let title, items = {}, formButton = { buttons: [] }
+      let title,
+        items = {},
+        formButton = { buttons: [] }
       switch(this.operationType) {
         case 'detail':
           title = '囚犯信息'
           break
         case 'blacklist':
           title = '加入黑名单'
-          formButton.buttons = [ { add: 'add', text: '确认' }, { cancel: 'cancel', type: 'danger' } ]
+          formButton.buttons = [
+            {
+              add: 'add',
+              text: '确认'
+            },
+            {
+              cancel: 'cancel',
+              type: 'danger'
+            }
+          ]
           items = Object.assign({},{
-            blackListReason: { type: 'textarea', noLabel: true, placeholder: '请输入加入黑名单理由', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-200'], label: '加入黑名单的原因' }
+            blackListReason: {
+              type: 'textarea',
+              noLabel: true,
+              placeholder: '请输入加入黑名单理由',
+              autosize: { minRows: 5 },
+              rules: ['required', 'lengthRange-200'],
+              label: '加入黑名单的原因'
+            }
           }, formButton)
           break
         default:
           break
       }
-      return { title, items }
+      return {
+        title,
+        items
+      }
     }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getFamilies', 'addFamilyBlacklist', 'removeFamilyBlacklist']),
+    ...mapActions([
+      'getFamilies',
+      'addFamilyBlacklist',
+      'removeFamilyBlacklist'
+    ]),
     getDatas() {
-      this.getFamilies({ ...this.filter, ...this.pagination })
+      this.getFamilies({
+        ...this.filter,
+        ...this.pagination
+      })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
     getFamilyDetail(e) {
-      this.$router.push({ path: `/family/detail/${ e }` })
+      this.$router.push({
+        path: `/family/detail/${ e }`
+      })
     },
     showPrisonerDetail(prisoner) {
       this.prisoner = prisoner

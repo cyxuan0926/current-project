@@ -21,7 +21,20 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-const detailItems = [ { label: '姓名', prop: 'name' }, { label: '邮编', prop: 'postalCode' }, { label: '家庭地址', prop: 'homeAddress' } ]
+const detailItems = [
+  {
+    label: '姓名',
+    prop: 'name'
+  },
+  {
+    label: '邮编',
+    prop: 'postalCode'
+  },
+  {
+    label: '家庭地址',
+    prop: 'homeAddress'
+  }
+]
 
 export default {
   data() {
@@ -33,12 +46,16 @@ export default {
     ...mapState(['family'])
   },
   mounted() {
-    this.getFamilyDetail({ id: this.$route.params.id })
+    this.getFamilyDetail({
+      id: this.$route.params.id
+    })
   },
   methods: {
     ...mapActions(['getFamilyDetail']),
     goBack() {
-      this.$router.push({ path: '/family/list' })
+      this.$router.push({
+        path: '/family/list'
+      })
     }
   }
 }

@@ -148,12 +148,42 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   mixins: [prisonFilterCreator],
   data() {
+    const isReplyOptions = [
+      {
+        value: 1,
+        label: '是'
+      },
+      {
+        value: 0,
+        label: '否'
+      }
+    ]
     return {
       searchItems: {
-        time: { type: 'datetimerange', start: 'startTime', end: 'endTime' },
-        type: { type: 'select', label: '信件类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
-        isReply: { type: 'select', label: '是否回复', options: [{ value: 1, label: '是' }, { value: 0, label: '否' }] },
-        name: { type: 'input', label: '用户名' }
+        time: {
+          type: 'datetimerange',
+          start: 'startTime',
+          end: 'endTime'
+        },
+        type: {
+          type: 'select',
+          label: '信件类别',
+          options: [],
+          getting: true,
+          belong: {
+            value: 'id',
+            label: 'name'
+          }
+        },
+        isReply: {
+          type: 'select',
+          label: '是否回复',
+          options: isReplyOptions
+        },
+        name: {
+          type: 'input',
+          label: '用户名'
+        }
       },
       visible: false,
       replying: false,
@@ -167,7 +197,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['mailboxes', 'mailboxTypes']),
+    ...mapState([
+      'mailboxes',
+      'mailboxTypes'
+    ]),
     tableCols() {
       const commonCols = [
         {
@@ -222,8 +255,15 @@ export default {
           width: '240px'
         }
       ]
-      let cols = [ ...commonCols, ...onlyWardenEndCols ]
-      if (this.hasOnlyAllPrisonQueryAuth) cols = [ ...onlyHasAllPrisonQueryAuthHeadersCols, ...commonCols, ...onlyHasAllPrisonQueryAuthEndCols ]
+      let cols = [
+        ...commonCols,
+        ...onlyWardenEndCols
+      ]
+      if (this.hasOnlyAllPrisonQueryAuth) cols = [
+        ...onlyHasAllPrisonQueryAuthHeadersCols,
+        ...commonCols,
+        ...onlyHasAllPrisonQueryAuthEndCols
+      ]
       return cols
     },
     disabled() {
@@ -244,9 +284,18 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getMailboxes', 'getMailboxTypes', 'deleteMailbox', 'replyMailbox', 'getMailboxDetail']),
+    ...mapActions([
+      'getMailboxes',
+      'getMailboxTypes',
+      'deleteMailbox',
+      'replyMailbox',
+      'getMailboxDetail'
+    ]),
     getDatas() {
-      this.getMailboxes({ ...this.filter, ...this.pagination })
+      this.getMailboxes({
+        ...this.filter,
+        ...this.pagination
+      })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -260,7 +309,10 @@ export default {
       }, 300)
     },
     onReply(e) {
-      let params = { contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'), id: e }
+      const params = {
+        contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'),
+        id: e
+      }
       this.replying = true
       this.replyMailbox(params).then(res => {
         this.replying = false
@@ -285,7 +337,8 @@ export default {
       }).catch(() => {})
     },
     getDetail(e) {
-      this.getMailboxDetail({ id: e.id }).then(res => {
+      const { id } = e
+      this.getMailboxDetail({ id }).then(res => {
         if (!res) return
         this.mailbox = res
         this.answer = ''

@@ -35,21 +35,42 @@
 </template>
 <script>
 import commonTableColsMixins from './mixins/common-table-cols'
+import prisons from '@/common/constants/prisons'
+
 export default {
   mixins: [commonTableColsMixins],
   data () {
+    const { options, belong } = prisons.PRISONAREA
     return {
       selfOwnSearchItems: {
-        time: { type: 'dateRange', start: 'startDate', end: 'endDate', unlinkPanels: true },
+        time: {
+          type: 'dateRange',
+          start: 'startDate',
+          end: 'endDate',
+          unlinkPanels: true
+        },
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1
-          ? { label: '监区', type: 'input', value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`, disabled: true }
-          : { label: '监区', type: 'select', options: JSON.parse(localStorage.getItem('user')).prisonConfigList, belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+          ? {
+              label: '监区',
+              type: 'input',
+              value: `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }`,
+              disabled: true
+            }
+          : {
+              label: '监区',
+              type: 'select',
+              options,
+              belong
+            }
       }
     }
   },
   methods: {
     getDatas() {
-      this.getPrisonersInsideJailsCosts({ ...this.filter, ...this.pagination })
+      this.getPrisonersInsideJailsCosts({
+        ...this.filter,
+        ...this.pagination
+      })
     }
   }
 }

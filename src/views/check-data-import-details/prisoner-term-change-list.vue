@@ -9,7 +9,10 @@
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
-      <m-table-new stripe :data="prisonTerms.contents" :cols="tableCols" >
+      <m-table-new
+        stripe
+        :data="prisonTerms.contents"
+        :cols="tableCols" >
         <template slot-scope="scope" slot="changeyear">
           {{ scope.row.changeyear | termChangeYearMonthDay(scope.row.changemonth, scope.row.changeday) }}
         </template>
@@ -32,13 +35,20 @@ export default {
   data() {
     return {
       selfOwnSearchItems: {
-        operateName: { type: 'input', label: '数据导入人员姓名', noPlaceholder: true }
+        operateName: {
+          type: 'input',
+          label: '数据导入人员姓名',
+          noPlaceholder: true
+        }
       }
     }
   },
   methods: {
     getDatas() {
-      this.getPrisonTerms({ ...this.filter, ...this.pagination })
+      this.getPrisonTerms({
+        ...this.filter,
+        ...this.pagination
+      })
     }
   }
 }

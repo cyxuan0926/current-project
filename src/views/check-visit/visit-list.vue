@@ -198,14 +198,25 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import prisons from '@/common/constants/prisons'
+
 export default {
   data() {
+    const { options, belong } = prisons.PRISONAREA
     return {
       tabs: 'first',
       searchItems: {
         // prisonerNumber: { type: 'input', label: '罪犯编号' },
-        name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } }
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        }
       },
       show: {
         authorize: false,
@@ -217,8 +228,23 @@ export default {
       withdraw: {},
       remarks: '您的身份信息错误',
       rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [{ required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 }]
+        remarks: [
+          {
+            required: true,
+            message: '请填写撤回理由',
+            trigger: 'blur'
+          }
+        ],
+        refuseRemark: [
+          {
+            required: true,
+            message: '请填写驳回原因'
+          },
+          {
+            validator: validator.lengthRange,
+            max: 200
+          }
+        ]
       },
       refuseForm: {}
     }
@@ -248,7 +274,11 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getVisits', 'getCanceledVisit', 'authorizeVisit', 'withdrawVisit']),
+    ...mapActions([
+      'getVisits',
+      'getCanceledVisit',
+      'authorizeVisit',
+      'withdrawVisit']),
     getDatas() {
       if (this.tabs === 'CANCELED') this.getCanceledVisit({ ...this.filter, ...this.pagination })
       else if (this.tabs !== 'CANCELED') this.getVisits({ ...this.filter, ...this.pagination })
