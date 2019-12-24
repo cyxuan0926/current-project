@@ -224,7 +224,7 @@ export default {
       searchItems: {
         name: {
                 type: 'input',
-                abel: '家属姓名'
+                label: '家属姓名'
               },
         prisonerNumber: {
                           type: 'input',

@@ -18,7 +18,7 @@
           style="margin-left: 10px;"
           :loading="gettingConfigs"
           @click="getConfigs('sure')">确定</el-button>
-        <label style="margin-left: 5px;font-size: 12px;color: red">注：仅支持2天后的会见申请调整</label>
+        <label class="label-warning_danger">注：仅支持2天后的会见申请调整</label>
         <div
           v-if="show"
           class="adjustTable"
@@ -122,6 +122,7 @@ export default {
   },
   watch: {
     meetingAdjustRefresh(val) {
+      console.log(11, val)
       if (val && val === this.realDate) {
         this.adjustDate = this.realDate
         this.getConfigs()
@@ -130,6 +131,7 @@ export default {
   },
   methods: {
     ...mapActions(['getMeetingConfigs', 'adjustMeeting', 'meetingAdjustDealing']),
+    // 获取配置
     getConfigs(e) {
       this.show = false
       let adjustDate = this.realDate
@@ -168,8 +170,10 @@ export default {
         this.lastRowWidth = `width: ${ 100 - 100 / (this.meetingAdjustment.meetingQueue.length + 1) }%`
         this.show = true
         this.meetingAdjustDealing(false)
+        console.log(this.meetings)
       })
     },
+    // 保存数据
     saveOrigin() {
       Object.keys(this.origin).forEach(terminal => {
         Object.keys(this.origin[terminal]).forEach(duration => {
@@ -180,6 +184,7 @@ export default {
         })
       })
     },
+    // 点击单元格
     onCellClick(row, col, meeting) {
       // meeting.changed = true
       this.clicked.push(meeting)
@@ -216,10 +221,12 @@ export default {
       this.show = false
       this.show = true
     },
+    // 重置
     resetMeetings() {
       this.adjustDate = this.realDate
       this.getConfigs()
     },
+    // 确认调整
     onSubmit() {
       this.buttonLoading = true
       let params = [], meeting = {}
@@ -311,5 +318,10 @@ export default {
 }
 .el-date-editor.el-input {
   width: 160px;
+}
+.label-warning_danger {
+  margin-left: 5px;
+  font-size: 12px;
+  color: red;
 }
 </style>
