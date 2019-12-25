@@ -1,18 +1,25 @@
 module.exports = {
-  local: true,
-  buildCommands: ["npm ci", "npm run build:prod"],
-  buildOutputPath: "dist",
   repository: {
-    name: "ywgk-fe",
-    branch: "master",
-    url: "https://github.com/sinog2c/ywgk-fe.git"
+    local: true,
+    type: 'git',
+    url: 'https://github.com/sinog2c/ywgk-fe.git',
+    branch: 'master'
   },
-  remotePath: "/mnt/projects/nginx/www",
-  sourcePatterns: ["static", "index.html"],
-  server: {
-    host: "39.108.185.51",
+
+  buildConfig: {
+    commands: ['npm ci', 'npm run build:prod'],
+    outputDir: 'dist',
+    assetsPatterns: ['static', 'index.html']
+  },
+
+  remoteOperatesConfig: {
+    remotePath: '/mnt/projects/nginx/www'
+  },
+
+  connectConfig: {
+    host: '39.108.185.51',
     port: 22,
-    username: "root",
-    password: "GKYT!ssj##"
+    username: 'root',
+    password: 'GKYT!ssj##',
   }
 };

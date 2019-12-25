@@ -6,16 +6,14 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="families.contents"
+      <m-table-new
         stripe
-        class="mini-td-padding"
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="家属姓名" />
-        <el-table-column label="身份证信息">
-          <template slot-scope="scope">
+        :data="families.contents"
+        :cols="tableCols"
+        class="mini-td-padding">
+        <template
+          slot-scope="scope"
+          slot="idCard">
             <m-img-viewer
               v-if="scope.row.idCardFront"
               :url="scope.row.idCardFront"
@@ -24,28 +22,10 @@
               v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
               title="身份证背面照"/>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column label="身份证背面">
-          <template slot-scope="scope">
-            <m-img-viewer
-              v-if="scope.row.idCardBack"
-              :url="scope.row.idCardBack"
-              title="身份证背面照"/>
-          </template>
-        </el-table-column> -->
-        <el-table-column
-          label="黑名单原因"
-          prop="reason"
-          show-overflow-tooltip>
-          <!-- <template slot-scope="scope">
-            <el-tooltip placement="top" :content="scope.row.reason" v-if="scope.row.reason">
-              <div :class="scope.row.reason.length>27? 'more-content-column': ''">{{scope.row.reason}}</div>
-            </el-tooltip>
-          </template> -->
-        </el-table-column>
-        <el-table-column label="对应罪犯">
-          <template slot-scope="scope">
+        </template>
+        <template
+          slot-scope="scope"
+          slot="prisoners">
             <el-button
               v-for="prisoner in scope.row.prisonerList"
               :key="prisoner.prisonerId"
@@ -54,10 +34,10 @@
               @click="showPrisonerDetail(prisoner)">
               {{ prisoner.name }}
             </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
+        </template>
+        <template
+          slot-scope="scope"
+          slot="operate">
             <el-button
               type="text"
               size="small"
@@ -68,87 +48,49 @@
               type="text"
               size="small"
               v-if="!scope.row.isBlacklist"
-              @click="showBlackList(scope.row, scope.$index)">
+              @click="showBlackList(scope.row)">
               加入黑名单
             </el-button>
             <el-button
               type="text"
               size="small"
               v-else
-              @click="removeBlackList(scope.row, scope.$index)">
+              @click="removeBlackList(scope.row)">
               移出黑名单
             </el-button>
           </template>
-        </el-table-column>
-      </el-table>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
       :total="families.total"
       @onPageChange="getDatas" />
     <el-dialog
-      title="囚犯信息"
-      :visible.sync="dialogTableVisible">
-      <el-row :gutter="0">
-        <el-col :span="12">
-          <label for="">姓名：</label>
-          <span>{{ prisoner.name }}</span>
-        </el-col>
-        <el-col :span="12">
-          <label for="">罪名：</label>
-          <span>{{ prisoner.crimes }}</span>
-        </el-col>
-      </el-row>
-      <el-row :gutter="0">
-        <el-col :span="12">
-          <label for="">罪犯编号：</label>
-          <span>{{ prisoner.prisonerNumber }}</span>
-        </el-col>
-        <el-col :span="12">
-          <label for="">监区：</label>
-          <span>{{ prisoner.prisonArea }}</span>
-        </el-col>
-      </el-row>
-      <el-row :gutter="0">
-        <el-col :span="12">
-          <label for="">性别：</label>
-          <span>{{ prisoner.gender | gender }}</span>
-        </el-col>
-        <el-col :span="12">
-          <label for="">关系：</label>
-          <span>{{ prisoner.relationship }}</span>
-        </el-col>
-      </el-row>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="blackTableShow"
-      @close="closeBlackTable"
+      :title="dialogContent['title']"
       class="authorize-dialog"
-      title="加入黑名单"
-      width="530px">
-      <el-form
-        :model="blackTable"
-        ref="blackTableForm"
-        :rules="rule">
-        <el-form-item prop="blackListReason">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 5 }"
-            placeholder="请输入加入黑名单理由"
-            v-model="blackTable.blackListReason"/>
-        </el-form-item>
-      </el-form>
-      <el-row :gutter="0">
-        <el-button
-          class="button-add"
-          size="mini"
-          type="danger"
-          @click="blackTableShow = false && closeBlackTable()">取消</el-button>
-        <el-button
-          class="button-add"
-          size="mini"
-          @click="handleBlackListReason">确定</el-button>
-      </el-row>
+      :width=" operationType === dialogTypes.BLACKLIST ? '530px' : '' "
+      :visible.sync="visible"
+      @close="handleCloseDialog" >
+      <template v-if=" operationType === dialogTypes.DETAIL ">
+        <el-row
+          v-for="(item, index) in prisonerDetailRows"
+          :key="`id-dialog-${ index + Math.random() }`">
+          <el-col
+            :span="12"
+            v-for="(children, i) in item"
+            :key="`id-dialog-child-${ i + Math.random() }`">
+            <label for="">{{ children.label }}：</label>
+            <span v-if=" children['prop'] === 'gender' ">{{ prisoner.gender | gender }}</span>
+            <span v-else>{{ prisoner[children['prop']] }}</span>
+          </el-col>
+        </el-row>
+      </template>
+      <m-form
+        v-else
+        ref="blackListForm"
+        :items="dialogContent['items']"
+        @submit="handleBlackListReason"
+        @cancel="visible = false" />
     </el-dialog>
   </el-row>
 </template>
@@ -156,72 +98,198 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
+import prisons from '@/common/constants/prisons'
+
+const prisonerDetailRows = [
+  [
+    {
+      label: '姓名',
+      prop: 'name'
+    },
+    {
+      label: '罪名',
+      prop: 'crimes'
+    }
+  ],
+  [
+    {
+      label: '罪犯编号',
+      prop: 'prisonerNumber'
+    },
+    {
+      label: '监区',
+      prop: 'prisonArea'
+    }
+  ],
+  [
+    {
+      label: '性别',
+      prop: 'gender'
+    },
+    {
+      label: '关系',
+      prop: 'relationship'
+    }
+  ]
+]
+
+const dialogTypes = {
+  // 罪犯详情
+  DETAIL: 'detail',
+  // 黑名单
+  BLACKLIST: 'blacklist'
+}
+
 export default {
   data() {
+    const { options, belong } = prisons.PRISONAREA
+    const isBlacklistOptions = [
+      {
+        label: '是',
+        value: 1
+      },
+      {
+        label: '否',
+        value: 0
+      }
+    ]
     return {
       searchItems: {
-        name: { type: 'input', label: '家属姓名' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        isBlacklist: { type: 'select', label: '黑名单', options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        },
+        isBlacklist: {
+          type: 'select',
+          label: '黑名单',
+          options: isBlacklistOptions
+        }
       },
-      dialogTableVisible: false,
       prisoner: {},
-      blackTableShow: false,
-      blackTable: {
-        blackListReason: ''
-      },
-      rule: {
-        blackListReason: [{ required: true, message: '请填写加入黑名单的原因' }, { validator: validator.lengthRange, max: 200 }]
-      },
       family: {},
-      index: ''
+      // 表格列
+      tableCols: [
+        {
+          label: '家属姓名',
+          prop: 'name'
+        },
+        {
+          label: '身份证信息',
+          slotName: 'idCard'
+        },
+        {
+          label: '黑名单原因',
+          prop: 'reason',
+          showOverflowtooltip: true
+        },
+        {
+          label: '对应罪犯',
+          slotName: 'prisoners'
+        },
+        {
+          label: '操作',
+          slotName: 'operate'
+        }
+      ],
+      // 罪犯详情信息行
+      prisonerDetailRows,
+      operationType: '',
+      visible: false,
+      dialogTypes
     }
   },
   computed: {
-    ...mapState(['families'])
+    ...mapState(['families']),
+    dialogContent() {
+      let title,
+        items = {},
+        formButton = { buttons: [] }
+      switch(this.operationType) {
+        case 'detail':
+          title = '囚犯信息'
+          break
+        case 'blacklist':
+          title = '加入黑名单'
+          formButton.buttons = [
+            {
+              add: 'add',
+              text: '确认'
+            },
+            {
+              cancel: 'cancel',
+              type: 'danger'
+            }
+          ]
+          items = Object.assign({},{
+            blackListReason: {
+              type: 'textarea',
+              noLabel: true,
+              placeholder: '请输入加入黑名单理由',
+              autosize: { minRows: 5 },
+              rules: ['required', 'lengthRange-200'],
+              label: '加入黑名单的原因'
+            }
+          }, formButton)
+          break
+        default:
+          break
+      }
+      return {
+        title,
+        items
+      }
+    }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getFamilies', 'addFamilyBlacklist', 'removeFamilyBlacklist']),
+    ...mapActions([
+      'getFamilies',
+      'addFamilyBlacklist',
+      'removeFamilyBlacklist'
+    ]),
     getDatas() {
-      this.getFamilies({ ...this.filter, ...this.pagination })
+      this.getFamilies({
+        ...this.filter,
+        ...this.pagination
+      })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
     getFamilyDetail(e) {
-      this.$router.push({ path: `/family/detail/${ e }` })
+      this.$router.push({
+        path: `/family/detail/${ e }`
+      })
     },
     showPrisonerDetail(prisoner) {
       this.prisoner = prisoner
-      this.dialogTableVisible = true
+      this.visible = true
+      this.operationType = this.dialogTypes.DETAIL
     },
-    showBlackList(e, index) {
+    showBlackList(e) {
       this.family = Object.assign({}, e)
-      this.blackTableShow = true
-      this.index = index
+      this.visible = true
+      this.operationType = this.dialogTypes.BLACKLIST
     },
-    closeBlackTable() {
-      this.$refs.blackTableForm.resetFields()
-    },
-    handleBlackListReason() {
-      this.$refs['blackTableForm'].validate(valid => {
-        if (valid) {
-          let params = new FormData()
-          params.append('familyId', this.family.id)
-          params.append('reason', this.blackTable.blackListReason)
-          this.addFamilyBlacklist(params).then(res => {
-            if (!res) return
-            this.families.contents[this.index].reason = this.blackTable.blackListReason
-            this.families.contents[this.index].isBlacklist = 1
-            this.blackTableShow = false
-          })
-        }
+    handleBlackListReason(val) {
+      let params = new FormData()
+      params.append('familyId', this.family.id)
+      params.append('reason', val.blackListReason)
+      this.addFamilyBlacklist(params).then(res => {
+        if (!res) return
+        this.onSearch()
+        this.handleCloseDialog()
       })
     },
-    removeBlackList(e, index) {
+    removeBlackList(e) {
       this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -231,10 +299,12 @@ export default {
         params.append('familyId', e.id)
         this.removeFamilyBlacklist(params).then(res => {
           if (!res) return
-          this.families.contents[index].reason = ''
-          this.families.contents[index].isBlacklist = 0
+          this.onSearch()
         })
       }).catch(() => {})
+    },
+    handleCloseDialog() {
+      this.$refs.blackListForm && this.$refs.blackListForm.onCancel()
     }
   }
 }

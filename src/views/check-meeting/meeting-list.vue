@@ -5,8 +5,7 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportMettings"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       ref="search"
@@ -16,117 +15,70 @@
       <el-tabs
         v-model="tabs"
         type="card">
-        <el-tab-pane
-          label="会见申请"
-          name="first" />
-        <el-tab-pane
-          label="未授权"
-          name="PENDING" />
+        <template v-for="(tab, index) in tabsItems">
+          <el-tab-pane
+            :key="index"
+            :label="tab.label"
+            :name="tab.name" />
+        </template>  
       </el-tabs>
-      <el-table
-        ref="meetingTable"
-        :data="meetings.contents"
+      <m-table-new
         stripe
-        style="width: 100%"
-        @sort-change="sortChange">
-        <el-table-column
-          v-if="hasAllPrisonQueryAuth"
-          prop="jailName" 
-          label="监狱名称"
-        />
-        <el-table-column
-          prop="prisonerNumber"
-          label="罪犯编号" />
-        <el-table-column
-          prop="prisonArea"
-          label="监区"
-          :sortable="'custom'" />
-        <el-table-column
-          label="申请时间"
-          width="150px"
-        >
-          <template slot-scope="scope">
-            <span >{{ scope.row.createdAt }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="会见时间"
-          :sortable="'custom'"
-          width="150px"
-          prop="meetingTime">
-          <template slot-scope="scope">
-            <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="罪犯姓名"
-          prop="prisonerName" />
-        <el-table-column
-          label="家属"
-        >
-          <template slot-scope="scope">
-            <div v-if="scope.row.families && scope.row.families.length">
-              <el-button
-                type="text"
-                size="small"
-                v-for="family in scope.row.families"
-                :key="family.familyId"
-                style="margin-left: 0px; margin-right: 8px;"
-                @click="showFamilyDetail(family.familyId, scope.row.id)">
-                {{ family.familyName }}
-              </el-button>
-            </div>
+        :data="meetings.contents"
+        @sort-change="sortChange"
+        :cols="tableCols" >
+        <template
+          slot-scope="scope"
+          slot="meetingTime">
+          <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="families">
+          <div v-if="scope.row.filterFamilies && scope.row.filterFamilies.length">
             <el-button
               type="text"
               size="small"
-              v-else
+              v-for="family in scope.row.filterFamilies"
+              :key="family.familyId"
               style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(scope.row.familyId, scope.row.id)">
-              {{ scope.row.name }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          class-name="orange"
-          width="110px"
-          label="申请状态">
-          <template slot-scope="scope">
-            <span v-if="!scope.row.content">
-              <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
-              <template v-else>{{ scope.row.status | applyStatus }}</template>
-            </span>
-            <el-tooltip
-              v-else
-              :content="scope.row.content"
-              placement="top">
-              <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
-              <span v-else>{{ scope.row.status | applyStatus }}</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="!hasAllPrisonQueryAuth"
-          label="操作"
-          align="center"
-          width="160px">
-          <template slot-scope="scope">
-            <el-button
-              v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
-              size="mini"
-              @click="handleAuthorization(scope.row)">授权</el-button>
-            <el-button
-              v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
-              size="mini"
-              @click="handleWithdraw(scope.row)">撤回</el-button>
-            <el-button
-              v-if="scope.row.status != 'PENDING'"
-              type="text"
-              size="mini"
-              class="button-detail"
-              @click="onDetail(scope.row)">详情</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+              @click="showFamilyDetail(family.familyId, scope.row.id)">{{ family.familyName }}</el-button>
+          </div>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="content">
+          <span v-if="!scope.row.content">
+            <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
+            <template v-else>{{ scope.row.status | applyStatus }}</template>
+          </span>
+          <el-tooltip
+            v-else
+            :content="scope.row.content"
+            placement="top" >
+            <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
+            <span v-else>{{ scope.row.status | applyStatus }}</span>
+          </el-tooltip>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="operate">
+          <el-button
+            v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
+            size="mini"
+            @click="handleAuthorization(scope.row)">授权</el-button>
+          <el-button
+            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
+            size="mini"
+            @click="handleWithdraw(scope.row)">撤回</el-button>
+          <el-button
+            v-if="scope.row.status != 'PENDING'"
+            type="text"
+            size="mini"
+            class="button-detail"
+            @click="onDetail(scope.row)">详情</el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -141,31 +93,12 @@
       <div
         v-if="!show.agree && !show.disagree"
         class="button-box">
-        <el-button
-          plain
-          @click="show.agree = true; buttonLoading = false">同意</el-button>
-        <el-button
-          plain
-          @click="show.disagree = true; buttonLoading = false">不同意</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
+        <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
       <div
         v-if="show.agree"
         class="button-box">
-        <el-button
-          plain
-          :loading="buttonLoading"
-          @click="onAuthorization('PASSED')">确定申请通过？</el-button>
-        <el-button
-          plain
-          @click="show.agree=false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
+        <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
       <div
         v-if="show.disagree"
@@ -178,31 +111,13 @@
             :label="remark"
             :key="index"/>
         </el-select>
-        <el-form
+        <m-form
           v-if="remarks === '其他'"
-          :model="refuseForm"
-          :rules="rule"
+          class="withdraw-box"
           ref="refuseForm"
-          class="withdraw-box">
-          <el-form-item prop="refuseRemark">
-            <el-input
-              type="textarea"
-              placeholder="请输入驳回原因..."
-              :autosize="{ minRows: 5 }"
-              v-model="refuseForm.refuseRemark"/>
-          </el-form-item>
-        </el-form>
-        <el-button
-          plain
-          :loading="buttonLoading"
-          @click="onAuthorization('DENIED')">提交</el-button>
-        <el-button
-          plain
-          @click="closeAuthorize('back')">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
+          :items="authorizeFormItems"
+          @submit="onAuthorization('DENIED', $event)" />
+        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
       </div>
     </el-dialog>
     <el-dialog
@@ -211,29 +126,12 @@
       class="authorize-dialog"
       title="撤回"
       width="530px">
-      <el-form
-        :model="withdraw"
-        :rules="rule"
-        ref="withdrawForm">
-        <el-form-item prop="remarks">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 6 }"
-            placeholder="请输入撤回理由"
-            v-model="withdraw.remarks" />
-        </el-form-item>
-      </el-form>
-      <el-row :gutter="0">
-        <el-button
-          class="button-add"
-          size="mini"
-          type="danger"
-          @click="show.withdraw = false">取消</el-button>
-        <el-button
-          class="button-add"
-          size="mini"
-          @click="onWithdraw">确定</el-button>
-      </el-row>
+      <m-form
+        ref="dialogForm"
+        class="withdraw-form"
+        :items="withdrawFormItems"
+        @submit="onWithdraw"
+        @cancel=" show.withdraw = false " />
     </el-dialog>
     <el-dialog
       :visible.sync="toShow.id ? true : false"
@@ -241,71 +139,47 @@
       width="530px"
       class="authorize-dialog"
       @close="onCloseShow">
-      <div class="flex-dialog">
-        <div style="width: 100%;"><label>与囚犯关系：</label><span>{{ toShow.relationship }}</span></div>
-        <div style="width: 50%;"><label>预约时间：</label><span>{{ toShow.meetingTime }}</span></div>
-        <div style="width: 50%;"><label>终端号：</label><span>{{ toShow.terminalNumber }}</span></div>
-        <div style="width: 50%;"><label>审核人账号：</label><span>{{ toShow.auditUserName }}</span></div>
-        <div style="width: 50%;"><label>审核人姓名：</label><span>{{ toShow.auditRealName }}</span></div>
-        <div style="width: 50%;"><label>审核时间：</label><span>{{ toShow.auditAt | Date }}</span></div>
-        <div style="width: 50%;"><label>审核状态：</label><span>{{ toShow.status | applyStatus }}</span></div>
-        <div style="width: 50%;"><label>会见时长：</label><span>{{ toShow.duration | time }}</span></div>
-        <div
-          v-if="toShow.status === 'DENIED'"
-          style="width: 100%;"><label>拒绝原因：</label><span>{{ toShow.content }}</span></div>
-      </div>
+      <family-to-show
+        :elItems="familyShows"
+        :showData="toShow">
+        <template
+          slot-scope="{ toShow }"
+          slot="auditAt">{{ toShow.auditAt | Date }}</template>
+        <template
+          slot-scope="{ toShow }"
+          slot="status">{{ toShow.status | applyStatus }}</template>
+        <template
+          slot-scope="{ toShow }"
+          slot="duration">{{ toShow.duration | time }}</template>
+      </family-to-show>
     </el-dialog>
     <el-dialog
       title="家属信息"
+      class="authorize-dialog"
       :visible.sync="show.familiesDetialInform"
       @close="closeFamilyDetail">
-      <el-row :gutter="0">
-        <el-col :span="12">
-          <el-col :span="24">
-            <label for="">姓名：</label>
-            <span>{{ family.familyName }}</span>
-          </el-col>
-          <el-col :span="24">
-            <label for="">关系：</label>
-            <span>{{ family.relationship }}</span>
-          </el-col>
-        </el-col>
-      </el-row>
-      <el-row
-        class="row-flex"
-        :gutter="20"
-        justify="space-between"
-        type="flex">
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证正面：</label>
-          <m-img-viewer
-            v-if="family.familyIdCardFront"
-            :url="family.familyIdCardFront"
+      <family-detial-information
+        :elItems="familyDetailInformationItems"
+        :detailData="family">
+        <m-img-viewer
+            slot="familyIdCardFront"
+            slot-scope="{ scope }"
+            v-if="scope.familyIdCardFront"
+            :url="scope.familyIdCardFront"
             title="身份证正面"/>
-        </el-col>
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证背面：</label>
-          <m-img-viewer
-            v-if="family.familyIdCardBack"
-            :url="family.familyIdCardBack"
+        <m-img-viewer
+            slot="familyIdCardBack"
+            slot-scope="{ scope }"
+            v-if="scope.familyIdCardBack"
+            :url="scope.familyIdCardBack"
             title="身份证背面"/>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">关系证明图：</label>
-          <m-img-viewer
-            v-if="family.familyRelationalProofUrl"
-            :url="family.familyRelationalProofUrl"
+        <m-img-viewer
+            slot="familyRelationalProofUrl"
+            slot-scope="{ scope }"
+            v-if="scope.familyRelationalProofUrl"
+            :url="scope.familyRelationalProofUrl"
             title="关系证明图"/>
-        </el-col>
-      </el-row>
+      </family-detial-information>
     </el-dialog>
   </el-row>
 </template>
@@ -314,20 +188,77 @@
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisons from '@/common/constants/prisons'
 
 export default {
   mixins: [prisonFilterCreator],
   data() {
+    // 标签元素
+    const tabsItems = [
+      {
+        label: '会见申请',
+        name: 'first' },
+      {
+        label: '未授权',
+        name: 'PENDING'
+      }
+    ]
+    // 证件照片class
+    const idCardClassName = 'img-idCard'
+    // 授权对话框的返回按钮
+    const goBackButton = {
+      text: '返回',
+      attrs: { plain: true }
+    }
+    // 授权对话框的关闭按钮
+    const closeButton = {
+      text: '关闭',
+      attrs: {
+               plain: true,
+               type: 'danger'
+             },
+      events: { click: this.onCloseAuthorize }
+    }
+    const { options, belong } = prisons.PRISONAREA
     return {
+      tabsItems,
       tabs: 'PENDING',
       searchItems: {
-        name: { type: 'input', label: '家属姓名' },
-        prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        applicationDate: { type: 'date', label: '会见时间' },
-        auditName: { type: 'input', label: '审核人', miss: true },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.applyStatus, miss: true, value: '' },
-        auditAt: { type: 'date', label: '审核时间', miss: true }
+        name: {
+                type: 'input',
+                label: '家属姓名'
+              },
+        prisonerNumber: {
+                          type: 'input',
+                          label: '罪犯编号'
+                        },
+        prisonArea: {
+                      type: 'select',
+                      label: '监区',
+                      options,
+                      belong
+                    },
+        applicationDate: {
+                           type: 'date',
+                           label: '会见时间'
+                         },
+        auditName: {
+                     type: 'input',
+                     label: '审核人',
+                     miss: true
+                   },
+        status: {
+                  type: 'select',
+                  label: '审核状态',
+                  options: this.$store.state.applyStatus,
+                  miss: true,
+                  value: ''
+                },
+        auditAt: {
+                   type: 'date',
+                   label: '审核时间',
+                   miss: true
+                 }
       },
       show: {
         authorize: false,
@@ -340,26 +271,257 @@ export default {
       toAuthorize: {},
       toShow: {},
       remarks: '您的身份信息错误',
-      withdraw: {},
-      rule: {
-        remarks: [{ required: true, message: '请填写撤回理由', trigger: 'blur' }],
-        refuseRemark: [ { required: true, message: '请填写驳回原因' }, { validator: validator.lengthRange, max: 200 } ]
-      },
-      refuseForm: {},
       family: {},
       sortObj: {},
-      buttonLoading: false
+      buttonLoading: false,
+      familyShows: [],
+      // 撤回对话框表单组件
+      withdrawFormItems: {
+        remarks: {
+          type: 'textarea',
+          autosize: { minRows: 6 },
+          rules: ['required'],
+          noLabel: true,
+          label: '撤回理由' },
+        buttons: [
+          { add: 'add', text: '确定' },
+          { cancel: 'cancel', type: 'danger' } ]
+      },
+      // 授权对话框表单组件
+      authorizeFormItems: {
+        refuseRemark: {
+          type: 'textarea',
+          autosize: { minRows: 5 },
+          rules: ['required', 'lengthRange-200'],
+          noLabel: true,
+          label: '驳回原因' }
+      },
+      // 家属详情信息组件
+      familyDetailInformationItems: [
+        {
+          label: '姓名',
+          prop: 'familyName'
+        },
+        {
+          label: '关系',
+          prop: 'relationship'
+        },
+        {
+          label: '身份证正面',
+          prop: 'familyIdCardFront',
+          definedClass: idCardClassName
+        },
+        {
+          label: '身份证背面',
+          prop: 'familyIdCardBack',
+          definedClass: idCardClassName
+        },
+        {
+          label: '关系证明图',
+          prop: 'familyRelationalProofUrl',
+          definedClass: idCardClassName
+        }
+      ],
+      // 授权不同意情况下的按钮元素
+      showDisagreebuttons: [
+        {
+          text: '提交',
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+          events: { click: this.onDeniedSubmit }
+        },
+        {
+          ...goBackButton,
+          events: { click: this.onDisagreeAuthorizeGoBack } },
+          closeButton
+      ],
+      // 授权按钮元素
+      authorizeButtons: [
+        {
+          text: '同意',
+          attrs: { plain: true },
+          events: { click: this.onAgreeAuthorize }
+        },
+        {
+          text: '不同意',
+          attrs: { plain: true },
+          events: { click: this.onDisagreeAuthorize}
+        },
+        closeButton
+      ],
+      // 授权同意情况下按钮元素
+      showAgreeButtons: [
+        {
+          text: '确定申请通过？',
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+          events: { click: this.onPassedAuthorize }
+        },
+        { ...goBackButton,
+          events: { click: this.onAgreeAuthorizeGoBack } },
+          closeButton
+      ]
+    }
+  },
+  components: {
+    // 操作列-详情组件
+    'family-to-show': {
+      methods: {
+        renderItems(h) {
+          return this.elItems.map(elItem => {
+            const contents = elItem['slotName'] && this.$scopedSlots[elItem['slotName']] ?
+            this.$scopedSlots[elItem['slotName']]({
+              toShow: this.showData}) : this.showData[elItem['prop']]
+            return h('div', {
+              style: elItem.style || { width: '50%' },
+              key: elItem.label + this.showData.id
+            }, [ h('label', elItem.label + '：'), h('span', contents)])
+          })
+        }
+      },
+      render(h) {
+        return h('div', {
+          attrs: {
+            class: 'flex-dialog'
+          }
+        }, this.renderItems(h))
+      },
+      props: {
+        elItems: {
+          type: Array,
+          default: () => []
+        },
+        showData: {
+          type: Object,
+          default: () => ({})
+        }
+      }
+    },
+    // 家属详细信息组件
+    'family-detial-information': {
+      template:
+        `<div>
+          <el-row
+            :gutter="20"
+            v-for="(item, index) in elItems"
+            :key="'id-family-detail-information-item-' + index + Math.random()">
+            <el-col :class="item.definedClass">
+              <label>{{ item.label }}：</label>
+              <template>
+                <slot
+                  :name="item.prop"
+                  :scope="detailData">
+                  <span>{{ detailData[item['prop']] }}</span>
+                </slot>
+              </template>
+            </el-col>
+          </el-row>
+        </div>`,
+      props: {
+        elItems: {
+          type: Array,
+          default: () => []
+        },
+        detailData: {
+          type: Object,
+          default: () => ({})
+        }
+      }
+    },
+    // 多次复用的el-button组件
+    'repetition-el-buttons': {
+      template:
+        `<el-row>
+          <el-button
+            v-bind="button.attrs"
+            v-on="button.events"
+            v-for="(button, index) in buttonItems"
+            :key="'id-repetition-el-button-' + index + Math.random()">
+            {{ button.text }}
+          </el-button>
+        </el-row>`,
+      props: {
+        buttonItems: {
+          type: Array,
+          default: () => []
+        }
+      }
     }
   },
   computed: {
-    ...mapState(['meetings', 'frontRemarks', 'meetingRefresh'])
+    ...mapState([
+      'meetings',
+      'frontRemarks',
+      'meetingRefresh'
+    ]),
+    tableCols() {
+      const basicCols = [
+        {
+          label: '罪犯编号',
+          prop: 'prisonerNumber'
+        },
+        {
+          label: '监区',
+          prop: 'prisonArea'
+        },
+        {
+          label: '申请时间',
+          prop: 'createdAt',
+          width: 150
+        },
+        {
+          label: '会见时间',
+          slotName: 'meetingTime',
+          sortable: 'custom',
+          width: 150
+        },
+        {
+          label: '罪犯姓名',
+          prop: 'prisonerName'
+        },
+        {
+          label: '家属',
+          slotName: 'families'
+        },
+        {
+          label: '申请状态',
+          slotName: 'content',
+          width: 110,
+          className: 'orange'
+        }
+      ],
+        allPrisonQueryAuthLeadingCols = [
+          {
+            label: '监狱名称',
+            prop: 'jailName'
+          }
+        ],
+        noAllPrisonQueryAuthLeadingCols = [
+          {
+            label: '操作',
+            slotName: 'operate',
+            width: 160,
+            align: 'center'
+          }
+        ]
+        if (this.hasAllPrisonQueryAuth) return [
+          ...allPrisonQueryAuthLeadingCols,
+          ...basicCols
+        ]
+        else return [
+          ...basicCols,
+          ...noAllPrisonQueryAuthLeadingCols
+        ]
+    }
   },
   watch: {
     meetingRefresh(val) {
       if (val) {
-        if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) {
-          this.getDatas('meetingRefresh')
-        }
+        if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
       }
     },
     tabs(val) {
@@ -388,23 +550,30 @@ export default {
         else this.show.detail = false
       },
       deep: true
-    },
-    remarks(val) {
-      if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   mounted() {
     this.getDatas('mounted')
   },
   methods: {
-    ...mapActions(['getMeetings', 'getMeetingsAll', 'authorizeMeeting', 'withdrawMeeting', 'getMeetingsFamilyDetail', 'getMeettingsDetail', 'meetingApplyDealing']),
+    ...mapActions([
+      'getMeetings',
+      'getMeetingsAll',
+      'authorizeMeeting',
+      'withdrawMeeting',
+      'getMeetingsFamilyDetail',
+      'getMeettingsDetail',
+      'meetingApplyDealing'
+    ]),
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
-      const params = { ...this.filter, ...this.pagination }
+      const params = {
+        ...this.filter,
+        ...this.pagination
+      }
 
-      if (this.hasAllPrisonQueryAuth) {
-        this.getMeetingsAll(params)
-      } else {
+      if (this.hasAllPrisonQueryAuth) this.getMeetingsAll(params)
+      else {
         this.getMeetings(params).then(res => {
           if (!res) return
           if (this.meetingRefresh) this.meetingApplyDealing()
@@ -412,11 +581,9 @@ export default {
       }
     },
     onSearch() {
-      if (helper.isEmptyObject(this.sortObj)) {
-        this.filter = Object.assign(this.filter, this.sortObj)
-      }
+      if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
       else {
-        this.$refs.meetingTable && this.$refs.meetingTable.clearSort()
+        this.$refs.elTable && this.$refs.elTable.clearSort()
         delete this.filter.sortDirection
         delete this.filter.orderField
       }
@@ -430,14 +597,56 @@ export default {
     },
     handleWithdraw(e) {
       this.toAuthorize = e
-      this.withdraw = {}
       this.show.withdraw = true
     },
     onDetail(e) {
-      let params = { meetingId: e.id }
+      const constFamilyShows = [
+        {
+          label: '与囚犯关系',
+          prop: 'relationship',
+          style: { width: '100%' }
+        },
+        {
+          label: '预约时间',
+          prop: 'meetingTime'
+        },
+        {
+          label: '终端号',
+          prop: 'terminalNumber'
+        },
+        {
+          label: '审核人账号',
+          prop: 'auditUserName'
+        },
+        {
+          label: '审核人姓名',
+          prop: 'auditRealName'
+        },
+        {
+          label: '审核时间',
+          slotName: 'auditAt'
+        },
+        {
+          label: '审核状态',
+          slotName: 'status'
+        },
+        {
+          label: '会见时长',
+          slotName: 'duration'
+        },
+        {
+          label: '拒绝原因',
+          prop: 'content',
+          style: { width: '100%' }
+        }
+      ],
+      params = { meetingId: e.id }
       this.getMeettingsDetail(params).then(res => {
         if (!res) return
         this.toShow = Object.assign({}, res)
+        this.familyShows = this.toShow.status !== 'DENIED'
+          ? constFamilyShows.slice(0, constFamilyShows.length - 1)
+          : constFamilyShows
       })
     },
     onCloseShow() {
@@ -449,24 +658,48 @@ export default {
       this.show.familiesDetialInform = false
       if (this.meetingRefresh) this.getDatas('closeFamilyDetail')
     },
-    onAuthorization(e) {
+    // 授权不同意情况下的提交操作
+    onDeniedSubmit() {
+      if (this.$refs.refuseForm) this.$refs.refuseForm.onSubmit()
+      else this.onAuthorization('DENIED')
+    },
+    // 授权对话框的关闭操作
+    onCloseAuthorize() {
+      this.show.authorize = false
+    },
+    // 授权对话框的同意操作
+    onAgreeAuthorize() {
+      this.show.agree = true
+      this.buttonLoading = false
+    },
+    // 授权对话框的不同意操作
+    onDisagreeAuthorize() {
+      this.show.disagree = true
+      this.buttonLoading = false
+    },
+    // 授权对话框同意情况下的确认操作
+    onPassedAuthorize() {
+      this.onAuthorization('PASSED')
+    },
+    // 授权对话框同意情况下的返回操作
+    onAgreeAuthorizeGoBack() {
+      this.show.agree=false
+    },
+    // 授权对话框不同意情况下的返回操作
+    onDisagreeAuthorizeGoBack() {
+      this.closeAuthorize('back')
+    },
+    onAuthorization(e, args) {
       let params = { id: this.toAuthorize.id, status: e }
       if (e === 'DENIED') {
         if (this.remarks === '其他') {
-          this.$refs['refuseForm'].validate(valid => {
-            if (valid) {
-              params.remarks = this.refuseForm.refuseRemark
-            }
-          })
+          const { refuseRemark } = args
+          params.remarks = refuseRemark
         }
-        else {
-          params.remarks = this.remarks
-        }
+        else params.remarks = this.remarks
         if (params.remarks) this.handleSubmit(params)
       }
-      else {
-        this.handleSubmit(params)
-      }
+      else this.handleSubmit(params)
     },
     handleSubmit(params) {
       this.buttonLoading = true
@@ -478,34 +711,31 @@ export default {
         this.getDatas('handleSubmit')
       })
     },
-    onWithdraw() {
-      this.$refs['withdrawForm'].validate(valid => {
-        if (valid) {
-          let params = { id: this.toAuthorize.id, status: 'DENIED', remarks: this.withdraw.remarks }
-          this.withdrawMeeting(params).then(res => {
-            if (!res) return
-            this.closeWithdraw(true)
-            this.toAuthorize = {}
-            this.getDatas('onWithdraw')
-          })
-        }
+    onWithdraw(arg) {
+      const { remarks } = arg
+      const params = {
+        id: this.toAuthorize.id,
+        status: 'DENIED',
+        remarks
+      }
+      this.withdrawMeeting(params).then(res => {
+        if (!res) return
+        this.closeWithdraw(true)
+        this.toAuthorize = {}
+        this.getDatas('onWithdraw')
       })
     },
     closeAuthorize(e) {
       if (e === 'back') this.show.disagree = false
       else {
         this.show.authorize = false
-        if (this.meetingRefresh) {
-          this.getDatas('closeAuthorize')
-        }
+        if (this.meetingRefresh) this.getDatas('closeAuthorize')
       }
       this.remarks = '您的身份信息错误'
-      this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
     },
     closeWithdraw(e) {
-      this.show.withdraw = false
+      this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
       if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
-      this.$refs['withdrawForm'].resetFields()
     },
     showFamilyDetail(...args) {
       const [ familyId, meetingId ] = args
@@ -552,16 +782,17 @@ export default {
 .flex-dialog
   display: flex;
   flex-wrap: wrap;
-  label
-    display: inline-block;
-    width: 90px;
-    text-align: right;
+  >>> label
+        display: inline-block;
+        width: 90px;
+        text-align: right;
 .withdraw-box
   margin-bottom: 20px;
-.row-flex
-  flex-wrap: wrap;
 img
   display: block;
 .img-idCard
   min-width: 350px;
+.withdraw-form
+ >>> .button-box
+       padding-bottom: 0px 
 </style>

@@ -1,5 +1,7 @@
 import Moment from 'moment'
 import switches from '@/filters/modules/switches'
+import urls from '@/service/urls'
+
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -198,4 +200,99 @@ export function formatTime(
   }
 
   return format
+}
+
+/**
+ * 处理图片格式
+ * @param { Array || String } images 图片数组 || 图片字符串
+ * @param { Boolean } isIdentify 是否有字段来标识是哪种类型的图片
+ * @param { String } cutSymbol images是字符串的时候的切割符号
+ * @param { Boolean } isPublic isIdentify是有标识符的时候 公共服务图片的标识
+*/
+export const filterImages = ({ images, isIdentify = false, cutSymbol = ';', isPublic } = {}) => {
+  if (!images || !images.length) return
+  let imageUrls = images
+  if (Object.prototype.toString.call(images) === '[object String]') {
+    imageUrls = new Set(images.split(cutSymbol))
+    if (imageUrls.has('')) imageUrls.delete('')
+  }
+  if (!isIdentify) {
+    return [ ...imageUrls ].map(url => {
+      if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
+      else return `${ urls.publicApiHost }/files/${ url }`
+    })
+  }
+  if (isIdentify) {
+    if (isPublic) return [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
+    else return [ ...imageUrls ]
+  }
+}
+
+
+/**
+ * 判断是否有值
+ * @param val 待检测值
+ * @return 检测结果
+ *
+ * @example
+ *
+ * hasValue(0) // => true
+ * hasValue({}) // => true
+ * hasValue(null) // => false
+ * hasValue("") // => false
+ */
+export const hasValue = val => (val === 0 ? true : Boolean(val))
+
+/**
+ * 筛选对象中符合条件的项
+ * @param obj 目标对象
+ * @param fn 筛选函数，接受三个参数（val, k, obj）
+ *   @param val 属性值
+ *   @param k 属性名
+ *   @param obj 目标对象
+ * @return 筛选函数执行结果为 truthy 的项组成的对象
+ *
+ * @example
+ *
+ * filterObject({ a: '', b: 1, c: true, d: 'aa' }, val => typeof val === 'number')
+ * // => { b: 1 }
+ */
+export function filterObject(obj, predicate) {
+  obj = new Object(obj)
+
+  const result = {}
+
+  Object.keys(obj).forEach(k => {
+    if (predicate(obj[k], k, obj)) {
+      result[k] = obj[k]
+    }
+  })
+
+  return result
+}
+
+/**
+ * 格式化金额
+ * @param n 金额
+ * @param decimalDigit 保留几位小数，默认保留两位小数
+ * @return 千分字符串
+ *
+ * @example
+ *
+ * toCurrencyString(-12345678.789, 5) // => '-12,345,678.78900'
+ * toCurrencyString('12345678.789') // => '12,345,678.79'
+ */
+export function toCurrencyString(amount, decimalDigit = 2) {
+  const n = parseFloat(amount)
+
+  if (isNaN(n)) {
+    return n
+  }
+  else {
+    return n
+      .toFixed(decimalDigit)
+      .replace(/^(-)?(\d+)(\.\d+)*$/, (m, $1, $2, $3) => {
+        return ($1 || '') + Number($2).toLocaleString() + ($3 || '')
+      })
+  }
 }

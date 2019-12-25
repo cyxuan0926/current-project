@@ -23,13 +23,15 @@
         style="width: 100%">
         <el-table-column
           prop="username"
-          min-width="180px"
+          min-width="85"
           label="用户名" />
         <el-table-column
           prop="roles"
+          min-width="85"
           label="角色" />
         <el-table-column
           prop="jailName"
+          min-width="110"
           label="监狱名称" />
         <el-table-column
           prop="prisonAreas"
@@ -37,13 +39,14 @@
           label="监区" />
         <el-table-column
           prop="policeNumber"
+          min-width="90"
           label="狱警号" />
         <el-table-column
           prop="realName"
           label="真实姓名" />
         <el-table-column
           v-if="user.role === '-1'"
-          width="210px"
+          min-width="130"
           label="操作">
           <!-- v-if="routeRole != scope.row.role && scope.row.role !== 0" -->
           <template

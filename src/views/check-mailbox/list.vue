@@ -11,8 +11,7 @@
     <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
       path="/download/exportMailboxes"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       @search="onSearch" />
@@ -28,6 +27,10 @@
           slot-scope="scope"
           v-if="scope.row.imageUrls.length">
           <m-img-viewer
+            v-if="!hasOnlyAllPrisonQueryAuth"
+            :publicUrl="scope.row.imageUrls[0]" />
+          <m-img-viewer
+            v-else
             v-for=" (url,index) of scope.row.imageUrls"
             v-show="!index"
             :key="url"
@@ -141,22 +144,52 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { wardenMailboxExcelConfig } from '@/common/excel-config'
+// import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
   mixins: [prisonFilterCreator],
   data() {
+    const isReplyOptions = [
+      {
+        value: 1,
+        label: '是'
+      },
+      {
+        value: 0,
+        label: '否'
+      }
+    ]
     return {
       searchItems: {
-        time: { type: 'datetimerange', start: 'startTime', end: 'endTime' },
-        type: { type: 'select', label: '信件类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
-        isReply: { type: 'select', label: '是否回复', options: [{ value: 1, label: '是' }, { value: 0, label: '否' }] },
-        name: { type: 'input', label: '用户名' }
+        time: {
+          type: 'datetimerange',
+          start: 'startTime',
+          end: 'endTime'
+        },
+        type: {
+          type: 'select',
+          label: '信件类别',
+          options: [],
+          getting: true,
+          belong: {
+            value: 'id',
+            label: 'name'
+          }
+        },
+        isReply: {
+          type: 'select',
+          label: '是否回复',
+          options: isReplyOptions
+        },
+        name: {
+          type: 'input',
+          label: '用户名'
+        }
       },
       visible: false,
       replying: false,
       mailbox: {},
       answer: '',
-      wardenMailboxExcelConfig,
+      // wardenMailboxExcelConfig,
       toolbar: {
         prev: 1,
         next: 1
@@ -164,7 +197,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['mailboxes', 'mailboxTypes']),
+    ...mapState([
+      'mailboxes',
+      'mailboxTypes'
+    ]),
     tableCols() {
       const commonCols = [
         {
@@ -219,8 +255,15 @@ export default {
           width: '240px'
         }
       ]
-      let cols = [ ...commonCols, ...onlyWardenEndCols ]
-      if (this.hasOnlyAllPrisonQueryAuth) cols = [ ...onlyHasAllPrisonQueryAuthHeadersCols, ...commonCols, ...onlyHasAllPrisonQueryAuthEndCols ]
+      let cols = [
+        ...commonCols,
+        ...onlyWardenEndCols
+      ]
+      if (this.hasOnlyAllPrisonQueryAuth) cols = [
+        ...onlyHasAllPrisonQueryAuthHeadersCols,
+        ...commonCols,
+        ...onlyHasAllPrisonQueryAuthEndCols
+      ]
       return cols
     },
     disabled() {
@@ -241,9 +284,18 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getMailboxes', 'getMailboxTypes', 'deleteMailbox', 'replyMailbox', 'getMailboxDetail']),
+    ...mapActions([
+      'getMailboxes',
+      'getMailboxTypes',
+      'deleteMailbox',
+      'replyMailbox',
+      'getMailboxDetail'
+    ]),
     getDatas() {
-      this.getMailboxes({ ...this.filter, ...this.pagination })
+      this.getMailboxes({
+        ...this.filter,
+        ...this.pagination
+      })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -257,7 +309,10 @@ export default {
       }, 300)
     },
     onReply(e) {
-      let params = { contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'), id: e }
+      const params = {
+        contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'),
+        id: e
+      }
       this.replying = true
       this.replyMailbox(params).then(res => {
         this.replying = false
@@ -276,15 +331,14 @@ export default {
       }).then(() => {
         this.deleteMailbox({ id: id }).then(res => {
           if (!res) return
-          if (this.mailboxes.contents.length === 1) {
-            this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
-          }
+          if (this.mailboxes.contents.length === 1) this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
           else this.getDatas()
         })
       }).catch(() => {})
     },
     getDetail(e) {
-      this.getMailboxDetail({ id: e.id }).then(res => {
+      const { id } = e
+      this.getMailboxDetail({ id }).then(res => {
         if (!res) return
         this.mailbox = res
         this.answer = ''

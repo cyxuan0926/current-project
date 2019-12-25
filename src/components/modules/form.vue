@@ -28,6 +28,11 @@
       class="button-box">
       <template v-for="(button, index) in items.buttons">
         <el-button
+          v-if="button.attrs"
+          :key="index"
+          v-bind="button.attrs"
+          v-on="button.events">{{ button.text }}</el-button>
+        <el-button
           v-if="button === 'prev' || button.prev"
           :key="index"
           size="small"
@@ -77,15 +82,11 @@ export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     },
     values: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     }
   },
   watch: {
@@ -122,9 +123,7 @@ export default {
     },
     onSubmit(e) {
       this.$refs.form.validate(valid => {
-        if (valid) {
-          this.$emit('submit', helper.trimObject(this.fields))
-        }
+        if (valid) this.$emit('submit', helper.trimObject(this.fields))
       })
     },
     onCancel() {

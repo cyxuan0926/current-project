@@ -286,18 +286,46 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisons from '@/common/constants/prisons'
 
 export default {
   mixins: [prisonFilterCreator],
   data() {
+    const { options, belong } = prisons.PRISONAREA
     return {
       searchItems: {
-        name: { type: 'input', label: '家属姓名' },
-        prisonerNumber: { type: 'input', label: '罪犯编号' },
-        prisonArea: { type: 'select', label: '监区', options: (JSON.parse(localStorage.getItem('user')).prisonConfigList || []), belong: { value: 'prisonConfigName', label: 'prisonConfigName' } },
-        auditName: { type: 'input', label: '审核人', miss: true },
-        status: { type: 'select', label: '审核状态', options: this.$store.state.registStatus, miss: true, no: ['DENIED'], value: '' },
-        auditAt: { type: 'date', label: '审核时间', miss: true }
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonerNumber: {
+          type: 'input',
+          label: '罪犯编号'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        },
+        auditName: {
+          type: 'input',
+          label: '审核人',
+          miss: true
+        },
+        status: {
+          type: 'select',
+          label: '审核状态',
+          options: this.$store.state.registStatus,
+          miss: true,
+          no: ['DENIED'],
+          value: ''
+        },
+        auditAt: {
+          type: 'date',
+          label: '审核时间',
+          miss: true
+        }
       },
       toAuthorize: {},
       show: {
@@ -313,8 +341,18 @@ export default {
         anotherRemarks: ''
       },
       withdrawRule: {
-        anotherRemarks: [{ required: true, message: '请填写驳回原因' }],
-        withdrawReason: [{ required: true, message: '请填写撤回理由' }]
+        anotherRemarks: [
+          {
+            required: true,
+            message: '请填写驳回原因'
+          }
+        ],
+        withdrawReason: [
+          {
+            required: true,
+            message: '请填写撤回理由'
+          }
+        ]
       },
       remarks: '身份信息错误',
       btnDisable: false, // 按钮禁用与启用
@@ -348,10 +386,17 @@ export default {
     this.getDatas()
   },
   computed: {
-    ...mapState(['registrations', 'registRemarks', 'notification'])
+    ...mapState([
+      'registrations',
+      'registRemarks',
+      'notification'])
   },
   methods: {
-    ...mapActions(['getRegistrations', 'getRegistrationsAll', 'authorizeRegistrations', 'getNotification']),
+    ...mapActions([
+      'getRegistrations',
+      'getRegistrationsAll',
+      'authorizeRegistrations',
+      'getNotification']),
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
 
