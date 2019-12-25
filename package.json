@@ -15,9 +15,9 @@
     "build:prod": "cross-env BUILD_ENV=production node build/build.js",
     "build:auth": "cross-env BUILD_ENV=auth node build/build.js",
     "commit": "git-cz",
-    "deploy:test": "npx deployment-cli deploy --config deploy/deploy.test.conf.js",
-    "deploy:prod": "npx deployment-cli deploy --config deploy/deploy.prod.conf.js",
-    "deploy:auth": "npx deployment-cli deploy --config deploy/deploy.auth.conf.js"
+    "deploy:test": "npx deployment-cli --config deploy/deploy.test.conf.js",
+    "deploy:prod": "npx deployment-cli --config deploy/deploy.prod.conf.js",
+    "deploy:auth": "npx deployment-cli --config deploy/deploy.auth.conf.js"
   },
   "config": {
     "commitizen": {
