@@ -12,11 +12,13 @@ let switches = {
     { value: 'f', label: '女' }
   ],
   role: [
-    { value: 0, label: '超级管理员' },
-    { value: 1, label: '审核人员' },
-    { value: 2, label: '商品用户' },
-    { value: 3, label: '信息管理人员' },
-    { value: 4, label: '监狱管理员' }
+    { role: '0', label: '狱务通管理员' },
+    { role: '1', label: '审核人员' },
+    { role: '2', label: '商品用户' },
+    { role: '3', label: '信息管理人员' },
+    { role: '4', label: '监狱管理员' },
+    { role: '5', label: '监狱作品审核人员' },
+    { role: '6', label: '家属作品审核人员' }
   ],
   goodsCategory: [
     { value: 1, label: '洗化日用' },

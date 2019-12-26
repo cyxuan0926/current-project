@@ -1,4 +1,5 @@
 import Pagination from './modules/pagination'
+import PaginationNew from './modules/pagination-new'
 import Search from './modules/search'
 import QuillEditor from './modules/quill-editor'
 import UploadImg from './modules/upload-img'
@@ -14,6 +15,9 @@ import audio from './modules/audio'
 import excelExport from './modules/excel-export'
 import excelDownload from './modules/excel-download'
 import table from './modules/table'
+import TableNew from './modules/table-new'
+import Filter from './modules/filter'
+import Charts from './modules/charts'
 import excelUpload from './modules/excel-upload'
 export default {
   audio,
@@ -22,6 +26,7 @@ export default {
   monthRangeSelector,
   monthRangePicker,
   Pagination,
+  PaginationNew,
   QuillEditor,
   Search,
   timeRangeSelector,
@@ -32,5 +37,8 @@ export default {
   excelExport,
   excelDownload,
   table,
+  TableNew,
+  Filter,
+  Charts,
   excelUpload
 }

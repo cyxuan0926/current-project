@@ -1,7 +1,7 @@
 <template>
   <el-table
     :data="contents"
-    border
+    stripe
     style="width: 100%">
     <el-table-column
       prop="phone"

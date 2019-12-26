@@ -1,4 +1,4 @@
-import { get, postForm, put } from '../request'
+import { get, postForm, put, post } from '../request'
 
 export function login({ username, password }) {
   return postForm('/oauth/token', {
@@ -36,4 +36,28 @@ export function estimateUsername({ username }) {
 
 export function getAllTenants() {
   return get('/tenants')
+}
+
+export function getSecurityQuestions() {
+  return get('/security-questions')
+}
+
+export function getUserSecurityQuestions({ username }) {
+  return get('/users/security-question-answers/by-username', { username })
+}
+
+export function getUserSecurityQuestionAnswers() {
+  return get('/users/security-question-answers/my')
+}
+
+export function setUserSecurityQuestionAnswers(questionAnswers) {
+  return put('/users/security-question-answers/my', questionAnswers)
+}
+
+export function verificateSecurityQuestionAnswers({ username, questionAnswers }) {
+  return post('/users/security-question-answers/verification', { username, questionAnswers })
+}
+
+export function modifyMyPasswordByToken({ token, newPassword }) {
+  return put('/users/password/by-token', { token, newPassword })
 }

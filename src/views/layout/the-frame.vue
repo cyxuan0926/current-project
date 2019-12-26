@@ -19,7 +19,9 @@
           <transition
             name="router-fade"
             mode="out-in">
-            <router-view />
+            <keep-alive :include="$store.state.global.componentsKeepAlive">
+              <router-view />
+            </keep-alive>
           </transition>
         </el-main>
         <el-footer

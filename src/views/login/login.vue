@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <div class="login-container">
-      <h1>狱务通管理平台</h1>
+      <h1>狱务通</h1>
       <div class="login-form">
         <p class="white">请输入您的用户名和密码</p>
         <el-form       
@@ -11,14 +11,14 @@
           @keyup.enter.native="handleLogin">
           <el-form-item prop="username">
             <el-input
-              v-model="formData.username"
+              v-model.trim="formData.username"
               placeholder="用户名">
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
               type="password"
-              v-model="formData.password"
+              v-model.trim="formData.password"
               placeholder="密码">
             </el-input>
           </el-form-item>
@@ -26,6 +26,10 @@
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
+            <el-button
+              type="text"
+              class="white forget-password"
+              @click="handleGoPasswordRetrieve">忘记密码</el-button>  
           </el-form-item>
         </el-form>
         <el-button
@@ -89,6 +93,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setUser']),
+    ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie', 'getWebsocketResult']),
     ...mapActions('account', ['login']),
     handleLogin() {
@@ -104,14 +109,14 @@ export default {
           const res = await this.login({ username, password })
           if(res) {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
-            localStorage.setItem('authorities', JSON.stringify(this.authorities))
+            localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
             localStorage.setItem('publicUserInfo', JSON.stringify(this.publicUserInfo))
             localStorage.setItem('menus', JSON.stringify(this.menus))
             this.setUser(Object.assign({}, this.user, {...helper.transitionRoleId(this.publicUserInfo.userRoles)}))
             localStorage.setItem('user', JSON.stringify(this.user))
 
             const { role, jailId } = this.user
-            if (role === '1') {
+            if ([1, -1].includes(parseInt(role))) {
               this.getWebsocketResult(jailId)
             }
 
@@ -147,6 +152,12 @@ export default {
       this.formData = { username, password: Base64.decode(password) }
       this.isRememberAccount = true
     },
+    handleGoPasswordRetrieve() {
+      const { username } = this.formData
+      this.setFindPasswordUsername(username)
+      localStorage.setItem('findPasswordUsername', JSON.stringify(username))
+      this.$router.push({ path: `/password_retrieve/step_one` })
+    }
     // handleLogin() {
     //   if (this.loginState.loged || this.loginState.loading) return false
     //   this.$refs.form.validate(valid => {
@@ -201,6 +212,13 @@ export default {
 
   /deep/ .el-input {
     width: 100% !important;
+  }
+  .forget-password {
+    margin-left: 61%;
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  .el-checkbox {
+    margin-left: 1px;
   }
 }
 </style>

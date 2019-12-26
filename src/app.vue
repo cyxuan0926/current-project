@@ -6,7 +6,9 @@ import { mapActions } from 'vuex'
 export default {
   mounted() {
     if (localStorage.getItem('user')) {
-      if (JSON.parse(localStorage.getItem('user')).role === '1') {
+      const role = JSON.parse(localStorage.getItem('user')).role
+
+      if ([1, -1].includes(parseInt(role))) {
         this.getWebsocketResult(JSON.parse(localStorage.getItem('user')).jailId)
       }
     }

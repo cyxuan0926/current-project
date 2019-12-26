@@ -16,12 +16,11 @@
     />
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
         :data="prisonAreas.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="jailName"
@@ -154,10 +153,6 @@ export default {
   },
   methods: {
     ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea', 'deletePrisonArea', 'addPrisonArea']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       if (this.user.role !== '4' && this.user.role !== '-1') {
         this.getPrisonAreas({ params: {...this.filter, ...this.pagination }})

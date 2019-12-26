@@ -10,12 +10,11 @@
       @click="onAdd">添加白名单</el-button>
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
         :data="whitemembers.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="phone"
@@ -116,10 +115,6 @@ export default {
   },
   methods: {
     ...mapActions(['getWhitemembers', 'deleteWhitemember', 'checkPhoneWhitemember', 'addWhitemember', 'updateWhitemember']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getWhitemembers({ ...this.filter, ...this.pagination })
     },

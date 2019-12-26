@@ -32,9 +32,12 @@ export default {
   // 上传文件
   uploadFile: (state, uploadResult) => {
     state.uploadResult = uploadResult
-  }
+  },
   // 登陆状态控制
   // setLoginState: (state, { loading = false, loged = false } = {}) => {
   //   state.loginState = { loading, loged }
   // }
+  setComponentsKeepAlive(state, components) {
+    state.componentsKeepAlive = components
+  }
 }

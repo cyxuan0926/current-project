@@ -1,14 +1,15 @@
 <template>
   <el-table
     :data="data"
+    @selection-change="selectionChange"
     class="com-table"
-    @selection-change="handleSelectionChange"
-    border>
+    stripe
+  >
     <template v-for="(col, i) in cols">
       <el-table-column
         v-if="col.slotName"
         :align="col.align"
-        :key="i"
+        :key="i + '1'"
         :type="col.type"
         :prop="col.prop"
         :label="col.label"
@@ -25,9 +26,9 @@
       </el-table-column>
       <el-table-column
         v-else
+        :key="i + '2'"
         :align="col.align"
         :index="col.index"
-        :key="i"
         :type="col.type"
         :prop="col.prop"
         :label="col.label"
@@ -47,11 +48,10 @@ export default {
     },
     cols: {
       type: Array
-    }
-  },
-  methods: {
-    handleSelectionChange(selectionData) {
-      this.$emit('onSelectChange', selectionData)
+    },
+    'selection-change': {
+      type: Function,
+      default: () => () => {}
     }
   }
 }

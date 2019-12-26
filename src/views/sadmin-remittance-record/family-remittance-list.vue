@@ -5,12 +5,11 @@
     <m-excel-download path="/download/exportFamilyRemit" :params="filter"/>
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
         :data="familyRemittanceRecords.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           label="汇款单号"
@@ -93,10 +92,6 @@ export default {
   },
   methods: {
     ...mapActions(['getPrisonAll', 'getFamilyRemittance']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },

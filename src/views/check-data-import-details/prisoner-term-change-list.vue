@@ -9,49 +9,17 @@
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
-      <el-table
-        border
+      <m-table-new
+        stripe
         :data="prisonTerms.contents"
-        style="width: 100%"
-      >
-        <el-table-column
-          label="罪犯姓名"
-          min-width="65"
-          prop="name" />
-        <el-table-column
-          label="罪犯编号"
-          min-width="70"
-          prop="prisonerNumber" />
-        <el-table-column
-          label="监区"
-          min-width="65"
-          prop="prisonArea"/> 
-        <el-table-column
-          label="减刑时间"
-          min-width="110"
-          prop="termStart" />
-        <el-table-column
-          label="变动类型"
-          prop="changetype" />
-        <el-table-column label="减刑变动年/月/日" min-width="110">
-          <template slot-scope="scope">
-            {{ scope.row.changeyear | termChangeYearMonthDay(scope.row.changemonth, scope.row.changeday) }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="变动后刑期止日"
-          min-width="120px"
-          prop="termFinish" />  
-        <el-table-column
-          label="数据导入人员"
-          min-width="95"
-          prop="realName"/>
-        <el-table-column label="数据导入时间" min-width="110">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-      </el-table>
+        :cols="tableCols" >
+        <template slot-scope="scope" slot="changeyear">
+          {{ scope.row.changeyear | termChangeYearMonthDay(scope.row.changemonth, scope.row.changeday) }}
+        </template>
+        <template slot="createdAt" slot-scope="scope">
+          {{ scope.row.createdAt | Date }}
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       :total="prisonTerms.total"
@@ -61,36 +29,27 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import commonTableColsMixins from './mixins/common-table-cols'
 export default {
+  mixins: [commonTableColsMixins],
   data() {
     return {
-      searchItems: {
-        name: { type: 'input', label: '罪犯姓名' },
-        prisonerNumber: { type: 'input', label: '罪犯编号' },
-        operateName: { type: 'input', label: '数据导入人员姓名', noPlaceholder: true },
-        time: { type: 'dateRange', start: 'start', end: 'end', unlinkPanels: true }
+      selfOwnSearchItems: {
+        operateName: {
+          type: 'input',
+          label: '数据导入人员姓名',
+          noPlaceholder: true
+        }
       }
     }
   },
-  computed: {
-    ...mapState(['prisonTerms'])
-  },
   methods: {
-    ...mapActions(['getPrisonTerms']),
     getDatas() {
-      this.getPrisonTerms({ ...this.filter, ...this.pagination })
-    },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
-    onSearch() {
-      this.$refs.pagination.handleCurrentChange(1)
+      this.getPrisonTerms({
+        ...this.filter,
+        ...this.pagination
+      })
     }
-  },
-  mounted () {
-    this.getDatas()
   }
 }
 </script>

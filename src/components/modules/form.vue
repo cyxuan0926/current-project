@@ -17,20 +17,27 @@
           :rule="item.rule"
           :item="item"
           :fields="fields"
-          @resetFieldValue="resetFieldValue"
+          :select-change-event="selectChangeEvent"
+          :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
+      <slot></slot>
     </el-form>
     <div
       v-if="items.buttons && Object.keys(items.buttons).length"
       class="button-box">
       <template v-for="(button, index) in items.buttons">
         <el-button
+          v-if="button.attrs"
+          :key="index"
+          v-bind="button.attrs"
+          v-on="button.events">{{ button.text }}</el-button>
+        <el-button
           v-if="button === 'prev' || button.prev"
           :key="index"
           size="small"
           type="primary"
-          @click="onPrevClick">上一步</el-button>
+          @click="button.func && button.func() || onPrevClick">上一步</el-button>
         <el-button
           v-if="button === 'next' || button.next"
           :key="index"
@@ -75,15 +82,11 @@ export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     },
     values: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     }
   },
   watch: {
@@ -97,8 +100,7 @@ export default {
       handler: function(val) {
         val && this.render()
       }
-    },
-    deep: true
+    }
   },
   data() {
     return {
@@ -121,9 +123,7 @@ export default {
     },
     onSubmit(e) {
       this.$refs.form.validate(valid => {
-        if (valid) {
-          this.$emit('submit', helper.trimObject(this.fields))
-        }
+        if (valid) this.$emit('submit', helper.trimObject(this.fields))
       })
     },
     onCancel() {
@@ -150,23 +150,23 @@ export default {
       if (this.destroyed) return
       this.$refs.form.validateField(e)
     },
-    initSelect(item, key) {
+    async initSelect(item, key) {
       if (item.action && !item.defer) {
         item.loading = true
         const actionArgs = item.actionArgs || {}
-        this.$store.dispatch(item.action, actionArgs).then(res => {
-          if (!res) return
-          item.options = res.options
-          item.props = { label: res.label, value: res.value }
-          item.loading = false
-        })
+        const action = item.namespaced ? `${item.namespaced}/${item.action}` : item.action
+        const res = await this.$store.dispatch(action, actionArgs)
+        if (!res) return
+        this.$set(item, 'options', res.options)
+        this.$set(item, 'props', { label: res.label, value: res.value })
+        this.$set(item, 'loading', false)
       }
     },
     initRules(item) {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
-        item.rule.push(this.ruleSwitch(rule, item.label, item.type))
+        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages))
       })
       delete item.rules
     },
@@ -182,15 +182,15 @@ export default {
             if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() > time.getTime()
           }
         }
-        item['pickerOptions'] = {disabledDate}
+        item['pickerOptions'] = { disabledDate }
       }
     },
-    ruleSwitch(rule, label, type) {
+    ruleSwitch(rule, label, type, ruleMessages) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
-        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate)
+        return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate, ruleMessages)
       }
       let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
@@ -202,17 +202,32 @@ export default {
           return { validator: validator.isFee }
         case 'noChinese':
           return { validator: validator.noChinese }
+        case 'phone':
+          return { validator: validator.phone }
+        case 'tempNumber':
+          return { validator: validator.tempNumber }
         default:
           return {}
       }
     },
     resetFieldValue(...arg) {
-      let [status, prop] = arg, fields = this.$refs.form.fields, relevantFields = []
+      const [status, prop, { controlTheOther }] = arg
+      if (!controlTheOther) return
+      const fields = this.$refs.form.fields
       for(let [key, value] of Object.entries(this.items)) {
-        if(value.disableDependingProp === prop) relevantFields.push(key)
+        if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }
-      if(!relevantFields.length) return
-      fields.map(val => relevantFields.map(value => val.prop === value && val.resetField()))
+    },
+    selectChangeEvent(e, prop, item) {
+      const { controlProps } = item
+      if (Array.isArray(controlProps)) {
+        this.$nextTick(function() {
+          controlProps.map(prop => {
+          if (this.fields[prop]) this.$set(this.fields, prop, '')
+          })
+        })
+      }
+      item.func && item.func(e, prop, item)
     }
   }
 }

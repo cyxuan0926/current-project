@@ -1,17 +1,13 @@
 import api from './service'
+import { filterImages } from '@/utils/helper'
 
 export default {
   getMailboxes: ({ commit }, params) => {
     return api.getMailboxes(params).then(res => {
       if (!res) return
       res.mailBoxes.forEach(mail => {
-        if (mail.imageUrls) {
-          mail.imageUrls = mail.imageUrls.split(';')
-          if (!mail.imageUrls[mail.imageUrls.length - 1]) mail.imageUrls.pop()
-        }
-        else {
-          mail.imageUrls = []
-        }
+        if (mail.imageUrls) mail.imageUrls = filterImages({ images: mail.imageUrls })
+        else mail.imageUrls = []
       })
       commit('getMailboxes', res)
       return true
@@ -20,13 +16,8 @@ export default {
   getMailboxDetail: ({ commit }, params) => {
     return api.getMailboxDetail(params).then(res => {
       if (!res) return
-      if (res.detail.imageUrls) {
-        res.detail.imageUrls = res.detail.imageUrls.split(';')
-        if (!res.detail.imageUrls[res.detail.imageUrls.length - 1]) res.detail.imageUrls.pop()
-      }
-      else {
-        res.detail.imageUrls = []
-      }
+      if (res.detail.imageUrls) res.detail.imageUrls = filterImages({ images: res.detail.imageUrls })
+      else res.detail.imageUrls = []
       return res.detail
     })
   },

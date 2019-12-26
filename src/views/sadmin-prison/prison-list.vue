@@ -1,7 +1,7 @@
 <template>
   <el-table
     :data="prisons.contents"
-    border
+    stripe
     style="width: 100%">
     <el-table-column
       prop="title"

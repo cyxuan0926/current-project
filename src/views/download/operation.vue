@@ -8,7 +8,7 @@
       </div>
       <el-table
         :data="list.contents"
-        border>
+        stripe>
         <el-table-column
           label="文件名称"
           prop="name"

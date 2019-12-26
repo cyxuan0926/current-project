@@ -3,8 +3,7 @@
     <el-col :span="24">
       <el-table 
         :data="prisonReportDetail.meetingDetails"
-        border
-        class="mini-td-padding td"
+        stripe
       >
         <el-table-column
           v-if="hasAllPrisonQueryAuth"
@@ -15,7 +14,7 @@
           <template slot-scope="scope">
             <el-button
               type="text"
-              @click="showFamilyDetail(scope.row.familyId)"
+              @click="showFamilyDetail(scope.row.familyId, scope.row.id)"
             >
               {{ scope.row.name }}
             </el-button>
@@ -100,7 +99,7 @@
       :visible.sync="callRecordsVisible"
       @close="clearCallRecords"
     >
-      <el-table :data="callRecords" border>
+      <el-table :data="callRecords" stripe>
         <el-table-column label="开始时间">
           <template slot-scope="scope">
             {{ scope.row.start_time }}
@@ -149,9 +148,10 @@ export default {
   },
   methods: {
     ...mapActions(['getMeetingsFamilyDetail']),
-    async showFamilyDetail(familyId) {
+    async showFamilyDetail(...args) {
+      const [ familyId, meetingId ] = args
       try {
-        const res = await this.getMeetingsFamilyDetail({ id: familyId })
+        const res = await this.getMeetingsFamilyDetail({ familyId, meetingId })
 
         if (res.family) {
           this.family = res.family
@@ -181,8 +181,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
+  height: 46px;
   padding: 0 12px;
+  border-top: 1px solid #e6e6e6;
 }
 
 /deep/ .el-table td {

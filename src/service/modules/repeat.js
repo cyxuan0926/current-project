@@ -56,5 +56,17 @@ export default {
   // 会见统计-监区会见-所有监狱
   getPrisonAreaReportListAll: params => {
     return service.get('/report/findReportPage', params).then(res => res && res.data)
+  },
+  // 会见节约成本统计-个人维度
+  getMeetingCostSavingIndividual: params => {
+    return service.get('/meetings/cost-saving/statistics/personal-dimension', params).then(res => res && res.data)
+  },
+  // 会见节约成本统计-监区维度
+  getMeetingCostSavingPrisonArea: params => {
+    return service.get('/meetings/cost-saving/statistics/prisonarea-dimension', params).then(res => res && res.data)
+  },
+  // 会见节约成本统计-监狱维度
+  getMeetingCostSavingPrison: params => {
+    return service.get('/meetings/cost-saving/statistics/jail-dimension', params).then(res => res && res.data)
   }
 }

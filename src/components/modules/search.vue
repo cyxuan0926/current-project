@@ -13,6 +13,7 @@
           :key="index"
           v-if="item.type === 'select' && !item.miss"
           v-model="item.value"
+          v-autowidth:8="item.value"
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
@@ -57,8 +58,8 @@
           v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :start-placeholder=" item.startPlaceholder || '开始时间' "
+          :end-placeholder=" item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd HH:mm:ss"
           :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
           :default-time="['00:00:00', '23:59:59']"/>
@@ -102,9 +103,10 @@
           @onEnsure="onEnsure" />
       </template>
       <template v-if="items">
+        <slot name="pre" /> 
         <el-button
           v-if="buttonText"
-          @click="onSearch">{{ buttonText }}</el-button>
+          @click="onSearch">{{ buttonText }}</el-button> 
         <el-button
           v-else
           icon="el-icon-search"
@@ -119,14 +121,15 @@
 </template>
 
 <script>
+import autowidth from '@/common/directives/autowidth'
 import { helper } from '@/utils'
+
 export default {
   props: {
     items: {
       type: Object,
-      default: () => {
-        return {}
-      } },
+      default: () => {}
+    },
     buttonText: {
       type: String,
       default: ''
@@ -161,11 +164,55 @@ export default {
       }
     }
   },
+  directives: { autowidth },
   mounted() {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
   methods: {
     onSearch(e) {
+      this.onGetFilter()
+      if (e !== 'tabs') this.$emit('search')
+    },
+    onEnsure(e) {
+      let prop = e.prop
+      Object.keys(e).forEach(key => {
+        if (key === 'prop') return
+        this.items[prop][key] = e[key]
+      })
+    },
+    onSelectChange(selectKey, value) {
+      this.$emit('searchSelectChange', selectKey, value)
+    },
+    onClear() {
+      Object.keys(this.items).forEach(key => {
+        if (this.items[key].miss) return
+        // if (this.items[key].type === 'monthRangeSelector') {
+        //   this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
+        //   // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
+        //   this.items[key][this.items[key].endKey] = this.items[key].endValue || ''
+        //   // params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
+        // }
+        // if (this.items[key].type === 'monthrange') {
+        //   this.startValue = this.endValue = ''
+        //   // params[this.items[key].start] = this.startValue
+        //   // params[this.items[key].end] = this.endValue
+        // }
+        // // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+        // if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
+        //   this.items[key].value = null
+        //   // params[this.items[key].start] = this.items[key].value[0]
+        //   // params[this.items[key].end] = this.items[key].value[1]
+        // }
+        // else {
+        //   this.items[key].value = ''
+        //   // params[key] = this.items[key].value
+        // }
+        this.$set(this.items[key], 'value', '')
+      })
+
+      this.$parent.$parent.filter = {}
+    },
+    onGetFilter() {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
@@ -189,45 +236,6 @@ export default {
         })
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
-      if (e !== 'tabs') this.$emit('search')
-    },
-    onEnsure(e) {
-      let prop = e.prop
-      Object.keys(e).forEach(key => {
-        if (key === 'prop') return
-        this.items[prop][key] = e[key]
-      })
-    },
-    onSelectChange(selectKey, value) {
-      this.$emit('searchSelectChange', selectKey, value)
-    },
-    onClear() {
-      Object.keys(this.items).forEach(key => {
-        // if (this.items[key].miss) return
-        if (this.items[key].type === 'monthRangeSelector') {
-          this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
-          // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
-          this.items[key][this.items[key].endKey] = this.items[key].endValue || ''
-          // params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
-        }
-        if (this.items[key].type === 'monthrange') {
-          this.startValue = this.endValue = ''
-          // params[this.items[key].start] = this.startValue
-          // params[this.items[key].end] = this.endValue
-        }
-        // if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
-        if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
-          this.items[key].value && this.items[key].value.splice(0, 2, '', '')
-          // params[this.items[key].start] = this.items[key].value[0]
-          // params[this.items[key].end] = this.items[key].value[1]
-        }
-        else {
-          this.items[key].value = ''
-          // params[key] = this.items[key].value
-        }
-      })
-
-      this.$parent.$parent.filter = {}
     }
   }
 }
@@ -273,16 +281,21 @@ export default {
     button{
       min-width: 50px;
       margin-bottom: 10px;
+      margin-right: 10px;
       // height: 40px;
       // margin-left: 10px;
+      + button {
+        margin-left: 0;
+      }
     }
 
     .el-input {
-      width: $--input-width;
+      width: 13em;
+      // width: $--input-width;
     }
 
     .el-date-editor--datetimerange {
-      width: 326px;
+      width: 318px;
     }
 
     .m-range-picker,

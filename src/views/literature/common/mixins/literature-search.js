@@ -1,8 +1,4 @@
 export default {
-  props: {
-    role: String,
-    jailId: Number
-  },
   data() {
     return {
       isGettingTableData: false,
@@ -32,63 +28,129 @@ export default {
           start: 'publishStartDate',
           end: 'publishEndDate'
         },
-        title: { type: 'input', label: '作品标题' }
+        title: { type: 'input', label: '作品标题' },
+        penName: { type: 'input', label: '笔名' }
       },
-      /**
-       * 作品状态
-       * publish 已发布待审核
-       * pass 已通过审核
-       * reject 未通过审核
-       * shelf 已下架
-       */
-      literatureStatus: '',
-      publisher: '', // 作品发布者，1 家属发的，2 预警发的，3 审核人员发的
-      totalPage: 1, // 分页数据总页数
       filter: {},
-      pagination: {}
+      total: 0, // 分页数据总条数
+      pagination: { page: 1, rows: 10 }
+    }
+  },
+  computed: {
+    isFamilyLiteratureChecker() {
+      return this.role === 6
+    },
+    isPoliceLiteratureChecker() {
+      return [-1, 5].includes(this.role)
+    },
+    isMyLiteratureChecker() {
+      return this.$route.path === '/literature-my/literatures'
+    },
+    role() {
+      return parseInt(this.$store.state.global.user.role)
+    },
+    /**
+     * 作品状态
+     * publish 已发布待审核
+     * pass 已通过审核
+     * reject 未通过审核
+     * shelf 已下架
+     */
+    literatureStatus() {
+      return this.activeTabName
     }
   },
   watch: {
-    activeTabName(val) {
-      switch (val) {
-        // 审核通过的作品（上架状态）
-        case 'ONLINE':
-          this.literatureStatus = 'pass'
-          break
-
-        // 已下架的作品
-        case 'OFFLINE':
-          this.literatureStatus = 'shelf'
-          break
-
-        default:
-          this.literatureStatus = ''
-          break
+    activeTabName(activeTab) {
+      if (this.$route.path === '/literature-management/literatures') {
+        if (activeTab === 'pass') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportReason', 'reportTime'])
+          this.$set(this.searchItems.reportReason, 'miss', true)
+          this.$set(this.searchItems.reportTime, 'miss', true)
+        }
+        if (activeTab === 'shelf') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportReason', 'reportTime', 'reportStatus'])
+          this.$set(this.searchItems.reportReason, 'miss', true)
+          this.$set(this.searchItems.reportTime, 'miss', true)
+          this.$set(this.searchItems.reportStatus, 'miss', true)
+        }
+        if (activeTab === 'tipOff') {
+          this.resetSearchMissStatus()
+          this.resetSearchFilters(['reportStatus', 'time', 'title', 'penName'])
+          this.$set(this.searchItems.reportStatus, 'miss', true)
+          this.$set(this.searchItems.time, 'miss', true)
+          this.$set(this.searchItems.title, 'miss', true)
+          this.$set(this.searchItems.penName, 'miss', true)
+        }
+        this.$refs.search.onGetFilter()
       }
-
       this.pagination.page = 1
+      this.$refs.pagination.updateCurrentPage(1)
       this.getTableData()
     }
   },
   created() {
-    this.initSearchStatus()
     this.getTableData()
   },
   activated() {
     !this.isGettingTableData && this.getTableData()
   },
   methods: {
-    initSearchStatus() {
-      console.error('组件未覆盖 initSearchStatus 方法')
-    },
     onSearch() {
       this.getTableData()
     },
     onPageChange() {
       this.getTableData()
     },
-    getTableData() {
-      console.error('组件未覆盖 getTableData 方法')
+    async getTableData() {
+      const currentOperateRows = this.$store.state.literature.currentOperateRows
+      const currentTableRows = this.$store.getters['literature/currentTableRows']
+
+      const { page, rows } = this.pagination
+      const hasNextPage = this.total - page * rows > 0
+
+      if (currentOperateRows === currentTableRows && !hasNextPage) {
+        this.pagination.page = page > 1 ? page - 1 : 1
+      }
+
+      let res = {}
+      const params = {
+        status: this.literatureStatus,
+        ...this.filter,
+        ...this.pagination
+      }
+
+      this.isGettingTableData = true
+
+      if (this.activeTabName === 'tipOff') {
+        delete params.status
+        let url
+        if (this.isPoliceLiteratureChecker) {
+          url = '/article/findPoliceReportPage'
+          params.jailId = this.$store.state.global.user.jailId
+        }
+        if (this.isFamilyLiteratureChecker) url = '/article/findReportPage'
+        res = await this.getReportLiteratures({ url, params })
+      }
+      else {
+        if (this.isFamilyLiteratureChecker) {
+          res = await this.getFamilyLiteratures(params)
+        }
+
+        if (this.isPoliceLiteratureChecker && !this.isMyLiteratureChecker) {
+          params.jailId = this.$store.state.global.user.jailId
+          res = await this.getPoliceLiteratures(params)
+        }
+
+        if (this.isMyLiteratureChecker) {
+          res = await this.getMyLiteratures(params)
+        }
+      }
+
+      this.total = res.data && res.data.total
+      this.isGettingTableData = false
     }
   }
 }

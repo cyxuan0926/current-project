@@ -11,7 +11,7 @@
             class="form-box">
             <el-col class="form-top">
               <el-col class="form-top-left">
-                <h2>狱务通管理平台</h2>
+                <h2>狱务通</h2>
                 <p>请输入监狱编号, 您的用户名和密码:</p>
               </el-col>
             </el-col>

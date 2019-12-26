@@ -62,6 +62,7 @@ module.exports = {
     'no-unused-expressions': 0,
     'prefer-promise-reject-errors': 0,
     'no-useless-return': 0,
-    'no-multiple-empty-lines': 0
+    'no-multiple-empty-lines': 0,
+    'no-new-object': 0
   }
 };

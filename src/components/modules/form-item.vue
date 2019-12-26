@@ -7,6 +7,7 @@
     <el-input
       v-if="item.type === 'input' || item.type === 'textarea'"
       :type="item.type"
+      :maxlength="item.maxlength"
       :clearable="item.clearable"
       :autosize="item.autosize"
       v-model="fields[prop]"
@@ -23,7 +24,7 @@
       :loading="item.loading"
       :filterable="!!(item.filterable)"
       :disabled="item.disabled"
-      @change="item.func && item.func($event, prop)">
+      @change="selectChangeEvent($event, prop, item)">
       <el-option
         v-for="(option) in item.options"
         :key="item.props ? option[item.props.value] : option.value"
@@ -46,7 +47,7 @@
       :active-value="1"
       :inactive-value="0"
       :disabled="item.disabled"
-      @change="handleChange"
+      @change="(item.func && item.func($event, prop, item)) || resetFieldValue($event, prop, item) "
       :width="60" />
     <el-checkbox-group
       v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
@@ -101,17 +102,19 @@ export default {
     },
     fields: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => {}
     },
     rule: {
       type: Array,
       default: () => []
-    }
-  },
-  data() {
-    return {
+    },
+    'reset-field-value': {
+      type: Function,
+      default: () => () => {}
+    },
+    'select-change-event': {
+      type: Function,
+      default: () => () => {}
     }
   },
   methods: {
@@ -134,9 +137,6 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
-    },
-    handleChange(status) {
-      if(this.item.controlTheOther) this.$emit('resetFieldValue', status, this.prop)
     }
   }
 }

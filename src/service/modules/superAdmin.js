@@ -112,6 +112,10 @@ export default {
   updateTerminal: params => {
     return service.postObj('/terminals/edit', params).then(res => res && res.code === 200)
   },
+  // 终端管理-启用/禁用
+  enableTerminal: params => {
+    return service.postObj('/terminals/enabled', params).then(res => res && res.code === 200)
+  },
   // 版本管理-列表
   getVersions: params => {
     return service.get('/versions/page', params).then(res => res && res.data)
@@ -151,5 +155,9 @@ export default {
   // 监区管理-新增
   addPrisonArea: params => {
     return service.post('/prison_config/add', params).then(res => res && res.code === 200)
+  },
+  // 监狱数据查询-监狱会见数据统计表-列表
+  getMeetingStatics: params => {
+    return service.get('/report/meetings', params)
   }
 }

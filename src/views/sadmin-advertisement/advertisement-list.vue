@@ -10,12 +10,11 @@
       @click="onAdd">添加广告</el-button>
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
         :data="advertisements.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -102,10 +101,6 @@ export default {
   },
   methods: {
     ...mapActions(['getAdvertisements', 'updateAdvertisementStatus', 'deleteAdvertisement', 'getProvincesAll', 'getAdvertisementTypes']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getAdvertisements({ ...this.filter, ...this.pagination })
     },

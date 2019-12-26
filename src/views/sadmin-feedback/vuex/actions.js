@@ -1,18 +1,14 @@
 import http from '@/service'
 import api from './service'
+import { filterImages } from '@/utils/helper'
 
 export default {
   getFeedbacks: ({ commit }, params) => {
     return http.getFeedbacks(params).then(res => {
       if (!res) return
       res.feedbacks.forEach(feedback => {
-        if (feedback.imageUrls) {
-          feedback.imageUrls = feedback.imageUrls.split(';')
-          if (!feedback.imageUrls[feedback.imageUrls.length - 1]) feedback.imageUrls.pop()
-        }
-        else {
-          feedback.imageUrls = []
-        }
+        if (feedback.imageUrls) feedback.imageUrls = filterImages({ images: feedback.imageUrls, isIdentify: true, isPublic: !feedback.isCo })
+        else feedback.imageUrls = []
       })
       commit('getFeedbacks', res)
       return true
@@ -21,13 +17,8 @@ export default {
   getFeedbackDetail: ({ commit }, params) => {
     return api.getFeedbackDetail(params).then(res => {
       if (!res) return
-      if (res.detail.imageUrls) {
-        res.detail.imageUrls = res.detail.imageUrls.split(';')
-        if (!res.detail.imageUrls[res.detail.imageUrls.length - 1]) res.detail.imageUrls.pop()
-      }
-      else {
-        res.detail.imageUrls = []
-      }
+      if (res.detail.imageUrls) res.detail.imageUrls = filterImages({ images: res.detail.imageUrls, isIdentify: true, isPublic: !res.detail.isCo })
+      else res.detail.imageUrls = []
       return res.detail
     })
   },

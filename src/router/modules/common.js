@@ -1,58 +1,85 @@
-import frame from '@/views/layout/the-frame'
-// eslint-disable-next-line
-import { helper } from '@/utils'
-
 let common = [{
   path: '/',
   meta: { hidden: true },
-  component: frame,
+  component: 'layout/the-frame',
   children: [{
     path: '/dashboard',
     name: '工作台',
     // component: resolve => require(['@/views/dashboard/dashboard'], resolve)
-    component: helper.loadView('dashboard/dashboard')
+    component: 'dashboard/dashboard'
   }, {
     path: '/password/edit',
     name: '修改密码',
     // component: resolve => require(['@/views/password/password-edit'], resolve)
-    component: helper.loadView('password/password-edit')
+    component: 'password/password-edit'
   }]
 }, {
   path: '/login',
   name: '登录',
   meta: { notLogin: true },
-  component: helper.loadView('login/login')
+  component: 'login/login'
   // component: resolve => require(['@/views/login/login'], resolve)
 }, {
   path: '/app_preview',
   name: 'app下载',
-  component: frame,
+  component: 'layout/the-frame',
   meta: { hidden: true },
   children: [{
     path: '/app_preview/family_download',
     name: '家属版app',
     meta: { notLogin: true },
     // component: resolve => require(['@/views/download/app-family'], resolve)
-    component: helper.loadView('download/app-family')
+    component: 'download/app-family'
   }, {
     path: '/app_preview/prison_download',
     name: '监狱版app',
     meta: { notLogin: true },
     // component: resolve => require(['@/views/download/app-prison'], resolve)
-    component: helper.loadView('download/app-prison')
+    component: 'download/app-prison'
+    // component: helper.loadView('download/app-prison')
+  }, {
+    path: '/app_preview/police_download',
+    name: '狱警版app',
+    meta: { notLogin: true },
+    component: 'download/app-police'
   }]
 }, {
   path: '/download',
   name: '文件下载',
-  component: frame,
+  component: 'layout/the-frame',
   meta: { hidden: true },
   children: [{
     path: '/download/operation',
     name: '操作手册',
     meta: { notLogin: true },
     // component: resolve => require(['@/views/download/operation'], resolve)
-    component: helper.loadView('download/operation')
+    component: 'download/operation'
   }]
+}, {
+  path: '/password_retrieve',
+  name: 'password-retrieve',
+  meta: { hidden: true },
+  component: 'password/password-retrieve',
+  children: [{
+    path: '/password_retrieve/step_one',
+    name: 'password-retrieve-one',
+    meta: { notLogin: true, step: 1 },
+    component: 'password/password-retrieve-step-one'
+  }, {
+    path: '/password_retrieve/step_two',
+    name: 'password-retrieve-two',
+    props: { step: 2 },
+    meta: { notLogin: true, step: 2 },
+    component: 'password/password-retrieve-step-two'
+  }, {
+    path: '/password_retrieve/step_three',
+    name: 'password-retrieve-three',
+    meta: { notLogin: true, step: 3 },
+    component: 'password/password-retrieve-step-three'
+  }]
+}, {
+  path: '*',
+  redirect: '/dashboard'
 }]
 
 export default common

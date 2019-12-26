@@ -62,7 +62,7 @@
     <el-row v-if="uploadInsideJailsCostsExcelResult.error_arrays && uploadInsideJailsCostsExcelResult.error_arrays.length">
       <el-tag type="danger">解析失败的信息:</el-tag>
       <!--上传模板失败的结果-->
-      <el-table :data="uploadInsideJailsCostsExcelResult.error_arrays">
+      <el-table :data="uploadInsideJailsCostsExcelResult.error_arrays" stripe>
         <el-table-column
           label="所在行"
           prop="row"
@@ -112,7 +112,7 @@
     <el-row v-if="uploadInsideJailsCostsExcelResult.success_arrays && uploadInsideJailsCostsExcelResult.success_arrays.length">
       <el-tag type="success">解析成功的信息:</el-tag>
       <!--上传模板文件的结果-->
-      <el-table :data="uploadInsideJailsCostsExcelResult.success_arrays">
+      <el-table :data="uploadInsideJailsCostsExcelResult.success_arrays" stripe>
         <el-table-column
           label="所在行"
           prop="row"

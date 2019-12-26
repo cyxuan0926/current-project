@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" >
       <template slot="append">
         <el-button
@@ -23,14 +22,14 @@
         </el-button>
         <m-excel-upload
           url="/sensitiveword/upload"
-          @onGetUploadResults="handleGetUploadResults" />
+          :get-results="handleGetUploadResults" />
       </template>
     </m-search>  
     <el-col :span="24">
       <m-table
-        @onSelectChange="handleSelectChange"
+        :selection-change="handleSelectChange"
         :data="sensitiveWords"
-        :cols="test"
+        :cols="tableCols"
         class="mini-td-padding">
         <template
           slot="keyWord"
@@ -89,7 +88,7 @@
         <el-col class="button-box">
           <el-button
             size="small"
-            @click="visible = false"
+            @click="onExcelSure"
             type="primary">
             确定
           </el-button>
@@ -128,7 +127,7 @@ export default {
       operationInput: [],
       dialogOperationStatus: 0,
       uploadResults: {},
-      test: [
+      tableCols: [
         {
           type: 'selection'
         },
@@ -173,10 +172,6 @@ export default {
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
-    },
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
     },
     // 列表的操作
     async handleOperate(data) {
@@ -228,17 +223,29 @@ export default {
         type: 'warning'
         }).then(async () => {
           await this.delSensitiveword({ ids })
-          if(this.delSensitiveCharacters.length === this.sensitiveWords.length) this.$refs.pagination.handleCurrentChange(this.pagination.page - 1)
+          if(this.delSensitiveCharacters.length === this.sensitiveWords.length) this.$refs.pagination.handleCurrentChange((this.pagination.page - 1 || 1))
           else this.getDatas()
         }).catch(() => {})
       }
     },
-    handleGetUploadResults(result) {
-      setTimeout(() => {
-        this.dialogOperationStatus = 1
-        this.visible = true
-        this.uploadResults = result
-      }, 1000)
+    handleGetUploadResults(response) {
+      this.$message({
+        showClose: true,
+        message: response.msg,
+        duration: 3000,
+        type: response.code === 200 ? 'success' : 'error'
+      })
+      if (response.code === 200) {
+        setTimeout(() => {
+          this.dialogOperationStatus = 1
+          this.visible = true
+          this.uploadResults = response.data
+        }, 1000)
+      }
+    },
+    onExcelSure() {
+      this.visible = false
+      if(this.uploadResults.success_total) this.onSearch()
     }
   },
   computed: {

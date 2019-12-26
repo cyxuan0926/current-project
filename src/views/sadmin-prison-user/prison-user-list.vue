@@ -4,7 +4,6 @@
     :gutter="0">
     <el-button
       v-if="user.role === '-1'"
-      size="small"
       type="primary"
       plain
       class="button-add button-shift-down"
@@ -16,22 +15,23 @@
     />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-table
         :data="prisonUsers.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="username"
-          width="260px"
+          min-width="85"
           label="用户名" />
         <el-table-column
           prop="roles"
+          min-width="85"
           label="角色" />
         <el-table-column
           prop="jailName"
+          min-width="110"
           label="监狱名称" />
         <el-table-column
           prop="prisonAreas"
@@ -39,13 +39,14 @@
           label="监区" />
         <el-table-column
           prop="policeNumber"
+          min-width="90"
           label="狱警号" />
         <el-table-column
           prop="realName"
           label="真实姓名" />
         <el-table-column
           v-if="user.role === '-1'"
-          width="210px"
+          min-width="130"
           label="操作">
           <!-- v-if="routeRole != scope.row.role && scope.row.role !== 0" -->
           <template
@@ -93,7 +94,7 @@ export default {
     hasAllPrisonQueryAuth: Boolean
   },
   data() {
-    let options = { roleId: { type: 'select', label: '角色', getting: false }, jail: { type: 'select', label: '监狱名称', getting: true, belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
+    let options = { roleId: { type: 'select', label: '角色' }, jail: { type: 'select', label: '监狱名称', belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
     if (routeRole === '0') delete options.roleId
     if (role === '-1') delete options.jail
@@ -121,8 +122,9 @@ export default {
     if (this.routeRole === '0') {
       const res = await this.getAllTenants()
       if (res) {
-        this.searchItems.jail.getting = false
-        this.searchItems.jail.options = this.allTenants
+        this.$set(this.searchItems.jail, 'getting', true)
+        this.$set(this.searchItems.jail, 'options', this.allTenants)
+        this.$set(this.searchItems.jail, 'getting', false)
       }
     }
     await this.getDatas()
@@ -136,10 +138,6 @@ export default {
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),
     ...mapActions('account', ['getRolesList', 'getAllTenants']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     async getDatas() {
       let { page } = this.pagination
       this.$set(this.pagination, 'page', page-1)

@@ -6,7 +6,6 @@
       :items="searchItems"
       append-btn="下载"
       @appendHandler="handleDownload"
-      @sizeChange="sizeChange"
       @search="onSearch">
       <el-button
         slot="append"
@@ -19,7 +18,7 @@
       class="el-col__no-tabs__margin">
       <el-table
         :data="feedbacks.contents"
-        border
+        stripe
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -33,10 +32,16 @@
           label="反馈内容" />
         <el-table-column
           label="反馈图片">
-          <template slot-scope="scope">
+          <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
+          <template
+            slot-scope="scope"
+            v-if="scope.row.imageUrls.length">
             <m-img-viewer
-              v-if="scope.row.imageUrls.length"
-              :src="scope.row.imageUrls[0] + '?token=' + $urls.token" />
+              v-if="scope.row.isCo"
+              :url="scope.row.imageUrls[0]" />
+            <m-img-viewer
+              v-else
+              :publicUrl="scope.row.imageUrls[0]" /> 
           </template>
         </el-table-column>
         <el-table-column
@@ -109,11 +114,17 @@
           v-if="feedback.imageUrls.length">
           <label>反馈图片</label>
           <div class="img-box">
-            <template v-for="(img, index) in feedback.imageUrls">
+            <template v-if="feedback.isCo">
               <m-img-viewer
+                v-for="(img, index) in feedback.imageUrls"
                 :key="index"
-                v-if="img"
-                :src="img + '?token=' + $urls.token" />
+                :url="img" />
+            </template>
+            <template v-else>
+              <m-img-viewer
+                v-for="(img, index) in feedback.imageUrls"
+                :key="index"
+                :publicUrl="img" />
             </template>
           </div>
         </div>
@@ -184,10 +195,6 @@ export default {
   },
   methods: {
     ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail', 'downloadFeedbacks']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
     getDatas() {
       this.getFeedbacks({ ...this.filter, ...this.pagination })
     },

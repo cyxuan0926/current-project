@@ -2,9 +2,9 @@
   <div>
     <el-table
       :data="contents"
-      border
+      stripe
       @cell-click="handleClick"
-      :row-class-name="rowClass">
+      :cell-style="cellStyle">
       <el-table-column
         prop="phone"
         label="手机号码" />
@@ -75,7 +75,7 @@
       <el-table
         :data="accountDetail"
         max-height="400"
-        border>
+        stripe>
         <el-table-column
           property="phone"
           label="手机号码" />
@@ -104,12 +104,16 @@ export default {
   data() {
     return {
       dialogTableVisible: false,
-      rowClass: ({ row, rowIndex }) => {
+      cellStyle: ({ row }) => {
         if (row.remark > 0) {
-          return 'table-row-blue'
+          return {
+            background: '#81cdf1'
+          }
         }
         else if (row.remark < 0) {
-          return 'table-row-red'
+          return {
+            background: '#ffbdbf'
+          }
         }
       },
       accountDetail: []

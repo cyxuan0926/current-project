@@ -61,11 +61,11 @@
             placeholder="请填写主持人密码" />
         </el-form-item>
         <el-form-item
-          label="参与密码"
+          label="参会密码"
           prop="mettingPassword">
           <el-input
             v-model="terminal.mettingPassword"
-            placeholder="请填写参与密码" />
+            placeholder="请填写参会密码" />
         </el-form-item>
       </el-form>
       <el-button
@@ -89,7 +89,7 @@ export default {
         jailId: [{ required: true, message: '请选择监狱' }],
         prisonConfigId: [{ required: true, message: '请填写分监区' }],
         hostPassword: [{ required: true, message: '请填写主持人密码', trigger: 'blur' }],
-        mettingPassword: [{ required: true, message: '请填写参与密码', trigger: 'blur' }]
+        mettingPassword: [{ required: true, message: '请填写参会密码', trigger: 'blur' }]
       },
       hasPrisonArea: false,
       gettingPrison: true,

@@ -39,6 +39,9 @@ module.exports = {
       '@': resolve('src'),
     }
   },
+  externals: {
+    echarts: 'echarts'
+  },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('common.js'),
     new webpack.ProvidePlugin({

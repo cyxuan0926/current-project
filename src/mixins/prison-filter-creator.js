@@ -2,7 +2,8 @@
 export default {
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
-    hasAllPrisonQueryAuth: Boolean
+    hasAllPrisonQueryAuth: Boolean,
+    hasOnlyAllPrisonQueryAuth: Boolean
   },
   data() {
     return {
@@ -13,6 +14,9 @@ export default {
     if (this.hasAllPrisonQueryAuth) {
       this.createPrisonFilter()
       this.createPrisonAreaFilter()
+    }
+    if (this.hasOnlyAllPrisonQueryAuth) {
+      this.createPrisonFilter()
     }
   },
   methods: {

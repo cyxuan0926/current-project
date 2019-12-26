@@ -18,5 +18,8 @@ export default {
     result += minutes ? `${ minutes }:` : '0:'
     result += second ? second < 10 ? `0${ second }` : `${ second }` : '00'
     return result
+  },
+  handleGetIndex(index, rows, page) {
+    return rows * (page - 1) + index + 1
   }
 }

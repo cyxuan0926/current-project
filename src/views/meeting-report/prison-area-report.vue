@@ -15,7 +15,7 @@
     <el-col :span="24">
       <el-table
         :data="prisonAreaReportList.contents"
-        border
+        stripe
         show-summary
         :summary-method="summaryMethod"
         style="width: 100%">
