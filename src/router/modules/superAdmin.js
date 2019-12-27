@@ -201,6 +201,7 @@ let superAdmin = [{
   }, {
     path: '/advertisement/add',
     name: 'advertisement-add',
+    props: { hasPermission: 'add' },
     meta: { deep: true, permission: 'visit.advertisement.add', breadcrumbName: '新增广告' },
     component: 'sadmin-advertisement/advertisement-add'
     // component: resolve => require(['@/views/sadmin-advertisement/advertisement-add'], resolve)
@@ -208,8 +209,10 @@ let superAdmin = [{
   }, {
     path: '/advertisement/edit/:id',
     name: 'advertisement-edit',
+    props: { hasPermission: 'edit' },
     meta: { deep: true, permission: 'visit.advertisement.update', breadcrumbName: '编辑广告' },
-    component: 'sadmin-advertisement/advertisement-edit'
+    component: 'sadmin-advertisement/advertisement-add'
+    // component: 'sadmin-advertisement/advertisement-edit'
     // component: resolve => require(['@/views/sadmin-advertisement/advertisement-edit'], resolve)
     // component: helper.loadView('sadmin-advertisement/advertisement-edit')
   }]
