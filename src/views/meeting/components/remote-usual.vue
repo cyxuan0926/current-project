@@ -114,7 +114,11 @@ export default {
         { label: '星期日', value: 0 }
       ],
       configs: [
-        { days: [], config: [], queue: [] }
+        {
+          days: [],
+          config: [],
+          queue: []
+        }
       ],
       queue: ['09:00', '09:30'],
       flag: true,
@@ -143,7 +147,6 @@ export default {
     }
   },
   activated() {
-    //
     if (this.$route.meta.role === '0') this.disabled = false
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
     if (this.permission === 'edit') {
@@ -154,7 +157,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getRemoteNormalConfig', 'updateRemoteNormalConfig']),
+    ...mapActions([
+      'getRemoteNormalConfig',
+      'updateRemoteNormalConfig'
+    ]),
     onSubmit(e) {
       let params = []
       this.configs.forEach(config => {
@@ -165,15 +171,17 @@ export default {
       })
       if (e) {
         this.loading = true
-        this.updateRemoteNormalConfig({ id: this.normalConfig.id, jailId: this.normalConfig.jailId, normalConfig: params }).then(res => {
+        this.updateRemoteNormalConfig({
+          id: this.normalConfig.id,
+          jailId: this.normalConfig.jailId,
+          normalConfig: params
+        }).then(res => {
           this.loading = false
           if (!res) return
           this.visible = false
         })
       }
-      else {
-        this.$emit('submit', params)
-      }
+      else this.$emit('submit', params)
     },
     handleConfig(e) {
       this.configs[e].queue = [this.queue]
@@ -184,12 +192,8 @@ export default {
       this.flag = true
     },
     handleDeleteConfig(e) {
-      if (this.configs.length > 1) {
-        this.configs.splice(e, 1)
-      }
-      else {
-        this.configs = [{ days: [], config: [], queue: [] }]
-      }
+      if (this.configs.length > 1) this.configs.splice(e, 1)
+      else this.configs = [{ days: [], config: [], queue: [] }]
     },
     onAddRange(e) {
       e.push(this.getNextRange(e[e.length - 1]))

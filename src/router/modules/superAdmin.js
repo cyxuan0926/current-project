@@ -30,7 +30,11 @@ let superAdmin = [{
 }, {
   path: '/prison',
   name: 'prison-manage',
-  meta: { hidden: true, breadcrumbName: '监狱管理', permission: 'visit.prison.search' },
+  meta: {
+    hidden: true,
+    breadcrumbName: '监狱管理',
+    permission: 'visit.prison.search'
+  },
   children: [
   //   {
   //   path: '/prison/add',
