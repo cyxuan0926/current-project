@@ -70,7 +70,7 @@
         v-if="configs[0].queue.length && !disabled && permission === 'edit'"
         size="small"
         type="primary"
-        @click="visible = true">更新</el-button>
+        @click="onUpdate">更新</el-button>
     </div>
     <el-dialog
       :visible.sync="visible"
@@ -100,6 +100,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+import isEqual from 'lodash/isEqual'
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   data() {
     return {
@@ -125,7 +127,8 @@ export default {
       loading: false,
       disabled: true,
       permission: 'add',
-      visible: false
+      visible: false,
+      orignConfigs: []
     }
   },
   computed: {
@@ -153,6 +156,7 @@ export default {
       this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
         this.configs = this.normalConfig.normalConfig
+        this.orignConfigs = cloneDeep(this.normalConfig.normalConfig)
       })
     }
   },
@@ -161,14 +165,32 @@ export default {
       'getRemoteNormalConfig',
       'updateRemoteNormalConfig'
     ]),
-    onSubmit(e) {
-      let params = []
-      this.configs.forEach(config => {
+    filterParams(params) {
+      let result = []
+      params.forEach(config => {
         if (!config.days.length || !config.queue.length) return
         let c = []
         config.queue.forEach(q => c.push(q.join('-')))
-        params.push({ days: config.days, config: c })
+        result.push({ days: config.days, config: c })
       })
+      return result
+    },
+    onUpdate() {
+      const configs = this.filterParams(this.configs)
+      const orignConfigs = this.filterParams(this.orignConfigs)
+      const hasNoChanged = isEqual(configs, orignConfigs)
+      if (hasNoChanged) {
+        this.$message({
+          showClose: true,
+          message: '配置没有变化，无需编辑！',
+          duration: 3000,
+          type: 'error'
+        })
+      }
+      else this.visible = true
+    },
+    onSubmit(e) {
+      const params = this.filterParams(this.configs)
       if (e) {
         this.loading = true
         this.updateRemoteNormalConfig({
