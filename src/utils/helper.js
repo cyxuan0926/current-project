@@ -296,3 +296,7 @@ export function toCurrencyString(amount, decimalDigit = 2) {
       })
   }
 }
+
+export function uuId() {
+  return `uuid-${ Math.floor(Math.random() * Date.now()) }`
+}
