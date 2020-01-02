@@ -92,9 +92,7 @@ export default {
   props: {
     item: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     },
     prop: {
       type: String,
@@ -102,7 +100,7 @@ export default {
     },
     fields: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     },
     rule: {
       type: Array,

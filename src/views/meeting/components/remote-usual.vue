@@ -70,7 +70,7 @@
         v-if="configs[0].queue.length && !disabled && permission === 'edit'"
         size="small"
         type="primary"
-        @click="visible = true">更新</el-button>
+        @click="onUpdate">更新</el-button>
     </div>
     <el-dialog
       :visible.sync="visible"
@@ -100,6 +100,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+import isEqual from 'lodash/isEqual'
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   data() {
     return {
@@ -114,14 +116,19 @@ export default {
         { label: '星期日', value: 0 }
       ],
       configs: [
-        { days: [], config: [], queue: [] }
+        {
+          days: [],
+          config: [],
+          queue: []
+        }
       ],
       queue: ['09:00', '09:30'],
       flag: true,
       loading: false,
       disabled: true,
       permission: 'add',
-      visible: false
+      visible: false,
+      orignConfigs: []
     }
   },
   computed: {
@@ -143,37 +150,60 @@ export default {
     }
   },
   activated() {
-    //
     if (this.$route.meta.role === '0') this.disabled = false
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
     if (this.permission === 'edit') {
       this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
         this.configs = this.normalConfig.normalConfig
+        this.orignConfigs = cloneDeep(this.normalConfig.normalConfig)
       })
     }
   },
   methods: {
-    ...mapActions(['getRemoteNormalConfig', 'updateRemoteNormalConfig']),
-    onSubmit(e) {
-      let params = []
-      this.configs.forEach(config => {
+    ...mapActions([
+      'getRemoteNormalConfig',
+      'updateRemoteNormalConfig'
+    ]),
+    filterParams(params) {
+      let result = []
+      params.forEach(config => {
         if (!config.days.length || !config.queue.length) return
         let c = []
         config.queue.forEach(q => c.push(q.join('-')))
-        params.push({ days: config.days, config: c })
+        result.push({ days: config.days, config: c })
       })
+      return result
+    },
+    onUpdate() {
+      const configs = this.filterParams(this.configs)
+      const orignConfigs = this.filterParams(this.orignConfigs)
+      const hasNoChanged = isEqual(configs, orignConfigs)
+      if (hasNoChanged) {
+        this.$message({
+          showClose: true,
+          message: '配置没有变化，无需编辑！',
+          duration: 3000,
+          type: 'error'
+        })
+      }
+      else this.visible = true
+    },
+    onSubmit(e) {
+      const params = this.filterParams(this.configs)
       if (e) {
         this.loading = true
-        this.updateRemoteNormalConfig({ id: this.normalConfig.id, jailId: this.normalConfig.jailId, normalConfig: params }).then(res => {
+        this.updateRemoteNormalConfig({
+          id: this.normalConfig.id,
+          jailId: this.normalConfig.jailId,
+          normalConfig: params
+        }).then(res => {
           this.loading = false
           if (!res) return
           this.visible = false
         })
       }
-      else {
-        this.$emit('submit', params)
-      }
+      else this.$emit('submit', params)
     },
     handleConfig(e) {
       this.configs[e].queue = [this.queue]
@@ -184,12 +214,8 @@ export default {
       this.flag = true
     },
     handleDeleteConfig(e) {
-      if (this.configs.length > 1) {
-        this.configs.splice(e, 1)
-      }
-      else {
-        this.configs = [{ days: [], config: [], queue: [] }]
-      }
+      if (this.configs.length > 1) this.configs.splice(e, 1)
+      else this.configs = [{ days: [], config: [], queue: [] }]
     },
     onAddRange(e) {
       e.push(this.getNextRange(e[e.length - 1]))
