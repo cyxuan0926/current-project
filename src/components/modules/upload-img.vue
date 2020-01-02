@@ -26,13 +26,14 @@
         :on-remove="handleRemove">
         <!-- 这里用来插槽来扩展化 -->
         <template v-for="slotItem in slots['uploadSlots']">
-          <slot :name="slotItem.slotName">
-            <el-button
-              size="small"
-              slot="trigger"
-              :disabled="loading || Boolean(value)"
-              type="primary">上传图片</el-button>
-          </slot>
+          <template :slot="slotItem.type">
+            <slot :name="slotItem.slotName">
+              <el-button
+                size="small"
+                :disabled="loading || Boolean(value)"
+                type="primary">上传图片</el-button>
+            </slot>
+          </template>
         </template>
         <!-- <i class="el-icon-plus"/>
         <div
@@ -107,7 +108,7 @@ export default {
       type: Object,
       default: () => ({
         uploadSlots: [
-          { slotName: 'default' }
+          { slotName: 'default', type: 'trigger' }
         ]
       })
     }
@@ -136,7 +137,8 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('图片上传成功')
-          this.$emit('success', res.url)
+          // this.$emit('success', res.url)
+          this.$emit('input', res.url)
           const urls = localStorage.getItem('urls')
             ? JSON.parse(localStorage.getItem('urls'))
             : []
@@ -191,7 +193,7 @@ export default {
       console.log(e)
     },
     handleRemove(file, fileList) {
-      this.$emit('success', fileList.length ? fileList : '')
+      this.$emit('input', fileList.length ? fileList : '')
     },
     handleDelete() {
       this.$refs.uploadImage.clearFiles()

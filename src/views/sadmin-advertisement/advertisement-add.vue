@@ -76,21 +76,17 @@
             v-model="advertisementData.imageUrl"
             :show-tip="showTip"
             :ratio="imageRatio"
-            @success="onSuccess"
             :slots="uploadImgSlots">
             <template slot="tooltipSlot">
-              <el-tooltip
-              v-if="showTooltip"
-              slot="tip"
-              v-bind="tooltipAttrs">
-              <p class="
-                el-button
-                el-button--primary
-                el-button--small
-                is-disabled" >
-                <span>上传图片</span>
-              </p>
-            </el-tooltip>
+              <el-tooltip v-bind="tooltipAttrs">
+                <p class="
+                  el-button
+                  el-button--primary
+                  el-button--small
+                  is-disabled" >
+                  <span>上传图片</span>
+                </p>
+              </el-tooltip>
             </template>
           </m-upload-img>
         </el-form-item>
@@ -157,11 +153,9 @@ export default {
         content: '请先选择"广告类型"',
         placement: "top-start"
       },
-      // 控制提示组件显示的属性
-      showTooltip: true,
       uploadImgSlots: {
         uploadSlots: [
-          { slotName: 'tooltipSlot' }
+          { slotName: 'tooltipSlot', type: 'tip' }
         ]
       }
     }
@@ -177,10 +171,15 @@ export default {
       return this.hasPermission === 'ádd' ? '新增' : '更新'
     }
   },
+  watch: {
+    'advertisementData.imageUrl'(url) {
+      if (url) this.$refs.form.clearValidate('imageUrl')
+      else this.$refs.form.validateField('imageUrl')
+    }
+  },
   async mounted() {
     if (this.hasPermission === 'add') {
-      this.advertisementData = { imageUrl: '' }
-      this.showTooltip = true
+      this.$set(this.uploadImgSlots, 'uploadSlots', [{ slotName: 'tooltipSlot', type: 'tip' }])
       this.showTip = false
     }
     if (this.hasPermission === 'edit') {
@@ -192,7 +191,7 @@ export default {
         this.advertisement.endDate = dateFormate.Date(this.advertisement.endDate)
         this.advertisement.time = [this.advertisement.startDate, this.advertisement.endDate]
         this.imageRatio = this.advertisement.typeId === 2 ? '360:200' : (this.advertisement.typeId === 1 ? '9:16' : '')
-        this.showTooltip = false
+        this.$set(this.uploadImgSlots, 'uploadSlots', [{ slotName: 'default', type: 'trigger' }])
         this.showTip = true
         this.advertisementData = this.advertisement
       }
@@ -229,20 +228,20 @@ export default {
       switch (e) {
         case 2:
           this.imageRatio = '360:200'
-          this.advertisementData.imageUrl = ''
+          this.$set(this.advertisementData, 'imageUrl', '')
           this.showTip = true
-          this.showTooltip = false
+          this.$set(this.uploadImgSlots, 'uploadSlots', [{ slotName: 'default', type: 'trigger' }])
           break
         case 1:
           this.imageRatio = '9:16'
-          this.advertisementData.imageUrl = ''
+          this.$set(this.advertisementData, 'imageUrl', '')
           this.showTip = true
-          this.showTooltip = false
+          this.$set(this.uploadImgSlots, 'uploadSlots', [{ slotName: 'default', type: 'trigger' }])
           break
         default:
           this.imageRatio = ''
           this.showTip = false
-          this.showTooltip = true
+          this.$set(this.uploadImgSlots, 'uploadSlots', [{ slotName: 'tooltipSlot', type: 'tip' }])
       }
     },
     onTimeRangeChange(e) {
@@ -254,9 +253,6 @@ export default {
         this.advertisementData.startDate = ''
         this.advertisementData.endDate = ''
       }
-    },
-    onSuccess(e) {
-      this.advertisementData.imageUrl = e
     }
   }
 }
