@@ -29,7 +29,7 @@ let check = [{
     path: '/meeting/adjust',
     name: 'meeting-adjust',
     // component: helper.loadView('check-meeting/meeting-adjust'),
-    component: 'check-meeting/meeting-adjust',
+    component: 'check-meeting/meeting-adjust/index',
     // component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve),
     meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '远程会见申请调整' }
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)

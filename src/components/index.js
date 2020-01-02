@@ -18,6 +18,7 @@ import table from './modules/table'
 import TableNew from './modules/table-new'
 import Filter from './modules/filter'
 import Charts from './modules/charts'
+import Draggable from './modules/draggable'
 import excelUpload from './modules/excel-upload'
 export default {
   audio,
@@ -40,5 +41,6 @@ export default {
   TableNew,
   Filter,
   Charts,
+  Draggable,
   excelUpload
 }
