@@ -64,12 +64,14 @@ export default {
         longitude: {
           type: 'input',
           label: '经度',
-          disabled: true
+          disabled: true,
+          noPlaceholder: true
         },
         latitude: {
           type: 'input',
           label: '纬度',
-          disabled: true
+          disabled: true,
+          noPlaceholder: true
         },
         description: {
           type: 'jaileditor',

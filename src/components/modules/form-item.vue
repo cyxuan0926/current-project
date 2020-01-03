@@ -12,7 +12,7 @@
       :autosize="item.autosize"
       v-model="fields[prop]"
       :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
-      :placeholder="item.placeholder || '请输入' + item.label">
+      :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)">
       <template
         v-if="item.append"
         slot="append">{{ item.append }}</template>
