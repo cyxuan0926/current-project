@@ -45,11 +45,25 @@
             <m-img-viewer
               v-if="scope.row.idCardFront"
               :url="scope.row.idCardFront"
+              :toolbar="{ prev: 1, next: 1 }"
               title="身份证正面照" />
             <m-img-viewer
               v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
+              :toolbar="{ prev: 1, next: 1 }"
               title="身份证背面照" />
+            <m-img-viewer
+              v-if="scope.row.avatarUrl"
+              v-show="false"
+              :url="scope.row.avatarUrl"
+              :toolbar="{ prev: 1, next: 1 }"
+              title="头像" />
+            <m-img-viewer
+              v-if="scope.row.relationalProofUrl"
+              v-show="false"
+              :url="scope.row.relationalProofUrl"
+              :toolbar="{ prev: 1, next: 1 }"
+              title="关系证明图" />
           </template>
         </el-table-column>
         <el-table-column
@@ -132,18 +146,22 @@
         <m-img-viewer
           v-if="toAuthorize.idCardFront"
           :url="toAuthorize.idCardFront"
+          :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"/>
         <m-img-viewer
           v-if="toAuthorize.idCardBack"
           :url="toAuthorize.idCardBack"
+          :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"/>
         <m-img-viewer
           v-if="toAuthorize.avatarUrl"
           :url="toAuthorize.avatarUrl"
+          :toolbar="{ prev: 1, next: 1 }"
           title="头像"/>
         <m-img-viewer
           v-if="toAuthorize.relationalProofUrl"
           :url="toAuthorize.relationalProofUrl"
+          :toolbar="{ prev: 1, next: 1 }"
           title="关系证明图"/>
       </div>
       <div
