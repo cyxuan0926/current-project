@@ -44,6 +44,9 @@
     </div>
     <div class="button-box">
       <el-button
+        size="small"
+        @click="onGoBack">返回</el-button>
+      <el-button
         v-if="canEdit"
         :disabled="!(prisonVisitConfigDetail.windowSize && !errorMsg && hasLocalTimeConfig)"
         size="small"
@@ -59,6 +62,7 @@ import Moment from 'moment'
 import validator from '@/utils'
 
 export default {
+  name: 'VisitConfig',
   props: {
     role: {
       type: Number,
@@ -107,6 +111,10 @@ export default {
     }
   },
   mounted() {
+    console.log('created')
+  },
+  activated() {
+    console.log('actived', this.jailId)
     this.getPrisonVisitConfigDetail({ jailId: this.jailId })
   },
   beforeDestroy() {
@@ -153,6 +161,9 @@ export default {
         return [e[1], '23:59']
       }
       return [e[1], time.format('HH:mm')]
+    },
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

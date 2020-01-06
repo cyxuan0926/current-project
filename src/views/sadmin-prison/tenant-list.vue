@@ -50,9 +50,10 @@ export default {
     ...mapState(['tenants'])
   },
   methods: {
-    ...mapActions(['createJailByBindTenant']),
+    ...mapActions(['createJailByBindTenant', 'getTenants']),
     handleCreate(val) {
-      let {name, code, provinceCode, cityCode, streetDetail} = val, params = {name, code, provinceCode, cityCode, streetDetail}
+      const {name, code, provinceCode, cityCode, streetDetail} = val
+      const params = {name, code, provinceCode, cityCode, streetDetail}
       this.createJailByBindTenant(params).then(res => {
         if (!res) return
         val.isJailCreated = 1

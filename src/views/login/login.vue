@@ -11,12 +11,14 @@
           @keyup.enter.native="handleLogin">
           <el-form-item prop="username">
             <el-input
+              clearable
               v-model.trim="formData.username"
               placeholder="用户名">
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
+              clearable
               type="password"
               v-model.trim="formData.password"
               placeholder="密码">

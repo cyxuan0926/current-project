@@ -79,6 +79,11 @@
             @click="onAddDay">新增特殊日期</el-button>
         </div>
       </div>
+      <div class="button-box">
+        <el-button
+          size="small"
+          @click="onGoBack">返回</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -120,7 +125,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getRemoteSpecialConfig', 'addSpecialConfig', 'updateSpecialConfig', 'deleteSpecialConfig']),
+    ...mapActions([
+      'getRemoteSpecialConfig',
+      'addSpecialConfig',
+      'updateSpecialConfig',
+      'deleteSpecialConfig'
+    ]),
     onSubmit(config, index, e) {
       let params = {
         day: config.day,
@@ -238,6 +248,9 @@ export default {
         return [e[1], '23:59']
       }
       return [e[1], time.format('HH:mm')]
+    },
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

@@ -67,6 +67,9 @@
     </div>
     <div class="button-box">
       <el-button
+        size="small"
+        @click="onGoBack">返回</el-button>
+      <el-button
         v-if="configs[0].queue.length && !disabled && permission === 'edit'"
         size="small"
         type="primary"
@@ -249,6 +252,9 @@ export default {
         })
         return !days.some(v => v === w.value)
       }
+    },
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

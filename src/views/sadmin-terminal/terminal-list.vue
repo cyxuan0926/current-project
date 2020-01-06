@@ -12,46 +12,23 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="terminals.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="terminalNumber"
-          label="终端号" />
-        <el-table-column
-          prop="roomNumber"
-          label="会议室号" />
-        <el-table-column
-          min-width="100"
-          prop="jailName"
-          label="所属监狱" />
-        <el-table-column
-          prop="prisonConfigName"
-          label="分监区" />
-        <el-table-column
-          min-width="60"
-          prop="hostPassword"
-          label="主持人密码" />
-        <el-table-column
-          min-width="60"
-          prop="mettingPassword"
-          label="参会密码" />
-        <el-table-column
-          min-width="90"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="onEdit(scope.row.id)">编辑</el-button>
-            <el-button
-              :type="scope.row.isEnabled ? 'danger': 'primary'"
-              size="mini"
-              @click="onEnable(scope.row)">{{ scope.row.isEnabled ? '停用' : '启用' }}</el-button>  
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="terminals.contents"
+        :cols="tableCols">
+        <template
+          slot="operation"
+          slot-scope="scope">
+          <el-button
+            type="primary"
+            size="mini"
+            @click="onEdit(scope.row.id)">编辑</el-button>
+          <el-button
+            :type="scope.row.isEnabled ? 'danger': 'primary'"
+            size="mini"
+            @click="onEnable(scope.row)">{{ scope.row.isEnabled ? '停用' : '启用' }}</el-button>  
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -73,7 +50,41 @@ export default {
           belong: { value: 'id', label: 'title' },
           filterable: true
         }
-      }
+      },
+      tableCols: [
+        {
+          label: '终端号',
+          prop: 'terminalNumber'
+        },
+        {
+          label: '会议室号',
+          prop: 'roomNumber'
+        },
+        {
+          label: '所属监狱',
+          prop: 'jailName',
+          minWidth: 100
+        },
+        {
+          label: '分监区',
+          prop: 'prisonConfigName'
+        },
+        {
+          label: '主持人密码',
+          prop: 'hostPassword',
+          minWidth: 60
+        },
+        {
+          label: '参会密码',
+          prop: 'mettingPassword',
+          minWidth: 60
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          minWidth: 90
+        }
+      ]
     }
   },
   computed: {

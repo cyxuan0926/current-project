@@ -76,6 +76,9 @@ export default {
   mounted() {
     this.render()
   },
+  activated() {
+    console.log('romote-edit activated')
+  },
   methods: {
     ...mapActions(['getRemoteAdvanceDayLimit', 'updateRemoteAdvanceDayLimit']),
     handleClick() {
@@ -101,6 +104,14 @@ export default {
         advanceDayLimit: day
       })
     }
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log(22, to, from)
+    if (from.meta.hasNoGetting) {
+      console.log('sdasd')
+      from.meta.hasNoGetting = false
+    }
+    next()
   }
 }
 </script>

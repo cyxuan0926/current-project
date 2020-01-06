@@ -31,8 +31,7 @@
         <el-table-column
           v-if="hasAllPrisonQueryAuth"
           prop="jailName" 
-          label="监狱名称"
-        />
+          label="监狱名称" />
         <el-table-column
           prop="name"
           min-width="80px"
@@ -71,7 +70,9 @@
           prop="relationship"
           width="70px"
           label="关系" />
-        <el-table-column label="家属会见告知书" width="110px">
+        <el-table-column
+          label="家属会见告知书"
+          width="110px" >
           <template slot-scope="scope">
             <span
               :class="[
@@ -396,17 +397,15 @@ export default {
       'getRegistrations',
       'getRegistrationsAll',
       'authorizeRegistrations',
-      'getNotification']),
+      'getNotification'
+    ]),
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
 
       const params = { ...this.filter, ...this.pagination }
 
-      if (this.hasAllPrisonQueryAuth) {
-        this.getRegistrationsAll(params)
-      } else {
-        this.getRegistrations(params)
-      }
+      if (this.hasAllPrisonQueryAuth) this.getRegistrationsAll(params)
+      else this.getRegistrations(params)
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -425,32 +424,20 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if (this.remarks === '其他') {
           this.$refs.refuseForm.validate(valid => {
-            if (valid) {
-              params.remarks = this.refuseForm.anotherRemarks
-            }
-            else {
-              this.btnDisable = false
-            }
+            if (valid) params.remarks = this.refuseForm.anotherRemarks
+            else this.btnDisable = false
           })
         }
-        else {
-          params.remarks = this.remarks
-        }
+        else params.remarks = this.remarks
         if (e === 'WITHDRAW') {
           this.$refs.withdrawForm.validate(valid => {
-            if (valid) {
-              params.withdrawReason = this.withdrawForm.withdrawReason
-            }
-            else {
-              this.btnDisable = false
-            }
+            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason
+            else this.btnDisable = false
           })
         }
         if (this.btnDisable) this.handleSubmit(params)
       }
-      else {
-        this.handleSubmit(params)
-      }
+      else this.handleSubmit(params)
     },
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {

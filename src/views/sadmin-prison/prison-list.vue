@@ -63,19 +63,19 @@ export default {
       this.$router.push(`/prison/edit/${ e }`)
     },
     onVisit(e, type) {
-      if (type === 'visit') {
-        this.$router.push(`/prison/visit/${ e }`)
-      }
-      else {
-        this.$router.push(`/remote/edit/${ e }`)
-      }
+      console.log(e, type)
+      if (type === 'visit') this.$router.push(`/prison/visit/${ e }`)
+      else this.$router.push(`/remote/edit/${ e }`)
     }
+  },
+  activated() {
+    console.log('prison-list activated')
   }
 }
 </script>
 
-// <style type="text/stylus" lang="stylus" scoped>
+<style type="text/stylus" lang="stylus" scoped>
 // .row-container .cell img
 //   width: 91px;
 //   height: 91px;
-// </style>
+</style>

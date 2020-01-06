@@ -418,8 +418,20 @@ export default {
       user: state => state.global.user
     }),
     dialogContent() {
-      const genderOptions = [{ label: '男', value: 'm' }, { label: '女', value: 'f' }]
-      const genderProps = { label: 'label', value: 'value' }
+      const genderOptions = [
+        {
+          label: '男',
+          value: 'm'
+        },
+        {
+          label: '女',
+          value: 'f'
+        }
+      ]
+      const genderProps = {
+        label: 'label',
+        value: 'value'
+      }
       const delReason = [
         {
           label: '刑满释放',

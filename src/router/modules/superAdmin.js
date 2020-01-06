@@ -14,14 +14,25 @@ let superAdmin = [{
     children: [{
       path: '/prison/list',
       name: 'prison-list',
-      meta: { permission: 'visit.prison.search', breadcrumbName: '监狱列表' },
+      meta: {
+        permission: 'visit.prison.search',
+        breadcrumbName: '监狱列表',
+        componentsToKeepAlive: ['PrisonTab', 'VisitConfig'],
+        hasNoGetting: true
+        // componentsUnRemoveKeepAlive: []
+      },
       component: 'sadmin-prison/prison-list'
       // component: helper.loadView('sadmin-prison/prison-list')
       // component: resolve => require(['@/views/sadmin-prison/prison-list'], resolve)
     }, {
       path: '/tenant/list',
       name: 'tenant-list',
-      meta: { permission: 'visit.prison.tenant.search', breadcrumbName: '租户列表', activeMenu: '/prison/list' },
+      meta: {
+        permission: 'visit.prison.tenant.search',
+        breadcrumbName: '租户列表',
+        activeMenu: '/prison/list',
+        componentsUnRemoveKeepAlive: ['PrisonTab', 'VisitConfig']
+      },
       component: 'sadmin-prison/tenant-list'
       // component: resolve => require(['@/views/sadmin-prison/tenant-list'], resolve)
       // component: helper.loadView('sadmin-prison/tenant-list')
@@ -49,7 +60,9 @@ let superAdmin = [{
       meta: { role: '0',
         permission: 'visit.prison.filed-visit-config.search',
         breadcrumbName: '监狱实地会见配置',
-        activeMenu: '/prison/list' },
+        activeMenu: '/prison/list',
+        componentsUnRemoveKeepAlive: ['PrisonTab', 'VisitConfig']
+      },
       component: 'meeting/visit-config'
       // component: resolve => require(['@/views/meeting/visit-config'], resolve)
       // component: helper.loadView('meeting/visit-config')
@@ -65,7 +78,10 @@ let superAdmin = [{
       meta: { role: '0',
         permission: 'visit.prison.visit-config.search',
         breadcrumbName: '监狱远程会见配置',
-        activeMenu: '/prison/list' },
+        activeMenu: '/prison/list',
+        componentsUnRemoveKeepAlive: ['PrisonTab'],
+        hasNoGetting: true
+      },
       component: 'meeting/remote-edit'
       // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
       // component: helper.loadView('meeting/remote-edit')
@@ -77,7 +93,9 @@ let superAdmin = [{
         permission: 'visit.prison.update',
         role: '0',
         activeMenu: '/prison/list',
-        breadcrumbName: '编辑监狱'
+        breadcrumbName: '编辑监狱',
+        componentsUnRemoveKeepAlive: ['PrisonTab'],
+        hasNoGetting: true
       },
       component: 'sadmin-prison/prison-edit'
       // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)

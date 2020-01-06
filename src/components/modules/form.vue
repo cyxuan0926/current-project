@@ -67,6 +67,7 @@
         <el-button
           v-if="button === 'back'"
           :key="index"
+          @click="onGoBack"
           size="small">返回</el-button>
       </template>
     </div>
@@ -129,6 +130,9 @@ export default {
     onCancel() {
       this.$refs.form.resetFields()
       this.$emit('cancel')
+    },
+    onGoBack() {
+      this.$emit('back')
     },
     handleResetField() {
       this.$refs.form.resetFields()

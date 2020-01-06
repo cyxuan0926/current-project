@@ -3,6 +3,7 @@
     <m-form
       :items="formItems"
       @submit="onSubmit"
+      @back="onBack"
       :values="values"/>
   </div>
 </template>
@@ -12,11 +13,23 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     let formButton = {}
-    formButton.buttons = ['update']
+    formButton.buttons = [
+      'back',
+      'update'
+    ]
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '150px' },
-        dailyApplyLimit: { type: 'input', label: '每人日申请次数限制', rules: ['isNumber', 'numberRange0'], append: '次/人', value: null }
+        dailyApplyLimit: {
+          type: 'input',
+          label: '每人日申请次数限制',
+          rules: [
+            'isNumber',
+            'numberRange0'
+          ],
+          append: '次/人',
+          value: null
+        }
       }, formButton),
       values: {}
     }
@@ -33,13 +46,19 @@ export default {
   mounted() {
   },
   methods: {
-    ...mapActions(['getPrisonDetail', 'updatePrison']),
+    ...mapActions([
+      'getPrisonDetail',
+      'updatePrison'
+    ]),
     onSubmit(e) {
       this.updatePrison(e).then(res => {
         if (!res) return
         // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
         // else this.$router.push('/jails/detail')
       })
+    },
+    onBack() {
+      this.$router.push({ path: '/prison/list' })
     }
   }
 }

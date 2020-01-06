@@ -5,9 +5,9 @@
     <m-excel-download
       v-if="activeName === 'prison'"
       path="/download/exportJails" 
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch" />
     <el-tabs
@@ -24,6 +24,7 @@
     </el-tabs>
     <router-view />
     <m-pagination
+      v-if="paginationShow"
       ref="pagination"
       :total="total"
       @onPageChange="getDatas" />
@@ -32,50 +33,86 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
+  name: 'PrisonTab',
   data () {
     return {
       tabMapOptions: [
-        { label: '监狱', key: 'prison' },
-        { label: '租户', key: 'tenant' }
+        {
+          label: '监狱',
+          key: 'prison'
+        },
+        {
+          label: '租户',
+          key: 'tenant'
+        }
       ],
       activeName: this.$route.path.slice(this.$route.path.indexOf('/')+1, this.$route.path.lastIndexOf('/')),
       searchItems: {
-        title: { type: 'input', label: '监狱名称', miss: false },
-        name: { type: 'input', label: '租户名称', miss: true }
+        title: {
+          type: 'input',
+          label: '监狱名称',
+          miss: false
+        },
+        name: {
+          type: 'input',
+          label: '租户名称',
+          miss: true
+        }
       },
       total: 0,
-      filter: {}
+      filter: {},
+      pagination: {
+        page: 1,
+        rows: 10
+      },
+      paginationShow: false
     }
-  },
-  mounted() {
-    this.getSearchItem()
   },
   watch: {
-    '$route' (val) {
-      this.getSearchItem('clearFilter')
+    '$route' (to, from) {
+      console.log(from, to)
+      if (!from.meta.hasNoGetting) {
+        this.getSearchItem('clearFilter')
+      }
     }
   },
+  created() {
+    this.getSearchItem()
+  },
+  activated() {
+    console.log('prison-tab activated')
+  },
   methods: {
-    ...mapActions(['getTenants', 'getPrisons']),
+    ...mapActions([
+      'getTenants',
+      'getPrisons'
+    ]),
     handleClick() {
       this.$router.push(`/${this.activeName}/list`)
+      const page = this.activeName !== 'tenant' ? 1 : 0
+      this.$set(this.pagination, 'page', page)
+      this.$refs.pagination.updateCurrentPage(page)
     },
     getDatas() {
-      let tabName = this.activeName.toLowerCase(), api = this.activeName.toLowerCase().replace(/^\S/, function(s) { return s.toUpperCase() })
-      if(tabName==='tenant') {
-        let { page } = this.pagination
-        this.$set(this.pagination, 'page', page-1)
+      this.paginationShow = false
+      const tabName = this.activeName.toLowerCase()
+      const api = this.activeName.toLowerCase().replace(/^\S/, function(s) { return s.toUpperCase() })
+      if (tabName ==='tenant') {
+        const { page } = this.pagination
+        const currentPage = page <= 0 ? 0 : page - 1
+        this.$set(this.pagination, 'page', currentPage)
       }
       this[`get${api}s`]({ ...this.filter, ...this.pagination }).then(res => {
-        if(!res) return
+        if (!res) return
         this.total = this.$store.state[`${tabName}s`]['total']
       })
+      this.paginationShow = true
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    getSearchItem(e) {
-      let tabName = this.activeName.toLowerCase()
+    async getSearchItem(e) {
+      const tabName = this.activeName.toLowerCase()
       if (tabName === 'tenant') {
         this.searchItems.title.miss = true
         this.searchItems.name.miss = false
@@ -84,13 +121,8 @@ export default {
         this.searchItems.title.miss = false
         this.searchItems.name.miss = true
       }
-      if (e === 'clearFilter') {
-        this.filter = {}
-        this.$refs.pagination.handleCurrentChange(1)
-      }
-      else {
-        this.getDatas()
-      }
+      if (e === 'clearFilter') this.$refs.search.onClear()
+      await this.getDatas()
     }
   }
 }

@@ -5,70 +5,35 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportPrisonStatical"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="prisonAreaReportList.contents"
+      <m-table-new
         stripe
         show-summary
         :summary-method="summaryMethod"
-        style="width: 100%">
-        <el-table-column
-          v-if="hasAllPrisonQueryAuth"
-          prop="jailName" 
-          label="监狱名称"
-        />
-        <el-table-column
-          prop="prisonerName"
-          label="罪犯姓名" />
-        <el-table-column
-          prop="prisonerNumber"
-          label="罪犯编号" />
-        <el-table-column
-          prop="prisonArea"
-          label="监区" />
-        <el-table-column
-          prop="total"
-          label="会见申请次数">
-          <template slot-scope="scope">
-            {{ scope.row.total }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="finishedTotal"
-          label="会见完成次数">
-          <template slot-scope="scope">
-            {{ scope.row.finishedTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="canceledTotal"
-          label="会见取消次数">
-          <template slot-scope="scope">
-            {{ scope.row.canceledTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="expiredTotal"
-          label="会见过期次数">
-          <template slot-scope="scope">
-            {{ scope.row.expiredTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="deniedTotal"
-          label="会见拒绝/撤回次数">
-          <template slot-scope="scope">
-            {{ scope.row.deniedTotal }} 次
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="prisonAreaReportList.contents"
+        :cols="tableCols">
+        <template
+          slot="total"
+          slot-scope="scope">{{ scope.row.total }} 次</template>
+        <template
+          slot="finishedTotal"
+          slot-scope="scope">{{ scope.row.finishedTotal }} 次</template>
+        <template
+          slot="canceledTotal"
+          slot-scope="scope">{{ scope.row.canceledTotal }} 次</template>
+        <template
+          slot="expiredTotal"
+          slot-scope="scope">{{ scope.row.expiredTotal }} 次</template>
+        <template
+          slot="deniedTotal"
+          slot-scope="scope">{{ scope.row.deniedTotal }} 次</template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -100,7 +65,10 @@ export default {
           value: '',
           canNotClear: true,
           getting: true,
-          belong: { value: 'id', label: 'name' },
+          belong: {
+            value: 'id',
+            label: 'name'
+          },
           filterable: true,
           options: []
         },
@@ -129,11 +97,62 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prisonAreaReportList', 'jailPrisonAreas', 'user']),
+    ...mapState([
+      'prisonAreaReportList',
+      'jailPrisonAreas',
+      'user'
+    ]),
     summaryMethod() {
       return this.hasAllPrisonQueryAuth
         ? this.getSummariesAll
         : this.getSummaries
+    },
+    tableCols() {
+      let allCols = [
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '罪犯姓名',
+          prop: 'prisonerName'
+        },
+        {
+          label: '罪犯编号',
+          prop: 'prisonerNumber'
+        },
+        {
+          label: '监区',
+          prop: 'prisonArea'
+        },
+        {
+          label: '会见申请次数',
+          prop: 'total',
+          slotName: 'total'
+        },
+        {
+          label: '会见完成次数',
+          prop: 'finishedTotal',
+          slotName: 'finishedTotal'
+        },
+        {
+          label: '会见取消次数',
+          prop: 'canceledTotal',
+          slotName: 'canceledTotal'
+        },
+        {
+          label: '会见过期次数',
+          prop: 'expiredTotal',
+          slotName: 'expiredTotal'
+        },
+        {
+          label: '会见拒绝/撤回次数',
+          prop: 'deniedTotal',
+          slotName: 'deniedTotal'
+        }
+      ]
+      if (!this.hasAllPrisonQueryAuth) allCols.splice(0, 1)
+      return allCols
     }
   },
   mounted() {
@@ -152,7 +171,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getPrisonAreaReportList', 'getPrisonAreaReportListAll', 'getJailPrisonAreas']),
+    ...mapActions([
+      'getPrisonAreaReportList',
+      'getPrisonAreaReportListAll',
+      'getJailPrisonAreas'
+    ]),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
@@ -161,7 +184,6 @@ export default {
       this.prisonArea = this.searchItems.prisonAreaId.options.find(o => o.id === this.filter.prisonAreaId)
       if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length === 1) delete this.filter.prisonAreaId
       else if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length > 1) this.filter.prisonAreaId = ''
-
       if (this.hasAllPrisonQueryAuth) {
         this.getPrisonAreaReportListAll({ ...this.filter, ...this.pagination }).then(res => {
           if (!res) return

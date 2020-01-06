@@ -6,38 +6,14 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="appLogs.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="phone"
-          label="账号" />
-        <el-table-column
-          prop="appVersion"
-          label="app版本" />
-        <el-table-column
-          prop="deviceName"
-          label="设备名称" />
-        <el-table-column
-          prop="deviceType"
-          label="设备类型" />
-        <el-table-column
-          prop="sysVersion"
-          label="系统版本" />
-        <el-table-column
-          prop="contents"
-          width="380px"
-          show-overflow-tooltip
-          label="内容" />
-        <el-table-column
-          label="创建时间"
-          width="166px">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="appLogs.contents"
+        :cols="tableCols">
+        <template
+          slot="createdAt"
+          slot-scope="scope">{{ scope.row.createdAt | Date }}</template>  
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -55,7 +31,40 @@ export default {
       searchItems: {
         // endTime: { type: 'datetime', label: '结束时间' },
         time: { type: 'datetimerange', start: 'startTime', end: 'endTime' }
-      }
+      },
+      tableCols: [
+        {
+          label: '账号',
+          prop: 'phone'
+        },
+        {
+          label: 'app版本',
+          prop: 'appVersion'
+        },
+        {
+          label: '设备名称',
+          prop: 'deviceName'
+        },
+        {
+          label: '设备类型',
+          prop: 'deviceType'
+        },
+        {
+          label: '系统版本',
+          prop: 'sysVersion'
+        },
+        {
+          label: '内容',
+          prop: 'contents',
+          width: '380px',
+          showOverflowTooltip: true
+        },
+        {
+          label: '创建时间',
+          slotName: 'createdAt',
+          width: '166px'
+        }
+      ]
     }
   },
   computed: {

@@ -5,7 +5,8 @@
       ref="form"
       :items="formItems"
       @submit="onSubmit"
-      :values="values"/>
+      @back="onBack"
+      :values="values" />
   </div>
 </template>
 
@@ -14,9 +15,14 @@ import { mapActions, mapState } from 'vuex'
 import roles from '@/common/constants/roles'
 export default {
   data() {
-    let formButton = { buttons: [{ update: { loading: false } }] },
-      permission = 'edit',
-      allFormItems = {
+    const formButton = {
+      buttons: [
+        'back',
+        {
+          update: { loading: false }
+        }]
+    }, permission = 'edit'
+    let allFormItems = {
         formConfigs: { labelWidth: '140px' },
         title: {
           type: 'input',
@@ -106,6 +112,7 @@ export default {
     ...mapState(['prison'])
   },
   activated() {
+    console.log(1)
     if ((this.permission === 'edit' && this.$route.query.tag === 'prisonBase') || (this.permission === 'edit' && !this.$route.query.tag)) {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
@@ -117,9 +124,7 @@ export default {
     this.show = true
   },
   deactivated() {
-    if (this.permission === 'edit') {
-      this.show = false
-    }
+    if (this.permission === 'edit') this.show = false
   },
   destroyed() {
     this.removeUrlStorage()
@@ -152,6 +157,9 @@ export default {
         if (!res) return
         this.formItems.citysId = Object.assign({}, this.formItems.citysId, { options: res.options, props: { label: res.label, value: res.value }, loading: false, value: '', disabled: true })
       })
+    },
+    onBack() {
+      this.$router.push({ path: '/prison/list' })
     }
   }
 }
