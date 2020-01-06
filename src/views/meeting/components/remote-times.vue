@@ -10,6 +10,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import roles from '@/common/constants/roles'
 export default {
   data() {
     let formButton = {}
@@ -17,6 +18,9 @@ export default {
       'back',
       'update'
     ]
+    if (this.$store.getters.role !== roles.SUPER_ADMIN) {
+      formButton.buttons = ['update']
+    }
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '150px' },

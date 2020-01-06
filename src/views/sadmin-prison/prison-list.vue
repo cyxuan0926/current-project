@@ -63,13 +63,9 @@ export default {
       this.$router.push(`/prison/edit/${ e }`)
     },
     onVisit(e, type) {
-      console.log(e, type)
       if (type === 'visit') this.$router.push(`/prison/visit/${ e }`)
       else this.$router.push(`/remote/edit/${ e }`)
     }
-  },
-  activated() {
-    console.log('prison-list activated')
   }
 }
 </script>

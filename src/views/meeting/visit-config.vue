@@ -44,6 +44,7 @@
     </div>
     <div class="button-box">
       <el-button
+        v-if="superAdmin"
         size="small"
         @click="onGoBack">返回</el-button>
       <el-button
@@ -60,6 +61,7 @@
 import { mapActions, mapState, mapMutations } from 'vuex'
 import Moment from 'moment'
 import validator from '@/utils'
+import roles from '@/common/constants/roles'
 
 export default {
   name: 'VisitConfig',
@@ -79,6 +81,9 @@ export default {
   },
   computed: {
     ...mapState(['prisonVisitConfigDetail']),
+    superAdmin() {
+      return this.$store.getters.role === roles.SUPER_ADMIN
+    },
     errorMsg() {
       if (this.prisonVisitConfigDetail.windowSize === null || this.prisonVisitConfigDetail.windowSize === undefined) {
         return ''
@@ -111,10 +116,6 @@ export default {
     }
   },
   mounted() {
-    console.log('created')
-  },
-  activated() {
-    console.log('actived', this.jailId)
     this.getPrisonVisitConfigDetail({ jailId: this.jailId })
   },
   beforeDestroy() {

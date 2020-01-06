@@ -5,7 +5,9 @@
       type="border-card"
       class="min-height-400"
       @tab-click="handleClick">
-      <div v-if="activeName === 'usual'" class="remote-visit-form">
+      <div
+        v-if="activeName === 'usual'"
+        class="remote-visit-form">
         <remote-visit-day
           v-model="advanceDayLimit_"
           @submit="handleUpdateAdvanceDayLimit"
@@ -36,14 +38,28 @@ import special from './components/remote-special'
 import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';
 export default {
-  components: { remoteVisitDay, usual, special, times },
+  components: {
+    remoteVisitDay,
+    usual,
+    special,
+    times
+  },
   data() {
     return {
       activeName: 'usual',
       tabMapOptions: [
-        { label: '常规配置', key: 'usual' },
-        { label: '特殊日期配置', key: 'special' },
-        { label: '每人日申请次数限制配置', key: 'times' }
+        {
+          label: '常规配置',
+          key: 'usual'
+        },
+        {
+          label: '特殊日期配置',
+          key: 'special'
+        },
+        {
+          label: '每人日申请次数限制配置',
+          key: 'times'
+        }
       ],
       advanceDayLimit_: 1 // 远程探视申请需提前天数
     }
@@ -76,11 +92,11 @@ export default {
   mounted() {
     this.render()
   },
-  activated() {
-    console.log('romote-edit activated')
-  },
   methods: {
-    ...mapActions(['getRemoteAdvanceDayLimit', 'updateRemoteAdvanceDayLimit']),
+    ...mapActions([
+      'getRemoteAdvanceDayLimit',
+      'updateRemoteAdvanceDayLimit'
+    ]),
     handleClick() {
       this.$router.replace({ query: { tag: this.activeName } })
     },
@@ -104,14 +120,6 @@ export default {
         advanceDayLimit: day
       })
     }
-  },
-  beforeRouteLeave (to, from, next) {
-    console.log(22, to, from)
-    if (from.meta.hasNoGetting) {
-      console.log('sdasd')
-      from.meta.hasNoGetting = false
-    }
-    next()
   }
 }
 </script>

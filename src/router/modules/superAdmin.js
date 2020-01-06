@@ -17,9 +17,7 @@ let superAdmin = [{
       meta: {
         permission: 'visit.prison.search',
         breadcrumbName: '监狱列表',
-        componentsToKeepAlive: ['PrisonTab', 'VisitConfig'],
-        hasNoGetting: true
-        // componentsUnRemoveKeepAlive: []
+        componentsToKeepAlive: ['PrisonTab']
       },
       component: 'sadmin-prison/prison-list'
       // component: helper.loadView('sadmin-prison/prison-list')
@@ -31,7 +29,7 @@ let superAdmin = [{
         permission: 'visit.prison.tenant.search',
         breadcrumbName: '租户列表',
         activeMenu: '/prison/list',
-        componentsUnRemoveKeepAlive: ['PrisonTab', 'VisitConfig']
+        componentsUnRemoveKeepAlive: ['PrisonTab']
       },
       component: 'sadmin-prison/tenant-list'
       // component: resolve => require(['@/views/sadmin-prison/tenant-list'], resolve)
@@ -61,7 +59,7 @@ let superAdmin = [{
         permission: 'visit.prison.filed-visit-config.search',
         breadcrumbName: '监狱实地会见配置',
         activeMenu: '/prison/list',
-        componentsUnRemoveKeepAlive: ['PrisonTab', 'VisitConfig']
+        componentsUnRemoveKeepAlive: ['PrisonTab']
       },
       component: 'meeting/visit-config'
       // component: resolve => require(['@/views/meeting/visit-config'], resolve)
@@ -79,8 +77,7 @@ let superAdmin = [{
         permission: 'visit.prison.visit-config.search',
         breadcrumbName: '监狱远程会见配置',
         activeMenu: '/prison/list',
-        componentsUnRemoveKeepAlive: ['PrisonTab'],
-        hasNoGetting: true
+        componentsUnRemoveKeepAlive: ['PrisonTab']
       },
       component: 'meeting/remote-edit'
       // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
@@ -94,8 +91,7 @@ let superAdmin = [{
         role: '0',
         activeMenu: '/prison/list',
         breadcrumbName: '编辑监狱',
-        componentsUnRemoveKeepAlive: ['PrisonTab'],
-        hasNoGetting: true
+        componentsUnRemoveKeepAlive: ['PrisonTab']
       },
       component: 'sadmin-prison/prison-edit'
       // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)

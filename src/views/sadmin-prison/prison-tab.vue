@@ -65,22 +65,20 @@ export default {
         page: 1,
         rows: 10
       },
-      paginationShow: false
+      paginationShow: false,
+      loading: false
     }
   },
   watch: {
-    '$route' (to, from) {
-      console.log(from, to)
-      if (!from.meta.hasNoGetting) {
-        this.getSearchItem('clearFilter')
-      }
+    activeName(val) {
+      this.getSearchItem('clearFilter')
     }
   },
   created() {
     this.getSearchItem()
   },
   activated() {
-    console.log('prison-tab activated')
+    this.getSearchItem()
   },
   methods: {
     ...mapActions([
@@ -88,7 +86,7 @@ export default {
       'getPrisons'
     ]),
     handleClick() {
-      this.$router.push(`/${this.activeName}/list`)
+      this.$router.replace(`/${this.activeName}/list`)
       const page = this.activeName !== 'tenant' ? 1 : 0
       this.$set(this.pagination, 'page', page)
       this.$refs.pagination.updateCurrentPage(page)
@@ -112,6 +110,8 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     async getSearchItem(e) {
+      if (this.loading) return
+      this.loading = true
       const tabName = this.activeName.toLowerCase()
       if (tabName === 'tenant') {
         this.searchItems.title.miss = true
@@ -123,6 +123,7 @@ export default {
       }
       if (e === 'clearFilter') this.$refs.search.onClear()
       await this.getDatas()
+      this.loading = false
     }
   }
 }

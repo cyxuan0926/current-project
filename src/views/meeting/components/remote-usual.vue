@@ -67,6 +67,7 @@
     </div>
     <div class="button-box">
       <el-button
+        v-if="superAdmin"
         size="small"
         @click="onGoBack">返回</el-button>
       <el-button
@@ -105,6 +106,7 @@ import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
 import isEqual from 'lodash/isEqual'
 import cloneDeep from 'lodash/cloneDeep'
+import roles from '@/common/constants/roles'
 export default {
   data() {
     return {
@@ -142,6 +144,9 @@ export default {
         days = days.concat(config.days)
       })
       return days.length < 7
+    },
+    superAdmin() {
+      return this.$store.getters.role === roles.SUPER_ADMIN
     }
   },
   watch: {

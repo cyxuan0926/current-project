@@ -11,6 +11,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
+import roles from '@/common/constants/roles'
 export default {
   data() {
     let formButton = { buttons: [] }, permission
@@ -21,7 +22,7 @@ export default {
       ]
       permission = 'edit'
     }
-    if (this.$route.meta.role === '3') delete formButton.buttons
+    if (this.$route.meta.role === '3') formButton.buttons = ['back']
     const disabled = this.$route.meta.role === '3'
     return {
       formItems: Object.assign({}, {
@@ -158,7 +159,8 @@ export default {
       }
     },
     onBack() {
-      this.$router.push({ path: '/prison/list' })
+      if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
+      else this.$router.push({ path: '/jails/detail' })
     }
   }
 }

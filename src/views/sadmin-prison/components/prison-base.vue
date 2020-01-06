@@ -112,7 +112,6 @@ export default {
     ...mapState(['prison'])
   },
   activated() {
-    console.log(1)
     if ((this.permission === 'edit' && this.$route.query.tag === 'prisonBase') || (this.permission === 'edit' && !this.$route.query.tag)) {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
@@ -132,14 +131,12 @@ export default {
   methods: {
     ...mapActions(['getCities', 'getPrisonDetail', 'updatePrison', 'removeUrlStorage', 'setUrlStorage']),
     onSubmit(e) {
-      console.log(e)
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')
         return false
       }
       if (this.permission === 'edit') {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        console.log(params)
         this.formItems.buttons[0].update.loading = true
         this.updatePrison(params).then(res => {
           this.formItems.buttons[0].update.loading = false
@@ -159,7 +156,8 @@ export default {
       })
     },
     onBack() {
-      this.$router.push({ path: '/prison/list' })
+      if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
+      else this.$router.push({ path: '/jails/detail' })
     }
   }
 }

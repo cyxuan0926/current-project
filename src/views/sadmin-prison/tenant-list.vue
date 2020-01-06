@@ -50,7 +50,7 @@ export default {
     ...mapState(['tenants'])
   },
   methods: {
-    ...mapActions(['createJailByBindTenant', 'getTenants']),
+    ...mapActions(['createJailByBindTenant']),
     handleCreate(val) {
       const {name, code, provinceCode, cityCode, streetDetail} = val
       const params = {name, code, provinceCode, cityCode, streetDetail}
