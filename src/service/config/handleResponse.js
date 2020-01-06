@@ -5,6 +5,7 @@ import { showSuccessTip } from './helper'
 // import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
+  Message.closeAll()
   Message({
     showClose: true,
     message: msg,

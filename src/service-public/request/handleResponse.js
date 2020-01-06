@@ -3,6 +3,7 @@ import logout from '@/utils/logout'
 import router from '@/router'
 
 const tip = (message = '操作失败！', type = 'error') => {
+  Message.closeAll()
   Message({ type, message, duration: 3000, showClose: true })
 }
 
