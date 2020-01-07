@@ -34,7 +34,8 @@ let switches = {
     { value: 'FINISHED', label: '已完成' },
     // { value: 'TOBECANCELED', label: '待取消' },
     { value: 'EXPIRED', label: '已过期' },
-    { value: 'CANCELED', label: '已取消' }
+    { value: 'CANCELED', label: '已取消' },
+    { value: 'MEETING_ON', label: '会见中' }
   ],
   registStatus: [
     { value: 'PENDING', label: '未授权' },
