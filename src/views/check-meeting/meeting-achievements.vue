@@ -331,7 +331,6 @@ export default {
     ]),
 
     async onFilter() {
-      console.log("onFilter", this.requetParams)
       try {
         switch (this.filterParams.dimension) {
           case dimensions.INDIVIDUAL:
@@ -352,7 +351,6 @@ export default {
     },
 
     rank(index) {
-      console.log('rank', this.pagination.page, this.pagination.rows)
       return index + 1 + (this.pagination.page - 1) * this.pagination.rows
     },
 
