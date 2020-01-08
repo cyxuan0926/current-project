@@ -142,15 +142,9 @@
       <family-to-show
         :elItems="familyShows"
         :showData="toShow">
-        <template
-          slot-scope="{ toShow }"
-          slot="auditAt">{{ toShow.auditAt | Date }}</template>
-        <template
-          slot-scope="{ toShow }"
-          slot="status">{{ toShow.status | applyStatus }}</template>
-        <template
-          slot-scope="{ toShow }"
-          slot="duration">{{ toShow.duration | time }}</template>
+        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
+        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
+        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
       </family-to-show>
     </el-dialog>
     <el-dialog
@@ -161,24 +155,24 @@
       <family-detial-information
         :elItems="familyDetailInformationItems"
         :detailData="family">
-        <m-img-viewer
-            slot="familyIdCardFront"
-            slot-scope="{ scope }"
+        <template #familyIdCardFront="{ scope }">
+          <m-img-viewer
             v-if="scope.familyIdCardFront"
             :url="scope.familyIdCardFront"
             title="身份证正面"/>
-        <m-img-viewer
-            slot="familyIdCardBack"
-            slot-scope="{ scope }"
+        </template>
+        <template #familyIdCardBack="{ scope }">
+          <m-img-viewer
             v-if="scope.familyIdCardBack"
             :url="scope.familyIdCardBack"
             title="身份证背面"/>
-        <m-img-viewer
-            slot="familyRelationalProofUrl"
-            slot-scope="{ scope }"
+        </template>
+        <template #familyRelationalProofUrl="{ scope }">
+          <m-img-viewer 
             v-if="scope.familyRelationalProofUrl"
             :url="scope.familyRelationalProofUrl"
             title="关系证明图"/>
+        </template>
       </family-detial-information>
     </el-dialog>
   </el-row>
@@ -282,19 +276,31 @@ export default {
           autosize: { minRows: 6 },
           rules: ['required'],
           noLabel: true,
-          label: '撤回理由' },
+          label: '撤回理由'
+        },
         buttons: [
-          { add: 'add', text: '确定' },
-          { cancel: 'cancel', type: 'danger' } ]
+          {
+            add: 'add',
+            text: '确定'
+          },
+          {
+            cancel: 'cancel',
+            type: 'danger'
+          }
+        ]
       },
       // 授权对话框表单组件
       authorizeFormItems: {
         refuseRemark: {
           type: 'textarea',
           autosize: { minRows: 5 },
-          rules: ['required', 'lengthRange-200'],
+          rules: [
+            'required',
+            'lengthRange-200'
+          ],
           noLabel: true,
-          label: '驳回原因' }
+          label: '驳回原因'
+        }
       },
       // 家属详情信息组件
       familyDetailInformationItems: [
@@ -408,7 +414,7 @@ export default {
           <el-row
             :gutter="20"
             v-for="(item, index) in elItems"
-            :key="'id-family-detail-information-item-' + index + Math.random()">
+            :key="'id-family-detail-information-item-' + index">
             <el-col :class="item.definedClass">
               <label>{{ item.label }}：</label>
               <template>
@@ -440,7 +446,7 @@ export default {
             v-bind="button.attrs"
             v-on="button.events"
             v-for="(button, index) in buttonItems"
-            :key="'id-repetition-el-button-' + index + Math.random()">
+            :key="'id-repetition-el-button-' + index">
             {{ button.text }}
           </el-button>
         </el-row>`,

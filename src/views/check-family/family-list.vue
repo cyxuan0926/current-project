@@ -74,11 +74,11 @@
       <template v-if=" operationType === dialogTypes.DETAIL ">
         <el-row
           v-for="(item, index) in prisonerDetailRows"
-          :key="`id-dialog-${ index + Math.random() }`">
+          :key="`id-dialog-${ index }`">
           <el-col
             :span="12"
             v-for="(children, i) in item"
-            :key="`id-dialog-child-${ i + Math.random() }`">
+            :key="`id-dialog-child-${ i }`">
             <label for="">{{ children.label }}：</label>
             <span v-if=" children['prop'] === 'gender' ">{{ prisoner.gender | gender }}</span>
             <span v-else>{{ prisoner[children['prop']] }}</span>
