@@ -18,9 +18,8 @@ export default {
     const formButton = {
       buttons: [
         'back',
-        {
-          update: { loading: false }
-        }]
+        { update: { loading: false } }
+      ]
     }, permission = 'edit'
     let allFormItems = {
         formConfigs: { labelWidth: '140px' },
@@ -137,9 +136,9 @@ export default {
       }
       if (this.permission === 'edit') {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        this.formItems.buttons[0].update.loading = true
+        this.formItems.buttons[1].update.loading = true
         this.updatePrison(params).then(res => {
-          this.formItems.buttons[0].update.loading = false
+          this.formItems.buttons[1].update.loading = false
           if (!res) return
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
           // else this.$router.push('/jails/detail')
