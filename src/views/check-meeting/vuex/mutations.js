@@ -45,5 +45,10 @@ export default {
   },
   setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
     state.meetingStatisticTotalItem = meetingStatisticTotalItem
+  },
+  setMeetingCallRecords: (state, meetingCallRecords) => {
+    const { filterMeetingCallRecords, meetingCallRecordsSize } = meetingCallRecords
+    state.meetingCallRecords.total = meetingCallRecordsSize
+    state.meetingCallRecords.contents = filterMeetingCallRecords.flat()
   }
 }

@@ -5,8 +5,7 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       ref="search"

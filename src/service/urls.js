@@ -58,7 +58,7 @@ const config = {
   },
   ybDevelopment: {
     publicApiHost: 'http://qa.api.auth.prisonpublic.com',
-    apiHost: 'http://192.168.0.150:8021',
+    apiHost: 'http://192.168.0.114:8021',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,

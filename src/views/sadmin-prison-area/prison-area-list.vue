@@ -152,7 +152,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getPrisonAreas', 'getPrisonAll', 'updatePrisonArea', 'deletePrisonArea', 'addPrisonArea']),
+    ...mapActions([
+      'getPrisonAreas',
+      'getPrisonAll',
+      'updatePrisonArea',
+      'deletePrisonArea',
+      'addPrisonArea'
+    ]),
     getDatas() {
       if (this.user.role !== '4' && this.user.role !== '-1') {
         this.getPrisonAreas({ params: {...this.filter, ...this.pagination }})

@@ -299,56 +299,92 @@ let superAdmin = [{
 }, {
   path: '/prison-data',
   name: 'prison-data',
-  meta: { hidden: true, breadcrumbName: '监狱数据查询' },
+  meta: {
+    hidden: true,
+    breadcrumbName: '监狱数据查询'
+  },
   children: [{
     path: '/prison-data/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
-    meta: { permission: 'visit.visit-statistic.all-prison.cost-save.search', breadcrumbName: '远程会见节约成本统计表' }
+    meta: {
+      permission: 'visit.visit-statistic.all-prison.cost-save.search',
+      breadcrumbName: '远程会见节约成本统计表'
+    }
   }, {
     path: '/prison-data/registrations',
     name: 'prison-data_registrations',
     props: { hasAllPrisonQueryAuth: true },
-    meta: { permission: 'visit.family-registration.all-prison.search', breadcrumbName: '家属注册信息' },
+    meta: {
+      permission: 'visit.family-registration.all-prison.search',
+      breadcrumbName: '家属注册信息'
+    },
     component: 'check-registration/registration-list'
     // component: helper.loadView('check-registration/registration-list')
   }, {
     path: '/prison-data/meeting-applications',
     name: 'prison-data_meeting-applications',
     props: { hasAllPrisonQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.all-prison.remote-visit.search', breadcrumbName: '远程会见申请' },
+    meta: {
+      permission: 'visit.visit-statistic.all-prison.remote-visit.search',
+      breadcrumbName: '远程会见申请'
+    },
     component: 'check-meeting/meeting-list'
     // component: helper.loadView('check-meeting/meeting-list')
   }, {
     path: '/prison-data/meeting-statistics',
     name: 'prison-data_meeting-statistics',
     props: { hasAllPrisonQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.all-prison.search', breadcrumbName: '监狱会见统计' },
+    meta: {
+      permission: 'visit.visit-statistic.all-prison.search',
+      breadcrumbName: '监狱会见统计'
+    },
     component: 'meeting-report/prison-report'
     // component: helper.loadView('meeting-report/prison-report')
   }, {
     path: '/prison-data/meeting-statistics/prison-area',
     name: 'prison-data_meeting-statistics_prison-area',
     props: { hasAllPrisonQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.all-prison-area.search', breadcrumbName: '监区会见统计' },
+    meta: {
+      permission: 'visit.visit-statistic.all-prison-area.search',
+      breadcrumbName: '监区会见统计'
+    },
     component: 'meeting-report/prison-area-report'
     // component: helper.loadView('meeting-report/prison-area-report')
   }, {
     path: '/prison-data/prisoners',
     name: 'prison-data_prisoners',
     props: { hasAllPrisonQueryAuth: true },
-    meta: { permission: 'visit.prisoner.all-prison.search', breadcrumbName: '服刑人员信息' },
+    meta: {
+      permission: 'visit.prisoner.all-prison.search',
+      breadcrumbName: '服刑人员信息'
+    },
     component: 'check-prisoner/prisoner-list'
     // component: helper.loadView('check-prisoner/prisoner-list')
   }, {
     path: '/prison-data/warden-mailbox',
     name: 'prison-data_warden-mailbox',
     props: { hasOnlyAllPrisonQueryAuth: true },
-    meta: { breadcrumbName: '监狱长信箱查询', permission: 'visit.prisoner.all-prison.search' },
+    meta: {
+      breadcrumbName: '监狱长信箱查询',
+      permission: 'visit.all-warden-mail.search'
+    },
     component: 'check-mailbox/list'
   }, {
     path: '/prison-data/prison-meeting-statistics',
     component: 'check-meeting/meeting-statistics',
-    meta: { permission: 'visit.visit-statistic.chart.all-prison.search', breadcrumbName: '监狱会见数据统计表' }
+    meta: {
+      permission: 'visit.visit-statistic.chart.all-prison.search',
+      breadcrumbName: '监狱会见数据统计表'
+    }
+  }, {
+    path: '/prison-data/meeting-reconciliation',
+    name: 'prison-data_meeting-reconciliation',
+    props: { hasOnlyAllPrisonQueryAuth: true },
+    meta: {
+      breadcrumbName: '远程会见对账报表',
+      permission: 'visit.meeting.reconciliation.search'
+    },
+    component: 'check-meeting/meeting-reconciliation-list'
   }]
 }]
 

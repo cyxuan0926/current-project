@@ -18,8 +18,7 @@
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
           :filterable="item.filterable"
-          @change="onSelectChange(item.selectKey, item.value)"
-        >
+          @change="onSelectChange(item.selectKey, item.value)" >
           <template v-for="option in item.options">
             <el-option
               v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"

@@ -92,5 +92,52 @@ export default {
     catch (err) {
       throw err
     }
+  },
+  async getMeetingCallRecords({ commit }, params) {
+    try {
+      const { meetingCallRecords, meetingCallRecordsSize } = await repeatAPI.getMeetingCallRecords(params)
+      const { page, rows } = params
+      const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
+        let itemData = {}
+        for (let [key, value] of Object.entries(item)) {
+          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          else itemData = Object.assign({}, itemData, { [key]: value })
+        }
+        return itemData['startTimeConcat'].map((value, index) => (Object.assign({}, { count: itemData['startTimeConcat'].length, orderNumber: index, orderIndex: rows * (page - 1) + num + 1 },
+          itemData, {
+            startTimeConcat: value,
+            mcstatusConcat: itemData['mcstatusConcat'][index],
+            zijingStartTimeConcat: itemData['zijingStartTimeConcat'][index],
+            zijingEndTimeConcat: itemData['zijingEndTimeConcat'][index],
+            zijingDurationConcat: itemData['zijingDurationConcat'][index],
+            endTimeConcat: itemData['endTimeConcat'][index],
+            remarksConcat: itemData['remarksConcat'][index],
+            durationConcat: itemData['durationConcat'][index]
+          })))
+      })
+      commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getBackupMeetingCallRecords({ commit }, params) {
+    try {
+      const { meetingCallRecords, meetingCallRecordsSize } = await repeatAPI.getMeetingCallRecords(params)
+      const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
+        let itemData = {}
+        for (let [key, value] of Object.entries(item)) {
+          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          else itemData = Object.assign({}, itemData, { [key]: value })
+        }
+        return itemData
+      })
+      commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
+      return true
+    }
+    catch (err) {
+      throw err
+    }
   }
 }
