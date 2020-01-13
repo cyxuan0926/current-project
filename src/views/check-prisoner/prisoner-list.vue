@@ -858,7 +858,7 @@ export default {
     // 展示新增罪犯对话框
     async showAddPrisoner() {
       this.operationType = 3
-      await this.handleRolePrisonArea(this.dialogContent['items'], 'prisonConfigId')
+      await this.handleRolePrisonArea(this.dialogContent['items'], 'prisonConfigId', 'props', 'add')
       this.visible = true
     },
     // 关闭对话框
@@ -944,17 +944,19 @@ export default {
       this.deletePrisoners = val
     },
     // 根据角色来区分监区数据
-    async handleRolePrisonArea(element, prop, type = 'props', role = this.user.role) {
+    async handleRolePrisonArea(element, prop, type = 'props',operation = 'search', role = this.user.role) {
       if (role === '-1') {
         // 租户管理员
+        const options = operation === 'search' ? { value: 'name', label: 'name' } : { value: 'id', label: 'name' }
         await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
         this.$set(element[prop], 'options', this.prisonConfigs)
-        this.$set(element[prop], type, { value: 'name', label: 'name' })
+        this.$set(element[prop], type, options)
       }
       if (role === '1') {
         // 监狱审核人员
+        const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
         this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
-        this.$set(element[prop], type, { label: 'prisonConfigName', value: 'prisonConfigName' })
+        this.$set(element[prop], type, options)
       }
     }
     // 自定义的全选操作 不要删除
