@@ -721,7 +721,7 @@ export default {
       const { remarks } = arg
       const params = {
         id: this.toAuthorize.id,
-        status: 'DENIED',
+        status: 'CANCELED',
         remarks
       }
       this.withdrawMeeting(params).then(res => {

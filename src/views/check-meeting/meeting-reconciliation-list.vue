@@ -162,8 +162,8 @@ export default {
           label: '会见时长',
           slotName: 'zijingDurationConcat'
         }
-      ]
-      // 这个是用样式来控制的'伪单元格合并'效果
+      ],
+      // // 这个是用样式来控制的'伪单元格合并'效果
       // tableBackupCols: [
       //   {
       //     label: '序号',
@@ -228,6 +228,9 @@ export default {
 
   methods: {
     // getBackupMeetingCallRecords： 样式控制实现
+
+    // ...mapActions(['getBackupMeetingCallRecords']),
+
     // getMeetingCallRecords: 单元格合并实现
     ...mapActions(['getMeetingCallRecords']),
     // 搜索组件的搜索操作
@@ -262,7 +265,7 @@ export default {
           }
         }
       }
-    }
+    },
 
     // 单元格样式
     // cellClassName({row, column, rowIndex, columnIndex}) {
