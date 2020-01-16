@@ -38,14 +38,14 @@
         </el-form-item>
         <el-form-item
           v-if="isPrisonArea"
-          label="分监区"
+          label="监区"
           prop="prisonConfigId">
           <el-select
             v-model="terminal.prisonConfigId"
             filterable
             :disabled="!hasPrisonArea"
             :loading="gettingPrisonArea"
-            placeholder="请选择分监区">
+            placeholder="请选择监区">
             <el-option
               v-for="prisonArea in jailPrisonAreas"
               :key="prisonArea.id"

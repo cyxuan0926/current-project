@@ -66,7 +66,7 @@ export default {
           minWidth: 100
         },
         {
-          label: '分监区',
+          label: '监区',
           prop: 'prisonConfigName'
         },
         {
