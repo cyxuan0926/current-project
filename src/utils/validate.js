@@ -97,5 +97,12 @@ export default {
     }
     else if (!pattern.test(value)) callback(new Error('格式不对，狱警号是10位以内的数字'))
     else callback()
+  },
+  // 正整数
+  isPositiveIntegers: (rule, value, callback) => {
+    const integerNumbers = Number.isInteger(value)
+    if (isEmpty(value)) callback(new Error(rule.ownMessage))
+    else if (!integerNumbers || value <= 0) callback(new Error('请输入正整数'))
+    else callback()
   }
 }

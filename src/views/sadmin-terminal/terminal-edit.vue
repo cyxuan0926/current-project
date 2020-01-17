@@ -79,6 +79,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import validate from '@/utils'
 
 export default {
   data() {
@@ -107,17 +108,12 @@ export default {
           message: '请填写参会密码',
           trigger: 'blur'
         }],
-        roomNumber: [
-          {
-            required: true,
-            message: '请填写会议室号',
-            trigger: 'blur'
-          },
-          {
-            type: 'number',
-            message: '会议室号必须为数字'
-          }
-        ]
+        roomNumber: [{
+          validator: validate.isPositiveIntegers,
+          required: true,
+          ownMessage: '请填写会议室号',
+          trigger: 'blur'
+        }]
       },
       hasPrisonArea: false,
       gettingPrisonArea: true,
