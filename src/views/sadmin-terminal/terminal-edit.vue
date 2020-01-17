@@ -16,9 +16,9 @@
             v-model="terminal.terminalNumber"
             placeholder="请填写终端号" />
         </el-form-item>
-        <el-form-item label="会议室号">
+        <el-form-item label="会议室号" prop="roomNumber">
           <el-input
-            v-model="terminal.roomNumber"
+            v-model.number="terminal.roomNumber"
             placeholder="请填写会议室号" />
         </el-form-item>
         <el-form-item
@@ -84,11 +84,40 @@ export default {
   data() {
     return {
       rule: {
-        terminalNumber: [{ required: true, message: '请填写终端号', trigger: 'blur' }],
-        jailId: [{ required: true, message: '请选择监狱' }],
-        prisonConfigId: [{ required: true, message: '请填写分监区' }],
-        hostPassword: [{ required: true, message: '请填写主持人密码', trigger: 'blur' }],
-        mettingPassword: [{ required: true, message: '请填写参会密码', trigger: 'blur' }]
+        terminalNumber: [{
+          required: true,
+          message: '请填写终端号',
+          trigger: 'blur'
+        }],
+        jailId: [{
+          required: true,
+          message: '请选择监狱'
+        }],
+        prisonConfigId: [{
+          required: true,
+          message: '请填写分监区'
+        }],
+        hostPassword: [{
+          required: true,
+          message: '请填写主持人密码',
+          trigger: 'blur'
+        }],
+        mettingPassword: [{
+          required: true,
+          message: '请填写参会密码',
+          trigger: 'blur'
+        }],
+        roomNumber: [
+          {
+            required: true,
+            message: '请填写会议室号',
+            trigger: 'blur'
+          },
+          {
+            type: 'number',
+            message: '会议室号必须为数字'
+          }
+        ]
       },
       hasPrisonArea: false,
       gettingPrisonArea: true,

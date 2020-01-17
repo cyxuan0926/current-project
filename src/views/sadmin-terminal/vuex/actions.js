@@ -10,7 +10,9 @@ export default {
   getTerminalDetail: ({ commit }, params) => {
     return http.getTerminalDetail(params).then(res => {
       if (!res) return
-      commit('getTerminalDetail', res)
+      const { roomNumber } = res.terminals
+      const terminals = Object.assign({}, res.terminals, { roomNumber: +roomNumber })
+      commit('getTerminalDetail', { terminals })
       return true
     })
   },
