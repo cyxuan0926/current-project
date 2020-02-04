@@ -52,13 +52,13 @@
               title="身份证背面照" />
             <m-img-viewer
               v-if="scope.row.avatarUrl"
-              v-show="false"
+              class="img-viewer__hidden"
               :url="scope.row.avatarUrl"
               :toolbar="{ prev: 1, next: 1 }"
               title="头像" />
             <m-img-viewer
               v-if="scope.row.relationalProofUrl"
-              v-show="false"
+              class="img-viewer__hidden"
               :url="scope.row.relationalProofUrl"
               :toolbar="{ prev: 1, next: 1 }"
               title="关系证明图" />
@@ -505,4 +505,15 @@ export default {
     display: inline-block;
     width: 120px;
     text-align: right;
+.authorize-dialog
+  .img-box
+    .el-image
+      width: 48%;
+      height: 150px;
+      margin-bottom: 5px;
+      box-shadow: 0 0 5px #ddd;
+      >>> img
+           width: 100%;
+           height: 100%;
+           cursor: pointer;
 </style>

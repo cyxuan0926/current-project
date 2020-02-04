@@ -800,5 +800,12 @@ img
   min-width: 350px;
 .withdraw-form
  >>> .button-box
-       padding-bottom: 0px 
+       padding-bottom: 0px
+.el-image
+  display: block;
+  width: 342.4px;
+  height: 216px;
+  >>> img
+        width: 100%;
+        height: 100%;
 </style>

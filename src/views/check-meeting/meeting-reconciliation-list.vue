@@ -118,7 +118,7 @@ export default {
           showOverflowTooltip: true
         },
         {
-          label: '会议号',
+          label: '会见ID',
           prop: 'meetingId',
           minWidth: 60
         },
@@ -137,11 +137,11 @@ export default {
           label: '会见时长',
           slotName: 'durationConcat'
         },
-        {
-          // 需要自己处理 只有 FINISHED 和 MEETING_ON 两个状态
-          label: '会见状态',
-          slotName: 'mcstatusConcat'
-        },
+        // {
+        //   // 需要自己处理 只有 FINISHED 和 MEETING_ON 两个状态
+        //   label: '会见状态',
+        //   slotName: 'mcstatusConcat'
+        // },
         {
           label: '挂断原因',
           prop: 'remarksConcat',

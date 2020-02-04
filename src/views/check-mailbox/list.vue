@@ -32,7 +32,7 @@
           <m-img-viewer
             v-else
             v-for=" (url,index) of scope.row.imageUrls"
-            v-show="!index"
+            :class="!index ? '' : 'img-viewer__hidden'"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
             :publicUrl="url" />
@@ -386,10 +386,11 @@ export default {
     }
     .img-box{
       width: 400px;
-      img{
+      /deep/ .el-image{
         width: 195px;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        /deep/ img {
+          width: 100%;
+        }
       }
     }
     button{

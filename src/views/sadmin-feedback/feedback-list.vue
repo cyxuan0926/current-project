@@ -316,10 +316,11 @@ export default {
     }
     .img-box{
       width: 400px;
-      img{
+      /deep/ .el-image{
         width: 195px;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        /deep/ img {
+          width: 100%;
+        }
       }
     }
     button{

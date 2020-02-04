@@ -67,15 +67,23 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
-        <el-col :span="12" class="img-idCard">
+      <el-row
+        class="row-flex"
+        :gutter="20"
+        justify="space-between"
+        type="flex">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证正面：</label>
           <m-img-viewer
             v-if="family.familyIdCardFront"
             :url="family.familyIdCardFront"
             title="身份证正面"/>
         </el-col>
-        <el-col :span="12" class="img-idCard">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证背面：</label>
           <m-img-viewer
             v-if="family.familyIdCardBack"
@@ -84,7 +92,9 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="12" class="img-idCard">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">关系证明图：</label>
           <m-img-viewer
             v-if="family.familyRelationalProofUrl"
@@ -115,7 +125,9 @@
             {{ scope.row.duration | time }}
           </template>
         </el-table-column> 
-        <el-table-column prop="remarks" label="备注" />
+        <el-table-column
+          prop="remarks"
+          label="备注" />
       </el-table>
     </el-dialog>
   </el-row>

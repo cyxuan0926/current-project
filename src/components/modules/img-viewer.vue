@@ -1,8 +1,9 @@
 <template>
-  <img
+  <el-image
     :src="publicUrl || url+'?token=' + $urls.token"
-    @click="showImg"
-    :alt="title">
+    :alt="title"
+    lazy
+    @click.native="showImg" />
 </template>
 
 <script>
