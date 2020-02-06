@@ -1,60 +1,74 @@
 <template>
-  <el-table
-    :data="prisons.contents"
+  <m-table-new
     stripe
-    style="width: 100%">
-    <el-table-column
-      prop="title"
-      label="监狱名称" />
-    <el-table-column label="监狱图片">
-      <template slot-scope="scope">
-        <img
-          v-if="scope.row.imageUrl"
-          :src="scope.row.imageUrl + '?token=' + $urls.token"
-          alt="">
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="zipcode"
-      label="监狱编号" />
-    <el-table-column label="所在地区">
-      <template slot-scope="scope">
-        <span
-          class="separate"
-          v-if="scope.row.provincesName">{{ scope.row.provincesName }}</span>
-        <span
-          class="separate"
-          v-if="scope.row.citysName">{{ scope.row.citysName }}</span>
-        <span
-          class="separate"
-          v-if="scope.row.street">{{ scope.row.street }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-      label="操作"
-      width="260px">
-      <template slot-scope="scope">
-        <el-button
-          type="primary"
-          size="mini"
-          @click="onEdit(scope.row.id)">编辑</el-button>
-        <el-button
-          type="text"
-          size="mini"
-          @click="onVisit(scope.row.id, 'remote')">远程会见配置</el-button>
-        <el-button
-          type="text"
-          size="mini"
-          @click="onVisit(scope.row.id, 'visit')">实地会见配置</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+    :data="prisons.contents"
+    style="width: 100%"
+    :cols="tableCols">
+    <template #imageUrl="{ row }">
+      <el-image
+        v-if="row.imageUrl"
+        :src="row.imageUrl + '?token=' + $urls.token"
+        alt="监狱图片" />
+    </template>
+    <template #location="{ row }">
+      <span
+        class="separate"
+        v-if="row.provincesName">{{ row.provincesName }}</span>
+      <span
+        class="separate"
+        v-if="row.citysName">{{ row.citysName }}</span>
+      <span
+        class="separate"
+        v-if="row.street">{{ row.street }}</span>
+    </template>
+    <template #operation="{ row }">
+      <el-button
+        type="primary"
+        size="mini"
+        @click="onEdit(row.id)">编辑</el-button>
+      <el-button
+        type="text"
+        size="mini"
+        @click="onVisit(row.id, 'remote')">远程会见配置</el-button>
+      <el-button
+        type="text"
+        size="mini"
+        @click="onVisit(row.id, 'visit')">实地会见配置</el-button>
+    </template>
+  </m-table-new>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 
 export default {
+  data() {
+    return {
+      tableCols: [
+        {
+          label: '监狱名称',
+          prop: 'title'
+        },
+        {
+          label: '监狱图片',
+          slotName: 'imageUrl'
+        },
+        {
+          label: '监狱编号',
+          prop: 'zipcode'
+        },
+        {
+          label: '所在地区',
+          slotName: 'location'
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          width: 260
+        }
+      ]
+    }
+  },
   computed: {
     ...mapState(['prisons'])
   },
