@@ -12,56 +12,31 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportPrison"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="prisonAreas.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="jailName"
-          label="监狱名称" />
-        <el-table-column
-          prop="name"
-          label="监区名称" />
-        <el-table-column
-          prop="createdAt"
-          label="创建时间">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="updatedAt"
-          label="更新时间">
-          <template slot-scope="scope">
-            {{ scope.row.updatedAt | Date }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="监区服刑人数"
-          prop="prisonerNum"/>
-        <el-table-column
-          label="操作"
-          v-if="user.role !== '0' ">
-          <template slot-scope="scope">
-            <el-button
-              :disabled=" scope.row.id === '-1' || scope.row.prisonerNum !== 0 "
-              size="mini"
-              :type=" scope.row.id === '-1' || scope.row.prisonerNum !== 0  ? 'info' : 'danger' "
-              @click="onDelete(scope.row.id)">删除</el-button>
-            <el-button
-              :disabled="scope.row.id === '-1'"
-              :type=" scope.row.id === '-1' ? 'info' : 'primary' "
-              size="mini"
-              @click="handleEdit(scope.row, scope.$index)">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="prisonAreas.contents"
+        style="width: 100%"
+        :cols="tableCols">
+        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+        <template #updatedAt="{ row }">{{ row.updatedAt | Date }}</template>
+        <template #operation="{ row, $index }">
+          <el-button
+            :disabled=" row.id === '-1' || row.prisonerNum !== 0 "
+            size="mini"
+            :type=" row.id === '-1' || row.prisonerNum !== 0  ? 'info' : 'danger' "
+            @click="onDelete(row.id)">删除</el-button>
+          <el-button
+            :disabled="row.id === '-1'"
+            :type=" row.id === '-1' ? 'info' : 'primary' "
+            size="mini"
+            @click="handleEdit(row, $index)">编辑</el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -141,6 +116,36 @@ export default {
           break;
       }
       return {title,text}
+    },
+    tableCols() {
+      let cols = [
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '监区名称',
+          prop: 'name'
+        },
+        {
+          label: '创建时间',
+          slotName: 'createdAt'
+        },
+        {
+          label: '更新时间',
+          slotName: 'updatedAt'
+        },
+        {
+          label: '监区服刑人数',
+          prop: 'prisonerNum'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
+        }
+      ]
+      if (this.user.role === '0') cols.splice(-1, 1)
+      return cols
     }
   },
   async mounted() {
