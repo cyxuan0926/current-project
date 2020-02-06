@@ -16,81 +16,57 @@
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
-      <el-table
-        :data="feedbacks.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="用户" />
-        <el-table-column
-          prop="typeName"
-          label="反馈类别" />
-        <el-table-column
-          prop="content"
-          show-overflow-tooltip
-          label="反馈内容" />
-        <el-table-column
-          label="反馈图片">
-          <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
-          <template
-            slot-scope="scope"
-            v-if="scope.row.imageUrls.length">
+        :data="feedbacks.contents"
+        style="width: 100%"
+        :cols="tableCols">
+        <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
+        <template #imageUrls="{ row }">
+          <template v-if="row.imageUrls && row.imageUrls.length">
             <m-img-viewer
-              v-if="scope.row.isCo"
-              :url="scope.row.imageUrls[0]" />
+              v-if="row.isCo"
+              :url="row.imageUrls[0]" />
             <m-img-viewer
               v-else
-              :publicUrl="scope.row.imageUrls[0]" /> 
+              :publicUrl="row.imageUrls[0]" /> 
           </template>
-        </el-table-column>
-        <el-table-column
-          label="反馈时间">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="是否答复">
-          <template slot-scope="scope">
-            {{ scope.row.isReply | isTrue }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="250px">
-          <template slot-scope="scope">
-            <el-button
-              v-if="!scope.row.isReply"
-              size="mini"
-              class="button-column"
-              @click="handleReply(scope.row)"
-              type="primary">
-              答复
-            </el-button>
-            <el-button
-              v-else
-              size="mini"
-              class="button-column"
-              disabled
-              type="primary">
-              已答复
-            </el-button>
-            <el-button
-              size="mini"
-              class="button-column"
-              @click="onDelete(scope.row.id)"
-              type="danger">
-              删除
-            </el-button>
-            <el-button
-              size="mini"
-              type="text"
-              style="width: 56px;"
-              @click="getDetail(scope.row)">
-              详细内容
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        </template>
+        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+        <template #isReply="{ row }">{{ row.isReply | isTrue }}</template>
+        <template #operation="{ row }">
+          <el-button
+            v-if="!row.isReply"
+            size="mini"
+            class="button-column"
+            @click="handleReply(row)"
+            type="primary">
+            答复
+          </el-button>
+          <el-button
+            v-else
+            size="mini"
+            class="button-column"
+            disabled
+            type="primary">
+            已答复
+          </el-button>
+          <el-button
+            size="mini"
+            class="button-column"
+            @click="onDelete(row.id)"
+            type="danger">
+            删除
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            style="width: 56px;"
+            @click="getDetail(row)">
+            详细内容
+          </el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -175,7 +151,39 @@ export default {
       replying: false,
       downloading: false,
       feedback: {},
-      answer: ''
+      answer: '',
+      tableCols: [
+        {
+          label: '用户',
+          prop: 'name'
+        },
+        {
+          label: '反馈类别',
+          prop: 'typeName'
+        },
+        {
+          label: '反馈内容',
+          prop: 'content',
+          showOverflowTooltip: true
+        },
+        {
+          label: '反馈图片',
+          slotName: 'imageUrls'
+        },
+        {
+          label: '反馈时间',
+          slotName: 'createdAt'
+        },
+        {
+          label: '是否答复',
+          slotName: 'isReply'
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          width: 250
+        }
+      ]
     }
   },
   computed: {
