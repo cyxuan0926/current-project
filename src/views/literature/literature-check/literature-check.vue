@@ -1,58 +1,71 @@
 <template>
   <el-row class="row-container page literature-check">
-    <div v-show="activeTabName === 'publish'" class="check-batch">
+    <div
+      v-show="activeTabName === 'publish'"
+      class="check-batch">
       <el-button type="primary"
         @click="onPass(selectedLiteraturesId)"
       >
         批量通过
       </el-button>
-      <el-button type="primary" @click="onRejectBatch">
+      <el-button
+        type="primary"
+        @click="onRejectBatch">
         批量不通过
       </el-button>
     </div>
-    <m-search ref="search" :items="searchItems" @search="onSearch" clearable />
 
-    <el-tabs v-model="activeTabName" type="card">
-      <el-tab-pane name="pass" label="审核通过"/>
-      <el-tab-pane name="reject" label="审核不通过"/>
-      <el-tab-pane name="publish" label="待审核"/>
+    <m-search
+      ref="search"
+      :items="searchItems"
+      @search="onSearch"
+      clearable />
+
+    <el-tabs
+      v-model="activeTabName"
+      type="card">
+      <el-tab-pane
+        name="pass"
+        label="审核通过"/>
+      <el-tab-pane
+        name="reject"
+        label="审核不通过"/>
+      <el-tab-pane
+        name="publish"
+        label="待审核"/>
     </el-tabs>
 
-    <m-table 
+    <m-table-new
+      stripe
       :data="literatures"
       :cols="tableCols"
-      :selection-change="onLiteratureSelectionChange"
-    >
-      <span
-        class="title-cell"
-        slot="title"
-        slot-scope="scope"
-        @click="onPreview(scope.row)"
-      >
-        {{ scope.row.title }}
-      </span>
+      :selection-change="onLiteratureSelectionChange">
 
-      <template
-        v-if="scope.row.status === 'publish'"
-        slot="operate"
-        slot-scope="scope"
-      >
-        <el-button
-          type="text"
-          size="mini"
-          @click="onPass(scope.row.id)"
-        >
-          通过
-        </el-button>
-        <el-button
-          type="text"
-          size="mini"
-          @click="onReject(scope.row)"
-        >
-          不通过
-        </el-button>
+      <template #title="{ row }">
+        <span
+          class="title-cell"
+          @click="onPreview(row)">
+          {{ row.title }}
+        </span>
       </template>
-    </m-table>
+
+      <template #operate="{ row }">
+        <template v-if="row.status === 'publish'">
+          <el-button
+            type="text"
+            size="mini"
+            @click="onPass(row.id)" >
+            通过
+          </el-button>
+          <el-button
+            type="text"
+            size="mini"
+            @click="onReject(row)" >
+            不通过
+          </el-button>
+        </template>
+      </template>
+    </m-table-new>
 
     <m-pagination
       ref="pagination"
@@ -65,9 +78,12 @@
       :visible.sync="rejectDialogVisible"
       title="不通过审核"
       width="530px"
-      @close="onCloseRejectDialog"
-    >
-      <el-form ref="rejectForm" :model="rejectForm" :rules="rules">
+      @close="onCloseRejectDialog">
+
+      <el-form
+        ref="rejectForm"
+        :model="rejectForm"
+        :rules="rules">
         <el-form-item prop="rejectReason">
           <el-input
             v-model="rejectForm.rejectReason"
@@ -78,7 +94,9 @@
         </el-form-item>
         <el-form-item class="operate">
           <el-button @click="hideRejectDialog">取消</el-button>
-          <el-button type="danger" @click="onConfirmReject">
+          <el-button
+            type="danger"
+            @click="onConfirmReject">
             确定
           </el-button>
         </el-form-item>
@@ -101,7 +119,11 @@ export default {
       rejectForm: { rejectReason: '' },
       rules: {
         rejectReason: [
-          { required: true, message: '请填写不通过原因', trigger: 'change' },
+          {
+            required: true,
+            message: '请填写不通过原因',
+            trigger: 'change'
+          },
           {
             max: 20,
             message: '不通过原因不能超过 20 个字符',
@@ -119,16 +141,34 @@ export default {
       const cols = {
         selectCols: [{ type: 'selection' }],
         baseCols: [
-          { slotName: 'title', label: '作品标题', showOverflowTooltip: true },
-          { prop: 'articleTypeName', label: '作品类型' },
-          { prop: 'penName', label: '作者笔名', showOverflowTooltip: true },
-          { prop: 'publishAt', label: '发布时间' }
+          {
+            slotName: 'title',
+            label: '作品标题',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'articleTypeName',
+            label: '作品类型'
+          },
+          {
+            prop: 'penName',
+            label: '作者笔名',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'publishAt',
+            label: '发布时间'
+          }
         ],
-        passCols: [
-          { prop: 'auditAt', label: '审核时间' }
-        ],
+        passCols: [{
+          prop: 'auditAt',
+          label: '审核时间'
+        }],
         rejectCols: [
-          { prop: 'auditAt', label: '审核时间' },
+          {
+            prop: 'auditAt',
+            label: '审核时间'
+          },
           {
             prop: 'rejectReason',
             label: '不通过原因',
@@ -136,8 +176,14 @@ export default {
           }
         ],
         publishCols: [
-          { prop: 'publishTypeName', label: '待审核作品状态' },
-          { slotName: 'operate', label: '审核' }
+          {
+            prop: 'publishTypeName',
+            label: '待审核作品状态'
+          },
+          {
+            slotName: 'operate',
+            label: '审核'
+          }
         ]
       }
       const tableCols = cols.baseCols.concat(
@@ -155,7 +201,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'passLiterature', 'rejectLiterature']),
+    ...mapActions('literature', [
+      'getFamilyLiteratures',
+      'getPoliceLiteratures',
+      'passLiterature',
+      'rejectLiterature']),
     onPreview(literature) {
       this.$router.push({
         path: `/literature-check/literature-preview/${literature.id}`,
