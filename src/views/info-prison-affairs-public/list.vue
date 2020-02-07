@@ -12,95 +12,66 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="newsList.contents"
+      <m-table-new
         stripe
+        :data="newsList.contents"
         class="mini-td-padding"
-        style="width: 100%">
-        <el-table-column
-          prop="title"
-          show-overflow-tooltip
-          label="新闻标题"/>
-        <el-table-column
-          label="新闻内容"
-          :resizable="false">
-          <template slot-scope="scope">
-            <p :class="['summary', { 'three-line': scope.row.ellipsis }]">{{ scope.row.summary }}</p>
+        :cols="tableCols">
+        <template #summary="{ row }">
+          <p :class="['summary', { 'three-line': row.ellipsis }]">{{ row.summary }}</p>
+        </template>
+        <template #videoPath="{ row }">
+          <video
+            controls
+            poster="/static/images/video-background.png"
+            style="width: 198px; height: 112px;">
+            <source
+              :src="row.videoPath + '?token=' + $urls.token"
+              type='video/mp4'>
+            <source
+              :src="row.videoPath + '?token=' + $urls.token"
+              type='video/webm'>
+            <source
+              :src="row.videoPath + '?token=' + $urls.token"
+              type='video/ogg'>您的浏览器不支持Video标签。
+          </video>
+        </template>
+        <template #imageUrl="{ row }">
+          <el-image
+            lazy
+            alt="新闻图片"
+            :src="row.imageUrl + '?token=' + $urls.token" />
+        </template>
+        <template #audioPath="{ row }">
+          <template v-if="showTable && row.audioPath">
+            <m-audio :value="row.audioPath + '?token=' + $urls.token" />
           </template>
-        </el-table-column>
-        <el-table-column
-          label="新闻视频"
-          width="222px">
-          <template
-            slot-scope="scope"
-            v-if="showTable && scope.row.videoPath">
-            <video
-              controls
-              poster="/static/images/video-background.png"
-              style="width: 198px; height: 112px;">
-              <source
-                :src="scope.row.videoPath + '?token=' + $urls.token"
-                type='video/mp4'>
-              <source
-                :src="scope.row.videoPath + '?token=' + $urls.token"
-                type='video/webm'>
-              <source
-                :src="scope.row.videoPath + '?token=' + $urls.token"
-                type='video/ogg'>您的浏览器不支持Video标签。
-            </video>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="新闻图片"
-          width="86px">
-          <template
-            slot-scope="scope"
-            v-if="scope.row.imageUrl">
-            <img
-              :src="scope.row.imageUrl + '?token=' + $urls.token"
-              alt="">
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="新闻音频"
-          width="212px">
-          <template
-            slot-scope="scope"
-            v-if="showTable && scope.row.audioPath">
-            <m-audio :value="scope.row.audioPath + '?token=' + $urls.token" />
-          </template>
-        </el-table-column>
-        <el-table-column label="焦点" width="62px">
-          <template slot-scope="scope">
-            {{ scope.row.isFocus ? '是' : '否' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="230px">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              class="button-column"
-              @click="onEdit(scope.row.id)"
-              type="primary">
-              编辑
-            </el-button>
-            <el-button
-              size="mini"
-              class="button-column"
-              @click="onDelete(scope.row.id)"
-              type="danger">
-              删除
-            </el-button>
-            <el-button
-              size="mini"
-              type="text"
-              style="width: 56px;"
-              @click="getDetail(scope.row)">
-              详细内容
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        </template>
+        <template #isFocus="{ row }">{{ row.isFocus ? '是' : '否' }}</template>
+        <template #operation="{ row }">
+          <el-button
+            size="mini"
+            class="button-column"
+            @click="onEdit(row.id)"
+            type="primary">
+            编辑
+          </el-button>
+          <el-button
+            size="mini"
+            class="button-column"
+            @click="onDelete(row.id)"
+            type="danger">
+            删除
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            style="width: 56px;"
+            @click="getDetail(row)">
+            详细内容
+          </el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -159,7 +130,10 @@ export default {
   data() {
     return {
       searchItemInit: {
-        title: { type: 'input', label: '新闻标题' }
+        title: {
+          type: 'input',
+          label: '新闻标题'
+        }
       },
       searchItems: Object.assign({}, this.searchItemInit),
       visible: false,
@@ -189,6 +163,43 @@ export default {
         {
           name: 'prison-affairs-public/6',
           typeId: 6
+        }
+      ],
+      tableCols: [
+        {
+          label: '新闻标题',
+          prop: 'title',
+          showOverflowTooltip: true
+        },
+        {
+          label: '新闻内容',
+          slotName: 'summary',
+          resizable: false
+        },
+        {
+          label: '新闻视频',
+          slotName: 'videoPath',
+          width: 222
+        },
+        {
+          label: '新闻图片',
+          slotName: 'imageUrl',
+          width: 86
+        },
+        {
+          label: '新闻音频',
+          slotName: 'audioPath',
+          width: 212
+        },
+        {
+          label: '焦点',
+          slotName: 'isFocus',
+          width: 62
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          width: 230
         }
       ]
     }

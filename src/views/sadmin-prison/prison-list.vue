@@ -7,6 +7,7 @@
     <template #imageUrl="{ row }">
       <el-image
         v-if="row.imageUrl"
+        lazy
         :src="row.imageUrl + '?token=' + $urls.token"
         alt="监狱图片" />
     </template>
