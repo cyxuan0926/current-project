@@ -20,7 +20,10 @@ export default {
               articleTypeName: '连载小说'
             }
           ],
-          belong: { value: 'articleType', label: 'articleTypeName' },
+          belong: {
+            value: 'articleType',
+            label: 'articleTypeName'
+          },
           value: ''
         },
         time: {
@@ -28,8 +31,14 @@ export default {
           start: 'publishStartDate',
           end: 'publishEndDate'
         },
-        title: { type: 'input', label: '作品标题' },
-        penName: { type: 'input', label: '笔名' }
+        title: {
+          type: 'input',
+          label: '作品标题'
+        },
+        penName: {
+          type: 'input',
+          label: '笔名'
+        }
       },
       filter: {},
       total: 0, // 分页数据总条数

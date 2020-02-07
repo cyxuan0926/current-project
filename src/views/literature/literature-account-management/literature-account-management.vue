@@ -39,6 +39,7 @@
     </m-search> 
     <el-col :span="24">
       <m-table-new
+        stripe
         :data="authors"
         :cols="roleContents['cols']"
         class="mini-td-padding">
