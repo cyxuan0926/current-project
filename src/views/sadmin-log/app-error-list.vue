@@ -10,9 +10,7 @@
         stripe
         :data="appLogs.contents"
         :cols="tableCols">
-        <template
-          slot="createdAt"
-          slot-scope="scope">{{ scope.row.createdAt | Date }}</template>  
+        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>  
       </m-table-new>
     </el-col>
     <m-pagination
@@ -30,7 +28,11 @@ export default {
       tabNum: 'first',
       searchItems: {
         // endTime: { type: 'datetime', label: '结束时间' },
-        time: { type: 'datetimerange', start: 'startTime', end: 'endTime' }
+        time: {
+          type: 'datetimerange',
+          start: 'startTime',
+          end: 'endTime'
+        }
       },
       tableCols: [
         {

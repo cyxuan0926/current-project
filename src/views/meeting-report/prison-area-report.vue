@@ -18,21 +18,11 @@
         :summary-method="summaryMethod"
         :data="prisonAreaReportList.contents"
         :cols="tableCols">
-        <template
-          slot="total"
-          slot-scope="scope">{{ scope.row.total }} 次</template>
-        <template
-          slot="finishedTotal"
-          slot-scope="scope">{{ scope.row.finishedTotal }} 次</template>
-        <template
-          slot="canceledTotal"
-          slot-scope="scope">{{ scope.row.canceledTotal }} 次</template>
-        <template
-          slot="expiredTotal"
-          slot-scope="scope">{{ scope.row.expiredTotal }} 次</template>
-        <template
-          slot="deniedTotal"
-          slot-scope="scope">{{ scope.row.deniedTotal }} 次</template>
+        <template #total="{ row }">{{ row.total }} 次</template>
+        <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
+        <template #canceledTotal="{ row }">{{ row.canceledTotal }} 次</template>
+        <template #expiredTotal="{ row }">{{ row.expiredTotal }} 次</template>
+        <template #deniedTotal="{ row }">{{ row.deniedTotal }} 次</template>
       </m-table-new>
     </el-col>
     <m-pagination

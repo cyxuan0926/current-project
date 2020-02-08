@@ -25,16 +25,14 @@
       :options="chartOptions"
       :loading="loading"/>
     <el-col :span="24">
-      <m-table
+      <m-table-new
         :data="tableDatas"
         :cols="tableCols"
         class="mini-td-padding">
-        <template
-          slot="rank"
-          slot-scope="scope">
-          <span v-if="scope.row.jailId">{{ scope.$index | handleGetIndex(pagination.rows, pagination.page) }}</span>
+        <template #rank="{ row, $index }">
+          <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
         </template>
-      </m-table>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"

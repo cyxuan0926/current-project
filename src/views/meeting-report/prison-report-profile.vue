@@ -1,56 +1,18 @@
 <template>
   <el-row :gutter="0">
     <el-col :span="24">
-      <el-table
-        :data="prisonReportList.contents"
+      <m-table-new
         stripe
+        :data="prisonReportList.contents"
         show-summary
         :summary-method="summaryMethod"
-        style="width: 100%">
-        <el-table-column
-          v-if="hasAllPrisonQueryAuth"
-          prop="jailName" 
-          label="监狱名称"
-        />
-        <el-table-column
-          prop="prisonArea"
-          label="监区" />
-        <el-table-column
-          prop="total"
-          label="会见申请次数">
-          <template slot-scope="scope">
-            {{ scope.row.total }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="finishedTotal"
-          label="会见成功次数">
-          <template slot-scope="scope">
-            {{ scope.row.finishedTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="canceledTotal"
-          label="会见取消次数">
-          <template slot-scope="scope">
-            {{ scope.row.canceledTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="expiredTotal"
-          label="会见过期次数">
-          <template slot-scope="scope">
-            {{ scope.row.expiredTotal }} 次
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="deniedTotal"
-          label="会见拒绝/撤回次数">
-          <template slot-scope="scope">
-            {{ scope.row.deniedTotal }} 次
-          </template>
-        </el-table-column>
-      </el-table>
+        :cols="tableCols">
+        <template #total="{ row }">{{ row.total }} 次</template>
+        <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
+        <template #canceledTotal="{ row }">{{ row.canceledTotal }} 次</template>
+        <template #expiredTotal="{ row }">{{ row.expiredTotal }} 次</template>
+        <template #deniedTotal="{ row }"> {{ row.deniedTotal }} 次</template>
+      </m-table-new>
     </el-col>
   </el-row>
 </template>
@@ -71,6 +33,45 @@ export default {
       return this.hasAllPrisonQueryAuth
         ? this.getSummariesAll
         : this.getSummaries
+    },
+    tableCols() {
+      let cols = [
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '监区',
+          prop: 'prisonArea'
+        },
+        {
+          label: '会见申请次数',
+          prop: 'total',
+          slotName: 'total'
+        },
+        {
+          label: '会见成功次数',
+          prop: 'finishedTotal',
+          slotName: 'finishedTotal'
+        },
+        {
+          label: '会见取消次数',
+          prop: 'canceledTotal',
+          slotName: 'canceledTotal'
+        },
+        {
+          label: '会见过期次数',
+          prop: 'expiredTotal',
+          slotName: 'expiredTotal'
+        },
+        {
+          label: '会见拒绝/撤回次数',
+          prop: 'deniedTotal',
+          slotName: 'deniedTotal'
+        }
+      ]
+      if (!this.hasAllPrisonQueryAuth) cols.splice(1, 1)
+      return cols
     }
   },
   methods: {
