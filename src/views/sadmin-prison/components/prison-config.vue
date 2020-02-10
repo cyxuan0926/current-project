@@ -63,7 +63,17 @@ export default {
           rules: ['required'],
           value: 1
         },
-        // dailyApplyLimit: { type: 'input', label: '每人日申请次数限制', disabled: this.$route.meta.role === '3', rules: ['isNumber', 'numberRange0'], append: '次/人', value: null },
+        // dailyApplyLimit: {
+        //   type: 'input',
+        //   label: '每人日申请次数限制',
+        //   disabled: this.$route.meta.role === '3',
+        //   rules: [
+        //     'isNumber',
+        //     'numberRange0'
+        //   ],
+        //   append: '次/人',
+        //   value: null
+        // },
         rewards: {
           type: 'switch',
           label: '奖励模块开放',
