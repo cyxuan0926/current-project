@@ -21,7 +21,7 @@
           :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
-      <slot></slot>
+      <slot />
     </el-form>
     <div
       v-if="items.buttons && Object.keys(items.buttons).length"
@@ -99,6 +99,7 @@ export default {
     },
     items: {
       handler: function(val) {
+        console.log(val)
         val && this.render()
       }
     }

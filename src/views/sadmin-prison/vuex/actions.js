@@ -43,5 +43,14 @@ export default {
   },
   createJailByBindTenant: ({ commit }, params) => {
     return http.createJailByBindTenant(params).then(res => res)
+  },
+  getBranchStatus: async({ commit }, params) => {
+    try {
+      const res = await http.getBranchStatus(params)
+      return res.data
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

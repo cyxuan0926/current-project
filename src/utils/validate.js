@@ -20,11 +20,8 @@ export default {
     else callback(new Error('手机号格式错误'))
   },
   isFee: (rule, value, callback) => {
-    const num = Number(value)
-    console.log(parseInt(num * 100), num * 100)
-    if (isNaN(num)) callback(new Error('请输入数字'))
-    else if (num < 0) callback(new Error('请输入大于0的数字'))
-    else if (parseInt(num * 100) !== num * 100) callback(new Error('最多保留两位小数'))
+    const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+    if (!feeReg.test(value)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
     else callback()
   },
   isNumber: (rule, value, callback) => {

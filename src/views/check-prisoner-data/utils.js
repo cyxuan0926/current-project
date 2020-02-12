@@ -1,5 +1,13 @@
 import Vue from 'vue'
-let that = new Vue()
+
+import store from '@/store'
+
+import roles from '@/common/constants/roles'
+
+const that = new Vue()
+
+const tenantAdmin = () => store.getters.role === roles.TENANT_ADMIN
+
 function alertParseResult(result) {
   let notify = null, message = ''
   if (notify) notify.close()
@@ -31,7 +39,7 @@ function alertParseResult(result) {
     message: message,
     duration: 8000,
     offset: 100,
-    customClass: result.prisonConfigs && result.prisonConfigs.length ? '' : 'alert-parse-result__notify'
+    customClass: result.prisonConfigs && result.prisonConfigs.length && tenantAdmin() ? '' : 'alert-parse-result__notify'
   })
 }
 function alertImportResult(result) {

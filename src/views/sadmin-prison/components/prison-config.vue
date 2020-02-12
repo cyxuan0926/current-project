@@ -12,6 +12,8 @@
 import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import roles from '@/common/constants/roles'
+import cloneDeep from 'lodash/cloneDeep'
+import { Message } from 'element-ui'
 export default {
   data() {
     let formButton = { buttons: [] }, permission
@@ -31,7 +33,10 @@ export default {
           type: 'input',
           label: '单次会见费用',
           disabled,
-          rules: ['required', 'isFee'],
+          rules: [
+            'required',
+            'isFee'
+          ],
           append: '/元',
           value: 0
         },
@@ -106,17 +111,23 @@ export default {
           type: 'input',
           label: '汇款限制',
           disabled,
-          rules: ['required', 'isFee'],
+          rules: [
+            'required',
+            'isFee'
+          ],
           append: '/元',
-          value: 800
+          value: 0
         },
         consumption: {
           type: 'input',
           label: '消费限制',
           disabled,
-          rules: ['required', 'isFee'],
+          rules: [
+            'required',
+            'isFee'
+          ],
           append: '/元',
-          value: 800
+          value: 0
         }
       }, formButton),
       values: {},
@@ -130,8 +141,27 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
-        this.values = this.prison
-        if(this.prison.prisonAreaList && this.prison.prisonAreaList.length) this.values.prisonAreaList = (this.prison.prisonAreaList.map(val => val.name)).join(',')
+        this.values = cloneDeep(this.prison)
+        if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
+          const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
+          this.$set(this.values, 'prisonAreaList', prisonAreaList)
+        }
+        if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
+          (async() => {
+            const res = await this.getBranchStatus(this.prison)
+            Message.closeAll()
+            Message({
+              showClose: true,
+              message: '查询监狱基本信息成功',
+              duration: 2000,
+              type: 'success'
+            })
+            if (!res) {
+              this.$set(this.formItems['branchPrison'], 'disabled', true)
+              this.$set(this.formItems['prisonAreaList'], 'disabled', true)
+            }
+          })()
+        }
       })
     }
   },
@@ -143,7 +173,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getPrisonDetail', 'updatePrison']),
+    ...mapActions([
+      'getPrisonDetail',
+      'updatePrison',
+      'getBranchStatus']),
     onSubmit(e) {
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
@@ -159,13 +192,14 @@ export default {
         }
         else e.prisonAreaList = []
 
-        let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        this.updatePrison(params).then(res => {
-          if (!res) return
-          this.getPrisonDetail({ id: this.$route.params.id })
-          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-          // else this.$router.push('/jails/detail')
-        })
+        const params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
+        console.log(params)
+        // this.updatePrison(params).then(res => {
+        //   if (!res) return
+        //   this.getPrisonDetail({ id: this.$route.params.id })
+        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+        //   // else this.$router.push('/jails/detail')
+        // })
       }
     },
     onBack() {

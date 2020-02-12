@@ -159,5 +159,9 @@ export default {
   // 监狱数据查询-监狱会见数据统计表-列表
   getMeetingStatics: params => {
     return service.get('/report/meetings', params)
+  },
+  // 监狱管理-监狱基本信息-监狱是否可以修改监狱是否分监区状态
+  getBranchStatus: params => {
+    return service.postObj('/jails/getBranchStatus', params)
   }
 }
