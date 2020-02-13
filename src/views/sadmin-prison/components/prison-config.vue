@@ -135,7 +135,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['prison'])
+    ...mapState([
+      'prison',
+      'branchStatus'])
   },
   activated() {
     if (this.permission === 'edit') {
@@ -146,22 +148,28 @@ export default {
           const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
           this.$set(this.values, 'prisonAreaList', prisonAreaList)
         }
-        if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
-          (async() => {
-            const res = await this.getBranchStatus(this.prison)
-            Message.closeAll()
-            Message({
-              showClose: true,
-              message: '查询监狱基本信息成功',
-              duration: 2000,
-              type: 'success'
-            })
-            if (!res) {
-              this.$set(this.formItems['branchPrison'], 'disabled', true)
-              this.$set(this.formItems['prisonAreaList'], 'disabled', true)
-            }
-          })()
+        if (this.$store.getters.role !== roles.INFORMATION_ADMIN) {
+          if (!this.branchStatus) {
+            this.$set(this.formItems['branchPrison'], 'disabled', true)
+            this.$set(this.formItems['prisonAreaList'], 'disabled', true)
+          }
         }
+        // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
+        //   (async() => {
+        //     const res = await this.getBranchStatus(this.prison)
+        //     Message.closeAll()
+        //     Message({
+        //       showClose: true,
+        //       message: '查询监狱基本信息成功',
+        //       duration: 2000,
+        //       type: 'success'
+        //     })
+        //     if (!res) {
+        //       this.$set(this.formItems['branchPrison'], 'disabled', true)
+        //       this.$set(this.formItems['prisonAreaList'], 'disabled', true)
+        //     }
+        //   })()
+        // }
       })
     }
   },
@@ -175,8 +183,7 @@ export default {
   methods: {
     ...mapActions([
       'getPrisonDetail',
-      'updatePrison',
-      'getBranchStatus']),
+      'updatePrison']),
     onSubmit(e) {
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
