@@ -26,7 +26,7 @@ const config = {
     socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    publicApiHost: 'qa-auth-api.yuwugongkai.com',
     apiHost: 'http://47.107.245.151:8021',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
