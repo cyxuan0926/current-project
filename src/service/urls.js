@@ -26,7 +26,7 @@ const config = {
     socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
-    publicApiHost: 'qa-auth-api.yuwugongkai.com',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://47.107.245.151:8021',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -36,7 +36,7 @@ const config = {
     socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
-    publicApiHost: 'http://192.168.0.230:8081',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.182:8088',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -57,7 +57,7 @@ const config = {
     socketUrl: 'wss://www.yuwugongkai.com/ws'
   },
   ybDevelopment: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.114:8021',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -67,7 +67,7 @@ const config = {
     // socketUrl: 'ws://192.168.0.54:8083/websocket'
   },
   xzyDev: {
-    publicApiHost: 'http://192.168.0.230:8081',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.108:8088',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -77,7 +77,7 @@ const config = {
     // socketUrl: 'ws://192.168.0.54:8083/websocket'
   },
   phl: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.188:8088',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
