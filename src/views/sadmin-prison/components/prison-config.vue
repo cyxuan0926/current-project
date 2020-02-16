@@ -200,13 +200,12 @@ export default {
         else e.prisonAreaList = []
 
         const params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        console.log(params)
-        // this.updatePrison(params).then(res => {
-        //   if (!res) return
-        //   this.getPrisonDetail({ id: this.$route.params.id })
-        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-        //   // else this.$router.push('/jails/detail')
-        // })
+        this.updatePrison(params).then(res => {
+          if (!res) return
+          this.getPrisonDetail({ id: this.$route.params.id })
+          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+          // else this.$router.push('/jails/detail')
+        })
       }
     },
     onBack() {
