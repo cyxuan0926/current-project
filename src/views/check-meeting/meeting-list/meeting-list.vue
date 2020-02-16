@@ -769,7 +769,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "../../assets/css/list";
+@import "../../../assets/css/list";
 .el-table /deep/ {
   th {
     padding: 5px 0 3px !important;

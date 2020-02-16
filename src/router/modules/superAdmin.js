@@ -328,7 +328,8 @@ let superAdmin = [{
       permission: 'visit.visit-statistic.all-prison.remote-visit.search',
       breadcrumbName: '远程会见申请'
     },
-    component: 'check-meeting/meeting-list'
+    // component: 'check-meeting/meeting-list/index'
+    component: 'check-meeting/meeting-list/meeting-list'
     // component: helper.loadView('check-meeting/meeting-list')
   }, {
     path: '/prison-data/meeting-statistics',

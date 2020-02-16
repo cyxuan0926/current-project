@@ -22,7 +22,8 @@ let check = [{
     path: '/meeting/list',
     name: 'meeting-list',
     // component: helper.loadView('check-meeting/meeting-list'),
-    component: 'check-meeting/meeting-list',
+    // component: 'check-meeting/meeting-list',
+    component: 'check-meeting/meeting-list/meeting-list',
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '远程会见申请列表' }
   }, {
