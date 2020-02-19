@@ -3,11 +3,12 @@
     <m-table-new
       border
       stripe
+      height="123"
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
       @cell-click="onGetTime"
       :cols="tableCols"
-      :data="meetingConfigs.testData">
+      :data="meetingConfigs.tableData">
     </m-table-new>
   </el-row>
 </template>
@@ -18,32 +19,13 @@ import cloneDeep from 'lodash/cloneDeep'
 export default {
   data () {
     return {
-      meetingConfigs: {},
-      // 最原始的值 用prop传递过来
-      originTableData: [
-        {
-          number: '44352',
-          nameOne: '汪姐1',
-          nameTwo: '汪姐2',
-          indexNumber: 0
-        },
-        {
-          number: '44353',
-          nameOne: '汪姐3',
-          nameTwo: '汪姐4',
-          indexNumber: 1
-        }
-      ]
+      meetingConfigs: {}
     }
   },
   props: {
-    test: {
+    tableProps: {
       type: Array,
-      default: () => [
-      { duration: '09:00 - 09:30', slotName: 'nameOne'},
-      { duration: '09:30 - 10:00', slotName: 'nameTwo' },
-      { duration: '10:30 - 11:00', slotName: 'nameThree' },
-      { duration: '11:30 - 12:00', slotName: 'nameFour' }]
+      default: () => []
     },
     value: {
       type: Object,
@@ -55,14 +37,14 @@ export default {
       const basicCols = [
         {
           label: '终端号',
-          prop: 'number',
+          prop: 'terminalNumber',
           align: 'center'
         }
       ]
-      const durationCols = this.test.map((item, index) => {
+      const durationCols = this.tableProps.map(item => {
         return {
-          label: item.duration,
-          prop: item.slotName,
+          label: item.label,
+          prop: item.prop,
           align: 'center'
         }
       })
@@ -83,7 +65,7 @@ export default {
   },
   methods: {
     cellStyle({row, column, rowIndex, columnIndex}) {
-      const haveNoCellStyleProp = ['number']
+      const haveNoCellStyleProp = ['terminalNumber']
       const occupiedCellStyle = {
         background: '#A8ACB1',
         transition: 'background 0.3s ease-in-out',
@@ -127,12 +109,14 @@ export default {
         }
     },
     onGetTime(row, column, cell, event) {
-      const haveNoCellStyleProp = ['number']
-      const cloneDate = cloneDeep(this.originTableData)
+      const haveNoCellStyleProp = ['terminalNumber']
+      const cloneDate = cloneDeep(this.meetingConfigs.originTableData)
       if (haveNoCellStyleProp.includes(column.property) || (!haveNoCellStyleProp.includes(column.property) && row[column.property])) return
-      this.$set(this.meetingConfigs, 'testData', cloneDate)
-      this.$set(this.meetingConfigs.testData[row.indexNumber], column.property, this.meetingConfigs.familyName)
+      this.$set(this.meetingConfigs, 'tableData', cloneDate)
+      this.$set(this.meetingConfigs.tableData[row.indexNumber], column.property, this.meetingConfigs.familyName)
       this.$set(this.meetingConfigs, 'isSelected', false)
+      this.$set(this.meetingConfigs, 'terminalId', row.terminalId)
+      this.$set(this.meetingConfigs, 'meetingTime', column.property)
       this.$emit('input', this.meetingConfigs)
     }
   }

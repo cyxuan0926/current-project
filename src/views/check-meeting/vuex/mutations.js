@@ -22,9 +22,10 @@ export default {
       total: params.total
     }
   },
-  meetingApplyDealing(state, params) {
+  meetingApplyDealing(state, params = []) {
     if (params && state.meetings.contents.length) {
-      if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)
+      // if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)
+      if (state.meetings.contents.find(m => params.includes(m.id))) state.meetingRefresh = parseInt(params)
       else state.meetingRefresh = false
     }
     else state.meetingRefresh = false
@@ -50,5 +51,8 @@ export default {
     const { filterMeetingCallRecords, meetingCallRecordsSize } = meetingCallRecords
     state.meetingCallRecords.total = meetingCallRecordsSize
     state.meetingCallRecords.contents = filterMeetingCallRecords.flat()
+  },
+  setMeetingTimes: (state, meetingTimes) => {
+    state.meetingTimes = meetingTimes
   }
 }

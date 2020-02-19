@@ -134,6 +134,7 @@ const handleErrorMessage = (message) => {
 }
 export default params => {
   if (params.config.url.includes('/feedbacks/download') || params.config.url.includes('/authorFamily/export')) if (params.status === 200 && !params.data.code) return params
+  // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
     tips(params.data ? params.data.msg : handleErrorMessage(params.message))

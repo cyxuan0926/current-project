@@ -28,11 +28,13 @@ const config = {
   test: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://47.107.245.151:8021',
+    // apiHost: 'http://qa-ywgk.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
+    // socketUrl: 'ws://qa-ywgk.yuwugongkai.com/ywgk/websocket'
     socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
@@ -58,13 +60,14 @@ const config = {
   },
   ybDevelopment: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://192.168.0.114:8021',
-    apiPath: '',
+    apiHost: 'http://47.107.245.151:8080',
+    apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`
-    // socketUrl: 'ws://192.168.0.54:8083/websocket'
+    videoUrl: `${ nodeUrl }/video-server/videos`,
+    // socketUrl: 'ws://47.107.245.151:8030/ws'
+    socketUrl: 'ws://47.107.245.151:8080/ywgk/websocket'
   },
   xzyDev: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',

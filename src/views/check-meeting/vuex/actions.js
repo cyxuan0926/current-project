@@ -16,8 +16,15 @@ export default {
       return true
     })
   },
-  authorizeMeeting({ commit }, params) {
-    return http.authorizeMeeting(params).then(res => res)
+  async authorizeMeeting({ commit }, params) {
+    // return http.authorizeMeeting(params).then(res => res)
+    try {
+      const res = await http.authorizeMeeting(params)
+      return res && res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
   },
   withdrawMeeting({ commit }, params) {
     return http.withdrawMeeting(params).then(res => res)
@@ -135,6 +142,36 @@ export default {
       })
       commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
       return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async authorizeBatchMeetings({ commit }, params) {
+    try {
+      // 只要有一条不通过就是code 为 -1 全部通过才是200
+      await http.authorizeBatchMeetings(params)
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getMeetingTimes({ commit }, params) {
+    try {
+      const { data } = await http.getMeetingTimes(params)
+      const { meetingQueue = [], terminals = [], meetings = [] } = data
+      commit('setMeetingTimes', Object.assign({}, data, { meetingQueue, terminals, meetings }))
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async authorizeSingleMeeting({ commit }, params) {
+    try {
+      const res = await http.authorizeSingleMeeting(params)
+      return res.code === 200
     }
     catch (err) {
       throw err

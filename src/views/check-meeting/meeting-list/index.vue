@@ -94,6 +94,7 @@
     <m-pagination
       ref="pagination"
       :total="meetings.total"
+      :pageSizes="paginationPageSizes"
       @onPageChange="getDatas" />
     <el-dialog
       :visible.sync="show.authorize"
@@ -191,18 +192,23 @@
     <el-dialog
       title="请选择会见时间段"
       class="authorize-dialog"
-      :width="'75%'"
+      :width="'88%'"
       :visible.sync="show.meetingTime"
       @close="onCloseMeetingTimeDialog">
-      <meeting-time v-model="meetingConfigs"/>
+      <meeting-time
+        v-model="meetingConfigs"
+        :tableProps="meetingTimeProps.tableProps"/>
       <template #footer>
         <el-button
           type="primary"
           size="medium"
-          :disabled="meetingConfigs.isSelected">确定</el-button>
+          :loading="meetingTimeBtnLoading"
+          :disabled="meetingConfigs.isSelected"
+          @click="handleAuthorizeSingleMeeting">确定</el-button>
         <el-button
           type="warning"
-          size="medium" >取消</el-button>
+          size="medium"
+          @click="onCloseMeetingTimeDialog">取消</el-button>
       </template>
     </el-dialog>
   </el-row>
@@ -414,7 +420,7 @@ export default {
       // 授权操作的数据
       authorizeMeetingData: [],
 
-      // 授权的方法：批量审核(多条/单条)、普通审核(单条)
+      // 授权的方法：批量审核、普通审核(单条)
       authorizeMeetingStatus: {
         // 批量
         batch: false,
@@ -423,8 +429,14 @@ export default {
         operation: false
       },
       meetingConfigs: {
-        isSelected: true
-      }
+        isSelected: true,
+        terminalId: null,
+        meetingTime: ''
+      },
+      meetingTimeProps: {
+        tableProps: []
+      },
+      meetingTimeBtnLoading: false
     }
   },
   components: {
@@ -517,7 +529,8 @@ export default {
     ...mapState([
       'meetings',
       'frontRemarks',
-      'meetingRefresh'
+      'meetingRefresh',
+      'meetingTimes'
     ]),
     tableCols() {
       const basicCols = [
@@ -585,6 +598,9 @@ export default {
           ]
           else return noAllPrisonQueryAuthCols
         }
+    },
+    paginationPageSizes () {
+      if (!this.hasAllPrisonQueryAuth && this.tabs === 'PENDING') return [10]
     }
   },
   watch: {
@@ -632,7 +648,10 @@ export default {
       'withdrawMeeting',
       'getMeetingsFamilyDetail',
       'getMeettingsDetail',
-      'meetingApplyDealing'
+      'meetingApplyDealing',
+      'authorizeBatchMeetings',
+      'getMeetingTimes',
+      'authorizeSingleMeeting'
     ]),
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
@@ -658,6 +677,7 @@ export default {
       }
       this.$refs.pagination.handleCurrentChange(1)
     },
+    // 单条审核
     handleAuthorization(e) {
       this.toAuthorize = e
       this.onShowAuthorizationDialog()
@@ -738,31 +758,46 @@ export default {
     },
     // 授权对话框的同意操作
     onAgreeAuthorize() {
-      if (this.authorizeMeetingStatus.operation || (this.authorizeMeetingStatus.batch && this.authorizeMeetingData.length > 1)) {
+      if (this.authorizeMeetingStatus.batch) {
+        // 批量审核操作
         this.show.agree = true
         this.buttonLoading = false
       }
-      if (this.authorizeMeetingStatus.batch && this.authorizeMeetingData.length === 1) {
+      if (this.authorizeMeetingStatus.operation) {
+        // 单条审核
         // 这里传递数据给子组件
-        const familyName = this.authorizeMeetingData[0].name
-        const data =  [
-        {
-          number: '44352',
-          nameOne: '汪姐1',
-          nameTwo: '汪姐2',
-          indexNumber: 0
-        },
-        {
-          number: '44353',
-          nameOne: '汪姐3',
-          nameTwo: '汪姐4',
-          indexNumber: 1
-        }
-      ]
-        this.$set(this.meetingConfigs, 'testData', cloneDeep(data))
-        this.$set(this.meetingConfigs, 'familyName', familyName)
-        console.log(this.meetingConfigs)
-        this.show.meetingTime = true
+        (async() => {
+          const { id, name } = this.toAuthorize
+          await this.getMeetingTimes({ id })
+          const { meetingQueue, meetings, terminals, applicationDate } = this.meetingTimes
+          // 列名
+          const meetingTimeTableProps = meetingQueue.map(queue => ({ label: queue, prop: queue }))
+          const meetingTimeTableQueueData = meetingQueue.reduce((total, value) => {
+            total = Object.assign({},  total, { [value]: ''})
+            return total
+          }, {[meetingQueue[0]]: ''})
+          // 数据 需要根据列明来初始话数据样式
+          const meetingTimeTableData = terminals.map((terminal, index) => {
+            // 终端id 是要传给后台的 终端号是要显示出来的
+            const { id, terminalNumber } = terminal
+            let meetingTimeTableQueueCopyData = helper.deepCopy(meetingTimeTableQueueData)
+
+            meetings.map(meetingItem => {
+              // 时间段 家属姓名 终端号
+              const { meetingTime, name, terminalId } = meetingItem
+              const meetingTimeProp = meetingTime.replace(`${applicationDate} `, '')
+              if (terminalId === id) meetingTimeTableQueueCopyData[meetingTimeProp] = name
+              return meetingItem
+            })
+
+            return { terminalId: id, terminalNumber, ...meetingTimeTableQueueCopyData, indexNumber: index }
+          })
+          this.$set(this.meetingTimeProps, 'tableProps', meetingTimeTableProps)
+          this.$set(this.meetingConfigs, 'tableData', cloneDeep(meetingTimeTableData))
+          this.$set(this.meetingConfigs, 'originTableData', cloneDeep(meetingTimeTableData))
+          this.$set(this.meetingConfigs, 'familyName', name)
+          this.show.meetingTime = true
+        })()
       }
     },
     // 授权对话框的不同意操作
@@ -783,9 +818,10 @@ export default {
       this.closeAuthorize('back')
     },
     onAuthorization(e, args) {
-      let params = { id: this.toAuthorize.id, status: e }
+      // let params = { id: this.toAuthorize.id, status: e }
+      let params = { status: e }
       if (e === 'DENIED') {
-        if (this.remarks === '其他') {
+        if (this.remarks === '其他' || this.authorizeMeetingStatus.batch) {
           const { refuseRemark } = args
           params.remarks = refuseRemark
         }
@@ -794,15 +830,26 @@ export default {
       }
       else this.handleSubmit(params)
     },
-    handleSubmit(params) {
+
+    async handleSubmit(params) {
       this.buttonLoading = true
-      this.authorizeMeeting(params).then(res => {
-        this.buttonLoading = false
+      if (this.authorizeMeetingStatus.batch) {
+        // 批量审核多条同意
+        const ids = (this.authorizeMeetingData.map(meeting => meeting.id)).join(',')
+        const meetings = Object.assign({}, { ids }, params)
+        await this.authorizeBatchMeetings(meetings)
+         this.loading = false
+      }
+      if (this.authorizeMeetingStatus.operation) {
+        // 普通审核
+        const meeting = Object.assign({}, { id: this.toAuthorize.id }, params)
+        const res = await this.authorizeMeeting(meeting)
+         this.loading = false
         if (!res) return
-        this.closeAuthorize()
         this.toAuthorize = {}
-        this.getDatas('handleSubmit')
-      })
+      }
+      this.closeAuthorize()
+      this.getDatas('handleSubmit')
     },
     onWithdraw(arg) {
       const { remarks } = arg
@@ -855,7 +902,6 @@ export default {
 
     // 复选框选中内容变化时
     onSelectionChange(meetings) {
-      console.log(meetings)
       this.authorizeButtonDisabledStatus = meetings && meetings.length ? false : true
 
       this.authorizeMeetingData = meetings
@@ -878,9 +924,27 @@ export default {
       this.show.authorize = true
     },
     onCloseMeetingTimeDialog() {
-      console.log(this.meetingConfigs)
+      this.show.meetingTime = false
       this.$set(this.meetingConfigs, 'isSelected', true)
-      // this.$set(this.meetingConfigs, 'meetingData')
+    },
+    // 单条审核通过
+    async handleAuthorizeSingleMeeting() {
+      const { id } = this.toAuthorize
+      const { meetingTime, terminalId } = this.meetingConfigs
+      const { prisonArea, jailId, applicationDate, isBranchprison } = this.meetingTimes
+      this.meetingTimeBtnLoading = true
+      await this.authorizeSingleMeeting({
+        meetingId: id,
+        prisonArea,
+        jailId,
+        applicationDate,
+        isBranchprison,
+        terminalId,
+        meetingTime: `${applicationDate} ${meetingTime}` })
+      this.meetingTimeBtnLoading = false
+      this.onCloseMeetingTimeDialog()
+      this.closeAuthorize()
+      await this.getDatas('authorizeSingleMeeting')
     }
   }
 }
