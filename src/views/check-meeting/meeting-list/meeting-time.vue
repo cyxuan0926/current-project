@@ -3,7 +3,7 @@
     <m-table-new
       border
       stripe
-      height="123"
+      :height="tableHeight"
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
       @cell-click="onGetTime"
@@ -33,6 +33,10 @@ export default {
     }
   },
   computed: {
+    tableHeight() {
+      const height = this.tableProps.length > 12 ? 50 : 41
+      return this.meetingConfigs.tableData.length > 10 ? 10 * height : (this.meetingConfigs.tableData.length + 1) * height
+    },
     tableCols() {
       const basicCols = [
         {
