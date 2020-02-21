@@ -6,7 +6,7 @@
 // eslint-disable-next-line
 const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
 
-const nodeUrl = env === 'test' ? 'http://47.107.245.151:1339' : 'http://192.168.0.180:1339'
+const nodeUrl = env === 'test' ? 'http://qa-ywgk.yuwugongkai.com' : 'http://192.168.0.180:1339'
 
 // apiHost: 接口ip+端口,
 // apiPath: 接口的共同前缀,
