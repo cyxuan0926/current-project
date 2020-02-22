@@ -16,5 +16,11 @@ export default {
 
   hasPrisonArea(state) {
     return state.user.branch_prison === 1
+  },
+
+  prisonAreaOptions(state) {
+    return {
+      options: state.user.prisonConfigList || []
+    }
   }
 }

@@ -142,7 +142,8 @@ const dialogTypes = {
 
 export default {
   data() {
-    const { options, belong } = prisons.PRISONAREA
+    const { belong } = prisons.PRISONAREA
+    const { options } = this.$store.getters.prisonAreaOptions
     const isBlacklistOptions = [
       {
         label: '是',

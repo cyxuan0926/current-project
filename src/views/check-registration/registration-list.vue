@@ -311,7 +311,8 @@ import prisons from '@/common/constants/prisons'
 export default {
   mixins: [prisonFilterCreator],
   data() {
-    const { options, belong } = prisons.PRISONAREA
+    const { belong } = prisons.PRISONAREA
+    const { options } = this.$store.getters.prisonAreaOptions
     return {
       searchItems: {
         name: {

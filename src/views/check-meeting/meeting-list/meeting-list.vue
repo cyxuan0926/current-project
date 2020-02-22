@@ -213,7 +213,8 @@ export default {
              },
       events: { click: this.onCloseAuthorize }
     }
-    const { options, belong } = prisons.PRISONAREA
+    const { belong } = prisons.PRISONAREA
+    const { options } = this.$store.getters.prisonAreaOptions
     return {
       tabsItems,
       tabs: 'PENDING',
