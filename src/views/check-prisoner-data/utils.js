@@ -23,14 +23,14 @@ function alertParseResult(result) {
                     <i class="el-icon-success Success" style="font-size: 20px;margin-right: 10px;"></i>成功：${ result.success_total }条<br>
                     <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ result.error_total }条
                     <p style="padding-left: 30px">原因：数据内容格式有误，请检查导入失败记录，仔细对照下载的模版数据。</p>
-                    <p style="padding-left: 30px" class="new-prison__areas">提示: ${ result.prisonConfigs.join('、') }为新创建的监区，请联系租户管理员分配该监区的相应权限！</p>
+                    <p style="padding-left: 30px" class="new-prison__areas">提示: ${ result.prisonConfigs.join('、') }为新创建的监区，请给审核人员分配该监区的相应权限！</p>
                   </div>`
   }
   if (result.error_total === 0 && result.success_total !== 0) {
     message = `<div style="line-height: 30px; margin-top: 10px;">
                 <i class="el-icon-success Success" style="font-size: 20px;margin-right: 10px;"></i>成功：${ result.success_total }条<br>
                 <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：${ result.error_total }条
-                <p style="padding-left: 30px" class="new-prison__areas">提示: ${ result.prisonConfigs.join('、') }为新创建的监区，请联系租户管理员分配该监区的相应权限！</p>
+                <p style="padding-left: 30px" class="new-prison__areas">提示: ${ result.prisonConfigs.join('、') }为新创建的监区，请给审核人员分配该监区的相应权限！</p>
               </div>`
   }
   notify = that.$notify({
