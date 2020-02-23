@@ -187,10 +187,11 @@ export default {
     onSubmit(e) {
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
+          // 这里就是分监区的情况
           const prisonAreas = e.prisonAreaList.replace(/，/g, ',').split(',')
           let uniquePrisonAreas = [...new Set(prisonAreas)]
 
-          if (prisonAreas.length !== uniquePrisonAreas.length && !(this.prison.prisonAreaList && this.prison.prisonAreaList.length)) {
+          if (prisonAreas.length !== uniquePrisonAreas.length) {
             this.$message.error('监区名不能重复');
             return
           }
