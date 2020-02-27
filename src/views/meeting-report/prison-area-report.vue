@@ -100,6 +100,10 @@ export default {
     tableCols() {
       let allCols = [
         {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
           label: '监狱名称',
           prop: 'jailName'
         },
@@ -141,7 +145,7 @@ export default {
           slotName: 'deniedTotal'
         }
       ]
-      if (!this.hasAllPrisonQueryAuth) allCols.splice(0, 1)
+      if (!this.hasAllPrisonQueryAuth) allCols.splice(0, 2)
       return allCols
     }
   },

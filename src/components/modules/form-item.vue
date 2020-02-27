@@ -5,12 +5,27 @@
     :label="item.noLabel ? '' : item.label"
     :prop="prop">
     <el-input
-      v-if="item.type === 'input' || item.type === 'textarea'"
+      v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
       :type="item.type"
       :maxlength="item.maxlength"
       :clearable="item.clearable"
       :autosize="item.autosize"
+      :show-word-limit="item.type === 'textarea' && item.showWordLimit"
       v-model="fields[prop]"
+      :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
+      :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)">
+      <template
+        v-if="item.append"
+        slot="append">{{ item.append }}</template>
+    </el-input>
+    <el-input
+      v-if="(item.type === 'input' || item.type === 'textarea') && item.isTrim"
+      :type="item.type"
+      :maxlength="item.maxlength"
+      :clearable="item.clearable"
+      :autosize="item.autosize"
+      :show-word-limit="item.type === 'textarea' && item.showWordLimit"
+      v-model.trim="fields[prop]"
       :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
       :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)">
       <template

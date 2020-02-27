@@ -19,10 +19,11 @@
           :clearable="!item.canNotClear"
           :filterable="item.filterable"
           @change="onSelectChange(item.selectKey, item.value)" >
-          <template v-for="option in item.options">
+          <!-- :key="item.belong ? option[item.belong.value] : option.value" -->
+          <template v-for="(option, i) in item.options">
             <el-option
               v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
-              :key="item.belong ? option[item.belong.value] : option.value"
+              :key="i"
               :label="item.belong ? option[item.belong.label] : option.label"
               :value="item.belong ? option[item.belong.value] : option.value" />
           </template>

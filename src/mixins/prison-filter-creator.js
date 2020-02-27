@@ -1,9 +1,11 @@
+import { Message } from 'element-ui'
 
 export default {
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
     hasAllPrisonQueryAuth: Boolean,
-    hasOnlyAllPrisonQueryAuth: Boolean
+    hasOnlyAllPrisonQueryAuth: Boolean,
+    hasProvinceQueryAuth: Boolean
   },
   data() {
     return {
@@ -15,9 +17,10 @@ export default {
       this.createPrisonFilter()
       this.createPrisonAreaFilter()
     }
-    if (this.hasOnlyAllPrisonQueryAuth) {
-      this.createPrisonFilter()
-    }
+
+    if (this.hasOnlyAllPrisonQueryAuth) this.createPrisonFilter()
+
+    if (this.hasProvinceQueryAuth) this.createProvinceFilter()
   },
   methods: {
     async createPrisonFilter() {
@@ -39,6 +42,27 @@ export default {
       this.searchItems.jailId.options = this.$store.state.prisonAll
       this.searchItems.jailId.getting = false
     },
+
+    async createProvinceFilter() {
+      const provinceItem = {
+        type: 'select',
+        label: '省份',
+        selectKey: 'provincesId',
+        options: [],
+        belong: { label: 'name', value: 'id' },
+        filterable: true,
+        value: null,
+        getting: true
+      }
+
+      if (this.$store.state.provincesAll.length === 0) await this.$store.dispatch('getProvincesAll')
+
+      this.searchItems = Object.assign({}, { provincesId: provinceItem }, this.searchItems)
+
+      this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
+
+      this.$set(this.searchItems['provincesId'], 'getting', false)
+    },
     createPrisonAreaFilter() {
       const prisonAreaItem = {
         type: 'select',
@@ -52,15 +76,39 @@ export default {
     },
     async searchSelectChange(selectKey, value) {
       if (selectKey === 'jailId') {
-        if (value) {
-          await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
-          this.searchItems.prisonArea.options = this.$store.state.jailPrisonAreas
-        }
-        else {
-          this.searchItems.prisonArea.options = []
-        }
+        if (this.searchItems.prisonArea) {
+          if (value) {
+            await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+            this.searchItems.prisonArea.options = this.$store.state.jailPrisonAreas
+          }
+          else {
+            this.searchItems.prisonArea.options = []
+          }
 
-        this.searchItems.prisonArea.value = ''
+          this.searchItems.prisonArea.value = ''
+        }
+      }
+
+      if (selectKey === 'provincesId') {
+        if (value) {
+          this.$set(this.searchItems['jailId'], 'value', '')
+          if (this.searchItems['prisonArea']) {
+            this.$set(this.searchItems['prisonArea'], 'value', '')
+
+            this.$set(this.searchItems['prisonArea'], 'options', [])
+          }
+        }
+        this.$set(this.searchItems['jailId'], 'getting', true)
+        await this.$store.dispatch('getPrisonAll', { provincesId: value })
+        Message.closeAll()
+        Message({
+          showClose: true,
+          message: '查询监狱成功',
+          duration: 2000,
+          type: 'success'
+        })
+        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
+        this.$set(this.searchItems['jailId'], 'getting', false)
       }
     }
   }

@@ -28,12 +28,17 @@
         class="mini-td-padding"
         style="width: 100%">
         <el-table-column
+          v-if="hasProvinceQueryAuth"
+          prop="provinceName"
+          label="省份"/>
+        <el-table-column
           v-if="hasAllPrisonQueryAuth"
+          show-overflow-tooltip
           prop="jailName" 
           label="监狱名称" />
         <el-table-column
           prop="name"
-          min-width="80px"
+          min-width="70px"
           show-overflow-tooltip
           label="家属姓名" />
         <el-table-column
@@ -71,17 +76,17 @@
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
-          min-width="88px"
+          min-width="70px"
           show-overflow-tooltip
           label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
-          min-width="80px"
+          min-width="58px"
           show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="relationship"
-          width="70px"
+          width="58px"
           label="关系" />
         <el-table-column
           label="家属会见告知书"
@@ -102,13 +107,13 @@
         </el-table-column>
         <el-table-column
           label="申请状态"
-          width="74px"
+          width="70px"
           class-name="orange">
           <template slot-scope="scope"> {{ scope.row.status | registStatus }} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
-          min-width="140px"
+          min-width="120px"
           label="审核信息">
           <template
             v-if="scope.row.auditAt"
@@ -142,6 +147,7 @@
       :visible.sync="show.authorize"
       class="authorize-dialog"
       :title="show.callback ? '撤回' : '授权'"
+      @close="closeWithdraw"
       width="530px">
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
@@ -217,8 +223,10 @@
           <el-form-item prop="anotherRemarks">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks" />
+              v-model.trim="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
         <el-button
@@ -254,8 +262,10 @@
           <el-form-item prop="anotherRemarks">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks" />
+              v-model.trim="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
         <el-form
@@ -266,8 +276,10 @@
           <el-form-item prop="withdrawReason">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入撤回理由..."
-              v-model="withdrawForm.withdrawReason" />
+              v-model.trim="withdrawForm.withdrawReason" />
           </el-form-item>
         </el-form>
         <el-button
@@ -475,6 +487,7 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = true
+      if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
     closeWithdraw() {
       this.show.authorize = false

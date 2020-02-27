@@ -7,6 +7,7 @@
     path="/download/exportMeetingReconciliation" />
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <m-table-new
@@ -110,7 +111,12 @@ export default {
         {
           label: '序号',
           prop: 'orderIndex',
-          minWidth: 40
+          minWidth: 45
+        },
+        {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: 70
         },
         {
           label: '监狱名称',

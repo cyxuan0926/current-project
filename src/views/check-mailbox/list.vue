@@ -14,6 +14,7 @@
       :params="filter" />
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col
       :span="24"
@@ -227,7 +228,6 @@ export default {
         },
         {
           label: '是否答复',
-          minWidth: '50px',
           slotName: 'isReply'
         }
       ]
@@ -259,7 +259,12 @@ export default {
         ...commonCols,
         ...onlyWardenEndCols
       ]
-      if (this.hasOnlyAllPrisonQueryAuth) cols = [
+      if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) cols = [
+        {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: 70
+        },
         ...onlyHasAllPrisonQueryAuthHeadersCols,
         ...commonCols,
         ...onlyHasAllPrisonQueryAuthEndCols

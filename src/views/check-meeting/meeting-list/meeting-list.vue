@@ -294,11 +294,14 @@ export default {
       authorizeFormItems: {
         refuseRemark: {
           type: 'textarea',
-          autosize: { minRows: 5 },
+          autosize: { minRows: 2 },
           rules: [
             'required',
-            'lengthRange-200'
+            'lengthRange-15'
           ],
+          maxlength: 15,
+          showWordLimit: true,
+          isTrim: true,
           noLabel: true,
           label: '驳回原因'
         }
@@ -504,7 +507,8 @@ export default {
         allPrisonQueryAuthLeadingCols = [
           {
             label: '监狱名称',
-            prop: 'jailName'
+            prop: 'jailName',
+            showOverflowTooltip: true
           }
         ],
         noAllPrisonQueryAuthLeadingCols = [
@@ -515,7 +519,11 @@ export default {
             align: 'center'
           }
         ]
-        if (this.hasAllPrisonQueryAuth) return [
+        if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) return [
+          {
+            label: '省份',
+            prop: 'provinceName'
+          },
           ...allPrisonQueryAuthLeadingCols,
           ...basicCols
         ]

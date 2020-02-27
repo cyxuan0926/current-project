@@ -135,7 +135,12 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisonReportList', 'getPrisonReportListAll', 'getPrisonReportDetail', 'getPrisonReportDetailAll']),
+    ...mapActions([
+      'getPrisonReportList',
+      'getPrisonReportListAll',
+      'getPrisonReportDetail',
+      'getPrisonReportDetailAll'
+    ]),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()

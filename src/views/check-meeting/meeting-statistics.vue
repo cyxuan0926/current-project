@@ -43,6 +43,7 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 const chartTypes = {
   PIE: 'pie',
@@ -50,6 +51,7 @@ const chartTypes = {
 }
 
 export default {
+  mixins: [prisonFilterCreator],
   data () {
     return {
       total: 0,
@@ -71,9 +73,16 @@ export default {
           minWidth: '5.5%'
         },
         {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: '6%',
+          showOverflowTooltip: true
+        },
+        {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '8%'
+          minWidth: '8.5%',
+          showOverflowTooltip: true
         },
         {
           label: '会见申请次数(次)',

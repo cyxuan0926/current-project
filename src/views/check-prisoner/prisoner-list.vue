@@ -617,8 +617,13 @@ export default {
           selectable: this.handleControlSelect
         },
         {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯姓名',
@@ -668,8 +673,8 @@ export default {
           slotName: 'operations'
         }
       ]
-      if (this.hasAllPrisonQueryAuth) allCols.splice(10, 2)
-      else allCols.splice(1, 1)
+      if (this.hasAllPrisonQueryAuth) allCols.splice(11, 2)
+      else allCols.splice(1, 2)
       return allCols
     }
   },
