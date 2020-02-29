@@ -381,7 +381,7 @@ let superAdmin = [{
   }, {
     path: '/prison-data/meeting-reconciliation',
     name: 'prison-data_meeting-reconciliation',
-    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+    props: { hasOnlyAllPrisonQueryAuth: true },
     meta: {
       breadcrumbName: '远程会见对账报表',
       permission: 'visit.meeting.reconciliation.search'

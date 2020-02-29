@@ -75,13 +75,13 @@ export default {
         {
           label: '省份',
           prop: 'provinceName',
-          minWidth: '6%',
+          minWidth: '11%',
           showOverflowTooltip: true
         },
         {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '8.5%',
+          minWidth: '11%',
           showOverflowTooltip: true
         },
         {
