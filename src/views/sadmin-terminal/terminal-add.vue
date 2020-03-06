@@ -67,6 +67,17 @@
             v-model="terminal.mettingPassword"
             placeholder="请填写参会密码" />
         </el-form-item>
+        <el-form-item
+          label="狱警会见开关"
+          prop="meetingEnabled">
+          <el-switch
+            v-model="terminal.meetingEnabled"
+            active-color="#13ce66"
+            inactive-color="#dddddd"
+            :active-value="1"
+            :inactive-value="0"
+            :width="60" />
+        </el-form-item>
       </el-form>
       <el-button
         class="submit"

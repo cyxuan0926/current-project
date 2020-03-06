@@ -56,6 +56,16 @@ let switches = {
   isJailCreated: [
     { value: 1, label: '已创建' },
     { value: 0, label: '未创建' }
+  ],
+  isOpened: [
+    {
+      value: 1,
+      label: '开'
+    },
+    {
+      value: 0,
+      label: '关'
+    }
   ]
 }
 

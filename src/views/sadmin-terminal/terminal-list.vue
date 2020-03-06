@@ -38,6 +38,11 @@
           prop="mettingPassword"
           label="参会密码" />
         <el-table-column
+          prop="meetingEnabled"
+          label="狱警会见开关" >
+          <template slot-scope="scope">{{ scope.row.meetingEnabled | isOpened }}</template>
+        </el-table-column>
+        <el-table-column
           min-width="90"
           label="操作">
           <template slot-scope="scope">
