@@ -16,6 +16,7 @@
         stripe
         :data="terminals.contents"
         :cols="tableCols">
+        <template #meetingEnabled="{ row }">{{ row.meetingEnabled | isOpened}}</template>
         <template
           slot="operation"
           slot-scope="scope">
@@ -78,6 +79,11 @@ export default {
           label: '参会密码',
           prop: 'mettingPassword',
           minWidth: 60
+        },
+        {
+          label: '狱警会见开关',
+          prop: 'meetingEnabled',
+          slotName: 'meetingEnabled'
         },
         {
           label: '操作',

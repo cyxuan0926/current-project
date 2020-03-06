@@ -104,7 +104,7 @@ export default {
   methods: {
     ...mapMutations(['setUser']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
-    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie', 'getWebsocketResult']),
+    ...mapActions(['getWebsocketResult']),
     ...mapActions('account', ['login']),
     handleLogin() {
       if (this.loading) return
