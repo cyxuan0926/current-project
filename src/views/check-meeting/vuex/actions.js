@@ -40,7 +40,7 @@ export default {
     return http.adjustMeeting(params).then(res => res)
   },
   getFreeMeetings({ commit }, params) {
-    http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', res))
+    http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', { contents: res.freeMeetings, total: res.total }))
   },
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)
@@ -172,6 +172,17 @@ export default {
     try {
       const res = await http.authorizeSingleMeeting(params)
       return res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getPoliceFamilyFreeMeetings({ commit }, params) {
+    try {
+      const policeFamilyFreeMeetings = await repeatAPI.getPoliceFamilyFreeMeetings(params)
+      const { total, freeMeetings } = policeFamilyFreeMeetings.data
+      commit('getFreeMeetings', { contents: freeMeetings, total })
+      return true
     }
     catch (err) {
       throw err

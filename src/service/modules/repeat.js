@@ -72,5 +72,10 @@ export default {
   // 监狱数据查询-远程会见对账报表
   getMeetingCallRecords: params => {
     return service.get('/meetingCallRecords/page', params).then(res => res && res.data)
+  },
+
+  // 会见统计-狱警家属免费会见纪录
+  getPoliceFamilyFreeMeetings: params => {
+    return service.get('/freeMeetings/page-police', params)
   }
 }

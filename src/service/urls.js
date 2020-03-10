@@ -48,7 +48,6 @@ const config = {
     socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket'
   },
   production: {
-    // publicApiHost: 'https://api.auth.prisonpublic.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',

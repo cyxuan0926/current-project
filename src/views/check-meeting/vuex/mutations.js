@@ -17,10 +17,7 @@ export default {
     state.meetingAdjustment.meetings = params.meetings
   },
   getFreeMeetings(state, params) {
-    state.freeMeetings = {
-      contents: params.freeMeetings,
-      total: params.total
-    }
+    state.freeMeetings = params
   },
   meetingApplyDealing(state, params = []) {
     if (params && state.meetings.contents.length) {

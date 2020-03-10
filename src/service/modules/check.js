@@ -126,6 +126,12 @@ export default {
   removeFamilyBlacklist: params => {
     return service.postFile('/blacklists/removeFamilyBlacklist', params).then(res => res && res.code === 200)
   },
+
+  // 家属信息管理-狱警家属信息
+  getPoliceFamilies: params => {
+    return service.get('/families/findPolicePage', params)
+  },
+
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {
     return service.post('/prisoners/processing', params, { timeout: 0 }).then(res => res && res.data)
@@ -142,9 +148,12 @@ export default {
   importPrisonerRewardPunishment: params => {
     return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
   },
+
+  // 会见统计-远程免费会见纪录
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
   },
+
   // 数据管理-上传并解析
   uploadAnalyticExcel: params => {
     return service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type }))
