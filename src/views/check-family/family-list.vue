@@ -20,13 +20,12 @@
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
-        type="card"
-        @tab-click="onTabClick" >
+        type="card" >
         <el-tab-pane
           label="家属信息管理"
           name="families" />
         <el-tab-pane
-          label="狱警家属信息管理"
+          label="警员家属信息管理"
           name="jailerFamilies" />
       </el-tabs>
       <m-table-new
@@ -217,10 +216,42 @@ export default {
       dialogTypes,
       tabs: tabOptions.FAMILY,
       tabOptions,
-      options,
-      belong,
-      isBlacklistOptions,
-      uploadResults: {}
+      uploadResults: {},
+      searchItems: {
+        name: {
+          type: 'input',
+          label: '家属姓名',
+          miss: false
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong,
+          miss: false
+        },
+        isBlacklist: {
+          type: 'select',
+          label: '黑名单',
+          options: isBlacklistOptions,
+          belong: {
+            value: 'value',
+            label: 'label'
+          },
+          miss: false
+        },
+        familyName: {
+          type: 'input',
+          label: '家属姓名',
+          miss: true
+        },
+        policeName: {
+          type: 'input',
+          label: '警员姓名',
+          miss: true
+        }
+      },
+      filter: {}
     }
   },
   computed: {
@@ -257,7 +288,7 @@ export default {
           }, formButton)
           break
         case 'uploading':
-          title = '狱警家属信息导入'
+          title = '警员家属信息导入'
           break
         default:
           break
@@ -303,51 +334,38 @@ export default {
           prop: 'phone'
         },
         {
-          label: '狱警姓名',
+          label: '警员姓名',
           prop: 'policeName'
         },
         {
-          label: '狱警编号',
+          label: '警员编号',
           prop: 'policeNumber'
         }
       ]
 
       if (this.tabs === this.tabOptions.FAMILY) return familyTableCols
       else return jailerFamiliesTableCols
-    },
-
-    searchItems() {
-      const familySearchItems = {
-        name: {
-          type: 'input',
-          label: '家属姓名'
-        },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options: this.options,
-          belong: this.belong
-        },
-        isBlacklist: {
-          type: 'select',
-          label: '黑名单',
-          options: this.isBlacklistOptions
-        }
+    }
+  },
+  watch: {
+    tabs(val) {
+      if (val === this.tabOptions.FAMILY) {
+        this.resetSearchFilters(['familyName', 'policeName'])
+        this.$set(this.searchItems.name, 'miss', false)
+        this.$set(this.searchItems.prisonArea, 'miss', false)
+        this.$set(this.searchItems.isBlacklist, 'miss', false)
+        this.$set(this.searchItems.familyName, 'miss', true)
+        this.$set(this.searchItems.policeName, 'miss', true)
       }
-
-      const jailerFamiliesSearchItems = {
-        familyName: {
-          type: 'input',
-          label: '家属姓名'
-        },
-        policeName: {
-          type: 'input',
-          label: '狱警姓名'
-        }
+      else {
+        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist'])
+        this.$set(this.searchItems.name, 'miss', true)
+        this.$set(this.searchItems.prisonArea, 'miss', true)
+        this.$set(this.searchItems.isBlacklist, 'miss', true)
+        this.$set(this.searchItems.familyName, 'miss', false)
+        this.$set(this.searchItems.policeName, 'miss', false)
       }
-
-      if (this.tabs === this.tabOptions.FAMILY) return familySearchItems
-      else return jailerFamiliesSearchItems
+      this.onSearch()
     }
   },
   mounted() {
@@ -420,10 +438,6 @@ export default {
       this.$refs.blackListForm && this.$refs.blackListForm.onCancel()
     },
 
-    onTabClick() {
-      this.getDatas()
-    },
-
     handleGetUploadResults(response) {
       this.$message({
         showClose: true,
@@ -443,6 +457,14 @@ export default {
     onExcelSure() {
       this.visible = false
       if(this.uploadResults.success_total) this.onSearch()
+    },
+
+    // 重置搜索组件的filter
+    resetSearchFilters(filters = []) {
+      filters.map(filter => {
+        this.$set(this.searchItems[filter], 'value', '')
+        delete this.filter[filter]
+      })
     }
   }
 }

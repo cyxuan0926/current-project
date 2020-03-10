@@ -9,13 +9,12 @@
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
-        type="card"
-        @tab-click="onTabClick" >
+        type="card" >
         <el-tab-pane
           label="家属免费会见记录"
           name="familyFreeMeetings" />
         <el-tab-pane
-          label="狱警家属免费会见记录"
+          label="警员家属免费会见记录"
           name="jailerFamilyFreeMeetings" />
       </el-tabs>
       <m-table-new
@@ -50,10 +49,43 @@ export default {
       JAILER_FAMILY_FREE_MEETINGS: 'jailerFamilyFreeMeetings'
     }
     return {
-      options,
-      belong,
       tabOptions,
-      tabs: tabOptions.FAMILY_FREE_MEETINGS
+      tabs: tabOptions.FAMILY_FREE_MEETINGS,
+      searchItems: {
+        name: {
+          type: 'input',
+          label: '家属姓名',
+          miss: false
+        },
+        prisonerNumber: {
+          type: 'input',
+          label: '罪犯编号',
+          miss: false
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options,
+          belong,
+          miss: false
+        },
+        familyName: {
+          type: 'input',
+          label: '家属姓名',
+          miss: true
+        },
+        policeName: {
+          type: 'input',
+          label: '警员姓名',
+          miss: true
+        },
+        policeNumber: {
+          type: 'input',
+          label: '警员编号',
+          miss: true
+        }
+      },
+      filter: {}
     }
   },
   computed: {
@@ -66,11 +98,11 @@ export default {
           prop: 'familyName'
         },
         {
-          label: '狱警姓名',
+          label: '警员姓名',
           prop: 'policeName'
         },
         {
-          label: '狱警编号',
+          label: '警员编号',
           prop: 'policeNumber'
         },
         {
@@ -142,41 +174,29 @@ export default {
       ]
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingstableCols
       else return jailerFamilyFreeMeetingsTableCols
-    },
-
-    searchItems() {
-      const familyFreeMeetingsSearchItems = {
-        name: {
-          type: 'input',
-          label: '家属姓名'
-        },
-        prisonerNumber: {
-          type: 'input',
-          label: '罪犯编号'
-        },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options: this.options,
-          belong: this.belong
-        }
+    }
+  },
+  watch: {
+    tabs(val) {
+      if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
+        this.resetSearchFilters(['familyName', 'policeName', 'policeNumber'])
+        this.$set(this.searchItems.name, 'miss', false)
+        this.$set(this.searchItems.prisonerNumber, 'miss', false)
+        this.$set(this.searchItems.prisonArea, 'miss', false)
+        this.$set(this.searchItems.familyName, 'miss', true)
+        this.$set(this.searchItems.policeName, 'miss', true)
+        this.$set(this.searchItems.policeNumber, 'miss', true)
       }
-      const jailerFamilyFreeMeetingsSearchItems = {
-        familyName: {
-          type: 'input',
-          label: '家属姓名'
-        },
-        policeName: {
-          type: 'input',
-          label: '狱警姓名'
-        },
-        policeNumber: {
-          type: 'input',
-          label: '狱警编号'
-        }
+      else {
+        this.resetSearchFilters(['name', 'prisonerNumber', 'prisonArea'])
+        this.$set(this.searchItems.name, 'miss', true)
+        this.$set(this.searchItems.prisonerNumber, 'miss', true)
+        this.$set(this.searchItems.prisonArea, 'miss', true)
+        this.$set(this.searchItems.familyName, 'miss', false)
+        this.$set(this.searchItems.policeName, 'miss', false)
+        this.$set(this.searchItems.policeNumber, 'miss', false)
       }
-      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingsSearchItems
-      else return jailerFamilyFreeMeetingsSearchItems
+      this.onSearch()
     }
   },
   mounted() {
@@ -209,8 +229,12 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    onTabClick() {
-      this.getDatas()
+    // 重置搜索组件的filter
+    resetSearchFilters(filters = []) {
+      filters.map(filter => {
+        this.$set(this.searchItems[filter], 'value', '')
+        delete this.filter[filter]
+      })
     }
   }
 }
