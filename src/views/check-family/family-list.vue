@@ -326,20 +326,20 @@ export default {
 
       const jailerFamiliesTableCols = [
         {
-          label: '家属姓名',
-          prop: 'familyName'
-        },
-        {
-          label: '家属手机号码',
-          prop: 'phone'
-        },
-        {
           label: '警员姓名',
           prop: 'policeName'
         },
         {
           label: '警员编号',
           prop: 'policeNumber'
+        },
+        {
+          label: '家属姓名',
+          prop: 'familyName'
+        },
+        {
+          label: '家属手机号码',
+          prop: 'phone'
         }
       ]
 
