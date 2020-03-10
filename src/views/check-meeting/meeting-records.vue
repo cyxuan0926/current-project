@@ -7,6 +7,17 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
+      <el-tabs
+        v-model="tabs"
+        type="card"
+        @tab-click="onTabClick" >
+        <el-tab-pane
+          label="家属免费会见记录"
+          name="familyFreeMeetings" />
+        <el-tab-pane
+          label="狱警家属免费会见记录"
+          name="jailerFamilyFreeMeetings" />
+      </el-tabs>
       <m-table-new
         stripe
         :data="freeMeetings.contents"
@@ -32,24 +43,60 @@ import prisons from '@/common/constants/prisons'
 export default {
   data() {
     const { options, belong } = prisons.PRISONAREA
+
+    const tabOptions = {
+      FAMILY_FREE_MEETINGS: 'familyFreeMeetings',
+      JAILER_FAMILY_FREE_MEETINGS: 'jailerFamilyFreeMeetings'
+    }
+
     return {
-      searchItems: {
-        name: {
-          type: 'input',
-          label: '家属姓名'
+      options,
+      belong,
+      tabOptions,
+      tabs: tabOptions.FAMILY_FREE_MEETINGS
+    }
+  },
+  computed: {
+    ...mapState(['freeMeetings']),
+
+    tableCols() {
+      const jailerFamilyFreeMeetingsTableCols = [
+        {
+          label: '家属姓名',
+          prop: 'familyName'
         },
-        prisonerNumber: {
-          type: 'input',
-          label: '罪犯编号'
+        {
+          label: '狱警姓名',
+          prop: 'policeName'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong
+        {
+          label: '狱警编号',
+          prop: 'policeNumber'
+        },
+        {
+          label: '会见时间',
+          prop: 'meetingTime',
+          minWidth: 140
+        },
+        {
+          label: '会见时长',
+          slotName: 'duration',
+          minWidth: 110
+        },
+        {
+          label: '终端号',
+          prop: 'terminalNumber'
+        },
+        {
+          label: '家属所在省',
+          prop: 'province'
+        },
+        {
+          label: '家属所在市',
+          prop: 'city'
         }
-      },
-      tableCols: [
+      ]
+      const familyFreeMeetingstableCols = [
         {
           label: '家属姓名',
           prop: 'name'
@@ -93,32 +140,81 @@ export default {
           prop: 'city'
         }
       ]
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingstableCols
+      else return jailerFamilyFreeMeetingsTableCols
+    },
+
+    searchItems() {
+      const familyFreeMeetingsSearchItems = {
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonerNumber: {
+          type: 'input',
+          label: '罪犯编号'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options: this.options,
+          belong: this.belong
+        }
+      }
+      const jailerFamilyFreeMeetingsSearchItems = {
+        familyName: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        policeName: {
+          type: 'input',
+          label: '狱警姓名'
+        },
+        policeNumber: {
+          type: 'input',
+          label: '狱警编号'
+        }
+      }
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingsSearchItems
+      else return jailerFamilyFreeMeetingsSearchItems
     }
-  },
-  computed: {
-    ...mapState(['freeMeetings'])
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getFreeMeetings']),
+    ...mapActions([
+      'getFreeMeetings',
+      'getPoliceFamilyFreeMeetings'
+    ]),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getFreeMeetings({
-        ...this.filter,
-        ...this.pagination
-      })
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
+        this.getFreeMeetings({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
+      else {
+        this.getPoliceFamilyFreeMeetings({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
+    },
+
+    onTabClick() {
+      this.getDatas()
     }
   }
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style scoped>
 </style>

@@ -27,7 +27,7 @@ const config = {
   },
   test: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://47.107.245.151:8021',
+    apiHost: 'http://qa-ywgk.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,

@@ -4,8 +4,31 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch" >
+      <template
+        slot="append"
+        v-if="tabs === tabOptions.JAILER_FAMILY">
+        <m-excel-download
+          path="/download/downloadfile"
+          :params="{ filepath: 'police_template.xlsx' }"
+          text="模板" />
+        <m-excel-upload
+          :get-results="handleGetUploadResults"
+          url="/police/upload" />
+      </template>
+    </m-search>
     <el-col :span="24">
+      <el-tabs
+        v-model="tabs"
+        type="card"
+        @tab-click="onTabClick" >
+        <el-tab-pane
+          label="家属信息管理"
+          name="families" />
+        <el-tab-pane
+          label="狱警家属信息管理"
+          name="jailerFamilies" />
+      </el-tabs>
       <m-table-new
         stripe
         :data="families.contents"
@@ -71,6 +94,29 @@
       :width=" operationType === dialogTypes.BLACKLIST ? '530px' : '' "
       :visible.sync="visible"
       @close="handleCloseDialog" >
+      <el-row v-if=" operationType === dialogTypes.UPLOADING ">
+        <el-col style="line-height: 30px">
+          <i
+            class="el-icon-success green"
+            style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+          <template v-if="!!uploadResults.error_total">
+            <i
+            class="el-icon-error red"
+            style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
+            <p style="padding-left: 30px">
+              原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据
+            </p>
+          </template>
+        </el-col>
+        <el-col class="button-box">
+          <el-button
+            size="small"
+            @click="onExcelSure"
+            type="primary">
+            确定
+          </el-button>
+        </el-col>
+      </el-row>
       <template v-if=" operationType === dialogTypes.DETAIL ">
         <el-row
           v-for="(item, index) in prisonerDetailRows"
@@ -137,7 +183,14 @@ const dialogTypes = {
   // 罪犯详情
   DETAIL: 'detail',
   // 黑名单
-  BLACKLIST: 'blacklist'
+  BLACKLIST: 'blacklist',
+
+  UPLOADING: 'uploading'
+}
+
+const tabOptions = {
+  JAILER_FAMILY: 'jailerFamilies',
+  FAMILY: 'families'
 }
 
 export default {
@@ -154,54 +207,19 @@ export default {
       }
     ]
     return {
-      searchItems: {
-        name: {
-          type: 'input',
-          label: '家属姓名'
-        },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong
-        },
-        isBlacklist: {
-          type: 'select',
-          label: '黑名单',
-          options: isBlacklistOptions
-        }
-      },
       prisoner: {},
       family: {},
-      // 表格列
-      tableCols: [
-        {
-          label: '家属姓名',
-          prop: 'name'
-        },
-        {
-          label: '身份证信息',
-          slotName: 'idCard'
-        },
-        {
-          label: '黑名单原因',
-          prop: 'reason',
-          showOverflowtooltip: true
-        },
-        {
-          label: '对应罪犯',
-          slotName: 'prisoners'
-        },
-        {
-          label: '操作',
-          slotName: 'operate'
-        }
-      ],
       // 罪犯详情信息行
       prisonerDetailRows,
       operationType: '',
       visible: false,
-      dialogTypes
+      dialogTypes,
+      tabs: tabOptions.FAMILY,
+      tabOptions,
+      options,
+      belong,
+      isBlacklistOptions,
+      uploadResults: {}
     }
   },
   computed: {
@@ -237,6 +255,9 @@ export default {
             }
           }, formButton)
           break
+        case 'uploading':
+          title = '狱警家属信息导入'
+          break
         default:
           break
       }
@@ -244,6 +265,88 @@ export default {
         title,
         items
       }
+    },
+
+    tableCols() {
+      const familyTableCols = [
+        {
+          label: '家属姓名',
+          prop: 'name'
+        },
+        {
+          label: '身份证信息',
+          slotName: 'idCard'
+        },
+        {
+          label: '黑名单原因',
+          prop: 'reason',
+          showOverflowtooltip: true
+        },
+        {
+          label: '对应罪犯',
+          slotName: 'prisoners'
+        },
+        {
+          label: '操作',
+          slotName: 'operate'
+        }
+      ]
+
+      const jailerFamiliesTableCols = [
+        {
+          label: '家属姓名',
+          prop: 'familyName'
+        },
+        {
+          label: '家属手机号码',
+          prop: 'phone'
+        },
+        {
+          label: '狱警姓名',
+          prop: 'policeName'
+        },
+        {
+          label: '狱警编号',
+          prop: 'policeNumber'
+        }
+      ]
+
+      if (this.tabs === this.tabOptions.FAMILY) return familyTableCols
+      else return jailerFamiliesTableCols
+    },
+
+    searchItems() {
+      const familySearchItems = {
+        name: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options: this.options,
+          belong: this.belong
+        },
+        isBlacklist: {
+          type: 'select',
+          label: '黑名单',
+          options: this.isBlacklistOptions
+        }
+      }
+
+      const jailerFamiliesSearchItems = {
+        familyName: {
+          type: 'input',
+          label: '家属姓名'
+        },
+        policeName: {
+          type: 'input',
+          label: '狱警姓名'
+        }
+      }
+
+      if (this.tabs === this.tabOptions.FAMILY) return familySearchItems
+      else return jailerFamiliesSearchItems
     }
   },
   mounted() {
@@ -253,13 +356,22 @@ export default {
     ...mapActions([
       'getFamilies',
       'addFamilyBlacklist',
-      'removeFamilyBlacklist'
+      'removeFamilyBlacklist',
+      'getPoliceFamilies'
     ]),
     getDatas() {
-      this.getFamilies({
-        ...this.filter,
-        ...this.pagination
-      })
+      if (this.tabs === this.tabOptions.FAMILY) {
+        this.getFamilies({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
+      else {
+        this.getPoliceFamilies({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -305,6 +417,31 @@ export default {
     },
     handleCloseDialog() {
       this.$refs.blackListForm && this.$refs.blackListForm.onCancel()
+    },
+
+    onTabClick() {
+      this.getDatas()
+    },
+
+    handleGetUploadResults(response) {
+      this.$message({
+        showClose: true,
+        message: response.msg,
+        duration: 3000,
+        type: response.code === 200 ? 'success' : 'error'
+      })
+      if (response.code === 200) {
+        setTimeout(() => {
+          this.visible = true
+          this.operationType = this.dialogTypes.UPLOADING
+          this.uploadResults = response.data
+        }, 1000)
+      }
+    },
+
+    onExcelSure() {
+      this.visible = false
+      if(this.uploadResults.success_total) this.onSearch()
     }
   }
 }
@@ -322,5 +459,11 @@ export default {
       margin: 5px 6px 0 0;
     }
   }
+}
+.button-box {
+  padding-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 </style>

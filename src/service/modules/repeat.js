@@ -68,5 +68,10 @@ export default {
   // 会见节约成本统计-监狱维度
   getMeetingCostSavingPrison: params => {
     return service.get('/meetings/cost-saving/statistics/jail-dimension', params).then(res => res && res.data)
+  },
+
+  // 会见统计-狱警家属免费会见纪录
+  getPoliceFamilyFreeMeetings: params => {
+    return service.get('/freeMeetings/page-police', params)
   }
 }
