@@ -83,7 +83,6 @@
 </template>
 
 <script>
-// BLANK_DATA 占位符 判空的标志
 
 import { mapActions, mapState } from 'vuex'
 
@@ -98,12 +97,12 @@ export default {
           type: 'datetimerange',
           start: 'startTime',
           end: 'endTime'
-        },
-        status: {
-          type: 'select',
-          label: '会见状态',
-          options: this.$store.state.applyStatus
         }
+        // status: {
+        //   type: 'select',
+        //   label: '会见状态',
+        //   options: this.$store.state.applyStatus
+        // }
       },
       // 这个是真的单元格合并的实现
       tableCols: [
@@ -115,7 +114,6 @@ export default {
         {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: 100,
           showOverflowTooltip: true
         },
         {
@@ -146,7 +144,8 @@ export default {
         {
           label: '挂断原因',
           prop: 'remarksConcat',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          minWidth: 130
         },
         {
           label: '紫荆会见开始时间',
@@ -160,8 +159,9 @@ export default {
         },
         {
           // 紫荆会见时长 返回的是分钟 需要加上'分钟'的
-          label: '会见时长',
-          slotName: 'zijingDurationConcat'
+          label: '紫荆会见时长',
+          slotName: 'zijingDurationConcat',
+          minWidth: 95
         }
       ],
       // // 这个是用样式来控制的'伪单元格合并'效果
