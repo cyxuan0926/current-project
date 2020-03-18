@@ -101,12 +101,6 @@ export default {
         this.$set(this.searchItems['jailId'], 'getting', true)
         await this.$store.dispatch('getPrisonAll', { provincesId: value })
         Message.closeAll()
-        Message({
-          showClose: true,
-          message: '查询监狱成功',
-          duration: 2000,
-          type: 'success'
-        })
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
         this.$set(this.searchItems['jailId'], 'getting', false)
       }
