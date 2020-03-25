@@ -28,7 +28,6 @@
       <el-date-picker
         v-if="isDatePicker(item.type)"
         v-model="filterParams[item.name]"
-        value-format="timestamp"
         align="right"
         unlink-panels
         v-bind="item"

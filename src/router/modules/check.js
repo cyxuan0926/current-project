@@ -22,14 +22,15 @@ let check = [{
     path: '/meeting/list',
     name: 'meeting-list',
     // component: helper.loadView('check-meeting/meeting-list'),
-    component: 'check-meeting/meeting-list',
+    // component: 'check-meeting/meeting-list',
+    component: 'check-meeting/meeting-list/meeting-list',
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '远程会见申请列表' }
   }, {
     path: '/meeting/adjust',
     name: 'meeting-adjust',
     // component: helper.loadView('check-meeting/meeting-adjust'),
-    component: 'check-meeting/meeting-adjust',
+    component: 'check-meeting/meeting-adjust/index',
     // component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve),
     meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '远程会见申请调整' }
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)

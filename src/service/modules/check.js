@@ -31,7 +31,8 @@ export default {
   },
   // 家属会见申请-授权
   authorizeMeeting: params => {
-    return service.post('/meetings/authorize', params).then(res => res && res.code === 200)
+    // return service.post('/meetings/authorize', params).then(res => res && res.code === 200)
+    return service.post('/meetings/authorize', params)
   },
   // 家属会见申请-获取会见信息
   getMeetingConfigs: params => {
@@ -125,6 +126,12 @@ export default {
   removeFamilyBlacklist: params => {
     return service.postFile('/blacklists/removeFamilyBlacklist', params).then(res => res && res.code === 200)
   },
+
+  // 家属信息管理-狱警家属信息
+  getPoliceFamilies: params => {
+    return service.get('/families/findPolicePage', params)
+  },
+
   // 数据管理-罪犯数据导入-上传到服务器
   importPrisoner: params => {
     return service.post('/prisoners/processing', params, { timeout: 0 }).then(res => res && res.data)
@@ -141,9 +148,12 @@ export default {
   importPrisonerRewardPunishment: params => {
     return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
   },
+
+  // 会见统计-远程免费会见纪录
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
   },
+
   // 数据管理-上传并解析
   uploadAnalyticExcel: params => {
     return service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type }))
@@ -187,5 +197,17 @@ export default {
   // 导入数据详情列表-罪犯奖励惩罚信息列表
   getPrisonerRewardPunishments: params => {
     return service.get('/prisoner_reward_punishments/page', params).then(res => res && res.data)
+  },
+  // 会见申请管理-远程会见申请-批量审核授权
+  authorizeBatchMeetings: params => {
+    return service.post('/meetings/batchAuthorize', params)
+  },
+  // 会见申请管理-远程会见申请-单条审核获取审核时间段
+  getMeetingTimes: params => {
+    return service.get('/meetings/showMeetingTimes', params)
+  },
+  // 会见申请管理-远程会见申请-单条审核通过
+  authorizeSingleMeeting: params => {
+    return service.post('/meetings/singleAuthorize', params)
   }
 }

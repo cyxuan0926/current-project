@@ -1,10 +1,10 @@
 import { Message } from 'element-ui'
 import router from '@/router'
 import logout from '@/utils/logout'
-import { showSuccessTip } from './helper'
 // import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
+  Message.closeAll()
   Message({
     showClose: true,
     message: msg,
@@ -25,11 +25,7 @@ const codes = {
       if (url.indexOf('/prisoners/processing') > -1) {
         tips('导入的Excel罪犯数据解析完成', 'success')
       }
-      else {
-        if (showSuccessTip(url)) {
-          tips(params.msg || '操作成功', 'success')
-        }
-      }
+      else tips(params.msg || '操作成功', 'success')
     }
   },
   400: {
@@ -133,6 +129,7 @@ const handleErrorMessage = (message) => {
 }
 export default params => {
   if (params.config.url.includes('/feedbacks/download') || params.config.url.includes('/authorFamily/export')) if (params.status === 200 && !params.data.code) return params
+  // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
     tips(params.data ? params.data.msg : handleErrorMessage(params.message))

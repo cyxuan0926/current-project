@@ -11,72 +11,41 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportPrisonuser"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="prisonUsers.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="username"
-          min-width="85"
-          label="用户名" />
-        <el-table-column
-          prop="roles"
-          min-width="85"
-          label="角色" />
-        <el-table-column
-          prop="jailName"
-          min-width="110"
-          label="监狱名称" />
-        <el-table-column
-          prop="prisonAreas"
-          show-overflow-tooltip
-          label="监区" />
-        <el-table-column
-          prop="policeNumber"
-          min-width="90"
-          label="狱警号" />
-        <el-table-column
-          prop="realName"
-          label="真实姓名" />
-        <el-table-column
-          v-if="user.role === '-1'"
-          min-width="130"
-          label="操作">
-          <!-- v-if="routeRole != scope.row.role && scope.row.role !== 0" -->
-          <template
-            slot-scope="scope"
-            v-if="!scope.row.isAdministrator">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="onEdit(scope.row.id)">编辑</el-button>
-            <el-button
-              v-if="scope.row.status == 'DISABLED'"
-              size="mini"
-              type="success"
-              style="margin-left: 5px;"
-              @click="onChangeStatus(scope.row, 1, 'ENABLED')">启用</el-button>
-            <el-button
-              v-if="scope.row.status == 'ENABLED'"
-              size="mini"
-              type="info"
-              style="margin-left: 5px;"
-              @click="onChangeStatus(scope.row, 0, 'DISABLED')">禁用</el-button>
+        :data="prisonUsers.contents"
+        style="width: 100%"
+        :cols="tableCols">
+        <template #operation="{ row }">
+          <el-button
+            type="primary"
+            size="mini"
+            @click="onEdit(row.id)">编辑</el-button>
+          <el-button
+            v-if="row.status == 'DISABLED'"
+            size="mini"
+            type="success"
+            style="margin-left: 5px;"
+            @click="onChangeStatus(row, 1, 'ENABLED')">启用</el-button>
+          <el-button
+            v-if="row.status == 'ENABLED'"
+            size="mini"
+            type="info"
+            style="margin-left: 5px;"
+            @click="onChangeStatus(row, 0, 'DISABLED')">禁用</el-button>
             <!--  v-if="routeRole === '0'" -->
-            <el-button
-              type="danger"
-              size="mini"
-              style="margin-left: 5px;"
-              @click="onDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-button
+            type="danger"
+            size="mini"
+            style="margin-left: 5px;"
+            @click="onDelete(row.id)">删除</el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -94,7 +63,9 @@ export default {
     hasAllPrisonQueryAuth: Boolean
   },
   data() {
-    let options = { roleId: { type: 'select', label: '角色' }, jail: { type: 'select', label: '监狱名称', belong: { value: 'id', label: 'name' }, filterable: true } }, { role } = JSON.parse(localStorage.getItem('user')),
+    let options = { roleId: { type: 'select', label: '角色' },
+      jail: { type: 'select', label: '监狱名称', belong: { value: 'id', label: 'name' }, filterable: true } },
+      { role } = JSON.parse(localStorage.getItem('user')),
       routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
     if (routeRole === '0') delete options.roleId
     if (role === '-1') delete options.jail
@@ -116,7 +87,47 @@ export default {
       user: state => state.global.user,
       rolesList: state => state.account.rolesList,
       allTenants: state => state.account.allTenants
-    })
+    }),
+    tableCols() {
+      let cols = [
+        {
+          label: '用户名',
+          prop: 'username',
+          minWidth: 85
+        },
+        {
+          label: '角色',
+          prop: 'roles',
+          minWidth: 85
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName',
+          minWidth: 110
+        },
+        {
+          label: '监区',
+          prop: 'prisonAreas',
+          showOverflowTooltip: true
+        },
+        {
+          label: '狱警号',
+          prop: 'policeNumber',
+          minWidth: 90
+        },
+        {
+          label: '真实姓名',
+          prop: 'realName'
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          minWidth: 130
+        }
+      ]
+      if (this.user.role !== '-1') cols.splice(-1, 1)
+      return cols
+    }
   },
   async mounted() {
     if (this.routeRole === '0') {

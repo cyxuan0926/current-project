@@ -8,7 +8,7 @@
       layout="sizes, prev, pager, next, jumper, slot"
       :total="total"
       :page-size="pageSize"
-      :page-sizes = '[10, 20, 30, 40, 50]'
+      :page-sizes = 'pageSizes'
       :current-page.sync="currentPage"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange">
@@ -27,6 +27,10 @@ export default {
     total: {
       type: Number,
       default: 0
+    },
+    pageSizes: {
+      type: Array,
+      default: () => [10, 20, 30, 40, 50]
     }
   },
   data() {

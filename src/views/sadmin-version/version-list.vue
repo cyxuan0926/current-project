@@ -16,63 +16,54 @@
         :span="24"
         :key="index + type.title"
         style="margin-bottom: 10px;">
-        <el-table
-          :data="[versions[index]]"
+        <m-table-new
           stripe
-          style="width: 100%;">
-          <el-table-column label="版本名">
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.versionCode"
-                :disabled="!scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="版本号">
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.versionNumber"
-                :disabled="!scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="是否强制更新">
-            <template slot-scope="scope">
-              <el-select
-                v-model="scope.row.isForce"
-                placeholder="请选择"
-                :disabled="!scope.row.isCheck">
-                <el-option
-                  v-for="(item,$key) in {'是':1,'否':0}"
-                  :key="item"
-                  :label="$key"
-                  :value="item" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="描述" >
-            <template slot-scope="scope">
-              <el-input
-                type="text"
-                v-model="scope.row.description"
-                :disabled="!scope.row.isCheck" />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button
-                v-if="!scope.row.isCheck"
-                type="primary"
-                size="mini"
-                @click="$set(scope.row, 'isCheck', true)">修改</el-button>
+          :data="[versions[index]]"
+          style="width: 100%;"
+          :cols="tableCols">
+          <template #versionCode="{ row }">
+            <el-input
+              type="text"
+              v-model="row.versionCode"
+              :disabled="!row.isCheck" />
+          </template>
+          <template #versionNumber="{ row }">
+            <el-input
+              type="text"
+              v-model="row.versionNumber"
+              :disabled="!row.isCheck" />
+          </template>
+          <template #isForce="{ row }">
+            <el-select
+              v-model="row.isForce"
+              placeholder="请选择"
+              :disabled="!row.isCheck">
+              <el-option
+                v-for="(item, $key) in {'是':1,'否':0}"
+                :key="row.id + $key"
+                :label="$key"
+                :value="item"/>
+            </el-select>
+          </template>
+          <template #description="{ row }">
+            <el-input
+              type="text"
+              v-model="row.description"
+              :disabled="!row.isCheck" />
+          </template>
+          <template #operation="{ row }">
+            <el-button
+              v-if="!row.isCheck"
+              type="primary"
+              size="mini"
+              @click="$set(row, 'isCheck', true)">修改</el-button>
               <el-button
                 v-else
                 type="primary"
                 size="mini"
-                @click="modifyOrSave(scope.row)">保存</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+                @click="modifyOrSave(row)">保存</el-button>
+          </template>
+        </m-table-new>
       </el-col>
     </template>
     <m-pagination
@@ -151,8 +142,33 @@ export default {
       }
     return {
       searchItems: {
-        versionNumber: { type: 'input', label: '版本号' } // 版本号
+        versionNumber: {
+          type: 'input',
+          label: '版本号'
+        } // 版本号
       },
+      tableCols: [
+        {
+          label: '版本名',
+          slotName: 'versionCode'
+        },
+        {
+          label: '版本号',
+          slotName: 'versionNumber'
+        },
+        {
+          label: '是否强制更新',
+          slotName: 'isForce'
+        },
+        {
+          label: '描述',
+          slotName: 'description'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
+        }
+      ],
       dialogVisible: false,
       ruleForm: {
         pass: '',
@@ -196,7 +212,7 @@ export default {
         this.$message.warning('请输入描述')
         return false
       }
-      let params = {
+      const params = {
         id: row.id,
         code: row.versionCode,
         number: row.versionNumber,

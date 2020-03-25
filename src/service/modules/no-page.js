@@ -2,8 +2,8 @@ import * as service from '../config/service'
 
 export default {
   // 监狱
-  getPrisonAll: () => {
-    return service.get('/jails/getJailAll').then(res => res && res.data)
+  getPrisonAll: params => {
+    return service.get('/jails/getJailAll', params).then(res => res && res.data)
   },
   // 监狱-含分监区参数
   getPrisonAllWithBranchPrison: params => {

@@ -80,11 +80,19 @@
         </div>
       </div>
     </div>
+    <div
+      class="button-box"
+      v-if="superAdmin" >
+      <el-button
+        size="small"
+        @click="onGoBack">返回</el-button>
+    </div>
   </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
+import roles from '@/common/constants/roles'
 export default {
   data() {
     return {
@@ -107,7 +115,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['specialConfig'])
+    ...mapState(['specialConfig']),
+    superAdmin() {
+      return this.$store.getters.role === roles.SUPER_ADMIN
+    }
   },
   activated() {
     if (this.$route.meta.role === '0') this.disabled = false
@@ -120,7 +131,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getRemoteSpecialConfig', 'addSpecialConfig', 'updateSpecialConfig', 'deleteSpecialConfig']),
+    ...mapActions([
+      'getRemoteSpecialConfig',
+      'addSpecialConfig',
+      'updateSpecialConfig',
+      'deleteSpecialConfig'
+    ]),
     onSubmit(config, index, e) {
       let params = {
         day: config.day,
@@ -238,6 +254,9 @@ export default {
         return [e[1], '23:59']
       }
       return [e[1], time.format('HH:mm')]
+    },
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

@@ -16,8 +16,15 @@ export default {
       return true
     })
   },
-  authorizeMeeting({ commit }, params) {
-    return http.authorizeMeeting(params).then(res => res)
+  async authorizeMeeting({ commit }, params) {
+    // return http.authorizeMeeting(params).then(res => res)
+    try {
+      const res = await http.authorizeMeeting(params)
+      return res && res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
   },
   withdrawMeeting({ commit }, params) {
     return http.withdrawMeeting(params).then(res => res)
@@ -33,7 +40,7 @@ export default {
     return http.adjustMeeting(params).then(res => res)
   },
   getFreeMeetings({ commit }, params) {
-    http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', res))
+    http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', { contents: res.freeMeetings, total: res.total }))
   },
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)
@@ -88,6 +95,94 @@ export default {
       commit('setMeetingStatistics', list || [])
       commit('setMeetingStatisticTotalItem', item || {})
       return totalCount || 0
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getMeetingCallRecords({ commit }, params) {
+    try {
+      const { meetingCallRecords, meetingCallRecordsSize } = await repeatAPI.getMeetingCallRecords(params)
+      const { page, rows } = params
+      const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
+        let itemData = {}
+        for (let [key, value] of Object.entries(item)) {
+          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          else itemData = Object.assign({}, itemData, { [key]: value })
+        }
+        return itemData['startTimeConcat'].map((value, index) => (Object.assign({}, { count: itemData['startTimeConcat'].length, orderNumber: index, orderIndex: rows * (page - 1) + num + 1 },
+          itemData, {
+            startTimeConcat: value,
+            mcstatusConcat: itemData['mcstatusConcat'][index],
+            zijingStartTimeConcat: itemData['zijingStartTimeConcat'][index],
+            zijingEndTimeConcat: itemData['zijingEndTimeConcat'][index],
+            zijingDurationConcat: itemData['zijingDurationConcat'][index],
+            endTimeConcat: itemData['endTimeConcat'][index],
+            remarksConcat: itemData['remarksConcat'][index],
+            durationConcat: itemData['durationConcat'][index]
+          })))
+      })
+      commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getBackupMeetingCallRecords({ commit }, params) {
+    try {
+      const { meetingCallRecords, meetingCallRecordsSize } = await repeatAPI.getMeetingCallRecords(params)
+      const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
+        let itemData = {}
+        for (let [key, value] of Object.entries(item)) {
+          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          else itemData = Object.assign({}, itemData, { [key]: value })
+        }
+        return itemData
+      })
+      commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async authorizeBatchMeetings({ commit }, params) {
+    try {
+      // 只要有一条不通过就是code 为 -1 全部通过才是200
+      await http.authorizeBatchMeetings(params)
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getMeetingTimes({ commit }, params) {
+    try {
+      const { data } = await http.getMeetingTimes(params)
+      const { meetingQueue = [], terminals = [], meetings = [] } = data
+      commit('setMeetingTimes', Object.assign({}, data, { meetingQueue, terminals, meetings }))
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async authorizeSingleMeeting({ commit }, params) {
+    try {
+      const res = await http.authorizeSingleMeeting(params)
+      return res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async getPoliceFamilyFreeMeetings({ commit }, params) {
+    try {
+      const policeFamilyFreeMeetings = await repeatAPI.getPoliceFamilyFreeMeetings(params)
+      const { total, freeMeetings } = policeFamilyFreeMeetings.data
+      commit('getFreeMeetings', { contents: freeMeetings, total })
+      return true
     }
     catch (err) {
       throw err

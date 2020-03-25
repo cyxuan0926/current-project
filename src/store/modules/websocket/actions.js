@@ -59,6 +59,7 @@ export default {
 
           let res = JSON.parse(response.data)
 
+
           if (res.code === 200 && res.data && res.data.meetings) {
             dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
             Notification({
@@ -68,12 +69,21 @@ export default {
               duration: 8000
             })
           }
-          else if (res.code === 200 && res.data && res.data.meetingId) {
-            dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
+          // (res.code === 200 && res.data && res.data.meetingId) || (res.code === 200 && res.data && res.data.wsInfo && res.data.wsInfo.length)
+          else if (res.code === 200 && res.data && (res.data.meetingId || (res.data.wsInfo && res.data.wsInfo.length))) {
+            const params = res.data.meetingId ? [ parseInt(res.data.meetingId) ] : res.data.wsInfo.map(info => parseInt(info.meetingId))
+            const htmlElements = res.data.meetingId ? [{ k: res.data.info }] : JSON.parse(res.data.info)
+            const htmlStrings = (htmlElements.map(element => {
+              const value = element['k']
+              return `<p>${ value }</p>`
+            })).join('\n')
+            // dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
+            dispatch('meetingApplyDealing', params)
             Notification({
+              dangerouslyUseHTMLString: true,
               title: '处理成功',
               type: 'success',
-              message: `${ res.data.info }`,
+              message: htmlStrings,
               duration: 8000
             })
           }

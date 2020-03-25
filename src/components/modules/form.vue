@@ -21,7 +21,7 @@
           :reset-field-value="resetFieldValue"
           @validateField="validateField" />
       </template>
-      <slot></slot>
+      <slot />
     </el-form>
     <div
       v-if="items.buttons && Object.keys(items.buttons).length"
@@ -67,6 +67,7 @@
         <el-button
           v-if="button === 'back'"
           :key="index"
+          @click="onGoBack"
           size="small">返回</el-button>
       </template>
     </div>
@@ -98,6 +99,7 @@ export default {
     },
     items: {
       handler: function(val) {
+        console.log(val)
         val && this.render()
       }
     }
@@ -129,6 +131,9 @@ export default {
     onCancel() {
       this.$refs.form.resetFields()
       this.$emit('cancel')
+    },
+    onGoBack() {
+      this.$emit('back')
     },
     handleResetField() {
       this.$refs.form.resetFields()

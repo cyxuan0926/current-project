@@ -7,6 +7,16 @@
       @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
+      <el-tabs
+        v-model="tabs"
+        type="card" >
+        <el-tab-pane
+          label="家属免费会见记录"
+          name="familyFreeMeetings" />
+        <el-tab-pane
+          label="警员家属免费会见记录"
+          name="jailerFamilyFreeMeetings" />
+      </el-tabs>
       <m-table-new
         stripe
         :data="freeMeetings.contents"
@@ -31,25 +41,94 @@ import prisons from '@/common/constants/prisons'
 
 export default {
   data() {
-    const { options, belong } = prisons.PRISONAREA
+    const { belong } = prisons.PRISONAREA
+    const { options } = this.$store.getters.prisonAreaOptions
+
+    const tabOptions = {
+      FAMILY_FREE_MEETINGS: 'familyFreeMeetings',
+      JAILER_FAMILY_FREE_MEETINGS: 'jailerFamilyFreeMeetings'
+    }
     return {
+      tabOptions,
+      tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
         name: {
           type: 'input',
-          label: '家属姓名'
+          label: '家属姓名',
+          miss: false
         },
         prisonerNumber: {
           type: 'input',
-          label: '罪犯编号'
+          label: '罪犯编号',
+          miss: false
         },
         prisonArea: {
           type: 'select',
           label: '监区',
           options,
-          belong
+          belong,
+          miss: false
+        },
+        familyName: {
+          type: 'input',
+          label: '家属姓名',
+          miss: true
+        },
+        policeName: {
+          type: 'input',
+          label: '警员姓名',
+          miss: true
+        },
+        policeNumber: {
+          type: 'input',
+          label: '警员编号',
+          miss: true
         }
       },
-      tableCols: [
+      filter: {}
+    }
+  },
+  computed: {
+    ...mapState(['freeMeetings']),
+
+    tableCols() {
+      const jailerFamilyFreeMeetingsTableCols = [
+        {
+          label: '家属姓名',
+          prop: 'familyName'
+        },
+        {
+          label: '警员姓名',
+          prop: 'policeName'
+        },
+        {
+          label: '警员编号',
+          prop: 'policeNumber'
+        },
+        {
+          label: '会见时间',
+          prop: 'meetingTime',
+          minWidth: 140
+        },
+        {
+          label: '会见时长',
+          slotName: 'duration',
+          minWidth: 110
+        },
+        {
+          label: '终端号',
+          prop: 'terminalNumber'
+        },
+        {
+          label: '家属所在省',
+          prop: 'province'
+        },
+        {
+          label: '家属所在市',
+          prop: 'city'
+        }
+      ]
+      const familyFreeMeetingstableCols = [
         {
           label: '家属姓名',
           prop: 'name'
@@ -93,32 +172,73 @@ export default {
           prop: 'city'
         }
       ]
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingstableCols
+      else return jailerFamilyFreeMeetingsTableCols
     }
   },
-  computed: {
-    ...mapState(['freeMeetings'])
+  watch: {
+    tabs(val) {
+      if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
+        this.resetSearchFilters(['familyName', 'policeName', 'policeNumber'])
+        this.$set(this.searchItems.name, 'miss', false)
+        this.$set(this.searchItems.prisonerNumber, 'miss', false)
+        this.$set(this.searchItems.prisonArea, 'miss', false)
+        this.$set(this.searchItems.familyName, 'miss', true)
+        this.$set(this.searchItems.policeName, 'miss', true)
+        this.$set(this.searchItems.policeNumber, 'miss', true)
+      }
+      else {
+        this.resetSearchFilters(['name', 'prisonerNumber', 'prisonArea'])
+        this.$set(this.searchItems.name, 'miss', true)
+        this.$set(this.searchItems.prisonerNumber, 'miss', true)
+        this.$set(this.searchItems.prisonArea, 'miss', true)
+        this.$set(this.searchItems.familyName, 'miss', false)
+        this.$set(this.searchItems.policeName, 'miss', false)
+        this.$set(this.searchItems.policeNumber, 'miss', false)
+      }
+      this.onSearch()
+    }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getFreeMeetings']),
+    ...mapActions([
+      'getFreeMeetings',
+      'getPoliceFamilyFreeMeetings'
+    ]),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()
     },
     getDatas() {
-      this.getFreeMeetings({
-        ...this.filter,
-        ...this.pagination
-      })
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
+        this.getFreeMeetings({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
+      else {
+        this.getPoliceFamilyFreeMeetings({
+          ...this.filter,
+          ...this.pagination
+        })
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
+    },
+
+    // 重置搜索组件的filter
+    resetSearchFilters(filters = []) {
+      filters.map(filter => {
+        this.$set(this.searchItems[filter], 'value', '')
+        delete this.filter[filter]
+      })
     }
   }
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style scoped>
 </style>

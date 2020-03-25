@@ -4,7 +4,7 @@
       <div
         class="detail-item"
         v-for="(item, index) in detailItems"
-        :key="`id-family-detail-item-${ index + Math.random() }`">
+        :key="`id-family-detail-item-${ index }`">
         <label>{{ item.label }}：</label>
         <span>{{ family[item['prop']] }}</span>
       </div>

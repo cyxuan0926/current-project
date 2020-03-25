@@ -1,8 +1,8 @@
 module.exports = {
   repository: {
-    local: true,
+    // local: true,
     type: 'git',
-    url: 'https://github.com/sinog2c/ywgk-fe.git',
+    url: 'http://103.37.158.17/yt/front/ywgk-fe.git',
     branch: 'master'
   },
 

@@ -1,70 +1,20 @@
 <template>
   <div>
-    <el-table
-      :data="contents"
+    <m-table-new
       stripe
+      :data="contents"
       @cell-click="handleClick"
-      :cell-style="cellStyle">
-      <el-table-column
-        prop="phone"
-        label="手机号码" />
-      <el-table-column
-        prop="balance"
-        label="账户余额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.balance | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="recharge"
-        label="充值金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.recharge | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="consume"
-        label="消费金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.consume | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="preConsume"
-        label="预消费金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.preConsume | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="refund"
-        label="已退款金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.refund | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="refundable"
-        label="可退款金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.refundable | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="transferMoney"
-        label="需转账金额(元)">
-        <template slot-scope="scope">
-            {{ scope.row.transferMoney | fixedNumber }}
-        </template>
-      </el-table-column>  
-      <el-table-column
-        prop="contents"
-        label="备注">
-        <template slot-scope="scope">
-          {{ (scope.row.remark ? (scope.row.remark > 0 ? '+' + scope.row.remark : scope.row.remark) : '' )}}
-        </template>
-      </el-table-column>
-    </el-table>
+      :cell-style="cellStyle"
+      :cols="tableCols">
+      <template #balance="{ row }">{{ row.balance | fixedNumber }}</template>
+      <template #recharge="{ row }">{{ row.recharge | fixedNumber }}</template>
+      <template #consume="{ row }">{{ row.consume | fixedNumber }}</template>
+      <template #preConsume="{ row }">{{ row.preConsume | fixedNumber }}</template>
+      <template #refund="{ row }">{{ row.refund | fixedNumber }}</template>
+      <template #refundable="{ row }">{{ row.refundable | fixedNumber }}</template>
+      <template #transferMoney="{ row }">{{ row.transferMoney | fixedNumber }}</template>
+      <template #contents="{ row }">{{(row.remark ? (row.remark > 0 ? '+' + row.remark : row.remark) : '' )}}</template>
+    </m-table-new>
     <el-dialog
       title="账户余额"
       :visible.sync="dialogTableVisible"
@@ -72,24 +22,13 @@
       <!-- <div>
         手机号码：{{ accountDetail[0].phone }}
       </div> -->
-      <el-table
+      <m-table-new
+        stripe
         :data="accountDetail"
         max-height="400"
-        stripe>
-        <el-table-column
-          property="phone"
-          label="手机号码" />
-        <el-table-column
-          property="jailName"
-          label="监狱名称" />
-        <el-table-column
-          property="balance"
-          label="账户余额(元)">
-          <template slot-scope="scope">
-            {{ scope.row.balance | fixedNumber }}
-          </template>
-        </el-table-column>  
-      </el-table>
+        :cols="dialogTableCols">
+        <template #balance="{ row }">{{ row.balance | fixedNumber }}</template>
+      </m-table-new>
     </el-dialog>
   </div>
 </template>
@@ -116,7 +55,68 @@ export default {
           }
         }
       },
-      accountDetail: []
+      accountDetail: [],
+      tableCols: [
+        {
+          label: '手机号码',
+          prop: 'phone'
+        },
+        {
+          label: '账户余额(元)',
+          prop: 'balance',
+          slotName: 'balance'
+        },
+        {
+          label: '充值金额(元)',
+          prop: 'recharge',
+          slotName: 'recharge'
+        },
+        {
+          label: '消费金额(元)',
+          prop: 'consume',
+          slotName: 'consume'
+        },
+        {
+          label: '预消费金额(元)',
+          prop: 'preConsume',
+          slotName: 'preConsume'
+        },
+        {
+          label: '已退款金额(元)',
+          prop: 'refund',
+          slotName: 'refund'
+        },
+        {
+          label: '可退款金额(元)',
+          prop: 'refundable',
+          slotName: 'refundable'
+        },
+        {
+          label: '需转账金额(元)',
+          prop: 'transferMoney',
+          slotName: 'transferMoney'
+        },
+        {
+          label: '备注',
+          prop: 'contents',
+          slotName: 'contents'
+        }
+      ],
+      dialogTableCols: [
+        {
+          label: '手机号码',
+          prop: 'phone'
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '账户余额(元)',
+          prop: 'balance',
+          slotName: 'balance'
+        }
+      ]
     }
   },
   methods: {

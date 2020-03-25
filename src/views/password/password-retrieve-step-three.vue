@@ -10,6 +10,7 @@
         <el-input
           placeholder="请输入新密码"
           type="password"
+          show-password
           clearable
           v-model.trim="passwords.newPassword" />
       </el-form-item>

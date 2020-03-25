@@ -15,13 +15,18 @@
       @search="onSearch"
     />
     <el-col :span="24">
-      <el-tabs v-model="activeComponentName" type="card">
+      <el-tabs
+        v-model="activeComponentName"
+        type="card">
         <template v-for="item in tabOptions">
-          <el-tab-pane :label="item.label" :name="item.name" :key="item.name">
+          <el-tab-pane
+            :label="item.label"
+            :name="item.name"
+            :key="item.name">
             <keep-alive>
               <component
-                :is="activeComponentName" :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth"
-              />
+                :is="activeComponentName"
+                :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth" />
             </keep-alive>
           </el-tab-pane>
         </template>
@@ -130,7 +135,12 @@ export default {
     this.getDatas()
   },
   methods: {
-    ...mapActions(['getPrisonReportList', 'getPrisonReportListAll', 'getPrisonReportDetail', 'getPrisonReportDetailAll']),
+    ...mapActions([
+      'getPrisonReportList',
+      'getPrisonReportListAll',
+      'getPrisonReportDetail',
+      'getPrisonReportDetailAll'
+    ]),
     sizeChange(rows) {
       this.$refs.pagination.handleSizeChange(rows)
       this.getDatas()

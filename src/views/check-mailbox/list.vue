@@ -14,6 +14,7 @@
       :params="filter" />
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col
       :span="24"
@@ -32,7 +33,7 @@
           <m-img-viewer
             v-else
             v-for=" (url,index) of scope.row.imageUrls"
-            v-show="!index"
+            :class="!index ? '' : 'img-viewer__hidden'"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
             :publicUrl="url" />
@@ -91,7 +92,7 @@
         class="tips-title">详细内容</span>
       <div class="dialog-container">
         <div class="detail-item"><label>用户</label><span>{{ mailbox.familyName || mailbox.name }}</span></div>
-        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt | Date }}</span></div>
+        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt }}</span></div>
         <div class="detail-item"><label>信件类别</label><span>{{ mailbox.typeName }}</span></div>
         <div class="detail-item"><label>信件内容</label><span>{{ mailbox.contents }}</span></div>
         <div
@@ -227,7 +228,6 @@ export default {
         },
         {
           label: '是否答复',
-          minWidth: '50px',
           slotName: 'isReply'
         }
       ]
@@ -259,7 +259,12 @@ export default {
         ...commonCols,
         ...onlyWardenEndCols
       ]
-      if (this.hasOnlyAllPrisonQueryAuth) cols = [
+      if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) cols = [
+        {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: 70
+        },
         ...onlyHasAllPrisonQueryAuthHeadersCols,
         ...commonCols,
         ...onlyHasAllPrisonQueryAuthEndCols
@@ -386,10 +391,11 @@ export default {
     }
     .img-box{
       width: 400px;
-      img{
+      /deep/ .el-image{
         width: 195px;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        /deep/ img {
+          width: 100%;
+        }
       }
     }
     button{

@@ -70,7 +70,9 @@ export default {
   },
 
   computed: {
-    ...mapState(['meetingCostSaving']),
+    ...mapState([
+      'meetingCostSaving',
+      'provincesAll']),
 
     isSuperAdmin() {
       return this.$store.getters.role === roles.SUPER_ADMIN
@@ -82,7 +84,7 @@ export default {
 
     filterItems() {
       return [
-        this.filterItemDimension,
+        ...this.filterItemDimension,
         {
           type: 'daterange',
           name: 'daterange',
@@ -94,22 +96,37 @@ export default {
     },
 
     filterItemDimension() {
-      const result = {
+      const result = [{
         type: 'select',
         name: 'dimension',
         options: [{ value: dimensions.INDIVIDUAL, label: '个人维度' }],
         defaultValue: dimensions.INDIVIDUAL
+      }]
+      let provinceItem = {
+        type: 'select',
+        name: 'provincesId',
+        placeholder: '请选择省份',
+        options: [],
+        filterable: true,
+        loading: true,
+        value: null,
+        clearable: true,
+        labelKey: 'name',
+        valueKey: 'id'
       }
-
       if (this.hasPrisonArea || this.isSuperAdmin) {
-        result.options.push({
+        result[result.length - 1].options.push({
           value: dimensions.PRISON_AREA,
           label: '监区维度'
         })
       }
 
       if (this.isSuperAdmin) {
-        result.options.push({ value: dimensions.PRISON, label: '监狱维度' })
+        if (this.provincesAll.length === 0) (async () => await this.getProvincesAll() )()
+        provinceItem.loading = false
+        provinceItem.options = this.provincesAll
+        result.unshift(provinceItem)
+        result[result.length - 1].options.push({ value: dimensions.PRISON, label: '监狱维度' })
       }
 
       return result
@@ -117,7 +134,9 @@ export default {
 
     requetParams() {
       const result = {}
-      const daterange = this.filterParams.daterange
+      const { daterange, provincesId } = this.filterParams
+
+      if (provincesId) result.provincesId = provincesId
 
       if (daterange) {
         result.meetingStartDate = daterange[0]
@@ -252,8 +271,8 @@ export default {
             minWidth: '100px',
             showOverflowTooltip: true
           },
-          { prop: 'meetingTime', label: '会见日期', minWidth: '130px' },
-          { prop: 'duration', label: '会见时长', minWidth: '90px' },
+          { prop: 'meetingTime', label: '会见日期', minWidth: '110px' },
+          { prop: 'duration', label: '会见时长', minWidth: '70px' },
           { prop: 'province', label: '家属会见所在省', minWidth: '100px' },
           { prop: 'city', label: '家属会见所在市', minWidth: '100px' },
           {
@@ -265,7 +284,7 @@ export default {
           {
             prop: 'saveMoney',
             label: '节约开支(元)',
-            minWidth: '100px',
+            minWidth: '80px',
             formatter: this.currencyFormatter
           }
         ],
@@ -300,12 +319,20 @@ export default {
       }
 
       if (this.isSuperAdmin) {
+        const provinceCol = {
+          label: '省份',
+          prop: 'provinceName'
+        }
         cols[dimensions.INDIVIDUAL].unshift({
           prop: 'jailName',
           label: '监狱名称',
-          minWidth: '126px',
+          minWidth: '90px',
           showOverflowTooltip: true
         })
+        for (let [type, col] of Object.entries(cols)) {
+          if (type === 'PRISON') col.splice(1, 0, provinceCol)
+          else col.unshift(provinceCol)
+        }
       }
 
       return cols[this.filterParams.dimension]
@@ -327,11 +354,11 @@ export default {
     ...mapActions([
       'getMeetingCostSavingIndividual',
       'getMeetingCostSavingPrisonArea',
-      'getMeetingCostSavingPrison'
+      'getMeetingCostSavingPrison',
+      'getProvincesAll'
     ]),
 
     async onFilter() {
-      console.log("onFilter", this.requetParams)
       try {
         switch (this.filterParams.dimension) {
           case dimensions.INDIVIDUAL:
@@ -352,7 +379,6 @@ export default {
     },
 
     rank(index) {
-      console.log('rank', this.pagination.page, this.pagination.rows)
       return index + 1 + (this.pagination.page - 1) * this.pagination.rows
     },
 

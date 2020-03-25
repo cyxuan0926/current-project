@@ -25,16 +25,14 @@
       :options="chartOptions"
       :loading="loading"/>
     <el-col :span="24">
-      <m-table
+      <m-table-new
         :data="tableDatas"
         :cols="tableCols"
         class="mini-td-padding">
-        <template
-          slot="rank"
-          slot-scope="scope">
-          <span v-if="scope.row.jailId">{{ scope.$index | handleGetIndex(pagination.rows, pagination.page) }}</span>
+        <template #rank="{ row, $index }">
+          <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
         </template>
-      </m-table>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -45,6 +43,7 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 const chartTypes = {
   PIE: 'pie',
@@ -52,6 +51,7 @@ const chartTypes = {
 }
 
 export default {
+  mixins: [prisonFilterCreator],
   data () {
     return {
       total: 0,
@@ -73,9 +73,16 @@ export default {
           minWidth: '5.5%'
         },
         {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: '11%',
+          showOverflowTooltip: true
+        },
+        {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '8%'
+          minWidth: '11%',
+          showOverflowTooltip: true
         },
         {
           label: '会见申请次数(次)',

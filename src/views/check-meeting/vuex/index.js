@@ -12,7 +12,11 @@ let state = {
   // 会见统计数据
   meetingStatistics: [],
   // 总计项数据
-  meetingStatisticTotalItem: {}
+  meetingStatisticTotalItem: {},
+  // 远程会见对账
+  meetingCallRecords: { total: 0, contents: [] },
+  // 会见时间段
+  meetingTimes: []
 }
 
 export default {

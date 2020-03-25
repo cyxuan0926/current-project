@@ -11,12 +11,14 @@
           @keyup.enter.native="handleLogin">
           <el-form-item prop="username">
             <el-input
+              clearable
               v-model.trim="formData.username"
               placeholder="用户名">
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
+              clearable
               type="password"
               v-model.trim="formData.password"
               placeholder="密码">
@@ -63,8 +65,16 @@ export default {
         password: ''
       },
       rules: {
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
+        password: [{
+          required: true,
+          message: '请输入密码',
+          trigger: 'blur'
+        }],
+        username: [{
+          required: true,
+          message: '请输入用户名',
+          trigger: 'blur'
+        }]
       }
     }
   },
@@ -94,7 +104,7 @@ export default {
   methods: {
     ...mapMutations(['setUser']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
-    ...mapActions(['login', 'setCookie', 'getCookie', 'removeCookie', 'getWebsocketResult']),
+    ...mapActions(['getWebsocketResult']),
     ...mapActions('account', ['login']),
     handleLogin() {
       if (this.loading) return

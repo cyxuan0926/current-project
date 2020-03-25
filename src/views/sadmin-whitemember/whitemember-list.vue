@@ -12,24 +12,19 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="whitemembers.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="phone"
-          label="手机号" />
-        <el-table-column
-          label="操作">
-          <template slot-scope="scope">
-            <!-- <el-button type="primary" size="mini" @click="onEdit(scope.row)">编辑</el-button> -->
-            <el-button
-              type="danger"
-              size="mini"
-              @click="onDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="whitemembers.contents"
+        style="width: 100%"
+        :cols="tableCols">
+        <template #operation="{ row }">
+          <!-- <el-button type="primary" size="mini" @click="onEdit(row)">编辑</el-button> -->
+          <el-button
+            type="danger"
+            size="mini"
+            @click="onDelete(row.id)">删除</el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -88,7 +83,17 @@ export default {
       whitemember: {},
       phone: '',
       isChecked: true,
-      isAdd: false
+      isAdd: false,
+      tableCols: [
+        {
+          label: '手机号',
+          prop: 'phone'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
+        }
+      ]
     }
   },
   computed: {

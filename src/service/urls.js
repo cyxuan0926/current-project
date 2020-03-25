@@ -6,7 +6,7 @@
 // eslint-disable-next-line
 const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
 
-const nodeUrl = env === 'test' ? 'http://47.107.245.151:1339' : 'http://192.168.0.180:1339'
+const nodeUrl = env === 'test' ? 'http://qa-ywgk.yuwugongkai.com' : 'http://192.168.0.180:1339'
 
 // apiHost: 接口ip+端口,
 // apiPath: 接口的共同前缀,
@@ -26,17 +26,19 @@ const config = {
     socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
   },
   test: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
-    apiHost: 'http://47.107.245.151:8021',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
+    // apiHost: 'http://47.107.245.151:8021',
+    apiHost: 'http://qa-ywgk.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
+    socketUrl: 'ws://qa-ywgk.yuwugongkai.com/ywgk/websocket'
+    // socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
-    publicApiHost: 'http://192.168.0.230:8081',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.182:8088',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -46,7 +48,7 @@ const config = {
     socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket'
   },
   production: {
-    publicApiHost: 'https://api.auth.prisonpublic.com',
+    publicApiHost: 'https://auth-api.yuwugongkai.com',
     apiHost: 'https://www.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
@@ -57,17 +59,18 @@ const config = {
     socketUrl: 'wss://www.yuwugongkai.com/ws'
   },
   ybDevelopment: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
-    apiHost: 'http://192.168.0.150:8021',
-    apiPath: '',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
+    apiHost: 'http://47.107.245.151:8080',
+    apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`
-    // socketUrl: 'ws://192.168.0.54:8083/websocket'
+    videoUrl: `${ nodeUrl }/video-server/videos`,
+    // socketUrl: 'ws://47.107.245.151:8030/ws'
+    socketUrl: 'ws://47.107.245.151:8080/ywgk/websocket'
   },
   xzyDev: {
-    publicApiHost: 'http://192.168.0.230:8081',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.108:8088',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
@@ -77,7 +80,7 @@ const config = {
     // socketUrl: 'ws://192.168.0.54:8083/websocket'
   },
   phl: {
-    publicApiHost: 'http://qa.api.auth.prisonpublic.com',
+    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.188:8088',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,

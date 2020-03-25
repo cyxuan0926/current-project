@@ -290,6 +290,7 @@ import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+// import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -418,8 +419,20 @@ export default {
       user: state => state.global.user
     }),
     dialogContent() {
-      const genderOptions = [{ label: '男', value: 'm' }, { label: '女', value: 'f' }]
-      const genderProps = { label: 'label', value: 'value' }
+      const genderOptions = [
+        {
+          label: '男',
+          value: 'm'
+        },
+        {
+          label: '女',
+          value: 'f'
+        }
+      ]
+      const genderProps = {
+        label: 'label',
+        value: 'value'
+      }
       const delReason = [
         {
           label: '刑满释放',
@@ -604,8 +617,13 @@ export default {
           selectable: this.handleControlSelect
         },
         {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯姓名',
@@ -655,8 +673,8 @@ export default {
           slotName: 'operations'
         }
       ]
-      if (this.hasAllPrisonQueryAuth) allCols.splice(10, 2)
-      else allCols.splice(1, 1)
+      if (this.hasAllPrisonQueryAuth) allCols.splice(11, 2)
+      else allCols.splice(1, 2)
       return allCols
     }
   },
@@ -846,7 +864,7 @@ export default {
     // 展示新增罪犯对话框
     async showAddPrisoner() {
       this.operationType = 3
-      await this.handleRolePrisonArea(this.dialogContent['items'], 'prisonConfigId')
+      await this.handleRolePrisonArea(this.dialogContent['items'], 'prisonConfigId', 'props', 'add')
       this.visible = true
     },
     // 关闭对话框
@@ -932,17 +950,19 @@ export default {
       this.deletePrisoners = val
     },
     // 根据角色来区分监区数据
-    async handleRolePrisonArea(element, prop, type = 'props', role = this.user.role) {
+    async handleRolePrisonArea(element, prop, type = 'props',operation = 'search', role = this.user.role) {
       if (role === '-1') {
         // 租户管理员
+        const options = operation === 'search' ? { value: 'name', label: 'name' } : { value: 'id', label: 'name' }
         await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
         this.$set(element[prop], 'options', this.prisonConfigs)
-        this.$set(element[prop], type, { value: 'name', label: 'name' })
+        this.$set(element[prop], type, options)
       }
       if (role === '1') {
         // 监狱审核人员
+        const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
         this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
-        this.$set(element[prop], type, { label: 'prisonConfigName', value: 'prisonConfigName' })
+        this.$set(element[prop], type, options)
       }
     }
     // 自定义的全选操作 不要删除

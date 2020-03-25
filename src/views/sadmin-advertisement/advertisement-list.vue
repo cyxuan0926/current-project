@@ -12,59 +12,35 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="advertisements.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="广告名称" />
-        <el-table-column
-          prop="typeName"
-          label="广告类型" />
-        <el-table-column label="广告图片">
-          <template slot-scope="scope">
-            <img :src="scope.row.imageUrl + '?token=' + $urls.token">
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="广告有效时间"
-          width="280px">
-          <template slot-scope="scope">
-            {{ scope.row.startDate | Date }} - {{ scope.row.endDate | Date }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="provinceName"
-          label="省份"
-          width="80px" />
-        <el-table-column
-          label="是否上架"
-          min-width="100px">
-          <template slot-scope="scope">
-            {{ scope.row.status | isTrue }}
-            <el-button
-              type="text"
-              size="mini"
-              style="margin-left: 10px;"
-              @click="onUpdateStatus(scope.row.id, scope.row.status, scope.row)"> 点击{{ scope.row.status === 1 ? "下架" : "上架" }} </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          min-width="146px">
-          <template slot-scope="scope">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="onEdit(scope.row.id)">编辑</el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              @click="onDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="advertisements.contents"
+        :cols="tableCols">
+        <template #imageUrl="{ row }">
+          <img :src="row.imageUrl + '?token=' + $urls.token">
+        </template>
+        <template #isDate="{ row }">{{ row.startDate | Date }} - {{ row.endDate | Date }}</template>
+        <template #status="{ row }">
+          {{ row.status | isTrue }}
+          <el-button
+            type="text"
+            size="mini"
+            style="margin-left: 10px;"
+            @click="onUpdateStatus(row)">
+            点击{{ row.status === 1 ? "下架" : "上架" }}
+          </el-button>
+        </template>
+        <template #operation="{ row }">
+          <el-button
+            type="primary"
+            size="mini"
+            @click="onEdit(row.id)">编辑</el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            @click="onDelete(row.id)">删除</el-button>
+        </template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -77,16 +53,58 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
+    const belong = {
+      value: 'id',
+      label: 'name'
+    }
     return {
       searchItems: {
-        provinceId: { type: 'select', label: '省份', getting: true, belong: { value: 'id', label: 'name' }, filterable: true },
-        typeId: { type: 'select', label: '广告类型', getting: true, belong: { value: 'id', label: 'name' } },
+        provinceId: { type: 'select', label: '省份', getting: true, belong, filterable: true },
+        typeId: { type: 'select', label: '广告类型', getting: true, belong },
         name: { type: 'input', label: '广告名称' }
-      }
+      },
+      tableCols: [
+        {
+          label: '广告名称',
+          prop: 'name'
+        },
+        {
+          label: '广告类型',
+          prop: 'typeName'
+        },
+        {
+          label: '广告图片',
+          slotName: 'imageUrl'
+        },
+        {
+          label: '广告有效时间',
+          slotName: 'isDate',
+          width: 280
+        },
+        {
+          label: '省份',
+          prop: 'provinceName',
+          width: 80
+        },
+        {
+          label: '是否上架',
+          slotName: 'status',
+           minWidth: 100
+        },
+        {
+          label: '操作',
+          slotName: 'operation',
+          minWidth: 146
+        }
+      ]
     }
   },
   computed: {
-    ...mapState(['advertisements', 'provincesAll', 'advertisementTypes'])
+    ...mapState([
+      'advertisements',
+      'provincesAll',
+      'advertisementTypes'
+    ])
   },
   mounted() {
     this.getDatas()
@@ -100,7 +118,13 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getAdvertisements', 'updateAdvertisementStatus', 'deleteAdvertisement', 'getProvincesAll', 'getAdvertisementTypes']),
+    ...mapActions([
+      'getAdvertisements',
+      'updateAdvertisementStatus',
+      'deleteAdvertisement',
+      'getProvincesAll',
+      'getAdvertisementTypes'
+    ]),
     getDatas() {
       this.getAdvertisements({ ...this.filter, ...this.pagination })
     },
@@ -110,8 +134,9 @@ export default {
     onAdd() {
       this.$router.push('/advertisement/add')
     },
-    onUpdateStatus(id, status, row) {
-      this.updateAdvertisementStatus({ id: id, status: Number(!status) }).then(res => {
+    onUpdateStatus(advertisement) {
+      let { id, status } = advertisement
+      this.updateAdvertisementStatus({ id, status: Number(!status) }).then(res => {
         if (!res) return
         row.status = Number(!status)
       })

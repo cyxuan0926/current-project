@@ -1,68 +1,84 @@
 <template>
   <el-row class="row-container page literature-management">
-    <m-search ref="search" :items="searchItems" @search="onSearch" clearable />
+    <m-search
+      ref="search"
+      :items="searchItems"
+      @search="onSearch"
+      clearable />
 
-    <el-tabs v-model="activeTabName" type="card">
-      <el-tab-pane name="pass" label="作品管理"/>
-      <el-tab-pane name="shelf" label="已下架作品"/>
-      <el-tab-pane name="tipOff" label="举报管理"/>
+    <el-tabs
+      v-model="activeTabName"
+      type="card">
+      <el-tab-pane
+        name="pass"
+        label="作品管理"/>
+      <el-tab-pane
+        name="shelf"
+        label="已下架作品"/>
+      <el-tab-pane
+        name="tipOff"
+        label="举报管理"/>
     </el-tabs>
 
-    <m-table :data="literatures" :cols="tableCols">
-      <span
-        class="title-cell"
-        slot="title"
-        slot-scope="scope"
-        @click="onPreview(scope.row)"
-      >
-        {{ scope.row.title }}
-      </span>
+    <m-table-new
+      stripe
+      :data="literatures"
+      :cols="tableCols">
+      
+      <template #title="{ row }">
+        <span
+          class="title-cell"
+          @click="onPreview(row)">
+          {{row.title }}
+        </span>
+      </template>
 
       <template
         v-if="activeTabName !== 'shelf'"
-        slot-scope="scope"
-        slot="operate">
+        #operate="{ row }">
         <el-row>
           <el-button
             type="danger"
             size="mini"
             plain
-            @click="onOffline(scope.row)"
+            @click="onOffline(row)"
           >
           下架
           </el-button>
         </el-row>
         <el-row>
           <el-button
-            v-if="scope.row.reportStatus || activeTabName === 'tipOff'"
+            v-if="row.reportStatus || activeTabName === 'tipOff'"
             size="mini"
             class="button--neglect"
-            @click="onNeglect(scope.row)">
+            @click="onNeglect(row)">
           忽略
           </el-button>
         </el-row>
       </template>
-      <el-button
-        v-if="scope.row.status === 'shelf'"
-        :id="'onlineButton' + scope.row.id"
-        type="primary"
-        size="mini"
-        slot="pass"
-        slot-scope="scope"
-        plain
-        @click="onOnline(scope.row)"
-      >
-        上架
-      </el-button>
-      <span
-        slot="tipOffDetails"
-        slot-scope="scope"
-        v-if="scope.row.reportStatus"
-        class="tip__off-detail"
-        @click="onReportDetail(scope.row)">
-        详情
-      </span>
-    </m-table>
+
+      <template #pass="{ row }">
+        <el-button
+          v-if="row.status === 'shelf'"
+          :id="'onlineButton' + row.id"
+          type="primary"
+          size="mini"
+          plain
+          @click="onOnline(row)">
+          上架
+        </el-button>
+      </template>
+
+      <template #tipOffDetails="{ row }">
+        <span
+          v-if="row.reportStatus"
+          class="tip__off-detail"
+          @click="onReportDetail(row)">
+          详情
+        </span>
+      </template>
+
+    </m-table-new>
 
     <m-pagination
       ref="pagination"
@@ -98,7 +114,7 @@
       title="举报详情"
       class="authorize-dialog dialog--tip_off"
       :visible.sync="tipOffDialogVisible">
-      <m-table
+      <m-table-new
         :data="tipOffDialogTableData"
         :cols="tipOffDialogTableCols"/>
       <div
@@ -129,10 +145,19 @@ export default {
           type: 'select',
           label: '作品类型',
           options: [
-            { articleType: 1, articleTypeName: '互动文章' },
-            { articleType: 2, articleTypeName: '连载小说' }
+            {
+              articleType: 1,
+              articleTypeName: '互动文章'
+            },
+            {
+              articleType: 2,
+              articleTypeName: '连载小说'
+            }
           ],
-          belong: { value: 'articleType', label: 'articleTypeName' },
+          belong: {
+            value: 'articleType',
+            label: 'articleTypeName'
+          },
           miss: false
         },
         reportStatus: {
@@ -140,26 +165,62 @@ export default {
           label: '是否被举报',
           noPlaceholder: true,
           options: [
-            { type: 1, typeName: '是' },
-            { type: 0, typeName: '否' }
+            {
+              type: 1,
+              typeName: '是'
+            },
+            {
+              type: 0,
+              typeName: '否'
+            }
           ],
-          belong: { value: 'type', label: 'typeName' },
+          belong: {
+            value: 'type',
+            label: 'typeName'
+          },
           miss: false
         },
         reportReason: {
           type: 'select',
           label: '举报内容',
           options: [
-            { tipOffContent: '色情污秽', tipOffName: '色情污秽' },
-            { tipOffContent: '垃圾营销', tipOffName: '垃圾营销' },
-            { tipOffContent: '谣言', tipOffName: '谣言' },
-            { tipOffContent: '政治敏感', tipOffName: '政治敏感' },
-            { tipOffContent: '违法信息', tipOffName: '违法信息' },
-            { tipOffContent: '侵权(肖像、诽谤等)', tipOffName: '侵权(肖像、诽谤等)' },
-            { tipOffContent: '售假举报', tipOffName: '售假举报' },
-            { tipOffContent: '其他', tipOffName: '其他' }
+            {
+              tipOffContent: '色情污秽',
+              tipOffName: '色情污秽'
+            },
+            {
+              tipOffContent: '垃圾营销',
+              tipOffName: '垃圾营销'
+            },
+            {
+              tipOffContent: '谣言',
+              tipOffName: '谣言'
+            },
+            {
+              tipOffContent: '政治敏感',
+              tipOffName: '政治敏感'
+            },
+            {
+              tipOffContent: '违法信息',
+              tipOffName: '违法信息'
+            },
+            {
+              tipOffContent: '侵权(肖像、诽谤等)',
+              tipOffName: '侵权(肖像、诽谤等)'
+            },
+            {
+              tipOffContent: '售假举报',
+              tipOffName: '售假举报'
+            },
+            {
+              tipOffContent: '其他',
+              tipOffName: '其他'
+            }
           ],
-          belong: { value: 'tipOffContent', label: 'tipOffName' },
+          belong: {
+            value: 'tipOffContent',
+            label: 'tipOffName'
+          },
           miss: true
         },
         reportTime: {
@@ -178,14 +239,30 @@ export default {
           end: 'publishEndDate',
           miss: false
         },
-        title: { type: 'input', label: '作品标题', miss: false },
-        penName: { type: 'input', label: '笔名', miss: false }
+        title: {
+          type: 'input',
+          label: '作品标题',
+          miss: false
+        },
+        penName: {
+          type: 'input',
+          label: '笔名',
+          miss: false
+        }
       },
       offlineForm: { offlineReason: '' },
       rules: {
         offlineReason: [
-          { required: true, message: '请填写下架原因', trigger: 'change' },
-          { max: 20, message: '下架原因不能超过 20 个字符', trigger: 'change' }
+          {
+            required: true,
+            message: '请填写下架原因',
+            trigger: 'change'
+          },
+          {
+            max: 20,
+            message: '下架原因不能超过 20 个字符',
+            trigger: 'change'
+          }
         ]
       },
       // 当前点击下架的文章
@@ -194,9 +271,21 @@ export default {
       tipOffDialogVisible: false,
       // 举报对话框表格的列字段
       tipOffDialogTableCols: [
-        { prop: 'reportName', label: '举报人', minWidth: '40%' },
-        { prop: 'createdAt', label: '举报时间', minWidth: '23%' },
-        { prop: 'reportReason', label: '举报内容', minWidth: '37%' }
+        {
+          prop: 'reportName',
+          label: '举报人',
+          minWidth: '40%'
+        },
+        {
+          prop: 'createdAt',
+          label: '举报时间',
+          minWidth: '23%'
+        },
+        {
+          prop: 'reportReason',
+          label: '举报内容',
+          minWidth: '37%'
+        }
       ],
       tipOffDialogTableData: []
     }
@@ -205,21 +294,58 @@ export default {
     ...mapState('literature', ['literatures']),
     tableCols() {
       const noTipOffCols = [
-        { prop: 'clientNum', label: '点击数量', minWidth: '70px' },
-        { prop: 'praiseNum', label: '点赞数量', minWidth: '70px' },
-        { prop: 'collectNum', label: '收藏数量', minWidth: '70px' },
-        { prop: 'finishName', label: '是否完结', minWidth: '70px' }
+        {
+          prop: 'clientNum',
+          label: '点击数量',
+          minWidth: '70px'
+        },
+        {
+          prop: 'praiseNum',
+          label: '点赞数量',
+          minWidth: '70px'
+        },
+        {
+          prop: 'collectNum',
+          label: '收藏数量',
+          minWidth: '70px'
+        },
+        {
+          prop: 'finishName',
+          label: '是否完结',
+          minWidth: '70px'
+        }
       ]
-      const operateCol = [
-        { slotName: 'operate', label: '操作' }
-      ]
+      const operateCol = [{
+        slotName: 'operate',
+        label: '操作'
+      }]
       const cols = {
         baseCols: [
-          { type: 'index', label: '序号' },
-          { slotName: 'title', label: '作品标题', showOverflowTooltip: true},
-          { prop: 'articleTypeName', label: '作品类型', minWidth: '76px' },
-          { prop: 'penName', label: '作者笔名', showOverflowTooltip: true, minWidth: '100px' },
-          { prop: 'publishAt', label: '发布时间', minWidth: '124px' }
+          {
+            type: 'index',
+            label: '序号'
+          },
+          {
+            slotName: 'title',
+            label: '作品标题',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'articleTypeName',
+            label: '作品类型',
+            minWidth: '76px'
+          },
+          {
+            prop: 'penName',
+            label: '作者笔名',
+            showOverflowTooltip: true,
+            minWidth: '100px'
+          },
+          {
+            prop: 'publishAt',
+            label: '发布时间',
+            minWidth: '124px'
+          }
           // {
           //   prop: '',
           //   label: '打赏金额（元）'
@@ -231,20 +357,52 @@ export default {
         ],
         passCols: [
           ...noTipOffCols,
-          { prop: 'auditAt', label: '审核时间', minWidth: '124px' },
-          { slotName: 'tipOffDetails', label: '举报详情', minWidth: '75px' },
+          {
+            prop: 'auditAt',
+            label: '审核时间',
+            minWidth: '124px'
+          },
+          {
+            slotName: 'tipOffDetails',
+            label: '举报详情',
+            minWidth: '75px'
+          },
           ...operateCol
         ],
         shelfCols: [
           ...noTipOffCols,
-          { prop: 'shelfAt', label: '下架时间', minWidth: '124px' },
-          { prop: 'shelfReason', label: '下架原因', showOverflowTooltip: true },
-          { slotName: 'pass', label: '操作', minWidth: '70px' }
+          {
+            prop: 'shelfAt',
+            label: '下架时间',
+            minWidth: '124px'
+          },
+          {
+            prop: 'shelfReason',
+            label: '下架原因',
+            showOverflowTooltip: true
+          },
+          {
+            slotName: 'pass',
+            label: '操作',
+            minWidth: '70px'
+          }
         ],
         tipOffCols: [
-          { prop: 'reportName', label: '举报人', showOverflowTooltip: true },
-          { prop: 'createdAt', label: '被举报时间', minWidth: '124px' },
-          { prop: 'reportReason', label: '举报内容', showOverflowTooltip: true },
+          {
+            prop: 'reportName',
+            label: '举报人',
+            showOverflowTooltip: true
+          },
+          {
+            prop: 'createdAt',
+            label: '被举报时间',
+            minWidth: '124px'
+          },
+          {
+            prop: 'reportReason',
+            label: '举报内容',
+            showOverflowTooltip: true
+          },
           ...operateCol
         ]
       }
@@ -252,7 +410,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('literature', ['getFamilyLiteratures', 'getPoliceLiteratures', 'offlineLiterature', 'onlineLiterature', 'getReportLiteratures', 'ignoreReportArticles']),
+    ...mapActions('literature', [
+      'getFamilyLiteratures',
+      'getPoliceLiteratures',
+      'offlineLiterature',
+      'onlineLiterature',
+      'getReportLiteratures',
+      'ignoreReportArticles']),
     onPreview(literature) {
       const articleId = this.activeTabName === 'tipOff' ? literature.articleId : literature.id
       this.$router.push(

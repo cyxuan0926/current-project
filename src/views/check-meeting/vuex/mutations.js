@@ -1,3 +1,5 @@
+import flattenDepth from 'lodash/flattenDepth'
+
 export default {
   getMeetings(state, params) {
     const { meetings } = params
@@ -17,14 +19,12 @@ export default {
     state.meetingAdjustment.meetings = params.meetings
   },
   getFreeMeetings(state, params) {
-    state.freeMeetings = {
-      contents: params.freeMeetings,
-      total: params.total
-    }
+    state.freeMeetings = params
   },
-  meetingApplyDealing(state, params) {
+  meetingApplyDealing(state, params = []) {
     if (params && state.meetings.contents.length) {
-      if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)
+      // if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)
+      if (state.meetings.contents.find(m => params.includes(m.id))) state.meetingRefresh = parseInt(params)
       else state.meetingRefresh = false
     }
     else state.meetingRefresh = false
@@ -45,5 +45,13 @@ export default {
   },
   setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
     state.meetingStatisticTotalItem = meetingStatisticTotalItem
+  },
+  setMeetingCallRecords: (state, meetingCallRecords) => {
+    const { filterMeetingCallRecords, meetingCallRecordsSize } = meetingCallRecords
+    state.meetingCallRecords.total = meetingCallRecordsSize
+    state.meetingCallRecords.contents = flattenDepth(filterMeetingCallRecords)
+  },
+  setMeetingTimes: (state, meetingTimes) => {
+    state.meetingTimes = meetingTimes
   }
 }

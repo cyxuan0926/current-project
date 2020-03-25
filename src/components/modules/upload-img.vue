@@ -14,28 +14,27 @@
     </div>
     <div class="upload-buttons">
       <el-upload
+        v-bind="uploadAttrs"
         class="avatar-uploader"
         ref="uploadImage"
-        :action="$urls.imageUrl"
-        :headers="headers"
-        :multiple="multiple"
-        name="avatar"
-        :accept="accept"
         :file-list="fileList"
-        :limit="1"
-        :show-file-list="false"
         :on-success="handleSuccess"
         :before-upload="beforUpload"
         :on-exceed="handleExceed"
         :disabled="loading || Boolean(value)"
         :on-error="handleError"
         :on-remove="handleRemove">
-        <el-button
-          slot="trigger"
-          size="small"
-          :disabled="loading || Boolean(value)"
-          type="primary">上传图片
-        </el-button>
+        <!-- 这里用来插槽来扩展化 -->
+        <template v-for="slotItem in slots['uploadSlots']">
+          <template :slot="slotItem.type">
+            <slot :name="slotItem.slotName">
+              <el-button
+                size="small"
+                :disabled="loading || Boolean(value)"
+                type="primary">上传图片</el-button>
+            </slot>
+          </template>
+        </template>
         <!-- <i class="el-icon-plus"/>
         <div
           slot="tip"
@@ -55,7 +54,9 @@
       slot="tip"
       class="el-upload__tip"
       style="line-height: 40px; clear: both; display: block;">
-      只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
+      <template v-if="showTip">
+        只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
+      </template>
       <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
     </span>
     <el-dialog :visible.sync="dialogVisible">
@@ -70,46 +71,62 @@
 
 <script>
 import { mapActions } from 'vuex'
+import urls from '@/service/urls'
+
+// 默认的上传组件的属性
+const defaultUploadAttrs = {
+  action: urls.imageUrl,
+  headers: {
+    Authorization: urls.token
+  },
+  multiple: false,
+  accept: 'image/jpeg,image/jpg',
+  limit: 1,
+  name: 'avatar',
+  showFileList: false
+}
+
 export default {
   props: {
     value: {
       type: String,
       default: ''
     },
-    multiple: {
-      type: Boolean,
-      default: false
-    },
-    accept: {
-      type: String,
-      default: 'image/jpeg,image/jpg'
-    },
-    listType: {
-      type: String,
-      default: 'picture-card'
-    },
     ratio: {
       type: String,
       default: ''
+    },
+    showTip: {
+      type: Boolean,
+      default: true
+    },
+    uploadAttrs: {
+      type: Object,
+      default: () => defaultUploadAttrs
+    },
+    slots: {
+      type: Object,
+      default: () => ({
+        uploadSlots: [
+          { slotName: 'default', type: 'trigger' }
+        ]
+      })
     }
   },
   data() {
     return {
       imageUrl: '',
       dialogVisible: false,
-      headers: {
-        Authorization: this.$urls.token
-      },
       loading: false,
       notification: null
     }
   },
   computed: {
     fileList() {
-      let files = [], name = ''
+      let files = []
       if (this.value) {
-        name = this.value.replace(`${ this.$urls.imageUrl }/`, '').replace(/-[0-9]+\./, '.')
-        files.push({ name: name, url: this.value })
+        const name = this.value.replace(`${ this.$urls.imageUrl }/`, '').replace(/-[0-9]+\./, '.')
+        files.push({ name, url: this.value })
       }
       return files
     }
@@ -120,8 +137,11 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('图片上传成功')
-          this.$emit('success', res.url)
-          let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
+          // this.$emit('success', res.url)
+          this.$emit('input', res.url)
+          const urls = localStorage.getItem('urls')
+            ? JSON.parse(localStorage.getItem('urls'))
+            : []
           this.setUrlStorage({ urls: [...urls, res.url] })
           this.setNewUrlStorage({ urls: [res.url] })
           break
@@ -130,7 +150,7 @@ export default {
       }
     },
     beforUpload(file) {
-      let fileType = this.accept.split(',')
+      const fileType = this.uploadAttrs.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
       const isSize = file.size / 1024 / 1024 < 1
       if (!isAccept) {
@@ -146,7 +166,7 @@ export default {
       if (!this.ratio) return true
       const ratio = this.ratio.split(':')
       return new Promise((resolve, reject) => {
-        var reader = new FileReader()
+        let reader = new FileReader()
         reader.onload = (e) => {
           let data = e.target.result, image = new Image()
           image.onload = () => {
@@ -154,9 +174,7 @@ export default {
               this.$message.error(`请上传宽高比为${ this.ratio }的图片`)
               reject(false)
             }
-            else {
-              resolve(true)
-            }
+            else resolve(true)
           }
           image.src = data
         }
@@ -175,7 +193,7 @@ export default {
       console.log(e)
     },
     handleRemove(file, fileList) {
-      this.$emit('success', fileList.length ? fileList : '')
+      this.$emit('input', fileList.length ? fileList : '')
     },
     handleDelete() {
       this.$refs.uploadImage.clearFiles()
@@ -219,5 +237,16 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+  }
+  .text {
+    font-size: 12px;
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    border-radius: 3px;
+    /* padding: 8px 12px; */
+    display: inline-block;
+    cursor: pointer;
+    border: 1px solid #dcdfe6;
   }
 </style>

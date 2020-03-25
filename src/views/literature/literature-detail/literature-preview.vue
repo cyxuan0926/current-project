@@ -1,5 +1,8 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="作品预览" width="360px">
+  <el-dialog
+    :visible.sync="dialogVisible"
+    title="作品预览"
+    width="360px">
     <h3>{{ article.title }}</h3>
     <div class="article-info">
       <img src="/static/images/user2-160x160.jpg">

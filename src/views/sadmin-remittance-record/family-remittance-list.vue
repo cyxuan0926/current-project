@@ -7,44 +7,20 @@
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
-      <el-table
-        :data="familyRemittanceRecords.contents"
+      <m-table-new
         stripe
-        style="width: 100%">
-        <el-table-column
-          label="汇款单号"
-          prop="remitNum"
-          min-width="120"/>
-        <el-table-column
-          label="罪犯姓名"
-          prop="prisonerName"/>
-        <el-table-column
-          label="罪犯编号"
-          prop="prisonerNumber"/>
-        <el-table-column
-          label="汇款家属"
-          prop="familyName"/>
-        <el-table-column
-          label="汇款金额(元)"
-          prop="money"
-          min-width="80">
-          <template slot-scope="scope">
-            {{ scope.row.money | fixedNumber }}
-          </template>
-        </el-table-column>  
-        <el-table-column
-          label="汇款时间"
-          min-width="110">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-        <el-table-column label="汇款状态">
-          <template slot-scope="scope">
-            {{ scope.row.status | payStatus }}
-          </template>
-        </el-table-column>
-      </el-table>
+        :data="familyRemittanceRecords.contents"
+        :cols="tableCols">
+        <template
+          slot="money"
+          slot-scope="scope">{{ scope.row.money | fixedNumber }}</template>
+        <template
+          slot="createdAt"
+          slot-scope="scope">{{ scope.row.createdAt | Date }}</template>
+        <template
+          slot="status"
+          slot-scope="scope">{{ scope.row.status | payStatus }}</template>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -67,18 +43,69 @@ export default {
           getting: true,
           options: [],
           value: '',
-          belong: { label: 'title', value: 'id' }
+          belong: {
+            label: 'title',
+            value: 'id'
+          }
         },
-        prisonerName: { type: 'input', label: '罪犯姓名' },
-        prisonerNumber: { type: 'input', label: '罪犯编号' },
-        familyName: { type: 'input', label: '汇款家属' },
-        remitTime: { type: 'date', label: '汇款时间' }
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名'
+        },
+        prisonerNumber: {
+          type: 'input',
+          label: '罪犯编号'
+        },
+        familyName: {
+          type: 'input',
+          label: '汇款家属'
+        },
+        remitTime: {
+          type: 'date',
+          label: '汇款时间'
+        }
       },
-      filter: {}
+      filter: {},
+      tableCols: [
+        {
+          label: '汇款单号',
+          prop: 'remitNum',
+          minWidth: 120
+        },
+        {
+          label: '罪犯姓名',
+          prop: 'prisonerName'
+        },
+        {
+          label: '罪犯编号',
+          prop: 'prisonerNumber'
+        },
+        {
+          label: '汇款家属',
+          prop: 'familyName'
+        },
+        {
+          label: '汇款金额(元)',
+          slotName: 'money',
+          minWidth: 80
+        },
+        {
+          label: '汇款时间',
+          slotName: 'createdAt',
+          minWidth: 110
+        },
+        {
+          label: '汇款状态',
+          slotName: 'status'
+        }
+      ]
     }
   },
   computed: {
-    ...mapState(['familyRemittanceRecords', 'prisonAll'])
+    ...mapState([
+      'familyRemittanceRecords',
+      'prisonAll'
+    ])
   },
   mounted() {
     this.getPrisonAll().then(res => {
@@ -91,7 +118,10 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getPrisonAll', 'getFamilyRemittance']),
+    ...mapActions([
+      'getPrisonAll',
+      'getFamilyRemittance'
+    ]),
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },

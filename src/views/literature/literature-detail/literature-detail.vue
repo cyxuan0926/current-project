@@ -6,32 +6,53 @@
       :rules="rules"
       label-width="100px"
     >
-      <el-form-item label="作品类型" prop="articleType">
+      <el-form-item
+        label="作品类型"
+        prop="articleType">
         <el-select
           v-model="articleForm.articleType"
           :disabled="isLiteratureCreated"
         >
-          <el-option label="互动文章" :value="1"></el-option>
-          <el-option label="连载小说" :value="2"></el-option>
+          <el-option
+            label="互动文章"
+            :value="1" />
+          <el-option
+            label="连载小说"
+            :value="2" />
         </el-select>
       </el-form-item>
-      <el-form-item label="作者笔名" prop="penName">
-        <el-input v-model="articleForm.penName" disabled></el-input>
+      <el-form-item
+        label="作者笔名"
+        prop="penName">
+        <el-input
+          v-model="articleForm.penName"
+          disabled />
       </el-form-item>
-      <el-form-item label="作品标题" prop="title">
-        <el-input v-model="articleForm.title"></el-input>
+      <el-form-item
+        label="作品标题"
+        prop="title">
+        <el-input v-model="articleForm.title"/>
         <p class="title font-num-tip">
           你还可以输入 {{ TITLE_MAX_LENGTH - titleLength > 0 ? TITLE_MAX_LENGTH - titleLength : 0 }} 个字符
         </p>
       </el-form-item>
-      <el-form-item label="作品内容" prop="content">
-        <el-input v-model="articleForm.content" type="textarea" rows="20" />
+      <el-form-item
+        label="作品内容"
+        prop="content">
+        <el-input
+          v-model="articleForm.content"
+          type="textarea"
+          rows="20" />
         <p class="content font-num-tip">
           你还可以输入 {{ CONTENT_MAX_LENGTH - contentLength > 0 ? CONTENT_MAX_LENGTH - contentLength : 0 }} 个字符
         </p>
       </el-form-item>
-      <el-form-item align="right" style="margin-top: 30px">
-        <el-button type="primary" @click="onFormatContent">自动排版</el-button>
+      <el-form-item
+        align="right"
+        style="margin-top: 30px">
+        <el-button
+          type="primary"
+          @click="onFormatContent">自动排版</el-button>
         <el-button
           v-if="this.articleForm.articleType === 1"
           type="primary"
@@ -39,7 +60,9 @@
         >
           预览
         </el-button>
-        <el-button type="primary" @click="onSubmit">发布</el-button>
+        <el-button
+          type="primary"
+          @click="onSubmit">发布</el-button>
       </el-form-item>
     </el-form>
 
@@ -74,35 +97,54 @@ export default {
       },
       articleUpdateTime: '',
       rules: {
-        articleType: [
-          { required: true, message: '请选择作品类型', trigger: 'change' }
-        ],
-        penName: [
-          { required: true, message: '请输入笔名', trigger: 'change' }
-        ],
+        articleType: [{
+          required: true,
+          message: '请选择作品类型',
+          trigger: 'change'
+        }],
+        penName: [{
+          required: true,
+          message: '请输入笔名',
+          trigger: 'change'
+        }],
         title: [
           {
             validator: debounce(this.titleValidator, 300, {
               maxWait: 60 * 1000
             }),
-            trigger: ['change', 'blur']
+            trigger: [
+              'change',
+              'blur'
+            ]
           },
-          { required: true, message: '请输入标题', trigger: 'blur' }
+          {
+            required: true,
+            message: '请输入标题',
+            trigger: 'blur'
+          }
         ],
         content: [
           {
             validator: debounce(this.contentValidator, 300, {
               maxWait: 60 * 1000
             }),
-            trigger: ['change', 'blur']
+            trigger: [
+              'change',
+              'blur']
           },
-          { required: true, message: '请输入作品内容', trigger: 'blur' }
+          {
+            required: true,
+            message: '请输入作品内容',
+            trigger: 'blur'
+          }
         ]
       }
     }
   },
   computed: {
-    ...mapState('literature', ['sensitiveWords', 'literatureDetail']),
+    ...mapState('literature', [
+      'sensitiveWords',
+      'literatureDetail']),
     isLiteratureCreated() {
       return Boolean(this.$route.params.id)
     },

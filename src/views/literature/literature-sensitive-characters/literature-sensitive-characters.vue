@@ -26,42 +26,37 @@
       </template>
     </m-search>  
     <el-col :span="24">
-      <m-table
+      <m-table-new
+        stripe
         :selection-change="handleSelectChange"
         :data="sensitiveWords"
         :cols="tableCols"
         class="mini-td-padding">
-        <template
-          slot="keyWord"
-          slot-scope="scope">
-          <span v-if="!operationStatus[scope.$index]">{{scope.row.keyWord}}</span>
+        <template #keyWord="{ row, $index }">
+          <span v-if="!operationStatus[$index]">{{row.keyWord}}</span>
             <el-input
               v-else
-              v-model="operationInput[scope.$index]"/>
+              v-model="operationInput[$index]"/>
         </template>
-        <template
-          slot="isEnabled"
-          slot-scope="scope">
-          <span v-if="!operationStatus[scope.$index]">{{scope.row.isEnabled | isTrue}}</span>
+        <template #isEnabled="{ row, $index }" >
+          <span v-if="!operationStatus[$index]">{{row.isEnabled | isTrue}}</span>
             <el-select
               v-else
-              v-model="operationSelects[scope.$index]">
+              v-model="operationSelects[$index]">
               <el-option
-                v-for="(val, index) in [{ value: 1, label: '是' }, { value: 0, label: '否' }]"
+                v-for="(val, index) in constIsEnabledVaule"
                 :label="val.label"
                 :value="val.value"
                 :key="index" />
             </el-select>
         </template>
-        <template
-          slot-scope="scope"
-          slot="operate">
+        <template #operate="{ row, $index }" >
             <el-button
-              @click="handleOperate(scope)"
+              @click="handleOperate({ row, $index })"
               type="primary"
-              plain>{{ !operationStatus[scope.$index] ? '修改' : '保存' }}</el-button>
+              plain>{{ !operationStatus[$index] ? '修改' : '保存' }}</el-button>
           </template>
-      </m-table>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -107,17 +102,63 @@
 import { mapActions, mapState } from 'vuex';
 export default {
   data () {
-    const options = [{ value: 1, label: '是' }, { value: 0, label: '否' }]
+    const options = [
+      {
+        value: 1,
+        label: '是'
+      },
+      {
+        value: 0,
+        label: '否'
+      }
+    ]
+    const constSelectValue = {
+      value: 'value',
+      label: 'label'
+    }
+    const constIsEnabledVaule = [
+      {
+        value: 1,
+        label: '是'
+      },
+      {
+        value: 0,
+        label: '否'
+      }
+    ]
     return {
       searchItems: {
-        keyWord: { type: 'input', label: '关键词' },
-        isEnabled: { type: 'select', options, belong: { value: 'value',  label: 'label' }, label: '是否有效' }
+        keyWord: {
+          type: 'input',
+          label: '关键词'
+        },
+        isEnabled: {
+          type: 'select',
+          options,
+          belong: constSelectValue,
+          label: '是否有效'
+        }
       },
       dialogFormItems: {
         formConfigs: { labelWidth: '120px' },
-        keyWord: { type: 'input', label: '关键字', rules: ['required'], clearable: true },
-        isEnabled: { type: 'select', label: '是否有效', rules: ['required'], options, props: { label: 'label', value: 'value' }, value: 1 },
-        buttons: [ 'add', 'cancel' ]
+        keyWord: {
+          type: 'input',
+          label: '关键字',
+          rules: ['required'],
+          clearable: true
+        },
+        isEnabled: {
+          type: 'select',
+          label: '是否有效',
+          rules: ['required'],
+          options,
+          props: constSelectValue,
+          value: 1
+        },
+        buttons: [
+          'add',
+          'cancel'
+        ]
       },
       delSensitiveCharacters: [],
       visible: false,
@@ -149,14 +190,21 @@ export default {
           slotName: 'operate',
           align: "center"
         }
-      ]
+      ],
+      constIsEnabledVaule
     }
   },
   mounted() {
     this.getDatas()
   },
   methods: {
-    ...mapActions('literature', ['getSensitivewords', 'addSensitiveword', 'delSensitiveword', 'editSensitiveword']),
+    ...mapActions('literature', [
+      'getSensitivewords',
+      'addSensitiveword',
+      'delSensitiveword',
+      'editSensitiveword'
+      ]
+    ),
     // 编号字段
     handleGetIndex(index) {
       return this.pagination.rows * (this.pagination.page - 1) + index + 1

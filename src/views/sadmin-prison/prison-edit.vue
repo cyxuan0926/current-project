@@ -33,8 +33,14 @@ export default {
     return {
       activeName: '',
       tabMapOptions: [
-        { label: '基本信息', key: 'prisonBase' },
-        { label: '配置信息', key: 'prisonConfig' }
+        {
+          label: '基本信息',
+          key: 'prisonBase'
+        },
+        {
+          label: '配置信息',
+          key: 'prisonConfig'
+        }
       ]
     }
   },
@@ -49,9 +55,7 @@ export default {
       this.$router.push({ query: { tag: this.activeName } })
     },
     render() {
-      if (!this.$route.query.tag) {
-        this.$router.push({ query: { tag: this.tabMapOptions[0].key } })
-      }
+      if (!this.$route.query.tag) this.$router.push({ query: { tag: this.tabMapOptions[0].key } })
       if (this.$route.query.tag !== this.activeName) {
         if (this.tabMapOptions.find(item => item.key === this.$route.query.tag)) this.activeName = this.$route.query.tag
         else this.activeName = this.tabMapOptions[0].key

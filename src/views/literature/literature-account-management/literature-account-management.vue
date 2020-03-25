@@ -38,40 +38,34 @@
       </template>
     </m-search> 
     <el-col :span="24">
-      <m-table
+      <m-table-new
+        stripe
         :data="authors"
         :cols="roleContents['cols']"
         class="mini-td-padding">
         <template
           v-if="['5', '-1'].includes(user.role)"
-          slot-scope="scope"
-          slot="pseudonym">
-          <span>{{ scope.row.pseudonym ? scope.row.jailName + '-' + scope.row.pseudonym : '' }}</span>
+          #pseudonym="{ row }" >
+          <span>{{ row.pseudonym ? row.jailName + '-' + row.pseudonym : '' }}</span>
         </template>
-        <template
-          slot-scope="scope"
-          slot="jailName">
-          <span>{{ scope.row.jailName === '平台' ? '' : scope.row.jailName }}</span>
+        <template #jailName="{ row }">
+          <span>{{ row.jailName === '平台' ? '' : row.jailName }}</span>
         </template>
-        <template
-          slot-scope="scope"
-          slot="provinceName">
-          <span>{{ scope.row.jailName === '平台' ? '' : scope.row.provinceName }}</span>
+        <template #provinceName="{ row }">
+          <span>{{ row.jailName === '平台' ? '' : row.provinceName }}</span>
         </template>
-        <template
-          slot-scope="scope"
-          slot="operate">
+        <template #operate="{ row }">
             <el-button
               @click="() => {
-                scope.row.isEnabled ? operationType = 2 : operationType = 3
+                row.isEnabled ? operationType = 2 : operationType = 3
                 visible = true
-                currentAccount = scope.row
+                currentAccount = row
               }"
               type="primary"
               size="small"
-              plain>{{ scope.row.isEnabled ? '禁用' : '启用'}}</el-button>
+              plain>{{ row.isEnabled ? '禁用' : '启用'}}</el-button>
           </template>
-      </m-table>
+      </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -144,32 +138,85 @@ export default {
       user: state => state.global.user
     }),
     dialogConent() {
-      let title, items = {}, formButton = { buttons: [{ add: 'add', text: '确认' }, 'cancel'] }
+      let title
+      let items = {}
+      const formButton = { buttons: [{ add: 'add', text: '确认' }, 'cancel'] }
+      const options = [{ label: '男', value: '男' }, { label: '女', value: '女' }]
+      const props = { label: 'label', value: 'value' }
       switch(this.operationType) {
         case 1:
           title = '新增账户'
           items = {...{
             formConfigs: { labelWidth: '90px' },
-            accountName: { type: 'input', label: '账户(手机号)', rules: ['required', 'phone'], clearable: true, placeholder: '请输入手机号码' },
-            policeNumber: { type: 'input', label: '狱警号', rules: ['required', 'tempNumber'], clearable: true, placeholder: '请输入狱警号(格式为10位以内数字)' },
-            realName: { type: 'input', label: '真实姓名', rules: ['required'], clearable: true },
-            sex: { type: 'select', label: '性别', rules: ['required'], clearable: true,
-              options: [{ label: '男', value: '男' }, { label: '女', value: '女' }],
-              props: { label: 'label', value: 'value' }, value: '男' }
+            accountName: {
+              type: 'input',
+              label: '账户(手机号)',
+              rules: [
+                'required',
+                'phone'
+              ],
+              clearable: true,
+              placeholder: '请输入手机号码'
+            },
+            policeNumber: {
+              type: 'input',
+              label: '狱警号',
+              rules: [
+                'required',
+                'tempNumber'
+              ],
+              clearable: true,
+              placeholder: '请输入狱警号(格式为10位以内数字)'
+            },
+            realName: {
+              type: 'input',
+              label: '真实姓名',
+              rules: ['required'],
+              clearable: true
+            },
+            sex: {
+              type: 'select',
+              label: '性别',
+              rules: ['required'],
+              clearable: true,
+              options,
+              props,
+              value: '男'
+            }
           }, ...{
-            buttons: ['add', 'cancel']
+            buttons: [
+              'add',
+              'cancel'
+            ]
           }}
           break
         case 2:
           title = '禁用用户'
           items = {...{
-            disabledReason: { type: 'textarea', noLabel: true, placeholder: '请输入该用户被禁用的原因', label: '该用户被禁用的原因', autosize: { minRows: 5 }, rules: ['required', 'lengthRange-20'] }
+            disabledReason: {
+              type: 'textarea',
+              noLabel: true,
+              placeholder: '请输入该用户被禁用的原因',
+              label: '该用户被禁用的原因',
+              autosize: { minRows: 5 },
+              rules: [
+                'required',
+                'lengthRange-20'
+              ]
+            }
           }, ...formButton}
           break
         case 3:
           title = '启用用户'
           items = {...{
-            showReason: { type: 'textarea', noLabel: true, disabled: true, label: '用户被禁用时的原因', autosize: { minRows: 5 }, value: this.currentAccount['disabledReason'] }
+            showReason: {
+              type: 'textarea',
+              noLabel: true,
+              disabled: true,
+              label: '用户被禁用时的原因',
+              autosize: { minRows: 5 },
+              value: this.currentAccount['disabledReason']
+            }
           }, ...formButton}
           break
         case 4:
@@ -260,21 +307,50 @@ export default {
     }
   },
   async mounted() {
-    let searchItems, options = [ {userLable: '全部', userStatus: '' }, {userLable: '启用', userStatus: 1 }, {userLable: '禁用', userStatus: 0 } ],
-    commonItems = {
-      accountName: { type: 'input', label: '账户' },
+    let searchItems
+    const options = [
+      {
+        userLable: '全部',
+        userStatus: ''
+      },
+      {
+        userLable: '启用',
+        userStatus: 1
+      },
+      {
+        userLable: '禁用',
+        userStatus: 0
+      }
+    ]
+    const belong = {
+      value: 'userStatus',
+      label: 'userLable'
+    }
+    const commonItems = {
+      accountName: {
+        type: 'input',
+        label: '账户'
+      },
       isEnabled: {
         type: 'select',
         label: '用户状态',
         options,
-        belong: { value: 'userStatus', label: 'userLable' },
-        value: ''}}
+        belong,
+        value: ''
+      }
+    }
     if (['5', '-1'].includes(this.user.role)) {
       this.searchItems = {
         ...commonItems,
         ...{
-          policeNumber: { type: 'input', label: '狱警号' },
-          realName: { type: 'input', label: '真实姓名' },
+          policeNumber: {
+            type: 'input',
+            label: '狱警号'
+          },
+          realName: {
+            type: 'input',
+            label: '真实姓名'
+          },
         }
       }
     }
@@ -282,7 +358,13 @@ export default {
     await this.getDatas()
   },
   methods: {
-    ...mapActions('literature', [ 'exportAuthorFamily',  'addAuthorPolice', 'getAuthors', 'enableAuthor' ]),
+    ...mapActions('literature', [
+      'exportAuthorFamily',
+      'addAuthorPolice',
+      'getAuthors',
+      'enableAuthor'
+      ]
+    ),
     async getDatas() {
       let url
       const params = { ...this.filter, ...this.pagination }

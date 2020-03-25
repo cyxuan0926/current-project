@@ -5,8 +5,7 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
-      :params="filter"
-    />
+      :params="filter" />
     <m-search
       :items="searchItems"
       ref="search"
@@ -29,13 +28,17 @@
         class="mini-td-padding"
         style="width: 100%">
         <el-table-column
+          v-if="hasProvinceQueryAuth"
+          prop="provinceName"
+          label="省份"/>
+        <el-table-column
           v-if="hasAllPrisonQueryAuth"
+          show-overflow-tooltip
           prop="jailName" 
-          label="监狱名称"
-        />
+          label="监狱名称" />
         <el-table-column
           prop="name"
-          min-width="80px"
+          min-width="70px"
           show-overflow-tooltip
           label="家属姓名" />
         <el-table-column
@@ -45,11 +48,25 @@
             <m-img-viewer
               v-if="scope.row.idCardFront"
               :url="scope.row.idCardFront"
+              :toolbar="{ prev: 1, next: 1 }"
               title="身份证正面照" />
             <m-img-viewer
               v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
+              :toolbar="{ prev: 1, next: 1 }"
               title="身份证背面照" />
+            <m-img-viewer
+              v-if="scope.row.avatarUrl"
+              class="img-viewer__hidden"
+              :url="scope.row.avatarUrl"
+              :toolbar="{ prev: 1, next: 1 }"
+              title="头像" />
+            <m-img-viewer
+              v-if="scope.row.relationalProofUrl"
+              class="img-viewer__hidden"
+              :url="scope.row.relationalProofUrl"
+              :toolbar="{ prev: 1, next: 1 }"
+              title="关系证明图" />
           </template>
         </el-table-column>
         <el-table-column
@@ -59,19 +76,21 @@
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
-          min-width="88px"
+          min-width="70px"
           show-overflow-tooltip
           label="罪犯编号" />
         <el-table-column
           prop="prisonArea"
-          min-width="80px"
+          min-width="58px"
           show-overflow-tooltip
           label="监区" />
         <el-table-column
           prop="relationship"
-          width="70px"
+          width="58px"
           label="关系" />
-        <el-table-column label="家属会见告知书" width="110px">
+        <el-table-column
+          label="家属会见告知书"
+          width="110px" >
           <template slot-scope="scope">
             <span
               :class="[
@@ -88,13 +107,13 @@
         </el-table-column>
         <el-table-column
           label="申请状态"
-          width="74px"
+          width="70px"
           class-name="orange">
           <template slot-scope="scope"> {{ scope.row.status | registStatus }} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
-          min-width="140px"
+          min-width="120px"
           label="审核信息">
           <template
             v-if="scope.row.auditAt"
@@ -102,7 +121,9 @@
             {{ scope.row.auditRealName }} ({{ scope.row.auditUserName }})<br >
             {{ scope.row.auditAt | Date }}</template>
         </el-table-column>
-        <el-table-column v-if="!hasAllPrisonQueryAuth" label="操作">
+        <el-table-column
+          v-if="!hasAllPrisonQueryAuth"
+          label="操作">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.status == 'PENDING'"
@@ -126,24 +147,29 @@
       :visible.sync="show.authorize"
       class="authorize-dialog"
       :title="show.callback ? '撤回' : '授权'"
+      @close="closeWithdraw"
       width="530px">
       <div style="margin-bottom: 10px;">请核对申请人照片:</div>
       <div class="img-box">
         <m-img-viewer
           v-if="toAuthorize.idCardFront"
           :url="toAuthorize.idCardFront"
+          :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"/>
         <m-img-viewer
           v-if="toAuthorize.idCardBack"
           :url="toAuthorize.idCardBack"
+          :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"/>
         <m-img-viewer
           v-if="toAuthorize.avatarUrl"
           :url="toAuthorize.avatarUrl"
+          :toolbar="{ prev: 1, next: 1 }"
           title="头像"/>
         <m-img-viewer
           v-if="toAuthorize.relationalProofUrl"
           :url="toAuthorize.relationalProofUrl"
+          :toolbar="{ prev: 1, next: 1 }"
           title="关系证明图"/>
       </div>
       <div
@@ -197,8 +223,10 @@
           <el-form-item prop="anotherRemarks">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks" />
+              v-model.trim="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
         <el-button
@@ -234,8 +262,10 @@
           <el-form-item prop="anotherRemarks">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks" />
+              v-model.trim="refuseForm.anotherRemarks" />
           </el-form-item>
         </el-form>
         <el-form
@@ -246,8 +276,10 @@
           <el-form-item prop="withdrawReason">
             <el-input
               type="textarea"
+              show-word-limit
+              maxlength="15"
               placeholder="请输入撤回理由..."
-              v-model="withdrawForm.withdrawReason" />
+              v-model.trim="withdrawForm.withdrawReason" />
           </el-form-item>
         </el-form>
         <el-button
@@ -291,7 +323,8 @@ import prisons from '@/common/constants/prisons'
 export default {
   mixins: [prisonFilterCreator],
   data() {
-    const { options, belong } = prisons.PRISONAREA
+    const { belong } = prisons.PRISONAREA
+    const { options } = this.$store.getters.prisonAreaOptions
     return {
       searchItems: {
         name: {
@@ -396,17 +429,15 @@ export default {
       'getRegistrations',
       'getRegistrationsAll',
       'authorizeRegistrations',
-      'getNotification']),
+      'getNotification'
+    ]),
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
 
       const params = { ...this.filter, ...this.pagination }
 
-      if (this.hasAllPrisonQueryAuth) {
-        this.getRegistrationsAll(params)
-      } else {
-        this.getRegistrations(params)
-      }
+      if (this.hasAllPrisonQueryAuth) this.getRegistrationsAll(params)
+      else this.getRegistrations(params)
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -425,32 +456,20 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if (this.remarks === '其他') {
           this.$refs.refuseForm.validate(valid => {
-            if (valid) {
-              params.remarks = this.refuseForm.anotherRemarks
-            }
-            else {
-              this.btnDisable = false
-            }
+            if (valid) params.remarks = this.refuseForm.anotherRemarks
+            else this.btnDisable = false
           })
         }
-        else {
-          params.remarks = this.remarks
-        }
+        else params.remarks = this.remarks
         if (e === 'WITHDRAW') {
           this.$refs.withdrawForm.validate(valid => {
-            if (valid) {
-              params.withdrawReason = this.withdrawForm.withdrawReason
-            }
-            else {
-              this.btnDisable = false
-            }
+            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason
+            else this.btnDisable = false
           })
         }
         if (this.btnDisable) this.handleSubmit(params)
       }
-      else {
-        this.handleSubmit(params)
-      }
+      else this.handleSubmit(params)
     },
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
@@ -468,6 +487,7 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = true
+      if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
     closeWithdraw() {
       this.show.authorize = false
@@ -501,4 +521,15 @@ export default {
     display: inline-block;
     width: 120px;
     text-align: right;
+.authorize-dialog
+  .img-box
+    .el-image
+      width: 48%;
+      height: 150px;
+      margin-bottom: 5px;
+      box-shadow: 0 0 5px #ddd;
+      >>> img
+           width: 100%;
+           height: 100%;
+           cursor: pointer;
 </style>

@@ -17,10 +17,14 @@
     <!-- <p class="literature-content">{{ literatureDetail.content }}</p> -->
 
     <template v-if="!isCheckNeeded">
-      <p v-if="literatureDetail.rejectReason" class="reason">
+      <p
+        v-if="literatureDetail.rejectReason"
+        class="reason">
         审核不通过原因：{{ literatureDetail.rejectReason }}
       </p>
-      <p v-if="literatureDetail.shelfReason" class="reason">
+      <p
+        v-if="literatureDetail.shelfReason"
+        class="reason">
         下架原因：{{ literatureDetail.shelfReason }}
       </p>
     </template>
@@ -33,8 +37,12 @@
     >
       <el-form-item prop="checkResult">
         <el-select v-model="rejectForm.checkResult">
-          <el-option label="通过" value="pass"></el-option>
-          <el-option label="不通过" value="reject"></el-option>
+          <el-option
+            label="通过"
+            value="pass"></el-option>
+          <el-option
+            label="不通过"
+            value="reject"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item
@@ -48,16 +56,23 @@
           placeholder="请填写不通过原因"
         />
       </el-form-item>
-      <p v-if="literatureDetail.shelfReason" class="reason">
+      <p
+        v-if="literatureDetail.shelfReason"
+        class="reason">
         下架原因：{{ literatureDetail.shelfReason }}
       </p>
     </el-form>
 
     <div class="operate">
-      <el-button v-if="isCheckNeeded" type="primary" @click="onConfirm">
+      <el-button
+        v-if="isCheckNeeded"
+        type="primary"
+        @click="onConfirm">
         确定
       </el-button>
-      <el-button type="primary" @click="back">返回</el-button>
+      <el-button 
+        type="primary"
+        @click="back">返回</el-button>
     </div>
   </div>
 </template>
@@ -69,10 +84,17 @@ import { mapActions, mapState } from 'vuex';
 export default {
   data() {
     return {
-      rejectForm: { rejectReason: '', checkResult: 'pass' },
+      rejectForm: {
+        rejectReason: '',
+        checkResult: 'pass'
+      },
       rules: {
         rejectReason: [
-          { required: true, message: '请填写不通过原因', trigger: 'change' },
+          {
+            required: true,
+            message: '请填写不通过原因',
+            trigger: 'change'
+          },
           {
             max: 20,
             message: '不通过原因不能超过 20 个字符',

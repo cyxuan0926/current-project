@@ -45,7 +45,8 @@ export default {
   data() {
     return {
       id: 'chart-' + Date.now(),
-      instance: null
+      instance: null,
+      resizeHandler: function(){}
     }
   },
 
@@ -94,22 +95,24 @@ export default {
   beforeDestroy() {
     this.instance.dispose()
     this.instance = null
+    window.removeEventListener('resize', this.resizeHandler)
   },
 
   methods: {
     init() {
       this.instance = echarts.init(document.getElementById(this.id))
       this.instance.setOption(this.options)
+      this.resizeHandler = debounce(this.resize, 300)
 
       if (this.loading) {
         this.instance.showLoading()
       }
 
-      window.addEventListener('resize', debounce(this.resizeHandler, 300))
+      window.addEventListener('resize', this.resizeHandler)
     },
 
-    resizeHandler() {
-      this.instance.resize()
+    resize() {
+      this.instance && this.instance.resize()
     }
   }
 }

@@ -1,5 +1,6 @@
 import api from './service'
 import { filterImages } from '@/utils/helper'
+import dateHelp from '@/filters/modules/date'
 
 export default {
   getMailboxes: ({ commit }, params) => {
@@ -16,6 +17,7 @@ export default {
   getMailboxDetail: ({ commit }, params) => {
     return api.getMailboxDetail(params).then(res => {
       if (!res) return
+      res.detail.createdAt = dateHelp.Date(res.detail.createdAt)
       if (res.detail.imageUrls) res.detail.imageUrls = filterImages({ images: res.detail.imageUrls })
       else res.detail.imageUrls = []
       return res.detail

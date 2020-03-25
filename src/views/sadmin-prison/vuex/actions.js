@@ -18,8 +18,9 @@ export default {
   getPrisonDetail: ({ commit }, params) => {
     return http.getPrisonDetail(params).then(res => {
       if (!res) return
-      let regs = res.jails || {}
+      const regs = res.jails || {}
       commit('getPrisonDetail', regs)
+      commit('getBranchStatus', res.branchStatus)
       return true
     })
   },
@@ -44,4 +45,13 @@ export default {
   createJailByBindTenant: ({ commit }, params) => {
     return http.createJailByBindTenant(params).then(res => res)
   }
+  // getBranchStatus: async({ commit }, params) => {
+  //   try {
+  //     const res = await http.getBranchStatus(params)
+  //     return res.data
+  //   }
+  //   catch (err) {
+  //     throw err
+  //   }
+  // }
 }

@@ -1,53 +1,37 @@
 <template>
   <el-row :gutter="0">
     <el-col :span="24">
-      <el-table 
-        :data="prisonReportDetail.meetingDetails"
+      <m-table-new
         stripe
-      >
-        <el-table-column
-          v-if="hasAllPrisonQueryAuth"
-          prop="jailName" 
-          label="监狱名称"
-        />
-        <el-table-column label="家属姓名">
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              @click="showFamilyDetail(scope.row.familyId, scope.row.id)"
-            >
-              {{ scope.row.name }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="prisonerName" label="罪犯姓名" />
-        <el-table-column prop="prisonerNumber" label="罪犯编号" />
-        <el-table-column prop="total_time" label="总会见时间段" width="236px" />
-        <el-table-column label="会见时长">
-          <template slot-scope="scope">
-            {{ scope.row.duration | time }}
-          </template>
-        </el-table-column> 
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
-              v-if="scope.row.is_interrupt !== 0"
-              type="text"
-              @click="showCallRecords(scope.row.meeting_details)"
-            >
-              详细内容
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="province" label="家属所在省" />
-        <el-table-column prop="city" label="家属所在市" />
-        <p v-if="showSummary" slot="append" class="table-footer">
-          <span>{{ prisonReportDetail.jailName }}</span>
-          <span>
-            总会见时长：{{ prisonReportDetail.totalDuration | time }}
-          </span>
-        </p>
-      </el-table>
+        :data="prisonReportDetail.meetingDetails"
+        :cols="tableCols">
+        <template #familyId="{ row }">
+          <el-button
+            type="text"
+            @click="showFamilyDetail(row.familyId, row.id)">
+            {{ row.name }}
+          </el-button>
+        </template>
+        <template #duration="{ row }">{{ row.duration | time }}</template>
+        <template #operation="{ row }">
+          <el-button
+            v-if="row.is_interrupt !== 0"
+            type="text"
+            @click="showCallRecords(row.meeting_details)">
+            详细内容
+          </el-button>
+        </template>
+        <template #append-count>
+          <p
+            v-if="showSummary"
+            class="table-footer">
+            <span>{{ prisonReportDetail.jailName }}</span>
+            <span>
+              总会见时长：{{ prisonReportDetail.totalDuration | time }}
+            </span>
+          </p>
+        </template>
+      </m-table-new>
     </el-col>
   
     <el-dialog
@@ -67,15 +51,23 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-row class="row-flex" :gutter="20" justify="space-between" type="flex">
-        <el-col :span="12" class="img-idCard">
+      <el-row
+        class="row-flex"
+        :gutter="20"
+        justify="space-between"
+        type="flex">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证正面：</label>
           <m-img-viewer
             v-if="family.familyIdCardFront"
             :url="family.familyIdCardFront"
             title="身份证正面"/>
         </el-col>
-        <el-col :span="12" class="img-idCard">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">身份证背面：</label>
           <m-img-viewer
             v-if="family.familyIdCardBack"
@@ -84,7 +76,9 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="12" class="img-idCard">
+        <el-col
+          :span="12"
+          class="img-idCard">
           <label for="">关系证明图：</label>
           <m-img-viewer
             v-if="family.familyRelationalProofUrl"
@@ -115,7 +109,9 @@
             {{ scope.row.duration | time }}
           </template>
         </el-table-column> 
-        <el-table-column prop="remarks" label="备注" />
+        <el-table-column
+          prop="remarks"
+          label="备注" />
       </el-table>
     </el-dialog>
   </el-row>
@@ -144,6 +140,62 @@ export default {
     showSummary() {
       const rows = this.prisonReportDetail.meetingDetails
       return rows && rows.length
+    },
+    tableCols() {
+      let cols = [
+        {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
+          label: '家属姓名',
+          slotName: 'familyId'
+        },
+        {
+          label: '罪犯姓名',
+          prop: 'prisonerName'
+        },
+        {
+          label: '罪犯编号',
+          prop: 'prisonerNumber'
+        },
+        {
+          label: '总会见时间段',
+          prop: 'total_time',
+          width: 236
+        },
+        {
+          label: '会见时长',
+          slotName: 'duration'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
+        },
+        {
+          label: '家属所在省',
+          prop: 'province'
+        },
+        {
+          label: '家属所在市',
+          prop: 'city'
+        },
+        {
+          isElSlots: true,
+          belong: 'append',
+          elSlots: [
+            {
+              name: 'append-count'
+            }
+          ]
+        }
+      ]
+      if (!this.hasAllPrisonQueryAuth) cols.splice(0, 2)
+      return cols
     }
   },
   methods: {
