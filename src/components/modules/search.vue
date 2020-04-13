@@ -101,6 +101,9 @@
           :start-value="item.startValue"
           :end-value="item.endValue"
           @onEnsure="onEnsure" />
+          <template v-if="item.slotName">
+            <slot :name="item.slotName" />
+          </template>
       </template>
       <template v-if="items">
         <slot name="pre" /> 
@@ -216,7 +219,7 @@ export default {
       if (this.items) {
         let params = {}
         Object.keys(this.items).forEach(key => {
-          if (this.items[key].miss) return
+          if (this.items[key].miss || this.items[key].slotName) return
           if (this.items[key].type === 'monthRangeSelector') {
             params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
             params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
@@ -300,7 +303,8 @@ export default {
 
     .m-range-picker,
     .el-date-editor--month,
-    .el-date-editor--daterange {
+    .el-date-editor--daterange,
+    .el-date-editor--monthrange {
       width: 210px !important;
     }
 

@@ -66,6 +66,15 @@
         </el-upload>
       </el-col>
     </el-row>
+    <!-- <el-row class="step-box" :gutter="0">
+      <el-col :span="22" :offset="2">
+        <el-steps :active="active" finish-status="success">
+          <el-step title="步骤 1"></el-step>
+          <el-step title="步骤 2"></el-step>
+          <span name="title">cy</span>
+        </el-steps>
+      </el-col>
+    </el-row> -->
     <el-row
       class="table-box"
       v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
@@ -363,7 +372,8 @@ export default {
       visible: false,
       notify: null,
       onProgress: false,
-      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
+      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`,
+      active: 1
     }
   },
   computed: {

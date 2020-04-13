@@ -546,17 +546,18 @@ export default {
         {
           label: '申请时间',
           prop: 'createdAt',
-          width: 150
+          minWidth: 130
         },
         {
           label: '会见时间',
           slotName: 'meetingTime',
           sortable: 'custom',
-          width: 150
+          minWidth: 135
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          showOverflowTooltip: true
         },
         {
           label: '家属',
@@ -565,29 +566,50 @@ export default {
         {
           label: '申请状态',
           slotName: 'content',
-          width: 110,
+          minWidth: 80,
           className: 'orange'
         }
       ],
         allPrisonQueryAuthLeadingCols = [
           {
             label: '监狱名称',
-            prop: 'jailName'
+            prop: 'jailName',
+            minWidth: 110
           }
         ],
         noAllPrisonQueryAuthLeadingCols = [
           {
             label: '操作',
             slotName: 'operate',
-            width: 160,
+            minWidth: 160,
             align: 'center'
           }
         ]
-        const selectionCol = [{ type: 'selection' }]
-        if (this.hasAllPrisonQueryAuth) return [
-          ...allPrisonQueryAuthLeadingCols,
-          ...basicCols
+
+        const selectionCol = [
+          { type: 'selection' }
         ]
+
+        const terminaUniquelId = {
+          label: '终端唯一标识',
+          prop: '',
+          minWidth: 100
+        }
+
+        if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+          let cols = [
+            {
+              label: '省份',
+              prop: 'provinceName'
+            },
+            ...allPrisonQueryAuthLeadingCols,
+            ...basicCols
+          ]
+
+          if (this.tabs === 'first') cols = [ ...cols, terminaUniquelId ]
+
+          return cols
+        }
         else {
           const noAllPrisonQueryAuthCols = [
             ...basicCols,

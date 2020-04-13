@@ -13,15 +13,16 @@ export default {
     }
   },
   created() {
-    if (this.hasAllPrisonQueryAuth) {
-      this.createPrisonFilter()
-      this.createPrisonAreaFilter()
-    }
-
     if (this.hasOnlyAllPrisonQueryAuth) this.createPrisonFilter()
+
+    if (this.hasAllPrisonQueryAuth) {
+      this.createPrisonAreaFilter()
+      this.createPrisonFilter()
+    }
 
     if (this.hasProvinceQueryAuth) this.createProvinceFilter()
   },
+
   methods: {
     async createPrisonFilter() {
       const prisonSearchItem = {
@@ -35,11 +36,16 @@ export default {
         options: []
       }
 
+      this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
+
       if (this.$store.state.prisonAll.length === 0) {
         await this.$store.dispatch('getPrisonAll')
+
+        Message.closeAll()
       }
-      this.$set(this.searchItems, 'jailId', prisonSearchItem)
+
       this.searchItems.jailId.options = this.$store.state.prisonAll
+
       this.searchItems.jailId.getting = false
     },
 
@@ -55,14 +61,19 @@ export default {
         getting: true
       }
 
-      if (this.$store.state.provincesAll.length === 0) await this.$store.dispatch('getProvincesAll')
-
       this.searchItems = Object.assign({}, { provincesId: provinceItem }, this.searchItems)
+
+      if (this.$store.state.provincesAll.length === 0) {
+        await this.$store.dispatch('getProvincesAll')
+
+        Message.closeAll()
+      }
 
       this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
 
       this.$set(this.searchItems['provincesId'], 'getting', false)
     },
+
     createPrisonAreaFilter() {
       const prisonAreaItem = {
         type: 'select',
@@ -72,13 +83,17 @@ export default {
         value: ''
       }
 
-      this.$set(this.searchItems, 'prisonArea', prisonAreaItem)
+      this.searchItems = Object.assign({}, { prisonArea: prisonAreaItem }, this.searchItems)
     },
+
     async searchSelectChange(selectKey, value) {
       if (selectKey === 'jailId') {
         if (this.searchItems.prisonArea) {
           if (value) {
             await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+
+            Message.closeAll()
+
             this.searchItems.prisonArea.options = this.$store.state.jailPrisonAreas
           }
           else {
@@ -98,10 +113,15 @@ export default {
             this.$set(this.searchItems['prisonArea'], 'options', [])
           }
         }
+
         this.$set(this.searchItems['jailId'], 'getting', true)
+
         await this.$store.dispatch('getPrisonAll', { provincesId: value })
+
         Message.closeAll()
+
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
+
         this.$set(this.searchItems['jailId'], 'getting', false)
       }
     }
