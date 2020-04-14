@@ -42,7 +42,7 @@
           show-overflow-tooltip
           label="家属姓名" />
         <el-table-column
-          width="150px"
+          min-width="145px"
           label="身份证信息">
           <template slot-scope="scope">
             <m-img-viewer
@@ -70,7 +70,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="122px"
+          min-width="120px"
           label="申请时间">
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
@@ -86,23 +86,24 @@
           label="监区" />
         <el-table-column
           prop="relationship"
-          width="58px"
-          label="关系" />
+          min-width="58px"
+          label="关系"
+          show-overflow-tooltip />
         <el-table-column
           label="家属会见告知书"
-          width="110px" >
+          min-width="105px" >
           <template slot-scope="scope">
             <span
               :class="[
                 'bold',
-                { 'red' : !scope.row.notifyId },
-                { 'green' : scope.row.notifyId }
-            ]">{{ scope.row.notifyId ? '已签订' : '未签订' }}</span>
+                { 'red' : scope.row.notifyId === null },
+                { 'green' : scope.row.notifyId !== null }
+            ]">{{ scope.row.notifyId !== null ? '已签订' : '未签订' }}</span>
             <el-button
-              v-if="scope.row.notifyId"
+              v-if="scope.row.notifyId !== null"
               type="text"
               size="small"
-              @click="showSign(scope.row.notifyId)">点击查看</el-button>
+              @click="showSign(scope.row)">点击查看</el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -429,7 +430,8 @@ export default {
       'getRegistrations',
       'getRegistrationsAll',
       'authorizeRegistrations',
-      'getNotification'
+      'getNotification',
+      'getRegistrationNotificationDetail'
     ]),
     getDatas() {
       if (this.tabs !== 'first') this.filter.status = this.tabs
@@ -497,11 +499,22 @@ export default {
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
-    showSign(e) {
-      this.getNotification({ id: e }).then(res => {
-        if (!res) return
-        this.notificationShow = true
-      })
+    showSign(row) {
+      const { status } = row
+      if (status === 'PENDING') {
+        const { id } = row
+        this.getRegistrationNotificationDetail({ id }).then(res => {
+          if (!res) return
+          this.notificationShow = true
+        })
+      }
+      else {
+        const { notifyId } = row
+        this.getNotification({ id: notifyId }).then(res => {
+          if (!res) return
+          this.notificationShow = true
+        })
+      }
     }
   }
 }

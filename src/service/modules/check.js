@@ -5,6 +5,10 @@ export default {
   getRegistrations: params => {
     return service.get('/registrations/page', params).then(res => res && res.data)
   },
+  // 家属注册管理-未审核-会见告知书详情
+  getRegistrationNotificationDetail: params => {
+    return service.get('/notification/detail-registration', params).then(res => res && res.data)
+  },
   // 家属注册管理-列表-所有监狱
   getRegistrationsAll: params => {
     return service.get('/registrations/findPage', params).then(res => res && res.data)

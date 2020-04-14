@@ -9,5 +9,12 @@ export default {
   },
   authorizeRegistrations: ({ commit }, params) => {
     return http.authorizeRegistrations(params).then(res => res)
+  },
+  getRegistrationNotificationDetail: ({ commit }, params) => {
+    return http.getRegistrationNotificationDetail(params).then(res => {
+      if (!res) return
+      commit('getNotification', res)
+      return true
+    })
   }
 }

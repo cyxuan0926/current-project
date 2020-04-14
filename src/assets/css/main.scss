@@ -3,6 +3,9 @@
 html{
   background: #ecf0f5;
 }
+body.el-popup-parent--hidden {
+  padding: 0px !important;
+}
 img{
   vertical-align: middle;
   border: 0;

@@ -28,7 +28,7 @@ export default {
     const disabled = this.$route.meta.role === '3'
     return {
       formItems: Object.assign({}, {
-        formConfigs: { labelWidth: '150px' },
+        formConfigs: { labelWidth: '180px' },
         cost: {
           type: 'input',
           label: '单次会见费用',
@@ -61,6 +61,11 @@ export default {
             required: true,
             validator: validator.required
           }]},
+        agreement: {
+          type: 'switch',
+          label: '线上签署《远程会见告知书》',
+          value: 0
+        },
         meeting: {
           type: 'switch',
           label: '会见模块开放',
