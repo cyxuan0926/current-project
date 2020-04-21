@@ -1,7 +1,9 @@
 export default {
   setPageData: (state, pageData) => {
-    // const {} = pageData
-    // state.pageData.content = []
-    // state.pageData.totalCount = 0
+    const { content, totalElements } = pageData
+
+    state.pageData.content = content
+
+    state.pageData.totalCount = totalElements
   }
 }

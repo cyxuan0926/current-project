@@ -1,3 +1,7 @@
-// import * as service from '../config/service'
+import { getFinance } from '@/service-public/request'
 
-export default {}
+export default {
+  getPageData: (url, params) => {
+    return getFinance(url, params)
+  }
+}

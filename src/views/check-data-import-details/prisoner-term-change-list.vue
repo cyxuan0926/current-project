@@ -4,8 +4,7 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
-      @search="onSearch"/>
+      @search="onSearch" />
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">

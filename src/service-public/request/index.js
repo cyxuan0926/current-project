@@ -6,6 +6,9 @@ const basicConfig = {
   baseURL: urls.publicApiHost
 }
 
+const financeBasicConfig = {
+  baseURL: urls.financeApiHost
+}
 
 export function get(url = '', params = {}, config = {}) {
   Object.assign(config, basicConfig)
@@ -44,3 +47,7 @@ export function post(url = '', data = {}, config = {}) {
   })
 }
 
+export function getFinance(url = '', params = {}, config = {}) {
+  Object.assign(config, financeBasicConfig)
+  return instance.request({ url, method: 'GET', params, ...config })
+}

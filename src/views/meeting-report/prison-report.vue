@@ -10,7 +10,6 @@
     <m-search
       ref="search"
       :items="searchItems"
-      @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
@@ -141,10 +140,7 @@ export default {
       'getPrisonReportDetail',
       'getPrisonReportDetailAll'
     ]),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
+
     getDatas() {
       const params = { ...this.filter, ...this.pagination }
 

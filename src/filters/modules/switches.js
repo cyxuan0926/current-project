@@ -74,12 +74,8 @@ let switches = {
       value: 1
     },
     {
-      label: '余额不足',
+      label: '转账失败',
       value: 0
-    },
-    {
-      label: '账号错误',
-      value: 2
     }
   ]
 }

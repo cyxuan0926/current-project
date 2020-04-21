@@ -29,6 +29,7 @@ const config = {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     // apiHost: 'http://47.107.245.151:8021',
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
+    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
@@ -40,6 +41,7 @@ const config = {
   auth: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.182:8088',
+    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk-auth',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
@@ -50,6 +52,7 @@ const config = {
   production: {
     publicApiHost: 'https://auth-api.yuwugongkai.com',
     apiHost: 'https://www.yuwugongkai.com',
+    financeApiHost: 'https://finance-api.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: 'https://www.yuwugongkai.com/audio-server/audios',
     // imageUrl: 'http://39.108.185.51:1339/image-server/avatars',
@@ -61,6 +64,7 @@ const config = {
   ybDevelopment: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://47.107.245.151:8080',
+    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
@@ -72,6 +76,7 @@ const config = {
   xzyDev: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.108:8088',
+    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,
@@ -82,6 +87,7 @@ const config = {
   phl: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     apiHost: 'http://192.168.0.188:8088',
+    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
     imageUrl: `${ nodeUrl }/image-server/avatars`,

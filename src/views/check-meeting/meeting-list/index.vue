@@ -592,7 +592,7 @@ export default {
 
         const terminaUniquelId = {
           label: '终端唯一标识',
-          prop: '',
+          prop: 'terminalNo',
           minWidth: 100
         }
 

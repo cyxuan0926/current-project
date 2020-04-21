@@ -9,11 +9,10 @@
 
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" >
       <template #dealTime>
         <el-date-picker
-          v-if="activeTabName === tabOptions['TERMINAL_SHARED_DETAILS']"
+          v-if="activeTabName !== tabOptions['TERMINAL_SHARED_DETAILS']"
           v-model="dealTime"
           type="monthrange"
           value-format="yyyy-MM"
@@ -40,8 +39,8 @@
         stripe
         :data="pageData.content"
         :cols="tableCols">
-        <template #status="{ row }">
-          {{ row.status | coopertivePartnerTransferStatus }}
+        <template #transferFlag="{ row }">
+          {{ row.transferFlag | coopertivePartnerTransferStatus }}
         </template>
       </m-table>
     </el-col>
@@ -79,17 +78,21 @@ export default {
 
     const phoneItem = {
       label: '手机号码(合作商)',
-      prop: ''
+      prop: 'partnerPhone',
+      minWidth: 100
     }
 
     const terminaUniquelIdItem = {
       label: '终端唯一标识',
-      prop: ''
+      prop: 'uniqueId',
+      minWidth: 100,
+      showOverflowTooltip: true
     }
 
     const prisonNameItem = {
       label: '监狱名称',
-      prop: ''
+      prop: 'jailName',
+      showOverflowTooltip: true
     }
 
     const terminalIncomeMenusItems = [
@@ -98,11 +101,11 @@ export default {
       prisonNameItem,
       {
         label: '月份',
-        prop: ''
+        prop: 'month'
       },
       {
         label: '合作商终端收入（元）',
-        prop: ''
+        prop: 'amount'
       }
     ]
 
@@ -110,37 +113,46 @@ export default {
       phoneItem,
       {
         label: '交易金额（元）',
-        prop: ''
+        prop: 'transactionAmount',
+        minWidth: 70
       },
       {
         label: '交易场景时间',
-        prop: ''
+        prop: 'transactionTime',
+        minWidth: 120
       },
       {
         label: '会见结束时间',
-        prop: ''
+        prop: 'mettingEndTime',
+        minWidth: 120
       },
       {
         label: '到账时间',
-        prop: ''
+        prop: 'paymentTime',
+        minWidth: 120
       },
       {
         label: '分成比例（%）',
-        prop: ''
+        prop: 'divideRate',
+        minWidth: 70
       },
       {
         label: '合作商分成（元）',
-        prop: ''
+        prop: 'divideMoney'
       },
       prisonNameItem,
       {
         label: '会见ID',
-        prop: ''
+        prop: 'mettingId',
+        minWidth: 60,
+        showOverflowTooltip: true
       },
       terminaUniquelIdItem,
       {
         label: '转账状态',
-        slotName: 'status'
+        slotName: 'transferFlag',
+        minWidth: 70,
+        showOverflowTooltip: true
       }
     ]
 
@@ -148,7 +160,7 @@ export default {
       tabOptions,
       activeTabName: tabOptions.TERMINAL_SHARED_DETAILS,
       searchItems: {
-        phone: {
+        partnerPhone: {
           type: 'input',
           label: '手机号码',
           value: null
@@ -165,9 +177,9 @@ export default {
         dateRange: {
           type: 'dateRange',
           unlinkPanels: true,
-          start: 'start',
-          end: 'end',
-          miss: true
+          start: 'startDate',
+          end: 'endDate',
+          miss: false
         },
 
         monthRange: {
@@ -195,50 +207,67 @@ export default {
     },
 
     excelPath() {
-      if (this.activeTabName === this.tabOptions['TERMINAL_INCOME_MENUS']) return '/'
+      if (this.activeTabName === this.tabOptions['TERMINAL_INCOME_MENUS']) return '/sharing/terminalIncome/export'
 
-      else return '/test'
+      else return '/sharing/terminalDivide/export'
     }
   },
 
   watch: {
     activeTabName(val) {
       if (val === this.tabOptions['TERMINAL_INCOME_MENUS']) {
-        this.$set(this.searchItems['dateRange'], 'miss', false)
+        this.$set(this.searchItems['dateRange'], 'miss', true)
 
         this.$set(this.searchItems['status'], 'miss', true)
 
-        this.resetSearchFilters(['status'])
+        this.resetSearchFilters(['status', 'dateRange'])
 
-        this.dealTime = []
+        this.dealTime = [this.date, this.date]
 
       } else {
-        this.$set(this.searchItems['dateRange'], 'miss', true)
+        this.$set(this.searchItems['dateRange'], 'miss', false)
 
         this.$set(this.searchItems['status'], 'miss', false)
 
-        this.resetSearchFilters(['dateRange'])
-
-        this.dealTime = [this.date, this.date]
+        this.dealTime = []
       }
 
-      this.resetSearchFilters(['phone', 'jailId'])
+      this.resetSearchFilters(['partnerPhone', 'jailId'])
 
       this.onSearch()
     }
   },
 
   methods: {
-    ...mapActions('coopertivePartner', []),
+    ...mapActions('coopertivePartner', ['getPageData']),
 
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
+    async getDatas() {
+      const { rows, page } = this.pagination
 
-      this.getDatas()
-    },
-
-    getDatas() {
-      console.log({...this.pagination, ...this.filter}, this.activeTabName, this.dealTime)
+      let params = {
+        page,
+        size: rows,
+        ...this.filter
+      }
+      if (this.activeTabName === this.tabOptions['TERMINAL_INCOME_MENUS']) {
+        if (this.dealTime) {
+          params = {
+            ...params,
+            startDate: this.dealTime[0],
+            endDate: this.dealTime[1]
+          }
+        }
+        await this.getPageData({
+          url: '/sharing/terminalIncome',
+          params
+        })
+      } else {
+        await this.getPageData({
+          url: '/sharing/terminalDivide',
+          params
+        })
+      }
+      console.log(params)
     },
 
     onSearch() {
