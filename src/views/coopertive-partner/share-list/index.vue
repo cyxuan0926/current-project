@@ -38,11 +38,8 @@
       <m-table
         stripe
         :data="pageData.content"
-        :cols="tableCols">
-        <template #transferFlag="{ row }">
-          {{ row.transferFlag | coopertivePartnerTransferStatus }}
-        </template>
-      </m-table>
+        :cols="tableCols"
+      />
     </el-col>
 
     <m-pagination
@@ -79,19 +76,20 @@ export default {
     const phoneItem = {
       label: '手机号码(合作商)',
       prop: 'partnerPhone',
-      minWidth: 100
+      minWidth: 105
     }
 
     const terminaUniquelIdItem = {
       label: '终端唯一标识',
       prop: 'uniqueId',
-      minWidth: 100,
+      minWidth: 95,
       showOverflowTooltip: true
     }
 
     const prisonNameItem = {
       label: '监狱名称',
       prop: 'jailName',
+      minWidth: 70,
       showOverflowTooltip: true
     }
 
@@ -144,15 +142,13 @@ export default {
       {
         label: '会见ID',
         prop: 'mettingId',
-        minWidth: 60,
+        minWidth: 55,
         showOverflowTooltip: true
       },
       terminaUniquelIdItem,
       {
         label: '转账状态',
-        slotName: 'transferFlag',
-        minWidth: 70,
-        showOverflowTooltip: true
+        prop: 'transferFlag'
       }
     ]
 
@@ -207,9 +203,9 @@ export default {
     },
 
     excelPath() {
-      if (this.activeTabName === this.tabOptions['TERMINAL_INCOME_MENUS']) return '/sharing/terminalIncome/export'
+      if (this.activeTabName === this.tabOptions['TERMINAL_INCOME_MENUS']) return '/download/exportTerminalIncome'
 
-      else return '/sharing/terminalDivide/export'
+      else return '/download/exportTerminalDivide'
     }
   },
 
@@ -245,7 +241,7 @@ export default {
       const { rows, page } = this.pagination
 
       let params = {
-        page,
+        page: page - 1,
         size: rows,
         ...this.filter
       }
@@ -267,7 +263,6 @@ export default {
           params
         })
       }
-      console.log(params)
     },
 
     onSearch() {
