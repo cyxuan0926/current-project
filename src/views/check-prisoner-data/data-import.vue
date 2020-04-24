@@ -87,7 +87,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -141,7 +142,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -198,7 +200,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -252,7 +255,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
