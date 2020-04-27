@@ -64,6 +64,7 @@ export default {
         agreement: {
           type: 'switch',
           label: '线上签署《远程会见告知书》',
+          disabled,
           value: 0
         },
         meeting: {
