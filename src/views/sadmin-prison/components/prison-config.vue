@@ -4,7 +4,33 @@
       :items="formItems"
       @submit="onSubmit"
       @back="onBack"
-      :values="values"/>
+      :values="values"
+    >
+      <template #jichufeiyong>
+        <el-col :span="11">
+          <el-form-item prop="time" >
+            <el-input
+              v-model.number="test.time"
+              placeholder="请输入基础时间"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">分钟</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11" :offset="2">
+          <el-form-item prop="money" :rules="rules.money">
+            <el-input
+              v-model="test.money"
+              placeholder="请输入基础费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+    </m-form>
   </div>
 </template>
 
@@ -26,9 +52,73 @@ export default {
     }
     if (this.$route.meta.role === '3') formButton.buttons = ['back']
     const disabled = this.$route.meta.role === '3'
+    const waysOptions = [
+      {
+        value: '按次收费',
+        label: 1
+      },
+      {
+        value: '按分钟收费',
+        label: 0
+      }
+    ]
+    const validateMoney = (rule, value, callback) => {
+      const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+      if (this.test.money === '') callback(new Error('请输入基础费用'))
+      else if (!feeReg.test(this.test.money)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      else callback()
+    }
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '180px' },
+        ways: {
+          type: 'radio',
+          label: '收费方式',
+          disabled,
+          rules: ['required'],
+          props: {
+            label: 'label',
+            value: 'value'
+          },
+          options: waysOptions,
+          configs: [
+            // 按分钟收费
+            {
+              value: 0,
+              itemConfigs: {
+                cost: 0
+              }
+            },
+            // 按次付费
+            {
+              value: 1,
+              itemConfigs: {
+                jichufeiyong: 0,
+                basicCost: 2.2
+              }
+            }
+          ]
+        },
+        jichufeiyong: {
+          slotName: 'jichufeiyong',
+          attrs: {
+            label: '基础费用',
+            required: true
+          },
+          func: this.onReset
+        },
+        basicCost: {
+          type: 'input',
+          label: '基础时长后每分钟费用',
+          customClass: 'el-form__notFull',
+          disabled,
+          rules: [
+            'required',
+            'isFee'
+          ],
+          append: '/元',
+          value: 2.2
+        },
         cost: {
           type: 'input',
           label: '单次会见费用',
@@ -137,7 +227,16 @@ export default {
         }
       }, formButton),
       values: {},
-      permission
+      permission,
+      test: {
+        time: 5,
+        money: 15
+      },
+      rules: {
+        money: [
+          { validator: validateMoney, trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {
@@ -149,7 +248,7 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
-        this.values = cloneDeep(this.prison)
+        this.values = { ...cloneDeep(this.prison), ways: 0, basicCost: 2.2 }
         if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
           const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
           this.$set(this.values, 'prisonAreaList', prisonAreaList)
@@ -159,6 +258,14 @@ export default {
             this.$set(this.formItems['branchPrison'], 'disabled', true)
             this.$set(this.formItems['prisonAreaList'], 'disabled', true)
           }
+        }
+        delete this.formItems.dissMissConfigs
+        // // 判断是什么收费情况 来初始化
+        if (this.values.ways === 0) {
+          this.$set(this.formItems, 'dissMissConfigs', ['cost'])
+        }
+        if (this.values.ways === 1) {
+          this.$set(this.formItems, 'dissMissConfigs', ['jichufeiyong', 'basicCost'])
         }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
         //   (async() => {
@@ -191,6 +298,7 @@ export default {
       'getPrisonDetail',
       'updatePrison']),
     onSubmit(e) {
+      console.log(e)
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
           // 这里就是分监区的情况
@@ -207,21 +315,22 @@ export default {
         else e.prisonAreaList = []
 
         const params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
-        this.updatePrison(params).then(res => {
-          if (!res) return
-          this.getPrisonDetail({ id: this.$route.params.id })
-          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-          // else this.$router.push('/jails/detail')
-        })
+        // this.updatePrison(params).then(res => {
+        //   if (!res) return
+        //   this.getPrisonDetail({ id: this.$route.params.id })
+        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+        //   // else this.$router.push('/jails/detail')
+        // })
       }
     },
     onBack() {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
       else this.$router.push({ path: '/jails/detail' })
+    },
+    onReset() {
+      this.$set(this.test, 'money', 15)
+      this.$set(this.test, 'time', 5)
     }
   }
 }
 </script>
-
-<style lang="css">
-</style>

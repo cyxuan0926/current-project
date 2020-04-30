@@ -22,8 +22,9 @@ const codes = {
   200: {
     resData: true,
     next: (params, url) => {
-      if (url.indexOf('/prisoners/processing') > -1) {
-        tips('导入的Excel罪犯数据解析完成', 'success')
+      if (url.indexOf('/prisoners/processing') > -1 || url.indexOf('/upload/uploadfile') > -1 || url.indexOf('/prisoners/validate') > -1) {
+        Message.closeAll()
+        // tips('导入的Excel罪犯数据解析完成', 'success')
       }
       else tips(params.msg || '操作成功', 'success')
     }

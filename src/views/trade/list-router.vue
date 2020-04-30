@@ -32,6 +32,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+// import switches from '@/filters/modules/switches'
 export default {
   data() {
     return {
@@ -108,6 +109,12 @@ export default {
           start: 'startDate',
           end: 'endDate'
         }
+        // shoufeifangshi: {
+        //   miss: true,
+        //   type: 'select',
+        //   label: '收费方式',
+        //   options: switches.chargeWays
+        // }
       },
       showSearch: {
         account: ['accountStatus', 'phone'],

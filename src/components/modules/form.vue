@@ -9,17 +9,28 @@
       :model="fields"
       :rules="rules">
       <template v-for="(item, key) in items">
-        <form-item
-          v-if="dismiss.indexOf(key) < 0"
-          :ref="key"
-          :key="key"
-          :prop="key"
-          :rule="item.rule"
-          :item="item"
-          :fields="fields"
-          :select-change-event="selectChangeEvent"
-          :reset-field-value="resetFieldValue"
-          @validateField="validateField" />
+        <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
+          <form-item
+            :ref="key"
+            :key="key"
+            :prop="key"
+            :rule="item.rule"
+            :item="item"
+            :fields="fields"
+            :select-change-event="selectChangeEvent"
+            :radio-change-event="radioChangeEvent"
+            :reset-field-value="resetFieldValue"
+            @validateField="validateField" />
+        </template>
+        <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
+          <el-form-item 
+            :key="key"
+            v-bind="item.attrs"
+            v-on="item.events"
+            :class="item.customClass">
+              <slot :name="item.slotName" />
+          </el-form-item>
+        </template>
       </template>
       <slot />
     </el-form>
@@ -99,7 +110,6 @@ export default {
     },
     items: {
       handler: function(val) {
-        console.log(val)
         val && this.render()
       }
     }
@@ -140,8 +150,10 @@ export default {
     },
     render() {
       let fields = {}
+      this.dismiss = ['buttons', 'formConfigs']
+      if (this.items.dissMissConfigs && Array.isArray(this.items.dissMissConfigs) && this.items.dissMissConfigs.length) this.dismiss = [...this.dismiss, ...this.items.dissMissConfigs]
       Object.keys(this.items).forEach(key => {
-        if (this.dismiss.indexOf(key) >= 0) return
+        if (this.dismiss.indexOf(key) >= 0 || key === 'dissMissConfigs') return
         fields[key] = this.items[key].value
         this.initRules(this.items[key])
         this.items[key].rule && (this.rules[key] = this.items[key].rule)
@@ -228,11 +240,28 @@ export default {
       if (Array.isArray(controlProps)) {
         this.$nextTick(function() {
           controlProps.map(prop => {
-          if (this.fields[prop]) this.$set(this.fields, prop, '')
+            if (this.fields[prop]) this.$set(this.fields, prop, '')
           })
         })
       }
       item.func && item.func(e, prop, item)
+    },
+    radioChangeEvent(e, prop, item) {
+      const { configs } = item
+      this.dismiss = ['buttons', 'formConfigs']
+      if (Array.isArray(configs)) {
+        this.$nextTick(function() {
+          configs.forEach(item => {
+            if (this.fields[prop] === item.value) {
+              for(let [key, value] of Object.entries(item.itemConfigs)) {
+                this.dismiss.push(key)
+                if (this.items[key].func) this.items[key].func(e, prop, item)
+                else this.$set(this.fields, key, value)
+              }
+            }
+          })
+        })
+      }
     }
   }
 }
