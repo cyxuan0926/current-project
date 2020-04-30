@@ -76,6 +76,10 @@ let switches = {
     {
       label: '转账失败',
       value: 0
+    },
+    {
+      label: '未转账',
+      value: 2
     }
   ]
 }
