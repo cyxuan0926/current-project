@@ -8,7 +8,6 @@
       :params="filter" />
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
@@ -170,10 +169,7 @@ export default {
       'getPrisonAreaReportListAll',
       'getJailPrisonAreas'
     ]),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
+
     getDatas() {
       this.prisonArea = this.searchItems.prisonAreaId.options.find(o => o.id === this.filter.prisonAreaId)
       if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length === 1) delete this.filter.prisonAreaId

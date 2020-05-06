@@ -67,6 +67,20 @@ let switches = {
       value: 0,
       label: '关'
     }
+  ],
+  coopertivePartnerTransferStatus: [
+    {
+      label: '转账成功',
+      value: 1
+    },
+    {
+      label: '转账失败',
+      value: 0
+    },
+    {
+      label: '未转账',
+      value: 2
+    }
   ]
 }
 

@@ -43,7 +43,13 @@ instance.interceptors.response.use(
     store.commit('hideLoading')
     if (state && history.state.key !== state.key) return
     // 这是公共服务的请求 做特别的响应处理
-    if (response.config && response.config.baseURL && response.config.baseURL === urls.publicApiHost) return publicHandleResponse(response)
+    if (
+      response.config &&
+      response.config.baseURL &&
+      (response.config.baseURL === urls.publicApiHost || response.config.baseURL === urls.financeApiHost)
+    ) {
+      return publicHandleResponse(response)
+    }
     return handleResponse(response)
   },
   error => {
@@ -52,7 +58,13 @@ instance.interceptors.response.use(
     if (error.response) {
       if (state && history.state.key !== state.key) return
       // 公共服务错误码处理 不一定是错误
-      if (error.response.config && error.response.config.baseURL && error.response.config.baseURL === urls.publicApiHost) return publicHandleResponse(error.response)
+      if (
+        error.response.config &&
+        error.response.config.baseURL &&
+        (error.response.config.baseURL === urls.publicApiHost || error.response.config.baseURL === urls.financeApiHost)
+      ) {
+        return publicHandleResponse(error.response)
+      }
       return handleResponse(error.response)
     }
     return handleResponse(error)

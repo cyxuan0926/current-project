@@ -92,6 +92,13 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../assets/css/new.css";
+.img-box .img-user{
+  position: absolute;
+  left: -55%;
+  width: 109%;
+  margin-top: 1px;
+  margin-left: 62%
+}
 .blue-block{
   background: #337AB7;
   display: flex;
@@ -99,5 +106,36 @@ export default {
   align-items: center;
   padding: 15px 0;
   position: relative;
+}
+@media screen and (max-width: 376px) {
+  .img-box .img-user {
+    margin-top: 27px;
+  }
+}
+@media screen and (max-width: 563px) and (min-width: 320px) {
+  .img-box .img-user {
+    margin-left: 61%;
+    width: 102%;
+  }
+}
+@media screen and (max-width: 416px) and (min-width: 377px) {
+  .img-box .img-user {
+    width: 110%;
+  }
+}
+@media screen and (max-width: 605px) and (min-width: 564px) {
+  .img-box .img-user{
+    margin-top: 19px;
+  }
+}
+@media screen and (max-width: 720px) and (min-width: 605px) {
+  .img-box .img-user{
+    margin-top: 2px;
+  }
+}
+@media screen and (min-width: 720px) {
+  .img-box .img-user{
+    width: 107%;
+  }
 }
 </style>

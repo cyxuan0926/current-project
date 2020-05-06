@@ -80,10 +80,10 @@ export default {
       },
       rules2: {
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { required: true, message: '请输入原密码', trigger: 'blur' }
         ],
         new_password: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
+          { required: true, message: '请输入新密码', trigger: 'blur' }
         ],
         passwordReview: [
           { validator: validatePasswordReview, trigger: 'blur' }

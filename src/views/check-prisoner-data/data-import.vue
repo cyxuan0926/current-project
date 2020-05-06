@@ -87,7 +87,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -141,7 +142,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -198,7 +200,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -252,7 +255,8 @@
           label="性别"
           width="50px">
           <template slot-scope="scope">
-            {{ scope.row.gender | gender }}
+            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -363,7 +367,8 @@ export default {
       visible: false,
       notify: null,
       onProgress: false,
-      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
+      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`,
+      active: 1
     }
   },
   computed: {
@@ -381,7 +386,7 @@ export default {
         this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
       }
       else if (val === 'second') {
-        this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xlsx`
+        this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`
       }
     }
   },

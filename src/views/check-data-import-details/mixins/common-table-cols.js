@@ -39,10 +39,7 @@ export default {
       'getPrisonersPocketMoney',
       'getPrisonTerms',
       'getPrisonerRewardPunishments']),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }

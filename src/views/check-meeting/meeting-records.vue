@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @sizeChange="sizeChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -207,10 +206,7 @@ export default {
       'getFreeMeetings',
       'getPoliceFamilyFreeMeetings'
     ]),
-    sizeChange(rows) {
-      this.$refs.pagination.handleSizeChange(rows)
-      this.getDatas()
-    },
+
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.getFreeMeetings({

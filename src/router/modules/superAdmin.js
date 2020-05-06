@@ -388,6 +388,24 @@ let superAdmin = [{
     },
     component: 'check-meeting/meeting-reconciliation-list'
   }]
+}, {
+  path: '/coopertive-partner',
+  name: 'coopertivePartner',
+  redirect: {
+    path: '/coopertive-partner/share/list'
+  },
+  children: [{
+    path: '/coopertive-partner/share/list',
+    name: 'coopertivePartnerShare',
+    meta: {
+      breadcrumbName: '合作商分成账单',
+      permission: 'visit.partner'
+    },
+    props: {
+      hasOnlyAllPrisonQueryAuth: true
+    },
+    component: 'coopertive-partner/share-list'
+  }]
 }]
 
 superAdmin.forEach(item => {
