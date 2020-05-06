@@ -253,6 +253,8 @@ export default {
         this.$nextTick(function() {
           configs.forEach(item => {
             if (this.fields[prop] === item.value) {
+              if (item.value === 1 && !this.fields['onceMoney']) this.$set(this.fields, 'onceMoney', 0)
+              if (item.value === 2 && !this.fields['fixedMoney']) this.$set(this.fields, 'fixedMoney', 2.2)
               for(let [key, value] of Object.entries(item.itemConfigs)) {
                 this.dismiss.push(key)
                 if (this.items[key].func) this.items[key].func(e, prop, item)

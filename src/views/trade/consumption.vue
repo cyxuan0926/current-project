@@ -40,6 +40,9 @@ export default {
         {
           label: '会见ID',
           prop: 'meetingId'
+        },
+        {
+          label: '收费方式'
         }
       ]
     }

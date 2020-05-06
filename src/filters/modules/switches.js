@@ -85,11 +85,11 @@ let switches = {
   chargeWays: [
     {
       label: '按次收费',
-      value: 0
+      value: 1
     },
     {
       label: '按分钟收费',
-      value: 1
+      value: 2
     }
   ]
 }

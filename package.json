@@ -5,7 +5,7 @@
   "author": "leelic07 <330314702@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env BUILD_ENV=test webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env BUILD_ENV=phl webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js",
     "e2e": "node test/e2e/runner.js",
