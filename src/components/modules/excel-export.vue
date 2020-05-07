@@ -5,7 +5,7 @@
     :loading="loading"
     @click="onDownload"
   >
-    导出 Excel
+    <slot>导出 Excel</slot>
   </el-button>
 </template>
 

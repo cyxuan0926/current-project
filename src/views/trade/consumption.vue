@@ -34,11 +34,15 @@ export default {
         {
           label: '交易场景',
           prop: 'reason',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          minWidth: 180
         },
         {
           label: '会见ID',
           prop: 'meetingId'
+        },
+        {
+          label: '收费方式'
         }
       ]
     }

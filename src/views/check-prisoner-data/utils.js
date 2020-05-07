@@ -34,7 +34,7 @@ function alertParseResult(result) {
               </div>`
   }
   notify = that.$notify({
-    title: '解析结果提示',
+    title: '导入结果提示',
     dangerouslyUseHTMLString: true,
     message: message,
     duration: 8000,

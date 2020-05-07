@@ -41,11 +41,24 @@
       :disabled="item.disabled"
       @change="selectChangeEvent($event, prop, item)">
       <el-option
-        v-for="(option) in item.options"
+        v-for="option in item.options"
         :key="item.props ? option[item.props.value] : option.value"
         :label="item.props.label ? option[item.props.label] : option.label"
         :value="item.props.value ? option[item.props.value] : option.value"/>
     </el-select>
+    <el-radio-group
+      v-if="item.type === 'radio'"
+      v-model="fields[prop]"
+      :disabled="item.disabled"
+      @change="radioChangeEvent($event, prop, item)"
+    >
+      <el-radio 
+        v-for="option in item.options"
+        :key="item.props ? option[item.props.value] : option.value"
+        :label="item.props.label ? option[item.props.label] : option.label">
+        {{ item.props.value ? option[item.props.value] : option.value }}
+      </el-radio>
+    </el-radio-group>
     <el-date-picker
       v-if="item.type === 'date'"
       v-model="fields[prop]"
@@ -128,6 +141,10 @@ export default {
     'select-change-event': {
       type: Function,
       default: () => () => {}
+    },
+    'radio-change-event': {
+      type: Function,
+      default: () => () => {}
     }
   },
   methods: {
@@ -156,4 +173,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-form-item.el-form__notFull {
+  /deep/ .el-form-item__content {
+    width: 35%;
+  }
+}
 </style>

@@ -81,6 +81,16 @@ let switches = {
       label: '未转账',
       value: 2
     }
+  ],
+  chargeWays: [
+    {
+      label: '按次收费',
+      value: 1
+    },
+    {
+      label: '按分钟收费',
+      value: 2
+    }
   ]
 }
 

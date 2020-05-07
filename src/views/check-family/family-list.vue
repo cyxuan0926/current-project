@@ -103,7 +103,7 @@
             class="el-icon-error red"
             style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
             <p style="padding-left: 30px">
-              原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据
+              原因：{{ excelReason }}
             </p>
           </template>
         </el-col>
@@ -251,7 +251,8 @@ export default {
           miss: true
         }
       },
-      filter: {}
+      filter: {},
+      excelReason: ''
     }
   },
   computed: {
@@ -450,6 +451,23 @@ export default {
           this.visible = true
           this.operationType = this.dialogTypes.UPLOADING
           this.uploadResults = response.data
+          if (Array.isArray(this.uploadResults['errors_prisoner']) && this.uploadResults['errors_prisoner'].length) {
+            const phoneList = this.uploadResults['errors_prisoner'].map(errorPrisoner => {
+              return errorPrisoner.phone
+            })
+            if (phoneList.length > 3) {
+              const phoneString = phoneList.slice(0, 3).join('、')
+              this.excelReason = `${phoneString}等电话号码与服刑人员家属电话号码相同，请更换其他号码；`
+            } else {
+              const phoneString = phoneList.join('、')
+              this.excelReason = `${phoneString}与服刑人员家属电话号码相同，请更换其他号码；`
+            }
+            if (Array.isArray(this.uploadResults['errors']) && this.uploadResults['errors'].length) {
+              this.excelReason = `${this.excelReason}所有信息均为必填项，请检查文件内容，仔细对照下载的模版数据；`
+            }
+          } else {
+            this.excelReason = '所有信息均为必填项，请检查文件内容，仔细对照下载的模版数据；'
+          }
         }, 1000)
       }
     },
