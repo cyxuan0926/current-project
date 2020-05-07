@@ -6,6 +6,7 @@
     :cols="tableCols">
     <template #money="{ row }">{{ row.money > 0 ? '+' + row.money : row.money }}</template>
     <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+    <template #chargeType="{ row }">{{ row.chargeType | chargeWays }}</template>
   </m-table-new>
 </template>
 <script>
@@ -42,7 +43,8 @@ export default {
           prop: 'meetingId'
         },
         {
-          label: '收费方式'
+          label: '收费方式',
+          slotName: 'chargeType'
         }
       ]
     }

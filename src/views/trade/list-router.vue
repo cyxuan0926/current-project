@@ -109,7 +109,7 @@ export default {
           start: 'startDate',
           end: 'endDate'
         },
-        shoufeifangshi: {
+        chargeType: {
           miss: true,
           type: 'select',
           label: '收费方式',
@@ -119,7 +119,7 @@ export default {
       showSearch: {
         account: ['accountStatus', 'phone'],
         recharge: ['paymentType', 'tradeNo', 'phone', 'range'],
-        consumption: ['phone', 'range', 'shoufeifangshi'],
+        consumption: ['phone', 'range', 'chargeType'],
         refund: ['refundType', 'tradeNo', 'phone', 'range']
       },
       filter: {}
