@@ -215,45 +215,74 @@ export default {
     }
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
+    const freeMeetingsOptions = [
+      {
+        label: '是',
+        value: 1
+      },
+      {
+        label: '否',
+        value: 0
+      }
+    ]
     return {
       tabsItems,
       tabs: 'PENDING',
       searchItems: {
         name: {
-                type: 'input',
-                label: '家属姓名'
-              },
+          type: 'input',
+          label: '家属姓名'
+        },
         prisonerNumber: {
-                          type: 'input',
-                          label: '罪犯编号'
-                        },
+          type: 'input',
+          label: '罪犯编号'
+        },
         prisonArea: {
-                      type: 'select',
-                      label: '监区',
-                      options,
-                      belong
-                    },
+          type: 'select',
+          label: '监区',
+          options,
+          belong
+        },
+        // applicationDate: {
+        //   type: 'date',
+        //   label: '会见时间',
+        //   miss: true,
+        //   value: ''
+        // },
         applicationDate: {
-                           type: 'date',
-                           label: '会见时间'
-                         },
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate'
+          // miss: true,
+          // value: ''
+        },
         auditName: {
-                     type: 'input',
-                     label: '审核人',
-                     miss: true
-                   },
+          type: 'input',
+          label: '审核人',
+          miss: true,
+          value: ''
+        },
         status: {
-                  type: 'select',
-                  label: '审核状态',
-                  options: this.$store.state.applyStatus,
-                  miss: true,
-                  value: ''
-                },
+          type: 'select',
+          label: '审核状态',
+          options: this.$store.state.applyStatus,
+          miss: true,
+          value: ''
+        },
         auditAt: {
-                   type: 'date',
-                   label: '审核时间',
-                   miss: true
-                 }
+          type: 'date',
+          label: '审核时间',
+          miss: true,
+          value: ''
+        },
+        freeMeetings: {
+          type: 'select',
+          label: '免费会见',
+          options: freeMeetingsOptions,
+          miss: true,
+          value: ''
+        }
       },
       show: {
         authorize: false,
@@ -557,16 +586,26 @@ export default {
     tabs(val) {
       this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
+        this.searchItems.freeMeetings.miss = true
         this.searchItems.status.miss = true
         this.searchItems.auditAt.miss = true
         this.searchItems.auditName.miss = true
         delete this.filter.auditAt
         delete this.filter.auditName
+        delete this.filter.freeMeetings
         this.searchItems.auditName.value = ''
         this.searchItems.auditAt.value = ''
         this.searchItems.status.value = ''
+        this.searchItems.freeMeetings.value = ''
       }
       else {
+        if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+          this.searchItems.freeMeetings.miss = false
+        } else {
+          this.searchItems.freeMeetings.miss = true
+          delete this.filter.freeMeetings
+          this.searchItems.freeMeetings.value = ''
+        }
         delete this.filter.status
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
@@ -583,6 +622,13 @@ export default {
     }
   },
   mounted() {
+    // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+    //   this.$set(this.searchItems.applicationDate, 'miss', true)
+    //   this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
+    // } else {
+    //   this.$set(this.searchItems.applicationDate, 'miss', false)
+    //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
+    // }
     this.getDatas('mounted')
   },
   methods: {
