@@ -252,8 +252,8 @@ export default {
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
-          start: 'startDate',
-          end: 'endDate'
+          start: 'applicationStartDate',
+          end: 'applicationEndDate'
           // miss: true,
           // value: ''
         },
@@ -276,7 +276,7 @@ export default {
           miss: true,
           value: ''
         },
-        freeMeetings: {
+        isFree: {
           type: 'select',
           label: '免费会见',
           options: freeMeetingsOptions,
@@ -586,25 +586,25 @@ export default {
     tabs(val) {
       this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
-        this.searchItems.freeMeetings.miss = true
+        this.searchItems.isFree.miss = true
         this.searchItems.status.miss = true
         this.searchItems.auditAt.miss = true
         this.searchItems.auditName.miss = true
         delete this.filter.auditAt
         delete this.filter.auditName
-        delete this.filter.freeMeetings
+        delete this.filter.isFree
         this.searchItems.auditName.value = ''
         this.searchItems.auditAt.value = ''
         this.searchItems.status.value = ''
-        this.searchItems.freeMeetings.value = ''
+        this.searchItems.isFree.value = ''
       }
       else {
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-          this.searchItems.freeMeetings.miss = false
+          this.searchItems.isFree.miss = false
         } else {
-          this.searchItems.freeMeetings.miss = true
-          delete this.filter.freeMeetings
-          this.searchItems.freeMeetings.value = ''
+          this.searchItems.isFree.miss = true
+          delete this.filter.isFree
+          this.searchItems.isFree.value = ''
         }
         delete this.filter.status
         this.searchItems.status.miss = false
