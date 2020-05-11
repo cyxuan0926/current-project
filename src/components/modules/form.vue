@@ -153,7 +153,7 @@ export default {
       this.dismiss = ['buttons', 'formConfigs']
       if (this.items.dissMissConfigs && Array.isArray(this.items.dissMissConfigs) && this.items.dissMissConfigs.length) this.dismiss = [...this.dismiss, ...this.items.dissMissConfigs]
       Object.keys(this.items).forEach(key => {
-        if (this.dismiss.indexOf(key) >= 0 || key === 'dissMissConfigs') return
+        if (this.dismiss.indexOf(key) >= 0 || key === 'dissMissConfigs' || this.items[key].slotName) return
         fields[key] = this.items[key].value
         this.initRules(this.items[key])
         this.items[key].rule && (this.rules[key] = this.items[key].rule)
@@ -254,7 +254,7 @@ export default {
           configs.forEach(item => {
             if (this.fields[prop] === item.value) {
               if (item.value === 1 && !this.fields['onceMoney']) this.$set(this.fields, 'onceMoney', 0)
-              if (item.value === 2 && !this.fields['fixedMoney']) this.$set(this.fields, 'fixedMoney', 2.2)
+              // if (item.value === 2 && !this.fields['fixedMoney']) this.$set(this.fields, 'fixedMoney', 2.2)
               for(let [key, value] of Object.entries(item.itemConfigs)) {
                 this.dismiss.push(key)
                 if (this.items[key].func) this.items[key].func(e, prop, item)

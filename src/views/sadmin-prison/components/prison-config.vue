@@ -30,6 +30,32 @@
           </el-form-item>
         </el-col>
       </template>
+      <template #fixedMoney>
+        <el-col :span="11">
+          <el-form-item prop="fixedMoney" :rules="rules.fixedMoney">
+            <el-input
+              v-model.trim="formData.fixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+      <template #totalCost>
+        <el-col :span="11">
+          <el-form-item prop="typeTotalCost">
+            <el-input
+              v-model="typeTotalCost"
+              placeholder="请输入申请会见总费用"
+              disabled
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
     </m-form>
   </div>
 </template>
@@ -39,6 +65,8 @@ import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import roles from '@/common/constants/roles'
 import cloneDeep from 'lodash/cloneDeep'
+import Moment from 'moment'
+import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
 export default {
   data() {
@@ -74,6 +102,12 @@ export default {
       else if (!integerNumbers || this.formData.startMinutes <= 0) callback(new Error('请输入正整数'))
       else callback()
     }
+    const validateFixedMoney = (rule, value, callback) => {
+      const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+      if (this.formData.fixedMoney === '') callback(new Error('请输入基础时长后每分钟费用'))
+      else if (!feeReg.test(this.formData.fixedMoney)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      else callback()
+    }
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '180px' },
@@ -100,7 +134,8 @@ export default {
               value: 1,
               itemConfigs: {
                 basicConfigs: 0,
-                fixedMoney: 2.2
+                fixedMoney: 0,
+                totalCost: 0
               }
             }
           ]
@@ -114,17 +149,17 @@ export default {
           func: this.onReset
         },
         fixedMoney: {
-          type: 'input',
-          label: '基础时长后每分钟费用',
-          customClass: 'el-form__notFull',
-          disabled,
-          rules: [
-            'required',
-            'isFee'
-          ],
-          append: '/元',
-          value: 2.2,
-          isTrim: true
+          slotName: 'fixedMoney',
+          attrs: {
+            label: '基础时长后每分钟费用',
+            required: true
+          }
+        },
+        totalCost: {
+          slotName: 'totalCost',
+          attrs: {
+            label: '申请会见总费用'
+          }
         },
         onceMoney: {
           type: 'input',
@@ -237,7 +272,8 @@ export default {
       permission,
       formData: {
         startMinutes: 5,
-        startMoney: 15
+        startMoney: 15,
+        fixedMoney: 2.2
       },
       rules: {
         startMinutes: [
@@ -245,6 +281,9 @@ export default {
         ],
         startMoney: [
           { validator: validateMoney, trigger: 'blur' }
+        ],
+        fixedMoney: [
+          { validator: validateFixedMoney, trigger: 'blur' }
         ]
       }
     }
@@ -252,7 +291,20 @@ export default {
   computed: {
     ...mapState([
       'prison',
-      'branchStatus'])
+      'branchStatus']),
+    typeTotalCost() {
+      const { meetingQueue } = this.values
+      if (meetingQueue && Array.isArray(meetingQueue) && meetingQueue.length) {
+        if (this.formData.startMinutes && this.formData.startMoney && this.formData.fixedMoney) {
+          const countMinutes = meetingQueue[0]['config'][0].split('-')
+          const startMinute = countMinutes[0]
+          const endMinute = countMinutes[1]
+          const minutes = Moment(endMinute, 'HH:mm').diff(Moment(startMinute, 'HH:mm'), 'minutes', true)
+          const cost = new BigNumber(this.formData.startMoney).plus(new BigNumber(minutes - this.formData.startMinutes).times(this.formData.fixedMoney)).toNumber()
+          return cost > 48 ? 48 : cost
+        } else return 0
+      } else return 48
+    }
   },
   activated() {
     if (this.permission === 'edit') {
@@ -274,13 +326,14 @@ export default {
         if (this.values.chargeType === 2) {
           const { startMinutes = 5, startMoney = 15, fixedMoney = 2.2 } = this.values
           this.$set(this.formItems, 'dissMissConfigs', ['onceMoney'])
-          this.$set(this.formItems['chargeType']['configs'][1], 'itemConfigs', { basicConfigs: 0, fixedMoney })
+          this.$set(this.formItems['chargeType']['configs'][1], 'itemConfigs', { basicConfigs: 0, fixedMoney: 0, totalCost: 0 })
           this.$set(this.formData, 'startMinutes', startMinutes)
           this.$set(this.formData, 'startMoney', startMoney)
+          this.$set(this.formData, 'fixedMoney', fixedMoney)
         }
         if (this.values.chargeType === 1) {
           const { onceMoney = 0 } = this.values
-          this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney'])
+          this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney', 'totalCost'])
           this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
         }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
@@ -335,9 +388,18 @@ export default {
         if (chargeType === 2) {
           params = {
             ...params,
-            ...this.formData
+            ...this.formData,
+            cost: this.typeTotalCost
           }
         }
+        if (chargeType === 1) {
+          const { onceMoney } = e
+          params = {
+            ...params,
+            cost: onceMoney
+          }
+        }
+        if (params.hasOwnProperty('totalCost')) delete params.totalCost
         this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
@@ -351,11 +413,13 @@ export default {
       else this.$router.push({ path: '/jails/detail' })
     },
     onReset() {
-      let { startMoney = 15, startMinutes = 5 } = this.prison
+      let { startMoney = 15, startMinutes = 5, fixedMoney = 2.2 } = this.prison
       startMoney = startMoney ? startMoney : 15
       startMinutes = startMinutes ? startMinutes : 5
+      fixedMoney = fixedMoney ? fixedMoney : 2.2
       this.$set(this.formData, 'startMoney', startMoney)
       this.$set(this.formData, 'startMinutes', startMinutes)
+      this.$set(this.formData, 'fixedMoney', fixedMoney)
     }
   }
 }

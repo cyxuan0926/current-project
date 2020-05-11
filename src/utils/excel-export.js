@@ -182,7 +182,7 @@ export function export_json_to_excel({
       /*先判断是否为null/undefined*/
       if (val == null) {
         return {
-          'wch': 10
+          'wch': 30
         };
       }
       /*再判断是否为中文*/
@@ -193,7 +193,7 @@ export function export_json_to_excel({
         };
       } else {
         return {
-          'wch': Math.min(val.toString().length + 1, MAX_COL_WIDTH)
+          'wch': Math.min(val.toString().length + 10, MAX_COL_WIDTH)
           // 'wch': val.toString().length
         };
       }

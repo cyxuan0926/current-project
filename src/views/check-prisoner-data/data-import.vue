@@ -85,8 +85,9 @@
       </el-col>
       <el-col class="process-col_waiting">请稍后...</el-col>
     </el-row>
-    <el-row class="table-box fail-box" v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
-      <el-tag type="danger">导入失败的数据:</el-tag>
+    <el-row class="table-box fail-box" v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length" >
+      <img src="../../assets/images/excel.png" alt="excel图片">
+      <span class="content">导入失败的数据:</span>
       <m-excel-export
         :filename="prisonerDataImportExcelConfig.filename"
         :jsonData="prisonerDataResult.errors"
@@ -94,7 +95,8 @@
         :filterFields="prisonerDataImportExcelConfig.filterFields" />
     </el-row>
     <el-row class="table-box fail-box" v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
-      <el-tag type="danger">导入失败的数据:</el-tag>
+      <img src="../../assets/images/excel.png" alt="excel图片">
+      <span class="content">导入失败的数据:</span>
       <m-excel-export
         :filename="prisonerDataImportExcelConfig.filename"
         :jsonData="prisonerYZKDataResult.errors"
@@ -230,17 +232,17 @@ export default {
       this.loading = true
       let index = 0
       let interver = setInterval(() => {
-        this.status = this.status + index
-        this.spendTime += 1
-        this.percent += 10
         index++
-        if (index > 1) {
-          clearInterval(interver)
+        if (index === 1) {
+          this.percent += 20
+          this.spendTime += 1
+          this.status = this.status + 1
           if (this.tabs === 'first') {
-              this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
+            this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
               this.loading = false
               this.visible = false
               this.onProgress = false
+              clearInterval(interver)
               if (!res) return
               this.spendTime += 1
               this.status += 1
@@ -259,6 +261,7 @@ export default {
               this.loading = false
               this.visible = false
               this.onProgress = false
+              clearInterval(interver)
               if (!res) return
               this.spendTime += 1
               this.status += 1
@@ -272,8 +275,10 @@ export default {
               }, 500)
             })
           }
+        } else {
+          this.spendTime += 1
         }
-      }, 500)
+      }, 1000)
     },
     beforeUpload(file) {
       this.onProgress = true
@@ -413,6 +418,13 @@ export default {
 .fail-box {
   width: 90%;
   margin-left: 10%;
+  img {
+    width: 24px;
+  }
+  .content {
+    vertical-align: middle;
+    padding-left: 2px;
+  }
 }
 .m-excel-export {
   float: none;
