@@ -18,7 +18,7 @@ instance.interceptors.request.use(
   config => {
     /* eslint-disable camelcase */
     const { access_token, token_type } = store.state.account.accountInfo
-    if (config.url && !config.url.includes('/prisoners/processing')) store.commit('showLoading')
+    if (config.url && (!config.url.includes('/prisoners/processing') || !config.url.includes('/prisoners/validate'))) store.commit('showLoading')
     state = history.state
 
     if (access_token) {
