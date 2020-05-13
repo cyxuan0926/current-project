@@ -52,7 +52,6 @@ export default {
           belong: { value: 'id', label: 'title' },
           filterable: true
         },
-        // 字段名
         meetingEnabled: {
           type: 'select',
           label: '狱警会见开关',
