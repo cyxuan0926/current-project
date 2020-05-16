@@ -293,10 +293,10 @@ export default {
       'prison',
       'branchStatus']),
     typeTotalCost() {
-      const { meetingQueue } = this.values
-      if (meetingQueue && Array.isArray(meetingQueue) && meetingQueue.length) {
+      const { normalQueue } = this.values
+      if (normalQueue && Array.isArray(normalQueue) && normalQueue.length) {
         if (this.formData.startMinutes && this.formData.startMoney && this.formData.fixedMoney) {
-          const countMinutes = meetingQueue[0]['config'] ? meetingQueue[0]['config'][0].split('-') : meetingQueue[0].split('-')
+          const countMinutes = normalQueue[0]['config'] ? normalQueue[0]['config'][0].split('-') : normalQueue[0].split('-')
           const startMinute = countMinutes[0]
           const endMinute = countMinutes[1]
           const minutes = Moment(endMinute, 'HH:mm').diff(Moment(startMinute, 'HH:mm'), 'minutes', true)
