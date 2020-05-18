@@ -85,7 +85,8 @@
       </el-col>
       <el-col class="process-col_waiting">请稍后...</el-col>
     </el-row>
-    <el-row class="table-box fail-box" v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length" >
+    <!-- v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length" -->
+    <el-row class="table-box fail-box">
       <img src="../../assets/images/excel.png" alt="excel图片">
       <span class="content">导入失败的数据:</span>
       <m-excel-export
@@ -448,8 +449,9 @@ export default {
 .fail-box {
   width: 90%;
   margin-left: 10%;
+  margin-top: 1%;
   img {
-    width: 24px;
+    width: 26px;
   }
   .content {
     vertical-align: middle;
