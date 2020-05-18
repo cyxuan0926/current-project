@@ -6,6 +6,7 @@
     :cols="tableCols">
     <template #money="{ row }">{{ row.money > 0 ? '+' + row.money : row.money }}</template>
     <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+    <template #chargeType="{ row }">{{ row.chargeType | chargeWays }}</template>
   </m-table-new>
 </template>
 <script>
@@ -34,11 +35,16 @@ export default {
         {
           label: '交易场景',
           prop: 'reason',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          minWidth: 180
         },
         {
           label: '会见ID',
           prop: 'meetingId'
+        },
+        {
+          label: '收费方式',
+          slotName: 'chargeType'
         }
       ]
     }

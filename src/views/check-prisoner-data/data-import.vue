@@ -66,236 +66,48 @@
         </el-upload>
       </el-col>
     </el-row>
-    <el-row
-      class="table-box"
-      v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
-      <el-tag type="danger">失败信息:</el-tag>
-      <!--上传模板失败的结果-->
-      <el-table :data="prisonerDataResult.errors" stripe>
-        <el-table-column
-          label="所在行"
-          prop="rowNum"
-          width="70px" />
-        <el-table-column
-          label="罪犯编号"
-          prop="prisonerNumber"
-          width="100px" />
-        <el-table-column
-          label="罪犯名字"
-          prop="name" />
-        <el-table-column
-          label="性别"
-          width="50px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
-            <span v-else />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="犯罪事实"
-          prop="crimes" />
-        <el-table-column
-          label="附加刑"
-          prop="additionalPunishment" />
-        <el-table-column
-          label="刑期起日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="刑期止日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="监区"
-          prop="prisonArea" />
-        <el-table-column
-          label="原判刑期"
-          prop="originalSentence" />
-        <el-table-column
-          label="失败原因"
-          show-overflow-tooltip
-          class-name="tips"
-          prop="reason" />
-      </el-table>
+    <el-row v-if="showProcessSteps">
+      <el-col :span="20" :offset="2">
+        <el-steps
+        :active="status"
+        finish-status="success"
+        style="margin: 20px 0px">
+        <el-step
+          v-for="(tag, index) in tabMapOptions"
+          :key="index"
+          :title="tag.label" />
+        </el-steps>
+      </el-col>
+      <el-col class="process-col_tips">
+        <span>准备导入数据总计：{{validatePrisonerResult.total}}条</span>
+        <span>已用时：{{spendTime}}秒</span>
+        <span>进度：{{percent}}%</span>
+      </el-col>
+      <el-col class="process-col_waiting">请稍后...</el-col>
     </el-row>
-    <el-row
-      class="table-box"
-      v-if="tabs === 'first' && prisonerDataResult.prisoners && prisonerDataResult.prisoners.length"
-      style="margin-top: 10px;">
-      <el-tag type="success">成功信息:</el-tag>
-      <!--上传模板文件的结果-->
-      <el-table :data="prisonerDataResult.prisoners" stripe>
-        <el-table-column
-          label="罪犯编号"
-          prop="prisonerNumber"
-          width="100px" />
-        <el-table-column
-          label="罪犯名字"
-          prop="name" />
-        <el-table-column
-          label="性别"
-          width="50px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
-            <span v-else />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="犯罪事实"
-          prop="crimes" />
-        <el-table-column
-          label="附加刑"
-          prop="additionalPunishment" />
-        <el-table-column
-          label="刑期起日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="刑期止日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="监区"
-          prop="prisonArea" />
-        <el-table-column
-          label="原判刑期"
-          prop="originalSentence" />
-        <el-table-column label="创建时间">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-row class="table-box fail-box" v-if="tabs === 'first' && prisonerDataResult.errors && prisonerDataResult.errors.length">
+      <img src="../../assets/images/excel.png" alt="excel图片">
+      <span class="content">导入失败的数据:</span>
+      <m-excel-export
+        :filename="prisonerDataImportExcelConfig.filename"
+        :jsonData="prisonerDataResult.errors"
+        :header="prisonerDataImportExcelConfig.header"
+        :filterFields="prisonerDataImportExcelConfig.filterFields" />
     </el-row>
-    <el-row
-      class="table-box"
-      v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
-      <el-tag type="danger">失败信息:</el-tag>
-      <!--上传模板失败的结果-->
-      <el-table :data="prisonerYZKDataResult.errors" stripe>
-        <el-table-column
-          label="所在行"
-          prop="rowNum"
-          width="70px" />
-        <el-table-column
-          label="罪犯编号"
-          prop="prisonerNumber"
-          width="100px" />
-        <el-table-column
-          label="姓名"
-          prop="name" />
-        <el-table-column
-          label="性别"
-          width="50px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
-            <span v-else />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="罪名"
-          prop="crimes" />
-        <el-table-column
-          label="罚金"
-          prop="additionalPunishment" />
-        <el-table-column
-          label="刑期起日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="刑期止日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="监区"
-          prop="prisonArea" />
-        <el-table-column
-          label="原判刑期"
-          prop="originalSentence" />
-        <el-table-column
-          label="失败原因"
-          class-name="tips"
-          show-overflow-tooltip
-          prop="reason" />
-      </el-table>
-    </el-row>
-    <el-row
-      class="table-box"
-      v-if="tabs === 'second' && prisonerYZKDataResult.prisoners && prisonerYZKDataResult.prisoners.length"
-      style="margin-top: 10px;">
-      <el-tag type="success">成功信息:</el-tag>
-      <!--上传模板文件的结果-->
-      <el-table :data="prisonerYZKDataResult.prisoners" stripe>
-        <el-table-column
-          label="罪犯编号"
-          prop="prisonerNumber"
-          width="100px" />
-        <el-table-column
-          label="姓名"
-          prop="name" />
-        <el-table-column
-          label="性别"
-          width="50px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.gender">{{ scope.row.gender | gender }}</span>
-            <span v-else />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="罪名"
-          prop="crimes" />
-        <el-table-column
-          label="罚金"
-          prop="additionalPunishment" />
-        <el-table-column
-          label="刑期起日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermStartedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="刑期止日"
-          show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="separate">{{ scope.row.prisonTermEndedAt | dateFormate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="监区"
-          prop="prisonArea" />
-        <el-table-column
-          label="原判刑期"
-          prop="originalSentence" />
-        <el-table-column label="创建时间">
-          <template slot-scope="scope">
-            {{ scope.row.createdAt | Date }}
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-row class="table-box fail-box" v-if="tabs === 'second' && prisonerYZKDataResult.errors && prisonerYZKDataResult.errors.length">
+      <img src="../../assets/images/excel.png" alt="excel图片">
+      <span class="content">导入失败的数据:</span>
+      <m-excel-export
+        :filename="prisonerDataImportExcelConfig.filename"
+        :jsonData="prisonerYZKDataResult.errors"
+        :header="prisonerDataImportExcelConfig.header"
+        :filterFields="prisonerDataImportExcelConfig.filterFields" />
     </el-row>
     <el-dialog
       :visible.sync="visible"
       class="authorize-dialog"
       width="640px"
+      :close-on-click-modal="false"
       @close="handleDialogClose">
       <span
         slot="title"
@@ -304,8 +116,8 @@
       <div style="text-align: center;">更换监区罪犯的会见申请未审批的将移交至新监区审核，已成功预约会见申请并未会见的视频申请将根据新监区的会见申请排期表重新安排会见时间段，如同日申请会见的排期未有空期则取消当日转移罪犯的会见申请。</div>
       <el-table
         :data="validatePrisonerResult.prisoners"
+        style="width: 100%"
         size="small"
-        max-height="400"
         stripe>
         <el-table-column
           prop="prisonerNumber"
@@ -358,6 +170,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Utils from './utils'
+import { prisonerDataImportExcelConfig } from '@/common/excel-config'
 export default {
   data() {
     return {
@@ -365,10 +178,22 @@ export default {
       loading: false,
       fileList: [],
       visible: false,
-      notify: null,
       onProgress: false,
       prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`,
-      active: 1
+      active: 1,
+      tabMapOptions: [
+        { label: '读取excel' },
+        { label: '解析excel' },
+        { label: '初始化数据' },
+        { label: '校验数据' },
+        { label: '导入数据' },
+        { label: '导入完成' }
+      ],
+      status: 0,
+      showProcessSteps: false,
+      spendTime: 0,
+      percent: 0,
+      prisonerDataImportExcelConfig
     }
   },
   computed: {
@@ -379,8 +204,8 @@ export default {
   },
   watch: {
     tabs(val) {
-      if (this.notify) {
-        this.notify.close()
+      if (this.$notify) {
+        this.$notify.closeAll()
       }
       if (val === 'first') {
         this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
@@ -394,8 +219,8 @@ export default {
     this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
   },
   destroyed() {
-    if (this.notify) {
-      this.notify.close()
+    if (this.$notify) {
+      this.$notify.closeAll()
     }
   },
   methods: {
@@ -405,29 +230,67 @@ export default {
     },
     onSubmit() {
       this.loading = true
-      if (this.tabs === 'first') {
-        this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
-          this.loading = false
-          this.visible = false
-          this.onProgress = false
-          if (!res) return
-          Utils.alertParseResult(this.prisonerDataResult)
-        })
-      }
-      else if (this.tabs === 'second') {
-        this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-          this.loading = false
-          this.visible = false
-          this.onProgress = false
-          if (!res) return
-          Utils.alertParseResult(this.prisonerYZKDataResult)
-        })
-      }
+      let index = 0
+      let interver = setInterval(() => {
+        index++
+        if (index === 1) {
+          this.percent += 20
+          this.spendTime += 1
+          this.status = this.status + 1
+          if (this.tabs === 'first') {
+            this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
+              this.loading = false
+              this.visible = false
+              this.onProgress = false
+              clearInterval(interver)
+              if (!res) {
+                this.showProcessSteps = false
+                return
+              }
+              this.spendTime += 1
+              this.status += 1
+              this.percent = 100
+              setTimeout(() => {
+                this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
+                Utils.alertParseResult(this.prisonerDataResult)
+              }, 1000)
+            })
+          }
+          else if (this.tabs === 'second') {
+            this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+              this.loading = false
+              this.visible = false
+              this.onProgress = false
+              clearInterval(interver)
+              if (!res) {
+                this.showProcessSteps = false
+                return
+              }
+              this.spendTime += 1
+              this.status += 1
+              this.percent = 100
+              setTimeout(() => {
+                this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
+                Utils.alertParseResult(this.prisonerYZKDataResult)
+              }, 1000)
+            })
+          }
+        } else {
+          this.spendTime += 1
+        }
+      }, 1000)
     },
     beforeUpload(file) {
       this.onProgress = true
-      if (this.notify) {
-        this.notify.close()
+      this.showProcessSteps = true
+      if (this.$notify) {
+        this.$notify.closeAll()
       }
       if (this.tabs === 'first') {
         this.resetState({ prisonerDataResult: {} })
@@ -436,46 +299,93 @@ export default {
         this.resetState({ prisonerYZKDataResult: {} })
       }
       this.resetState({ validatePrisonerResult: {} })
-      this.uploadFile(file).then(res => {
-        if (!res) {
-          this.onProgress = false
-          return
+      let uploadInterver = setInterval(() => {
+        this.status += 1
+        this.percent += 15
+        this.spendTime += .5
+        if (this.status === 4) {
+          clearInterval(uploadInterver)
+          this.uploadFile(file).then(res => {
+          if (!res) {
+            this.onProgress = false
+            this.showProcessSteps = false
+            this.spendTime = 0
+            this.percent = 0
+            this.status = 0
+            return
+          }
+          if (this.tabs === 'first') {
+            let count = 0
+            let prisonerInterver = setInterval(() => {
+              count ++
+              if (count === 1) {
+                this.spendTime += 1
+                this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
+                  clearInterval(prisonerInterver)
+                  if (!res) {
+                    this.onProgress = false
+                    this.showProcessSteps = false
+                    this.spendTime = 0
+                    this.percent = 0
+                    this.status = 0
+                    return
+                  }
+                  if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+                    this.status += 1
+                    this.visible = true
+                  }
+                  else {
+                    this.onSubmit()
+                  }
+                })
+              } else {
+                  this.spendTime += 1
+                }
+            }, 1000)
+          }
+          else if (this.tabs === 'second') {
+            let count = 0
+            let prisonYZXInterver = setInterval(() =>{
+              if (count === 1) {
+                this.spendTime += 1
+                this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+                  clearInterval(prisonYZXInterver)
+                  if (!res) {
+                    this.onProgress = false
+                    this.showProcessSteps = false
+                    this.spendTime = 0
+                    this.percent = 0
+                    this.status = 0
+                    return
+                  }
+                  if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+                    this.status += 1
+                    this.visible = true
+                  }
+                  else {
+                    this.onSubmit()
+                  }
+                })
+              } else {
+                this.spendTime += 1
+              }
+            }, 1000)
+          }
+        })
+        } else {
+          this.spendTime += 1
         }
-        if (this.tabs === 'first') {
-          this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) {
-              this.onProgress = false
-              return
-            }
-            if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
-              this.visible = true
-            }
-            else {
-              this.onSubmit()
-            }
-          })
-        }
-        else if (this.tabs === 'second') {
-          this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-            if (!res) {
-              this.onProgress = false
-              return
-            }
-            if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
-              this.visible = true
-            }
-            else {
-              this.onSubmit()
-            }
-          })
-        }
-      })
+      }, 500)
       return false
     },
     handleCancelUpload() {
       this.visible = false
     },
     handleDialogClose() {
+      this.showProcessSteps = false
+      this.spendTime = 0
+      this.percent = 0
+      this.status = 0
       this.onProgress = false
     }
   }
@@ -511,5 +421,44 @@ export default {
 .table-box{
   margin-left: 20px;
   margin-right: 20px;
+}
+.el-steps {
+  /deep/ .el-step__title {
+    font-size: 12px;
+    line-height: 32px;
+  }
+}
+.process-col_tips {
+  width: 68%;
+  margin-left: 32%;
+  span {
+    color: #303133;
+    font-weight: bold;
+    & + span {
+      padding-left: 3%;
+    }
+  }
+}
+.process-col_waiting {
+  width: 60%;
+  margin-left: 40%;
+  color: #303133;
+  font-weight: bold;
+}
+.fail-box {
+  width: 90%;
+  margin-left: 10%;
+  margin-top: 1%;
+  img {
+    width: 26px;
+  }
+  .content {
+    vertical-align: middle;
+    padding-left: 2px;
+  }
+}
+.m-excel-export {
+  float: none;
+  margin-left: 2%;
 }
 </style>

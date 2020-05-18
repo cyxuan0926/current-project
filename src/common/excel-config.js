@@ -78,4 +78,40 @@ const wardenMailboxExcelConfig = {
   ]
 }
 
-export { prisonerExcelConfig, wardenMailboxExcelConfig }
+const prisonerDataImportExcelConfig = {
+  filename: {
+    value: '导入失败的数据'
+  },
+  header: ['罪犯编号', '罪犯名字', '性别', '犯罪事实', '附加刑', '刑期起日', '刑期止日', '监区', '原判刑期', '失败原因'],
+  filterFields: [
+    { key: 'prisonerNumber' },
+    { key: 'name' },
+    {
+      key: 'gender',
+      formater: (gender) => {
+        if (gender === 'm') return '男'
+        if (gender === 'f') return '女'
+        else return ''
+      }
+    },
+    { key: 'crimes' },
+    { key: 'additionalPunishment' },
+    {
+      key: 'prisonTermStartedAt',
+      formater: (prisonTermStartedAt) => {
+        return formatTime(prisonTermStartedAt, 'yyyy/MM/dd')
+      }
+    },
+    {
+      key: 'prisonTermEndedAt',
+      formater: (prisonTermEndedAt) => {
+        return formatTime(prisonTermEndedAt, 'yyyy/MM/dd')
+      }
+    },
+    { key: 'prisonArea' },
+    { key: 'originalSentence' },
+    { key: 'reason' }
+  ]
+}
+
+export { prisonerExcelConfig, wardenMailboxExcelConfig, prisonerDataImportExcelConfig }
