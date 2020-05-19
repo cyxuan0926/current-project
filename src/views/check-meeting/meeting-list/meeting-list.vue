@@ -252,6 +252,8 @@ export default {
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
+          startPlaceholder: '会见开始时间',
+          endPlaceholder: '会见结束时间',
           start: 'applicationStartDate',
           end: 'applicationEndDate'
           // miss: true,
