@@ -46,8 +46,8 @@ import profile from './prison-report-profile'
 import detail from './prison-report-detail'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
-const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
+const startDate = Moment().format('YYYY-MM')
+const endDate = Moment().format('YYYY-MM')
 
 export default {
   mixins: [prisonFilterCreator],
@@ -64,7 +64,7 @@ export default {
           startKey: 'startDate',
           endKey: 'endDate',
           range: {
-            max: Moment().subtract(1, 'months').format('YYYY-MM'),
+            max: Moment().format('YYYY-MM'),
             maxMonthRange: 24
           }
         },
