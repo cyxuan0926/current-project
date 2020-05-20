@@ -41,6 +41,11 @@ let check = [{
     component: 'check-meeting/visit-list',
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '实地探监列表' }
+  }, {
+    path: '/meeting/justice-list',
+    name: 'meeting-justice-list',
+    component: 'check-meeting/visit-list',
+    meta: { permission: '', breadcrumbName: '司法所远程会见申请列表' }
   }]
 }, {
   path: '/meeting-report',
@@ -155,6 +160,11 @@ let check = [{
     component: 'check-prisoner-data/inside-jails-costs',
     // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
     meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '狱内消费情况数据导入' }
+  }, {
+    path: '/prisoner-data/sensitive-characters',
+    name: 'prisoner-sensitive-characters',
+    component: 'literature/literature-sensitive-characters/literature-sensitive-characters',
+    meta: { permission: '', breadcrumbName: '敏感词管理' }
   }]
 }, {
   path: '/import-data-details',

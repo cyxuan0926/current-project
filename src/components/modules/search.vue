@@ -69,8 +69,8 @@
           v-model="item.value"
           unlink-panels
           type="daterange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :start-placeholder="item.startPlaceholder || '开始时间'"
+          :end-placeholder="item.endPlaceholder || '结束时间'"
           format="yyyy-MM"
           value-format="yyyy-MM"/>
         <el-date-picker
@@ -79,8 +79,8 @@
           v-model="item.value"
           type="daterange"
           :unlink-panels="item.unlinkPanels"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :start-placeholder="item.startPlaceholder || '开始时间'"
+          :end-placeholder="item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"/>
         <m-month-range-picker
@@ -305,7 +305,7 @@ export default {
     .el-date-editor--month,
     .el-date-editor--daterange,
     .el-date-editor--monthrange {
-      width: 210px !important;
+      width: 235px !important;
     }
 
     .el-range-separator {
