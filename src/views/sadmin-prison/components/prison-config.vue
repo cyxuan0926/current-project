@@ -195,7 +195,7 @@ export default {
           }]},
         agreement: {
           type: 'switch',
-          label: '线上签署《亲情电话告知书》',
+          label: '线上签署《会见告知书》',
           disabled,
           value: 0
         },
