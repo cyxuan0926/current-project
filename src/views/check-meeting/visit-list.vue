@@ -189,7 +189,7 @@ export default {
     const { options } = this.$store.getters.prisonAreaOptions
     const tabPanes = [
       {
-        label: '实地探监',
+        label: '会见预约',
         name: 'first'
       },
       {

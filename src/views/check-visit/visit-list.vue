@@ -11,7 +11,7 @@
         v-model="tabs"
         type="card">
         <el-tab-pane
-          label="实地探监"
+          label="会见预约"
           name="first" />
         <el-tab-pane
           label="已取消"

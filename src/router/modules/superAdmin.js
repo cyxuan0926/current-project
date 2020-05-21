@@ -57,7 +57,7 @@ let superAdmin = [{
       props: { role: 0 },
       meta: { role: '0',
         permission: 'visit.prison.filed-visit-config.search',
-        breadcrumbName: '监狱实地会见配置',
+        breadcrumbName: '监狱会见预约配置',
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
@@ -75,7 +75,7 @@ let superAdmin = [{
       // permssion: 'edit'
       meta: { role: '0',
         permission: 'visit.prison.visit-config.search',
-        breadcrumbName: '监狱远程会见配置',
+        breadcrumbName: '监狱可视亲情电话配置',
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
@@ -308,7 +308,7 @@ let superAdmin = [{
     component: 'check-meeting/meeting-achievements',
     meta: {
       permission: 'visit.visit-statistic.all-prison.cost-save.search',
-      breadcrumbName: '远程会见节约成本统计表'
+      breadcrumbName: '亲情电话节约成本统计表'
     }
   }, {
     path: '/prison-data/registrations',
@@ -326,7 +326,7 @@ let superAdmin = [{
     props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       permission: 'visit.visit-statistic.all-prison.remote-visit.search',
-      breadcrumbName: '远程会见申请'
+      breadcrumbName: '亲情电话申请'
     },
     // component: 'check-meeting/meeting-list'
     component: 'check-meeting/meeting-list/meeting-list'
@@ -383,7 +383,7 @@ let superAdmin = [{
     name: 'prison-data_meeting-reconciliation',
     props: { hasOnlyAllPrisonQueryAuth: true },
     meta: {
-      breadcrumbName: '远程会见对账报表',
+      breadcrumbName: '亲情电话对账报表',
       permission: 'visit.meeting.reconciliation.search'
     },
     component: 'check-meeting/meeting-reconciliation-list'

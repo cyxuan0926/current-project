@@ -25,14 +25,14 @@ let check = [{
     // component: 'check-meeting/meeting-list',
     component: 'check-meeting/meeting-list/meeting-list',
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
-    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '远程会见申请列表' }
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '亲情电话申请列表' }
   }, {
     path: '/meeting/adjust',
     name: 'meeting-adjust',
     // component: helper.loadView('check-meeting/meeting-adjust'),
     component: 'check-meeting/meeting-adjust/index',
     // component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve),
-    meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '远程会见申请调整' }
+    meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '亲情电话申请调整' }
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)
   }, {
     path: '/visit/list',
@@ -40,7 +40,7 @@ let check = [{
     // component: helper.loadView('check-meeting/visit-list'),
     component: 'check-meeting/visit-list',
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
-    meta: { permission: 'visit.field-visit.search', breadcrumbName: '实地探监列表' }
+    meta: { permission: 'visit.field-visit.search', breadcrumbName: '会见预约列表' }
   }]
 }, {
   path: '/meeting-report',
@@ -66,11 +66,11 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '远程免费会见纪录' }
+    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费会见纪录' }
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
-    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '远程会见节约成本统计' }
+    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '亲情电话节约成本统计' }
   }]
 }, {
   path: '/mailbox',

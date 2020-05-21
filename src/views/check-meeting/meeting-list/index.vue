@@ -294,7 +294,9 @@ export default {
           type: 'dateRange',
           unlinkPanels: true,
           start: 'startDate',
-          end: 'endDate'
+          end: 'endDate',
+          startPlaceholder: '会见开始时间',
+          endPlaceholder: '会见结束时间'
           // miss: true,
           // value: ''
         },
