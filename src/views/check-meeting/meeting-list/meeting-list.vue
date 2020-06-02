@@ -241,7 +241,8 @@ export default {
           type: 'select',
           label: '监区',
           options,
-          belong
+          belong,
+          value: ''
         },
         // applicationDate: {
         //   type: 'date',

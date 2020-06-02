@@ -10,11 +10,14 @@ import { uuId } from '@/utils/helper'
 
 Sortable.mount(new Swap());
 
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+
 const defaultOptions = {
   swap: true,
   swapClass: "swap-target",
   filter: '.undraggable',
-  animation: 300
+  animation: 300,
+  forceFallback: isFirefox
 };
 
 export default {
