@@ -387,6 +387,15 @@ let superAdmin = [{
       permission: 'visit.meeting.reconciliation.search'
     },
     component: 'check-meeting/meeting-reconciliation-list'
+  }, {
+    path: '/prison-data/diplomatic-consul-official',
+    name: 'prison-data_diplomatic-consul-official',
+    props: '',
+    meta: {
+      breadcrumbName: '外交领事官员注册表',
+      premission: ''
+    },
+    component: 'diplomatic-consul-official/registration'
   }]
 }, {
   path: '/coopertive-partner',

@@ -15,6 +15,17 @@ let check = [{
     component: 'check-registration/registration-list'
   }]
 }, {
+  path: '/diplomatic-consul-official',
+  name: 'diplomatic-consul-official-manage',
+  redirect: { path: '/diplomatic-consul-official/list' },
+  meta: { breadcrumbName: '外交领事官员注册管理' },
+  children: [{
+    path: '/diplomatic-consul-official/list',
+    name: 'diplomatic-consul-official-list',
+    meta: { permission: '', breadcrumbName: '外交领事官员注册列表' },
+    component: 'diplomatic-consul-official/registration'
+  }]
+}, {
   path: '/meeting',
   name: 'meeting-manage',
   meta: { hidden: true, breadcrumbName: '会见申请管理' },
