@@ -247,15 +247,17 @@ export default {
       item.func && item.func(e, prop, item)
     },
     radioChangeEvent(e, prop, item) {
+      console.log(e, prop, item)
       const { configs } = item
       this.dismiss = ['buttons', 'formConfigs']
       if (Array.isArray(configs)) {
         this.$nextTick(function() {
           configs.forEach(item => {
             if (this.fields[prop] === item.value) {
-              if (item.value === 1 && !this.fields['onceMoney']) this.$set(this.fields, 'onceMoney', 0)
+              if (item.value === 1 && !this.fields['onceMoney'] && prop === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
               // if (item.value === 2 && !this.fields['fixedMoney']) this.$set(this.fields, 'fixedMoney', 2.2)
               for(let [key, value] of Object.entries(item.itemConfigs)) {
+                console.log(key)
                 this.dismiss.push(key)
                 if (this.items[key].func) this.items[key].func(e, prop, item)
                 else this.$set(this.fields, key, value)

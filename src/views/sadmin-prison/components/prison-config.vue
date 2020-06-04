@@ -5,6 +5,7 @@
       @submit="onSubmit"
       @back="onBack"
       :values="values"
+      ref="prison-config_form"
     >
       <template #basicConfigs>
         <el-col :span="11">
@@ -307,11 +308,27 @@ export default {
           append: '/元',
           value: 0
         },
-        diplomaticConsulOfficialSwitch: {
+        diplomatistCharge: {
           type: 'switch',
           label: '外交领事官员可视电话收费设置',
           disabled,
-          value: 0
+          func: this.onTest,
+          value: 0,
+          configs: [
+            // 打开外交领事官员可视电话收费设置
+            {
+              value: 1,
+              itemConfigs: {}
+            },
+            // 关闭外交领事官员可视电话收费设置
+            {
+              value: 0,
+              itemConfigs: {
+                diplomaticConsulOfficialBasicConfigs: 0,
+                diplomaticConsulOfficialFixedMoney: 0
+              }
+            }
+          ]
         },
         diplomaticConsulOfficialBasicConfigs: {
           slotName: 'diplomaticConsulOfficialBasicConfigs',
@@ -336,11 +353,11 @@ export default {
         startMoney: 15,
         fixedMoney: 2.2,
         // 外交领事官员基础费用分钟
-        diplomatistStartMinutes: 0,
+        diplomatistStartMinutes: 5,
         // 外交领事官员基础费用 元
-        diplomatistStartMoney: 0,
+        diplomatistStartMoney: 12,
         // 外交领事官员基础时长后 每分钟 元
-        diplomatistFixedMoney: 0
+        diplomatistFixedMoney: 1.8
       },
       rules: {
         startMinutes: [
@@ -412,6 +429,12 @@ export default {
           this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney', 'totalCost'])
           this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
         }
+        // if (this.formData.diplomatistCharge === 1) {
+        //   this.$set(this.formItems['diplomatistCharge']['configs'][0], 'itemConfigs', {})
+        // }
+        // if (this.formData.diplomatistCharge === 0) {
+        //   this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
+        // }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
         //   (async() => {
         //     const res = await this.getBranchStatus(this.prison)
@@ -476,12 +499,13 @@ export default {
           }
         }
         if (params.hasOwnProperty('totalCost')) delete params.totalCost
-        this.updatePrison(params).then(res => {
-          if (!res) return
-          this.getPrisonDetail({ id: this.$route.params.id })
-          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-          // else this.$router.push('/jails/detail')
-        })
+        console.log(params)
+        // this.updatePrison(params).then(res => {
+        //   if (!res) return
+        //   this.getPrisonDetail({ id: this.$route.params.id })
+        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+        //   // else this.$router.push('/jails/detail')
+        // })
       }
     },
     onBack() {
@@ -496,6 +520,9 @@ export default {
       this.$set(this.formData, 'startMoney', startMoney)
       this.$set(this.formData, 'startMinutes', startMinutes)
       this.$set(this.formData, 'fixedMoney', fixedMoney)
+    },
+    onTest(e, prop, item) {
+      this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     }
   }
 }
