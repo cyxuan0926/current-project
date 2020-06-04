@@ -56,6 +56,43 @@
           </el-form-item>
         </el-col>
       </template>
+      <template #diplomaticConsulOfficialBasicConfigs>
+        <el-col :span="11">
+          <el-form-item prop="diplomatistStartMinutes" :rules="rules.diplomatistStartMinutes">
+            <el-input
+              v-model.trim.number="formData.diplomatistStartMinutes"
+              placeholder="请输入基础时间"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">分钟</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11" :offset="2">
+          <el-form-item prop="diplomatistStartMoney" :rules="rules.diplomatistStartMoney">
+            <el-input
+              v-model.trim="formData.diplomatistStartMoney"
+              placeholder="请输入基础费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+      <template #diplomaticConsulOfficialFixedMoney>
+        <el-col :span="11">
+          <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
+            <el-input
+              v-model.trim="formData.diplomatistFixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
     </m-form>
   </div>
 </template>
@@ -91,21 +128,24 @@ export default {
       }
     ]
     const validateMoney = (rule, value, callback) => {
+      const { field } = rule
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
-      if (this.formData.startMoney === '') callback(new Error('请输入基础费用'))
-      else if (!feeReg.test(this.formData.startMoney)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      if (this.formData[field] === '') callback(new Error('请输入基础费用'))
+      else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
       else callback()
     }
     const validateMinutes = (rule, value, callback) => {
-      const integerNumbers = Number.isInteger(this.formData.startMinutes)
-      if (this.formData.startMinutes === '') callback(new Error('请输入基础时间'))
-      else if (!integerNumbers || this.formData.startMinutes <= 0) callback(new Error('请输入正整数'))
+      const { field } = rule
+      const integerNumbers = Number.isInteger(this.formData[field])
+      if (this.formData[field] === '') callback(new Error('请输入基础时间'))
+      else if (!integerNumbers || this.formData[field] <= 0) callback(new Error('请输入正整数'))
       else callback()
     }
     const validateFixedMoney = (rule, value, callback) => {
+      const { field } = rule
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
-      if (this.formData.fixedMoney === '') callback(new Error('请输入基础时长后每分钟费用'))
-      else if (!feeReg.test(this.formData.fixedMoney)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      if (this.formData[field] === '') callback(new Error('请输入基础时长后每分钟费用'))
+      else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
       else callback()
     }
     return {
@@ -266,14 +306,41 @@ export default {
           ],
           append: '/元',
           value: 0
-        }
+        },
+        diplomaticConsulOfficialSwitch: {
+          type: 'switch',
+          label: '外交领事官员可视电话收费设置',
+          disabled,
+          value: 0
+        },
+        diplomaticConsulOfficialBasicConfigs: {
+          slotName: 'diplomaticConsulOfficialBasicConfigs',
+          attrs: {
+            label: '基础费用',
+            required: true
+          },
+          func: this.onReset
+        },
+        diplomaticConsulOfficialFixedMoney: {
+          slotName: 'diplomaticConsulOfficialFixedMoney',
+          attrs: {
+            label: '基础时长后每分钟费用',
+            required: true
+          }
+        },
       }, formButton),
       values: {},
       permission,
       formData: {
         startMinutes: 5,
         startMoney: 15,
-        fixedMoney: 2.2
+        fixedMoney: 2.2,
+        // 外交领事官员基础费用分钟
+        diplomatistStartMinutes: 0,
+        // 外交领事官员基础费用 元
+        diplomatistStartMoney: 0,
+        // 外交领事官员基础时长后 每分钟 元
+        diplomatistFixedMoney: 0
       },
       rules: {
         startMinutes: [
@@ -283,6 +350,15 @@ export default {
           { validator: validateMoney, trigger: 'blur' }
         ],
         fixedMoney: [
+          { validator: validateFixedMoney, trigger: 'blur' }
+        ],
+        diplomatistStartMinutes: [
+          { validator: validateMinutes, trigger: 'blur' }
+        ],
+        diplomatistStartMoney: [
+          { validator: validateMoney, trigger: 'blur' }
+        ],
+        diplomatistFixedMoney: [
           { validator: validateFixedMoney, trigger: 'blur' }
         ]
       }
