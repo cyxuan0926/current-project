@@ -431,12 +431,17 @@ export default {
           this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney', 'totalCost'])
           this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
         }
-        // if (this.formData.diplomatistCharge === 1) {
-        //   this.$set(this.formItems['diplomatistCharge']['configs'][0], 'itemConfigs', {})
-        // }
-        // if (this.formData.diplomatistCharge === 0) {
-        //   this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
-        // }
+        if (this.values.diplomatistCharge === 1) {
+          this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
+        }
+        if (!this.values.diplomatistCharge) {
+          this.formItems['dissMissConfigs'] = [
+            ...this.formItems['dissMissConfigs'],
+            'diplomaticConsulOfficialBasicConfigs',
+            'diplomaticConsulOfficialFixedMoney'
+          ]
+          this.$set(this.formItems['diplomatistCharge']['configs'][0], 'itemConfigs', {})
+        }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
         //   (async() => {
         //     const res = await this.getBranchStatus(this.prison)
@@ -468,7 +473,7 @@ export default {
       'getPrisonDetail',
       'updatePrison']),
     onSubmit(e) {
-      const { chargeType } = e
+      const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
           // 这里就是分监区的情况
@@ -487,9 +492,16 @@ export default {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
         if (chargeType === 2) {
+          const {
+            startMinutes,
+            startMoney,
+            fixedMoney
+          } = this.formData
           params = {
             ...params,
-            ...this.formData,
+            startMinutes,
+            startMoney,
+            fixedMoney,
             cost: this.typeTotalCost
           }
         }
@@ -500,14 +512,27 @@ export default {
             cost: onceMoney
           }
         }
+        if (diplomatistCharge === 1) {
+          const {
+            diplomatistStartMinutes,
+            diplomatistStartMoney,
+            diplomatistFixedMoney
+          } = this.formData
+          params = {
+            ...params,
+            diplomatistStartMinutes,
+            diplomatistStartMoney,
+            diplomatistFixedMoney,
+          }
+        }
         if (params.hasOwnProperty('totalCost')) delete params.totalCost
-        console.log(params)
-        // this.updatePrison(params).then(res => {
-        //   if (!res) return
-        //   this.getPrisonDetail({ id: this.$route.params.id })
-        //   // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-        //   // else this.$router.push('/jails/detail')
-        // })
+        if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
+        this.updatePrison(params).then(res => {
+          if (!res) return
+          this.getPrisonDetail({ id: this.$route.params.id })
+          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+          // else this.$router.push('/jails/detail')
+        })
       }
     },
     onBack() {
@@ -515,7 +540,6 @@ export default {
       else this.$router.push({ path: '/jails/detail' })
     },
     onReset(e, prop) {
-      console.log(e, prop)
       let {
         startMoney = 15,
         startMinutes = 5,
