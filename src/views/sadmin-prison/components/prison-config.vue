@@ -162,6 +162,7 @@ export default {
             value: 'value'
           },
           options: waysOptions,
+          relativeProps: ['diplomatistCharge'],
           configs: [
             // 按分钟收费
             {
@@ -312,8 +313,9 @@ export default {
           type: 'switch',
           label: '外交领事官员可视电话收费设置',
           disabled,
-          func: this.onTest,
+          func: this.onDiplomatistChargeChange,
           value: 0,
+          relativeProps: ['chargeType'],
           configs: [
             // 打开外交领事官员可视电话收费设置
             {
@@ -512,16 +514,33 @@ export default {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
       else this.$router.push({ path: '/jails/detail' })
     },
-    onReset() {
-      let { startMoney = 15, startMinutes = 5, fixedMoney = 2.2 } = this.prison
+    onReset(e, prop) {
+      console.log(e, prop)
+      let {
+        startMoney = 15,
+        startMinutes = 5,
+        fixedMoney = 2.2,
+        diplomatistStartMinutes = 5,
+        diplomatistStartMoney = 12,
+        diplomatistFixedMoney = 1.8 } = this.prison
       startMoney = startMoney ? startMoney : 15
       startMinutes = startMinutes ? startMinutes : 5
       fixedMoney = fixedMoney ? fixedMoney : 2.2
-      this.$set(this.formData, 'startMoney', startMoney)
-      this.$set(this.formData, 'startMinutes', startMinutes)
-      this.$set(this.formData, 'fixedMoney', fixedMoney)
+      diplomatistStartMinutes = diplomatistStartMinutes ? diplomatistStartMinutes : 5
+      diplomatistStartMoney = diplomatistStartMoney ? diplomatistStartMoney : 12
+      diplomatistFixedMoney = diplomatistFixedMoney ? diplomatistFixedMoney : 1.8
+      if (prop === 'chargeType') {
+        this.$set(this.formData, 'startMoney', startMoney)
+        this.$set(this.formData, 'startMinutes', startMinutes)
+        this.$set(this.formData, 'fixedMoney', fixedMoney)
+      }
+      if (prop === 'diplomatistCharge') {
+        this.$set(this.formData, 'diplomatistStartMinutes', diplomatistStartMinutes)
+        this.$set(this.formData, 'diplomatistStartMoney', diplomatistStartMoney)
+        this.$set(this.formData, 'diplomatistFixedMoney', diplomatistFixedMoney)
+      }
     },
-    onTest(e, prop, item) {
+    onDiplomatistChargeChange(e, prop, item) {
       this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     }
   }
