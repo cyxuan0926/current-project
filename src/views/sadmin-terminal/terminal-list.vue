@@ -40,6 +40,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import switches from '@/filters/modules/switches'
 export default {
   data() {
     return {
@@ -50,6 +51,11 @@ export default {
           getting: true,
           belong: { value: 'id', label: 'title' },
           filterable: true
+        },
+        meetingEnabled: {
+          type: 'select',
+          label: '狱警会见开关',
+          options: switches.isOpened
         }
       },
       tableCols: [
