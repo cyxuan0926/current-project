@@ -10,6 +10,7 @@
       @search="onSearch" />
     <el-col :span="24">
       <m-table-new
+        class="reconciliation-table"
         border
         stripe
         :cols="tableCols"
@@ -285,26 +286,29 @@ export default {
 }
 </script>
 
-<style  lang="scss" scoped>
-.el-table {
-  /deep/ td {
-    border-bottom: 1px solid #e6e6e6 !important;
-  }
-  /deep/ .el-table-column__col {
-    padding: 10px !important;
-    border-bottom: 1px solid #e6e6e6 !important;
-    &:last-child {
-      border-bottom: 0 !important;
+<style lang="scss" scoped>
+.row-container {
+  /deep/ .reconciliation-table {
+    border-right: none !important;
+    td {
+      border-bottom: 1px solid #e6e6e6 !important;
     }
-  }
-  /deep/ .padding-20 {
-    padding: 20px !important;
-  }
-  /deep/ .no-pandding__td {
-    padding: 0px !important;
-    & > .cell {
-      padding: 0px !important;
-    }
+    // /deep/ .el-table-column__col {
+    //   padding: 10px !important;
+    //   border-bottom: 1px solid #e6e6e6 !important;
+    //   &:last-child {
+    //     border-bottom: 0 !important;
+    //   }
+    // }
+    // /deep/ .padding-20 {
+    //   padding: 20px !important;
+    // }
+    // /deep/ .no-pandding__td {
+    //   padding: 0px !important;
+    //   & > .cell {
+    //     padding: 0px !important;
+    //   }
+    // }
   }
 }
 </style>

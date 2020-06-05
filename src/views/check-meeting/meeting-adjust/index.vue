@@ -92,7 +92,7 @@ export default {
 
     if (meetings.length > 0) {
       try {
-        await this.$confirm("远程会见申请调整未确认，请确认调整！", "提示", {
+        await this.$confirm("可视亲情电话申请调整未确认，请确认调整！", "提示", {
           distinguishCancelAndClose: true,
           closeOnClickModal: false,
           closeOnPressEscape: false,

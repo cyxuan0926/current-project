@@ -30,11 +30,11 @@
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row.id, 'remote')">远程会见配置</el-button>
+        @click="onVisit(row.id, 'remote')">亲情电话配置</el-button>
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row.id, 'visit')">实地会见配置</el-button>
+        @click="onVisit(row.id, 'visit')">会见预约配置</el-button>
     </template>
   </m-table-new>
 </template>
