@@ -241,7 +241,8 @@ export default {
           type: 'select',
           label: '监区',
           options,
-          belong
+          belong,
+          value: ''
         },
         // applicationDate: {
         //   type: 'date',
@@ -255,7 +256,9 @@ export default {
           startPlaceholder: '会见开始时间',
           endPlaceholder: '会见结束时间',
           start: 'applicationStartDate',
-          end: 'applicationEndDate'
+          end: 'applicationEndDate',
+          startPlaceholder: '会见开始时间',
+          endPlaceholder: '会见结束时间'
           // miss: true,
           // value: ''
         },

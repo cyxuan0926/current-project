@@ -8,7 +8,7 @@
           :disabled="!canEdit"
           class="part-right"
           size="small"
-          placeholder="请填写实地探监窗口个数">
+          placeholder="请填写会见预约窗口个数">
           <template slot="append">/个</template>
         </el-input>
         <span

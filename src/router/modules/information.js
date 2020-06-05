@@ -202,11 +202,11 @@ let infomation = [{
 }, {
   path: '/remote',
   name: 'remote',
-  meta: { hidden: true, breadcrumbName: '远程会见信息' },
+  meta: { hidden: true, breadcrumbName: '亲情电话信息' },
   children: [{
     path: '/remote/edit',
     name: 'remote-edit-information',
-    meta: { role: '3', permission: 'visit.remote-visit-configure.search', breadcrumbName: '远程会见配置' },
+    meta: { role: '3', permission: 'visit.remote-visit-configure.search', breadcrumbName: '亲情电话配置' },
     component: 'meeting/remote-edit'
     // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
     // component: helper.loadView('meeting/remote-edit')
@@ -214,12 +214,12 @@ let infomation = [{
 }, {
   path: '/visit',
   name: 'visit',
-  meta: { hidden: true, breadcrumbName: '实地探监信息' },
+  meta: { hidden: true, breadcrumbName: '会见预约信息' },
   children: [{
     path: '/visit/config',
     name: 'visit-config',
     props: { role: 3 },
-    meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '实地探监配置' },
+    meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '会见预约配置' },
     component: 'meeting/visit-config'
     // component: resolve => require(['@/views/meeting/visit-config'], resolve)
     // component: helper.loadView('meeting/visit-config')

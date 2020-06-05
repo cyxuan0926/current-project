@@ -9,7 +9,7 @@
             alt="">
         </div>
         <div class="download-box">
-          <h3 style="text-align: center;">狱务通(监狱端)</h3>
+          <h3 style="text-align: center;">国科服务(监狱端)</h3>
           <div class="download prison">
             <div class="android">
               <a href="https://www.yuwugongkai.com/app/yuwutong_p.apk?from=wechat">

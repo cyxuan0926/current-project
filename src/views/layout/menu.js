@@ -68,7 +68,7 @@ let superAdminMenu = [{
         icon: 'iconfont icon-circle-o'
       }, {
         path: '/visit/list',
-        title: '实地探监管理',
+        title: '会见预约管理',
         icon: 'iconfont icon-shidihuijian'
       }
     ]

@@ -1,6 +1,6 @@
 <template>
   <el-form>
-    <el-form-item label="远程探视申请需提前">
+    <el-form-item label="亲情电话申请需提前">
       <div class="remote-visit-box">
         <el-select v-model="advanceDayLimit_" :disabled="disabled" size="small" placeholder="">
           <el-option
@@ -12,7 +12,7 @@
         </el-select>
         &nbsp;&nbsp;天
         <p v-if="!disabled" class="tip">
-          *每位家属需提前预约远程探视天数（以自然日为单位）
+          *每位家属需提前预约可视亲情电话天数（以自然日为单位）
         </p>
         <div v-if="!disabled && hasUpdateBtn && hasChange" class="operate">
           <el-button
