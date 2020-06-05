@@ -91,6 +91,16 @@ let switches = {
       label: '按分钟收费',
       value: 2
     }
+  ],
+  diplomaticConsulOfficialStatus: [
+    {
+      label: '未授权',
+      value: 'PENDING'
+    },
+    {
+      label: '已通过',
+      value: 'PASSED'
+    }
   ]
 }
 

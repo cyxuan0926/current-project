@@ -390,7 +390,10 @@ let superAdmin = [{
   }, {
     path: '/prison-data/diplomatic-consul-official',
     name: 'prison-data_diplomatic-consul-official',
-    props: '',
+    props: {
+      hasOnlyAllPrisonQueryAuth: true,
+      hasProvinceQueryAuth: true
+    },
     meta: {
       breadcrumbName: '外交领事官员注册表',
       premission: ''
