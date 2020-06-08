@@ -149,13 +149,69 @@
     </el-dialog>
     <el-dialog
       title="家属信息"
-      class="authorize-dialog"
+      class="family-dialog"
       :visible.sync="show.familiesDetialInform"
       @close="closeFamilyDetail">
       <family-detial-information
         :elItems="familyDetailInformationItems"
         :detailData="family">
-        <template #familyIdCardFront="{ scope }">
+        <template #familyInformation="{ scope }">
+          <div class="img-items">
+            <m-img-viewer
+            v-if="scope.familyIdCardFront"
+            :url="scope.familyIdCardFront"
+            title="身份证正面"
+            />
+            <m-img-viewer
+            v-if="scope.familyIdCardBack"
+            :url="scope.familyIdCardBack"
+            title="身份证背面"
+            />
+            <m-img-viewer
+            v-if="scope.familyAvatarUrl"
+            :url="scope.familyAvatarUrl"
+            title="头像"
+            />
+          </div>       
+        </template>
+        <template #familyRelationalInformation="{ scope }">
+          <div class="img-items">
+            <m-img-viewer
+              v-if="scope.familyRelationalProofUrl"
+              class="relation_img"
+              :url="scope.familyRelationalProofUrl"
+              title="关系证明图"
+            />
+            <m-img-viewer
+              v-if="scope.familyRelationalProofUrl2"
+              class="relation_img"
+              :url="scope.familyRelationalProofUrl2"
+              title="关系证明图"
+            />
+            <m-img-viewer
+              v-if="scope.familyRelationalProofUrl3"
+              class="relation_img"
+              :url="scope.familyRelationalProofUrl3"
+              title="关系证明图"
+            />
+            <m-img-viewer
+              v-if="scope.familyRelationalProofUrl4"
+              class="relation_img"
+              :url="scope.familyRelationalProofUrl4"
+              title="关系证明图"
+            />
+          </div>
+        </template>
+        <template #familyMeetNoticeInformation="{ scope }">
+          <div class="img-items">
+            <m-img-viewer
+              v-if="scope.meetNoticeUrl"
+              :url="scope.meetNoticeUrl"
+              title="会见通知单"
+            />
+          </div>
+        </template>
+        <!-- <template #familyIdCardFront="{ scope }">
           <m-img-viewer
             v-if="scope.familyIdCardFront"
             :url="scope.familyIdCardFront"
@@ -172,7 +228,7 @@
             v-if="scope.familyRelationalProofUrl"
             :url="scope.familyRelationalProofUrl"
             title="关系证明图"/>
-        </template>
+        </template> -->
       </family-detial-information>
     </el-dialog>
   </el-row>
@@ -198,7 +254,7 @@ export default {
       }
     ]
     // 证件照片class
-    const idCardClassName = 'img-idCard'
+    // const idCardClassName = 'img-idCard'
     // 授权对话框的返回按钮
     const goBackButton = {
       text: '返回',
@@ -253,6 +309,8 @@ export default {
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
+          startPlaceholder: '会见开始时间',
+          endPlaceholder: '会见结束时间',
           start: 'applicationStartDate',
           end: 'applicationEndDate',
           startPlaceholder: '会见开始时间',
@@ -349,20 +407,35 @@ export default {
           prop: 'relationship'
         },
         {
-          label: '身份证正面',
-          prop: 'familyIdCardFront',
-          definedClass: idCardClassName
+          label: '家属信息',
+          prop: 'familyInformation',
+          definedClass: 'img-box'
         },
         {
-          label: '身份证背面',
-          prop: 'familyIdCardBack',
-          definedClass: idCardClassName
+          label: '关系证明',
+          prop: 'familyRelationalInformation',
+          definedClass: 'img-box'
         },
         {
-          label: '关系证明图',
-          prop: 'familyRelationalProofUrl',
-          definedClass: idCardClassName
+          label: '会见通知单',
+          prop: 'familyMeetNoticeInformation',
+          definedClass: 'img-box'
         }
+        // {
+        //   label: '身份证正面',
+        //   prop: 'familyIdCardFront',
+        //   definedClass: idCardClassName
+        // },
+        // {
+        //   label: '身份证背面',
+        //   prop: 'familyIdCardBack',
+        //   definedClass: idCardClassName
+        // },
+        // {
+        //   label: '关系证明图',
+        //   prop: 'familyRelationalProofUrl',
+        //   definedClass: idCardClassName
+        // }
       ],
       // 授权不同意情况下的按钮元素
       showDisagreebuttons: [
@@ -451,7 +524,10 @@ export default {
             :gutter="20"
             v-for="(item, index) in elItems"
             :key="'id-family-detail-information-item-' + index">
-            <el-col :class="item.definedClass">
+            <el-col
+              :class="item.definedClass"
+              :style="item.definedStyles"
+            >
               <label>{{ item.label }}：</label>
               <template>
                 <slot
@@ -867,18 +943,28 @@ export default {
         text-align: right;
 .withdraw-box
   margin-bottom: 20px;
-img
-  display: block;
-.img-idCard
-  min-width: 350px;
 .withdraw-form
  >>> .button-box
        padding-bottom: 0px
-.el-image
-  display: block;
-  width: 342.4px;
-  height: 216px;
-  >>> img
+.img-box
+  display: flex;
+  flex-direction: column !important;
+  .img-items
+    padding-top: 10px;
+    .el-image
+      width: 32%;
+      height: 110px;
+      margin-bottom: 5px;
+      box-shadow: 0 0 5px #ddd;
+      >>> img
         width: 100%;
         height: 100%;
+        cursor: pointer;
+.el-image.relation_img
+  width: 24% !important;
+.family-dialog
+  >>> .el-dialog__body
+    padding: 10px 20px !important;
+  >>> .el-dialog__header
+    border-bottom: 1px solid #f4f4f4 !important;
 </style>

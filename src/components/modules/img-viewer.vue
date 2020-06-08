@@ -3,7 +3,8 @@
     :src="publicUrl || url+'?token=' + $urls.token"
     :alt="title"
     lazy
-    @click.native="showImg" />
+    @click.native="showImg"
+  />
 </template>
 
 <script>
