@@ -170,6 +170,7 @@
     </el-dialog>
     <el-dialog
       title="家属信息"
+      class="authorize-dialog"
       :visible.sync="dialogTableVisible">
       <el-row :gutter="0">
         <el-col :span="12">
@@ -183,7 +184,67 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-row
+      <div style="margin-bottom: 10px;">家属信息:</div>
+      <div class="img-box">
+        <m-img-viewer
+          v-if="family.familyIdCardFront"
+          :url="family.familyIdCardFront"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="身份证正面照"
+        />
+        <m-img-viewer
+          v-if="family.familyIdCardBack"
+          :url="family.familyIdCardBack"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="身份证背面照"
+        />
+        <m-img-viewer
+          v-if="family.familyAvatarUrl"
+          :url="family.familyAvatarUrl"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="头像"
+        />
+      </div>
+      <template>
+        <div style="margin-bottom: 10px;">关系证明:</div>
+        <div class="img-box">
+          <m-img-viewer
+            v-if="family.familyRelationalProofUrl"
+            class="relation_img"
+            :url="family.familyRelationalProofUrl"
+            title="关系证明图"
+          />
+          <m-img-viewer
+            v-if="family.familyRelationalProofUrl2"
+            class="relation_img"
+            :url="family.familyRelationalProofUrl2"
+            title="关系证明图"
+          />
+            <m-img-viewer
+              v-if="family.familyRelationalProofUrl3"
+              class="relation_img"
+              :url="family.familyRelationalProofUrl3"
+              title="关系证明图"
+            />
+            <m-img-viewer
+              v-if="family.familyRelationalProofUrl4"
+              class="relation_img"
+              :url="family.familyRelationalProofUrl4"
+              title="关系证明图"
+            />
+        </div>
+      </template>
+      <template>
+        <div style="margin-bottom: 10px;">会见通知单:</div>
+        <div class="img-box">
+          <m-img-viewer
+            v-if="family.meetNoticeUrl"
+            :url="family.meetNoticeUrl"
+            title="会见通知单"
+          />
+        </div>
+      </template>
+      <!-- <el-row
         class="row-flex"
         :gutter="20"
         justify="space-between"
@@ -216,7 +277,7 @@
             title="照片"
             class="avatar" />
         </el-col>
-      </el-row>
+      </el-row> -->
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
@@ -631,7 +692,8 @@ export default {
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          showOverflowTooltip: true
         },
         {
           label: '监区',
@@ -1010,4 +1072,16 @@ export default {
   width 100%
 .el-dialog__body
   padding-bottom: 20px !important
+.img-box
+  .el-image
+    width: 32%;
+    height: 110px;
+    margin-bottom: 5px;
+    box-shadow: 0 0 5px #ddd;
+    >>> img
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+.el-image.relation_img
+  width: 24% !important;
 </style>

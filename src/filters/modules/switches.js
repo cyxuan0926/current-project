@@ -91,6 +91,16 @@ let switches = {
       label: '按分钟收费',
       value: 2
     }
+  ],
+  nationality: [
+    {
+      label: '中国籍家属',
+      value: 0
+    },
+    {
+      label: '非中国籍家属',
+      value: 1
+    }
   ]
 }
 
