@@ -388,7 +388,8 @@ export default {
         },
         prisonArea: {
           type: 'select',
-          label: '监区'
+          label: '监区',
+          value: ''
         },
         name: {
           type: 'input',
