@@ -11,6 +11,7 @@
     <m-search
       ref="search"
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
 

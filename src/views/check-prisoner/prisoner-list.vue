@@ -351,6 +351,7 @@ import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisons from '@/common/constants/prisons'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
@@ -380,6 +381,7 @@ export default {
         value: 0
       }
     ]
+    const { belong } = prisons.PRISONAREA
     return {
       searchItems: {
         prisonerNumber: {
@@ -389,6 +391,7 @@ export default {
         prisonArea: {
           type: 'select',
           label: '监区',
+          belong,
           value: ''
         },
         name: {
