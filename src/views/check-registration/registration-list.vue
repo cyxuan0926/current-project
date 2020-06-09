@@ -74,10 +74,10 @@
             />
           </template>
         </el-table-column>
-        <!-- <el-table-column
+        <el-table-column
           label="身份证件有效期至"
           prop="validDates"
-        /> -->
+        />
         <el-table-column
           label="家属类型"
           prop="domicileName"
@@ -398,7 +398,8 @@ export default {
           type: 'select',
           label: '监区',
           options,
-          belong
+          belong,
+          value: ''
         },
         auditName: {
           type: 'input',
@@ -628,8 +629,6 @@ export default {
            width: 100%;
            height: 100%;
            cursor: pointer;
-.img-viewer__overflow-unset
-  overflow: unset !important;
 .button-box 
   .el-button
     &:first-of-type

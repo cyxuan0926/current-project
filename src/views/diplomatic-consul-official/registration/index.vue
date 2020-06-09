@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-excel-download
+      v-if="hasOnlyAllPrisonQueryAuth"
       path=""
       :params="filter"
     />
@@ -28,16 +29,36 @@
       <m-table
         ref="m-table"
         :cols=tableCols
-        :data="[]"
+        :data="pageData.content"
       >
-        <template #idCards="{ row }">{{ row }}</template>
+        <template #idCards="{ row }">
+          <template v-for="item in row.diplomaticConsulOfficialUrls">
+            <m-img-viewer 
+              v-if="item.url"
+              :key="item.url"
+              :url="item.url"
+              :toolbar="{ prev: 1, next: 1 }"
+              :title="item.title"
+              :class="[
+                { 'img-viewer__hidden': item.type === 3 },
+                'img-viewer__overflow-unset'
+              ]"
+            />
+          </template>
+        </template>
 
         <template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>
+
+        <template #operation="{ row }">
+          <el-button v-if="true" size="mini" @click="onAuthorization(row)">授权</el-button>
+
+          <el-button v-if="true" size="mini" @click="onCallback(row)">撤回</el-button>
+        </template>
       </m-table>
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="0"
+      :total="pageData.totalElements"
       @onPageChange="getDatas"
     />
   </el-row>
@@ -46,6 +67,8 @@
 <script>
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+import { mapState, mapActions } from 'vuex'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -148,6 +171,8 @@ export default {
   },
 
   computed: {
+    ...mapState('diplomaticConsulOfficial', ['pageData']),
+
     tableCols() {
       const allCols = [
         {
@@ -164,7 +189,8 @@ export default {
         },
         {
           label: '身份证件信息',
-          slotName: 'idCards'
+          slotName: 'idCards',
+          minWidth: 148
         },
         {
           label: '身份证件有效期至',
@@ -208,6 +234,8 @@ export default {
   },
 
   methods: {
+    ...mapActions('diplomaticConsulOfficial', ['getPageData']),
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
