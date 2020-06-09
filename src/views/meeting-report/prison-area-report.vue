@@ -35,6 +35,7 @@
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { Message } from 'element-ui'
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
 const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
@@ -255,16 +256,36 @@ export default {
     createPrisonAreaFilter() {},
     // 覆盖 prison-filter-creator mixin
     async searchSelectChange(selectKey, value) {
+      if (selectKey === 'provincesId') {
+        if (value) {
+          this.$set(this.searchItems['jailId'], 'value', '')
+          if (this.searchItems['prisonAreaId']) {
+            this.$set(this.searchItems['prisonAreaId'], 'value', '')
+
+            this.$set(this.searchItems['prisonAreaId'], 'options', [])
+          }
+        }
+
+        this.$set(this.searchItems['jailId'], 'getting', true)
+
+        await this.$store.dispatch('getPrisonAll', { provincesId: value })
+
+        Message.closeAll()
+
+        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
+
+        this.$set(this.searchItems['jailId'], 'getting', false)
+      }
+
       if (selectKey === 'jailId') {
         if (value) {
           await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
-          this.searchItems.prisonAreaId.options = this.$store.state.jailPrisonAreas
+          this.$set(this.searchItems['prisonAreaId'], 'options', this.$store.state.jailPrisonAreas)
         }
         else {
-          this.searchItems.prisonAreaId.options = []
+          this.$set(this.searchItems['prisonAreaId'], 'options', [])
         }
-
-        this.searchItems.prisonAreaId.value = ''
+        this.$set(this.searchItems['prisonAreaId'], 'value', '')
       }
     }
   }
