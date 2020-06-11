@@ -32,6 +32,8 @@
         :cols=tableCols
         :data="pageData.content"
       >
+        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+
         <template #idCards="{ row }">
           <template v-for="item in row.diplomaticConsulOfficialUrls">
             <m-img-viewer 
@@ -41,7 +43,7 @@
               :toolbar="{ prev: 1, next: 1 }"
               :title="item.title"
               :class="[
-                { 'img-viewer__hidden': item.type === 3 },
+                { 'img-viewer__hidden': item.type >= 2 },
                 'img-viewer__overflow-unset'
               ]"
             />
@@ -50,18 +52,141 @@
 
         <template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>
 
-        <template #operation="{ row }">
-          <el-button v-if="true" size="mini" @click="onAuthorization(row)">授权</el-button>
+        <template #auditInformation="{ row }">
+          <template v-if="row.auditAt">
+            {{ row.auditRealName }} ({{ row.auditUserName }})<br >
 
-          <el-button v-if="true" size="mini" @click="onCallback(row)">撤回</el-button>
+            {{ row.auditAt | Date }}
+          </template>
+        </template>
+
+        <template #operation="{ row }">
+          <el-button
+            v-if="true"
+            size="mini"
+            @click="onShow(row)">授权</el-button>
+
+          <el-button
+            v-if="true"
+            size="mini"
+            @click="onShow(row, 'callback')">撤回</el-button>
         </template>
       </m-table>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="pageData.totalElements"
       @onPageChange="getDatas"
     />
+
+    <el-dialog
+      :visible.sync="show.visible"
+      class="authorize-dialog"
+      :title="show.callback ? '撤回' : '授权'"
+      :close-on-click-modal="false"
+      width="530px"
+      @close="onCloseAuthorize"
+    >
+      <family-detail-information
+        :elItems="registrationInformationItems"
+        :detailData="registrant"
+      >
+        <template #familyInformation="{ scope }">
+          <div class="img-items">
+            <template v-for="item in scope.diplomaticConsulOfficialUrls">
+              <m-img-viewer 
+                v-if="item.url"
+                :key="item.url"
+                :url="item.url"
+                :toolbar="{ prev: 1, next: 1 }"
+                :title="item.title"
+              />
+          </template>
+          </div>       
+        </template>
+
+        <template #familyMeetNoticeInformation="{ scope }">
+          <div class="img-items">
+            <m-img-viewer
+              v-if="scope.meetNoticeUrl"
+              :url="scope.meetNoticeUrl"
+              title="会见审批单"
+            />
+          </div>
+        </template>
+      </family-detail-information>
+
+      <div
+        v-if="!show.agree && show.disagree && show.callback"
+        class="button-box">
+        <repetition-el-buttons :buttonItems="authorizeButtons" />
+      </div>
+
+      <div
+        v-if="show.agree"
+        class="button-box">
+        <repetition-el-buttons :buttonItems="showAgreeButtons" />
+      </div>
+
+      <div
+        v-if="show.disagree"
+        class="button-box">
+        <div style="margin-bottom: 10px;">请选择驳回原因</div>
+
+        <el-select v-model="remarks">
+          <el-option
+            v-for="remark in defaultRemarks"
+            :value="remark"
+            :label="remark"
+            :key="remark"
+          />
+        </el-select>
+
+        <m-form
+          v-if="remarks === '其他'"
+          class="withdraw-box"
+          ref="refuseForm"
+          :items="authorizeFormItems"
+          @submit="onAuthorization({
+            status: 'DENIED',
+            remarks,
+            ...$event
+          })"
+        />
+
+        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
+      </div>
+
+      <div
+        v-if="show.callback"
+        class="button-box"
+      >
+        <div style="margin-bottom: 10px;">请选择撤回原因</div>
+
+        <el-select v-model="remarks">
+          <el-option
+            v-for="remark in defaultRemarks"
+            :value="remark"
+            :label="remark"
+            :key="remark"
+          />
+        </el-select>
+
+        <m-form
+          class="withdraw-box"
+          ref="withdrawForm"
+          :items="callbackFormItems"
+          @submit="onAuthorization({
+            status: 'WITHDRAW',
+            remarks,
+            ...$event
+          })"
+        />
+
+        <repetition-el-buttons :buttonItems="callbackButtons" />
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -69,10 +194,14 @@
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
 import { mapState, mapActions } from 'vuex'
 
+import switches from '@/filters/modules/switches'
+
 export default {
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator, registrationDialogCreator],
 
   data() {
     const tabOptions = [
@@ -92,7 +221,7 @@ export default {
         label: '姓名'
       },
 
-      employer: {
+      orgName: {
         type: 'select',
         label: '所在机构',
         filterable: true
@@ -107,6 +236,7 @@ export default {
       status: {
         type: 'select',
         label: '审核状态',
+        options: switches.diplomaticConsulOfficialStatus,
         miss: true
       },
 
@@ -121,7 +251,32 @@ export default {
 
       tabs: 'PENDING',
 
-      searchItems
+      searchItems,
+
+      show: {
+        visible: false,
+
+        agree: false,
+
+        disagree: false,
+
+        callback: false
+      },
+
+      registrationInformationItems: [
+        {
+          label: '请核对申请人信息',
+          prop: 'familyInformation',
+          definedClass: 'img-box'
+        },
+        {
+          label: '会见审批单',
+          prop: 'familyMeetNoticeInformation',
+          definedClass: 'img-box'
+        }
+      ],
+
+      registrant: {}
     }
   },
 
@@ -158,13 +313,13 @@ export default {
       }
 
       if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-          this.$set(this.searchItems['employer'], 'miss', true)
+          this.$set(this.searchItems['orgName'], 'miss', true)
 
-          delete this.filter.employer
+          delete this.filter.orgName
 
-          this.$set(this.searchItems['employer'], 'value', '')
+          this.$set(this.searchItems['orgName'], 'value', '')
       } else {
-        this.$set(this.searchItems['employer'], 'miss', false)
+        this.$set(this.searchItems['orgName'], 'miss', false)
       }
 
       this.onSearch()
@@ -174,19 +329,49 @@ export default {
   computed: {
     ...mapState('diplomaticConsulOfficial', ['pageData']),
 
+    ...mapState(['frontRemarks']),
+
+    defaultRemarks() {
+      let copyRemarks = this.frontRemarks.slice(0)
+
+      copyRemarks.splice(1, 1)
+
+      return copyRemarks
+    },
+
+    callbackFormItems() {
+      const { refuseRemark } = this.authorizeFormItems
+
+      return {
+        withdrawReason: {
+          ...refuseRemark,
+          label: '撤回理由...'
+        }
+      }
+    },
+
+    callbackButtons() {
+      const [ submitButton ] = this.showDisagreebuttons
+
+      return [
+        submitButton,
+        this.closeButton
+      ]
+    },
+
     tableCols() {
       const allCols = [
         {
           label: '省份',
-          prop: ''
+          prop: 'provinceName'
         },
         {
           label: '监狱名称',
-          prop: ''
+          prop: 'jailName'
         },
         {
           label: '姓名',
-          prop: ''
+          prop: 'name'
         },
         {
           label: '身份证件信息',
@@ -195,20 +380,20 @@ export default {
         },
         {
           label: '身份证件有效期至',
-          prop: '',
+          prop: 'idValidDate',
           minWidth: 100
         },
         {
           label: '申请时间',
-          prop: ''
+          slotName: 'createdAt'
         },
         {
           label: '所在机构/馆名',
-          prop: ''
+          prop: 'orgName'
         },
         {
           label: '职位',
-          prop: ''
+          prop: 'positionName'
         },
         {
           label: '申请状态',
@@ -216,7 +401,8 @@ export default {
         },
         {
           label: '审核信息',
-          prop: ''
+          prop: 'auditInformation',
+          showOverflowTooltip: true
         },
         {
           label: '操作',
@@ -235,23 +421,159 @@ export default {
   },
 
   methods: {
-    ...mapActions('diplomaticConsulOfficial', ['getPageData']),
+    ...mapActions('diplomaticConsulOfficial', [
+      'getPageData',
+      'registrationAuthorize'
+    ]),
 
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    getDatas() {
+    async getDatas() {
+      const url = '/diplomats/registrations/page'
+
+      if (this.tabs !== 'diplomaticConsulOfficial') this.$set(this.filter, 'status', this.tabs)
+
+      if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) this.$set(this.filter, 'type', 1)
+
+      else this.$set(this.filter, 'type', 2)
+
+      const params = {
+        ...this.filter,
+        ...this.pagination
+      }
       console.log(this.filter, this.pagination)
+      // await this.getPageData({url, params})
+    },
+
+    // 授权/撤回 操作显示对话框
+    onShow(registrant, status) {
+      this.registrant = registrant
+
+      if (status === 'callback') this.show.callback = true
+
+      this.show.visible = true
+    },
+
+    //覆盖mixin 关闭对话框
+    onCloseAuthorize() {
+      this.show.visible = false
+
+      this.show.disagree = false
+
+      this.show.agree = false
+
+      this.show.callback = false
+
+      this.remarks = '身份信息错误'
+
+      if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+
+      if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+    },
+
+    //覆盖mixin 授权情况下的不同意
+    onDisagreeAuthorize() {
+      this.show.disagree = true
+    },
+
+    //覆盖mixin 授权情况下的同意
+    onAgreeAuthorize() {
+      this.show.agree = true
+    },
+
+    //覆盖mixin 授权对话框同意情况下的确认操作
+    async onPassedAuthorize() {
+      const { id } = this.registrant
+
+      const params = { id, status: 'PASSED' }
+
+      this.buttonLoading = true
+
+      await this.onAuthorization(params)
+    },
+
+    //覆盖mixin 授权对话框同意情况下的返回操作
+    onAgreeAuthorizeGoBack() {
+      this.show.agree = false
+    },
+
+    //覆盖mixin 授权不同意/撤回 情况下的提交操作
+    onDeniedSubmit() {
+      const { id } = this.registrant
+
+      this.buttonLoading = true
+
+      if (this.show.callback) {
+        // 撤回
+        this.$refs.withdrawForm.onSubmit()
+      } else {
+        // 不同意
+        if (this.remarks === '其他') this.$refs.refuseForm.onSubmit()
+      }
+    },
+
+    //覆盖mixin 授权对话框不同意情况下的返回操作
+    onDisagreeAuthorizeGoBack() {
+      this.show.disagree = false
+
+      this.remarks = '身份信息错误'
+
+      if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+    },
+
+    // 审批操作
+    async onAuthorization(params) {
+      console.log(params)
+      const res = await this.registrationAuthorize(params)
+
+      this.buttonLoading = false
+
+      if (res) {
+        this.onCloseAuthorize()
+
+        this.getDatas()
+      }
     }
   },
 
-  mounted() {
+  async mounted() {
     if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      this.$set(this.searchItems['employer'], 'miss', true)
+      this.$set(this.searchItems['orgName'], 'miss', true)
     } else {
-      this.$set(this.searchItems['employer'], 'miss', false)
+      this.$set(this.searchItems['orgName'], 'miss', false)
     }
+
+    await this.getDatas()
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.img-box {
+  .img-items {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    .el-image {
+      width: 32%;
+      height: 110px;
+      margin-bottom: 5px;
+      box-shadow: 0 0 5px #ddd;
+      /deep/ img {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+    }
+  }
+}
+.button-box {
+  /deep/ .el-button {
+    &:first-of-type {
+      margin-left: 0px !important;
+    }
+  }
+}
+</style>

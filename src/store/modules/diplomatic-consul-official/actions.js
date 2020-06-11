@@ -5,12 +5,12 @@ export default {
     try {
       const { url, params } = configs
 
-      const response = await diplomaticConsulOfficialAPI.getPageData(url, params)
+      const { data } = await diplomaticConsulOfficialAPI.getPageData(url, params)
 
-      if (response) {
-        const { content = [], totalElements = 0 } = response
+      if (data) {
+        const { registrations = [], total = 0 } = data
 
-        const urlsParams = ['', '', '']
+        const urlsParams = ['idCardFront', 'idCardBack', 'avatarUrl']
 
         const titles = {
           0: '身份证正面',
@@ -18,7 +18,7 @@ export default {
           2: '头像'
         }
 
-        content.map(item => {
+        registrations.map(item => {
           item.diplomaticConsulOfficialUrls = []
 
           urlsParams.forEach((url, index) => {
@@ -30,10 +30,21 @@ export default {
           })
         })
 
-        commit('setPageData', { content, totalElements })
+        commit('setPageData', { registrations, total })
       }
 
-      return response
+      return data
+    }
+    catch (err) {
+      throw err
+    }
+  },
+
+  async registrationAuthorize({ commit }, params) {
+    try {
+      const res = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
+
+      return res
     }
     catch (err) {
       throw err

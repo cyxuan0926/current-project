@@ -149,7 +149,8 @@ export default {
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          minWidth: 100
         },
         {
           label: '家属姓名',

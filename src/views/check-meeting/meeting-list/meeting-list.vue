@@ -152,7 +152,7 @@
       class="family-dialog"
       :visible.sync="show.familiesDetialInform"
       @close="closeFamilyDetail">
-      <family-detial-information
+      <family-detail-information
         :elItems="familyDetailInformationItems"
         :detailData="family">
         <template #familyInformation="{ scope }">
@@ -229,7 +229,7 @@
             :url="scope.familyRelationalProofUrl"
             title="关系证明图"/>
         </template> -->
-      </family-detial-information>
+      </family-detail-information>
     </el-dialog>
   </el-row>
 </template>
@@ -239,9 +239,10 @@ import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 export default {
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator, registrationDialogCreator],
   data() {
     // 标签元素
     const tabsItems = [
@@ -255,20 +256,6 @@ export default {
     ]
     // 证件照片class
     // const idCardClassName = 'img-idCard'
-    // 授权对话框的返回按钮
-    const goBackButton = {
-      text: '返回',
-      attrs: { plain: true }
-    }
-    // 授权对话框的关闭按钮
-    const closeButton = {
-      text: '关闭',
-      attrs: {
-               plain: true,
-               type: 'danger'
-             },
-      events: { click: this.onCloseAuthorize }
-    }
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     const freeMeetingsOptions = [
@@ -355,10 +342,8 @@ export default {
       },
       toAuthorize: {},
       toShow: {},
-      remarks: '您的身份信息错误',
       family: {},
       sortObj: {},
-      buttonLoading: false,
       familyShows: [],
       // 撤回对话框表单组件
       withdrawFormItems: {
@@ -379,22 +364,6 @@ export default {
             type: 'danger'
           }
         ]
-      },
-      // 授权对话框表单组件
-      authorizeFormItems: {
-        refuseRemark: {
-          type: 'textarea',
-          autosize: { minRows: 2 },
-          rules: [
-            'required',
-            'lengthRange-15'
-          ],
-          maxlength: 15,
-          showWordLimit: true,
-          isTrim: true,
-          noLabel: true,
-          label: '驳回原因'
-        }
       },
       // 家属详情信息组件
       familyDetailInformationItems: [
@@ -436,138 +405,7 @@ export default {
         //   prop: 'familyRelationalProofUrl',
         //   definedClass: idCardClassName
         // }
-      ],
-      // 授权不同意情况下的按钮元素
-      showDisagreebuttons: [
-        {
-          text: '提交',
-          attrs: {
-            plain: true,
-            loading: this.buttonLoading
-          },
-          events: { click: this.onDeniedSubmit }
-        },
-        {
-          ...goBackButton,
-          events: { click: this.onDisagreeAuthorizeGoBack } },
-          closeButton
-      ],
-      // 授权按钮元素
-      authorizeButtons: [
-        {
-          text: '同意',
-          attrs: { plain: true },
-          events: { click: this.onAgreeAuthorize }
-        },
-        {
-          text: '不同意',
-          attrs: { plain: true },
-          events: { click: this.onDisagreeAuthorize}
-        },
-        closeButton
-      ],
-      // 授权同意情况下按钮元素
-      showAgreeButtons: [
-        {
-          text: '确定申请通过？',
-          attrs: {
-            plain: true,
-            loading: this.buttonLoading
-          },
-          events: { click: this.onPassedAuthorize }
-        },
-        { ...goBackButton,
-          events: { click: this.onAgreeAuthorizeGoBack } },
-          closeButton
       ]
-    }
-  },
-  components: {
-    // 操作列-详情组件
-    'family-to-show': {
-      methods: {
-        renderItems(h) {
-          return this.elItems.map(elItem => {
-            const contents = elItem['slotName'] && this.$scopedSlots[elItem['slotName']] ?
-            this.$scopedSlots[elItem['slotName']]({
-              toShow: this.showData}) : this.showData[elItem['prop']]
-            return h('div', {
-              style: elItem.style || { width: '50%' },
-              key: elItem.label + this.showData.id
-            }, [ h('label', elItem.label + '：'), h('span', contents)])
-          })
-        }
-      },
-      render(h) {
-        return h('div', {
-          attrs: {
-            class: 'flex-dialog'
-          }
-        }, this.renderItems(h))
-      },
-      props: {
-        elItems: {
-          type: Array,
-          default: () => []
-        },
-        showData: {
-          type: Object,
-          default: () => ({})
-        }
-      }
-    },
-    // 家属详细信息组件
-    'family-detial-information': {
-      template:
-        `<div>
-          <el-row
-            :gutter="20"
-            v-for="(item, index) in elItems"
-            :key="'id-family-detail-information-item-' + index">
-            <el-col
-              :class="item.definedClass"
-              :style="item.definedStyles"
-            >
-              <label>{{ item.label }}：</label>
-              <template>
-                <slot
-                  :name="item.prop"
-                  :scope="detailData">
-                  <span>{{ detailData[item['prop']] }}</span>
-                </slot>
-              </template>
-            </el-col>
-          </el-row>
-        </div>`,
-      props: {
-        elItems: {
-          type: Array,
-          default: () => []
-        },
-        detailData: {
-          type: Object,
-          default: () => ({})
-        }
-      }
-    },
-    // 多次复用的el-button组件
-    'repetition-el-buttons': {
-      template:
-        `<el-row>
-          <el-button
-            v-bind="button.attrs"
-            v-on="button.events"
-            v-for="(button, index) in buttonItems"
-            :key="'id-repetition-el-button-' + index">
-            {{ button.text }}
-          </el-button>
-        </el-row>`,
-      props: {
-        buttonItems: {
-          type: Array,
-          default: () => []
-        }
-      }
     }
   },
   computed: {
@@ -604,7 +442,8 @@ export default {
         },
         {
           label: '家属',
-          slotName: 'families'
+          slotName: 'families',
+          minWidth: 115
         },
         {
           label: '申请状态',
@@ -617,7 +456,7 @@ export default {
           {
             label: '监狱名称',
             prop: 'jailName',
-            minWidth: 110,
+            minWidth: 100,
             showOverflowTooltip: true
           }
         ],
@@ -625,7 +464,7 @@ export default {
           {
             label: '操作',
             slotName: 'operate',
-            minWidth: 160,
+            minWidth: 105,
             align: 'center'
           }
         ]
@@ -809,38 +648,37 @@ export default {
       if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
     closeFamilyDetail() {
-      this.family = {}
       this.show.familiesDetialInform = false
       if (this.meetingRefresh) this.getDatas('closeFamilyDetail')
     },
-    // 授权不同意情况下的提交操作
+    //覆盖mixin 授权不同意情况下的提交操作
     onDeniedSubmit() {
       if (this.$refs.refuseForm) this.$refs.refuseForm.onSubmit()
       else this.onAuthorization('DENIED')
     },
-    // 授权对话框的关闭操作
+    //覆盖mixin 授权对话框的关闭操作
     onCloseAuthorize() {
       this.show.authorize = false
     },
-    // 授权对话框的同意操作
+    //覆盖mixin 授权对话框的同意操作
     onAgreeAuthorize() {
       this.show.agree = true
       this.buttonLoading = false
     },
-    // 授权对话框的不同意操作
+    //覆盖mixin 授权对话框的不同意操作
     onDisagreeAuthorize() {
       this.show.disagree = true
       this.buttonLoading = false
     },
-    // 授权对话框同意情况下的确认操作
+    //覆盖mixin 授权对话框同意情况下的确认操作
     onPassedAuthorize() {
       this.onAuthorization('PASSED')
     },
-    // 授权对话框同意情况下的返回操作
+    //覆盖mixin 授权对话框同意情况下的返回操作
     onAgreeAuthorizeGoBack() {
       this.show.agree=false
     },
-    // 授权对话框不同意情况下的返回操作
+    //覆盖mixin 授权对话框不同意情况下的返回操作
     onDisagreeAuthorizeGoBack() {
       this.closeAuthorize('back')
     },
@@ -894,10 +732,10 @@ export default {
     },
     showFamilyDetail(...args) {
       const [ familyId, meetingId ] = args
-      this.show.familiesDetialInform = true
       this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
-        if (!res.family) return
-        this.family = Object.assign({}, res.family)
+        if (res.family) this.family = Object.assign({}, res.family)
+        else this.family = {}
+        this.show.familiesDetialInform = true
       })
     },
     sortChange({ column, prop, order }) {
@@ -967,4 +805,8 @@ export default {
     padding: 10px 20px !important;
   >>> .el-dialog__header
     border-bottom: 1px solid #f4f4f4 !important;
+.button-box
+  >>> .el-button
+    &:first-of-type
+      margin-left: 0px !important;
 </style>

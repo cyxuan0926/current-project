@@ -30,7 +30,7 @@
         <el-table-column
           v-if="hasProvinceQueryAuth"
           label="省份"
-          min-width="55"
+          min-width="60"
           prop="provinceName"
           show-overflow-tooltip
         />
@@ -38,14 +38,14 @@
           v-if="hasAllPrisonQueryAuth"
           label="监狱名称"
           prop="jailName"
-          min-width="60"
+          min-width="50"
           show-overflow-tooltip
         />
         <el-table-column
           prop="name"
           show-overflow-tooltip
           label="家属姓名"
-          min-width="60"
+          min-width="50"
         />
         <el-table-column
           min-width="148px"
@@ -82,7 +82,7 @@
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="100"
+          min-width="80"
         />
         <el-table-column
           label="申请时间"
@@ -132,7 +132,8 @@
         </el-table-column>
         <el-table-column
           prop="auditRealName"
-          label="审核信息" 
+          label="审核信息"
+          min-width="50"
           show-overflow-tooltip
         >
           <template
