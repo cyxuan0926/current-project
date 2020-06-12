@@ -21,6 +21,14 @@ export default {
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
   },
+  // 外交领事官员可视电话申请-列表
+  getMeetingsDiplomats: params => {
+    return service.get('/meetings/diplomats/page', params).then(res => res && res.data)
+  },
+  // 外交领事官员可视电话申请-家属详情
+  getMeetingsDiplomatsDetail: params => {
+    return service.get('/meetings/diplomats/familyDetail', params).then(res => res && res.data)
+  },
   // 家属会见申请-列表-所有监狱
   getMeetingsAll: params => {
     return service.get('/meetings/findPage', params).then(res => res && res.data)
