@@ -22,8 +22,11 @@ let check = [{
   children: [{
     path: '/diplomatic-consul-official/list',
     name: 'diplomatic-consul-official-list',
-    meta: { permission: '', breadcrumbName: '外交领事官员注册列表' },
-    component: 'diplomatic-consul-official/registration'
+    meta: {
+      permission: 'visit.diplomatic-consul-official.search',
+      breadcrumbName: '外交领事官员注册列表'
+    },
+    component: 'diplomatic-consul-official/registration/index'
   }]
 }, {
   path: '/meeting',
@@ -93,7 +96,7 @@ let check = [{
 
   }, {
     path: '/meeting-report/meeting-diplomatist-detail',
-    component: 'check-meeting/meeting-diplomatist-detail',
+    component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }]
 }, {

@@ -102,7 +102,7 @@
                 :toolbar="{ prev: 1, next: 1 }"
                 :title="item.title"
               />
-          </template>
+            </template>
           </div>       
         </template>
 
@@ -117,75 +117,70 @@
         </template>
       </family-detail-information>
 
-      <div
-        v-if="!show.agree && show.disagree && show.callback"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
-      </div>
+      <template>
+        <div
+          v-if="!show.agree && show.disagree && show.callback"
+          class="button-box">
+          <repetition-el-buttons :buttonItems="authorizeButtons" />
+        </div>
+      </template>
 
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="showAgreeButtons" />
-      </div>
+      <template>
+        <div
+          v-if="show.agree"
+          class="button-box">
+          <repetition-el-buttons :buttonItems="showAgreeButtons" />
+        </div>
+      </template>
 
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
+      <template v-if="show.disagree">
+        <div class="button-box">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
+          <el-select v-model="remarks">
+            <el-option
+              v-for="remark in defaultRemarks"
+              :value="remark"
+              :label="remark"
+              :key="remark"
+            />
+          </el-select>
+
+          <m-form
+            v-if="remarks === '其他'"
+            class="withdraw-box"
+            ref="refuseForm"
+            :items="authorizeFormItems"
+            @submit="onAuthorization($event, 'DENIED')"
           />
-        </el-select>
 
-        <m-form
-          v-if="remarks === '其他'"
-          class="withdraw-box"
-          ref="refuseForm"
-          :items="authorizeFormItems"
-          @submit="onAuthorization({
-            status: 'DENIED',
-            remarks,
-            ...$event
-          })"
-        />
+          <repetition-el-buttons :buttonItems="showDisagreebuttons" />
+        </div>
+      </template>
 
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
+      <template v-if="show.callback">
+        <div class="button-box">
+          <div style="margin-bottom: 10px;">请选择撤回原因</div>
 
-      <div
-        v-if="show.callback"
-        class="button-box"
-      >
-        <div style="margin-bottom: 10px;">请选择撤回原因</div>
+          <el-select v-model="remarks">
+            <el-option
+              v-for="remark in defaultRemarks"
+              :value="remark"
+              :label="remark"
+              :key="remark"
+            />
+          </el-select>
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
+          <m-form
+            class="withdraw-box"
+            ref="withdrawForm"
+            :items="callbackFormItems"
+            @submit="onAuthorization($event, 'WITHDRAW')"
           />
-        </el-select>
 
-        <m-form
-          class="withdraw-box"
-          ref="withdrawForm"
-          :items="callbackFormItems"
-          @submit="onAuthorization({
-            status: 'WITHDRAW',
-            remarks,
-            ...$event
-          })"
-        />
-
-        <repetition-el-buttons :buttonItems="callbackButtons" />
-      </div>
+          <repetition-el-buttons :buttonItems="callbackButtons" />
+        </div>
+      </template>
     </el-dialog>
   </el-row>
 </template>

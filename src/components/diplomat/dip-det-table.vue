@@ -7,8 +7,10 @@
             class="mini-td-padding"
             style="width: 100%">
             <template #name="{ row }">
+
                 <span v-if="isAdmin">{{row.name}}</span>
                 <a v-else @click="handleShowInfo()"></a>
+
             </template>
             <template #operation="{ row }">
                 <el-button
@@ -79,12 +81,12 @@
                     },
                     {
                         label: '姓名',
-                        prop: 'a',
+                        prop: 'diplomatsName',
                         slotName: 'name'
                     },
                     {
                         label: '所在机构/馆名',
-                        prop: 'b'
+                        prop: 'orgName'
                     },
                     {
                         label: '可视电话时间段',

@@ -67,9 +67,9 @@
         methods: {
             getDatas() {
                 const params = { ...this.filter, ...this.pagination }
-                if (this.hasAllPrisonQueryAuth){
-                    http.getDiplomatistDetail(params)
-                }
+              const { data } = http.getDiplomatistDetail(params)
+              this.tableDatas.contents = data.diplomatsMeetingDetails || []
+              this.tableDatas.total = data.total
             },
 
             onSearch() {
