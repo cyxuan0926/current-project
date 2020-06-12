@@ -47,7 +47,7 @@
         </template>
         <template
           slot-scope="scope"
-          slot="content">
+          slot="status">
           <span v-if="!scope.row.content">
             <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
             <template v-else>{{ scope.row.status | applyStatus }}</template>
@@ -292,7 +292,7 @@ export default {
     ]
     return {
       tabsItems,
-      value1:[new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+      value1:[new Date(),new Date(new Date().getTime() + 2 * 60 * 60 * 1000) ],
       select:"",
       tabs: '',
       searchItems: {
@@ -958,6 +958,10 @@ img
   display: block;
 .img-idCard
   min-width: 350px;
+>>> label
+  color: #000;
+  font-size: 16px;
+  line-height: 22px;
 .withdraw-form
  >>> .button-box
        padding-bottom: 0px
@@ -965,6 +969,7 @@ img
   display: block;
   width: 342.4px;
   height: 216px;
+  margin:auto;
   >>> img
         width: 100%;
         height: 100%;
