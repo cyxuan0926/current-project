@@ -38,11 +38,9 @@ export default {
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
-      if (this.$store.state.prisonAll.length === 0) {
-        await this.$store.dispatch('getPrisonAll')
+      await this.$store.dispatch('getPrisonAll')
 
-        Message.closeAll()
-      }
+      Message.closeAll()
 
       this.searchItems.jailId.options = this.$store.state.prisonAll
 
@@ -63,11 +61,9 @@ export default {
 
       this.searchItems = Object.assign({}, { provincesId: provinceItem }, this.searchItems)
 
-      if (this.$store.state.provincesAll.length === 0) {
-        await this.$store.dispatch('getProvincesAll')
+      await this.$store.dispatch('getProvincesAll')
 
-        Message.closeAll()
-      }
+      Message.closeAll()
 
       this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
 
@@ -94,7 +90,7 @@ export default {
 
             Message.closeAll()
 
-            this.searchItems.prisonArea.options = this.$store.state.jailPrisonAreas
+            this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
           }
           else {
             this.searchItems.prisonArea.options = []

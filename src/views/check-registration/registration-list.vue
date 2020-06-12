@@ -29,69 +29,86 @@
         style="width: 100%">
         <el-table-column
           v-if="hasProvinceQueryAuth"
+          label="省份"
+          min-width="60"
           prop="provinceName"
-          label="省份"/>
+          show-overflow-tooltip
+        />
         <el-table-column
           v-if="hasAllPrisonQueryAuth"
+          label="监狱名称"
+          prop="jailName"
+          min-width="50"
           show-overflow-tooltip
-          prop="jailName" 
-          label="监狱名称" />
+        />
         <el-table-column
           prop="name"
-          min-width="70px"
           show-overflow-tooltip
-          label="家属姓名" />
+          label="家属姓名"
+          min-width="50"
+        />
         <el-table-column
-          min-width="145px"
-          label="身份证信息">
+          min-width="148px"
+          label="身份证件信息">
           <template slot-scope="scope">
             <m-img-viewer
               v-if="scope.row.idCardFront"
+              class="img-viewer__overflow-unset"
               :url="scope.row.idCardFront"
               :toolbar="{ prev: 1, next: 1 }"
-              title="身份证正面照" />
+              title="身份证正面照"
+            />
             <m-img-viewer
               v-if="scope.row.idCardBack"
+              class="img-viewer__overflow-unset"
               :url="scope.row.idCardBack"
               :toolbar="{ prev: 1, next: 1 }"
-              title="身份证背面照" />
+              title="身份证背面照"
+            />
             <m-img-viewer
               v-if="scope.row.avatarUrl"
-              class="img-viewer__hidden"
+              class="img-viewer__hidden img-viewer__overflow-unset"
               :url="scope.row.avatarUrl"
               :toolbar="{ prev: 1, next: 1 }"
-              title="头像" />
-            <m-img-viewer
-              v-if="scope.row.relationalProofUrl"
-              class="img-viewer__hidden"
-              :url="scope.row.relationalProofUrl"
-              :toolbar="{ prev: 1, next: 1 }"
-              title="关系证明图" />
+              title="头像"
+            />
           </template>
         </el-table-column>
         <el-table-column
-          min-width="120px"
-          label="申请时间">
+          label="身份证件有效期至"
+          prop="validDates"
+        />
+        <el-table-column
+          label="家属类型"
+          prop="domicileName"
+          show-overflow-tooltip
+          min-width="80"
+        />
+        <el-table-column
+          label="申请时间"
+          min-width="120"
+        >
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
           prop="prisonerNumber"
-          min-width="70px"
           show-overflow-tooltip
-          label="罪犯编号" />
+          label="罪犯编号"
+          min-width="55"
+        />
         <el-table-column
           prop="prisonArea"
-          min-width="58px"
           show-overflow-tooltip
-          label="监区" />
+          label="监区"
+          min-width="50"
+        />
         <el-table-column
           prop="relationship"
-          min-width="58px"
           label="关系"
-          show-overflow-tooltip />
-        <el-table-column
-          label="家属会见告知书"
-          min-width="105px" >
+          min-width="50"
+          show-overflow-tooltip 
+        />
+        <el-table-column label="家属会见告知书" min-width="65">
           <template slot-scope="scope">
             <span
               :class="[
@@ -108,14 +125,17 @@
         </el-table-column>
         <el-table-column
           label="申请状态"
-          width="70px"
-          class-name="orange">
+          min-width="60"
+          class-name="orange"
+        >
           <template slot-scope="scope"> {{ scope.row.status | registStatus }} </template>
         </el-table-column>
         <el-table-column
           prop="auditRealName"
-          min-width="120px"
-          label="审核信息">
+          label="审核信息"
+          min-width="50"
+          show-overflow-tooltip
+        >
           <template
             v-if="scope.row.auditAt"
             slot-scope="scope">
@@ -123,19 +143,24 @@
             {{ scope.row.auditAt | Date }}</template>
         </el-table-column>
         <el-table-column
-          v-if="!hasAllPrisonQueryAuth"
-          label="操作">
+          label="操作" 
+          min-width="65"
+        >
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.status == 'PENDING'"
+              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PENDING'"
               size="mini"
               @click="handleAuthorization(scope.row)">授权
             </el-button>
             <el-button
-              v-if="scope.row.status == 'PASSED'"
+              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PASSED'"
               size="mini"
               @click="handleCallback(scope.row)">撤回
             </el-button>
+            <el-button
+              v-if="hasProvinceQueryAuth"
+              size="mini"
+              @click="onView(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -147,151 +172,184 @@
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
-      :title="show.callback ? '撤回' : '授权'"
+      :title="dialogTitle"
       @close="closeWithdraw"
       width="530px">
-      <div style="margin-bottom: 10px;">请核对申请人照片:</div>
+      <div style="margin-bottom: 10px;">请核对申请人信息:</div>
       <div class="img-box">
         <m-img-viewer
           v-if="toAuthorize.idCardFront"
           :url="toAuthorize.idCardFront"
           :toolbar="{ prev: 1, next: 1 }"
-          title="身份证正面照"/>
+          title="身份证正面照"
+        />
         <m-img-viewer
           v-if="toAuthorize.idCardBack"
           :url="toAuthorize.idCardBack"
           :toolbar="{ prev: 1, next: 1 }"
-          title="身份证背面照"/>
+          title="身份证背面照"
+        />
         <m-img-viewer
           v-if="toAuthorize.avatarUrl"
           :url="toAuthorize.avatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
-          title="头像"/>
-        <m-img-viewer
-          v-if="toAuthorize.relationalProofUrl"
-          :url="toAuthorize.relationalProofUrl"
-          :toolbar="{ prev: 1, next: 1 }"
-          title="关系证明图"/>
+          title="头像"
+        />
       </div>
-      <div
-        v-if="!show.agree && !show.disagree && !show.callback"
-        class="button-box">
-        <el-button
-          plain
-          @click="show.agree = true">同意</el-button>
-        <el-button
-          plain
-          @click="show.disagree = true">不同意</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <!-- 同意 -->
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('PASSED')">确定申请通过？</el-button>
-        <el-button
-          plain
-          @click="show.agree=false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <!-- 不同意 -->
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-        <el-select v-model="remarks">
-          <el-option
-            v-for="(remark,index) in registRemarks"
-            :value="remark"
-            :label="remark"
-            :key="index"/>
-        </el-select>
-        <el-form
-          v-if="remarks === '其他'"
-          :model="refuseForm"
-          :rules="withdrawRule"
-          ref="refuseForm"
-          class="withdraw-box">
-          <el-form-item prop="anotherRemarks">
-            <el-input
-              type="textarea"
-              show-word-limit
-              maxlength="15"
-              placeholder="请输入驳回原因..."
-              v-model.trim="refuseForm.anotherRemarks" />
-          </el-form-item>
-        </el-form>
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('DENIED')">提交</el-button>
-        <el-button
-          plain
-          @click="show.disagree = false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="closeWithdraw('refuseForm')">关闭</el-button>
-      </div>
-      <!-- 撤回 -->
-      <div
-        v-if="show.callback"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-        <el-select v-model="remarks">
-          <el-option
-            v-for="(remark,index) in registRemarks"
-            :value="remark"
-            :label="remark"
-            :key="index"/>
-        </el-select>
-        <el-form
-          v-if="remarks === '其他'"
-          :model="refuseForm"
-          :rules="withdrawRule"
-          ref="refuseForm"
-          class="withdraw-box">
-          <el-form-item prop="anotherRemarks">
-            <el-input
-              type="textarea"
-              show-word-limit
-              maxlength="15"
-              placeholder="请输入驳回原因..."
-              v-model.trim="refuseForm.anotherRemarks" />
-          </el-form-item>
-        </el-form>
-        <el-form
-          :model="withdrawForm"
-          :rules="withdrawRule"
-          ref="withdrawForm"
-          class="withdraw-box">
-          <el-form-item prop="withdrawReason">
-            <el-input
-              type="textarea"
-              show-word-limit
-              maxlength="15"
-              placeholder="请输入撤回理由..."
-              v-model.trim="withdrawForm.withdrawReason" />
-          </el-form-item>
-        </el-form>
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('WITHDRAW')">提交</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="closeWithdraw('withdrawForm')">关闭</el-button>
-      </div>
+      <template>
+        <div style="margin-bottom: 10px;">请核对关系证明:</div>
+        <div class="img-box">
+          <template v-for="url in toAuthorize.relationalProofUrls" >
+            <m-img-viewer
+              v-if="url"
+              :style="{ width: relationalWidth }"
+              :key="url"
+              :url="url"
+              :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
+              title="关系证明图"
+            />
+          </template>
+        </div>
+      </template>
+      <template>
+        <div style="margin-bottom: 10px;">会见通知单:</div>
+        <div class="img-box">
+          <m-img-viewer
+            v-if="toAuthorize.meetNoticeUrl"
+            :url="toAuthorize.meetNoticeUrl"
+            title="会见通知单"
+          />
+        </div>
+      </template>
+      <template v-if="!hasAllPrisonQueryAuth">
+        <div
+          v-if="!show.agree && !show.disagree && !show.callback"
+          class="button-box">
+          <el-button
+            plain
+            @click="show.agree = true">同意</el-button>
+          <el-button
+            plain
+            @click="show.disagree = true">不同意</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false">关闭</el-button>
+        </div>
+        <!-- 同意 -->
+        <div
+          v-if="show.agree"
+          class="button-box">
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('PASSED')">确定申请通过？</el-button>
+          <el-button
+            plain
+            @click="show.agree=false">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false">关闭</el-button>
+        </div>
+        <!-- 不同意 -->
+        <div
+          v-if="show.disagree"
+          class="button-box">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
+          <el-select v-model="remarks">
+            <el-option
+              v-for="(remark,index) in registRemarks"
+              :value="remark"
+              :label="remark"
+              :key="index"/>
+          </el-select>
+          <el-form
+            v-if="remarks === '其他'"
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks">
+              <el-input
+                type="textarea"
+                show-word-limit
+                maxlength="15"
+                placeholder="请输入驳回原因..."
+                v-model.trim="refuseForm.anotherRemarks" />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('DENIED')">提交</el-button>
+          <el-button
+            plain
+            @click="show.disagree = false">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('refuseForm')">关闭</el-button>
+        </div>
+        <!-- 撤回 -->
+        <div
+          v-if="show.callback"
+          class="button-box">
+          <div style="margin-bottom: 10px;">请选择撤回原因</div>
+          <el-select v-model="remarks">
+            <el-option
+              v-for="(remark,index) in registRemarks"
+              :value="remark"
+              :label="remark"
+              :key="index"/>
+          </el-select>
+          <!-- <el-form
+            v-if="remarks === '其他'"
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks">
+              <el-input
+                type="textarea"
+                show-word-limit
+                maxlength="15"
+                placeholder="请选择撤回原因..."
+                v-model.trim="refuseForm.anotherRemarks" />
+            </el-form-item>
+          </el-form> -->
+          <el-form
+            :model="withdrawForm"
+            :rules="withdrawRule"
+            ref="withdrawForm"
+            class="withdraw-box">
+            <el-form-item prop="withdrawReason">
+              <el-input
+                type="textarea"
+                show-word-limit
+                maxlength="15"
+                placeholder="请输入撤回理由..."
+                v-model.trim="withdrawForm.withdrawReason" />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('WITHDRAW')">提交</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('withdrawForm')">关闭</el-button>
+        </div>
+      </template>
+      <template v-if="hasAllPrisonQueryAuth">
+        <div class="button-box view-box">
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false">关闭</el-button>
+        </div>
+      </template>
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
@@ -320,6 +378,7 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
+import switches from '@/filters/modules/switches'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -340,7 +399,8 @@ export default {
           type: 'select',
           label: '监区',
           options,
-          belong
+          belong,
+          value: ''
         },
         auditName: {
           type: 'input',
@@ -359,6 +419,12 @@ export default {
           type: 'date',
           label: '审核时间',
           miss: true
+        },
+        nationality: {
+          type: 'select',
+          label: '家属类型',
+          options: switches['nationality'],
+          value: ''
         }
       },
       toAuthorize: {},
@@ -391,7 +457,8 @@ export default {
       remarks: '身份信息错误',
       btnDisable: false, // 按钮禁用与启用
       tabs: 'PENDING',
-      notificationShow: false
+      notificationShow: false,
+      dialogTitle: ''
     }
   },
   watch: {
@@ -423,7 +490,18 @@ export default {
     ...mapState([
       'registrations',
       'registRemarks',
-      'notification'])
+      'notification']),
+
+      relationalWidth() {
+        const widthConstent = {
+          0: '0%',
+          1: '32%',
+          2: '48%',
+          3: '32%',
+          4: '24%'
+        }
+        return widthConstent[this.toAuthorize.relationalProofUrls.length]
+      }
   },
   methods: {
     ...mapActions([
@@ -451,12 +529,13 @@ export default {
       this.show.callback = false
       this.remarks = '身份信息错误'
       this.show.authorize = true
+      this.dialogTitle = '授权'
     },
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
-        if (this.remarks === '其他') {
+        if (this.remarks === '其他' && e !== 'WITHDRAW') {
           this.$refs.refuseForm.validate(valid => {
             if (valid) params.remarks = this.refuseForm.anotherRemarks
             else this.btnDisable = false
@@ -489,6 +568,7 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.callback = true
+      this.dialogTitle = '撤回'
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
     closeWithdraw() {
@@ -515,6 +595,11 @@ export default {
           this.notificationShow = true
         })
       }
+    },
+    onView(e) {
+      this.toAuthorize = e
+      this.dialogTitle = '查看'
+      this.show.authorize = true
     }
   }
 }
@@ -537,12 +622,19 @@ export default {
 .authorize-dialog
   .img-box
     .el-image
-      width: 48%;
-      height: 150px;
+      width: 32%;
+      height: 110px;
       margin-bottom: 5px;
       box-shadow: 0 0 5px #ddd;
       >>> img
            width: 100%;
            height: 100%;
            cursor: pointer;
+.button-box 
+  .el-button
+    &:first-of-type
+      margin-left: 0px !important;
+.view-box
+  display: flex;
+  flex-direction: row-reverse;
 </style>

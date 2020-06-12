@@ -245,6 +245,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1
@@ -267,6 +270,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1
@@ -346,6 +352,7 @@ export default {
           else if (this.tabs === 'second') {
             let count = 0
             let prisonYZXInterver = setInterval(() =>{
+              count ++
               if (count === 1) {
                 this.spendTime += 1
                 this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {

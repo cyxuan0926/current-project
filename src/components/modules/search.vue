@@ -7,7 +7,7 @@
           clearable
           :disabled="item.disabled"
           v-if="item.type === 'input' && !item.miss"
-          v-model="item.value"
+          v-model.trim="item.value"
           :placeholder="item.noPlaceholder ? item.label : '请输入' + item.label" />
         <el-select
           :key="index"

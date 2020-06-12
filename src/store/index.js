@@ -4,6 +4,7 @@ import account from './modules/account'
 import quillEditor from './modules/quill-editor'
 import literature from './modules/literature'
 import coopertivePartner from './modules/coopertive-partner'
+import diplomaticConsulOfficial from './modules/diplomatic-consul-official'
 
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
 import adminFeedback from '@/views/sadmin-feedback/vuex'
@@ -95,6 +96,7 @@ export default new Vuex.Store({
     login,
     global,
     trade,
-    coopertivePartner
+    coopertivePartner,
+    diplomaticConsulOfficial
   }
 })
