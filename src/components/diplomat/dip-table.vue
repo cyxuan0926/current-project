@@ -1,13 +1,17 @@
 <template>
     <div>
-        <el-table
+        <m-table-new
             :data="tableDatas.contents"
             :cols="tableCols"
             stripe
             class="mini-td-padding"
             style="width: 100%">
             <template #name="{ row }">
-                <span>{{row.name}}</span>
+                <span v-for="(f, i) in row.families" :key="f.familyId">{{f.familyName}}<i v-if="i != row.families.length - 1">，</i></span>
+            </template>
+            <template #status="{ row }">
+                <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
+                <span v-else>{{ row.status | applyStatus }}</span>
             </template>
             <template #operation="{ row }">
                 <el-button
@@ -15,7 +19,7 @@
                     @click="handleShowDetails(row.meeting_details)">详情
                 </el-button>
             </template>
-        </el-table>
+        </m-table-new>
         <m-pagination
             ref="pagination"
             :total="tableDatas.total"
@@ -37,11 +41,7 @@
             return {
                 callRecords: [],
                 recordsVisible: false,
-            }
-        },
-        computed: {
-            tableCols() {
-                let cols = [
+                tableCols: [
                     {
                         label: '省份',
                         prop: 'provinceName'
@@ -52,38 +52,43 @@
                     },
                     {
                         label: '姓名',
-                        prop: 'a',
+                        prop: 'name',
                         slotName: 'name'
                     },
                     {
                         label: '所在机构/馆名',
-                        prop: 'b'
+                        prop: 'orgName'
                     },
                     {
                         label: '申请时间',
-                        prop: 'c'
+                        prop: 'applicationDate'
                     },
                     {
                         label: '申请通话时间',
-                        prop: 'd',
+                        prop: 'meetingTime',
                     },
                     {
                         label: '申请时长',
-                        prop: 'd',
+                        prop: 'applyTimes',
                     },
                     {
                         label: '申请状态',
-                        prop: 'd',
+                        prop: 'status',
+                        slotName: 'status'
                     },
                     {
                         label: '操作',
                         slotName: 'operation'
                     }
                 ]
-                if (!this.hasAuth) {
-                    cols.splice(0, 2)
-                }
-                return cols
+            }
+        },
+        watch: {
+            tableDatas(val) {
+                console.log( '====', val )
+                this.contents = val.contents
+                this.total = val.total
+                console.log( this.contents )
             }
         },
         methods: {

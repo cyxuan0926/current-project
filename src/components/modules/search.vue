@@ -13,7 +13,7 @@
           :key="index"
           v-if="item.type === 'select' && !item.miss"
           v-model="item.value"
-          v-autowidth:8="item.value"
+          v-autowidth:10="item.value"
           :placeholder="item.noPlaceholder ? item.label : '请选择' + item.label"
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
@@ -293,7 +293,7 @@ export default {
     }
 
     .el-input {
-      width: 13.5em;
+      width: 14em;
       // width: $--input-width;
     }
 
