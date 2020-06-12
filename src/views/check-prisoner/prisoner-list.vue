@@ -282,7 +282,7 @@
     <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
-      :title="'会见告知书-' + notificationPrisoner.name"
+      :title="'亲情电话告知书-' + notificationPrisoner.name"
       width="530px">
       <div class="el-form el-form--inline">
         <div class="el-form-item">
@@ -406,7 +406,7 @@ export default {
         },
         isNotify: {
           type: 'select',
-          label: '会见告知书',
+          label: '亲情电话告知书',
           noPlaceholder: true,
           options: notifyOptions
         },
@@ -729,7 +729,7 @@ export default {
           slotName: 'families'
         },
         {
-          label: '家属会见告知书',
+          label: '家属亲情电话告知书',
           minWidth: 105,
           slotName: 'notifyId'
         },

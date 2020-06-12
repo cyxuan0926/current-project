@@ -337,7 +337,7 @@ let superAdmin = [{
     props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       permission: 'visit.visit-statistic.all-prison.search',
-      breadcrumbName: '监狱会见统计'
+      breadcrumbName: '监狱亲情电话统计'
     },
     component: 'meeting-report/prison-report'
     // component: helper.loadView('meeting-report/prison-report')
@@ -347,7 +347,7 @@ let superAdmin = [{
     props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       permission: 'visit.visit-statistic.all-prison-area.search',
-      breadcrumbName: '监区会见统计'
+      breadcrumbName: '监区亲情电话统计'
     },
     component: 'meeting-report/prison-area-report'
     // component: helper.loadView('meeting-report/prison-area-report')
@@ -375,7 +375,7 @@ let superAdmin = [{
     component: 'check-meeting/meeting-statistics',
     meta: {
       permission: 'visit.visit-statistic.chart.all-prison.search',
-      breadcrumbName: '监狱会见数据统计表'
+      breadcrumbName: '监狱通话数据统计表'
     },
     props: { hasProvinceQueryAuth: true }
   }, {

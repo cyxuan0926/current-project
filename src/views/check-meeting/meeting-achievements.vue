@@ -271,10 +271,10 @@ export default {
             minWidth: '100px',
             showOverflowTooltip: true
           },
-          { prop: 'meetingTime', label: '会见日期', minWidth: '110px' },
-          { prop: 'duration', label: '会见时长', minWidth: '70px' },
-          { prop: 'province', label: '家属会见所在省', minWidth: '100px' },
-          { prop: 'city', label: '家属会见所在市', minWidth: '100px' },
+          { prop: 'meetingTime', label: '通话日期', minWidth: '110px' },
+          { prop: 'duration', label: '通话时长', minWidth: '70px' },
+          { prop: 'province', label: '家属通话所在省', minWidth: '100px' },
+          { prop: 'city', label: '家属通话所在市', minWidth: '100px' },
           {
             prop: 'distance',
             label: '与监狱距离(km)',

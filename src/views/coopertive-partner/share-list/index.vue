@@ -120,7 +120,7 @@ export default {
         minWidth: 120
       },
       {
-        label: '会见结束时间',
+        label: '通话结束时间',
         prop: 'mettingEndTime',
         minWidth: 120
       },
@@ -140,7 +140,7 @@ export default {
       },
       prisonNameItem,
       {
-        label: '会见ID',
+        label: '通话ID',
         prop: 'mettingId',
         minWidth: 55,
         showOverflowTooltip: true
