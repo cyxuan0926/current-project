@@ -9,6 +9,14 @@ export default {
       return true
     })
   },
+  getMeetingsDiplomats({ commit }, params) {
+    return http.getMeetingsDiplomats(params).then(res => {
+      console.log(res)
+      if (!res) return
+      commit('getMeetingsDiplomats', res)
+      return true
+    })
+  },
   getMeetingsAll({ commit }, params) {
     return http.getMeetingsAll(params).then(res => {
       if (!res) return
@@ -41,6 +49,9 @@ export default {
   },
   getFreeMeetings({ commit }, params) {
     http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', { contents: res.freeMeetings, total: res.total }))
+  },
+  getMeetingsDiplomatsDetail({ commit }, params) {
+    return http.getMeetingsDiplomatsDetail(params).then(res => res)
   },
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)

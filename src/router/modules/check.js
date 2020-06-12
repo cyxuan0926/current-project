@@ -38,6 +38,14 @@ let check = [{
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '亲情电话申请列表' }
   }, {
+    path: '/meeting/diplomatist',
+    name: 'meeting-diplomatist',
+    // component: helper.loadView('check-meeting/meeting-list'),
+    // component: 'check-meeting/meeting-list',
+    component: 'check-meeting/meeting-diplomatist/meeting-diplomatist',
+    // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '外交领事官员可视电话申请列表 ' }
+  }, {
     path: '/meeting/adjust',
     name: 'meeting-adjust',
     // component: helper.loadView('check-meeting/meeting-adjust'),
@@ -82,6 +90,11 @@ let check = [{
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '亲情电话节约成本统计' }
+
+  }, {
+    path: '/meeting-report/meeting-diplomatist-detail',
+    component: 'check-meeting/meeting-diplomatist-detail',
+    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }]
 }, {
   path: '/mailbox',
