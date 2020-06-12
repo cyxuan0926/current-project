@@ -31,7 +31,7 @@
     "js-cookie": "^2.2.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "sortablnejs": "^1.10.2",
+    "sortablejs": "^1.10.2",
     "viewerjs": "^1.2.0",
     "vue": "^2.6.11",
     "vue-quill-editor": "^3.0.4",
