@@ -2,11 +2,11 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-excel-download
+    <!-- <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
       path=""
       :params="filter"
-    />
+    /> -->
 
     <m-search
       ref="search"
@@ -102,7 +102,7 @@
                 :toolbar="{ prev: 1, next: 1 }"
                 :title="item.title"
               />
-          </template>
+            </template>
           </div>       
         </template>
 
@@ -117,75 +117,70 @@
         </template>
       </family-detail-information>
 
-      <div
-        v-if="!show.agree && show.disagree && show.callback"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
-      </div>
+      <template>
+        <div
+          v-if="!show.agree && show.disagree && show.callback"
+          class="button-box">
+          <repetition-el-buttons :buttonItems="authorizeButtons" />
+        </div>
+      </template>
 
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="showAgreeButtons" />
-      </div>
+      <template>
+        <div
+          v-if="show.agree"
+          class="button-box">
+          <repetition-el-buttons :buttonItems="showAgreeButtons" />
+        </div>
+      </template>
 
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
+      <template v-if="show.disagree">
+        <div class="button-box">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
+          <el-select v-model="remarks">
+            <el-option
+              v-for="remark in defaultRemarks"
+              :value="remark"
+              :label="remark"
+              :key="remark"
+            />
+          </el-select>
+
+          <m-form
+            v-if="remarks === '其他'"
+            class="withdraw-box"
+            ref="refuseForm"
+            :items="authorizeFormItems"
+            @submit="onAuthorization($event, 'DENIED')"
           />
-        </el-select>
 
-        <m-form
-          v-if="remarks === '其他'"
-          class="withdraw-box"
-          ref="refuseForm"
-          :items="authorizeFormItems"
-          @submit="onAuthorization({
-            status: 'DENIED',
-            remarks,
-            ...$event
-          })"
-        />
+          <repetition-el-buttons :buttonItems="showDisagreebuttons" />  
+        </div>
+      </template>
 
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
+      <template v-if="show.callback">
+        <div class="button-box">
+          <div style="margin-bottom: 10px;">请选择撤回原因</div>
 
-      <div
-        v-if="show.callback"
-        class="button-box"
-      >
-        <div style="margin-bottom: 10px;">请选择撤回原因</div>
+          <el-select v-model="remarks">
+            <el-option
+              v-for="remark in defaultRemarks"
+              :value="remark"
+              :label="remark"
+              :key="remark"
+            />
+          </el-select>
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
+          <m-form
+            class="withdraw-box"
+            ref="withdrawForm"
+            :items="callbackFormItems"
+            @submit="onAuthorization($event, 'WITHDRAW')"
           />
-        </el-select>
 
-        <m-form
-          class="withdraw-box"
-          ref="withdrawForm"
-          :items="callbackFormItems"
-          @submit="onAuthorization({
-            status: 'WITHDRAW',
-            remarks,
-            ...$event
-          })"
-        />
-
-        <repetition-el-buttons :buttonItems="callbackButtons" />
-      </div>
+          <repetition-el-buttons :buttonItems="callbackButtons" />
+        </div>
+      </template>
     </el-dialog>
   </el-row>
 </template>
@@ -443,8 +438,8 @@ export default {
         ...this.filter,
         ...this.pagination
       }
-      console.log(this.filter, this.pagination)
-      // await this.getPageData({url, params})
+
+      await this.getPageData({url, params})
     },
 
     // 授权/撤回 操作显示对话框
@@ -511,6 +506,7 @@ export default {
       } else {
         // 不同意
         if (this.remarks === '其他') this.$refs.refuseForm.onSubmit()
+        else this.onAuthorization({ refuseRemark: this.remarks }, 'DENIED')
       }
     },
 
@@ -524,8 +520,25 @@ export default {
     },
 
     // 审批操作
-    async onAuthorization(params) {
-      console.log(params)
+    async onAuthorization(...agrs) {
+      const [ filterParams, status ] = agrs
+      let params
+      if (status === 'DENIED') {
+        // 授权不同意
+        const { refuseRemark } = filterParams
+        params = {
+          status,
+          remarks: refuseRemark
+        }
+      } else if (status === 'WITHDRAW') {
+        // 撤回
+        params = {
+          ...filterParams,
+          status,
+          remarks: this.remarks
+        }
+      } else params = filterParams
+
       const res = await this.registrationAuthorize(params)
 
       this.buttonLoading = false

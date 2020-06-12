@@ -200,12 +200,12 @@ export default {
         totalCost: {
           slotName: 'totalCost',
           attrs: {
-            label: '申请会见总费用'
+            label: '申请亲情电话总费用'
           }
         },
         onceMoney: {
           type: 'input',
-          label: '单次会见费用',
+          label: '单次费用',
           disabled,
           rules: [
             'required',
@@ -237,13 +237,13 @@ export default {
           }]},
         agreement: {
           type: 'switch',
-          label: '线上签署《会见告知书》',
+          label: '线上签署《亲情电话告知书》',
           disabled,
           value: 0
         },
         meeting: {
           type: 'switch',
-          label: '会见模块开放',
+          label: '亲情电话模块开放',
           disabled,
           rules: ['required'],
           value: 1

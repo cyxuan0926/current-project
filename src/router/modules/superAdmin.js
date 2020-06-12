@@ -396,9 +396,9 @@ let superAdmin = [{
     },
     meta: {
       breadcrumbName: '外交领事官员注册表',
-      premission: ''
+      premission: 'visit.data-search.diplomatic-consul-official.search'
     },
-    component: 'diplomatic-consul-official/registration'
+    component: 'diplomatic-consul-official/registration/index'
   }, {
     path: '/prison-data/diplomatist',
     name: 'prison-data_diplomatist',

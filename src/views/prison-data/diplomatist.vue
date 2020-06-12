@@ -123,7 +123,6 @@
 
         methods: {
             getDatas() {
-                console.log(this.filter)
                 if (this.tabs !== 'first') {
                     this.filter.status = this.tabs
                 }
