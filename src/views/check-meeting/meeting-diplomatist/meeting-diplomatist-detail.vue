@@ -65,11 +65,12 @@
         },
 
         methods: {
-            getDatas() {
-                const params = { ...this.filter, ...this.pagination }
-              const { data } = http.getDiplomatistDetail(params)
-              this.tableDatas.contents = data.diplomatsMeetingDetails || []
-              this.tableDatas.total = data.total
+            async getDatas() {
+                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
+                this.tableDatas = {
+                    contents: diplomatsMeetingDetails,
+                    total
+                }
             },
 
             onSearch() {

@@ -62,10 +62,12 @@
         },
 
         methods: {
-            getDatas() {
-                const { data } = http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
-                this.tableDatas.contents = data.data || []
-                this.tableDatas.total = data.paginator.totalCount
+            async getDatas() {
+                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
+                this.tableDatas = {
+                    contents: diplomatsMeetingDetails,
+                    total
+                }
             },
 
             onSearch() {

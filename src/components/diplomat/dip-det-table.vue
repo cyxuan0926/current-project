@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table
+        <m-table-new
             :data="tableDatas.contents"
             :cols="tableCols"
             stripe
@@ -18,7 +18,7 @@
                     @click="handleShowRecords(row.meeting_details)">详情内容
                 </el-button>
             </template>
-        </el-table>
+        </m-table-new>
         <m-pagination
             ref="pagination"
             :total="tableDatas.total"

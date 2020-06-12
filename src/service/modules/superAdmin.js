@@ -162,7 +162,7 @@ export default {
   },
   // 监狱数据查询-外交官会见统计数据
   getDiplomatistDetail: params => {
-    return service.get('/report/diplomats-meeting/details', params).then(res => res)
+    return service.get('/report/diplomats-meeting/details', params).then(res => res.data)
   },
 
   getDiplomatist: params => {
