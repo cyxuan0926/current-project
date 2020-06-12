@@ -2,7 +2,6 @@ import flattenDepth from 'lodash/flattenDepth'
 
 export default {
   getMeetings(state, params) {
-    console.log(params)
     const { meetings } = params
     const data = meetings.map(meeting => {
       meeting.filterFamilies = []

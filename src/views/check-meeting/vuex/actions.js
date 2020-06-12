@@ -11,7 +11,6 @@ export default {
   },
   getMeetingsDiplomats({ commit }, params) {
     return http.getMeetingsDiplomats(params).then(res => {
-      console.log(res)
       if (!res) return
       commit('getMeetingsDiplomats', res)
       return true

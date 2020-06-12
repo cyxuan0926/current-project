@@ -22,8 +22,11 @@ let check = [{
   children: [{
     path: '/diplomatic-consul-official/list',
     name: 'diplomatic-consul-official-list',
-    meta: { permission: '', breadcrumbName: '外交领事官员注册列表' },
-    component: 'diplomatic-consul-official/registration'
+    meta: {
+      permission: 'visit.diplomatic-consul-official.search',
+      breadcrumbName: '外交领事官员注册列表'
+    },
+    component: 'diplomatic-consul-official/registration/index'
   }]
 }, {
   path: '/meeting',
