@@ -402,7 +402,7 @@ let superAdmin = [{
   }, {
     path: '/prison-data/diplomatist',
     name: 'prison-data_diplomatist',
-    props: '',
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       breadcrumbName: '外交领事官员可视电话申请列表',
       premission: ''
@@ -411,7 +411,7 @@ let superAdmin = [{
   }, {
     path: '/prison-data/diplomatist-detail',
     name: 'prison-data_diplomatist-detail',
-    props: '',
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, hasDiplomatQueryAuth: true },
     meta: {
       breadcrumbName: '外交领事官员可视电话详情表',
       premission: ''

@@ -18,7 +18,7 @@
                     :label="tab.label"
                     :name="tab.name" />
             </el-tabs>
-            <dip-table :tableDatas="tableDatas" @on-page="getDatas" :hasAuth="hasAllPrisonQueryAuth" :tabs="tabs" />
+            <dip-table :tableDatas="tableDatas" @on-page="getDatas" />
         </el-col>
     </el-row>
 </template>
@@ -48,11 +48,9 @@
                     }
                 ],
                 searchItems: {
-                    prisonArea: {
-                        type: 'select',
-                        label: '所在机构/馆名',
-                        //options,
-                        value: ''
+                    name: {
+                        type: 'input',
+                        label: '姓名'
                     },
                     applicationDate: {
                         type: 'dateRange',
@@ -122,15 +120,15 @@
         },
 
         methods: {
-            getDatas() {
+            async getDatas() {
                 if (this.tabs !== 'first') {
                     this.filter.status = this.tabs
                 }
-                const params = { ...this.filter, ...this.pagination }
-                // if (this.hasAllPrisonQueryAuth){
-                //     http.getDiplomatist(params)
-                // }
-                http.getMeetingsDiplomats(params)
+                const { meetings, total } = await http.getMeetingsDiplomats({ ...this.filter, ...this.pagination })
+                this.tableDatas = {
+                    contents: meetings,
+                    total
+                }
             },
 
             onSearch() {

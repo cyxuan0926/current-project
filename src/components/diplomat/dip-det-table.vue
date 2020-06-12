@@ -1,14 +1,16 @@
 <template>
     <div>
-        <el-table
+        <m-table-new
             :data="tableDatas.contents"
             :cols="tableCols"
             stripe
             class="mini-td-padding"
             style="width: 100%">
             <template #name="{ row }">
+
                 <span v-if="isAdmin">{{row.name}}</span>
                 <a v-else @click="handleShowInfo()"></a>
+
             </template>
             <template #operation="{ row }">
                 <el-button
@@ -16,7 +18,7 @@
                     @click="handleShowRecords(row.meeting_details)">详情内容
                 </el-button>
             </template>
-        </el-table>
+        </m-table-new>
         <m-pagination
             ref="pagination"
             :total="tableDatas.total"
@@ -79,12 +81,12 @@
                     },
                     {
                         label: '姓名',
-                        prop: 'a',
+                        prop: 'diplomatsName',
                         slotName: 'name'
                     },
                     {
                         label: '所在机构/馆名',
-                        prop: 'b'
+                        prop: 'orgName'
                     },
                     {
                         label: '可视电话时间段',

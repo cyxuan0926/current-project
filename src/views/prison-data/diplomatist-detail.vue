@@ -31,16 +31,9 @@
         data() {
             return {
                 searchItems: {
-                    name: {
+                    diplomatsName: {
                         type: 'input',
                         label: '姓名'
-                    },
-                    prisonArea: {
-                        type: 'select',
-                        label: '所在机构/馆名',
-                        //options,
-                        labelWidth: 160,
-                        value: ''
                     },
                     applicationDate: {
                         type: 'dateRange',
@@ -69,10 +62,11 @@
         },
 
         methods: {
-            getDatas() {
-                const params = { ...this.filter, ...this.pagination }
-                if (this.hasAllPrisonQueryAuth){
-                    http.getDiplomatistDetail(params)
+            async getDatas() {
+                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
+                this.tableDatas = {
+                    contents: diplomatsMeetingDetails,
+                    total
                 }
             },
 

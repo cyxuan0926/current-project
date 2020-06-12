@@ -2,11 +2,11 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <!-- <m-excel-download
+    <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
       path=""
       :params="filter"
-    /> -->
+    />
 
     <m-search
       ref="search"
@@ -154,7 +154,7 @@
             @submit="onAuthorization($event, 'DENIED')"
           />
 
-          <repetition-el-buttons :buttonItems="showDisagreebuttons" />  
+          <repetition-el-buttons :buttonItems="showDisagreebuttons" />
         </div>
       </template>
 
@@ -438,8 +438,8 @@ export default {
         ...this.filter,
         ...this.pagination
       }
-
-      await this.getPageData({url, params})
+      console.log(this.filter, this.pagination)
+      // await this.getPageData({url, params})
     },
 
     // 授权/撤回 操作显示对话框
@@ -506,7 +506,6 @@ export default {
       } else {
         // 不同意
         if (this.remarks === '其他') this.$refs.refuseForm.onSubmit()
-        else this.onAuthorization({ refuseRemark: this.remarks }, 'DENIED')
       }
     },
 
@@ -520,25 +519,8 @@ export default {
     },
 
     // 审批操作
-    async onAuthorization(...agrs) {
-      const [ filterParams, status ] = agrs
-      let params
-      if (status === 'DENIED') {
-        // 授权不同意
-        const { refuseRemark } = filterParams
-        params = {
-          status,
-          remarks: refuseRemark
-        }
-      } else if (status === 'WITHDRAW') {
-        // 撤回
-        params = {
-          ...filterParams,
-          status,
-          remarks: this.remarks
-        }
-      } else params = filterParams
-
+    async onAuthorization(params) {
+      console.log(params)
       const res = await this.registrationAuthorize(params)
 
       this.buttonLoading = false

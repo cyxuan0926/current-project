@@ -1,11 +1,13 @@
 import { Message } from 'element-ui'
+import http from '@/service'
 
 export default {
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
     hasAllPrisonQueryAuth: Boolean,
     hasOnlyAllPrisonQueryAuth: Boolean,
-    hasProvinceQueryAuth: Boolean
+    hasProvinceQueryAuth: Boolean,
+    hasDiplomatQueryAuth: Boolean
   },
   data() {
     return {
@@ -13,6 +15,10 @@ export default {
     }
   },
   created() {
+    if (this.hasDiplomatQueryAuth) {
+      this.createDiplomatFilter()
+    }
+
     if (this.hasOnlyAllPrisonQueryAuth) this.createPrisonFilter()
 
     if (this.hasAllPrisonQueryAuth) {
@@ -24,6 +30,32 @@ export default {
   },
 
   methods: {
+
+    async createDiplomatFilter() {
+      const orgSearchItem = {
+        type: 'select',
+        selectKey: 'orgName',
+        label: '所在机构/馆名',
+        getting: true,
+        filterable: true,
+        value: null,
+        options: []
+      }
+
+      this.searchItems = Object.assign({}, { orgName: orgSearchItem }, this.searchItems)
+
+      let { data } = await http.getDiplomatist()
+      data = data.map(d => ({
+        label: d,
+        value: d
+      }))
+
+      this.searchItems.orgName.options = data
+      this.searchItems.orgName.getting = false
+
+      Message.closeAll()
+    },
+
     async createPrisonFilter() {
       const prisonSearchItem = {
         type: 'select',

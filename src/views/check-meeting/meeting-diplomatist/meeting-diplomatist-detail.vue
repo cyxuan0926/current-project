@@ -65,10 +65,11 @@
         },
 
         methods: {
-            getDatas() {
-                const params = { ...this.filter, ...this.pagination }
-                if (this.hasAllPrisonQueryAuth){
-                    http.getDiplomatistDetail(params)
+            async getDatas() {
+                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
+                this.tableDatas = {
+                    contents: diplomatsMeetingDetails,
+                    total
                 }
             },
 

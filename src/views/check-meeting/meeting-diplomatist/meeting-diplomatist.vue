@@ -103,18 +103,24 @@
           <el-form-item label="请设置可视电话时间段：">
             <el-time-picker
               is-range
-              v-model="value1"
+              v-model="valueTime"
               format="HH:mm"
               range-separator="至"
               start-placeholder="开始时间"
               end-placeholder="结束时间"
+              @change="timeChange"
               placeholder="选择时间范围">
             </el-time-picker>
           </el-form-item>
           <el-form-item label="请选择可视频终端：">
-            <el-select v-model="select" placeholder="请选择活动区域" style="width: 350px">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+
+            <el-select v-model="selectValue"  @change="timeChange" placeholder="请选择视频终端" style="width: 350px">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
             </el-select>
           </el-form-item>
           <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"18:00-20:55",外交领事馆可视电话时间请勿与之冲突</p>
@@ -160,8 +166,6 @@
       width="650px"
       class="authorize-dialog"
       @close="onCloseShow">
-
-
       <el-form  label-width="120px">
         <el-form-item label="所在机构/馆名:">
           *****
@@ -196,8 +200,6 @@
 
 
       </el-form>
-
-
       <!--<family-to-show-->
         <!--:elItems="familyShows"-->
         <!--:showData="toShow">-->
@@ -255,7 +257,7 @@ export default {
     // 标签元素
     const tabsItems = [
       {
-        label: '会见申请',
+        label: '可视电话申请',
         name: 'first' },
       {
         label: '未授权',
@@ -292,8 +294,24 @@ export default {
     ]
     return {
       tabsItems,
-      value1:[new Date(),new Date(new Date().getTime() + 2 * 60 * 60 * 1000) ],
-      select:"",
+      valueTime:[new Date(),new Date(new Date().getTime() + 2 * 60 * 60 * 1000) ],
+      selectValue:"",
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
       tabs: '',
       searchItems: {
         name: {
@@ -305,8 +323,8 @@ export default {
           unlinkPanels: true,
           start: 'applicationStartDate',
           end: 'applicationEndDate',
-          startPlaceholder: '会见开始时间',
-          endPlaceholder: '会见结束时间',
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间',
           miss: false,
           // value: ''
         },
@@ -326,7 +344,6 @@ export default {
         auditAt: {
           type: 'date',
           label: '审核时间',
-
           value: ''
         },
 
@@ -718,12 +735,12 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getMeetingsDiplomats',
+      'getMeetingsDiplomats',//表格数据
       'getMeetingsAll',
-      'authorizeMeeting',
+      'authorizeMeeting',//授权同意接口
       'withdrawMeeting',
 
-      'getMeetingsDiplomatsDetail',
+      'getMeetingsDiplomatsDetail',//身份证正反面照片
 
       'getMeettingsDetail',
       'meetingApplyDealing'
@@ -813,6 +830,16 @@ export default {
           : constFamilyShows
       })
     },
+    timeChange(){
+      let timeparms={ startTime:"",endTime:""}
+      this.valueTime.forEach((item,key)=>{
+        if(key==0){
+          timeparms.startTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
+        }else{
+          timeparms.endTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
+        }
+      })
+    },
     onCloseShow() {
       this.toShow.id = ''
       if (this.meetingRefresh) this.getDatas('onCloseShow')
@@ -836,6 +863,7 @@ export default {
      //this.show.timer=true
 
        this.show.agree = true
+       this.timeChange();
        this.buttonLoading = false
     },
     // 授权对话框的不同意操作
