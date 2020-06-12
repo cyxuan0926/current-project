@@ -396,6 +396,24 @@ let superAdmin = [{
       premission: ''
     },
     component: 'diplomatic-consul-official/registration'
+  }, {
+    path: '/prison-data/diplomatist',
+    name: 'prison-data_diplomatist',
+    props: '',
+    meta: {
+      breadcrumbName: '外交领事官员可视电话申请列表',
+      premission: ''
+    },
+    component: 'prison-data/diplomatist'
+  }, {
+    path: '/prison-data/diplomatist-detail',
+    name: 'prison-data_diplomatist-detail',
+    props: '',
+    meta: {
+      breadcrumbName: '外交领事官员可视电话详情表',
+      premission: ''
+    },
+    component: 'prison-data/diplomatist-detail'
   }]
 }, {
   path: '/coopertive-partner',

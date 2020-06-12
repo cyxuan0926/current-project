@@ -293,7 +293,7 @@ export default {
     }
 
     .el-input {
-      width: 13em;
+      width: 13.5em;
       // width: $--input-width;
     }
 

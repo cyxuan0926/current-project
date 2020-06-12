@@ -27,6 +27,7 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "element-ui": "^2.13.0",
+    "eslint-import-resolver-webpack": "^0.12.1",
     "file-saver": "^2.0.2",
     "js-cookie": "^2.2.0",
     "jwt-decode": "^2.2.0",
