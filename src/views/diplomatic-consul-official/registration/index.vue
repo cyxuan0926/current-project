@@ -1,193 +1,193 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-excel-download
-      v-if="hasOnlyAllPrisonQueryAuth"
-      path=""
-      :params="filter"
-    />
+  <!--<el-row-->
+    <!--class="row-container"-->
+    <!--:gutter="0">-->
+    <!--<m-excel-download-->
+      <!--v-if="hasOnlyAllPrisonQueryAuth"-->
+      <!--path=""-->
+      <!--:params="filter"-->
+    <!--/>-->
 
-    <m-search
-      ref="search"
-      :items="searchItems"
-      @searchSelectChange="searchSelectChange"
-      @search="onSearch"
-    />
+    <!--<m-search-->
+      <!--ref="search"-->
+      <!--:items="searchItems"-->
+      <!--@searchSelectChange="searchSelectChange"-->
+      <!--@search="onSearch"-->
+    <!--/>-->
 
-    <el-col :span="24">
-      <el-tabs
-        v-model="tabs"
-        type="card">
-        <el-tab-pane 
-          v-for="tab in tabOptions"
-          :key="tab.name"
-          :label="tab.label"
-          :name="tab.name"
-        />
-      </el-tabs>
+    <!--<el-col :span="24">-->
+      <!--<el-tabs-->
+        <!--v-model="tabs"-->
+        <!--type="card">-->
+        <!--<el-tab-pane -->
+          <!--v-for="tab in tabOptions"-->
+          <!--:key="tab.name"-->
+          <!--:label="tab.label"-->
+          <!--:name="tab.name"-->
+        <!--/>-->
+      <!--</el-tabs>-->
 
-      <m-table
-        ref="m-table"
-        :cols=tableCols
-        :data="pageData.content"
-      >
-        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+      <!--<m-table-->
+        <!--ref="m-table"-->
+        <!--:cols=tableCols-->
+        <!--:data="pageData.content"-->
+      <!--&gt;-->
+        <!--<template #createdAt="{ row }">{{ row.createdAt | Date }}</template>-->
 
-        <template #idCards="{ row }">
-          <template v-for="item in row.diplomaticConsulOfficialUrls">
-            <m-img-viewer 
-              v-if="item.url"
-              :key="item.url"
-              :url="item.url"
-              :toolbar="{ prev: 1, next: 1 }"
-              :title="item.title"
-              :class="[
-                { 'img-viewer__hidden': item.type >= 2 },
-                'img-viewer__overflow-unset'
-              ]"
-            />
-          </template>
-        </template>
+        <!--<template #idCards="{ row }">-->
+          <!--<template v-for="item in row.diplomaticConsulOfficialUrls">-->
+            <!--<m-img-viewer -->
+              <!--v-if="item.url"-->
+              <!--:key="item.url"-->
+              <!--:url="item.url"-->
+              <!--:toolbar="{ prev: 1, next: 1 }"-->
+              <!--:title="item.title"-->
+              <!--:class="[-->
+                <!--{ 'img-viewer__hidden': item.type >= 2 },-->
+                <!--'img-viewer__overflow-unset'-->
+              <!--]"-->
+            <!--/>-->
+          <!--</template>-->
+        <!--</template>-->
 
-        <template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>
+        <!--<template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>-->
 
-        <template #auditInformation="{ row }">
-          <template v-if="row.auditAt">
-            {{ row.auditRealName }} ({{ row.auditUserName }})<br >
+        <!--<template #auditInformation="{ row }">-->
+          <!--<template v-if="row.auditAt">-->
+            <!--{{ row.auditRealName }} ({{ row.auditUserName }})<br >-->
 
-            {{ row.auditAt | Date }}
-          </template>
-        </template>
+            <!--{{ row.auditAt | Date }}-->
+          <!--</template>-->
+        <!--</template>-->
 
-        <template #operation="{ row }">
-          <el-button
-            v-if="true"
-            size="mini"
-            @click="onShow(row)">授权</el-button>
+        <!--<template #operation="{ row }">-->
+          <!--<el-button-->
+            <!--v-if="true"-->
+            <!--size="mini"-->
+            <!--@click="onShow(row)">授权</el-button>-->
 
-          <el-button
-            v-if="true"
-            size="mini"
-            @click="onShow(row, 'callback')">撤回</el-button>
-        </template>
-      </m-table>
-    </el-col>
+          <!--<el-button-->
+            <!--v-if="true"-->
+            <!--size="mini"-->
+            <!--@click="onShow(row, 'callback')">撤回</el-button>-->
+        <!--</template>-->
+      <!--</m-table>-->
+    <!--</el-col>-->
 
-    <m-pagination
-      ref="pagination"
-      :total="pageData.totalElements"
-      @onPageChange="getDatas"
-    />
+    <!--<m-pagination-->
+      <!--ref="pagination"-->
+      <!--:total="pageData.totalElements"-->
+      <!--@onPageChange="getDatas"-->
+    <!--/>-->
 
-    <el-dialog
-      :visible.sync="show.visible"
-      class="authorize-dialog"
-      :title="show.callback ? '撤回' : '授权'"
-      :close-on-click-modal="false"
-      width="530px"
-      @close="onCloseAuthorize"
-    >
-      <family-detail-information
-        :elItems="registrationInformationItems"
-        :detailData="registrant"
-      >
-        <template #familyInformation="{ scope }">
-          <div class="img-items">
-            <template v-for="item in scope.diplomaticConsulOfficialUrls">
-              <m-img-viewer 
-                v-if="item.url"
-                :key="item.url"
-                :url="item.url"
-                :toolbar="{ prev: 1, next: 1 }"
-                :title="item.title"
-              />
-          </template>
-          </div>       
-        </template>
+    <!--<el-dialog-->
+      <!--:visible.sync="show.visible"-->
+      <!--class="authorize-dialog"-->
+      <!--:title="show.callback ? '撤回' : '授权'"-->
+      <!--:close-on-click-modal="false"-->
+      <!--width="530px"-->
+      <!--@close="onCloseAuthorize"-->
+    <!--&gt;-->
+      <!--<family-detail-information-->
+        <!--:elItems="registrationInformationItems"-->
+        <!--:detailData="registrant"-->
+      <!--&gt;-->
+        <!--<template #familyInformation="{ scope }">-->
+          <!--<div class="img-items">-->
+            <!--<template v-for="item in scope.diplomaticConsulOfficialUrls">-->
+              <!--<m-img-viewer -->
+                <!--v-if="item.url"-->
+                <!--:key="item.url"-->
+                <!--:url="item.url"-->
+                <!--:toolbar="{ prev: 1, next: 1 }"-->
+                <!--:title="item.title"-->
+              <!--/>-->
+          <!--</template>-->
+          <!--</div>       -->
+        <!--</template>-->
 
-        <template #familyMeetNoticeInformation="{ scope }">
-          <div class="img-items">
-            <m-img-viewer
-              v-if="scope.meetNoticeUrl"
-              :url="scope.meetNoticeUrl"
-              title="会见审批单"
-            />
-          </div>
-        </template>
-      </family-detail-information>
+        <!--<template #familyMeetNoticeInformation="{ scope }">-->
+          <!--<div class="img-items">-->
+            <!--<m-img-viewer-->
+              <!--v-if="scope.meetNoticeUrl"-->
+              <!--:url="scope.meetNoticeUrl"-->
+              <!--title="会见审批单"-->
+            <!--/>-->
+          <!--</div>-->
+        <!--</template>-->
+      <!--</family-detail-information>-->
 
-      <div
-        v-if="!show.agree && show.disagree && show.callback"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
-      </div>
+      <!--<div-->
+        <!--v-if="!show.agree && show.disagree && show.callback"-->
+        <!--class="button-box">-->
+        <!--<repetition-el-buttons :buttonItems="authorizeButtons" />-->
+      <!--</div>-->
 
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="showAgreeButtons" />
-      </div>
+      <!--<div-->
+        <!--v-if="show.agree"-->
+        <!--class="button-box">-->
+        <!--<repetition-el-buttons :buttonItems="showAgreeButtons" />-->
+      <!--</div>-->
 
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
+      <!--<div-->
+        <!--v-if="show.disagree"-->
+        <!--class="button-box">-->
+        <!--<div style="margin-bottom: 10px;">请选择驳回原因</div>-->
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
-          />
-        </el-select>
+        <!--<el-select v-model="remarks">-->
+          <!--<el-option-->
+            <!--v-for="remark in defaultRemarks"-->
+            <!--:value="remark"-->
+            <!--:label="remark"-->
+            <!--:key="remark"-->
+          <!--/>-->
+        <!--</el-select>-->
 
-        <m-form
-          v-if="remarks === '其他'"
-          class="withdraw-box"
-          ref="refuseForm"
-          :items="authorizeFormItems"
-          @submit="onAuthorization({
-            status: 'DENIED',
-            remarks,
-            ...$event
-          })"
-        />
+        <!--<m-form-->
+          <!--v-if="remarks === '其他'"-->
+          <!--class="withdraw-box"-->
+          <!--ref="refuseForm"-->
+          <!--:items="authorizeFormItems"-->
+          <!--@submit="onAuthorization({-->
+            <!--status: 'DENIED',-->
+            <!--remarks,-->
+            <!--...$event-->
+          <!--})"-->
+        <!--/>-->
 
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
+        <!--<repetition-el-buttons :buttonItems="showDisagreebuttons" />-->
+      <!--</div>-->
 
-      <div
-        v-if="show.callback"
-        class="button-box"
-      >
-        <div style="margin-bottom: 10px;">请选择撤回原因</div>
+      <!--<div-->
+        <!--v-if="show.callback"-->
+        <!--class="button-box"-->
+      <!--&gt;-->
+        <!--<div style="margin-bottom: 10px;">请选择撤回原因</div>-->
 
-        <el-select v-model="remarks">
-          <el-option
-            v-for="remark in defaultRemarks"
-            :value="remark"
-            :label="remark"
-            :key="remark"
-          />
-        </el-select>
+        <!--<el-select v-model="remarks">-->
+          <!--<el-option-->
+            <!--v-for="remark in defaultRemarks"-->
+            <!--:value="remark"-->
+            <!--:label="remark"-->
+            <!--:key="remark"-->
+          <!--/>-->
+        <!--</el-select>-->
 
-        <m-form
-          class="withdraw-box"
-          ref="withdrawForm"
-          :items="callbackFormItems"
-          @submit="onAuthorization({
-            status: 'WITHDRAW',
-            remarks,
-            ...$event
-          })"
-        />
+        <!--<m-form-->
+          <!--class="withdraw-box"-->
+          <!--ref="withdrawForm"-->
+          <!--:items="callbackFormItems"-->
+          <!--@submit="onAuthorization({-->
+            <!--status: 'WITHDRAW',-->
+            <!--remarks,-->
+            <!--...$event-->
+          <!--})"-->
+        <!--/>-->
 
-        <repetition-el-buttons :buttonItems="callbackButtons" />
-      </div>
-    </el-dialog>
-  </el-row>
+        <!--<repetition-el-buttons :buttonItems="callbackButtons" />-->
+      <!--</div>-->
+    <!--</el-dialog>-->
+  <!--</el-row>-->
 </template>
 
 <script>

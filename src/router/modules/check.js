@@ -93,7 +93,7 @@ let check = [{
 
   }, {
     path: '/meeting-report/meeting-diplomatist-detail',
-    component: 'check-meeting/meeting-diplomatist-detail',
+    component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }]
 }, {
