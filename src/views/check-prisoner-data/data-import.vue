@@ -245,6 +245,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1
@@ -267,6 +270,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1
