@@ -101,7 +101,7 @@ export default {
         }
         // status: {
         //   type: 'select',
-        //   label: '会见状态',
+        //   label: '通话状态',
         //   options: this.$store.state.applyStatus
         // }
       },
@@ -118,28 +118,28 @@ export default {
           showOverflowTooltip: true
         },
         {
-          label: '会见ID',
+          label: '通话ID',
           prop: 'meetingId',
           minWidth: 60
         },
         {
-          label: '会见开始时间',
+          label: '通话开始时间',
           prop: 'startTimeConcat',
           minWidth: 120
         },
         {
-          label: '会见结束时间',
+          label: '通话结束时间',
           prop: 'endTimeConcat',
           minWidth: 120
         },
         {
           // 需要自己处理 返回的是秒
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'durationConcat'
         },
         // {
         //   // 需要自己处理 只有 FINISHED 和 MEETING_ON 两个状态
-        //   label: '会见状态',
+        //   label: '通话状态',
         //   slotName: 'mcstatusConcat'
         // },
         {
@@ -149,18 +149,18 @@ export default {
           minWidth: 130
         },
         {
-          label: '紫荆会见开始时间',
+          label: '紫荆通话开始时间',
           prop: 'zijingStartTimeConcat',
           minWidth: 120
         },
         {
-          label: '紫荆会见结束时间',
+          label: '紫荆通话结束时间',
           prop: 'zijingEndTimeConcat',
           minWidth: 120
         },
         {
-          // 紫荆会见时长 返回的是分钟 需要加上'分钟'的
-          label: '紫荆会见时长',
+          // 紫荆通话时长 返回的是分钟 需要加上'分钟'的
+          label: '紫荆通话时长',
           slotName: 'zijingDurationConcat',
           minWidth: 95
         }
@@ -185,23 +185,23 @@ export default {
       //     minWidth: 60
       //   },
       //   {
-      //     label: '会见开始时间',
+      //     label: '通话开始时间',
       //     slotName: 'startTimeConcat',
       //     minWidth: 120
       //   },
       //   {
-      //     label: '会见结束时间',
+      //     label: '通话结束时间',
       //     slotName: 'endTimeConcat',
       //     minWidth: 120
       //   },
       //   {
       //     // 需要自己处理 返回的是秒
-      //     label: '会见时长',
+      //     label: '通话时长',
       //     slotName: 'durationConcat'
       //   },
       //   {
       //     // 需要自己处理 只有 FINISHED 和 MEETING_ON 两个状态
-      //     label: '会见状态',
+      //     label: '通话状态',
       //     slotName: 'mcstatusConcat'
       //   },
       //   {
@@ -210,18 +210,18 @@ export default {
       //     showOverflowTooltip: true
       //   },
       //   {
-      //     label: '紫荆会见开始时间',
+      //     label: '紫荆通话开始时间',
       //     slotName: 'zijingStartTimeConcat',
       //     minWidth: 120
       //   },
       //   {
-      //     label: '紫荆会见结束时间',
+      //     label: '紫荆通话结束时间',
       //     slotName: 'zijingEndTimeConcat',
       //     minWidth: 120
       //   },
       //   {
-      //     // 紫荆会见时长 返回的是分钟 需要加上'分钟'的
-      //     label: '会见时长',
+      //     // 紫荆通话时长 返回的是分钟 需要加上'分钟'的
+      //     label: '通话时长',
       //     slotName: 'zijingDurationConcat'
       //   }
       // ]

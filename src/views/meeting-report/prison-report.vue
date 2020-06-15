@@ -81,12 +81,12 @@ export default {
       },
       tabOptions: [
         {
-          label: '监狱会见统计',
+          label: '监狱亲情电话统计',
           name: 'profile',
           excelDownloadPath: '/download/exportJailStatical'
         },
         {
-          label: '会见统计详情',
+          label: '亲情电话统计详情',
           name: 'detail',
           excelDownloadPath: '/download/exportDetailsStatical'
         }

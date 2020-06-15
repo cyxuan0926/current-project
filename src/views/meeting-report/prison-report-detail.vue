@@ -27,7 +27,7 @@
             class="table-footer">
             <span>{{ prisonReportDetail.jailName }}</span>
             <span>
-              总会见时长：{{ prisonReportDetail.totalDuration | time }}
+              总通话时长：{{ prisonReportDetail.totalDuration | time }}
             </span>
           </p>
         </template>
@@ -104,7 +104,7 @@
             {{ scope.row.end_time }}
           </template>
         </el-table-column>
-        <el-table-column label="会见时长">
+        <el-table-column label="通话时长">
           <template slot-scope="scope">
             {{ scope.row.duration | time }}
           </template>
@@ -165,12 +165,12 @@ export default {
           prop: 'prisonerNumber'
         },
         {
-          label: '总会见时间段',
+          label: '总通话时间段',
           prop: 'total_time',
           width: 236
         },
         {
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'duration'
         },
         {
