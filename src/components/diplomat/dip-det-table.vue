@@ -6,11 +6,15 @@
             stripe
             class="mini-td-padding"
             style="width: 100%">
-            <template #name="{ row }">
-
-                <span v-if="isAdmin">{{row.name}}</span>
-                <a v-else @click="handleShowInfo()"></a>
-
+            <template #diplomatsName="{ row }">
+                <span v-for="(n, i) in row.diplomatsName" :key="n.id">
+                    <label v-if="isAdmin">{{n.name}}</label>
+                    <a v-else @click="handleShowInfo(n.id)">{{n.name}}</a>
+                    <em v-if="i != row.diplomatsName.length - 1">，</em>
+                </span>
+            </template>
+            <template #duration="{ row }">
+                <span>{{ row.duration | time }}</span>
             </template>
             <template #operation="{ row }">
                 <el-button
@@ -22,7 +26,7 @@
         <m-pagination
             ref="pagination"
             :total="tableDatas.total"
-            @onPageChange="emit('on-page')" />
+            @onPageChange="handlePageChange" />
         <el-dialog
             title="通话记录"
             :visible.sync="recordsVisible"
@@ -82,7 +86,7 @@
                     {
                         label: '姓名',
                         prop: 'diplomatsName',
-                        slotName: 'name'
+                        slotName: 'diplomatsName'
                     },
                     {
                         label: '所在机构/馆名',
@@ -90,11 +94,12 @@
                     },
                     {
                         label: '可视电话时间段',
-                        prop: 'c'
+                        prop: 'meetingTimetimeQuantum'
                     },
                     {
                         label: '通话时长',
-                        prop: 'd',
+                        prop: 'duration',
+                        slotName: 'duration'
                     },
                     {
                         label: '操作',
@@ -118,6 +123,10 @@
 
             clearRecords() {
                 this.callRecords = []
+            },
+
+            handlePageChange(page, rows) {
+                this.$emit('on-page', page, rows)
             }
         }
     }

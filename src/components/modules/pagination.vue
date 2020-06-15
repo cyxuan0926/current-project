@@ -53,11 +53,11 @@ export default {
         rows: e,
         page: 1
       }
-      this.$emit('onPageChange')
+      this.$emit('onPageChange', 1, e)
     },
     handleCurrentChange(e) {
       this.$parent.$parent.pagination.page = e
-      this.$emit('onPageChange')
+      this.$emit('onPageChange', e)
       this.currentPage = e
     },
     handleGo() {
