@@ -122,6 +122,10 @@
 
             clearRecords() {
                 this.callRecords = []
+            },
+
+            handlePageChange(page, rows) {
+                this.$emit('on-page', page, rows)
             }
         }
     }
