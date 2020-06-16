@@ -22,7 +22,8 @@ export default {
           item.diplomaticConsulOfficialUrls = []
 
           urlsParams.forEach((url, index) => {
-            item[url] && item.diplomaticConsulOfficialUrls.push({
+            // item[url] &&
+            item.diplomaticConsulOfficialUrls.push({
               url: item[url],
               title: titles[index],
               type: index
@@ -42,9 +43,9 @@ export default {
 
   async registrationAuthorize({ commit }, params) {
     try {
-      const res = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
+      const { code } = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
 
-      return res
+      return code === 200
     }
     catch (err) {
       throw err

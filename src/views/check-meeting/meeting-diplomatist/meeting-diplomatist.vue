@@ -218,27 +218,30 @@
         :detailData="family">
         <template #familyAvatarUrl="{ scope }">
           <m-img-viewer
-            v-if="scope.familyAvatarUrl"
+            isRequired
             :url="scope.familyAvatarUrl"
-            title="人脸照片"/>
+            title="人脸照片"
+          />
         </template>
         <template #familyIdCardFront="{ scope }">
           <m-img-viewer
-            v-if="scope.familyIdCardFront"
+            isRequired
             :url="scope.familyIdCardFront"
-            title="身份证正面"/>
+            title="身份证正面"
+          />
         </template>
         <template #familyIdCardBack="{ scope }">
           <m-img-viewer
-            v-if="scope.familyIdCardBack"
+            isRequired
             :url="scope.familyIdCardBack"
-            title="身份证背面"/>
+            title="身份证背面"
+          />
         </template>
         <template #approvalImageUrl="{ scope }">
           <m-img-viewer 
-            v-if="scope.approvalImageUrl"
             :url="scope.approvalImageUrl"
-            title="会见审批单"/>
+            title="会见审批单"
+          />
         </template>
       </family-detial-information>
     </el-dialog>

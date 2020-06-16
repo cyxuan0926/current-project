@@ -4,7 +4,7 @@
     :gutter="0">
     <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
-      path=""
+      path="/download/exportDiplomatsRegistrations"
       :params="filter"
     />
 
@@ -37,9 +37,9 @@
         <template #idCards="{ row }">
           <template v-for="item in row.diplomaticConsulOfficialUrls">
             <m-img-viewer 
-              v-if="item.url"
               :key="item.url"
               :url="item.url"
+              isRequired
               :toolbar="{ prev: 1, next: 1 }"
               :title="item.title"
               :class="[
@@ -62,12 +62,12 @@
 
         <template #operation="{ row }">
           <el-button
-            v-if="true"
+            v-if="row.status === 'PENDING'"
             size="mini"
             @click="onShow(row)">授权</el-button>
 
           <el-button
-            v-if="true"
+            v-if="row.status === 'PASSED'"
             size="mini"
             @click="onShow(row, 'callback')">撤回</el-button>
         </template>
@@ -76,7 +76,7 @@
 
     <m-pagination
       ref="pagination"
-      :total="pageData.totalElements"
+      :total="pageData.totalCount"
       @onPageChange="getDatas"
     />
 
@@ -95,8 +95,9 @@
         <template #familyInformation="{ scope }">
           <div class="img-items">
             <template v-for="item in scope.diplomaticConsulOfficialUrls">
-              <m-img-viewer 
-                v-if="item.url"
+              <m-img-viewer
+                isRequired
+                :class="[{'el-image__no-box_shadow': !item.url}]"
                 :key="item.url"
                 :url="item.url"
                 :toolbar="{ prev: 1, next: 1 }"
@@ -109,7 +110,8 @@
         <template #familyMeetNoticeInformation="{ scope }">
           <div class="img-items">
             <m-img-viewer
-              v-if="scope.meetNoticeUrl"
+              isRequired
+              :class="[{'el-image__no-box_shadow': !scope.meetNoticeUrl}]"
               :url="scope.meetNoticeUrl"
               title="会见审批单"
             />
@@ -119,7 +121,7 @@
 
       <template>
         <div
-          v-if="!show.agree && show.disagree && show.callback"
+          v-if="!show.agree && !show.disagree && !show.callback"
           class="button-box">
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
@@ -219,7 +221,8 @@ export default {
       orgName: {
         type: 'select',
         label: '所在机构',
-        filterable: true
+        filterable: true,
+        getting: false
       },
 
       auditName: {
@@ -324,7 +327,10 @@ export default {
   computed: {
     ...mapState('diplomaticConsulOfficial', ['pageData']),
 
-    ...mapState(['frontRemarks']),
+    ...mapState([
+      'frontRemarks',
+      'organizationNames'
+    ]),
 
     defaultRemarks() {
       let copyRemarks = this.frontRemarks.slice(0)
@@ -358,15 +364,18 @@ export default {
       const allCols = [
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provinceName',
+          minWidth: 100
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '姓名',
-          prop: 'name'
+          prop: 'name',
+          showOverflowTooltip: true
         },
         {
           label: '身份证件信息',
@@ -376,15 +385,17 @@ export default {
         {
           label: '身份证件有效期至',
           prop: 'idValidDate',
-          minWidth: 100
+          minWidth: 110
         },
         {
           label: '申请时间',
-          slotName: 'createdAt'
+          slotName: 'createdAt',
+          minWidth: 130
         },
         {
           label: '所在机构/馆名',
-          prop: 'orgName'
+          prop: 'orgName',
+          minWidth: 100
         },
         {
           label: '职位',
@@ -396,12 +407,14 @@ export default {
         },
         {
           label: '审核信息',
-          prop: 'auditInformation',
+          slotName: 'auditInformation',
+          minWidth: 130,
           showOverflowTooltip: true
         },
         {
           label: '操作',
-          slotName: 'operation'
+          slotName: 'operation',
+          minWidth: 60
         }
       ]
 
@@ -421,6 +434,8 @@ export default {
       'registrationAuthorize'
     ]),
 
+    ...mapActions(['getOrgName']),
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
@@ -438,13 +453,19 @@ export default {
         ...this.filter,
         ...this.pagination
       }
-      console.log(this.filter, this.pagination)
-      // await this.getPageData({url, params})
+
+      await this.getPageData({url, params})
     },
 
     // 授权/撤回 操作显示对话框
     onShow(registrant, status) {
       this.registrant = registrant
+
+      this.show.disagree = false
+
+      this.show.agree = false
+
+      this.show.callback = false
 
       if (status === 'callback') this.show.callback = true
 
@@ -455,17 +476,11 @@ export default {
     onCloseAuthorize() {
       this.show.visible = false
 
-      this.show.disagree = false
-
-      this.show.agree = false
-
-      this.show.callback = false
-
       this.remarks = '身份信息错误'
 
-      if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+      if (this.$refs.refuseForm) this.$refs.refuseForm.onCancel()
 
-      if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+      if (this.$refs.withdrawForm) this.$refs.withdrawForm.onCancel()
     },
 
     //覆盖mixin 授权情况下的不同意
@@ -506,6 +521,7 @@ export default {
       } else {
         // 不同意
         if (this.remarks === '其他') this.$refs.refuseForm.onSubmit()
+        else this.onAuthorization({ id, remarks: this.remarks }, 'DENIED')
       }
     },
 
@@ -515,12 +531,43 @@ export default {
 
       this.remarks = '身份信息错误'
 
-      if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+      if (this.$refs.refuseForm) this.$refs.refuseForm.onCancel()
     },
 
     // 审批操作
-    async onAuthorization(params) {
-      console.log(params)
+    async onAuthorization(...args) {
+      const [ filterParams, status ] = args
+
+      let params
+
+      if (!status) params = filterParams
+
+      else {
+        const { id } = this.registrant
+
+        params = {
+          id,
+          status,
+          remarks: this.remarks
+        }
+
+        if (status === 'DENIED' && this.remarks === '其他') {
+          const { refuseRemark } = filterParams
+
+          params = {
+            ...params,
+            remarks: refuseRemark
+          }
+        }
+
+        if (status === 'WITHDRAW') {
+          params = {
+            ...params,
+            ...filterParams
+          }
+        }
+      }
+
       const res = await this.registrationAuthorize(params)
 
       this.buttonLoading = false
@@ -537,7 +584,17 @@ export default {
     if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
       this.$set(this.searchItems['orgName'], 'miss', true)
     } else {
+      const { jailId } = this.$store.state.global.user
+
       this.$set(this.searchItems['orgName'], 'miss', false)
+
+      this.$set(this.searchItems['orgName'], 'getting', true)
+
+      await this.getOrgName({ jailId })
+
+      this.$set(this.searchItems['orgName'], 'options', this.organizationNames)
+
+      this.$set(this.searchItems['orgName'], 'getting', false)
     }
 
     await this.getDatas()
@@ -546,7 +603,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.img-box {
+/deep/ .img-box {
+  flex-direction: column !important;
   .img-items {
     display: flex;
     justify-content: space-between;
@@ -555,8 +613,7 @@ export default {
       width: 32%;
       height: 110px;
       margin-bottom: 5px;
-      box-shadow: 0 0 5px #ddd;
-      /deep/ img {
+      img {
         width: 100%;
         height: 100%;
         cursor: pointer;

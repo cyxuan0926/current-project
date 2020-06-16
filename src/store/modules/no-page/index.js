@@ -6,7 +6,9 @@ let state = {
   prisonAllWithBranchPrison: [],
   provincesAll: [],
   cities: [],
-  jailPrisonAreas: []
+  jailPrisonAreas: [],
+
+  organizationNames: []
 }
 
 export default {

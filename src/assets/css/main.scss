@@ -110,7 +110,7 @@ body .row-container .cell img{
   width: 48%;
   height: 150px;
   margin-bottom: 5px;
-  box-shadow: 0 0 5px #ddd;
+  // box-shadow: 0 0 5px #ddd;
   cursor: pointer;
 }
 .authorize-dialog .button-box button, .authorize-dialog .button-box .el-select{
@@ -518,5 +518,17 @@ body .el-table colgroup.gutter{
   margin-left: 0px !important;
   img, .el-image__error {
     display: none;
+  }
+}
+.el-image__error {
+  font-size:  12px ;
+}
+.cell {
+  /deep/ .el-image {
+    &:nth-of-type(2) {
+      .el-image__error {
+        padding-left: 12px;
+      }
+    }
   }
 }

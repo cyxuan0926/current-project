@@ -158,77 +158,41 @@
         <template #familyInformation="{ scope }">
           <div class="img-items">
             <m-img-viewer
-            v-if="scope.familyIdCardFront"
-            :url="scope.familyIdCardFront"
-            title="身份证正面"
+              :url="scope.familyIdCardFront"
+              title="身份证正面"
+              isRequired
             />
             <m-img-viewer
-            v-if="scope.familyIdCardBack"
-            :url="scope.familyIdCardBack"
-            title="身份证背面"
+              :url="scope.familyIdCardBack"
+              title="身份证背面"
+              isRequired
             />
             <m-img-viewer
-            v-if="scope.familyAvatarUrl"
-            :url="scope.familyAvatarUrl"
-            title="头像"
+              :url="scope.familyAvatarUrl"
+              title="头像"
+              isRequired
             />
           </div>       
         </template>
         <template #familyRelationalInformation="{ scope }">
           <div class="img-items">
             <m-img-viewer
-              v-if="scope.familyRelationalProofUrl"
-              class="relation_img"
-              :url="scope.familyRelationalProofUrl"
+              v-for="(item, index) of scope.relationalProofUrls"
+              :key="index"
               title="关系证明图"
-            />
-            <m-img-viewer
-              v-if="scope.familyRelationalProofUrl2"
-              class="relation_img"
-              :url="scope.familyRelationalProofUrl2"
-              title="关系证明图"
-            />
-            <m-img-viewer
-              v-if="scope.familyRelationalProofUrl3"
-              class="relation_img"
-              :url="scope.familyRelationalProofUrl3"
-              title="关系证明图"
-            />
-            <m-img-viewer
-              v-if="scope.familyRelationalProofUrl4"
-              class="relation_img"
-              :url="scope.familyRelationalProofUrl4"
-              title="关系证明图"
+              :class="{ 'relation_img': scope.relationalProofUrls.length !== 1 }"
+              :url="item.url"
             />
           </div>
         </template>
         <template #familyMeetNoticeInformation="{ scope }">
           <div class="img-items">
             <m-img-viewer
-              v-if="scope.meetNoticeUrl"
               :url="scope.meetNoticeUrl"
               title="亲情电话通知单"
             />
           </div>
         </template>
-        <!-- <template #familyIdCardFront="{ scope }">
-          <m-img-viewer
-            v-if="scope.familyIdCardFront"
-            :url="scope.familyIdCardFront"
-            title="身份证正面"/>
-        </template>
-        <template #familyIdCardBack="{ scope }">
-          <m-img-viewer
-            v-if="scope.familyIdCardBack"
-            :url="scope.familyIdCardBack"
-            title="身份证背面"/>
-        </template>
-        <template #familyRelationalProofUrl="{ scope }">
-          <m-img-viewer 
-            v-if="scope.familyRelationalProofUrl"
-            :url="scope.familyRelationalProofUrl"
-            title="关系证明图"/>
-        </template> -->
       </family-detail-information>
     </el-dialog>
   </el-row>
@@ -731,7 +695,19 @@ export default {
     showFamilyDetail(...args) {
       const [ familyId, meetingId ] = args
       this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
-        if (res.family) this.family = Object.assign({}, res.family)
+        if (res.family) {
+          res.family.relationalProofUrls = []
+          for(let [key, value] of Object.entries(res.family)) {
+            const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
+            keys.includes(key) && value && res.family.relationalProofUrls.push({
+              url: value
+            })
+          }
+          if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
+            url: ''
+          })
+          this.family = Object.assign({}, res.family)
+        }
         else this.family = {}
         this.show.familiesDetialInform = true
       })
@@ -791,7 +767,6 @@ export default {
       width: 32%;
       height: 110px;
       margin-bottom: 5px;
-      box-shadow: 0 0 5px #ddd;
       >>> img
         width: 100%;
         height: 100%;

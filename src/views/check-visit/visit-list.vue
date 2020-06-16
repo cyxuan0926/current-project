@@ -30,13 +30,15 @@
           <template slot-scope="scope">
             <div class="idcard-box">
               <m-img-viewer
-                v-if="scope.row.idCardFront"
+                isRequired
                 :url="scope.row.idCardFront"
-                title="身份证正面"/>
+                title="身份证正面"
+              />
               <m-img-viewer
-                v-if="scope.row.idCardBack"
+                isRequired
                 :url="scope.row.idCardBack"
-                title="身份证背面"/>
+                title="身份证背面"
+              />
             </div>
           </template>
         </el-table-column>

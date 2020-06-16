@@ -45,29 +45,27 @@
           prop="name"
           show-overflow-tooltip
           label="家属姓名"
-          min-width="50"
+          min-width="60"
         />
         <el-table-column
           min-width="148px"
           label="身份证件信息">
           <template slot-scope="scope">
             <m-img-viewer
-              v-if="scope.row.idCardFront"
-              class="img-viewer__overflow-unset"
               :url="scope.row.idCardFront"
+              isRequired
               :toolbar="{ prev: 1, next: 1 }"
               title="身份证正面照"
             />
             <m-img-viewer
-              v-if="scope.row.idCardBack"
-              class="img-viewer__overflow-unset"
+              isRequired
               :url="scope.row.idCardBack"
               :toolbar="{ prev: 1, next: 1 }"
               title="身份证背面照"
             />
             <m-img-viewer
-              v-if="scope.row.avatarUrl"
-              class="img-viewer__hidden img-viewer__overflow-unset"
+              isRequired
+              class="img-viewer__hidden"
               :url="scope.row.avatarUrl"
               :toolbar="{ prev: 1, next: 1 }"
               title="头像"
@@ -82,7 +80,7 @@
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="80"
+          min-width="70"
         />
         <el-table-column
           label="申请时间"
@@ -133,7 +131,7 @@
         <el-table-column
           prop="auditRealName"
           label="审核信息"
-          min-width="50"
+          min-width="60"
           show-overflow-tooltip
         >
           <template
@@ -144,7 +142,7 @@
         </el-table-column>
         <el-table-column
           label="操作" 
-          min-width="65"
+          min-width="60"
         >
           <template slot-scope="scope">
             <el-button
@@ -178,19 +176,22 @@
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
       <div class="img-box">
         <m-img-viewer
-          v-if="toAuthorize.idCardFront"
+          isRequired
+          :class="[{'el-image__no-box_shadow': !toAuthorize.idCardFront}]"
           :url="toAuthorize.idCardFront"
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"
         />
         <m-img-viewer
-          v-if="toAuthorize.idCardBack"
+          isRequired
+          :class="[{'el-image__no-box_shadow': !toAuthorize.idCardBack}]"
           :url="toAuthorize.idCardBack"
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"
         />
         <m-img-viewer
-          v-if="toAuthorize.avatarUrl"
+          isRequired
+          :class="[{'el-image__no-box_shadow': !toAuthorize.avatarUrl}]"
           :url="toAuthorize.avatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
@@ -199,12 +200,12 @@
       <template>
         <div style="margin-bottom: 10px;">请核对关系证明:</div>
         <div class="img-box">
-          <template v-for="url in toAuthorize.relationalProofUrls" >
+          <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls" >
             <m-img-viewer
-              v-if="url"
               :style="{ width: relationalWidth }"
-              :key="url"
-              :url="url"
+              :class="relationalProofUrl.className"
+              :key="relationalProofUrl.url"
+              :url="relationalProofUrl.url"
               :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
               title="关系证明图"
             />
@@ -215,7 +216,7 @@
         <div style="margin-bottom: 10px;">亲情电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
-            v-if="toAuthorize.meetNoticeUrl"
+            :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
             title="亲情电话通知单"
           />
@@ -625,7 +626,6 @@ export default {
       width: 32%;
       height: 110px;
       margin-bottom: 5px;
-      box-shadow: 0 0 5px #ddd;
       >>> img
            width: 100%;
            height: 100%;

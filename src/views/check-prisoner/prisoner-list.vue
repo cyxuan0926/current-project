@@ -187,19 +187,19 @@
       <div style="margin-bottom: 10px;">家属信息:</div>
       <div class="img-box">
         <m-img-viewer
-          v-if="family.familyIdCardFront"
+          isRequired
           :url="family.familyIdCardFront"
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"
         />
         <m-img-viewer
-          v-if="family.familyIdCardBack"
+          isRequired
           :url="family.familyIdCardBack"
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"
         />
         <m-img-viewer
-          v-if="family.familyAvatarUrl"
+          isRequired
           :url="family.familyAvatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
@@ -238,7 +238,6 @@
         <div style="margin-bottom: 10px;">会见通知单:</div>
         <div class="img-box">
           <m-img-viewer
-            v-if="family.meetNoticeUrl"
             :url="family.meetNoticeUrl"
             title="会见通知单"
           />
@@ -1081,7 +1080,6 @@ export default {
     width: 32%;
     height: 110px;
     margin-bottom: 5px;
-    box-shadow: 0 0 5px #ddd;
     >>> img
       width: 100%;
       height: 100%;
