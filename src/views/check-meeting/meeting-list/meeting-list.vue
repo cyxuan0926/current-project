@@ -207,7 +207,7 @@
             <m-img-viewer
               v-if="scope.meetNoticeUrl"
               :url="scope.meetNoticeUrl"
-              title="会见通知单"
+              title="亲情电话通知单"
             />
           </div>
         </template>
@@ -247,7 +247,7 @@ export default {
     // 标签元素
     const tabsItems = [
       {
-        label: '会见申请',
+        label: '亲情电话申请',
         name: 'first' },
       {
         label: '未授权',
@@ -289,19 +289,17 @@ export default {
         },
         // applicationDate: {
         //   type: 'date',
-        //   label: '会见时间',
+        //   label: '申请通话时间',
         //   miss: true,
         //   value: ''
         // },
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
-          startPlaceholder: '会见开始时间',
-          endPlaceholder: '会见结束时间',
           start: 'applicationStartDate',
           end: 'applicationEndDate',
-          startPlaceholder: '会见开始时间',
-          endPlaceholder: '会见结束时间'
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间'
           // miss: true,
           // value: ''
         },
@@ -326,7 +324,7 @@ export default {
         },
         isFree: {
           type: 'select',
-          label: '免费会见',
+          label: '免费',
           options: freeMeetingsOptions,
           miss: true,
           value: ''
@@ -386,7 +384,7 @@ export default {
           definedClass: 'img-box'
         },
         {
-          label: '会见通知单',
+          label: '亲情电话通知单',
           prop: 'familyMeetNoticeInformation',
           definedClass: 'img-box'
         }
@@ -430,7 +428,7 @@ export default {
           minWidth: 130
         },
         {
-          label: '会见时间',
+          label: '申请通话时间',
           slotName: 'meetingTime',
           sortable: 'custom',
           minWidth: 135
@@ -625,7 +623,7 @@ export default {
           slotName: 'status'
         },
         {
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'duration'
         },
         {

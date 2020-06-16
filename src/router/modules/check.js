@@ -31,7 +31,7 @@ let check = [{
 }, {
   path: '/meeting',
   name: 'meeting-manage',
-  meta: { hidden: true, breadcrumbName: '会见申请管理' },
+  meta: { hidden: true, breadcrumbName: '亲情电话申请管理' },
   children: [{
     path: '/meeting/list',
     name: 'meeting-list',
@@ -67,7 +67,7 @@ let check = [{
 }, {
   path: '/meeting-report',
   name: 'meeting-report-check',
-  meta: { hidden: true, breadcrumbName: '会见统计' },
+  meta: { hidden: true, breadcrumbName: '可视电话统计' },
   children: [{
     path: '/meeting-report/prison',
     name: 'prison-report-check',
@@ -88,7 +88,7 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费会见纪录' }
+    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费通话记录' }
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',

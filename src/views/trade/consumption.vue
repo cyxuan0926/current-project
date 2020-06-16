@@ -39,7 +39,7 @@ export default {
           minWidth: 180
         },
         {
-          label: '会见ID',
+          label: '通话ID',
           prop: 'meetingId'
         },
         {
