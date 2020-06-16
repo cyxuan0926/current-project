@@ -12,7 +12,7 @@
         @searchSelectChange="searchSelectChange"
         @search="onSearch" />
         <el-col :span="24">
-            <dip-det-table :tableDatas="tableDatas" @on-page="getDatas" :hasAuth="hasAllPrisonQueryAuth" />
+            <dip-det-table :tableDatas="tableDatas" @on-page="handlePage" :hasAuth="hasAllPrisonQueryAuth" />
         </el-col>
     </el-row>
 </template>
@@ -62,10 +62,40 @@
         },
 
         methods: {
+            handlePage(page, rows) {
+                if( page ) {
+                    this.pagination.page = page
+                }
+                if( rows ) {
+                    this.pagination.rows = rows
+                }
+                this.getDatas()
+            },
+
+            setDiplomatsNameData(data) {
+                if( data && data.length ) {
+                    return data.map(d => {
+                        let dips = []
+                        if( d.diplomatsName ) {
+                            d.diplomatsName.split(',').forEach(dip => {
+                                let _dip = dip.split(':')
+                                dips.push({
+                                    name: _dip[0],
+                                    id: _dip[1]
+                                })
+                            })
+                        }
+                        d.diplomatsName = dips
+                        return d
+                    })
+                }
+                return []
+            },
+
             async getDatas() {
                 const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
                 this.tableDatas = {
-                    contents: diplomatsMeetingDetails,
+                    contents: this.setDiplomatsNameData(diplomatsMeetingDetails),
                     total
                 }
             },

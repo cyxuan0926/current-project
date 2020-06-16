@@ -33,6 +33,16 @@ export default {
       throw err
     }
   },
+  async authorizeDiplomatsMeeting({ commit }, params) {
+    // return http.authorizeMeeting(params).then(res => res)
+    try {
+      const res = await http.authorizeDiplomatsMeeting(params)
+      return res && res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
+  },
   withdrawMeeting({ commit }, params) {
     return http.withdrawMeeting(params).then(res => res)
   },

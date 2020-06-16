@@ -18,7 +18,7 @@
                     :label="tab.label"
                     :name="tab.name" />
             </el-tabs>
-            <dip-table :tableDatas="tableDatas" @on-page="getDatas" />
+            <dip-table :tableDatas="tableDatas" @on-page="handlePage" />
         </el-col>
     </el-row>
 </template>
@@ -120,6 +120,16 @@
         },
 
         methods: {
+            handlePage(page, rows) {
+                if( page ) {
+                    this.pagination.page = page
+                }
+                if( rows ) {
+                    this.pagination.rows = rows
+                }
+                this.getDatas()
+            },
+
             async getDatas() {
                 if (this.tabs !== 'first') {
                     this.filter.status = this.tabs
