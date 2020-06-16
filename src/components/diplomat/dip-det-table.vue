@@ -9,7 +9,11 @@
             <template #diplomatsName="{ row }">
                 <span v-for="(n, i) in row.diplomatsName" :key="n.id">
                     <label v-if="isAdmin">{{n.name}}</label>
-                    <a v-else @click="handleShowInfo(n.id)">{{n.name}}</a>
+                    <el-button
+                        v-else
+                        type="text"
+                        size="small"
+                        @click="handleShowInfo(n.id)">{{ n.name }}</el-button>
                     <em v-if="i != row.diplomatsName.length - 1">，</em>
                 </span>
             </template>
@@ -61,7 +65,7 @@
         props: {
             isAdmin: {
                 type: Boolean,
-                default: false
+                default: true
             },
             hasAuth: Boolean,
             tableDatas: Object
@@ -86,7 +90,7 @@
                     {
                         label: '姓名',
                         prop: 'diplomatsName',
-                        slotName: 'name'
+                        slotName: 'diplomatsName'
                     },
                     {
                         label: '所在机构/馆名',
@@ -94,11 +98,12 @@
                     },
                     {
                         label: '可视电话时间段',
-                        prop: 'c'
+                        prop: 'meetingTimetimeQuantum'
                     },
                     {
                         label: '通话时长',
-                        prop: 'd',
+                        prop: 'duration',
+                        slotName: 'duration'
                     },
                     {
                         label: '操作',
