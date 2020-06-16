@@ -13,7 +13,7 @@
                         v-else
                         type="text"
                         size="small"
-                        @click="handleShowInfo(n.id)">{{ n.name }}</el-button>
+                        @click="handleShowInfo(n.id, row.meetingId)">{{ n.name }}</el-button>
                     <em v-if="i != row.diplomatsName.length - 1">，</em>
                 </span>
             </template>
@@ -57,10 +57,49 @@
                     label="备注" />
             </el-table>
         </el-dialog>
+      <el-dialog
+        title="查看信息"
+        class="authorize-dialog"
+        :visible.sync="show.familiesDetialInform"
+        @close="closeFamilyDetail">
+        <div v-if="family">
+          <p>姓名:{{family.familyName}}</p>
+          <p>所属机构/馆名:{{family.orgName}}</p>
+          <p>身份信息:</p>
+          <div style="margin-left:80px">
+            <m-img-viewer
+              isRequired
+              :url="family.familyAvatarUrl"
+              label=true
+              title="人脸照片"
+            />
+            <m-img-viewer
+              isRequired
+              :url="family.familyIdCardFront"
+              label=true
+              title="身份证正面"
+            />
+            <m-img-viewer
+              isRequired
+              :url="family.familyIdCardBack"
+              label=true
+              title="身份证背面"
+            />
+          </div>
+          <p>会见审批单:</p>
+          <div style="margin-left:80px">
+            <m-img-viewer
+              :url="family.approvalImageUrl"
+              title="会见审批单"
+            />
+          </div>
+        </div>
+      </el-dialog>
     </div>
 </template>
 
 <script>
+  import http from '@/service'
     export default {
         props: {
             isAdmin: {
@@ -74,6 +113,10 @@
             return {
                 callRecords: [],
                 recordsVisible: false,
+                family:null,
+                show:{
+                  familiesDetialInform:false
+                }
             }
         },
         computed: {
@@ -121,10 +164,20 @@
                 this.recordsVisible = true
                 this.callRecords = records
             },
-
-            handleShowInfo() {
-            },
-
+            handleShowInfo(...args) {
+                const [ familyId, meetingId ] = args
+                this.show.familiesDetialInform = true
+                http.getMeetingsDiplomatsDetail({ meetingId, familyId }).then(res => {
+                  if (!res.family) return
+                  this.family = Object.assign({}, res.family)
+                  console.log(this.family)
+                })
+              },
+          closeFamilyDetail() {
+            this.family = {}
+            this.show.familiesDetialInform = false
+            if (this.meetingRefresh) this.getDatas('closeFamilyDetail')
+          },
             clearRecords() {
                 this.callRecords = []
             },

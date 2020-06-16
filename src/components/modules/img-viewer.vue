@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <p v-if="label">{{title}}</p>
   <el-image
     :src="publicUrl || url+'?token=' + $urls.token"
     :alt="title"
@@ -13,8 +15,8 @@
       >
     </template>
   </el-image>
+  </div>
 </template>
-
 <script>
 import Viewer from 'viewerjs'
 
@@ -32,6 +34,10 @@ export default {
     url: {
       type: String,
       default: ''
+    },
+    label:{
+      type: Boolean,
+      default: false
     },
     title: {
       type: String,
