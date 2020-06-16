@@ -3,13 +3,30 @@
     :src="publicUrl || url+'?token=' + $urls.token"
     :alt="title"
     lazy
+    class="img-viewer__overflow-unset"
     @click.native="showImg"
-  />
+  >
+    <template v-if="!isRequired" #error>
+      <img
+        :src="elImageError"
+        alt="占位图"
+      >
+    </template>
+  </el-image>
 </template>
 
 <script>
 import Viewer from 'viewerjs'
+
+import elImageError from '@/assets/images/el-image__error.png'
+
 export default {
+  data() {
+    return {
+      elImageError
+    }
+  },
+
   props: {
     // 狱务通的图片
     url: {
@@ -29,6 +46,11 @@ export default {
     toolbar: {
       type: Object,
       default: () => ({})
+    },
+    // 图片类型是不是必传的
+    isRequired: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -62,3 +84,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.el-image {
+  /deep/ img {
+    box-shadow: none !important;
+  }
+}
+</style>

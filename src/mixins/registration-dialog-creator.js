@@ -216,9 +216,9 @@ export default {
       template:
         `<el-row>
           <el-button
+            v-for="(button, index) in buttonItems"
             v-bind="button.attrs"
             v-on="button.events"
-            v-for="(button, index) in buttonItems"
             :key="'id-repetition-el-button-' + index">
             {{ button.text }}
           </el-button>

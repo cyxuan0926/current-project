@@ -100,6 +100,10 @@ let switches = {
     {
       label: '已通过',
       value: 'PASSED'
+    },
+    {
+      label: '已撤回',
+      value: 'DENIED'
     }
   ],
   nationality: [

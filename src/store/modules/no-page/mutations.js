@@ -13,5 +13,9 @@ export default {
   },
   getJailPrisonAreas(state, params) {
     state.jailPrisonAreas = params.prisonConfigs
+  },
+
+  getOrgName(state, organization = []) {
+    state.organizationNames = organization
   }
 }

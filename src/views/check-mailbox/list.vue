@@ -29,14 +29,18 @@
           v-if="scope.row.imageUrls.length">
           <m-img-viewer
             v-if="!hasOnlyAllPrisonQueryAuth"
-            :publicUrl="scope.row.imageUrls[0]" />
+            :publicUrl="scope.row.imageUrls[0]"
+            isRequired
+          />
           <m-img-viewer
             v-else
             v-for=" (url,index) of scope.row.imageUrls"
             :class="!index ? '' : 'img-viewer__hidden'"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
-            :publicUrl="url" />
+            :publicUrl="url"
+            isRequired
+          />
         </template>
         <template
           slot="isReply"
@@ -103,8 +107,9 @@
             <template v-for="(img, index) in mailbox.imageUrls">
               <m-img-viewer
                 :key="index"
-                v-if="img"
-                :publicUrl="img" />
+                isRequired
+                :publicUrl="img"
+              />
             </template>
           </div>
         </div>

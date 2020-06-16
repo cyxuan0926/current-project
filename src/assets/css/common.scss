@@ -37,3 +37,9 @@
 .img-viewer__overflow-unset {
   overflow: unset !important;
 }
+.el-image__no-box_shadow {
+  box-shadow: none !important;
+  img {
+    box-shadow: none !important;
+  }
+}

@@ -37,13 +37,15 @@
           slot-scope="scope"
           slot="idCard">
             <m-img-viewer
-              v-if="scope.row.idCardFront"
               :url="scope.row.idCardFront"
-              title="身份证正面照"/>
+              title="身份证正面照"
+              isRequired
+            />
             <m-img-viewer
-              v-if="scope.row.idCardBack"
               :url="scope.row.idCardBack"
-              title="身份证背面照"/>
+              title="身份证背面照"
+              isRequired
+            />
         </template>
         <template
           slot-scope="scope"

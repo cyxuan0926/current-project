@@ -31,5 +31,29 @@ export default {
       commit('getJailPrisonAreas', res)
       return true
     })
+  },
+
+  async getOrgName({ commit }, params) {
+    try {
+      const { data } = await http.getOrgName(params)
+
+      let organization = []
+
+      if (data && Array.isArray(data)) {
+        organization = data.map(orgName => (
+          {
+            label: orgName,
+            value: orgName
+          }
+        ))
+      }
+
+      commit('getOrgName', organization)
+
+      return data
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

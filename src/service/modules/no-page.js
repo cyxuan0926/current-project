@@ -20,5 +20,9 @@ export default {
   // 监区-根据监狱id查询
   getJailPrisonAreas: params => {
     return service.get(`/prison_config/getPrisonConfigs`, params).then(res => res && res.data)
+  },
+  // 外交领事官员-外交官员组织机构
+  getOrgName: params => {
+    return service.get('/diplomats/registrations/getOrgName', params)
   }
 }
