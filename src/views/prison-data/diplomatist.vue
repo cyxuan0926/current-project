@@ -18,7 +18,7 @@
                     :label="tab.label"
                     :name="tab.name" />
             </el-tabs>
-            <dip-table :tableDatas="tableDatas" @on-page="handlePage" />
+            <dip-table ref="dipTable" :tableDatas="tableDatas" @on-page="handlePage" @on-order="handleOrder" />
         </el-col>
     </el-row>
 </template>
@@ -27,6 +27,7 @@
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
     import dipTable from '@/components/diplomat/dip-table.vue'
     import http from '@/service'
+    import { helper } from '@/utils'
     export default {
         mixins: [prisonFilterCreator],
 
@@ -81,6 +82,7 @@
                         value: ''
                     },
                 },
+                tableSort: {},
                 tableDatas: {
                     contents: [],
                     total: 0
@@ -130,6 +132,21 @@
                 this.getDatas()
             },
 
+            handleOrder(prop, order) {
+                if( !order ) {
+                    this.tableSort = {}
+                    delete this.filter.sortDirection
+                    delete this.filter.orderField
+                }else {
+                    this.tableSort = {
+                        sortDirection: order == 'descending' ? 'desc' : 'asc',
+                        orderField: prop
+                    }
+                    this.filter = Object.assign(this.filter, this.tableSort)
+                }
+                this.getDatas()
+            },
+
             async getDatas() {
                 if (this.tabs !== 'first') {
                     this.filter.status = this.tabs
@@ -142,6 +159,12 @@
             },
 
             onSearch() {
+                if (helper.isEmptyObject(this.tableSort)) {
+                    this.$refs.dipTable.$refs.mtableNew.$children[0].clearSort()
+                    this.tableSort = {}
+                    delete this.filter.sortDirection
+                    delete this.filter.orderField
+                }
                 this.pagination.page = 1
                 this.getDatas()
             }

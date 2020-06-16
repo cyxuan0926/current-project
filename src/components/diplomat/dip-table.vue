@@ -1,8 +1,10 @@
 <template>
     <div>
         <m-table-new
+            ref="mtableNew"
             :data="tableDatas.contents"
             :cols="tableCols"
+            @sort-change="handleSortChange"
             stripe
             class="mini-td-padding"
             style="width: 100%">
@@ -77,7 +79,8 @@
                 tableCols: [
                     {
                         label: '省份',
-                        prop: 'provinceName'
+                        prop: 'provinceName',
+                        width: '80px'
                     },
                     {
                         label: '监狱名称',
@@ -99,10 +102,12 @@
                     {
                         label: '申请通话时间',
                         prop: 'meetingTime',
+                        sortable: 'custom',
                     },
                     {
                         label: '申请时长',
                         prop: 'applyTimes',
+                        width: '80px'
                     },
                     {
                         label: '申请状态',
@@ -127,6 +132,10 @@
 
             handlePageChange(page, rows) {
                 this.$emit('on-page', page, rows)
+            },
+
+            handleSortChange({ prop, order }) {
+                this.$emit('on-order', prop, order)
             }
         }
     }
