@@ -114,16 +114,16 @@
           </el-form-item>
           <el-form-item label="请选择可视频终端：">
 
-            <el-select v-model="selectValue"  @change="timeChange" placeholder="请选择视频终端" style="width: 350px">
+            <el-select v-model="selectValue"  placeholder="请选择视频终端" style="width: 350px">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in selectOptions"
+                :key="item.terminalId"
+                :label="item.terminalNumber"
+                :value="item.terminalId">
               </el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"18:00-20:55",外交领事馆可视电话时间请勿与之冲突</p>
+          <p style="margin-bottom: 22px;height: 40px;line-height: 40px" v-if="clashTime"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
         </el-form>
         <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
@@ -168,32 +168,52 @@
       @close="onCloseShow">
       <el-form  label-width="120px">
         <el-form-item label="所在机构/馆名:">
-          *****
+          {{toShow.orgName}}
         </el-form-item>
         <div style="display: flex">
           <div  style="flex: 1">
             <el-form-item label="预约时间:">
-              *****
+              {{toShow.meetingTime}}
             </el-form-item>
             <el-form-item label="审核人账号:">
-              *****
+              {{toShow.auditUserName}}
             </el-form-item>
             <el-form-item label="审核时间:">
-              *****
+              {{toShow.applicationDate}}
             </el-form-item>
             <el-form-item label="通话时长:">
-              *****
+              {{toShow.duration}}
             </el-form-item>
           </div>
           <div style="flex: 1">
             <el-form-item label="终端号:">
-              *****
+              {{toShow.terminalNumber}}
             </el-form-item>
             <el-form-item label="审核人姓名:">
-              *****
+              {{toShow.auditRealName}}
             </el-form-item>
             <el-form-item label="审核状态:">
-              *****
+              <span v-if="toShow.status=='PENDING'">
+                待审核
+              </span>
+              <span v-if="toShow.status=='CANCELED'">
+                已取消
+              </span>
+              <span v-if="toShow.status=='DENIED'">
+                已拒绝
+              </span>
+              <span v-if="toShow.status=='EXPIRED'">
+                已过期
+              </span>
+              <span v-if="toShow.status=='FINISHED'">
+                已完成
+              </span>
+              <span v-if="toShow.status=='MEETING_ON'">
+                会见中
+              </span>
+              <span v-if="toShow.status=='PASSED'">
+                审核通过
+              </span>
             </el-form-item>
           </div>
         </div>
@@ -250,6 +270,8 @@ import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
+import http from '@/service'
+import { Message } from 'element-ui'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -295,23 +317,11 @@ export default {
     return {
       tabsItems,
       valueTime:[new Date(),new Date(new Date().getTime() + 2 * 60 * 60 * 1000) ],
+      startTime:"",
+      endTime:"",
       selectValue:"",
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      clashTime:"",
+      selectOptions: [],
       tabs: '',
       searchItems: {
         name: {
@@ -617,7 +627,6 @@ export default {
         {
           label: '申请通话时间',
           slotName: 'meetingTime',
-          sortable: 'custom',
           minWidth: 135
         },
         {
@@ -737,11 +746,10 @@ export default {
     ...mapActions([
       'getMeetingsDiplomats',//表格数据
       'getMeetingsAll',
-      'authorizeMeeting',//授权同意接口
-      'withdrawMeeting',
-
+      'authorizeDiplomatsMeeting',//授权同意接口
+      'authorizeMeeting',//授权拒绝接口
+      'withdrawMeeting',//撤回操作
       'getMeetingsDiplomatsDetail',//身份证正反面照片
-
       'getMeettingsDetail',
       'meetingApplyDealing'
     ]),
@@ -831,12 +839,27 @@ export default {
       })
     },
     timeChange(){
-      let timeparms={ startTime:"",endTime:""}
       this.valueTime.forEach((item,key)=>{
         if(key==0){
-          timeparms.startTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
+          this.startTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
         }else{
-          timeparms.endTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
+          this.endTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
+        }
+      })
+      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate,start:this.startTime,end:this.endTime}
+      this.getUsableTerminal(params)
+    },
+    getUsableTerminal(params){
+      http.getMeetingsUsableTerminal(params).then(res => {
+        console.log(res)
+        this.selectOptions=''
+        this.clashTime=""
+        this.selectValue=''
+        if(res.status=="success"){
+          this.selectOptions=res.list
+        }
+        if(res.status=="failure"){
+          this.clashTime=res.list
         }
       })
     },
@@ -884,20 +907,37 @@ export default {
       this.closeAuthorize('back')
     },
     onAuthorization(e, args) {
-      let params = { id: this.toAuthorize.id, status: e }
+      let params = { id: this.toAuthorize.id,terminalId:this.selectValue, start: this.startTime,end:this.endTime,status:""}
       if (e === 'DENIED') {
+        params.status='DENIED'
         if (this.remarks === '其他') {
           const { refuseRemark } = args
           params.remarks = refuseRemark
         }
         else params.remarks = this.remarks
-        if (params.remarks) this.handleSubmit(params)
+        if (params.remarks){
+          console.log(params)
+          this.buttonLoading = true
+          this.authorizeMeeting(params).then(res => {
+            this.buttonLoading = false
+            if (!res) return
+            this.closeAuthorize()
+            this.toAuthorize = {}
+            this.getDatas('handleSubmit')
+          })
+        }
       }
-      else this.handleSubmit(params)
+      else{
+        if(params.id && params.terminalId&&params.start&&params.end){
+          this.handleSubmit(params)
+        }else{
+          Message("请选择时间或视频终端")
+        }
+      }
     },
     handleSubmit(params) {
       this.buttonLoading = true
-      this.authorizeMeeting(params).then(res => {
+      this.authorizeDiplomatsMeeting(params).then(res => {
         this.buttonLoading = false
         if (!res) return
         this.closeAuthorize()
@@ -986,10 +1026,9 @@ img
   display: block;
 .img-idCard
   min-width: 350px;
->>> label
+.img-idCard label
   color: #000;
   font-size: 16px;
-  line-height: 22px;
 .withdraw-form
  >>> .button-box
        padding-bottom: 0px

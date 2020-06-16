@@ -25,9 +25,18 @@ export default {
   getMeetingsDiplomats: params => {
     return service.get('/meetings/diplomats/page', params).then(res => res && res.data)
   },
-  // 外交领事官员可视电话申请-家属详情
+  // 外交领事官员可视电话申请-列表
   getMeetingsDiplomatsDetail: params => {
     return service.get('/meetings/diplomats/familyDetail', params).then(res => res && res.data)
+  },
+  // 外交领事官员根据当前时间获取终端-列表
+  getMeetingsUsableTerminal: params => {
+    return service.get('/meetings/diplomats/usableTerminal', params).then(res => res && res.data)
+  },
+  // 外交领事官员根据同意提交
+  authorizeDiplomatsMeeting: params => {
+    // return service.post('/meetings/authorize', params).then(res => res && res.code === 200)
+    return service.post('/meetings/diplomats/authorize', params)
   },
   // 家属会见申请-列表-所有监狱
   getMeetingsAll: params => {
