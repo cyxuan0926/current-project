@@ -26,6 +26,8 @@ export default {
     }
 
     return {
+      goBackButton,
+
       // 授权按钮元素
       authorizeButtons: [
         {
@@ -49,55 +51,6 @@ export default {
 
           events: {
             click: this.onDisagreeAuthorize
-          }
-        },
-
-        closeButton
-      ],
-
-      // 授权同意情况下按钮元素
-      showAgreeButtons: [
-        {
-          text: '确定申请通过？',
-
-          attrs: {
-            plain: true,
-            loading: this.buttonLoading
-          },
-
-          events: {
-            click: this.onPassedAuthorize
-          }
-        },
-
-        { ...goBackButton,
-          events: {
-            click: this.onAgreeAuthorizeGoBack
-          }
-        },
-
-        closeButton
-      ],
-
-      // 授权不同意情况下的按钮元素
-      showDisagreebuttons: [
-        {
-          text: '提交',
-
-          attrs: {
-            plain: true,
-            loading: this.buttonLoading
-          },
-
-          events: {
-            click: this.onDeniedSubmit
-          }
-        },
-
-        {
-          ...goBackButton,
-          events: {
-            click: this.onDisagreeAuthorizeGoBack
           }
         },
 
@@ -254,5 +207,60 @@ export default {
 
     // 授权对话框不同意情况下的返回操作
     onDisagreeAuthorizeGoBack() {}
+  },
+
+  computed: {
+    // 授权同意情况下按钮元素
+    showAgreeButtons() {
+      return [
+        {
+          text: '确定申请通过？',
+
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+
+          events: {
+            click: this.onPassedAuthorize
+          }
+        },
+
+        { ...this.goBackButton,
+          events: {
+            click: this.onAgreeAuthorizeGoBack
+          }
+        },
+
+        this.closeButton
+      ]
+    },
+
+    // 授权不同意情况下的按钮元素
+    showDisagreebuttons() {
+      return [
+        {
+          text: '提交',
+
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+
+          events: {
+            click: this.onDeniedSubmit
+          }
+        },
+
+        {
+          ...this.goBackButton,
+          events: {
+            click: this.onDisagreeAuthorizeGoBack
+          }
+        },
+
+        this.closeButton
+      ]
+    }
   }
 }

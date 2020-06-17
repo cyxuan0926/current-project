@@ -35,9 +35,9 @@
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
 
         <template #idCards="{ row }">
-          <template v-for="item in row.diplomaticConsulOfficialUrls">
+          <template v-for="(item, index) in row.diplomaticConsulOfficialUrls">
             <m-img-viewer 
-              :key="item.url"
+              :key="index"
               :url="item.url"
               isRequired
               :toolbar="{ prev: 1, next: 1 }"
@@ -94,11 +94,11 @@
       >
         <template #familyInformation="{ scope }">
           <div class="img-items">
-            <template v-for="item in scope.diplomaticConsulOfficialUrls">
+            <template v-for="(item, index) in scope.diplomaticConsulOfficialUrls">
               <m-img-viewer
                 isRequired
                 :class="[{'el-image__no-box_shadow': !item.url}]"
-                :key="item.url"
+                :key="index"
                 :url="item.url"
                 :toolbar="{ prev: 1, next: 1 }"
                 :title="item.title"
@@ -385,7 +385,7 @@ export default {
         {
           label: '身份证件有效期至',
           prop: 'idValidDate',
-          minWidth: 110
+          minWidth: 120
         },
         {
           label: '申请时间',
@@ -395,11 +395,14 @@ export default {
         {
           label: '所在机构/馆名',
           prop: 'orgName',
-          minWidth: 100
+          minWidth: 110,
+          showOverflowTooltip: true
         },
         {
           label: '职位',
-          prop: 'positionName'
+          prop: 'positionName',
+          minWidth: 100,
+          showOverflowTooltip: true
         },
         {
           label: '申请状态',
@@ -454,7 +457,7 @@ export default {
         ...this.pagination
       }
 
-      await this.getPageData({url, params})
+      await this.getPageData({ url, params })
     },
 
     // 授权/撤回 操作显示对话框
@@ -623,6 +626,7 @@ export default {
 }
 .button-box {
   /deep/ .el-button {
+    width: 24% !important;
     &:first-of-type {
       margin-left: 0px !important;
     }
