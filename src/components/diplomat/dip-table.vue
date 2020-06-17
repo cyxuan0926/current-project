@@ -123,10 +123,9 @@
         },
         methods: {
             async handleShowDetails({ id }) {
-                let { data } = await http.getMeettingsDetail({
+                this.currentData = await http.getMeettingsDetail({
                     meetingId: id
                 })
-                this.currentData = data
                 this.detailsVisible = true
             },
 
