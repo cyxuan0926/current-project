@@ -66,7 +66,7 @@
           <p>姓名:{{family.familyName}}</p>
           <p>所属机构/馆名:{{family.orgName}}</p>
           <p>身份信息:</p>
-          <div style="margin-left:80px">
+          <div class="images-box__information" style="margin-left:80px">
             <m-img-viewer
               isRequired
               :url="family.familyAvatarUrl"
@@ -87,7 +87,7 @@
             />
           </div>
           <p>会见审批单:</p>
-          <div style="margin-left:80px">
+          <div class="images-box__information" style="margin-left:80px">
             <m-img-viewer
               :url="family.approvalImageUrl"
               title="会见审批单"
@@ -170,7 +170,6 @@
                 http.getMeetingsDiplomatsDetail({ meetingId, familyId }).then(res => {
                   if (!res.family) return
                   this.family = Object.assign({}, res.family)
-                  console.log(this.family)
                 })
               },
           closeFamilyDetail() {
@@ -190,5 +189,15 @@
 </script>
 
 <style lang="scss" scoped>
-
+.images-box__information {
+    /deep/ .el-image {
+        width: 32%;
+        &.img-viewer__overflow-unset {
+            img {
+                width: 100%;
+            }
+            
+        }
+    }
+}
 </style>
