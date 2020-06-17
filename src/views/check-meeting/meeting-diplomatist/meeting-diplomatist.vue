@@ -217,53 +217,44 @@
             </el-form-item>
           </div>
         </div>
-
-
       </el-form>
-      <!--<family-to-show-->
-        <!--:elItems="familyShows"-->
-        <!--:showData="toShow">-->
-        <!--<template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>-->
-        <!--<template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>-->
-        <!--<template #duration="{ toShow }">{{ toShow.duration | time }}</template>-->
-      <!--</family-to-show>-->
     </el-dialog>
     <el-dialog
       title="查看信息"
       class="authorize-dialog"
       :visible.sync="show.familiesDetialInform"
       @close="closeFamilyDetail">
-      <family-detial-information
+      <family-detail-information
         :elItems="familyDetailInformationItems"
         :detailData="family">
-        <template #familyAvatarUrl="{ scope }">
+        <template #familyInformation="{ scope }">
+          <div class="img-items">
           <m-img-viewer
             isRequired
             :url="scope.familyAvatarUrl"
             title="人脸照片"
           />
-        </template>
-        <template #familyIdCardFront="{ scope }">
           <m-img-viewer
             isRequired
             :url="scope.familyIdCardFront"
             title="身份证正面"
           />
-        </template>
-        <template #familyIdCardBack="{ scope }">
           <m-img-viewer
             isRequired
             :url="scope.familyIdCardBack"
             title="身份证背面"
           />
+        </div>
         </template>
         <template #approvalImageUrl="{ scope }">
+          <div class="img-items">
           <m-img-viewer 
             :url="scope.approvalImageUrl"
             title="会见审批单"
           />
+          </div>
         </template>
-      </family-detial-information>
+      </family-detail-information>
     </el-dialog>
   </el-row>
 </template>
@@ -451,21 +442,25 @@ export default {
           label: '所属机构/馆名',
           prop: 'orgName'
         },
-        {
-          label: '人脸照片',
-          prop: 'familyAvatarUrl',
-          definedClass: idCardClassName
+        { label: '家属信息',
+          prop: 'familyInformation',
+          definedClass: 'img-box'
         },
-        {
-          label: '身份证正面',
-          prop: 'familyIdCardFront',
-          definedClass: idCardClassName
-        },
-        {
-          label: '身份证背面',
-          prop: 'familyIdCardBack',
-          definedClass: idCardClassName
-        },
+        // {
+        //   label: '人脸照片',
+        //   prop: 'familyAvatarUrl',
+        //   definedClass: idCardClassName
+        // },
+        // {
+        //   label: '身份证正面',
+        //   prop: 'familyIdCardFront',
+        //   definedClass: idCardClassName
+        // },
+        // {
+        //   label: '身份证背面',
+        //   prop: 'familyIdCardBack',
+        //   definedClass: idCardClassName
+        // },
         {
           label: '会见审批单',
           prop: 'approvalImageUrl',
@@ -518,49 +513,19 @@ export default {
     }
   },
   components: {
-    // 操作列-详情组件
-    // 'family-to-show': {
-    //   methods: {
-    //     renderItems(h) {
-    //       return this.elItems.map(elItem => {
-    //         const contents = elItem['slotName'] && this.$scopedSlots[elItem['slotName']] ?
-    //         this.$scopedSlots[elItem['slotName']]({
-    //           toShow: this.showData}) : this.showData[elItem['prop']]
-    //         return h('div', {
-    //           style: elItem.style || { width: '50%' },
-    //           key: elItem.label + this.showData.id
-    //         }, [ h('label', elItem.label + '：'), h('span', contents)])
-    //       })
-    //     }
-    //   },
-    //   render(h) {
-    //     return h('div', {
-    //       attrs: {
-    //         class: 'flex-dialog'
-    //       }
-    //     }, this.renderItems(h))
-    //   },
-    //   props: {
-    //     elItems: {
-    //       type: Array,
-    //       default: () => []
-    //     },
-    //     showData: {
-    //       type: Object,
-    //       default: () => ({})
-    //     }
-    //   }
-    // },
     // 家属详细信息组件
-    'family-detial-information': {
+    'family-detail-information': {
       template:
         `<div>
           <el-row
             :gutter="20"
             v-for="(item, index) in elItems"
             :key="'id-family-detail-information-item-' + index">
-            <el-col :class="item.definedClass">
-              <label>{{item.label}}:</label>
+            <el-col
+              :class="item.definedClass"
+              :style="item.definedStyles"
+            >
+              <label>{{ item.label }}：</label>
               <template>
                 <slot
                   :name="item.prop"
@@ -571,11 +536,13 @@ export default {
             </el-col>
           </el-row>
         </div>`,
+
       props: {
         elItems: {
           type: Array,
           default: () => []
         },
+
         detailData: {
           type: Object,
           default: () => ({})
@@ -1000,47 +967,56 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "../../../assets/css/list";
-.el-table /deep/ {
-  th {
-    padding: 5px 0 3px !important;
+  @import "../../../assets/css/list";
+  .el-table /deep/ {
+    th {
+      padding: 5px 0 3px !important;
+    }
   }
-}
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>
-.cell img
-  width: 126.8px;
-  cursor: pointer;
-.button-detail
-  display: block;
-  margin-left: 0;
-  width: 56px;
-.flex-dialog
-  display: flex;
-  flex-wrap: wrap;
-  >>> label
-        display: inline-block;
-        width: 90px;
-        text-align: right;
-.withdraw-box
-  margin-bottom: 20px;
-img
-  display: block;
-.img-idCard
-  min-width: 350px;
-.img-idCard label
-  color: #000;
-  font-size: 16px;
-.withdraw-form
- >>> .button-box
-       padding-bottom: 0px
-.el-image
-  display: block;
-  width: 342.4px;
-  height: 216px;
-  margin:auto;
-  >>> img
-        width: 100%;
-        height: 100%;
+  .cell img
+    width: 126.8px;
+    cursor: pointer;
+  .button-detail
+    display: block;
+    margin-left: 0;
+    width: 56px;
+  .flex-dialog
+    display: flex;
+    flex-wrap: wrap;
+    >>> label
+      display: inline-block;
+      width: 90px;
+      text-align: right;
+  .withdraw-box
+    margin-bottom: 20px;
+  .withdraw-form
+    >>> .button-box
+      padding-bottom: 0px
+  .img-box
+    display: flex;
+    flex-direction: column !important;
+    .img-items
+      padding-top: 10px;
+      .el-image
+        width: 32%;
+        height: 110px;
+        margin-bottom: 5px;
+        >>> img
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+  .el-image.relation_img
+    width: 24% !important;
+  .family-dialog
+    >>> .el-dialog__body
+      padding: 10px 20px !important;
+    >>> .el-dialog__header
+      border-bottom: 1px solid #f4f4f4 !important;
+  .button-box
+    >>> .el-button
+      &:first-of-type
+        margin-left: 0px !important;
 </style>
