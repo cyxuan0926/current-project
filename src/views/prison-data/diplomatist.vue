@@ -3,8 +3,7 @@
         class="row-container"
         :gutter="0">
         <m-excel-download
-        v-if="hasAllPrisonQueryAuth"
-        path="/download/exportRegistrations"
+        path="/download/export/diplomats-meeting/list"
         :params="filter" />
         <m-search
         :items="searchItems"
