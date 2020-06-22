@@ -5,9 +5,10 @@ export default {
     try {
       const { url, params } = configs
 
-      const { data } = await diplomaticConsulOfficialAPI.getPageData(url, params)
+      const response = await diplomaticConsulOfficialAPI.getPageData(url, params)
 
-      if (data) {
+      if (response && response['data']) {
+        const { data } = response
         const { registrations = [], total = 0 } = data
 
         const urlsParams = ['idCardFront', 'idCardBack', 'avatarUrl']
@@ -34,7 +35,7 @@ export default {
         commit('setPageData', { registrations, total })
       }
 
-      return data
+      return response
     }
     catch (err) {
       throw err
@@ -43,9 +44,11 @@ export default {
 
   async registrationAuthorize({ commit }, params) {
     try {
-      const { code } = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
+      const response = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
 
-      return code === 200
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
     }
     catch (err) {
       throw err
