@@ -75,8 +75,12 @@
         data() {
             return {
                 detailsVisible: false,
-                currentData: {},
-                tableCols: [
+                currentData: {}
+            }
+        },
+        computed: {
+            tableCols() {
+                let cols = [
                     {
                         label: '省份',
                         prop: 'provinceName',
@@ -119,6 +123,11 @@
                         slotName: 'operation'
                     }
                 ]
+
+                if (!this.hasAuth) {
+                    cols.splice(0, 2)
+                }
+                return cols
             }
         },
         methods: {

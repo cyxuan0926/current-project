@@ -11,7 +11,10 @@
         @searchSelectChange="searchSelectChange"
         @search="onSearch" />
         <el-col :span="24">
-            <dip-det-table :tableDatas="tableDatas" @on-page="handlePage" :hasAuth="hasAllPrisonQueryAuth" />
+            <dip-det-table 
+                :tableDatas="tableDatas" 
+                @on-page="handlePage" 
+                :hasAuth="hasOnlyAllPrisonQueryAuth" />
         </el-col>
     </el-row>
 </template>

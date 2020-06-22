@@ -17,7 +17,12 @@
                     :label="tab.label"
                     :name="tab.name" />
             </el-tabs>
-            <dip-table ref="dipTable" :tableDatas="tableDatas" @on-page="handlePage" @on-order="handleOrder" />
+            <dip-table 
+                ref="dipTable" 
+                :tableDatas="tableDatas" 
+                @on-page="handlePage" 
+                @on-order="handleOrder" 
+                :hasAuth="hasOnlyAllPrisonQueryAuth"/>
         </el-col>
     </el-row>
 </template>
