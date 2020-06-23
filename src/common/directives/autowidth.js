@@ -13,7 +13,7 @@ export default {
     Vue.nextTick(() => {
       elInputWrapper.style.width = elInput.value.length > minlength
         ? `${ elInput.value.length + 5 }em`
-        : '13em'
+        : '14em'
     })
   }
 }

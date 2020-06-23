@@ -11,7 +11,7 @@ const logout = () => {
   // store.commit('account/setPublicUserInfo', {})
   Message({
     showClose: true,
-    message: '退出登陆成功',
+    message: '退出登录成功',
     duration: 3000,
     type: 'success'
   })
