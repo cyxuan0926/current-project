@@ -328,12 +328,12 @@ export default {
     ...mapState('diplomaticConsulOfficial', ['pageData']),
 
     ...mapState([
-      'frontRemarks',
+      'registRemarks',
       'organizationNames'
     ]),
 
     defaultRemarks() {
-      let copyRemarks = this.frontRemarks.slice(0)
+      let copyRemarks = this.registRemarks.slice(0)
 
       copyRemarks.splice(1, 1)
 
