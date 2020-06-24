@@ -30,7 +30,7 @@
         <el-table-column
           v-if="hasProvinceQueryAuth"
           label="省份"
-          min-width="60"
+          min-width="55"
           prop="provinceName"
           show-overflow-tooltip
         />
@@ -45,10 +45,10 @@
           prop="name"
           show-overflow-tooltip
           label="家属姓名"
-          min-width="60"
+          min-width="55"
         />
         <el-table-column
-          min-width="148px"
+          width="148px"
           label="身份证件信息">
           <template slot-scope="scope">
             <m-img-viewer
@@ -74,13 +74,13 @@
         </el-table-column>
         <el-table-column
           label="身份证件有效期至"
-          prop="validDates"
+          prop="validDate"
         />
         <el-table-column
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="70"
+          min-width="80"
         />
         <el-table-column
           label="申请时间"
@@ -92,7 +92,7 @@
           prop="prisonerNumber"
           show-overflow-tooltip
           label="罪犯编号"
-          min-width="55"
+          min-width="50"
         />
         <el-table-column
           prop="prisonArea"

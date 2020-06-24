@@ -780,6 +780,7 @@ export default {
     border-bottom: 1px solid #f4f4f4 !important;
 .button-box
   >>> .el-button
+    width: 24% !important;
     &:first-of-type
       margin-left: 0px !important;
 </style>

@@ -3,8 +3,7 @@
         class="row-container"
         :gutter="0">
         <m-excel-download
-        v-if="hasAllPrisonQueryAuth"
-        path="/download/exportRegistrations"
+        path="/download/export/diplomats-meeting/details"
         :params="filter" />
         <m-search
         :items="searchItems"
@@ -12,7 +11,10 @@
         @searchSelectChange="searchSelectChange"
         @search="onSearch" />
         <el-col :span="24">
-            <dip-det-table :tableDatas="tableDatas" @on-page="handlePage" :hasAuth="hasAllPrisonQueryAuth" />
+            <dip-det-table 
+                :tableDatas="tableDatas" 
+                @on-page="handlePage" 
+                :hasAuth="hasOnlyAllPrisonQueryAuth" />
         </el-col>
     </el-row>
 </template>
@@ -36,14 +38,11 @@
                         label: '姓名'
                     },
                     applicationDate: {
-                        type: 'dateRange',
+                        type: 'monthrange',
                         unlinkPanels: true,
-                        start: 'applicationStartDate',
-                        end: 'applicationEndDate',
-                        startPlaceholder: '会见开始时间',
-                        endPlaceholder: '会见结束时间'
-                        // miss: true,
-                        // value: ''
+                        start: 'startDate',
+                        end: 'endDate',
+                        value: ''
                     },
                 },
                 tableDatas: {

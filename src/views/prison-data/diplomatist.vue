@@ -3,8 +3,7 @@
         class="row-container"
         :gutter="0">
         <m-excel-download
-        v-if="hasAllPrisonQueryAuth"
-        path="/download/exportRegistrations"
+        path="/download/export/diplomats-meeting/list"
         :params="filter" />
         <m-search
         :items="searchItems"
@@ -18,7 +17,12 @@
                     :label="tab.label"
                     :name="tab.name" />
             </el-tabs>
-            <dip-table ref="dipTable" :tableDatas="tableDatas" @on-page="handlePage" @on-order="handleOrder" />
+            <dip-table 
+                ref="dipTable" 
+                :tableDatas="tableDatas" 
+                @on-page="handlePage" 
+                @on-order="handleOrder" 
+                :hasAuth="hasOnlyAllPrisonQueryAuth"/>
         </el-col>
     </el-row>
 </template>

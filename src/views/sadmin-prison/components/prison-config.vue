@@ -432,7 +432,11 @@ export default {
           this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
         }
         if (this.values.diplomatistCharge === 1) {
+          const { diplomatistStartMinutes = 5, diplomatistStartMoney = 12, diplomatistFixedMoney = 1.8 } = this.values
           this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
+          this.$set(this.formData, 'diplomatistStartMinutes', diplomatistStartMinutes)
+          this.$set(this.formData, 'diplomatistStartMoney', diplomatistStartMoney)
+          this.$set(this.formData, 'diplomatistFixedMoney', diplomatistFixedMoney)
         }
         if (!this.values.diplomatistCharge) {
           this.formItems['dissMissConfigs'] = [
