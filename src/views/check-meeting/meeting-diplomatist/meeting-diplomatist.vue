@@ -209,7 +209,7 @@
                 已完成
               </span>
               <span v-if="toShow.status=='MEETING_ON'">
-                会见中
+                通话中
               </span>
               <span v-if="toShow.status=='PASSED'">
                 审核通过
@@ -250,7 +250,7 @@
           <div class="img-items">
           <m-img-viewer 
             :url="scope.approvalImageUrl"
-            title="会见审批单"
+            title="审批单"
           />
           </div>
         </template>
@@ -462,7 +462,7 @@ export default {
         //   definedClass: idCardClassName
         // },
         {
-          label: '会见审批单',
+          label: '审批单',
           prop: 'approvalImageUrl',
           definedClass: idCardClassName
         }

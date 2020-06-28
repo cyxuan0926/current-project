@@ -396,7 +396,7 @@ let superAdmin = [{
     },
     meta: {
       breadcrumbName: '外交领事官员注册表',
-      premission: 'visit.data-search.diplomatic-consul-official.search'
+      permission: 'visit.data-search.diplomatic-consul-official.search'
     },
     component: 'diplomatic-consul-official/registration/index'
   }, {
@@ -405,7 +405,7 @@ let superAdmin = [{
     props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       breadcrumbName: '外交领事官员可视电话申请列表',
-      premission: ''
+      permission: 'visit.data-search.diplomatic-consul-official-all.search'
     },
     component: 'prison-data/diplomatist'
   }, {
@@ -414,7 +414,7 @@ let superAdmin = [{
     props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, hasDiplomatQueryAuth: true },
     meta: {
       breadcrumbName: '外交领事官员可视电话详情表',
-      premission: ''
+      permission: 'visit.data-search.diplomatic-consul-official.detail.search'
     },
     component: 'prison-data/diplomatist-detail'
   }]
