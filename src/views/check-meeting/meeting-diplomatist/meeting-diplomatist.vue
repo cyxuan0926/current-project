@@ -102,18 +102,16 @@
         <el-form  label-width="180px">
           <el-form-item label="请设置可视电话时间段：">
             <el-time-picker
-              is-range
+              style="width: 150px;margin-right: 15px"
               v-model="valueTime"
               format="HH:mm"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
               @change="timeChange"
-              placeholder="选择时间范围">
+              placeholder="选择时间">
             </el-time-picker>
+            至<el-input style="width: 150px;margin-left: 15px" v-model="this.endTime" :disabled="true" placeholder="请输入内容"></el-input>
+
           </el-form-item>
           <el-form-item label="请选择可视频终端：">
-
             <el-select v-model="selectValue"  placeholder="请选择视频终端" style="width: 350px">
               <el-option
                 v-for="item in selectOptions"
@@ -123,7 +121,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-bottom: 22px;height: 40px;line-height: 40px" v-if="clashTime"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
+          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
         </el-form>
         <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
@@ -310,7 +308,7 @@ export default {
     ]
     return {
       tabsItems,
-      valueTime:[new Date(),new Date(new Date().getTime() + 2 * 60 * 60 * 1000) ],
+      valueTime:new Date(),
       startTime:"",
       endTime:"",
       selectValue:"",
@@ -809,28 +807,32 @@ export default {
       })
     },
     timeChange(){
-      this.valueTime.forEach((item,key)=>{
-        if(key==0){
-          this.startTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
-        }else{
-          this.endTime=`${item.getHours()>9?item.getHours():'0'+item.getHours()}:${item.getMinutes()}`
-        }
-      })
+      this.startTime=`${this.valueTime.getHours()>9?this.valueTime.getHours():'0'+this.valueTime.getHours()}:${this.valueTime.getMinutes()>9?this.valueTime.getMinutes():'0'+this.valueTime.getMinutes()}`
+      let  minutes=parseInt(this.toAuthorize.applyTimes);
+      let   interTimes=parseInt(minutes*60*1000);
+      let date=new  Date(Date.parse(this.valueTime)+interTimes);
+      this.endTime=`${date.getHours()>9?date.getHours():'0'+date.getHours()}:${date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes()}`
       let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate,start:this.startTime,end:this.endTime}
       this.getUsableTerminal(params)
     },
     getUsableTerminal(params){
       http.getMeetingsUsableTerminal(params).then(res => {
-        console.log(res)
         this.selectOptions=''
-        this.clashTime=""
         this.selectValue=''
         if(res.status=="success"){
           this.selectOptions=res.list
         }
         if(res.status=="failure"){
-          this.clashTime=res.list
+
         }
+      })
+    },
+    getClashTime(){
+      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate}
+        this.clashTime=""
+      http.getMeetingsDiplomatsfamilyMeetingTimes(params).then(res => {
+        console.log(res)
+        this.clashTime=res
       })
     },
     onCloseShow() {
@@ -856,7 +858,9 @@ export default {
      //this.show.timer=true
 
        this.show.agree = true
+
        this.timeChange();
+       this.getClashTime()
        this.buttonLoading = false
     },
     // 授权对话框的不同意操作
