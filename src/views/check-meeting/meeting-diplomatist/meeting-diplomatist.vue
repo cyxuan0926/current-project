@@ -121,7 +121,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-bottom: 22px;height: 40px;line-height: 40px" v-if="clashTime"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
+          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
         </el-form>
         <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
@@ -817,16 +817,22 @@ export default {
     },
     getUsableTerminal(params){
       http.getMeetingsUsableTerminal(params).then(res => {
-        console.log(res)
         this.selectOptions=''
-        this.clashTime=""
         this.selectValue=''
         if(res.status=="success"){
           this.selectOptions=res.list
         }
         if(res.status=="failure"){
-          this.clashTime=res.list
+
         }
+      })
+    },
+    getClashTime(){
+      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate}
+        this.clashTime=""
+      http.getMeetingsDiplomatsfamilyMeetingTimes(params).then(res => {
+        console.log(res)
+        this.clashTime=res
       })
     },
     onCloseShow() {
@@ -852,7 +858,9 @@ export default {
      //this.show.timer=true
 
        this.show.agree = true
+
        this.timeChange();
+       this.getClashTime()
        this.buttonLoading = false
     },
     // 授权对话框的不同意操作

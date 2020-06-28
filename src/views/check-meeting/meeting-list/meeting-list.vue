@@ -20,7 +20,7 @@
             :key="index"
             :label="tab.label"
             :name="tab.name" />
-        </template>  
+        </template>
       </el-tabs>
       <m-table-new
         stripe
