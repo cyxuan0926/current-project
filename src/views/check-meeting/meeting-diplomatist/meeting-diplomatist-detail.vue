@@ -17,6 +17,9 @@
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
     import dipDetTable from '@/components/diplomat/dip-det-table.vue'
     import http from '@/service'
+    import Moment from 'moment'
+    const startDate = Moment().format('YYYY-MM')
+    const endDate = Moment().format('YYYY-MM')
     export default {
         mixins: [prisonFilterCreator],
 
@@ -32,11 +35,16 @@
                         label: '姓名'
                     },
                     applicationDate: {
-                        type: 'monthrange',
-                        unlinkPanels: true,
-                        start: 'startDate',
-                        end: 'endDate',
-                        value: ''
+                        type: 'monthRangeSelector',
+                        canNotClear: true,
+                        startValue: startDate,
+                        endValue: endDate,
+                        startKey: 'startDate',
+                        endKey: 'endDate',
+                        range: {
+                            max: Moment().format('YYYY-MM'),
+                            maxMonthRange: 24
+                        }
                     },
                 },
                 tableDatas: {
@@ -86,7 +94,12 @@
             },
 
             async getDatas() {
-                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({ ...this.filter, ...this.pagination })
+                const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({
+                    startDate,
+                    endDate,
+                    ...this.filter,
+                    ...this.pagination
+                })
                 this.tableDatas = {
                     contents: this.setDiplomatsNameData(diplomatsMeetingDetails),
                     total
