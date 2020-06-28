@@ -16,6 +16,9 @@
             v-model="terminal.terminalNumber"
             placeholder="请填写终端号" />
         </el-form-item>
+        <el-form-item label="终端唯一标识" prop="terminalSn">
+          <el-input v-model="terminal.terminalSn" placeholder="请填写终端唯一标识" />
+        </el-form-item>
         <el-form-item
           label="会议室号"
           prop="roomNumber">
@@ -70,7 +73,7 @@
             placeholder="请填写参会密码" />
         </el-form-item>
         <el-form-item
-          label="狱警会见开关"
+          label="狱警通话开关"
           prop="meetingEnabled">
           <el-switch
             v-model="terminal.meetingEnabled"
@@ -86,6 +89,11 @@
         type="primary"
         size="small"
         @click="onSubmit">新增</el-button>
+      <el-button
+        class="submit"
+        plain
+        size="small"
+        @click="onGoBack">返回</el-button>
     </el-col>
   </el-row>
 </template>
@@ -174,6 +182,10 @@ export default {
           this.gettingPrisonArea = false
         })
       }
+    },
+
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

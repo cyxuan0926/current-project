@@ -253,21 +253,35 @@ let superAdmin = [{
   children: [{
     path: '/terminal/list',
     name: 'terminal-list',
-    meta: { permission: 'visit.terminal.search', breadcrumbName: '终端列表' },
+    meta: {
+      permission: 'visit.terminal.search',
+      breadcrumbName: '终端列表',
+      componentsToKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-list'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-list'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-list')
   }, {
     path: '/terminal/add',
     name: 'terminal-add',
-    meta: { deep: true, permission: 'visit.terminal.add', breadcrumbName: '新增终端' },
+    meta: {
+      deep: true,
+      permission: 'visit.terminal.add',
+      breadcrumbName: '新增终端',
+      componentsUnRemoveKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-add'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-add'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-add')
   }, {
     path: '/terminal/edit/:id',
     name: 'terminal-edit',
-    meta: { deep: true, permission: 'visit.terminal.update', breadcrumbName: '编辑终端' },
+    meta: {
+      deep: true,
+      permission: 'visit.terminal.update',
+      breadcrumbName: '编辑终端',
+      componentsUnRemoveKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-edit'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-edit')

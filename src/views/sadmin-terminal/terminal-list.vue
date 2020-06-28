@@ -42,6 +42,8 @@
 import { mapActions, mapState } from 'vuex'
 import switches from '@/filters/modules/switches'
 export default {
+  name: 'TerminalList',
+
   data() {
     return {
       searchItems: {
@@ -54,7 +56,7 @@ export default {
         },
         meetingEnabled: {
           type: 'select',
-          label: '狱警会见开关',
+          label: '狱警通话开关',
           options: switches.isOpened
         }
       },
@@ -62,6 +64,10 @@ export default {
         {
           label: '终端号',
           prop: 'terminalNumber'
+        },
+        {
+          label: '终端唯一标识',
+          prop: 'terminalSn'
         },
         {
           label: '会议室号',
@@ -87,14 +93,14 @@ export default {
           minWidth: 60
         },
         {
-          label: '狱警会见开关',
+          label: '狱警通话开关',
           prop: 'meetingEnabled',
           slotName: 'meetingEnabled'
         },
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 90
+          minWidth: 95
         }
       ]
     }
