@@ -121,7 +121,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
+          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突.</p>
         </el-form>
         <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
