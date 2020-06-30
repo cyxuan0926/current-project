@@ -108,13 +108,15 @@ export default {
   computed: {
     ...mapState(['terminals', 'prisonAll'])
   },
-  mounted() {
+
+  activated() {
     this.getPrisonAll().then(() => {
       this.searchItems.jailId.options = this.prisonAll
       this.searchItems.jailId.getting = false
       this.getDatas()
     })
   },
+
   methods: {
     ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal', 'enableTerminal']),
     getDatas() {
