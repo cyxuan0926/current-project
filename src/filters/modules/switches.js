@@ -115,6 +115,16 @@ let switches = {
       label: '非中国籍家属',
       value: 1
     }
+  ],
+  terminalTypes: [
+    {
+      label: 'C9',
+      value: 0
+    },
+    {
+      label: '一体机',
+      value: 1
+    }
   ]
 }
 

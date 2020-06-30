@@ -16,6 +16,16 @@
             v-model="terminal.terminalNumber"
             placeholder="请填写终端号" />
         </el-form-item>
+        <el-form-item label="终端类型" prop="terminalType">
+          <el-select v-model="terminal.terminalType" placeholder="请选择终端类型">
+            <el-option
+              v-for="terminalType in terminalTypes"
+              :key="terminalType.value"
+              :label="terminalType.label"
+              :value="terminalType.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="终端唯一标识" prop="terminalSn">
           <el-input v-model="terminal.terminalSn" placeholder="请填写终端唯一标识" />
         </el-form-item>
@@ -100,6 +110,8 @@
 import { mapState, mapActions } from 'vuex'
 import validate from '@/utils'
 
+import switches from '@/filters/modules/switches'
+
 export default {
   data() {
     return {
@@ -115,7 +127,7 @@ export default {
         }],
         prisonConfigId: [{
           required: true,
-          message: '请填写分监区'
+          message: '请选择监区'
         }],
         hostPassword: [{
           required: true,
@@ -132,12 +144,19 @@ export default {
           required: true,
           ownMessage: '请填写会议室号',
           trigger: 'blur'
-        }]
+        }],
+        terminalType: [
+          {
+            required: true,
+            message: '请选择终端类型'
+          }
+        ]
       },
       hasPrisonArea: false,
       gettingPrisonArea: true,
       gettingPrison: true,
-      isPrisonArea: false
+      isPrisonArea: false,
+      terminalTypes: switches.terminalTypes
     }
   },
   computed: {

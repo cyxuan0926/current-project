@@ -17,6 +17,7 @@
         :data="terminals.contents"
         :cols="tableCols">
         <template #meetingEnabled="{ row }">{{ row.meetingEnabled | isOpened}}</template>
+        <template #terminalType="{ row }">{{ row.terminalType | terminalTypes }}</template>
         <template
           slot="operation"
           slot-scope="scope">
@@ -58,6 +59,11 @@ export default {
           type: 'select',
           label: '狱警通话开关',
           options: switches.isOpened
+        },
+        terminalType: {
+          type: 'select',
+          label: '终端类型',
+          options: switches.terminalTypes
         }
       },
       tableCols: [
@@ -66,8 +72,13 @@ export default {
           prop: 'terminalNumber'
         },
         {
+          label: '终端类型',
+          slotName: 'terminalType'
+        },
+        {
           label: '终端唯一标识',
-          prop: 'terminalSn'
+          prop: 'terminalSn',
+          minWidth: 95
         },
         {
           label: '会议室号',
@@ -76,7 +87,7 @@ export default {
         {
           label: '所属监狱',
           prop: 'jailName',
-          minWidth: 100
+          minWidth: 110
         },
         {
           label: '监区',
@@ -85,7 +96,7 @@ export default {
         {
           label: '主持人密码',
           prop: 'hostPassword',
-          minWidth: 60
+          minWidth: 70
         },
         {
           label: '参会密码',
@@ -100,7 +111,7 @@ export default {
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 95
+          minWidth: 112
         }
       ]
     }
