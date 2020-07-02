@@ -90,6 +90,15 @@
       @close="closeAuthorize"
       title="授权"
       width="800px">
+      <div>
+        审批单：
+        <div class="img-items">
+          <m-img-viewer
+            url="toshow.approvalImageUrl"
+            title="审批单"
+          />
+        </div>
+      </div>
       <div
         v-if="!show.agree && !show.disagree"
         class="button-box">
@@ -215,6 +224,15 @@
             </el-form-item>
           </div>
         </div>
+        <el-form-item>
+          审批单：
+          <div class="img-items">
+            <m-img-viewer
+              url="toshow.approvalImageUrl"
+              title="审批单"
+            />
+          </div>
+        </el-form-item>
       </el-form>
     </el-dialog>
     <el-dialog
@@ -248,7 +266,7 @@
           <div class="img-items">
           <m-img-viewer 
             :url="scope.approvalImageUrl"
-            title="会见审批单"
+            title="审批单"
           />
           </div>
         </template>
@@ -746,7 +764,6 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
-
       this.toAuthorize = e
       this.show.agree = false
       this.show.disagree = false
@@ -822,16 +839,12 @@ export default {
         if(res.status=="success"){
           this.selectOptions=res.list
         }
-        if(res.status=="failure"){
-
-        }
       })
     },
     getClashTime(){
       let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate}
         this.clashTime=""
       http.getMeetingsDiplomatsfamilyMeetingTimes(params).then(res => {
-        console.log(res)
         this.clashTime=res
       })
     },
@@ -856,9 +869,7 @@ export default {
     // 授权对话框的同意操作
     onAgreeAuthorize() {
      //this.show.timer=true
-
        this.show.agree = true
-
        this.timeChange();
        this.getClashTime()
        this.buttonLoading = false
