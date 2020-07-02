@@ -15,9 +15,23 @@ let check = [{
     component: 'check-registration/registration-list'
   }]
 }, {
+  path: '/diplomatic-consul-official',
+  name: 'diplomatic-consul-official-manage',
+  redirect: { path: '/diplomatic-consul-official/list' },
+  meta: { breadcrumbName: '外交领事官员注册管理' },
+  children: [{
+    path: '/diplomatic-consul-official/list',
+    name: 'diplomatic-consul-official-list',
+    meta: {
+      permission: 'visit.diplomatic-consul-official.search',
+      breadcrumbName: '外交领事官员注册列表'
+    },
+    component: 'diplomatic-consul-official/registration/index'
+  }]
+}, {
   path: '/meeting',
   name: 'meeting-manage',
-  meta: { hidden: true, breadcrumbName: '会见申请管理' },
+  meta: { hidden: true, breadcrumbName: '亲情电话申请管理' },
   children: [{
     path: '/meeting/list',
     name: 'meeting-list',
@@ -26,6 +40,14 @@ let check = [{
     component: 'check-meeting/meeting-list/meeting-list',
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '亲情电话申请列表' }
+  }, {
+    path: '/meeting/diplomatist',
+    name: 'meeting-diplomatist',
+    // component: helper.loadView('check-meeting/meeting-list'),
+    // component: 'check-meeting/meeting-list',
+    component: 'check-meeting/meeting-diplomatist/meeting-diplomatist',
+    // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '外交领事官员可视电话申请列表 ' }
   }, {
     path: '/meeting/adjust',
     name: 'meeting-adjust',
@@ -45,7 +67,7 @@ let check = [{
 }, {
   path: '/meeting-report',
   name: 'meeting-report-check',
-  meta: { hidden: true, breadcrumbName: '会见统计' },
+  meta: { hidden: true, breadcrumbName: '可视电话统计' },
   children: [{
     path: '/meeting-report/prison',
     name: 'prison-report-check',
@@ -66,11 +88,17 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费会见纪录' }
+    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费通话记录' }
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '亲情电话节约成本统计' }
+
+  }, {
+    path: '/meeting-report/meeting-diplomatist-detail',
+    component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
+    props: { hasDiplomatQueryAuth: true },
+    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }]
 }, {
   path: '/mailbox',

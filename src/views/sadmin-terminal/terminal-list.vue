@@ -17,6 +17,7 @@
         :data="terminals.contents"
         :cols="tableCols">
         <template #meetingEnabled="{ row }">{{ row.meetingEnabled | isOpened}}</template>
+        <template #terminalType="{ row }">{{ row.terminalType | terminalTypes }}</template>
         <template
           slot="operation"
           slot-scope="scope">
@@ -42,6 +43,8 @@
 import { mapActions, mapState } from 'vuex'
 import switches from '@/filters/modules/switches'
 export default {
+  name: 'TerminalList',
+
   data() {
     return {
       searchItems: {
@@ -54,8 +57,13 @@ export default {
         },
         meetingEnabled: {
           type: 'select',
-          label: '狱警会见开关',
+          label: '狱警通话开关',
           options: switches.isOpened
+        },
+        terminalType: {
+          type: 'select',
+          label: '终端类型',
+          options: switches.terminalTypes
         }
       },
       tableCols: [
@@ -64,13 +72,22 @@ export default {
           prop: 'terminalNumber'
         },
         {
+          label: '终端类型',
+          slotName: 'terminalType'
+        },
+        {
+          label: '终端唯一标识',
+          prop: 'terminalSn',
+          minWidth: 95
+        },
+        {
           label: '会议室号',
           prop: 'roomNumber'
         },
         {
           label: '所属监狱',
           prop: 'jailName',
-          minWidth: 100
+          minWidth: 110
         },
         {
           label: '监区',
@@ -79,7 +96,7 @@ export default {
         {
           label: '主持人密码',
           prop: 'hostPassword',
-          minWidth: 60
+          minWidth: 70
         },
         {
           label: '参会密码',
@@ -87,14 +104,14 @@ export default {
           minWidth: 60
         },
         {
-          label: '狱警会见开关',
+          label: '狱警通话开关',
           prop: 'meetingEnabled',
           slotName: 'meetingEnabled'
         },
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 90
+          minWidth: 112
         }
       ]
     }
@@ -102,13 +119,15 @@ export default {
   computed: {
     ...mapState(['terminals', 'prisonAll'])
   },
-  mounted() {
+
+  activated() {
     this.getPrisonAll().then(() => {
       this.searchItems.jailId.options = this.prisonAll
       this.searchItems.jailId.getting = false
       this.getDatas()
     })
   },
+
   methods: {
     ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal', 'enableTerminal']),
     getDatas() {

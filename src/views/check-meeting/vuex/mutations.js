@@ -12,6 +12,17 @@ export default {
     state.meetings.contents = data
     state.meetings.total = params.total
   },
+  getMeetingsDiplomats(state, params) {
+    const { meetings } = params
+    const data = meetings.map(meeting => {
+      meeting.filterFamilies = []
+      if (meeting.families && meeting.families.length) meeting.filterFamilies = meeting.families.slice(0)
+      else meeting.filterFamilies = [{ familyId: meeting.familyId, familyName: meeting.name }]
+      return meeting
+    })
+    state.meetingsDiplomats.contents = data
+    state.meetingsDiplomats.total = params.total
+  },
   getMeetingConfigs(state, params) {
     state.meetingAdjustment.config = params.config
     state.meetingAdjustment.meetingQueue = params.meetingQueue

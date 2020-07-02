@@ -113,7 +113,7 @@
         slot="title"
         class="tips-title">提醒注意</span>
       <div class="tips">上传文件中部分服刑人员监区与原录入系统中的监区不符</div>
-      <div style="text-align: center;">更换监区罪犯的会见申请未审批的将移交至新监区审核，已成功会见预约申请并未会见的视频申请将根据新监区的会见申请排期表重新安排会见时间段，如同日申请会见的排期未有空期则取消当日转移罪犯的会见申请。</div>
+      <div style="text-align: center;">更换监区罪犯的通话申请未审批的将移交至新监区审核，已审核通过通话申请将根据新监区的通话申请排期表重新安排通话时间段，如同日申请的排期没有空闲时间段则取消当日转移罪犯的通话申请。</div>
       <el-table
         :data="validatePrisonerResult.prisoners"
         style="width: 100%"
@@ -245,6 +245,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1
@@ -267,6 +270,9 @@ export default {
               clearInterval(interver)
               if (!res) {
                 this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
                 return
               }
               this.spendTime += 1

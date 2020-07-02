@@ -16,6 +16,19 @@
             v-model="terminal.terminalNumber"
             placeholder="请填写终端号" />
         </el-form-item>
+        <el-form-item label="终端类型" prop="terminalType">
+          <el-select v-model="terminal.terminalType" placeholder="请选择终端类型">
+            <el-option
+              v-for="terminalType in terminalTypes"
+              :key="terminalType.value"
+              :label="terminalType.label"
+              :value="terminalType.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="终端唯一标识" prop="terminalSn">
+          <el-input v-model="terminal.terminalSn" placeholder="请填写终端唯一标识" />
+        </el-form-item>
         <el-form-item
           label="会议室号"
           prop="roomNumber">
@@ -70,7 +83,7 @@
             placeholder="请填写参会密码" />
         </el-form-item>
         <el-form-item
-          label="狱警会见开关"
+          label="狱警通话开关"
           prop="meetingEnabled">
           <el-switch
             v-model="terminal.meetingEnabled"
@@ -86,6 +99,11 @@
         type="primary"
         size="small"
         @click="onSubmit">新增</el-button>
+      <el-button
+        class="submit"
+        plain
+        size="small"
+        @click="onGoBack">返回</el-button>
     </el-col>
   </el-row>
 </template>
@@ -93,6 +111,8 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import validate from '@/utils'
+
+import switches from '@/filters/modules/switches'
 
 export default {
   data() {
@@ -110,7 +130,7 @@ export default {
         }],
         prisonConfigId: [{
           required: true,
-          message: '请填写分监区'
+          message: '请选择监区'
         }],
         hostPassword: [{
           required: true,
@@ -127,12 +147,20 @@ export default {
           required: true,
           ownMessage: '请填写会议室号',
           trigger: 'blur'
-        }]
+        }],
+        terminalType: [
+          {
+            required: true,
+            message: '请选择终端类型'
+          }
+        ]
       },
       hasPrisonArea: false,
       gettingPrison: true,
       gettingPrisonArea: true,
-      isPrisonArea: false
+      isPrisonArea: false,
+
+      terminalTypes: switches.terminalTypes
     }
   },
   computed: {
@@ -174,6 +202,10 @@ export default {
           this.gettingPrisonArea = false
         })
       }
+    },
+
+    onGoBack() {
+      this.$router.back()
     }
   }
 }

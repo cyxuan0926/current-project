@@ -35,6 +35,7 @@
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { Message } from 'element-ui'
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
 const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
@@ -104,7 +105,8 @@ export default {
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯姓名',
@@ -119,27 +121,27 @@ export default {
           prop: 'prisonArea'
         },
         {
-          label: '会见申请次数',
+          label: '申请次数',
           prop: 'total',
           slotName: 'total'
         },
         {
-          label: '会见完成次数',
+          label: '通话完成次数',
           prop: 'finishedTotal',
           slotName: 'finishedTotal'
         },
         {
-          label: '会见取消次数',
+          label: '取消次数',
           prop: 'canceledTotal',
           slotName: 'canceledTotal'
         },
         {
-          label: '会见过期次数',
+          label: '过期次数',
           prop: 'expiredTotal',
           slotName: 'expiredTotal'
         },
         {
-          label: '会见拒绝/撤回次数',
+          label: '拒绝/撤回次数',
           prop: 'deniedTotal',
           slotName: 'deniedTotal'
         }
@@ -255,16 +257,36 @@ export default {
     createPrisonAreaFilter() {},
     // 覆盖 prison-filter-creator mixin
     async searchSelectChange(selectKey, value) {
+      if (selectKey === 'provincesId') {
+        if (value) {
+          this.$set(this.searchItems['jailId'], 'value', '')
+          if (this.searchItems['prisonAreaId']) {
+            this.$set(this.searchItems['prisonAreaId'], 'value', '')
+
+            this.$set(this.searchItems['prisonAreaId'], 'options', [])
+          }
+        }
+
+        this.$set(this.searchItems['jailId'], 'getting', true)
+
+        await this.$store.dispatch('getPrisonAll', { provincesId: value })
+
+        Message.closeAll()
+
+        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
+
+        this.$set(this.searchItems['jailId'], 'getting', false)
+      }
+
       if (selectKey === 'jailId') {
         if (value) {
           await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
-          this.searchItems.prisonAreaId.options = this.$store.state.jailPrisonAreas
+          this.$set(this.searchItems['prisonAreaId'], 'options', this.$store.state.jailPrisonAreas)
         }
         else {
-          this.searchItems.prisonAreaId.options = []
+          this.$set(this.searchItems['prisonAreaId'], 'options', [])
         }
-
-        this.searchItems.prisonAreaId.value = ''
+        this.$set(this.searchItems['prisonAreaId'], 'value', '')
       }
     }
   }

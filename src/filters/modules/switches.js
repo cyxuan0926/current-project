@@ -35,7 +35,7 @@ let switches = {
     // { value: 'TOBECANCELED', label: '待取消' },
     { value: 'EXPIRED', label: '已过期' },
     { value: 'CANCELED', label: '已取消' },
-    { value: 'MEETING_ON', label: '会见中' }
+    { value: 'MEETING_ON', label: '通话中' }
   ],
   registStatus: [
     { value: 'PENDING', label: '未授权' },
@@ -90,6 +90,40 @@ let switches = {
     {
       label: '按分钟收费',
       value: 2
+    }
+  ],
+  diplomaticConsulOfficialStatus: [
+    {
+      label: '未授权',
+      value: 'PENDING'
+    },
+    {
+      label: '已通过',
+      value: 'PASSED'
+    },
+    {
+      label: '已撤回',
+      value: 'DENIED'
+    }
+  ],
+  nationality: [
+    {
+      label: '中国籍家属',
+      value: 0
+    },
+    {
+      label: '非中国籍家属',
+      value: 1
+    }
+  ],
+  terminalTypes: [
+    {
+      label: 'C9',
+      value: 0
+    },
+    {
+      label: '一体机',
+      value: 1
     }
   ]
 }

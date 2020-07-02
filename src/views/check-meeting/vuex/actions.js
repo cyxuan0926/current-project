@@ -9,6 +9,13 @@ export default {
       return true
     })
   },
+  getMeetingsDiplomats({ commit }, params) {
+    return http.getMeetingsDiplomats(params).then(res => {
+      if (!res) return
+      commit('getMeetingsDiplomats', res)
+      return true
+    })
+  },
   getMeetingsAll({ commit }, params) {
     return http.getMeetingsAll(params).then(res => {
       if (!res) return
@@ -20,6 +27,16 @@ export default {
     // return http.authorizeMeeting(params).then(res => res)
     try {
       const res = await http.authorizeMeeting(params)
+      return res && res.code === 200
+    }
+    catch (err) {
+      throw err
+    }
+  },
+  async authorizeDiplomatsMeeting({ commit }, params) {
+    // return http.authorizeMeeting(params).then(res => res)
+    try {
+      const res = await http.authorizeDiplomatsMeeting(params)
       return res && res.code === 200
     }
     catch (err) {
@@ -41,6 +58,9 @@ export default {
   },
   getFreeMeetings({ commit }, params) {
     http.getFreeMeetings(params).then(res => res && commit('getFreeMeetings', { contents: res.freeMeetings, total: res.total }))
+  },
+  getMeetingsDiplomatsDetail({ commit }, params) {
+    return http.getMeetingsDiplomatsDetail(params).then(res => res)
   },
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)

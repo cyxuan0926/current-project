@@ -27,7 +27,7 @@
             class="table-footer">
             <span>{{ prisonReportDetail.jailName }}</span>
             <span>
-              总会见时长：{{ prisonReportDetail.totalDuration | time }}
+              总通话时长：{{ prisonReportDetail.totalDuration | time }}
             </span>
           </p>
         </template>
@@ -61,18 +61,20 @@
           class="img-idCard">
           <label for="">身份证正面：</label>
           <m-img-viewer
-            v-if="family.familyIdCardFront"
+            isRequired
             :url="family.familyIdCardFront"
-            title="身份证正面"/>
+            title="身份证正面"
+          />
         </el-col>
         <el-col
           :span="12"
           class="img-idCard">
           <label for="">身份证背面：</label>
           <m-img-viewer
-            v-if="family.familyIdCardBack"
+            isRequired
             :url="family.familyIdCardBack"
-            title="身份证背面"/>
+            title="身份证背面"
+          />
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -81,9 +83,9 @@
           class="img-idCard">
           <label for="">关系证明图：</label>
           <m-img-viewer
-            v-if="family.familyRelationalProofUrl"
             :url="family.familyRelationalProofUrl"
-            title="关系证明图"/>
+            title="关系证明图"
+          />
         </el-col>
       </el-row>
     </el-dialog>
@@ -104,7 +106,7 @@
             {{ scope.row.end_time }}
           </template>
         </el-table-column>
-        <el-table-column label="会见时长">
+        <el-table-column label="通话时长">
           <template slot-scope="scope">
             {{ scope.row.duration | time }}
           </template>
@@ -149,7 +151,8 @@ export default {
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          minWidth: 100
         },
         {
           label: '家属姓名',
@@ -164,12 +167,12 @@ export default {
           prop: 'prisonerNumber'
         },
         {
-          label: '总会见时间段',
+          label: '总通话时间段',
           prop: 'total_time',
           width: 236
         },
         {
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'duration'
         },
         {

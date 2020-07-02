@@ -171,21 +171,23 @@
         :detailData="family">
         <template #familyIdCardFront="{ scope }">
           <m-img-viewer
-            v-if="scope.familyIdCardFront"
+            isRequired
             :url="scope.familyIdCardFront"
-            title="身份证正面"/>
+            title="身份证正面"
+          />
         </template>
         <template #familyIdCardBack="{ scope }">
           <m-img-viewer
-            v-if="scope.familyIdCardBack"
+            isRequired
             :url="scope.familyIdCardBack"
-            title="身份证背面"/>
+            title="身份证背面"
+          />
         </template>
         <template #familyRelationalProofUrl="{ scope }">
           <m-img-viewer 
-            v-if="scope.familyRelationalProofUrl"
             :url="scope.familyRelationalProofUrl"
-            title="关系证明图"/>
+            title="关系证明图"
+          />
         </template>
       </family-detial-information>
     </el-dialog>

@@ -42,34 +42,35 @@ export default {
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '监区',
           prop: 'prisonArea'
         },
         {
-          label: '会见申请次数',
+          label: '申请次数',
           prop: 'total',
           slotName: 'total'
         },
         {
-          label: '会见成功次数',
+          label: '通话成功次数',
           prop: 'finishedTotal',
           slotName: 'finishedTotal'
         },
         {
-          label: '会见取消次数',
+          label: '取消次数',
           prop: 'canceledTotal',
           slotName: 'canceledTotal'
         },
         {
-          label: '会见过期次数',
+          label: '过期次数',
           prop: 'expiredTotal',
           slotName: 'expiredTotal'
         },
         {
-          label: '会见拒绝/撤回次数',
+          label: '拒绝/撤回次数',
           prop: 'deniedTotal',
           slotName: 'deniedTotal'
         }

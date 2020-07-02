@@ -253,21 +253,35 @@ let superAdmin = [{
   children: [{
     path: '/terminal/list',
     name: 'terminal-list',
-    meta: { permission: 'visit.terminal.search', breadcrumbName: '终端列表' },
+    meta: {
+      permission: 'visit.terminal.search',
+      breadcrumbName: '终端列表',
+      componentsToKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-list'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-list'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-list')
   }, {
     path: '/terminal/add',
     name: 'terminal-add',
-    meta: { deep: true, permission: 'visit.terminal.add', breadcrumbName: '新增终端' },
+    meta: {
+      deep: true,
+      permission: 'visit.terminal.add',
+      breadcrumbName: '新增终端',
+      componentsUnRemoveKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-add'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-add'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-add')
   }, {
     path: '/terminal/edit/:id',
     name: 'terminal-edit',
-    meta: { deep: true, permission: 'visit.terminal.update', breadcrumbName: '编辑终端' },
+    meta: {
+      deep: true,
+      permission: 'visit.terminal.update',
+      breadcrumbName: '编辑终端',
+      componentsUnRemoveKeepAlive: ['TerminalList']
+    },
     component: 'sadmin-terminal/terminal-edit'
     // component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
     // component: helper.loadView('sadmin-terminal/terminal-edit')
@@ -337,7 +351,7 @@ let superAdmin = [{
     props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       permission: 'visit.visit-statistic.all-prison.search',
-      breadcrumbName: '监狱会见统计'
+      breadcrumbName: '监狱亲情电话统计'
     },
     component: 'meeting-report/prison-report'
     // component: helper.loadView('meeting-report/prison-report')
@@ -347,7 +361,7 @@ let superAdmin = [{
     props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: {
       permission: 'visit.visit-statistic.all-prison-area.search',
-      breadcrumbName: '监区会见统计'
+      breadcrumbName: '监区亲情电话统计'
     },
     component: 'meeting-report/prison-area-report'
     // component: helper.loadView('meeting-report/prison-area-report')
@@ -375,7 +389,7 @@ let superAdmin = [{
     component: 'check-meeting/meeting-statistics',
     meta: {
       permission: 'visit.visit-statistic.chart.all-prison.search',
-      breadcrumbName: '监狱会见数据统计表'
+      breadcrumbName: '监狱通话数据统计表'
     },
     props: { hasProvinceQueryAuth: true }
   }, {
@@ -387,6 +401,36 @@ let superAdmin = [{
       permission: 'visit.meeting.reconciliation.search'
     },
     component: 'check-meeting/meeting-reconciliation-list'
+  }, {
+    path: '/prison-data/diplomatic-consul-official',
+    name: 'prison-data_diplomatic-consul-official',
+    props: {
+      hasOnlyAllPrisonQueryAuth: true,
+      hasProvinceQueryAuth: true
+    },
+    meta: {
+      breadcrumbName: '外交领事官员注册表',
+      permission: 'visit.data-search.diplomatic-consul-official.search'
+    },
+    component: 'diplomatic-consul-official/registration/index'
+  }, {
+    path: '/prison-data/diplomatist',
+    name: 'prison-data_diplomatist',
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+    meta: {
+      breadcrumbName: '外交领事官员可视电话申请列表',
+      permission: 'visit.data-search.diplomatic-consul-official-all.search'
+    },
+    component: 'prison-data/diplomatist'
+  }, {
+    path: '/prison-data/diplomatist-detail',
+    name: 'prison-data_diplomatist-detail',
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, hasDiplomatQueryAuth: true },
+    meta: {
+      breadcrumbName: '外交领事官员可视电话详情表',
+      permission: 'visit.data-search.diplomatic-consul-official.detail.search'
+    },
+    component: 'prison-data/diplomatist-detail'
   }]
 }, {
   path: '/coopertive-partner',

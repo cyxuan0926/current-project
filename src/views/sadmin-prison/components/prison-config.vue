@@ -5,6 +5,7 @@
       @submit="onSubmit"
       @back="onBack"
       :values="values"
+      ref="prison-config_form"
     >
       <template #basicConfigs>
         <el-col :span="11">
@@ -56,6 +57,43 @@
           </el-form-item>
         </el-col>
       </template>
+      <template #diplomaticConsulOfficialBasicConfigs>
+        <el-col :span="11">
+          <el-form-item prop="diplomatistStartMinutes" :rules="rules.diplomatistStartMinutes">
+            <el-input
+              v-model.trim.number="formData.diplomatistStartMinutes"
+              placeholder="请输入基础时间"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">分钟</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11" :offset="2">
+          <el-form-item prop="diplomatistStartMoney" :rules="rules.diplomatistStartMoney">
+            <el-input
+              v-model.trim="formData.diplomatistStartMoney"
+              placeholder="请输入基础费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+      <template #diplomaticConsulOfficialFixedMoney>
+        <el-col :span="11">
+          <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
+            <el-input
+              v-model.trim="formData.diplomatistFixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
     </m-form>
   </div>
 </template>
@@ -91,21 +129,24 @@ export default {
       }
     ]
     const validateMoney = (rule, value, callback) => {
+      const { field } = rule
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
-      if (this.formData.startMoney === '') callback(new Error('请输入基础费用'))
-      else if (!feeReg.test(this.formData.startMoney)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      if (this.formData[field] === '') callback(new Error('请输入基础费用'))
+      else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
       else callback()
     }
     const validateMinutes = (rule, value, callback) => {
-      const integerNumbers = Number.isInteger(this.formData.startMinutes)
-      if (this.formData.startMinutes === '') callback(new Error('请输入基础时间'))
-      else if (!integerNumbers || this.formData.startMinutes <= 0) callback(new Error('请输入正整数'))
+      const { field } = rule
+      const integerNumbers = Number.isInteger(this.formData[field])
+      if (this.formData[field] === '') callback(new Error('请输入基础时间'))
+      else if (!integerNumbers || this.formData[field] <= 0) callback(new Error('请输入正整数'))
       else callback()
     }
     const validateFixedMoney = (rule, value, callback) => {
+      const { field } = rule
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
-      if (this.formData.fixedMoney === '') callback(new Error('请输入基础时长后每分钟费用'))
-      else if (!feeReg.test(this.formData.fixedMoney)) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+      if (this.formData[field] === '') callback(new Error('请输入基础时长后每分钟费用'))
+      else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
       else callback()
     }
     return {
@@ -121,6 +162,7 @@ export default {
             value: 'value'
           },
           options: waysOptions,
+          relativeProps: ['diplomatistCharge'],
           configs: [
             // 按分钟收费
             {
@@ -158,12 +200,12 @@ export default {
         totalCost: {
           slotName: 'totalCost',
           attrs: {
-            label: '申请会见总费用'
+            label: '申请亲情电话总费用'
           }
         },
         onceMoney: {
           type: 'input',
-          label: '单次会见费用',
+          label: '单次费用',
           disabled,
           rules: [
             'required',
@@ -195,13 +237,13 @@ export default {
           }]},
         agreement: {
           type: 'switch',
-          label: '线上签署《会见告知书》',
+          label: '线上签署《亲情电话告知书》',
           disabled,
           value: 0
         },
         meeting: {
           type: 'switch',
-          label: '会见模块开放',
+          label: '亲情电话模块开放',
           disabled,
           rules: ['required'],
           value: 1
@@ -266,14 +308,58 @@ export default {
           ],
           append: '/元',
           value: 0
-        }
+        },
+        diplomatistCharge: {
+          type: 'switch',
+          label: '外交领事官员可视电话收费设置',
+          disabled,
+          func: this.onDiplomatistChargeChange,
+          value: 0,
+          relativeProps: ['chargeType'],
+          configs: [
+            // 打开外交领事官员可视电话收费设置
+            {
+              value: 1,
+              itemConfigs: {}
+            },
+            // 关闭外交领事官员可视电话收费设置
+            {
+              value: 0,
+              itemConfigs: {
+                diplomaticConsulOfficialBasicConfigs: 0,
+                diplomaticConsulOfficialFixedMoney: 0
+              }
+            }
+          ]
+        },
+        diplomaticConsulOfficialBasicConfigs: {
+          slotName: 'diplomaticConsulOfficialBasicConfigs',
+          attrs: {
+            label: '基础费用',
+            required: true
+          },
+          func: this.onReset
+        },
+        diplomaticConsulOfficialFixedMoney: {
+          slotName: 'diplomaticConsulOfficialFixedMoney',
+          attrs: {
+            label: '基础时长后每分钟费用',
+            required: true
+          }
+        },
       }, formButton),
       values: {},
       permission,
       formData: {
         startMinutes: 5,
         startMoney: 15,
-        fixedMoney: 2.2
+        fixedMoney: 2.2,
+        // 外交领事官员基础费用分钟
+        diplomatistStartMinutes: 5,
+        // 外交领事官员基础费用 元
+        diplomatistStartMoney: 12,
+        // 外交领事官员基础时长后 每分钟 元
+        diplomatistFixedMoney: 1.8
       },
       rules: {
         startMinutes: [
@@ -283,6 +369,15 @@ export default {
           { validator: validateMoney, trigger: 'blur' }
         ],
         fixedMoney: [
+          { validator: validateFixedMoney, trigger: 'blur' }
+        ],
+        diplomatistStartMinutes: [
+          { validator: validateMinutes, trigger: 'blur' }
+        ],
+        diplomatistStartMoney: [
+          { validator: validateMoney, trigger: 'blur' }
+        ],
+        diplomatistFixedMoney: [
           { validator: validateFixedMoney, trigger: 'blur' }
         ]
       }
@@ -336,6 +431,21 @@ export default {
           this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney', 'totalCost'])
           this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
         }
+        if (this.values.diplomatistCharge === 1) {
+          const { diplomatistStartMinutes = 5, diplomatistStartMoney = 12, diplomatistFixedMoney = 1.8 } = this.values
+          this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
+          this.$set(this.formData, 'diplomatistStartMinutes', diplomatistStartMinutes)
+          this.$set(this.formData, 'diplomatistStartMoney', diplomatistStartMoney)
+          this.$set(this.formData, 'diplomatistFixedMoney', diplomatistFixedMoney)
+        }
+        if (!this.values.diplomatistCharge) {
+          this.formItems['dissMissConfigs'] = [
+            ...this.formItems['dissMissConfigs'],
+            'diplomaticConsulOfficialBasicConfigs',
+            'diplomaticConsulOfficialFixedMoney'
+          ]
+          this.$set(this.formItems['diplomatistCharge']['configs'][0], 'itemConfigs', {})
+        }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
         //   (async() => {
         //     const res = await this.getBranchStatus(this.prison)
@@ -367,7 +477,7 @@ export default {
       'getPrisonDetail',
       'updatePrison']),
     onSubmit(e) {
-      const { chargeType } = e
+      const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
         if(e.prisonAreaList && e.prisonAreaList.length) {
           // 这里就是分监区的情况
@@ -386,9 +496,16 @@ export default {
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
         if (chargeType === 2) {
+          const {
+            startMinutes,
+            startMoney,
+            fixedMoney
+          } = this.formData
           params = {
             ...params,
-            ...this.formData,
+            startMinutes,
+            startMoney,
+            fixedMoney,
             cost: this.typeTotalCost
           }
         }
@@ -399,7 +516,21 @@ export default {
             cost: onceMoney
           }
         }
+        if (diplomatistCharge === 1) {
+          const {
+            diplomatistStartMinutes,
+            diplomatistStartMoney,
+            diplomatistFixedMoney
+          } = this.formData
+          params = {
+            ...params,
+            diplomatistStartMinutes,
+            diplomatistStartMoney,
+            diplomatistFixedMoney,
+          }
+        }
         if (params.hasOwnProperty('totalCost')) delete params.totalCost
+        if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
         this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
@@ -412,14 +543,33 @@ export default {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
       else this.$router.push({ path: '/jails/detail' })
     },
-    onReset() {
-      let { startMoney = 15, startMinutes = 5, fixedMoney = 2.2 } = this.prison
+    onReset(e, prop) {
+      let {
+        startMoney = 15,
+        startMinutes = 5,
+        fixedMoney = 2.2,
+        diplomatistStartMinutes = 5,
+        diplomatistStartMoney = 12,
+        diplomatistFixedMoney = 1.8 } = this.prison
       startMoney = startMoney ? startMoney : 15
       startMinutes = startMinutes ? startMinutes : 5
       fixedMoney = fixedMoney ? fixedMoney : 2.2
-      this.$set(this.formData, 'startMoney', startMoney)
-      this.$set(this.formData, 'startMinutes', startMinutes)
-      this.$set(this.formData, 'fixedMoney', fixedMoney)
+      diplomatistStartMinutes = diplomatistStartMinutes ? diplomatistStartMinutes : 5
+      diplomatistStartMoney = diplomatistStartMoney ? diplomatistStartMoney : 12
+      diplomatistFixedMoney = diplomatistFixedMoney ? diplomatistFixedMoney : 1.8
+      if (prop === 'chargeType') {
+        this.$set(this.formData, 'startMoney', startMoney)
+        this.$set(this.formData, 'startMinutes', startMinutes)
+        this.$set(this.formData, 'fixedMoney', fixedMoney)
+      }
+      if (prop === 'diplomatistCharge') {
+        this.$set(this.formData, 'diplomatistStartMinutes', diplomatistStartMinutes)
+        this.$set(this.formData, 'diplomatistStartMoney', diplomatistStartMoney)
+        this.$set(this.formData, 'diplomatistFixedMoney', diplomatistFixedMoney)
+      }
+    },
+    onDiplomatistChargeChange(e, prop, item) {
+      this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     }
   }
 }

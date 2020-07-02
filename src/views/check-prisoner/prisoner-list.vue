@@ -137,7 +137,7 @@
       :total="prisoners.total"
       @onPageChange="getDatas" />
     <el-dialog
-      title="修改会见次数"
+      title="修改通话次数"
       :visible.sync="isEditAccessTime"
       width="600px">
       <el-form
@@ -146,8 +146,8 @@
         :model="prisoner">
         <el-form-item label="罪犯">{{ prisoner.name }}</el-form-item>
         <el-form-item
-          label="会见次数"
-          :rules="[{ required: true, message: '请输入会见次数' }]"
+          label="通话次数"
+          :rules="[{ required: true, message: '请输入通话次数' }]"
           prop="accessTime">
           <el-input-number
             :min="0"
@@ -170,6 +170,7 @@
     </el-dialog>
     <el-dialog
       title="家属信息"
+      class="authorize-dialog"
       :visible.sync="dialogTableVisible">
       <el-row :gutter="0">
         <el-col :span="12">
@@ -183,7 +184,62 @@
           </el-col>
         </el-col>
       </el-row>
-      <el-row
+      <div style="margin-bottom: 10px;">家属信息:</div>
+      <div class="img-box">
+        <m-img-viewer
+          isRequired
+          :url="family.familyIdCardFront"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="身份证正面照"
+        />
+        <m-img-viewer
+          isRequired
+          :url="family.familyIdCardBack"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="身份证背面照"
+        />
+        <m-img-viewer
+          isRequired
+          :url="family.familyAvatarUrl"
+          :toolbar="{ prev: 1, next: 1 }"
+          title="头像"
+        />
+      </div>
+      <template>
+        <div style="margin-bottom: 10px;">关系证明:</div>
+        <div class="img-box">
+          <m-img-viewerq
+            class="relation_img"
+            :url="family.familyRelationalProofUrl"
+            title="关系证明图"
+          />
+          <m-img-viewer
+            class="relation_img"
+            :url="family.familyRelationalProofUrl2"
+            title="关系证明图"
+          />
+            <m-img-viewer
+              class="relation_img"
+              :url="family.familyRelationalProofUrl3"
+              title="关系证明图"
+            />
+            <m-img-viewer
+              class="relation_img"
+              :url="family.familyRelationalProofUrl4"
+              title="关系证明图"
+            />
+        </div>
+      </template>
+      <template>
+        <div style="margin-bottom: 10px;">通知单:</div>
+        <div class="img-box">
+          <m-img-viewer
+            :url="family.meetNoticeUrl"
+            title="通知单"
+          />
+        </div>
+      </template>
+      <!-- <el-row
         class="row-flex"
         :gutter="20"
         justify="space-between"
@@ -216,12 +272,12 @@
             title="照片"
             class="avatar" />
         </el-col>
-      </el-row>
+      </el-row> -->
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
-      :title="'会见告知书-' + notificationPrisoner.name"
+      :title="'亲情电话告知书-' + notificationPrisoner.name"
       width="530px">
       <div class="el-form el-form--inline">
         <div class="el-form-item">
@@ -290,6 +346,7 @@ import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisons from '@/common/constants/prisons'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
@@ -319,6 +376,7 @@ export default {
         value: 0
       }
     ]
+    const { belong } = prisons.PRISONAREA
     return {
       searchItems: {
         prisonerNumber: {
@@ -327,7 +385,9 @@ export default {
         },
         prisonArea: {
           type: 'select',
-          label: '监区'
+          label: '监区',
+          belong,
+          value: ''
         },
         name: {
           type: 'input',
@@ -341,7 +401,7 @@ export default {
         },
         isNotify: {
           type: 'select',
-          label: '会见告知书',
+          label: '亲情电话告知书',
           noPlaceholder: true,
           options: notifyOptions
         },
@@ -627,11 +687,13 @@ export default {
         },
         {
           label: '罪犯姓名',
-          prop: 'name'
+          prop: 'name',
+          minWidth: 75
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          showOverflowTooltip: true
         },
         {
           label: '监区',
@@ -643,13 +705,13 @@ export default {
           showOverflowTooltip: true
         },
         {
-          label: '会见次数/月',
-          minWidth: 92,
+          label: '通话次数/月',
+          minWidth: 85,
           slotName: 'accessTime'
         },
         {
           label: '刑期起止',
-          minWidth: 146,
+          minWidth: 140,
           slotName: 'prisonTerm'
         },
         {
@@ -663,13 +725,12 @@ export default {
           slotName: 'families'
         },
         {
-          label: '家属会见告知书',
-          minWidth: 105,
+          label: '家属亲情电话告知书',
+          minWidth: 125,
           slotName: 'notifyId'
         },
         {
           label: '操作',
-          minWidth: 85,
           slotName: 'operations'
         }
       ]
@@ -914,7 +975,7 @@ export default {
     // 更换监区
     handleChangePrisonConfig(e, prop) {
       if (e) {
-        this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消相关会见申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属', {
+        this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消通话申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配通话时间段，调整后会以短信形式通知相关家属', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
@@ -1010,4 +1071,15 @@ export default {
   width 100%
 .el-dialog__body
   padding-bottom: 20px !important
+.img-box
+  .el-image
+    width: 32%;
+    height: 110px;
+    margin-bottom: 5px;
+    >>> img
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+.el-image.relation_img
+  width: 24% !important;
 </style>

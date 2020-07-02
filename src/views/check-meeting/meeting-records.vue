@@ -10,10 +10,10 @@
         v-model="tabs"
         type="card" >
         <el-tab-pane
-          label="家属免费会见记录"
+          label="家属免费通话记录"
           name="familyFreeMeetings" />
         <el-tab-pane
-          label="警员家属免费会见记录"
+          label="警员家属免费通话记录"
           name="jailerFamilyFreeMeetings" />
       </el-tabs>
       <m-table-new
@@ -105,12 +105,12 @@ export default {
           prop: 'policeNumber'
         },
         {
-          label: '会见时间',
+          label: '通话时间',
           prop: 'meetingTime',
           minWidth: 140
         },
         {
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'duration',
           minWidth: 110
         },
@@ -142,7 +142,7 @@ export default {
           minWidth: 92
         },
         {
-          label: '会见时间',
+          label: '通话时间',
           prop: 'meetingTime',
           showOverflowTooltip: true,
           minWidth: 140
@@ -153,7 +153,7 @@ export default {
           minWidth: 92
         },
         {
-          label: '会见时长',
+          label: '通话时长',
           slotName: 'duration',
           minWidth: 110,
           showOverflowTooltip: true,

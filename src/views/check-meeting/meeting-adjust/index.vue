@@ -11,7 +11,7 @@
         :picker-options="pickerOptions"
       />
       <el-button type="primary" @click="getConfigs">确定</el-button>
-      <label class="filter__tip">注：仅支持2天后的会见申请调整</label>
+      <label class="filter__tip">注：仅支持2天后的申请调整</label>
     </div>
 
     <meeting-table
@@ -180,7 +180,7 @@ export default {
       let message = "";
 
       if (!this.hasMeetings) {
-        message = "该日无会见申请";
+        message = "该日无申请";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
       } else if (!this.hasMeetingQueue) {
