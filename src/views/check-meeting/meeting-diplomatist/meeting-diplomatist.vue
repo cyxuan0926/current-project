@@ -89,7 +89,7 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="授权"
-      width="633px">
+      width="650px">
       <div style="display: flex">
         <span style="width: 180px;text-align: right;padding-right: 17px">审批单：</span>
         <div style="flex: 1">
@@ -225,8 +225,8 @@
           </div>
         </div>
        <div style="display: flex">
-        <span style="width: 118px;text-align: right;">审批单：</span>
-         <div class="img-items">
+        <div style="width: 118px;text-align: right;">审批单：</div>
+         <div style="flex: 1" >
            <m-img-viewer
              :url="toShow.approvalImageUrl"
              title="审批单"
@@ -517,7 +517,7 @@ export default {
       // 授权同意情况下按钮元素
       showAgreeButtons: [
         {
-          text: '确定申请通过？',
+          text: '确定？',
           attrs: {
             plain: true,
             loading: this.buttonLoading
