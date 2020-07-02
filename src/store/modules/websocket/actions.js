@@ -91,9 +91,9 @@ export default {
             if (res.data && res.data.meetings) {
               dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
               Notification({
-                title: `${ res.data.meetings.name }会见调整失败`,
+                title: `${ res.data.meetings.name }调整失败`,
                 type: 'error',
-                message: `会见时间：${ res.data.meetings.meetingTime }，终端号：${ res.data.meetings.terminalNumber }，失败原因：${ res.msg }`,
+                message: `申请通话时间：${ res.data.meetings.meetingTime }，终端号：${ res.data.meetings.terminalNumber }，失败原因：${ res.msg }`,
                 duration: 8000
               })
             }

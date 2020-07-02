@@ -4,7 +4,7 @@ const prisonerExcelConfig = {
   filename: {
     value: '服刑人员信息'
   },
-  header: ['监狱名称', '服刑人员编号', '监区', '罪名', '每月会见次数', '刑期起止', '服刑人员状态', '对应家属'],
+  header: ['监狱名称', '服刑人员编号', '监区', '罪名', '每月通话次数', '刑期起止', '服刑人员状态', '对应家属'],
   filterFields: [
     { key: 'jailName' },
     { key: 'prisonerNumber' },

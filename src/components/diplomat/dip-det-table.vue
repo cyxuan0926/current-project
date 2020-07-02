@@ -47,7 +47,7 @@
                         {{ scope.row.end_time }}
                     </template>
                 </el-table-column>
-                <el-table-column label="会见时长">
+                <el-table-column label="通话时长">
                     <template slot-scope="scope">
                         {{ scope.row.duration | time }}
                     </template>
@@ -86,11 +86,11 @@
               title="身份证背面"
             />
           </div>
-          <p>会见审批单:</p>
+          <p>审批单:</p>
           <div class="images-box__information" style="margin-left:80px">
             <m-img-viewer
               :url="family.approvalImageUrl"
-              title="会见审批单"
+              title="审批单"
             />
           </div>
         </div>

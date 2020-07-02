@@ -147,6 +147,9 @@ body .row-container .cell img{
 .page-edit .submit{
   float: right;
   margin-bottom: 20px;
+  & + .submit {
+    margin-right: 10px;
+  }
 }
 .separate + .separate::before{
   content: '/ ';

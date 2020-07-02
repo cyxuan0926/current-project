@@ -113,7 +113,7 @@
               isRequired
               :class="[{'el-image__no-box_shadow': !scope.meetNoticeUrl}]"
               :url="scope.meetNoticeUrl"
-              title="会见审批单"
+              title="审批单"
             />
           </div>
         </template>
@@ -268,7 +268,7 @@ export default {
           definedClass: 'img-box'
         },
         {
-          label: '会见审批单',
+          label: '审批单',
           prop: 'familyMeetNoticeInformation',
           definedClass: 'img-box'
         }

@@ -192,7 +192,7 @@ export default {
         case 'bar':
           options = Object.assign({}, {
             title: {
-              text: '会见申请次数'
+              text: '通话申请次数'
             },
             tooltip: {},
             xAxis: {
@@ -236,7 +236,7 @@ export default {
       case 'pie':
         options = Object.assign({}, {
             title : {
-              text: '会见总量分析'
+              text: '通话总量分析'
             },
             tooltip: {},
             legend: {
@@ -246,11 +246,11 @@ export default {
               top: '16%',
               data: [
                 '未授权次数(未审核数)',
-                '已通过审核待见会见次数',
+                '已通过审核待见通话次数',
                 '审核被拒绝次数',
                 '狱警未审核过期次数',
-                '审核通过未会见过期次数',
-                '会见完成次数',
+                '审核通过未通话过期次数',
+                '通话完成次数',
                 '审核通过后取消次数'
               ]
             },
@@ -268,7 +268,7 @@ export default {
                   value: this.meetingStatisticTotalItem['pend']
                 },
                 {
-                  name: '已通过审核待见会见次数',
+                  name: '已通过审核待见通话次数',
                   value: this.meetingStatisticTotalItem['passed']
                 },
                 {
@@ -280,11 +280,11 @@ export default {
                   value: this.meetingStatisticTotalItem['noAuthToExpired']
                 },
                 {
-                  name: '审核通过未会见过期次数',
+                  name: '审核通过未通话过期次数',
                   value: this.meetingStatisticTotalItem['authedToExpired']
                 },
                 {
-                  name: '会见完成次数',
+                  name: '通话完成次数',
                   value: this.meetingStatisticTotalItem['finished']
                 },
                 {

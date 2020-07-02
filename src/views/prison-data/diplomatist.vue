@@ -44,7 +44,7 @@
                 tabs: '',
                 tabsItems: [
                     {
-                        label: '会见申请',
+                        label: '可视电话申请',
                         name: 'first'
                     },
                     {
@@ -62,8 +62,8 @@
                         unlinkPanels: true,
                         start: 'applicationStartDate',
                         end: 'applicationEndDate',
-                        startPlaceholder: '会见开始时间',
-                        endPlaceholder: '会见结束时间',
+                        startPlaceholder: '通话开始时间',
+                        endPlaceholder: '通话结束时间',
                         value: ''
                     },
                     auditName: {

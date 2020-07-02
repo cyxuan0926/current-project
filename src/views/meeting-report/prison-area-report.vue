@@ -105,7 +105,8 @@ export default {
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯姓名',
