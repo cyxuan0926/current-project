@@ -10,14 +10,14 @@ export default {
         }
       }
 
-      if (!registration.relationalProofUrls.length) {
-        registration.relationalProofUrls = [
-          {
-            url: '',
-            className: ['el-image__no-box_shadow']
-          }
-        ]
-      }
+      // if (!registration.relationalProofUrls.length) {
+      //   registration.relationalProofUrls = [
+      //     {
+      //       url: '',
+      //       className: ['el-image__no-box_shadow']
+      //     }
+      //   ]
+      // }
 
       return registration
     })

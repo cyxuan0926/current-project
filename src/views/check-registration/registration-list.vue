@@ -174,7 +174,7 @@
       @close="closeWithdraw"
       width="530px">
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
-      <div class="img-box">
+      <div class="img-box" :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}">
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.idCardFront}]"
@@ -197,7 +197,7 @@
           title="头像"
         />
       </div>
-      <template>
+      <template v-if="toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length" >
         <div style="margin-bottom: 10px;">请核对关系证明:</div>
         <div class="img-box">
           <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls" >
@@ -212,7 +212,7 @@
           </template>
         </div>
       </template>
-      <template>
+      <template v-if="!!toAuthorize.meetNoticeUrl">
         <div style="margin-bottom: 10px;">亲情电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
@@ -524,6 +524,7 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
+      console.log(e)
       this.toAuthorize = e
       this.show.agree = false
       this.show.disagree = false
