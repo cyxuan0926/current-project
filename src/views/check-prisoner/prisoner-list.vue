@@ -824,7 +824,6 @@ export default {
       })
     },
     showFamilyDetail(family) {
-      console.log(family)
       this.family = family
       this.dialogTableVisible = true
     },
