@@ -89,7 +89,16 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="授权"
-      width="800px">
+      width="650px">
+      <div style="display: flex">
+        <span style="width: 180px;text-align: right;padding-right: 17px">审批单：</span>
+        <div style="flex: 1">
+          <m-img-viewer
+            :url="toShow.approvalImageUrl"
+            title="审批单"
+          />
+        </div>
+      </div>
       <div
         v-if="!show.agree && !show.disagree"
         class="button-box">
@@ -215,6 +224,17 @@
             </el-form-item>
           </div>
         </div>
+       <div style="display: flex">
+        <div style="width: 118px;text-align: right;">审批单：</div>
+         <div style="flex: 1" >
+           <m-img-viewer
+             :url="toShow.approvalImageUrl"
+             title="审批单"
+           />
+         </div>
+       </div>
+
+
       </el-form>
     </el-dialog>
     <el-dialog
@@ -497,7 +517,7 @@ export default {
       // 授权同意情况下按钮元素
       showAgreeButtons: [
         {
-          text: '确定申请通过？',
+          text: '确定？',
           attrs: {
             plain: true,
             loading: this.buttonLoading
@@ -550,7 +570,7 @@ export default {
     // 多次复用的el-button组件
     'repetition-el-buttons': {
       template:
-        `<el-row>
+        `<el-row style="padding-left: 100px;padding-top: 25px">
           <el-button
             v-bind="button.attrs"
             v-on="button.events"
@@ -746,11 +766,16 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
+      let params={meetingId:e.id}
+      http.getApprovalImageUrl(params).then(res => {
+        console.log(res)
+       this.toShow.approvalImageUrl=res.approvalImageUrl
+        this.toAuthorize = e
+        this.show.agree = false
+        this.show.disagree = false
+        this.show.authorize = true
+      })
 
-      this.toAuthorize = e
-      this.show.agree = false
-      this.show.disagree = false
-      this.show.authorize = true
     },
     handleWithdraw(e) {
       this.toAuthorize = e
@@ -812,7 +837,7 @@ export default {
       let   interTimes=parseInt(minutes*60*1000);
       let date=new  Date(Date.parse(this.valueTime)+interTimes);
       this.endTime=`${date.getHours()>9?date.getHours():'0'+date.getHours()}:${date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes()}`
-      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate,start:this.startTime,end:this.endTime}
+      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.meetingTime,start:this.startTime,end:this.endTime}
       this.getUsableTerminal(params)
     },
     getUsableTerminal(params){
@@ -822,16 +847,12 @@ export default {
         if(res.status=="success"){
           this.selectOptions=res.list
         }
-        if(res.status=="failure"){
-
-        }
       })
     },
     getClashTime(){
-      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.applicationDate}
+      let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.meetingTime}
         this.clashTime=""
       http.getMeetingsDiplomatsfamilyMeetingTimes(params).then(res => {
-        console.log(res)
         this.clashTime=res
       })
     },
@@ -856,9 +877,7 @@ export default {
     // 授权对话框的同意操作
     onAgreeAuthorize() {
      //this.show.timer=true
-
        this.show.agree = true
-
        this.timeChange();
        this.getClashTime()
        this.buttonLoading = false

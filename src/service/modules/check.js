@@ -29,6 +29,10 @@ export default {
   getMeetingsDiplomatsDetail: params => {
     return service.get('/meetings/diplomats/familyDetail', params).then(res => res && res.data)
   },
+  // 外交领事官员可视电话授权获取审批图
+  getApprovalImageUrl: params => {
+    return service.get('/meetings/getApprovalImageUrl', params).then(res => res && res.data)
+  },
   // 外交领事官员可视电话 查询监狱家属可视电话时间段
   getMeetingsDiplomatsfamilyMeetingTimes: params => {
     return service.get('/meetings/diplomats/familyMeetingTimes', params).then(res => res && res.data)
