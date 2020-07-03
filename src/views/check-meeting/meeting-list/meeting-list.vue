@@ -703,9 +703,9 @@ export default {
               url: value
             })
           }
-          if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
-            url: ''
-          })
+          // if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
+          //   url: ''
+          // })
           this.family = Object.assign({}, res.family)
         }
         else this.family = {}

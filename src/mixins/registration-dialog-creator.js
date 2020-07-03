@@ -132,24 +132,30 @@ export default {
     'family-detail-information': {
       template:
         `<div>
-          <el-row
-            :gutter="20"
-            v-for="(item, index) in elItems"
-            :key="'id-family-detail-information-item-' + index">
-            <el-col
-              :class="item.definedClass"
-              :style="item.definedStyles"
-            >
-              <label>{{ item.label }}：</label>
-              <template>
-                <slot
-                  :name="item.prop"
-                  :scope="detailData">
-                  <span>{{ detailData[item['prop']] }}</span>
-                </slot>
-              </template>
-            </el-col>
-          </el-row>
+          <div v-for="(item, index) in elItems"
+          :key="'id-family-detail-information-item-' + index">
+            <el-row
+              v-if="item.prop != 'familyRelationalInformation' && item.prop != 'familyMeetNoticeInformation' ||
+              item.prop == 'familyRelationalInformation' && detailData.relationalProofUrls.length ||
+              item.prop == 'familyMeetNoticeInformation' && detailData.meetNoticeUrl"
+              :gutter="20"
+              style="margin-bottom: 10px"
+              >
+              <el-col
+                :class="item.definedClass"
+                :style="item.definedStyles"
+              >
+                <label>{{ item.label }}：</label>
+                <template>
+                  <slot
+                    :name="item.prop"
+                    :scope="detailData">
+                    <span>{{ detailData[item['prop']] }}</span>
+                  </slot>
+                </template>
+              </el-col>
+            </el-row>
+          </div>
         </div>`,
 
       props: {

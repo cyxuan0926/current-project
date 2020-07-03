@@ -205,37 +205,41 @@
           title="头像"
         />
       </div>
-      <template>
+      <template v-if="family.familyRelationalProofUrl || family.familyRelationalProofUrl2 || family.familyRelationalProofUrl3 || family.familyRelationalProofUrl4">
         <div style="margin-bottom: 10px;">关系证明:</div>
         <div class="img-box">
-          <m-img-viewerq
+          <m-img-viewer
             class="relation_img"
+            v-if="family.familyRelationalProofUrl"
             :url="family.familyRelationalProofUrl"
             title="关系证明图"
           />
           <m-img-viewer
             class="relation_img"
+            v-if="family.familyRelationalProofUrl2"
             :url="family.familyRelationalProofUrl2"
             title="关系证明图"
           />
             <m-img-viewer
               class="relation_img"
+              v-if="family.familyRelationalProofUrl3"
               :url="family.familyRelationalProofUrl3"
               title="关系证明图"
             />
             <m-img-viewer
               class="relation_img"
+              v-if="family.familyRelationalProofUrl4"
               :url="family.familyRelationalProofUrl4"
               title="关系证明图"
             />
         </div>
       </template>
-      <template>
-        <div style="margin-bottom: 10px;">通知单:</div>
+      <template v-if="family.meetNoticeUrl">
+        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :url="family.meetNoticeUrl"
-            title="通知单"
+            title="亲情电话通知单"
           />
         </div>
       </template>
@@ -820,6 +824,7 @@ export default {
       })
     },
     showFamilyDetail(family) {
+      console.log(family)
       this.family = family
       this.dialogTableVisible = true
     },
