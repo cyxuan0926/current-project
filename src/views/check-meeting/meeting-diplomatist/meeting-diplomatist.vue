@@ -249,11 +249,6 @@
           <div class="img-items">
           <m-img-viewer
             isRequired
-            :url="scope.familyAvatarUrl"
-            title="人脸照片"
-          />
-          <m-img-viewer
-            isRequired
             :url="scope.familyIdCardFront"
             title="身份证正面"
           />
@@ -261,6 +256,11 @@
             isRequired
             :url="scope.familyIdCardBack"
             title="身份证背面"
+          />
+          <m-img-viewer
+            isRequired
+            :url="scope.familyAvatarUrl"
+            title="人脸照片"
           />
         </div>
         </template>
@@ -460,7 +460,7 @@ export default {
           label: '所属机构/馆名',
           prop: 'orgName'
         },
-        { label: '家属信息',
+        { label: '身份信息',
           prop: 'familyInformation',
           definedClass: 'img-box'
         },
