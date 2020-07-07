@@ -141,7 +141,8 @@
                     },
                     {
                         label: '可视电话时间段',
-                        prop: 'meetingTimetimeQuantum'
+                        prop: 'meetingTimetimeQuantum',
+                        minWidth: 160
                     },
                     {
                         label: '通话时长',
