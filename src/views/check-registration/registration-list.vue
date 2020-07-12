@@ -51,6 +51,7 @@
           </template>
         </el-table-column>  
         <el-table-column
+          v-if="isInWhitelist"
           prop="phone"
           label="家属电话"
         />
@@ -499,8 +500,6 @@ export default {
   },
   mounted() {
     this.getDatas()
-    console.log('======= whitelist')
-    console.log(this.isInWhitelist)
   },
   computed: {
     ...mapState([
