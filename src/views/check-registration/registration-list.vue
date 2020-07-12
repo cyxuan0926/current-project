@@ -103,6 +103,7 @@
           min-width="50"
         />
         <el-table-column
+          v-if="isInWhitelist"
           prop="prisonerName"
           show-overflow-tooltip
           label="罪犯姓名"
