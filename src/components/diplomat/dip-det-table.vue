@@ -69,12 +69,6 @@
           <div class="images-box__information" style="margin-left:80px">
             <m-img-viewer
               isRequired
-              :url="family.familyAvatarUrl"
-              label=true
-              title="人脸照片"
-            />
-            <m-img-viewer
-              isRequired
               :url="family.familyIdCardFront"
               label=true
               title="身份证正面"
@@ -84,6 +78,12 @@
               :url="family.familyIdCardBack"
               label=true
               title="身份证背面"
+            />
+            <m-img-viewer
+              isRequired
+              :url="family.familyAvatarUrl"
+              label=true
+              title="人脸照片"
             />
           </div>
           <p>审批单:</p>
@@ -141,7 +141,8 @@
                     },
                     {
                         label: '可视电话时间段',
-                        prop: 'meetingTimetimeQuantum'
+                        prop: 'meetingTimetimeQuantum',
+                        minWidth: 160
                     },
                     {
                         label: '通话时长',

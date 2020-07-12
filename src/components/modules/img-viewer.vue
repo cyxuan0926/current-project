@@ -8,26 +8,26 @@
     class="img-viewer__overflow-unset"
     @click.native="showImg"
   >
-    <template v-if="!isRequired" #error>
+    <!-- <template v-if="!isRequired" #error>
       <img
         :src="elImageError"
         alt="占位图"
       >
-    </template>
+    </template> -->
   </el-image>
   <!-- </div> -->
 </template>
 <script>
 import Viewer from 'viewerjs'
 
-import elImageError from '@/assets/images/el-image__error.png'
+// import elImageError from '@/assets/images/el-image__error.png'
 
 export default {
-  data() {
-    return {
-      elImageError
-    }
-  },
+  // data() {
+  //   return {
+  //     elImageError
+  //   }
+  // },
 
   props: {
     // 狱务通的图片
@@ -52,12 +52,12 @@ export default {
     toolbar: {
       type: Object,
       default: () => ({})
-    },
-    // 图片类型是不是必传的
-    isRequired: {
-      type: Boolean,
-      default: false
     }
+    // 图片类型是不是必传的
+    // isRequired: {
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   methods: {
     showImg() {
