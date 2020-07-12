@@ -22,5 +22,9 @@ export default {
     return {
       options: state.user.prisonConfigList || []
     }
+  },
+
+  isInWhitelist(state) {
+    return roles.JAIL_WHITELIST.includes(state.user.jailCode)
   }
 }
