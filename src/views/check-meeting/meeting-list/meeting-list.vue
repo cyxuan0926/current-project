@@ -275,7 +275,7 @@ export default {
         },
         status: {
           type: 'select',
-          label: '审核状态',
+          label: '申请状态',
           options: this.$store.state.applyStatus,
           miss: true,
           value: ''
@@ -583,7 +583,7 @@ export default {
           slotName: 'auditAt'
         },
         {
-          label: '审核状态',
+          label: '申请状态',
           slotName: 'status'
         },
         {
