@@ -23,7 +23,8 @@ const config = {
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket',
+    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   test: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
@@ -35,7 +36,8 @@ const config = {
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://qa-ywgk.yuwugongkai.com/ywgk/websocket'
+    socketUrl: 'ws://qa-ywgk.yuwugongkai.com/ywgk/websocket',
+    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
     // socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
@@ -47,7 +49,8 @@ const config = {
     imageUrl: `${ nodeUrl }/image-server/avatars`,
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket'
+    socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket',
+    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   production: {
     publicApiHost: 'https://auth-api.yuwugongkai.com',
@@ -59,7 +62,8 @@ const config = {
     imageUrl: 'https://www.yuwugongkai.com/image-server/avatars',
     // fileUrl: 'https://www.yuwugongkai.com/image-server',
     videoUrl: 'https://www.yuwugongkai.com/video-server/videos',
-    socketUrl: 'wss://www.yuwugongkai.com/ws'
+    socketUrl: 'wss://www.yuwugongkai.com/ws',
+    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   ybDevelopment: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',

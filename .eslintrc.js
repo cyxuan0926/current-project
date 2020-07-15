@@ -50,7 +50,7 @@ module.exports = {
     // 模板字符串中使用${ 和 } 包含的表达式前后是否需要留空格
     'template-curly-spacing': ['error', 'always'],
     // 四个空格缩进,switch缩进风格
-    'indent': [2, 2, { 'SwitchCase': 1 }],
+    'indent': [0, 2, { 'SwitchCase': 1 }],
     // 在进行比较时，必须使用全等=== 和完全不等!==
     'eqeqeq': [2, 'allow-null'],
     //大括号的样式,允许单行样式
