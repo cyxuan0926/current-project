@@ -1,0 +1,203 @@
+<template>
+  <el-row
+    class="row-container"
+    :gutter="0">
+    <m-search
+      :items="searchItems"
+      @search="onSearch">
+      <!--<el-select-->
+        <!--v-model="chartType"-->
+        <!--slot="pre">-->
+          <!--<el-option-->
+            <!--label="申请次数柱状图"-->
+            <!--:value="chartTypes.BAR" />-->
+          <!--<el-option-->
+            <!--label="通话总量分析饼图"-->
+            <!--:value="chartTypes.PIE" />-->
+      <!--</el-select>-->
+      <m-excel-download
+        slot="append"
+        path="/download/export"
+        :params="filter" />
+    </m-search>
+    <el-col :span="24">
+      <m-table-new
+        :data="tableDatas"
+        :cols="tableCols"
+        class="mini-td-padding">
+        <template #rank="{ row, $index }">
+          <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
+        </template>
+      </m-table-new>
+    </el-col>
+    <m-pagination
+      ref="pagination"
+      :total="total"
+      @onPageChange="getDatas"/>
+  </el-row>
+</template>
+<script>
+
+import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+export default {
+  mixins: [prisonFilterCreator],
+  data () {
+    const { options } = this.$store.getters.prisonAreaOptions
+    const freeMeetingsOptions = [
+      {
+        label: '是',
+        value: 1
+      },
+      {
+        label: '否',
+        value: 0
+      }
+    ]
+    return {
+      total: 0,
+      loading: true,
+      filter: {},
+      searchItems: {
+        time: {
+          type: 'datetimerange',
+          start: 'startDate',
+          end: 'endDate'
+        },
+        status: {
+          type: 'select',
+          label: '审核状态',
+          options: this.$store.state.applyStatus,
+          miss: false,
+          value: ''
+        }
+      },
+      tableCols: [
+        {
+          slotName: 'rank',
+          label: '排名',
+          minWidth: '5.5%'
+        },
+        {
+          label: '省份',
+          prop: 'provinceName',
+          minWidth: '11%',
+          showOverflowTooltip: true
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName',
+          minWidth: '11%',
+          showOverflowTooltip: true
+        },
+        {
+          label: '申请次数(次)',
+          prop: 'cnt',
+          minWidth: '8.2%'
+        },
+        {
+          label: '未授权次数(次)',
+          prop: 'pend',
+          minWidth: '8.2%'
+        },
+        {
+          label: '待通话次数(次)',
+          prop: 'passed',
+          minWidth: '8.2%'
+        },
+        {
+          label: '审核被拒绝次数(次)',
+          prop: 'denied',
+          minWidth: '8.2%'
+        },
+        {
+          label: '审核被拒绝比例',
+          prop: 'deniedPercentShowValue',
+          minWidth: '8.2%'
+        },
+        {
+          label: '未审核过期次数(次)',
+          prop: 'noAuthToExpired',
+          minWidth: '8.2%'
+        },
+        {
+          label: '未审核过期比例',
+          prop: 'noAuthToExpiredPercentShowValue',
+          minWidth: '8.2%'
+        },
+        {
+          label: '审核通过未通话过期次数(次)',
+          prop: 'authedToExpired',
+          minWidth: '9%'
+        },
+        {
+          label: '审核通过未通话过期比例',
+          prop: 'authedToExpiredPercentShowValue',
+          minWidth: '8.8%'
+        },
+        {
+          label: '通话完成次数(次)',
+          prop: 'finished',
+          minWidth: '8.2%'
+        },
+        {
+          label: '通话完成比例',
+          prop: 'finishedPercentShowValue',
+          minWidth: '8.2%'
+        },
+        {
+          label: '审核通过后取消次数(次)',
+          prop: 'canceled',
+          minWidth: '8.8%'
+        }
+      ],
+      barData: [],
+      barXAxisData: [],
+      tableDatas: []
+    }
+  },
+  methods: {
+    ...mapActions(['getMeetingStatics']),
+    filterBarData() {
+      const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
+      this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
+      this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
+      this.loading = false
+    },
+    async onSearch() {
+      const { rows } = this.pagination
+      console.log(this.$data)
+      this.loading = true
+      this.$refs.pagination.currentPage = 1
+      this.pagination = Object.assign({}, { page: 1, rows })
+      await this.getDatas()
+      this.filterBarData()
+    },
+    async getDatas() {
+      const { page, rows } = this.pagination
+      this.filter.provincesId=`20`
+      const total = await this.getMeetingStatics({
+        ...this.filter,
+        ...this.pagination
+      })
+      this.total = total ? total + 1 : 0
+      this.tableDatas = this.meetingStatistics.slice(0)
+      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
+    }
+  },
+  async mounted() {
+    await this.getDatas()
+    this.filterBarData()
+  },
+  computed: {
+    ...mapState([
+      'meetingStatistics',
+      'meetingStatisticTotalItem'
+    ])
+    }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+</style>
