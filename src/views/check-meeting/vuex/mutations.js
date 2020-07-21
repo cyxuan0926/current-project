@@ -54,6 +54,13 @@ export default {
   setMeetingStatistics: (state, meetingStatistics) => {
     state.meetingStatistics = meetingStatistics
   },
+  setFamilyMeetingDetail: (state, FamilyMeetingDetail) => {
+    state.getFamilyMeetingDetail = FamilyMeetingDetail
+  },
+
+  setgdmeetingStatisticTotalItem: (state, gdmeetingStatisticTotalItem) => {
+    state.gdmeetingStatisticTotalItem = gdmeetingStatisticTotalItem
+  },
   setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
     state.meetingStatisticTotalItem = meetingStatisticTotalItem
   },

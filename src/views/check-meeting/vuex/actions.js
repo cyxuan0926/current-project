@@ -108,6 +108,19 @@ export default {
 
     return data
   },
+  async getFamilyDetail({ commit }, params) {
+    try {
+      const res = await http.getFamilyMeetingDetail(params)
+      console.log(res.data)
+      const { item, meetings, total } = res.data
+      commit('setFamilyMeetingDetail', meetings || [])
+      commit('setgdmeetingStatisticTotalItem', item || {})
+      return total || 0
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async getMeetingStatics({ commit }, params) {
     try {
       const res = await http.getMeetingStatics(params)
