@@ -184,7 +184,7 @@ export default {
       })
     },
     onSelectChange(selectKey, value) {
-      this.$emit('searchSelectChange', selectKey, value)
+      this.$emit('onSelectChange', selectKey, value)
     },
     onClear() {
       Object.keys(this.items).forEach(key => {
@@ -298,14 +298,14 @@ export default {
     }
 
     .el-date-editor--datetimerange {
-      width: 318px;
+      width: 380px;
     }
 
     .m-range-picker,
     .el-date-editor--month,
     .el-date-editor--daterange,
     .el-date-editor--monthrange {
-      width: 235px !important;
+      width: 280px !important;
     }
 
     .el-range-separator {

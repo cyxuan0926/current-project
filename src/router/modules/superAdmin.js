@@ -39,19 +39,19 @@ superAdmin = [{
   }, {
     path: '/family-meeting-statistics',
     component: 'gd-admin/family-statistics',
-    props: { hasOnlyAllPrisonQueryAuth: true },
+    props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' },
     meta: {
-      permission: 'visit.visit-statistic.chart.all-prison.search',
+      permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视亲情电话统计报表'
     }
   }, {
     path: '/family-meeting-detail',
     component: 'gd-admin/family-detail',
     meta: {
-      permission: 'visit.visit-statistic.chart.all-prison.search',
+      permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视亲情电话申请详情'
     },
-     props: { hasOnlyAllPrisonQueryAuth: true }
+     props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' }
   }]
 }, {
   path: '/prison',

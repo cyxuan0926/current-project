@@ -21,7 +21,7 @@
         :params="filter" />
     </m-search>
     <m-charts
-      :visible="!!total"
+      :visible="!!totalCount"
       :options="chartOptions"
       :loading="loading"/>
     <el-col :span="24">
@@ -36,7 +36,7 @@
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="total"
+      :total="totalCount"
       @onPageChange="getDatas"/>
   </el-row>
 </template>
@@ -44,6 +44,7 @@
 
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import http from '@/service'
 
 const chartTypes = {
   PIE: 'pie',
@@ -54,14 +55,16 @@ export default {
   mixins: [prisonFilterCreator],
   data () {
     return {
-      total: 0,
+      totalCount: 0,
       chartTypes,
       chartType: chartTypes.BAR,
       loading: true,
+      meetingStatistics:[],
+      meetingStatisticTotalItem:{},
       filter: {},
       searchItems: {
         time: {
-          type: 'datetimerange',
+          type: 'dateRange',
           start: 'startDate',
           end: 'endDate'
         }
@@ -139,9 +142,19 @@ export default {
           prop: 'finishedPercentShowValue',
           minWidth: '8.2%'
         },
+        // {
+        //   label: '审核通过后取消次数(次)',
+        //   prop: 'canceled',
+        //   minWidth: '8.8%'
+        // },
         {
-          label: '审核通过后取消次数(次)',
-          prop: 'canceled',
+          label: '警官取消次数(次)',
+          prop: 'policeCanceled',
+          minWidth: '8.8%'
+        },
+        {
+          label: '家属取消次数(次)',
+          prop: 'familiesCanceled',
           minWidth: '8.8%'
         }
       ],
@@ -151,7 +164,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getMeetingStatics']),
+    //...mapActions(['getMeetingStatics']),
     filterBarData() {
       const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
       this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
@@ -160,7 +173,6 @@ export default {
     },
     async onSearch() {
       const { rows } = this.pagination
-      console.log(this.$data)
       this.loading = true
       this.$refs.pagination.currentPage = 1
       this.pagination = Object.assign({}, { page: 1, rows })
@@ -170,13 +182,16 @@ export default {
     async getDatas() {
       const { page, rows } = this.pagination
       this.filter.provincesId=`20`
-      const total = await this.getMeetingStatics({
+      const { data}  = await http.getFamilyStatistics({
         ...this.filter,
         ...this.pagination
       })
-      this.total = total ? total + 1 : 0
+      const { item, list, totalCount }= data
+      this.totalCount = totalCount ? totalCount + 1 : 0
+      this.meetingStatistics=list
       this.tableDatas = this.meetingStatistics.slice(0)
-      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
+      this.meetingStatisticTotalItem=item
+      if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
     }
   },
   async mounted() {
@@ -185,8 +200,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'meetingStatistics',
-      'meetingStatisticTotalItem'
+     // 'meetingStatistics',
+     // 'meetingStatisticTotalItem'
     ]),
     chartOptions() {
       let options

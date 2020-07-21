@@ -4,6 +4,7 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch">
       <!--<el-select-->
         <!--v-model="chartType"-->
@@ -17,16 +18,31 @@
       <!--</el-select>-->
       <m-excel-download
         slot="append"
-        path="/download/export"
+        path="/download/export/meeting/by-province"
         :params="filter" />
     </m-search>
     <el-col :span="24">
       <m-table-new
         :data="tableDatas"
         :cols="tableCols"
+        @sort-change="sortChange"
         class="mini-td-padding">
         <template #rank="{ row, $index }">
           <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="createdAt">
+          <span >{{scope.row.createdAt }}</span>
+        </template>
+        <template
+          slot-scope="scope"
+          slot="operate">
+          <el-button
+            type="text"
+            size="mini"
+            class="button-detail"
+            @click="onDetail(scope.row)">详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -34,12 +50,76 @@
       ref="pagination"
       :total="total"
       @onPageChange="getDatas"/>
+    <el-dialog
+      :visible.sync="toShow.id ? true : false"
+      title="查看详情"
+      width="630px"
+      class="authorize-dialog"
+      @close="onCloseShow">
+      <div
+        :elItems="familyShows"
+        :showData="toShow">
+        <el-form  label-width="120px">
+          <div style="display: flex">
+            <div  style="flex: 1">
+              <el-form-item label="监狱名称:">
+                {{toShow.jailName}}
+              </el-form-item>
+              <el-form-item label="犯罪编号:">
+                {{toShow.prisonerNumber}}
+              </el-form-item>
+              <el-form-item label="申请时间:">
+                {{toShow.createdAt}}
+              </el-form-item>
+              <el-form-item label="申请通话时间:">
+                {{toShow.applicationDate}}
+              </el-form-item>
+            </div>
+            <div style="flex: 1">
+              <el-form-item label="家属姓名:">
+                {{toShow.name}}
+              </el-form-item>
+              <el-form-item label="犯罪姓名:">
+                {{toShow.prisonerName}}
+              </el-form-item>
+              <el-form-item label="申请状态:">
+              <span v-if="toShow.status=='PENDING'">
+                待审核
+              </span>
+                <span v-if="toShow.status=='CANCELED'">
+                已取消
+              </span>
+                <span v-if="toShow.status=='DENIED'">
+                已拒绝
+              </span>
+                <span v-if="toShow.status=='EXPIRED'">
+                已过期
+              </span>
+                <span v-if="toShow.status=='FINISHED'">
+                已完成
+              </span>
+                <span v-if="toShow.status=='MEETING_ON'">
+                通话中
+              </span>
+                <span v-if="toShow.status=='PASSED'">
+                审核通过
+              </span>
+              </el-form-item>
+              <el-form-item label="监区:">
+                {{toShow.prisonArea}}
+              </el-form-item>
+            </div>
+          </div>
+        </el-form>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 <script>
 
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
   mixins: [prisonFilterCreator],
   data () {
@@ -59,10 +139,25 @@ export default {
       loading: true,
       filter: {},
       searchItems: {
+        applicationDate: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'applicationStartDate',
+          end: 'applicationEndDate',
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间'
+          // miss: true,
+          // value: ''
+        },
         time: {
-          type: 'datetimerange',
-          start: 'startDate',
-          end: 'endDate'
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'createStartDate',
+          end: 'createEndDate',
+          startPlaceholder: '申请开始时间',
+          endPlaceholder: '申请结束时间'
+          // miss: true,
+          // value: ''
         },
         status: {
           type: 'select',
@@ -74,99 +169,161 @@ export default {
       },
       tableCols: [
         {
-          slotName: 'rank',
-          label: '排名',
-          minWidth: '5.5%'
-        },
-        {
-          label: '省份',
-          prop: 'provinceName',
-          minWidth: '11%',
-          showOverflowTooltip: true
-        },
-        {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '11%',
+          minWidth: '15%',
           showOverflowTooltip: true
         },
         {
-          label: '申请次数(次)',
-          prop: 'cnt',
-          minWidth: '8.2%'
+          label: '犯罪编号',
+          prop: 'prisonerNumber',
+          minWidth: '20',
+          showOverflowTooltip: true
         },
         {
-          label: '未授权次数(次)',
-          prop: 'pend',
-          minWidth: '8.2%'
+          label: '监区',
+          prop: 'prisonArea',
+          minWidth: '15'
         },
         {
-          label: '待通话次数(次)',
-          prop: 'passed',
-          minWidth: '8.2%'
+          label: '申请时间',
+          prop: 'createdAt',
+          sortable: 'custom',
+          minWidth: '30'
         },
         {
-          label: '审核被拒绝次数(次)',
-          prop: 'denied',
-          minWidth: '8.2%'
+          label: '申请通话时间',
+          prop: 'applicationDate',
+          minWidth: '30'
         },
         {
-          label: '审核被拒绝比例',
-          prop: 'deniedPercentShowValue',
-          minWidth: '8.2%'
+          label: '罪犯姓名',
+          prop: 'prisonerName',
+          minWidth: '30'
         },
         {
-          label: '未审核过期次数(次)',
-          prop: 'noAuthToExpired',
-          minWidth: '8.2%'
+          label: '家属',
+          prop: 'names',
+          minWidth: '30'
         },
         {
-          label: '未审核过期比例',
-          prop: 'noAuthToExpiredPercentShowValue',
-          minWidth: '8.2%'
-        },
-        {
-          label: '审核通过未通话过期次数(次)',
-          prop: 'authedToExpired',
-          minWidth: '9%'
-        },
-        {
-          label: '审核通过未通话过期比例',
-          prop: 'authedToExpiredPercentShowValue',
-          minWidth: '8.8%'
-        },
-        {
-          label: '通话完成次数(次)',
-          prop: 'finished',
-          minWidth: '8.2%'
-        },
-        {
-          label: '通话完成比例',
-          prop: 'finishedPercentShowValue',
-          minWidth: '8.2%'
-        },
-        {
-          label: '审核通过后取消次数(次)',
-          prop: 'canceled',
-          minWidth: '8.8%'
+          label: '申请状态',
+          prop: 'statusStr',
+          minWidth: '20'
+        }, {
+          label: '操作',
+          slotName: 'operate',
+          minWidth: 40,
+          align: 'center'
         }
+
       ],
       barData: [],
       barXAxisData: [],
-      tableDatas: []
+      tableDatas: [],
+      familyShows: [],
+      toShow:{},
+      sortObj:{},
+      show: {
+        familiesDetialInform: false
+      },
     }
   },
   methods: {
-    ...mapActions(['getMeetingStatics']),
+    ...mapActions(['getMeettingsDetail','getFamilyDetail']),
+    sortChange({ column, prop, order }) {
+      console.log({ column, prop, order })
+      if (!prop && !order) {
+        this.sortObj = {}
+        delete this.filter.sortDirection
+        delete this.filter.orderField
+      }
+      else {
+        this.sortObj.orderField = prop
+        if (order === 'descending') this.sortObj.sortDirection = 'desc'
+        else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+        this.filter = Object.assign(this.filter, this.sortObj)
+      }
+      this.getDatas('sortChange')
+    },
     filterBarData() {
-      const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
-      this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
-      this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
+      const count = this.getFamilyMeetingDetail.length > 10 ? 10 : this.getFamilyMeetingDetail.length
+      this.barData = this.getFamilyMeetingDetail.slice(0, count).map(data => [data.jailName, data.cnt])
+      this.barXAxisData = this.getFamilyMeetingDetail.slice(0, count).map(data => data.jailName)
       this.loading = false
+    },
+    onDetail(e) {
+      const constFamilyShows = [
+          {
+            label: '与囚犯关系',
+            prop: 'relationship',
+            style: { width: '100%' }
+          },
+          {
+            label: '预约时间',
+            prop: 'meetingTime'
+          },
+          {
+            label: '终端号',
+            prop: 'terminalNumber'
+          },
+          {
+            label: '审核人账号',
+            prop: 'auditUserName'
+          },
+          {
+            label: '审核人姓名',
+            prop: 'auditRealName'
+          },
+          {
+            label: '审核时间',
+            slotName: 'auditAt'
+          },
+          {
+            label: '审核状态',
+            slotName: 'status'
+          },
+          {
+            label: '会见时长',
+            slotName: 'duration'
+          },
+          {
+            label: '拒绝原因',
+            prop: 'content',
+            style: { width: '100%' }
+          }
+        ],
+        params = { meetingId: e.id }
+      this.getMeettingsDetail(params).then(res => {
+        if (!res) return
+        //this.toShow = Object.assign({}, res)
+        this.toShow=e
+        this.familyShows = this.toShow.status !== 'DENIED'
+          ? constFamilyShows.slice(0, constFamilyShows.length - 1)
+          : constFamilyShows
+      })
+    },
+    onCloseShow() {
+      this.toShow.id = ''
+      if (this.meetingRefresh) this.getDatas('onCloseShow')
+    },
+    currentDate(type) {
+            var now = new Date();
+            if(type){
+              now.setTime(now.getTime()-7*24*60*60*1000);
+            }
+            var year = now.getFullYear(); //得到年份
+            var month = now.getMonth();//得到月份
+            var date = now.getDate();//得到日期
+                month = month + 1;
+              if (month < 10) month = "0" + month;
+              if (date < 10) date = "0" + date;
+               var time = "";
+            return  time = year + "-" + month + "-" + date
+
     },
     async onSearch() {
       const { rows } = this.pagination
-      console.log(this.$data)
       this.loading = true
       this.$refs.pagination.currentPage = 1
       this.pagination = Object.assign({}, { page: 1, rows })
@@ -176,25 +333,54 @@ export default {
     async getDatas() {
       const { page, rows } = this.pagination
       this.filter.provincesId=`20`
-      const total = await this.getMeetingStatics({
+      this.filter.orderField = 'createTime'
+      if(!this.filter.createStartDate){
+        this.filter.createStartDate=this.currentDate(true)
+      }
+      if(!this.filter.createEndDate){
+        this.filter.createEndDate=this.currentDate(false)
+      }
+      console.log({
+        ...this.filter,
+        ...this.pagination
+      })
+      const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination
       })
       this.total = total ? total + 1 : 0
-      this.tableDatas = this.meetingStatistics.slice(0)
-      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
+      this.tableDatas = this.getFamilyMeetingDetail.slice(0)
+      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.gdmeetingStatisticTotalItem)
     }
   },
   async mounted() {
     await this.getDatas()
     this.filterBarData()
   },
+  created(){
+    this.provincesIdQuery=20
+  },
   computed: {
     ...mapState([
-      'meetingStatistics',
-      'meetingStatisticTotalItem'
+      'meetingRefresh',
+      'getFamilyMeetingDetail',
+      'gdmeetingStatisticTotalItem'
     ])
+    },
+  watch: {
+    meetingRefresh(val) {
+      if (val) {
+        if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
+      }
+    },
+    toShow: {
+      handler: function(val) {
+        if (val.id) this.show.detail = true
+        else this.show.detail = false
+      },
+      deep: true
     }
+  },
 }
 </script>
 
