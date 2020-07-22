@@ -5,30 +5,32 @@
       <section class="gd-home__left">
         <section class="gd-home-map">
           <div class="gd-home-map-container" id="gd-home-map-container"></div>
-          <div class="gd-home-map-tooltip">
-            <div class="gd-home-map-tooltip-title">
-              <i class="iconfont icon-jianyuguanli"></i>
-              <span>韶关监狱</span>
+          <transition name="modal">
+            <div v-show="isShowDevice" class="gd-home-map-tooltip" :style="deviceStyle" @click.stop>
+              <div class="gd-home-map-tooltip-title">
+                <i class="iconfont icon-jianyuguanli"></i>
+                <span>{{mapTooltips.name}}</span>
+              </div>
+              <el-table
+                class="gd-home-map-tooltip-table"
+                max-height="217"
+                :data="mapTooltips.data"
+                :cell-style="setCellStyle">
+                <el-table-column
+                  prop="name"
+                  label="监区名称">
+                </el-table-column>
+                <el-table-column
+                  prop="terminalNumber"
+                  label="设备终端号">
+                </el-table-column>
+                <el-table-column
+                  prop="status"
+                  label="设备状态">
+                </el-table-column>
+              </el-table>
             </div>
-            <el-table
-              class="gd-home-map-tooltip-table"
-              max-height="217"
-              :data="deviceData"
-              :cell-style="setCellStyle">
-              <el-table-column
-                prop="title"
-                label="监区名称">
-              </el-table-column>
-              <el-table-column
-                prop="no"
-                label="设备终端号">
-              </el-table-column>
-              <el-table-column
-                prop="status"
-                label="设备状态">
-              </el-table-column>
-            </el-table>
-          </div>
+          </transition>
         </section>
         <section class="gd-home-statistics">
           <m-chart-block>
@@ -46,11 +48,13 @@
               <div class="gd-home-top8">
                 <el-date-picker
                   class="gd-home-top8-datepicker"
-                  v-model="value1"
+                  v-model="datePickerVal"
                   type="daterange"
                   range-separator="至"
                   start-placeholder="开始日期"
-                  end-placeholder="结束日期">
+                  end-placeholder="结束日期"
+                  @change="drawTop8"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
                 <h3 class="gd-home-block-title"><span>申请通话次数TOP8</span></h3>
                 <div class="gd-home-top8-block" id="top8-apply"></div>
@@ -67,202 +71,246 @@
 </template>
 <script>
   import guangdongJson from '@/assets/map/guangdong.json'
-  import AmapUtil from '@/utils/amapUtil'
+  import { getRankBarChart, getSolidCircleLineChart } from '@/utils/chartOptions'
+  import http from '@/service'
   export default {
     data() {
       return {
+        datePickerVal: [],
+        deviceStyle: {},
         deviceData: [
           {
-            title: 'aaaa',
-            no: '123456',
+            name: 'aaaa',
+            terminalNumber: '123456',
             status: 0
           },
           {
-            title: 'bbbbb',
-            no: '123456',
+            name: 'bbbbb',
+            terminalNumber: '123456',
             status: 0
           },
           {
-            title: '哈哈哈',
-            no: '123456',
+            name: '哈哈哈',
+            terminalNumber: '123456',
             status: 2
           },
           {
-            title: 'aaaa',
-            no: '123456',
+            name: 'aaaa',
+            terminalNumber: '123456',
             status: 1
           },
           {
-            title: '哈哈哈222',
-            no: '123456',
+            name: '哈哈哈222',
+            terminalNumber: '123456',
             status: 2
           },
           {
-            title: 'aaaa2222',
-            no: '123456',
+            name: 'aaaa2222',
+            terminalNumber: '123456',
             status: 1
           },
           {
-            title: '哈哈哈222',
-            no: '123456',
+            name: '哈哈哈222',
+            terminalNumber: '123456',
             status: 2
           },
           {
-            title: 'aaaa2222',
-            no: '123456',
+            name: 'aaaa2222',
+            terminalNumber: '123456',
             status: 1
           },
           {
-            title: '哈哈哈444',
-            no: '123456',
+            name: '哈哈哈444',
+            terminalNumber: '123456',
             status: 2
           },
           {
-            title: 'aaaa444',
-            no: '123456',
+            name: 'aaaa444',
+            terminalNumber: '123456',
             status: 1
           }
         ],
         instance: null,
-        value1: ''
+        value1: '',
+        mapChart: null,
+        mapChartOptions: {},
+        mapTooltips: {},
+        isShowDevice: false,
+        barChartApply: null,
+        barChartApplyOptions: {},
+        barChartComplete: null,
+        barChartCompleteOptions: {},
+        lineChart: null,
+        lineChartOptions: {},
+        lineChartStatus: [
+          {
+            name: '申请次数',
+            color: '#5CA9E8'
+          },
+          {
+            name: '审核通过次数',
+            color: '#D2767A'
+          },
+          {
+            name: '审核拒绝次数',
+            color: '#EFB579'
+          },
+          {
+            name: '通话成功次数',
+            color: '#A692DA'
+          }
+        ]
       }
     },
     methods: {
+      add_0_prefix(n) {
+        return `${ n < 10 ? '0' : '' }${ n }`
+      },
+
       setCellStyle({row}) {
         return {
           'background-color': row.status == 0 ? '#FE3567' : (row.status == 1 ? '#2DD5FF' : '#4BF26F')
         }
       },
+
+      formateDate(date) {
+        return `${ date.getFullYear() }-${ this.add_0_prefix(date.getMonth() + 1) }-${ date.getDate
+        () }`
+      },
+
+      setDefaultPickerDate() {
+        const eDate = new Date()
+        eDate.setDate( eDate.getDate() - 1 )
+        const sDate = new Date()
+        sDate.setDate( sDate.getDate() - 31 )
+        this.datePickerVal = [this.formateDate(sDate), this.formateDate(eDate)]
+      },
+
+      setFitview(x, y) {
+        const h = document.querySelector('#gd-home-map-container').offsetHeight
+        const toolTip_h = 242
+        let top
+        if(h >= toolTip_h) {
+          top = y - toolTip_h / 2
+          if(top < 0) {
+            top = 0
+          }
+          if( h - y < toolTip_h / 2 ) {
+            top = h - toolTip_h
+          }
+        }
+        this.deviceStyle = {
+          left: (x + 5) + 'px',
+          top: top + 'px'
+        }
+      },
+
+      getMonthAxis(i) {
+        const date = new Date()
+        let y = date.getFullYear()
+        let m = date.getMonth() + 1
+        let res = []
+        for( ; i > 0; i-- ) {
+          if( --m < 0 ) {
+            m = 12
+            y--
+          }
+          res.unshift(`${ y }-${ this.add_0_prefix(m) }`)
+        }
+        return res
+      },
+
+      async drawTop8() {
+        let { totalTop = [], finishedTotalTop = [] } = await http.getHometop({
+          startDate: this.datePickerVal[0],
+          endDate: this.datePickerVal[1],
+          topN: 8
+        })
+        totalTop.reverse()
+        finishedTotalTop.reverse()
+
+        // 申请通话次数
+        this.barChartApplyOptions.yAxis.data = totalTop.map(t => t.jailName)
+        this.barChartApplyOptions.series[0].data = totalTop.map( t => t.total )
+        this.barChartApply.setOption(this.barChartApplyOptions)
+        // 完成通话次数
+        this.barChartCompleteOptions.yAxis.data = finishedTotalTop.map(t => t.jailName)
+        this.barChartCompleteOptions.series[0].data = finishedTotalTop.map( t => t.total )
+        this.barChartComplete.setOption(this.barChartCompleteOptions)
+      },
+
       initTop8() {
-        const barChartApply = echarts.init(document.getElementById('top8-apply'));
-        const barChartComplete = echarts.init(document.getElementById('top8-complete'));
-        barChartApply.setOption({
-          grid: {
-            top: 0,
-            left: 30,
-            right: 30,
-            bottom: 0,
-            containLabel: true
-          },
-          xAxis: {
-            type: 'value',
-            axisLabel: {
-              show: false
-            },
-            axisLine: {
-              show: false
-            },
-            splitLine: {
-              show: false
-            }
-          },
-          yAxis: {
-            type: 'category',
-            axisLabel: {
-              color: '#E7E7EA',
-              margin: 20
-            },
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false
-            },
-            data: ['从化监狱', '英德监狱', '东莞监狱', '四会监狱', '明康监狱', '高明监狱', '肇庆监狱', '北江监狱']
-          },
-          series: [
-            {
-              type: 'bar',
-              barWidth: 10,
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(
-                  0, 0, 1, 1,
-                  [
-                    {offset: 0, color: '#0043F4'},
-                    {offset: 1, color: '#48AEF8'}
-                  ]
-                )
-              },
-              label: {
-                show: true,
-                formatter: '{c}次',
-                position: 'right',
-                color: '#4FA5E4',
-                fontSize: 14,
-                fontStyle: 'italic',
-                fontWeight: 'bold'
-              },
-              data: [96, 94, 115, 84, 82, 88, 102, 66]
-            }
-          ]
+        this.barChartApply = echarts.init(document.getElementById('top8-apply'))
+        this.barChartApplyOptions = getRankBarChart({
+          itemColor: new echarts.graphic.LinearGradient(
+            0, 0, 1, 1,
+            [
+              {offset: 0, color: '#0043F4'},
+              {offset: 1, color: '#48AEF8'}
+            ]
+          ),
+          labelColor: '#4FA5E4',
+          formatter: '{c}次'
         })
 
-        barChartComplete.setOption({
-          grid: {
-            top: 0,
-            left: 30,
-            right: 30,
-            bottom: 0,
-            containLabel: true
-          },
-          xAxis: {
-            type: 'value',
-            axisLabel: {
-              show: false
-            },
-            axisLine: {
-              show: false
-            },
-            splitLine: {
-              show: false
-            }
-          },
-          yAxis: {
-            type: 'category',
-            axisLabel: {
-              color: '#E7E7EA',
-              margin: 20
-            },
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false
-            },
-            data: ['从化监狱', '英德监狱', '东莞监狱', '四会监狱', '明康监狱', '高明监狱', '肇庆监狱', '北江监狱']
-          },
-          series: [
-            {
-              type: 'bar',
-              barWidth: 10,
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(
-                  0, 0, 1, 1,
-                  [
-                    {offset: 0, color: '#80C654'},
-                    {offset: 1, color: '#B8E2C0'}
-                  ]
-                )
-              },
-              label: {
-                show: true,
-                formatter: '{c}次',
-                position: 'right',
-                color: '#B7E1BF',
-                fontSize: 14,
-                fontStyle: 'italic',
-                fontWeight: 'bold'
-              },
-              data: [96, 94, 115, 84, 82, 88, 102, 66]
-            }
-          ]
+        this.barChartComplete = echarts.init(document.getElementById('top8-complete'))
+        this.barChartCompleteOptions = getRankBarChart({
+          itemColor: new echarts.graphic.LinearGradient(
+            0, 0, 1, 1,
+            [
+              {offset: 0, color: '#80C654'},
+              {offset: 1, color: '#B8E2C0'}
+            ]
+          ),
+          labelColor: '#B7E1BF',
+          formatter: '{c}次'
         })
 
+        this.drawTop8()
+      },
+
+      async drawLineChart() {
+        const { monthList } = await http.getTotalMonthReport({
+          nums: 6
+        }) || []
+        const xaxis = []
+        const total = []
+        const passedTotal = []
+        const deniedTotal = []
+        const finishedTotal = []
+        monthList.forEach(d => {
+          xaxis.push( d.reportDate )
+          total.push( d.total )
+          passedTotal.push( d.passedTotal )
+          deniedTotal.push( d.deniedTotal )
+          finishedTotal.push( d.finishedTotal )
+        })
+
+        this.lineChartOptions.xAxis.data = xaxis
+        this.lineChartOptions.series.push(
+          Object.assign({ data: total }, getSolidCircleLineChart({
+            name: '申请次数',
+            color: '#5CA9E8'
+          })),
+          Object.assign({ data: passedTotal }, getSolidCircleLineChart({
+            name: '审核通过次数',
+            color: '#D2767A'
+          })),
+          Object.assign({ data: deniedTotal }, getSolidCircleLineChart({
+            name: '审核拒绝次数',
+            color: '#EFB579'
+          })),
+          Object.assign({ data: finishedTotal }, getSolidCircleLineChart({
+            name: '通话成功次数',
+            color: '#A692DA'
+          }))
+        )
+        this.lineChart.setOption(this.lineChartOptions)
       },
 
       initLineChart() {
-        const lineChart = echarts.init(document.getElementById('gd-home-statistics-charts'));
-        lineChart.setOption({
+        this.lineChart = echarts.init(document.getElementById('gd-home-statistics-charts'));
+        this.lineChartOptions = {
           grid: {
             top: 30,
             left: 0,
@@ -272,36 +320,15 @@
           },
           legend: {
             top: 5,
-            data: [
-              {
-                name: '申请次数',
-                textStyle: {
-                  color: '#5CA9E8'
-                }
-              },
-              {
-                name: '审核通过次数',
-                textStyle: {
-                  color: '#D2767A'
-                }
-              },
-              {
-                name: '审核拒绝次数',
-                textStyle: {
-                  color: '#EFB579'
-                }
-              },
-              {
-                name: '通话成功次数',
-                textStyle: {
-                  color: '#A692DA'
-                }
+            data: this.lineChartStatus.map(d => ({
+              name: d.name,
+              textStyle: {
+                color: d.color
               }
-            ]
+            }))
           },
           xAxis: {
             type: 'category',
-            data: ['一月', '二月', '三月', '四月', '五月', '六月'],
             axisLabel: {
               color: '#6EA8C3'
             },
@@ -333,70 +360,58 @@
               show: false
             }
           },
-          series: [
-            {
-              name: '申请次数',
-              type: 'line',
-              symbol: 'circle',
-              data: [120, 132, 101, 134, 90, 230, 210],
-              lineStyle: {
-                color: '#5CA9E8'
-              },
-              itemStyle: {
-                color: '#5CA9E8',
-                borderWidth: 3,
-                borderColor: '#5CA9E8'
-              }
-            },
-            {
-              name: '审核通过次数',
-              type: 'line',
-              symbol: 'circle',
-              data: [220, 182, 191, 234, 290, 330, 310],
-              lineStyle: {
-                color: '#D2767A'
-              },
-              itemStyle: {
-                color: '#D2767A',
-                borderWidth: 3,
-                borderColor: '#D2767A'
-              }
-            },
-            {
-              name: '审核拒绝次数',
-              type: 'line',
-              symbol: 'circle',
-              data: [150, 232, 201, 154, 190, 330, 410],
-              lineStyle: {
-                color: '#EFB579'
-              },
-              itemStyle: {
-                color: '#EFB579',
-                borderWidth: 3,
-                borderColor: '#EFB579'
-              }
-            },
-            {
-              name: '通话成功次数',
-              type: 'line',
-              symbol: 'circle',
-              data: [320, 332, 301, 334, 390, 330, 320],
-              lineStyle: {
-                color: '#A692DA'
-              },
-              itemStyle: {
-                color: '#A692DA',
-                borderWidth: 3,
-                borderColor: '#A692DA'
-              }
-            }
-          ]
-        })
+          series: []
+        }
+
+        this.drawLineChart()
       },
+
+      async drawMap() {
+        let { data = [] } = await http.getJailstatus()
+        data = [
+          {
+            jailId: 1111111,
+            name: '肇庆监狱',
+            longitude: 113.23,
+            latitude: 23.16,
+            status: 'online'
+          },
+          {
+            jailId: 222222,
+            name: '东莞监狱',
+            longitude: 113.38,
+            latitude: 22.52,
+            status: 'online'
+          },
+          {
+            jailId: 333333,
+            name: 'sz监狱',
+            longitude: 114.07,
+            latitude: 22.62,
+            status: 'offline'
+          },
+          {
+            jailId: 444444,
+            name: 'zh监狱',
+            longitude: 113.52,
+            latitude: 22.3,
+            status: 'offline'
+          }
+        ]
+        this.mapChartOptions.series[0].data = data.map(d => ({
+          name: d.name,
+          value: [d.longitude, d.latitude, d.jailId],
+          itemStyle: {
+            borderColor: d.status == 'online' ? '#75F950' : '#E6332D'
+          }
+        }))
+        this.mapChart.setOption(this.mapChartOptions)
+      },
+
       initMap() {
-        echarts.registerMap('guangdong', guangdongJson);
-        const myCharts = echarts.init(document.getElementById('gd-home-map-container'));
-        myCharts.setOption({
+        echarts.registerMap('guangdong', guangdongJson)
+        this.mapChart = echarts.init(document.getElementById('gd-home-map-container'))
+        this.mapChartOptions = {
           tooltip: {
             show: false
           },
@@ -404,8 +419,7 @@
             map: 'guangdong',
             emphasis: {
               label: {
-                show: true,
-                triggerOn: 'click'
+                show: false
               },
               itemStyle: {
                 areaColor: '#286DBA'
@@ -432,43 +446,44 @@
                 padding: [4, 7],
                 formatter: '{b}'
               },
-              data: [
-                {
-                  name: '韶关监狱',
-                  value: [113.23,23.16]
-                },
-                {
-                  name: '肇庆监狱',
-                  value: [113.38,22.52]
-                },
-                {
-                  name: '东莞监狱',
-                  value: [114.07,22.62]
-                },
-                {
-                  name: '从化监狱',
-                  value: [113.52,22.3]
-                }
-              ],
+              data: [],
               itemStyle: {
                 color: '#fff',
                 shadowBlur: 16,
                 shadowColor: '#2158DD',
-                borderWidth: 4,
-                borderColor: '#75F950'
+                borderWidth: 4
               },
               showEffectOn: 'render',
               zlevel: 1
             }
           ]
+        }
+
+        this.mapChart.on('click', 'series.effectScatter', async ({ data, event }) => {
+          if( !this.isShowDevice ) {
+            const { terminalList = [] } = await http.getTerminalList({
+              name: data.name,
+              jailId: data.value[2]
+            })
+            this.mapTooltips = {
+              name: data.name,
+              data: terminalList
+              //data: this.deviceData
+            }
+            this.setFitview(event.offsetX, event.offsetY)
+            this.isShowDevice = true
+          }
         })
 
-        myCharts.on('click', 'series.effectScatter', function(params) {
-          console.log(params)
-        })
+        document.body.onclick = () => {
+          this.isShowDevice = false
+        }
+
+        this.drawMap()
       }
     },
     mounted() {
+      this.setDefaultPickerDate()
       this.initMap()
       this.initLineChart()
       this.initTop8()

@@ -1,5 +1,5 @@
 <template>
-  <gdAdmin v-if="true" />
+  <gdAdmin v-if="isGdadmin" />
   <p v-else>欢迎来到狱务通管理平台</p>
 </template>
 <script>
@@ -7,6 +7,11 @@
   export default {
     components: {
       gdAdmin
+    },
+    computed: {
+      isGdadmin() {
+        return this.$store.state.account.accountInfo.role == '广东省管理员'
+      }
     }
   }
 </script>

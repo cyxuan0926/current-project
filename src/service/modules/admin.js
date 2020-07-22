@@ -14,5 +14,17 @@ export default {
   // 广东可视亲情电话统计报表
   getFamilyStatistics: params => {
     return service.get('/report/province/meetings', params)
-  }
+  },
+
+  // 广东监狱管理局首页 申请通话次数 完成通话次数 top8
+  getHometop: params => service.get('/homepage/querytop', params).then(res => res.data),
+
+  // 广东监狱管理局首页 监狱查询
+  getJailstatus: () => service.get('/homepage/queryjailstatus').then(res => res.data),
+
+  // 广东监狱管理局首页 设备状态查询
+  getTerminalList: params => service.get('/homepage/queryTerminalList', params).then(res => res.data),
+
+  // 广东监狱管理局首页 查询
+  getTotalMonthReport: params => service.get('/homepage/queryTotalMonthReport', params).then(res => res.data)
 }

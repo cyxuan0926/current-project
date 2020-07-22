@@ -46,5 +46,14 @@ export default {
                 }
             }
         ]
+    },
+
+    SOLID_CIRCLE_LINE_CHART: {
+        type: 'line',
+        symbol: 'circle',
+        lineStyle: {},
+        itemStyle: {
+          borderWidth: 3
+        }
     }
 }
