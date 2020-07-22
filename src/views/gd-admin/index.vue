@@ -27,6 +27,9 @@
                 <el-table-column
                   prop="status"
                   label="设备状态">
+                  <template slot-scope="scope">
+                    <span>{{ jailStatusEm[scope.row.status] }}</span>
+                  </template>
                 </el-table-column>
               </el-table>
             </div>
@@ -78,60 +81,6 @@
       return {
         datePickerVal: [],
         deviceStyle: {},
-        deviceData: [
-          {
-            name: 'aaaa',
-            terminalNumber: '123456',
-            status: 0
-          },
-          {
-            name: 'bbbbb',
-            terminalNumber: '123456',
-            status: 0
-          },
-          {
-            name: '哈哈哈',
-            terminalNumber: '123456',
-            status: 2
-          },
-          {
-            name: 'aaaa',
-            terminalNumber: '123456',
-            status: 1
-          },
-          {
-            name: '哈哈哈222',
-            terminalNumber: '123456',
-            status: 2
-          },
-          {
-            name: 'aaaa2222',
-            terminalNumber: '123456',
-            status: 1
-          },
-          {
-            name: '哈哈哈222',
-            terminalNumber: '123456',
-            status: 2
-          },
-          {
-            name: 'aaaa2222',
-            terminalNumber: '123456',
-            status: 1
-          },
-          {
-            name: '哈哈哈444',
-            terminalNumber: '123456',
-            status: 2
-          },
-          {
-            name: 'aaaa444',
-            terminalNumber: '123456',
-            status: 1
-          }
-        ],
-        instance: null,
-        value1: '',
         mapChart: null,
         mapChartOptions: {},
         mapTooltips: {},
@@ -159,7 +108,12 @@
             name: '通话成功次数',
             color: '#A692DA'
           }
-        ]
+        ],
+        jailStatusEm: {
+          online: '开机',
+          offline: '关机',
+          meeting_on: '会见中'
+        }
       }
     },
     methods: {
@@ -367,38 +321,8 @@
       },
 
       async drawMap() {
-        let { data = [] } = await http.getJailstatus()
-        data = [
-          {
-            jailId: 1111111,
-            name: '肇庆监狱',
-            longitude: 113.23,
-            latitude: 23.16,
-            status: 'online'
-          },
-          {
-            jailId: 222222,
-            name: '东莞监狱',
-            longitude: 113.38,
-            latitude: 22.52,
-            status: 'online'
-          },
-          {
-            jailId: 333333,
-            name: 'sz监狱',
-            longitude: 114.07,
-            latitude: 22.62,
-            status: 'offline'
-          },
-          {
-            jailId: 444444,
-            name: 'zh监狱',
-            longitude: 113.52,
-            latitude: 22.3,
-            status: 'offline'
-          }
-        ]
-        this.mapChartOptions.series[0].data = data.map(d => ({
+        const { jailList = [] } = await http.getJailstatus()
+        this.mapChartOptions.series[0].data = jailList.map(d => ({
           name: d.name,
           value: [d.longitude, d.latitude, d.jailId],
           itemStyle: {
@@ -530,7 +454,7 @@
           width: 240px;
           color: #fff;
           border: 1px solid #fff;
-          opacity: .8;
+          opacity: .9;
           
           &-title {
             text-align: center;
