@@ -18,11 +18,18 @@ const tips = (msg = '操作失败！', type = 'error') => {
   * next: Function数据处理
   * resData: Boolean是否将相应的数据返回，默认false
 **/
+
+const urlWhiteList = [
+  '/prisoners/processing',
+  '/upload/uploadfile',
+  '/prisoners/validate',
+  '/ywgk/homepage/queryjailstatus'
+]
 const codes = {
   200: {
     resData: true,
     next: (params, url) => {
-      if (url.indexOf('/prisoners/processing') > -1 || url.indexOf('/upload/uploadfile') > -1 || url.indexOf('/prisoners/validate') > -1) {
+      if (urlWhiteList.includes(url)) {
         Message.closeAll()
         // tips('导入的Excel罪犯数据解析完成', 'success')
       }

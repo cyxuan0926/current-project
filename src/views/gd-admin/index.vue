@@ -1,76 +1,80 @@
 <template>
-  <el-container class="gd-home">
-    <!-- <el-header class="gd-home-title">广东监狱管理首页</el-header> -->
-    <el-container>
-      <section class="gd-home__left">
-        <section class="gd-home-map">
-          <div class="gd-home-map-container" id="gd-home-map-container"></div>
-          <transition name="modal">
-            <div v-show="isShowDevice" class="gd-home-map-tooltip" :style="deviceStyle" @click.stop>
-              <div class="gd-home-map-tooltip-title">
-                <i class="iconfont icon-jianyuguanli"></i>
-                <span>{{mapTooltips.name}}</span>
+  <fullscreen class="fullscreen-layout" ref="fullscreen" @change="handleFullscreenChange">
+    <el-container class="gd-home">
+      <el-header class="gd-home-title" v-show="isFullscreen"><h3>广东省可视亲情电话数据分析</h3></el-header>
+      <el-container>
+        <section class="gd-home__left">
+          <section class="gd-home-map">
+            <div class="gd-home-map-container" id="gd-home-map-container"></div>
+            <transition name="modal">
+              <div v-show="isShowDevice" class="gd-home-map-tooltip" :style="deviceStyle" @click.stop>
+                <div class="gd-home-map-tooltip-title">
+                  <i class="iconfont icon-jianyuguanli"></i>
+                  <span>{{mapTooltips.name}}</span>
+                </div>
+                <el-table
+                  class="gd-home-map-tooltip-table"
+                  max-height="217"
+                  :data="mapTooltips.data"
+                  :cell-style="setCellStyle">
+                  <el-table-column
+                    prop="name"
+                    label="监区名称">
+                  </el-table-column>
+                  <el-table-column
+                    prop="terminalNumber"
+                    label="设备终端号">
+                  </el-table-column>
+                  <el-table-column
+                    prop="status"
+                    label="设备状态">
+                    <template slot-scope="scope">
+                      <span>{{ jailStatusEm[scope.row.status] }}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </div>
-              <el-table
-                class="gd-home-map-tooltip-table"
-                max-height="217"
-                :data="mapTooltips.data"
-                :cell-style="setCellStyle">
-                <el-table-column
-                  prop="name"
-                  label="监区名称">
-                </el-table-column>
-                <el-table-column
-                  prop="terminalNumber"
-                  label="设备终端号">
-                </el-table-column>
-                <el-table-column
-                  prop="status"
-                  label="设备状态">
-                  <template slot-scope="scope">
-                    <span>{{ jailStatusEm[scope.row.status] }}</span>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </transition>
+            </transition>
+            <el-button class="btn-fullscreen" type="primary" icon="el-icon-full-screen" @click="handleToggle" v-if="$fullscreen.support && !isFullscreen">全屏展示</el-button>
+            <div class="gd-home-map-loading" v-loading="isDrawMap"></div>
+          </section>
+          <section class="gd-home-statistics">
+            <m-chart-block>
+              <template v-slot:content>
+                <h3 class="gd-home-block-title"><span>广东省亲情电话统计曲线</span></h3>
+                <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
+              </template>
+            </m-chart-block>
+          </section>  
         </section>
-        <section class="gd-home-statistics">
-          <m-chart-block>
-            <template v-slot:content>
-              <h3 class="gd-home-block-title"><span>广东省亲情电话统计曲线</span></h3>
-              <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
-            </template>
-          </m-chart-block>
-        </section>  
-      </section>
-      <section class="gd-home__right">
-        <section>
-          <m-chart-block :style="{left: '30px', right: '30px', top: '16px', bottom: '16px'}">
-            <template v-slot:content>
-              <div class="gd-home-top8">
-                <el-date-picker
-                  class="gd-home-top8-datepicker"
-                  v-model="datePickerVal"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="drawTop8"
-                  value-format="yyyy-MM-dd">
-                </el-date-picker>
-                <h3 class="gd-home-block-title"><span>申请通话次数TOP8</span></h3>
-                <div class="gd-home-top8-block" id="top8-apply"></div>
-                <h3 class="gd-home-block-title"><span>完成通话次数TOP8</span></h3>
-                <div class="gd-home-top8-block" id="top8-complete"></div>
-              </div>
-            </template>
-          </m-chart-block>
+        <section class="gd-home__right">
+          <section>
+            <m-chart-block :style="{left: '30px', right: '30px', top: '16px', bottom: '16px'}">
+              <template v-slot:content>
+                <div class="gd-home-top8">
+                  <el-date-picker
+                    class="gd-home-top8-datepicker"
+                    v-model="datePickerVal"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :picker-options="pickerOptions"
+                    @change="drawTop8"
+                    value-format="yyyy-MM-dd">
+                  </el-date-picker>
+                  <h3 class="gd-home-block-title"><span>申请通话次数TOP8</span></h3>
+                  <div class="gd-home-top8-block" id="top8-apply"></div>
+                  <h3 class="gd-home-block-title"><span>完成通话次数TOP8</span></h3>
+                  <div class="gd-home-top8-block" id="top8-complete"></div>
+                </div>
+              </template>
+            </m-chart-block>
+          </section>
         </section>
-        
-      </section>
+      </el-container>
     </el-container>
-  </el-container>
+  </fullscreen>
 </template>
 <script>
   import guangdongJson from '@/assets/map/guangdong.json'
@@ -79,6 +83,7 @@
   export default {
     data() {
       return {
+        isFullscreen: false,
         datePickerVal: [],
         deviceStyle: {},
         mapChart: null,
@@ -113,6 +118,14 @@
           online: '开机',
           offline: '关机',
           meeting_on: '会见中'
+        },
+        drawMapInterval: null,
+        drawMapTimeout: null,
+        isDrawMap: false,
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now() - 24 * 60 * 60 * 1000;
+          }
         }
       }
     },
@@ -321,6 +334,10 @@
       },
 
       async drawMap() {
+        if( this.isDrawMap ) {
+          return
+        }
+        this.isDrawMap = true
         const { jailList = [] } = await http.getJailstatus()
         this.mapChartOptions.series[0].data = jailList.map(d => ({
           name: d.name,
@@ -330,6 +347,12 @@
           }
         }))
         this.mapChart.setOption(this.mapChartOptions)
+        if( this.drawMapTimeout ) {
+          clearTimeout( this.drawMapTimeout )
+        }
+        this.drawMapTimeout = setTimeout(() => {
+          this.isDrawMap = false
+        }, 2000)
       },
 
       initMap() {
@@ -404,24 +427,57 @@
         }
 
         this.drawMap()
+      },
+
+      handleFullscreenChange(val) {
+        this.isFullscreen = val
+      },
+
+      handleToggle() {
+        this.$refs['fullscreen'].toggle()
       }
+
     },
     mounted() {
+      if( this.drawMapInterval ) {
+        clearInterval(this.drawMapInterval)
+      }
       this.setDefaultPickerDate()
       this.initMap()
       this.initLineChart()
       this.initTop8()
+      this.drawMapInterval = setInterval(this.drawMap, 5 * 60 * 1000)
+    },
+    destroyed() {
+      clearInterval(this.drawMapInterval)
+      clearTimeout( this.drawMapTimeout )
     }
   }
 </script>
 <style lang="scss" scoped>
+  .fullscreen-layout {
+    height: 100%;
+    display: flex;
+    flex: 1;
+  }
+
   .gd-home {
     height: 100%;
     background-color: #000A26;
 
     &-title {
-      height: 44px;
-      background: gray;
+      background: url('../../assets/images/gd-admin-title-bg.png') repeat-x left top;
+
+      h3 {
+        width: 960px;
+        margin: 0 auto;
+        font-size: 0;
+        text-indent: -99px;
+        overflow: hidden;
+        height: 47px;
+        background: #000A26 url('../../assets/images/gd-admin-title.png') no-repeat center top;
+      }
+      
     }
 
     &__left, &__right {
@@ -463,6 +519,25 @@
             background-color: #2F7DDF;
             border-bottom: 1px solid #fff;
           }
+        }
+
+        &-loading {
+          position: absolute;
+          width: 56px;
+          height: 56px;
+          left: 0;
+          top: 0;
+          z-index: 4;
+        }
+
+        .btn-fullscreen {
+          position: absolute;
+          right: 0;
+          top: 10px;
+          z-index: 4;
+          background-color: transparent;
+          border-color: transparent;
+          color: #6CDFF5;
         }
       }
 
@@ -571,6 +646,25 @@
 
       thead th {
         background-color: #FB721F;
+      }
+    }
+
+    /deep/ .gd-home-map-loading {
+      .el-loading-mask {
+        background-color: transparent !important;
+        
+        .el-loading-spinner {
+          margin-top: -11px;
+
+          .circular {
+            width: 22px;
+            height: 22px;
+
+            .path {
+              stroke: #6CDFF5;
+            }
+          }
+        }
       }
     }
 

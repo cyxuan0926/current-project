@@ -34,6 +34,7 @@
     "sortablejs": "^1.10.2",
     "viewerjs": "^1.2.0",
     "vue": "^2.6.11",
+    "vue-fullscreen": "^2.1.6",
     "vue-quill-editor": "^3.0.4",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
