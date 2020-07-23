@@ -77,5 +77,10 @@ export default {
   // 会见统计-狱警家属免费会见纪录
   getPoliceFamilyFreeMeetings: params => {
     return service.get('/freeMeetings/page-police', params)
+  },
+
+  // 可视亲情电话统计报表-导出excel
+  exportMeetingStatistics: params => {
+    return service.get('/download/province/export', params, { responseType: 'blob' })
   }
 }

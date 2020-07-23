@@ -15,10 +15,14 @@
             label="通话总量分析饼图"
             :value="chartTypes.PIE" />
       </el-select>
-      <m-excel-download
+      <el-button 
+        class="m-excel-download"
+        type="primary"
         slot="append"
-        path="/download/export"
-        :params="filter" />
+        :loading="downloading"
+        @click="onDownloadExcel">
+        导出execl
+      </el-button>
     </m-search>
     <m-charts
       :visible="!!totalCount"
@@ -45,6 +49,8 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
+import { tokenExcel } from '@/utils/token-excel'
+import { helper } from '@/utils'
 
 const chartTypes = {
   PIE: 'pie',
@@ -160,11 +166,32 @@ export default {
       ],
       barData: [],
       barXAxisData: [],
-      tableDatas: []
+      tableDatas: [],
+      downloading: false
     }
   },
   methods: {
     //...mapActions(['getMeetingStatics']),
+    async onDownloadExcel() {
+      this.downloading = true
+
+      const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+
+      const formater = menuName => {
+        return `${menuName + times}`
+      }
+      await tokenExcel({
+        params: this.filter,
+        actionName: 'exportMeetingStatistics',
+        menuName: '可视亲情电话数据统计表',
+        formater
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
+
     filterBarData() {
       const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
       this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
