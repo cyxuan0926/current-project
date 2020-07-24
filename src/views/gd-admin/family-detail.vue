@@ -6,16 +6,6 @@
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch">
-      <!--<el-select-->
-        <!--v-model="chartType"-->
-        <!--slot="pre">-->
-          <!--<el-option-->
-            <!--label="申请次数柱状图"-->
-            <!--:value="chartTypes.BAR" />-->
-          <!--<el-option-->
-            <!--label="通话总量分析饼图"-->
-            <!--:value="chartTypes.PIE" />-->
-      <!--</el-select>-->
       <m-excel-download
         slot="append"
         path="/download/export/meeting/by-province"
@@ -232,7 +222,6 @@ export default {
   methods: {
     ...mapActions(['getMeettingsDetail','getFamilyDetail']),
     sortChange({ column, prop, order }) {
-      console.log({ column, prop, order })
       if (!prop && !order) {
         this.sortObj = {}
         delete this.filter.sortDirection
@@ -330,20 +319,16 @@ export default {
       await this.getDatas()
       this.filterBarData()
     },
-    async getDatas() {
-      const { page, rows } = this.pagination
-      this.filter.provincesId=`20`
+    getDatas: async function () {
+      const {page, rows} = this.pagination
+      this.filter.provincesId = `20`
       this.filter.orderField = 'createTime'
-      if(!this.filter.createStartDate){
-        this.filter.createStartDate=this.currentDate(true)
+      if ( !this.filter.createStartDate ) {
+        this.filter.createStartDate = this.currentDate(true)
       }
-      if(!this.filter.createEndDate){
-        this.filter.createEndDate=this.currentDate(false)
+      if ( !this.filter.createEndDate ) {
+        this.filter.createEndDate = this.currentDate(false)
       }
-      console.log({
-        ...this.filter,
-        ...this.pagination
-      })
       const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination

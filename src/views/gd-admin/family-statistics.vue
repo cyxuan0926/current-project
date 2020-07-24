@@ -17,13 +17,15 @@
       </el-select>
       <m-excel-download
         slot="append"
-        path="/download/export"
+        path="/download/province/export"
         :params="filter" />
     </m-search>
     <m-charts
       :visible="!!totalCount"
       :options="chartOptions"
-      :loading="loading"/>
+      :loading="loading">
+    </m-charts>
+    <div style="position:absolute;color: red">asdasd</div>
     <el-col :span="24">
       <m-table-new
         :data="tableDatas"
@@ -164,7 +166,6 @@ export default {
     }
   },
   methods: {
-    //...mapActions(['getMeetingStatics']),
     filterBarData() {
       const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
       this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
@@ -199,10 +200,6 @@ export default {
     this.filterBarData()
   },
   computed: {
-    ...mapState([
-     // 'meetingStatistics',
-     // 'meetingStatisticTotalItem'
-    ]),
     chartOptions() {
       let options
       switch(this.chartType) {
@@ -255,28 +252,75 @@ export default {
             title : {
               text: '通话总量分析'
             },
-            tooltip: {},
+            tooltip: {
+              formatter: (name)=> {
+                return `${ name.name}`
+              },
+            },
             legend: {
-              padding: 0,
+              padding: [0, 50, 0,0],
               orient: 'vertical',
+              selectedMode:true,
+              align:'left',
               left: 'right',
               top: '16%',
-              data: [
-                '未授权次数(未审核数)',
-                '已通过审核待见通话次数',
-                '审核被拒绝次数',
-                '狱警未审核过期次数',
-                '审核通过未通话过期次数',
-                '通话完成次数',
-                '审核通过后取消次数'
-              ]
+              formatter: (name)=> {
+                console.log(name)
+                let val=""
+                console.log(this.meetingStatisticTotalItem)
+                if(name==`未授权次数(未审核数)`){
+                  val=`          `+this.meetingStatisticTotalItem.pend
+                }
+                if(name==`已通过审核待见通话次数`){
+                  val=`      `+this.meetingStatisticTotalItem.passed
+                }
+                if(name==`审核被拒绝次数`){
+                  val=`                   `+this.meetingStatisticTotalItem.denied
+                }
+                if(name==`狱警未审核过期次数`){
+                  val=`             `+this.meetingStatisticTotalItem.noAuthToExpired
+                }
+                if(name==`审核通过未通话过期次数`){
+                  val=`      `+this.meetingStatisticTotalItem.authedToExpired
+                }
+                if(name==`通话完成次数`){
+                  val=`                       `+this.meetingStatisticTotalItem.finished
+                }
+                if(name==`审核通过后取消次数`){
+                  val=`             `+this.meetingStatisticTotalItem.canceled
+                }
+                return `${name}  ${val}(次)`
+              },
+              data:this.pieData
+              //  [
+              //   '未授权次数(未审核数)',
+              //   '已通过审核待见通话次数',
+              //   '审核被拒绝次数',
+              //   '狱警未审核过期次数',
+              //   '审核通过未通话过期次数',
+              //   '通话完成次数',
+              //   '审核通过后取消次数'
+              // ]
             },
             series : [{
               type: 'pie',
-              radius : '65%',
+              radius :  ['30%', '80%'],
+              label: {
+                show: false,
+                position: 'center'
+              },
+              emphasis: {
+                label: {
+                  show:  true,
+                  fontSize: '20',
+                  formatter: function (name) {
+                     return `${name.percent}%`
+                    },
+                }
+              },
               center: [
-                '40%',
-                '55%'
+                '30%',
+                '50%'
               ],
               data: this.pieData,
               data:[
@@ -310,6 +354,17 @@ export default {
                 }
               ],
               itemStyle: {
+                normal: {
+                  borderWidth: 1,
+                  borderColor: '#fff',
+                  //定义一个list，通过list获取颜色，
+                  color: function (params) {
+                    var colorList = [
+                      '#e8a29b', '#cccccc', '#fbc8d9', '#c7d890', '#b2a4c1', '#9dbfe2', '#fbe1a1'
+                    ];
+                    return colorList[params.dataIndex]
+                  }
+                },
                 emphasis: {
                   shadowBlur: 10,
                   shadowOffsetX: 0,

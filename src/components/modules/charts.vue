@@ -90,8 +90,13 @@ export default {
 
   mounted() {
     this.init()
+    this.instance.on('legendselectchanged', ({selected,name}) => {
+      selected[name] = true
+      this.instance.setOption({ legend:  {selected}})
+    })
+    var option =  this.instance.getOption()
+    console.log(option )
   },
-
   beforeDestroy() {
     this.instance.dispose()
     this.instance = null
