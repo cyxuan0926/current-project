@@ -71,6 +71,7 @@ export default {
   meetingApplyDealing({ commit }, params) {
     commit('meetingApplyDealing', params)
   },
+  // 会见调整处理
   meetingAdjustDealing({ commit }, params) {
     commit('meetingAdjustDealing', params)
   },
@@ -111,7 +112,6 @@ export default {
   async getFamilyDetail({ commit }, params) {
     try {
       const res = await http.getFamilyMeetingDetail(params)
-      console.log(res.data)
       const { item, meetings, total } = res.data
       commit('setFamilyMeetingDetail', meetings || [])
       commit('setgdmeetingStatisticTotalItem', item || {})

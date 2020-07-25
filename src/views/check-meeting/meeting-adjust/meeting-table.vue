@@ -93,18 +93,22 @@ export default {
       };
     },
 
+    // 通话时间段
     meetingQueue() {
       return this.meetingAdjustment.meetingQueue || [];
     },
 
+    // 终端
     terminals() {
       return this.meetingAdjustment.terminals || [];
     },
 
+    // 通话纪录
     meetings() {
       return this.meetingAdjustment.meetings || [];
     },
 
+    // 通话日期
     meetingDate() {
       if (this.hasMeetings) {
         return this.meetings[0].applicationDate;
@@ -113,6 +117,7 @@ export default {
       return "";
     },
 
+    // 通话数据
     meetingsData() {
       if (!this.hasMeetingQueue || !this.hasTerminal) {
         return [];
@@ -142,26 +147,39 @@ export default {
     uuId,
 
     onEnd(evt) {
+      // 移动的元素
       const elDragged = evt.item;
+      // 被置换的元素
       const elSwapped = evt.swapItem;
 
+      // 移动元素的参数
       const originParams = this.getMeetingParams(elDragged);
+      // 目标元素的参数
       const targetParams = this.getMeetingParams(elSwapped);
 
+      // 把目标位置的参数赋值移动的元素上
       this.setMeetingParams(elDragged, targetParams);
+      // 把移动位置的参数赋值给目标的元素上
       this.setMeetingParams(elSwapped, originParams);
 
+      // 拖拽完成
       this.onDragFinish(this.meetingsAjusted());
     },
 
+    // 通话调整完成
     meetingsAjusted() {
       const result = [];
+      // 通话的列元素
       const meetingCols = document.querySelectorAll(".meetings-col");
 
+      // 遍历每一列
       for (let i = 0; i < meetingCols.length; i++) {
+        // 通话的单元格
         const meetingCells = meetingCols[i].childNodes;
 
+        // 遍历单元格
         for (let j = 0; j < meetingCells.length; j++) {
+          // 单元格
           const meetingCell = meetingCells[j];
 
           if (
@@ -187,16 +205,19 @@ export default {
       return result;
     },
 
+    // 通话调整
     hasMeetingChanged(el) {
       const meetingParams = this.getMeetingParams(el);
       const { terminalNumber, meetingTime } = el.__MEETING__;
 
+      // 通话时间段/终端号不同 就说明这个元素调整了会见
       return (
         terminalNumber !== meetingParams["data-terminal-number"] ||
         meetingTime !== meetingParams["data-meeting-time"]
       );
     },
 
+    // 是否置换: 1: 没有变化 0: 变化
     isSwap(el) {
       const meetingParams = this.getMeetingParams(el);
 
@@ -208,15 +229,18 @@ export default {
       });
     },
 
+    // 有通话的单元格
     isMeeting(el) {
       return el.__MEETING__.id;
     },
 
+    // 获取通话参数
     getMeetingParams(el) {
       if (!el) {
         return {};
       }
 
+      // 返回的参数对象 通话时间/终端id/终端号
       return {
         "data-meeting-time": el.getAttribute("data-meeting-time"),
         "data-terminal-id": el.getAttribute("data-terminal-id"),
@@ -224,6 +248,7 @@ export default {
       };
     },
 
+    // 设置通话参数
     setMeetingParams(el, params) {
       if (!el) {
         return;

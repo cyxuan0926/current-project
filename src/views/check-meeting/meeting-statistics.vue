@@ -47,10 +47,14 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
+
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 import { tokenExcel } from '@/utils/token-excel'
 
 import { helper } from '@/utils'
+
+// import Moment from 'moment'
 
 const chartTypes = {
   PIE: 'pie',
@@ -60,17 +64,25 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
+    // const endDate = Moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')
+
+    // const startDate = Moment().subtract(1, 'months').startOf('day').format('YYYY-MM-DD HH:mm:ss')
     return {
       total: 0,
       chartTypes,
       chartType: chartTypes.BAR,
       loading: true,
       filter: {},
+      // filterInit: {
+      //   startDate,
+      //   endDate
+      // },
       searchItems: {
         time: {
           type: 'datetimerange',
           start: 'startDate',
           end: 'endDate'
+          // value: [startDate, endDate]
         }
       },
       tableCols: [
@@ -163,11 +175,15 @@ export default {
     async onDownloadExcel() {
       this.downloading = true
 
-      const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+       const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+
+      // const { startDate, endDate } = this.filter
 
       const formater = menuName => {
         return `${menuName + times}`
+        // return `${menuName + startDate + '-' + endDate}`
       }
+
       await tokenExcel({
         params: this.filter,
         actionName: 'exportMeetingStatistics',

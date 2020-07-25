@@ -50,7 +50,6 @@ import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
-import { helper } from '@/utils'
 
 const chartTypes = {
   PIE: 'pie',
@@ -175,10 +174,10 @@ export default {
     async onDownloadExcel() {
       this.downloading = true
 
-      const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+      const { startDate, endDate } = this.filter
 
       const formater = menuName => {
-        return `${menuName + times}`
+        return `${menuName + startDate + '-' + endDate}`
       }
       await tokenExcel({
         params: this.filter,

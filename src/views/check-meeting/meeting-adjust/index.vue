@@ -87,6 +87,7 @@ export default {
     }
   },
 
+  // 导航触发之前
   async beforeRouteLeave(to, from, next) {
     const meetings = this.meetingsAjusted();
 
@@ -101,6 +102,7 @@ export default {
           type: "warning"
         });
 
+        // 通话调整
         await this.adjustMeeting(meetings);
       } catch (err) {
         if (err === "close") {
@@ -128,6 +130,7 @@ export default {
       "meetingAdjustDealing"
     ]),
 
+    // 拖拽完成
     onDragFinish(meetings) {
       if (meetings.length > 0) {
         this.addPageunloadListener();
@@ -174,6 +177,7 @@ export default {
 
     // 获取配置
     async getConfigs() {
+      // 获取监狱配置
       await this.getMeetingConfigs(this.adjustDate);
       this.meetingAdjustDealing(false);
 
@@ -193,25 +197,31 @@ export default {
       }
     },
 
+    // 在浏览器窗口关闭或者刷新时 添加beforeunload事件
     addPageunloadListener() {
       window.addEventListener("beforeunload", this.pageunloadHandler);
     },
 
+    // 移除beforeunload事件
     removePageunloadListener() {
       window.removeEventListener("beforeunload", this.pageunloadHandler);
     },
 
+    // beforeunload事件 处理函数
     pageunloadHandler(e) {
       if (e) {
+        // 阻止默认行为
         e.returnValue = "";
       }
 
       return "";
     },
 
+    // 通话调整完成
     meetingsAjusted() {
       const result = this.$refs.meetingTable.meetingsAjusted();
 
+      // 在数据字段中加入监狱id
       result.forEach(meeting => {
         meeting.jailId = parseInt(this.$store.state.global.user.jailId);
       });
@@ -219,6 +229,7 @@ export default {
       return result;
     },
 
+    // 默认日期
     defaultDate() {
       return helper.dateFormate(Date.now() + 2 * 24 * 3600 * 1000)
     }

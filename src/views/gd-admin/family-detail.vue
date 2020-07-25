@@ -232,7 +232,6 @@ export default {
   methods: {
     ...mapActions(['getMeettingsDetail','getFamilyDetail']),
     sortChange({ column, prop, order }) {
-      console.log({ column, prop, order })
       if (!prop && !order) {
         this.sortObj = {}
         delete this.filter.sortDirection
@@ -340,10 +339,6 @@ export default {
       if(!this.filter.createEndDate){
         this.filter.createEndDate=this.currentDate(false)
       }
-      console.log({
-        ...this.filter,
-        ...this.pagination
-      })
       const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination
