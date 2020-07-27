@@ -71,7 +71,7 @@
       :total="versionsTotal"
       @onPageChange="getDatas" />
     <el-dialog
-      title="狱务通版本管理"
+      title="国科服务版本管理"
       :visible.sync="dialogVisible">
       <el-form
         :model="ruleForm"
