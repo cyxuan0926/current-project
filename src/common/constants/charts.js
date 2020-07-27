@@ -3,7 +3,7 @@ export default {
         grid: {
             top: 0,
             left: 30,
-            right: 30,
+            right: 100,
             bottom: 0,
             containLabel: true
         },

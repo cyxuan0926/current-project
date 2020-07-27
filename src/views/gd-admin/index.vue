@@ -59,6 +59,7 @@
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
+                    :clearable="false"
                     :picker-options="pickerOptions"
                     @change="drawTop8"
                     value-format="yyyy-MM-dd">
@@ -80,10 +81,12 @@
   import guangdongJson from '@/assets/map/guangdong.json'
   import { getRankBarChart, getSolidCircleLineChart } from '@/utils/chartOptions'
   import http from '@/service'
+  import debounce from 'lodash/debounce'
   export default {
     data() {
       return {
         isFullscreen: false,
+        winHandleResize: function() {},
         datePickerVal: [],
         deviceStyle: {},
         mapChart: null,
@@ -136,7 +139,7 @@
 
       setCellStyle({row}) {
         return {
-          'background-color': row.status == 0 ? '#FE3567' : (row.status == 1 ? '#2DD5FF' : '#4BF26F')
+          'background-color': row.status == 'offline' ? '#eb6100' : (row.status == 'online' ? '#6CDFF5' : '#4BF26F')
         }
       },
 
@@ -238,7 +241,7 @@
 
       async drawLineChart() {
         const { monthList } = await http.getTotalMonthReport({
-          nums: 6
+          nums: document.documentElement.clientWidth > 1440 ? 12 : 6
         }) || []
         const xaxis = []
         const total = []
@@ -339,13 +342,29 @@
         }
         this.isDrawMap = true
         const { jailList = [] } = await http.getJailstatus()
-        this.mapChartOptions.series[0].data = jailList.map(d => ({
-          name: d.name,
-          value: [d.longitude, d.latitude, d.jailId],
-          itemStyle: {
-            borderColor: d.status == 'online' ? '#75F950' : '#E6332D'
+        const onlineArr = []
+        const offlineArr = []
+        jailList.forEach((d) => {
+          let opt = {
+            name: d.name,
+            value: [d.longitude, d.latitude, d.jailId]
           }
-        }))
+          if( d.status == 'offline' ) {
+            offlineArr.push(Object.assign(opt, {
+              itemStyle: {
+                borderColor: '#eb6100'
+              }
+            }))
+          }else {
+            onlineArr.push(Object.assign(opt, {
+              itemStyle: {
+                borderColor: '#6CDFF5'
+              }
+            }))
+          }
+        })
+        this.mapChartOptions.series[0].data = onlineArr
+        this.mapChartOptions.series[1].data = offlineArr
         this.mapChart.setOption(this.mapChartOptions)
         if( this.drawMapTimeout ) {
           clearTimeout( this.drawMapTimeout )
@@ -383,7 +402,7 @@
             {
               type: 'effectScatter',
               coordinateSystem: 'geo',
-              symbolSize: 14,
+              symbolSize: 20,
               label: {
                 show: true,
                 color: '#fff',
@@ -398,15 +417,35 @@
                 color: '#fff',
                 shadowBlur: 16,
                 shadowColor: '#2158DD',
-                borderWidth: 4
+                borderWidth: 5
               },
               showEffectOn: 'render',
+              zlevel: 1
+            },
+            {
+              type: 'scatter',
+              coordinateSystem: 'geo',
+              symbolSize: 12,
+              label: {
+                show: true,
+                color: '#fff',
+                position: 'top',
+                backgroundColor: '#eb6100',
+                borderRadius: 7,
+                padding: [4, 7],
+                formatter: '{b}'
+              },
+              data: [],
+              itemStyle: {
+                color: '#fff',
+                borderWidth: 4
+              },
               zlevel: 1
             }
           ]
         }
 
-        this.mapChart.on('click', 'series.effectScatter', async ({ data, event }) => {
+        this.mapChart.on('click', 'series', async ({ data, event }) => {
           if( !this.isShowDevice ) {
             const { terminalList = [] } = await http.getTerminalList({
               name: data.name,
@@ -435,8 +474,14 @@
 
       handleToggle() {
         this.$refs['fullscreen'].toggle()
-      }
+      },
 
+      handleResize() {
+        this.mapChart.resize()
+        this.lineChart.resize()
+        this.barChartApply.resize()
+        this.barChartComplete.resize()
+      }
     },
     mounted() {
       if( this.drawMapInterval ) {
@@ -447,10 +492,17 @@
       this.initLineChart()
       this.initTop8()
       this.drawMapInterval = setInterval(this.drawMap, 5 * 60 * 1000)
+      this.winHandleResize = debounce(this.handleResize, 400)
+      window.addEventListener('resize', this.winHandleResize)
     },
     destroyed() {
+      this.mapChart = null
+      this.lineChart = null
+      this.barChartApply = null
+      this.barChartComplete = null
       clearInterval(this.drawMapInterval)
       clearTimeout( this.drawMapTimeout )
+      window.removeEventListener('resize', this.winHandleResize)
     }
   }
 </script>
@@ -485,7 +537,7 @@
     }
 
     &__left {
-      width: 50%;
+      width: 55%;
       display: flex;
       flex-direction: column;
 
@@ -557,7 +609,7 @@
     }
 
     &__right {
-      width: 50%;
+      width: 45%;
       margin-left: -30px;
       position: relative;
     }
