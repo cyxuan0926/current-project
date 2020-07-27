@@ -67,6 +67,7 @@
           :key="index"
           v-if="item.type === 'daterange' && !item.miss"
           v-model="item.value"
+          :clearable="item.clearable?false:true"
           unlink-panels
           type="daterange"
           :start-placeholder="item.startPlaceholder || '开始时间'"
@@ -77,6 +78,7 @@
           :key="index"
           v-if="item.type === 'dateRange' && !item.miss"
           v-model="item.value"
+          :clearable="item.clearable?false:true"
           type="daterange"
           :unlink-panels="item.unlinkPanels"
           :start-placeholder="item.startPlaceholder || '开始时间'"
