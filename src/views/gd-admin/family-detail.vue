@@ -6,16 +6,6 @@
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch">
-      <!--<el-select-->
-        <!--v-model="chartType"-->
-        <!--slot="pre">-->
-          <!--<el-option-->
-            <!--label="申请次数柱状图"-->
-            <!--:value="chartTypes.BAR" />-->
-          <!--<el-option-->
-            <!--label="通话总量分析饼图"-->
-            <!--:value="chartTypes.PIE" />-->
-      <!--</el-select>-->
       <m-excel-download
         slot="append"
         path="/download/export/meeting/by-province"
@@ -51,7 +41,7 @@
       :total="total"
       @onPageChange="getDatas"/>
     <el-dialog
-      :visible.sync="toShow.id ? true : false"
+      :visible.sync="show.detail"
       title="查看详情"
       width="630px"
       class="authorize-dialog"
@@ -65,7 +55,7 @@
               <el-form-item label="监狱名称:">
                 {{toShow.jailName}}
               </el-form-item>
-              <el-form-item label="犯罪编号:">
+              <el-form-item label="罪犯编号:">
                 {{toShow.prisonerNumber}}
               </el-form-item>
               <el-form-item label="申请时间:">
@@ -84,7 +74,7 @@
               </el-form-item>
               <el-form-item label="申请状态:">
               <span v-if="toShow.status=='PENDING'">
-                待审核
+                未授权
               </span>
                 <span v-if="toShow.status=='CANCELED'">
                 已取消
@@ -136,9 +126,18 @@ export default {
     ]
     return {
       total: 0,
-      loading: true,
       filter: {},
+      loading: true,
       searchItems: {
+        time: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'createStartDate',
+          end: 'createEndDate',
+          clearable:"true",
+          // miss: true,
+          // value: ''
+        },
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
@@ -146,16 +145,6 @@ export default {
           end: 'applicationEndDate',
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间'
-          // miss: true,
-          // value: ''
-        },
-        time: {
-          type: 'dateRange',
-          unlinkPanels: true,
-          start: 'createStartDate',
-          end: 'createEndDate',
-          startPlaceholder: '申请开始时间',
-          endPlaceholder: '申请结束时间'
           // miss: true,
           // value: ''
         },
@@ -175,7 +164,7 @@ export default {
           showOverflowTooltip: true
         },
         {
-          label: '犯罪编号',
+          label: '罪犯编号',
           prop: 'prisonerNumber',
           minWidth: '20',
           showOverflowTooltip: true
@@ -193,8 +182,8 @@ export default {
         },
         {
           label: '申请通话时间',
-          prop: 'applicationDate',
-          minWidth: '30'
+          prop: 'meetingTime',
+          minWidth: '60'
         },
         {
           label: '罪犯姓名',
@@ -225,7 +214,8 @@ export default {
       toShow:{},
       sortObj:{},
       show: {
-        familiesDetialInform: false
+        familiesDetialInform: false,
+        detail:false
       },
     }
   },
@@ -291,19 +281,19 @@ export default {
             prop: 'content',
             style: { width: '100%' }
           }
-        ],
-        params = { meetingId: e.id }
+        ], params = { meetingId: e.id}
       this.getMeettingsDetail(params).then(res => {
         if (!res) return
         //this.toShow = Object.assign({}, res)
         this.toShow=e
+        this.show.detail=true
         this.familyShows = this.toShow.status !== 'DENIED'
           ? constFamilyShows.slice(0, constFamilyShows.length - 1)
           : constFamilyShows
       })
     },
     onCloseShow() {
-      this.toShow.id = ''
+      this.show.detail=false
       if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
     currentDate(type) {
@@ -329,23 +319,24 @@ export default {
       await this.getDatas()
       this.filterBarData()
     },
-    async getDatas() {
-      const { page, rows } = this.pagination
-      this.filter.provincesId=`20`
+    getDatas: async function () {
+      const {page, rows} = this.pagination
+      this.filter.provincesId = `20`
       this.filter.orderField = 'createTime'
-      if(!this.filter.createStartDate){
-        this.filter.createStartDate=this.currentDate(true)
+      if ( !this.filter.createStartDate ) {
+        this.filter.createStartDate = this.currentDate(true)
+        this.searchItems.time.startPlaceholder=this.currentDate(true)
       }
-      if(!this.filter.createEndDate){
-        this.filter.createEndDate=this.currentDate(false)
+      if ( !this.filter.createEndDate ) {
+        this.filter.createEndDate = this.currentDate(false)
+        this.searchItems.time.endPlaceholder=this.currentDate(false)
       }
       const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination
       })
-      this.total = total ? total + 1 : 0
+      this.total = total
       this.tableDatas = this.getFamilyMeetingDetail.slice(0)
-      if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.gdmeetingStatisticTotalItem)
     }
   },
   async mounted() {

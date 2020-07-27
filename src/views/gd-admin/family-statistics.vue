@@ -15,7 +15,7 @@
             label="通话总量分析饼图"
             :value="chartTypes.PIE" />
       </el-select>
-      <el-button 
+      <el-button
         class="m-excel-download"
         type="primary"
         slot="append"
@@ -71,7 +71,8 @@ export default {
         time: {
           type: 'dateRange',
           start: 'startDate',
-          end: 'endDate'
+          end: 'endDate',
+          clearable:"true"
         }
       },
       tableCols: [
@@ -197,6 +198,21 @@ export default {
       this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
       this.loading = false
     },
+    currentDate(type) {
+      var now = new Date();
+      if(type){
+        now.setTime(now.getTime()-30*24*60*60*1000);
+      }
+      var year = now.getFullYear(); //得到年份
+      var month = now.getMonth();//得到月份
+      var date = now.getDate();//得到日期
+      month = month + 1;
+      if (month < 10) month = "0" + month;
+      if (date < 10) date = "0" + date;
+      var time = "";
+      return  time = year + "-" + month + "-" + date
+
+    },
     async onSearch() {
       const { rows } = this.pagination
       this.loading = true
@@ -208,6 +224,14 @@ export default {
     async getDatas() {
       const { page, rows } = this.pagination
       this.filter.provincesId=`20`
+      if ( !this.filter.createStartDate ) {
+        this.filter.createStartDate = this.currentDate(true)
+        this.searchItems.time.startPlaceholder=this.currentDate(true)
+      }
+      if ( !this.filter.createEndDate ) {
+        this.filter.createEndDate = this.currentDate(false)
+        this.searchItems.time.endPlaceholder=this.currentDate(false)
+      }
       const { data}  = await http.getFamilyStatistics({
         ...this.filter,
         ...this.pagination
@@ -225,19 +249,32 @@ export default {
     this.filterBarData()
   },
   computed: {
-    ...mapState([
-     // 'meetingStatistics',
-     // 'meetingStatisticTotalItem'
-    ]),
-    chartOptions() {
+    pieArr: function () {
+      let arr = []
+      arr.push( {name:'总和' ,vals:this.meetingStatisticTotalItem.cnt} )
+      arr.push( {name:'未授权次数(未审核数)' ,vals:this.meetingStatisticTotalItem.pend} )
+      arr.push( {name:'已通过审核待见通话次数' ,vals:this.meetingStatisticTotalItem.passed} )
+      arr.push( {name:'审核被拒绝次数' ,vals:this.meetingStatisticTotalItem.denied} )
+      arr.push( {name:'狱警未审核过期次数' ,vals:this.meetingStatisticTotalItem.noAuthToExpired} )
+      arr.push( {name:'审核通过未通话过期次数' ,vals:this.meetingStatisticTotalItem.authedToExpired} )
+      arr.push( {name:'通话完成次数' ,vals:this.meetingStatisticTotalItem.finished} )
+      arr.push( {name:'审核通过后取消次数' ,vals:this.meetingStatisticTotalItem.canceled} )
+      return arr
+    },
+    chartOptions: function () {
       let options
-      switch(this.chartType) {
+      switch (this.chartType) {
         case 'bar':
           options = Object.assign({}, {
             title: {
               text: '通话申请次数'
             },
-            tooltip: {},
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+              }
+            },
             xAxis: {
               data: this.barXAxisData,
               axisLine: {
@@ -272,37 +309,92 @@ export default {
               itemStyle: {
                 color: '#3398DB'
               },
-            data: this.barData
+              data: this.barData
             }]
           })
-        break
-      case 'pie':
-        options = Object.assign({}, {
-            title : {
+          break
+        case 'pie':
+          options = Object.assign({}, {
+            title: {
               text: '通话总量分析'
             },
-            tooltip: {},
+            tooltip: {
+              formatter: (name) => {
+                return `${name.name}`
+              },
+            },
             legend: {
-              padding: 0,
+              padding: [0, 150, 0, 0],
               orient: 'vertical',
+              selectedMode: true,
+              align: 'left',
               left: 'right',
               top: '16%',
-              data: [
-                '未授权次数(未审核数)',
-                '已通过审核待见通话次数',
-                '审核被拒绝次数',
-                '狱警未审核过期次数',
-                '审核通过未通话过期次数',
-                '通话完成次数',
-                '审核通过后取消次数'
-              ]
+              itemHeight: 14,
+              formatter: (name) => {
+                let val = ""
+                if (name == `审核通过后取消次数`) {
+                  this.pieArr.forEach((item, index) => {
+                    if (item.name == '审核通过后取消次数') {
+                    } else {
+                      val = name + `                 ${this.pieArr[1].vals}` + `         总数${this.pieArr[0].vals}（次）`
+                    }
+                  })
+                } else {
+                  this.pieArr.forEach((item, index) => {
+                    if (name == `未授权次数(未审核数)`) {
+                      val = this.pieArr[1].name + '               ' + this.pieArr[1].vals
+                    }
+                    if (name == `已通过审核待见通话次数`) {
+                      val = this.pieArr[2].name + `          ${this.pieArr[2].vals}`
+                    }
+                    if (name == `审核被拒绝次数`) {
+                      val = `${this.pieArr[3].name}                   ${this.pieArr[3].vals}`
+                    }
+                    if (name == `审核通过未通话过期次数`) {
+                      val = `${this.pieArr[5].name}        ${this.pieArr[5].vals}`
+                    }
+                    if(name=="狱警未审核过期次数"){
+                      val = this.pieArr[4].name + `              ${this.pieArr[4].vals}`
+                    }
+                    if (name == `通话完成次数`) {
+                    val = this.pieArr[6].name + "                       " + this.pieArr[6].vals
+                  }
+                }
+              )
+            }
+            return  val
+          },
+              data:this.pieData
+              //  [
+              //   '未授权次数(未审核数)',
+              //   '已通过审核待见通话次数',
+              //   '审核被拒绝次数',
+              //   '狱警未审核过期次数',
+              //   '审核通过未通话过期次数',
+              //   '通话完成次数',
+              //   '审核通过后取消次数'
+              // ]
             },
             series : [{
               type: 'pie',
-              radius : '65%',
+              radius :  ['30%', '80%'],
+              label: {
+                show: false,
+                position: 'center'
+              },
+              emphasis: {
+                label: {
+                  show:  true,
+                  fontSize: '20',
+                  formatter: function (name) {
+                     return `${name.percent}%`
+                    },
+                }
+              },
               center: [
-                '40%',
-                '55%'
+                '30%',
+                '50%'
               ],
               data: this.pieData,
               data:[
@@ -336,6 +428,17 @@ export default {
                 }
               ],
               itemStyle: {
+                normal: {
+                  borderWidth: 1,
+                  borderColor: '#fff',
+                  //定义一个list，通过list获取颜色，
+                  color: function (params) {
+                    var colorList = [
+                      '#e8a29b', '#cccccc', '#fbc8d9', '#c7d890', '#b2a4c1', '#9dbfe2', '#fbe1a1'
+                    ];
+                    return colorList[params.dataIndex]
+                  }
+                },
                 emphasis: {
                   shadowBlur: 10,
                   shadowOffsetX: 0,

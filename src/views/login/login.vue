@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <div class="login-container">
-      <h1>狱务通</h1>
+      <h1>国科服务</h1>
       <div class="login-form">
         <p class="white">请输入您的用户名和密码</p>
         <el-form       

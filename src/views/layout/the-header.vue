@@ -5,7 +5,7 @@
         'header-left',
         'transition',
         { 'collapsed': isCollapsed }]">
-      <span class="bold">狱务通</span>管理平台
+      <span class="bold">国科服务</span>管理平台
     </div>
     <div class="header-right">
       <i

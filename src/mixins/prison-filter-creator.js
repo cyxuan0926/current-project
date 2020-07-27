@@ -75,7 +75,6 @@ export default {
       await this.$store.dispatch('getPrisonAll', this.provincesId ? { provincesId: this.provincesId } : {})
       Message.closeAll()
       this.searchItems.jailId.options = this.$store.state.prisonAll
-      // this.searchSelectChange('provincesId', '20')
       this.searchItems.jailId.getting = false
     },
 
