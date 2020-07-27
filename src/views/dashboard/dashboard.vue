@@ -1,6 +1,6 @@
 <template>
   <gdAdmin v-if="isGdadmin" />
-  <p v-else>欢迎来到狱务通管理平台</p>
+  <p v-else>欢迎来到国科服务管理平台</p>
 </template>
 <script>
   import gdAdmin from '@/views/gd-admin/index.vue'

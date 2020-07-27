@@ -1,6 +1,10 @@
 import { Message } from 'element-ui'
 import router from '@/router'
 import logout from '@/utils/logout'
+
+import { responseURLWhiteLists } from '@/common/constants/const'
+
+import { agency } from '@/service/config/service'
 // import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
@@ -136,7 +140,7 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
-  if (params.config.url.includes('/feedbacks/download') || params.config.url.includes('/authorFamily/export') || params.config.url.includes('/download/province/export')) if (params.status === 200 && !params.data.code) return params
+  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, ''))) if (params.status === 200 && !params.data.code) return params
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {

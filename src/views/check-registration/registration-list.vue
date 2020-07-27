@@ -540,7 +540,6 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
-      console.log(e)
       this.toAuthorize = e
       this.show.agree = false
       this.show.disagree = false

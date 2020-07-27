@@ -36,7 +36,7 @@ const responseHandlers = {
       return true
     }
     else if (url.includes('/users/password/by-token')) {
-      tip('密码重置成功，请登录狱务通系统！', 'success')
+      tip('密码重置成功，请登录国科服务系统！', 'success')
       return true
     }
   },

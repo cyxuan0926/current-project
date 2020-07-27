@@ -768,7 +768,6 @@ export default {
     handleAuthorization(e) {
       let params={meetingId:e.id}
       http.getApprovalImageUrl(params).then(res => {
-        console.log(res)
        this.toShow.approvalImageUrl=res.approvalImageUrl
         this.toAuthorize = e
         this.show.agree = false
@@ -909,7 +908,6 @@ export default {
         }
         else params.remarks = this.remarks
         if (params.remarks){
-          console.log(params)
           this.buttonLoading = true
           this.authorizeMeeting(params).then(res => {
             this.buttonLoading = false
