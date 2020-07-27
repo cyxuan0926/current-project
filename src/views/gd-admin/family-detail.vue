@@ -74,7 +74,7 @@
               </el-form-item>
               <el-form-item label="申请状态:">
               <span v-if="toShow.status=='PENDING'">
-                待审核
+                未授权
               </span>
                 <span v-if="toShow.status=='CANCELED'">
                 已取消

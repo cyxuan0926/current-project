@@ -269,7 +269,12 @@ export default {
             title: {
               text: '通话申请次数'
             },
-            tooltip: {},
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+              }
+            },
             xAxis: {
               data: this.barXAxisData,
               axisLine: {
