@@ -21,7 +21,7 @@
           <!--<span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>-->
         <!--</template>-->
         <template #meetingTime="{ row }">
-          <span >{{ row.applicationDate }}</span>
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
         <template
           slot-scope="scope"
@@ -38,78 +38,32 @@
       ref="pagination"
       :total="total"
       @onPageChange="getDatas"/>
-    <el-dialog
-      :visible.sync="show.detail"
-      title="查看详情"
-      width="630px"
+      <el-dialog
+      :visible.sync="toShow.id ? true : false"
+      :title="'家属：' + toShow.name"
+      width="530px"
       class="authorize-dialog"
       @close="onCloseShow">
-      <div
+      <family-to-show
         :elItems="familyShows"
         :showData="toShow">
-        <el-form  label-width="120px">
-          <div style="display: flex">
-            <div  style="flex: 1">
-              <el-form-item label="监狱名称:">
-                {{toShow.jailName}}
-              </el-form-item>
-              <el-form-item label="罪犯编号:">
-                {{toShow.prisonerNumber}}
-              </el-form-item>
-              <el-form-item label="申请时间:">
-                {{toShow.createdAt}}
-              </el-form-item>
-              <el-form-item label="申请通话时间:">
-                {{toShow.applicationDate}}
-              </el-form-item>
-            </div>
-            <div style="flex: 1">
-              <el-form-item label="家属姓名:">
-                {{toShow.name}}
-              </el-form-item>
-              <el-form-item label="犯罪姓名:">
-                {{toShow.prisonerName}}
-              </el-form-item>
-              <el-form-item label="申请状态:">
-              <span v-if="toShow.status=='PENDING'">
-                未授权
-              </span>
-                <span v-if="toShow.status=='CANCELED'">
-                已取消
-              </span>
-                <span v-if="toShow.status=='DENIED'">
-                已拒绝
-              </span>
-                <span v-if="toShow.status=='EXPIRED'">
-                已过期
-              </span>
-                <span v-if="toShow.status=='FINISHED'">
-                已完成
-              </span>
-                <span v-if="toShow.status=='MEETING_ON'">
-                通话中
-              </span>
-                <span v-if="toShow.status=='PASSED'">
-                已通过
-              </span>
-              </el-form-item>
-              <el-form-item label="监区:">
-                {{toShow.prisonArea}}
-              </el-form-item>
-            </div>
-          </div>
-        </el-form>
-      </div>
+        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
+        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
+        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
+      </family-to-show>
     </el-dialog>
   </el-row>
 </template>
 <script>
 
 import { mapActions, mapState } from 'vuex'
+
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
 export default {
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator, registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
     const freeMeetingsOptions = [
@@ -194,6 +148,7 @@ export default {
         {
           label: '家属',
           prop: 'names',
+          showOverflowTooltip: true
           // minWidth: '30'
         },
         {
@@ -285,17 +240,14 @@ export default {
         ], params = { meetingId: e.id}
       this.getMeettingsDetail(params).then(res => {
         if (!res) return
-        //this.toShow = Object.assign({}, res)
-        this.toShow=e
-        this.show.detail=true
+        this.toShow = Object.assign({}, res)
         this.familyShows = this.toShow.status !== 'DENIED'
           ? constFamilyShows.slice(0, constFamilyShows.length - 1)
           : constFamilyShows
       })
     },
     onCloseShow() {
-      this.show.detail=false
-      if (this.meetingRefresh) this.getDatas('onCloseShow')
+      this.toShow.id= ''
     },
     currentDate(type) {
             var now = new Date();
@@ -372,5 +324,9 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
+.flex-dialog {
+  display: flex;
+  flex-wrap: wrap;
+}
 </style>
