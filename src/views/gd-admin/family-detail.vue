@@ -38,68 +38,83 @@
       ref="pagination"
       :total="total"
       @onPageChange="getDatas"/>
+    <!--<el-dialog-->
+      <!--:visible.sync="show.detail"-->
+      <!--title="查看详情"-->
+      <!--width="630px"-->
+      <!--class="authorize-dialog"-->
+      <!--@close="onCloseShow">-->
+      <!--<div-->
+        <!--:elItems="familyShows"-->
+        <!--:showData="toShow">-->
+        <!--<el-form  label-width="120px">-->
+          <!--<div style="display: flex">-->
+            <!--<div  style="flex: 1">-->
+              <!--<el-form-item label="监狱名称:">-->
+                <!--{{toShow.jailName}}-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="罪犯编号:">-->
+                <!--{{toShow.prisonerNumber}}-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="申请时间:">-->
+                <!--{{toShow.createdAt}}-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="申请通话时间:">-->
+                <!--{{toShow.applicationDate}}-->
+              <!--</el-form-item>-->
+            <!--</div>-->
+            <!--<div style="flex: 1">-->
+              <!--<el-form-item label="家属姓名:">-->
+                <!--{{toShow.name}}-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="犯罪姓名:">-->
+                <!--{{toShow.prisonerName}}-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="申请状态:">-->
+              <!--<span v-if="toShow.status=='PENDING'">-->
+                <!--未授权-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='CANCELED'">-->
+                <!--已取消-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='DENIED'">-->
+                <!--已拒绝-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='EXPIRED'">-->
+                <!--已过期-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='FINISHED'">-->
+                <!--已完成-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='MEETING_ON'">-->
+                <!--通话中-->
+              <!--</span>-->
+                <!--<span v-if="toShow.status=='PASSED'">-->
+                <!--已通过-->
+              <!--</span>-->
+              <!--</el-form-item>-->
+              <!--<el-form-item label="监区:">-->
+                <!--{{toShow.prisonArea}}-->
+              <!--</el-form-item>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</el-form>-->
+      <!--</div>-->
+    <!--</el-dialog>-->
+
     <el-dialog
-      :visible.sync="show.detail"
-      title="查看详情"
-      width="630px"
+      :visible.sync="toShow.id ? true : false"
+      :title="'家属：' + toShow.name"
+      width="530px"
       class="authorize-dialog"
       @close="onCloseShow">
-      <div
+      <family-to-show
         :elItems="familyShows"
         :showData="toShow">
-        <el-form  label-width="120px">
-          <div style="display: flex">
-            <div  style="flex: 1">
-              <el-form-item label="监狱名称:">
-                {{toShow.jailName}}
-              </el-form-item>
-              <el-form-item label="罪犯编号:">
-                {{toShow.prisonerNumber}}
-              </el-form-item>
-              <el-form-item label="申请时间:">
-                {{toShow.createdAt}}
-              </el-form-item>
-              <el-form-item label="申请通话时间:">
-                {{toShow.applicationDate}}
-              </el-form-item>
-            </div>
-            <div style="flex: 1">
-              <el-form-item label="家属姓名:">
-                {{toShow.name}}
-              </el-form-item>
-              <el-form-item label="犯罪姓名:">
-                {{toShow.prisonerName}}
-              </el-form-item>
-              <el-form-item label="申请状态:">
-              <span v-if="toShow.status=='PENDING'">
-                未授权
-              </span>
-                <span v-if="toShow.status=='CANCELED'">
-                已取消
-              </span>
-                <span v-if="toShow.status=='DENIED'">
-                已拒绝
-              </span>
-                <span v-if="toShow.status=='EXPIRED'">
-                已过期
-              </span>
-                <span v-if="toShow.status=='FINISHED'">
-                已完成
-              </span>
-                <span v-if="toShow.status=='MEETING_ON'">
-                通话中
-              </span>
-                <span v-if="toShow.status=='PASSED'">
-                已通过
-              </span>
-              </el-form-item>
-              <el-form-item label="监区:">
-                {{toShow.prisonArea}}
-              </el-form-item>
-            </div>
-          </div>
-        </el-form>
-      </div>
+        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
+        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
+        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
+      </family-to-show>
     </el-dialog>
   </el-row>
 </template>
@@ -107,9 +122,10 @@
 
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 export default {
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
     const freeMeetingsOptions = [
@@ -284,16 +300,14 @@ export default {
         ], params = { meetingId: e.id}
       this.getMeettingsDetail(params).then(res => {
         if (!res) return
-        //this.toShow = Object.assign({}, res)
-        this.toShow=e
-        this.show.detail=true
+        this.toShow = Object.assign({}, res)
         this.familyShows = this.toShow.status !== 'DENIED'
           ? constFamilyShows.slice(0, constFamilyShows.length - 1)
           : constFamilyShows
       })
     },
     onCloseShow() {
-      this.show.detail=false
+      this.toShow.id = ''
       if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
     currentDate(type) {
@@ -371,5 +385,51 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+
+<style type="text/stylus" lang="stylus" scoped>
+  .cell img
+    width: 126.8px;
+    cursor: pointer;
+  .button-detail
+    display: block;
+    margin-left: 0;
+    width: 56px;
+  .flex-dialog
+    display: flex;
+    flex-wrap: wrap;
+    >>> label
+      display: inline-block;
+      width: 90px;
+      text-align: right;
+  .withdraw-box
+    margin-bottom: 20px;
+  .withdraw-form
+    >>> .button-box
+      padding-bottom: 0px
+  .img-box
+    display: flex;
+    flex-direction: column !important;
+    .img-items
+      padding-top: 10px;
+      .el-image
+        width: 32%;
+        height: 110px;
+        margin-bottom: 5px;
+        >>> img
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+  .el-image.relation_img
+    width: 24% !important;
+  .family-dialog
+    >>> .el-dialog__body
+      padding: 10px 20px !important;
+    >>> .el-dialog__header
+      border-bottom: 1px solid #f4f4f4 !important;
+  .button-box
+    >>> .el-button
+      width: 24% !important;
+      &:first-of-type
+        margin-left: 0px !important;
 </style>
+
