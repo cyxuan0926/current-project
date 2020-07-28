@@ -300,10 +300,10 @@ export default {
               text: '通话申请次数'
             },
             tooltip: {
-              trigger: 'axis',
-              axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
-              }
+             // trigger: 'axis',
+              // axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+              //   type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+              // }
             },
             xAxis: {
               data: this.barXAxisData,
@@ -355,7 +355,6 @@ export default {
               },
             },
             legend: {
-              padding: [0, 150, 0, 0],
               orient: 'vertical',
               selectedMode: true,
               align: 'right',
