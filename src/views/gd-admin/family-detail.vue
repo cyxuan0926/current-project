@@ -17,13 +17,13 @@
         :cols="tableCols"
         @sort-change="sortChange"
         class="mini-td-padding">
-        <template #rank="{ row, $index }">
-          <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
-        </template>
+        <!--<template #rank="{ row, $index }">-->
+          <!--<span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>-->
+        <!--</template>-->
         <template
           slot-scope="scope"
-          slot="createdAt">
-          <span >{{scope.row.createdAt }}</span>
+          slot="meetingTime">
+          <span >{{ scope.row.meetingTime || scope.row.createdAt }}123</span>
         </template>
         <template
           slot-scope="scope"
@@ -92,7 +92,7 @@
                 通话中
               </span>
                 <span v-if="toShow.status=='PASSED'">
-                审核通过
+                已通过
               </span>
               </el-form-item>
               <el-form-item label="监区:">
@@ -178,12 +178,12 @@ export default {
           label: '申请时间',
           prop: 'createdAt',
           sortable: 'custom',
-          minWidth: '30'
+          minWidth: '40'
         },
         {
           label: '申请通话时间',
           prop: 'meetingTime',
-          minWidth: '60'
+          minWidth: '40'
         },
         {
           label: '罪犯姓名',
@@ -325,11 +325,11 @@ export default {
       this.filter.orderField = 'createTime'
       if ( !this.filter.createStartDate ) {
         this.filter.createStartDate = this.currentDate(true)
-        this.searchItems.time.startPlaceholder=this.currentDate(true)
+        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
       }
       if ( !this.filter.createEndDate ) {
         this.filter.createEndDate = this.currentDate(false)
-        this.searchItems.time.endPlaceholder=this.currentDate(false)
+        //this.searchItems.time.=this.currentDate(false)
       }
       const total = await this.getFamilyDetail({
         ...this.filter,

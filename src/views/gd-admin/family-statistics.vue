@@ -32,7 +32,7 @@
       <m-table-new
         :data="tableDatas"
         :cols="tableCols"
-        class="mini-td-padding">
+        class="mini-td-padding gd-placehould">
         <template #rank="{ row, $index }">
           <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
         </template>
@@ -224,13 +224,12 @@ export default {
     async getDatas() {
       const { page, rows } = this.pagination
       this.filter.provincesId=`20`
-      if ( !this.filter.createStartDate ) {
-        this.filter.createStartDate = this.currentDate(true)
-        this.searchItems.time.startPlaceholder=this.currentDate(true)
+      if ( !this.filter.startDate ) {
+        this.filter.startDate = this.currentDate(true)
+        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
       }
-      if ( !this.filter.createEndDate ) {
-        this.filter.createEndDate = this.currentDate(false)
-        this.searchItems.time.endPlaceholder=this.currentDate(false)
+      if ( !this.filter.endDate ) {
+        this.filter.endDate = this.currentDate(false)
       }
       const { data}  = await http.getFamilyStatistics({
         ...this.filter,
@@ -333,31 +332,31 @@ export default {
               itemHeight: 14,
               formatter: (name) => {
                 let val = ""
-                if (name == `审核通过后取消次数`) {
+                if (name == `审核通过后取消`) {
                   this.pieArr.forEach((item, index) => {
-                    if (item.name == '审核通过后取消次数') {
+                    if (item.name == '审核通过后取消') {
                     } else {
                       val = name + `                 ${this.pieArr[1].vals}` + `         总数${this.pieArr[0].vals}（次）`
                     }
                   })
                 } else {
                   this.pieArr.forEach((item, index) => {
-                    if (name == `未授权次数(未审核数)`) {
+                    if (name == `未授权(未审核数)`) {
                       val = this.pieArr[1].name + '               ' + this.pieArr[1].vals
                     }
-                    if (name == `已通过审核待见通话次数`) {
+                    if (name == `已通过审核待见通话`) {
                       val = this.pieArr[2].name + `          ${this.pieArr[2].vals}`
                     }
-                    if (name == `审核被拒绝次数`) {
+                    if (name == `审核被拒绝`) {
                       val = `${this.pieArr[3].name}                   ${this.pieArr[3].vals}`
                     }
-                    if (name == `审核通过未通话过期次数`) {
+                    if (name == `审核通过未通话过期`) {
                       val = `${this.pieArr[5].name}        ${this.pieArr[5].vals}`
                     }
-                    if(name=="狱警未审核过期次数"){
+                    if(name=="狱警未审核过期"){
                       val = this.pieArr[4].name + `              ${this.pieArr[4].vals}`
                     }
-                    if (name == `通话完成次数`) {
+                    if (name == `通话完成`) {
                     val = this.pieArr[6].name + "                       " + this.pieArr[6].vals
                   }
                 }
@@ -399,31 +398,31 @@ export default {
               data: this.pieData,
               data:[
                 {
-                  name: '未授权次数(未审核数)',
+                  name: '未授权(未审核数)',
                   value: this.meetingStatisticTotalItem['pend']
                 },
                 {
-                  name: '已通过审核待见通话次数',
+                  name: '已通过审核待见通话',
                   value: this.meetingStatisticTotalItem['passed']
                 },
                 {
-                  name: '审核被拒绝次数',
+                  name: '审核被拒绝',
                   value: this.meetingStatisticTotalItem['denied']
                 },
                 {
-                  name: '狱警未审核过期次数',
+                  name: '狱警未审核过期',
                   value: this.meetingStatisticTotalItem['noAuthToExpired']
                 },
                 {
-                  name: '审核通过未通话过期次数',
+                  name: '审核通过未通话过期',
                   value: this.meetingStatisticTotalItem['authedToExpired']
                 },
                 {
-                  name: '通话完成次数',
+                  name: '通话完成',
                   value: this.meetingStatisticTotalItem['finished']
                 },
                 {
-                  name: '审核通过后取消次数',
+                  name: '审核通过后取消',
                   value: this.meetingStatisticTotalItem['canceled']
                 }
               ],
@@ -459,5 +458,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
+  　input::-webkit-input-placeholder{
+    　　　　color:red;
+    　　　　font-size:16px;
+    }
+
+
 </style>
