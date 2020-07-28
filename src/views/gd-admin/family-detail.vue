@@ -158,26 +158,25 @@ export default {
         {
           label: '监狱名称',
           prop: 'jailName',
-          // minWidth: '15%',
+          minWidth: '15%',
           showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          // minWidth: '20',
+          minWidth: '20',
           showOverflowTooltip: true
         },
         {
           label: '监区',
           prop: 'prisonArea',
-          // minWidth: '15'
+          minWidth: '15'
         },
         {
           label: '申请时间',
           prop: 'createdAt',
           sortable: 'custom',
-          minWidth: 110
-          // minWidth: '40'
+          minWidth: '40'
         },
         {
           label: '申请通话时间',

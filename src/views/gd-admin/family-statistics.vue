@@ -27,6 +27,7 @@
     <m-charts
       :visible="!!totalCount"
       :options="chartOptions"
+      :cnt="cnt"
       :loading="loading"/>
     <el-col :span="24">
       <m-table-new
@@ -68,6 +69,7 @@ export default {
       totalCount: 0,
       chartTypes,
       chartType: chartTypes.BAR,
+      cnt:null,
       loading: true,
       meetingStatistics:[],
       meetingStatisticTotalItem:{},
@@ -292,15 +294,16 @@ export default {
       let options
       switch (this.chartType) {
         case 'bar':
+          this.cnt=0
           options = Object.assign({}, {
             title: {
               text: '通话申请次数'
             },
             tooltip: {
-              trigger: 'axis',
-              axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
-              }
+             // trigger: 'axis',
+              // axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+              //   type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+              // }
             },
             xAxis: {
               data: this.barXAxisData,
@@ -341,6 +344,7 @@ export default {
           })
           break
         case 'pie':
+          this.cnt=this.meetingStatisticTotalItem.cnt;
           options = Object.assign({}, {
             title: {
               text: '通话总量分析'
@@ -351,12 +355,13 @@ export default {
               },
             },
             legend: {
-              padding: [0, 150, 0, 0],
               orient: 'vertical',
               selectedMode: true,
-              align: 'left',
-              left: 'right',
-              top: '16%',
+              align: 'right',
+              width:400,
+              height:"800px",
+              right:50,
+              top: '50',
               itemHeight: 14,
               formatter: (name) => {
                 let val = ""
@@ -364,28 +369,28 @@ export default {
                   this.pieArr.forEach((item, index) => {
                     if (item.name == '审核通过后取消') {
                     } else {
-                      val = name + `                 ${this.pieArr[1].vals}` + `         总数 ${this.pieArr[0].vals}（次）`
+                      val = name
                     }
                   })
                 } else {
                   this.pieArr.forEach((item, index) => {
                     if (name == `未授权(未审核数)`) {
-                      val = this.pieArr[1].name + '               ' + this.pieArr[1].vals
+                      val = this.pieArr[1].name
                     }
                     if (name == `已通过审核待见通话`) {
-                      val = this.pieArr[2].name + `          ${this.pieArr[2].vals}`
+                      val = this.pieArr[2].name
                     }
                     if (name == `审核被拒绝`) {
-                      val = `${this.pieArr[3].name}                   ${this.pieArr[3].vals}`
+                      val = this.pieArr[3].name
                     }
                     if (name == `审核通过未通话过期`) {
-                      val = `${this.pieArr[5].name}        ${this.pieArr[5].vals}`
+                      val = this.pieArr[5].name
                     }
                     if(name=="狱警未审核过期"){
-                      val = this.pieArr[4].name + `              ${this.pieArr[4].vals}`
+                      val = this.pieArr[4].name
                     }
                     if (name == `通话完成`) {
-                    val = this.pieArr[6].name + "                       " + this.pieArr[6].vals
+                    val = this.pieArr[6].name
                   }
                 }
               )
@@ -487,10 +492,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-  　input::-webkit-input-placeholder{
-    　　　　color:red;
-    　　　　font-size:16px;
-    }
-
-
 </style>
