@@ -144,7 +144,7 @@ export default {
         {
           label: '家属',
           prop: 'names',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
           minWidth: '30'
         },
         {
