@@ -38,7 +38,7 @@
       ref="pagination"
       :total="total"
       @onPageChange="getDatas"/>
-      <el-dialog
+    <el-dialog
       :visible.sync="toShow.id ? true : false"
       :title="'家属：' + toShow.name"
       width="530px"
@@ -63,7 +63,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 export default {
-  mixins: [prisonFilterCreator, registrationDialogCreator],
+  mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
     const freeMeetingsOptions = [
@@ -131,7 +131,6 @@ export default {
           prop: 'createdAt',
           sortable: 'custom',
           minWidth: 110
-          // minWidth: '40'
         },
         {
           label: '申请通话时间',
@@ -330,3 +329,4 @@ export default {
   flex-wrap: wrap;
 }
 </style>
+
