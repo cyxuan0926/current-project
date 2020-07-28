@@ -1,11 +1,15 @@
 <template>
-  <div
-    class="m-charts"
-    v-show="visible"
-    :id="id"
-    :style="{ width, height }"
-  >
+  <div style="position: relative">
+    <div
+      class="m-charts"
+      v-show="visible"
+      :id="id"
+      :style="{ width, height }"
+    >
+
   </div>
+  </div>
+
 </template>
 
 <script>
@@ -95,7 +99,6 @@ export default {
       this.instance.setOption({ legend:  {selected}})
     })
     var option =  this.instance.getOption()
-    console.log(option )
   },
   beforeDestroy() {
     this.instance.dispose()

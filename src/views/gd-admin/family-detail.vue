@@ -17,13 +17,11 @@
         :cols="tableCols"
         @sort-change="sortChange"
         class="mini-td-padding">
-        <template #rank="{ row, $index }">
-          <span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>
-        </template>
-        <template
-          slot-scope="scope"
-          slot="createdAt">
-          <span >{{scope.row.createdAt }}</span>
+        <!--<template #rank="{ row, $index }">-->
+          <!--<span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>-->
+        <!--</template>-->
+        <template #meetingTime="{ row }">
+          <span >{{ row.applicationDate }}</span>
         </template>
         <template
           slot-scope="scope"
@@ -92,7 +90,7 @@
                 通话中
               </span>
                 <span v-if="toShow.status=='PASSED'">
-                审核通过
+                已通过
               </span>
               </el-form-item>
               <el-form-item label="监区:">
@@ -160,49 +158,52 @@ export default {
         {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '15%',
+          // minWidth: '15%',
           showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          minWidth: '20',
+          // minWidth: '20',
           showOverflowTooltip: true
         },
         {
           label: '监区',
           prop: 'prisonArea',
-          minWidth: '15'
+          // minWidth: '15'
         },
         {
           label: '申请时间',
           prop: 'createdAt',
           sortable: 'custom',
-          minWidth: '30'
+          minWidth: 110
+          // minWidth: '40'
         },
         {
           label: '申请通话时间',
           prop: 'meetingTime',
-          minWidth: '60'
+          slotName: 'meetingTime',
+          minWidth: 120
+          // minWidth: '40'
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          minWidth: '30'
+          // minWidth: '30'
         },
         {
           label: '家属',
           prop: 'names',
-          minWidth: '30'
+          // minWidth: '30'
         },
         {
           label: '申请状态',
           prop: 'statusStr',
-          minWidth: '20'
+          // minWidth: '20'
         }, {
           label: '操作',
           slotName: 'operate',
-          minWidth: 40,
+          // minWidth: 40,
           align: 'center'
         }
 
@@ -325,11 +326,11 @@ export default {
       this.filter.orderField = 'createTime'
       if ( !this.filter.createStartDate ) {
         this.filter.createStartDate = this.currentDate(true)
-        this.searchItems.time.startPlaceholder=this.currentDate(true)
+        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
       }
       if ( !this.filter.createEndDate ) {
         this.filter.createEndDate = this.currentDate(false)
-        this.searchItems.time.endPlaceholder=this.currentDate(false)
+        //this.searchItems.time.=this.currentDate(false)
       }
       const total = await this.getFamilyDetail({
         ...this.filter,

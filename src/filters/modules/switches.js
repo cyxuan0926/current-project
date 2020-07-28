@@ -12,7 +12,7 @@ let switches = {
     { value: 'f', label: '女' }
   ],
   role: [
-    { role: '0', label: '狱务通管理员' },
+    { role: '0', label: '国科服务管理员' },
     { role: '1', label: '审核人员' },
     { role: '2', label: '商品用户' },
     { role: '3', label: '信息管理人员' },

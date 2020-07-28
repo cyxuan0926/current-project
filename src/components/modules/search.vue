@@ -58,6 +58,7 @@
           v-if="item.type === 'datetimerange' && !item.miss"
           v-model="item.value"
           type="datetimerange"
+          unlink-panels
           :start-placeholder=" item.startPlaceholder || '开始时间' "
           :end-placeholder=" item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd HH:mm:ss"
