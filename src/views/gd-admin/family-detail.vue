@@ -57,9 +57,7 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
-
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 export default {
@@ -112,52 +110,51 @@ export default {
         {
           label: '监狱名称',
           prop: 'jailName',
-          // minWidth: '15%',
+          minWidth: '15%',
           showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          // minWidth: '20',
+          minWidth: '20',
           showOverflowTooltip: true
         },
         {
           label: '监区',
           prop: 'prisonArea',
-          // minWidth: '15'
+          minWidth: '15'
         },
         {
           label: '申请时间',
           prop: 'createdAt',
           sortable: 'custom',
-          minWidth: 110
+          minWidth: '40'
         },
         {
           label: '申请通话时间',
           prop: 'meetingTime',
           slotName: 'meetingTime',
-          minWidth: 120
-          // minWidth: '40'
+           minWidth: '40'
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          // minWidth: '30'
+          minWidth: '30'
         },
         {
           label: '家属',
           prop: 'names',
-          showOverflowTooltip: true
-          // minWidth: '30'
+          showOverflowTooltip: true,
+          minWidth: '30'
         },
         {
           label: '申请状态',
           prop: 'statusStr',
-          // minWidth: '20'
+           minWidth: '20'
         }, {
           label: '操作',
           slotName: 'operate',
-          // minWidth: 40,
+           minWidth: 40,
           align: 'center'
         }
 
@@ -246,7 +243,8 @@ export default {
       })
     },
     onCloseShow() {
-      this.toShow.id= ''
+      this.toShow.id = ''
+      if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
     currentDate(type) {
             var now = new Date();

@@ -284,7 +284,7 @@ export default {
       arr.push( {name:'未授权次数(未审核数)' ,vals:this.meetingStatisticTotalItem.pend} )
       arr.push( {name:'已通过审核待见通话次数' ,vals:this.meetingStatisticTotalItem.passed} )
       arr.push( {name:'审核被拒绝次数' ,vals:this.meetingStatisticTotalItem.denied} )
-      arr.push( {name:'狱警未审核过期次数' ,vals:this.meetingStatisticTotalItem.noAuthToExpired} )
+      arr.push( {name:'未审核过期次数' ,vals:this.meetingStatisticTotalItem.noAuthToExpired} )
       arr.push( {name:'审核通过未通话过期次数' ,vals:this.meetingStatisticTotalItem.authedToExpired} )
       arr.push( {name:'通话完成次数' ,vals:this.meetingStatisticTotalItem.finished} )
       arr.push( {name:'审核通过后取消次数' ,vals:this.meetingStatisticTotalItem.canceled} )
@@ -355,9 +355,10 @@ export default {
               },
             },
             legend: {
+              padding:[0,150,0,0],
               orient: 'vertical',
               selectedMode: true,
-              align: 'right',
+              align: 'left',
               width:400,
               height:"800px",
               right:50,
@@ -386,7 +387,7 @@ export default {
                     if (name == `审核通过未通话过期`) {
                       val = this.pieArr[5].name
                     }
-                    if(name=="狱警未审核过期"){
+                    if(name=="未审核过期次数"){
                       val = this.pieArr[4].name
                     }
                     if (name == `通话完成`) {
@@ -443,7 +444,7 @@ export default {
                   value: this.meetingStatisticTotalItem['denied']
                 },
                 {
-                  name: '狱警未审核过期',
+                  name: '未审核过期次数',
                   value: this.meetingStatisticTotalItem['noAuthToExpired']
                 },
                 {
