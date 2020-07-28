@@ -11,8 +11,8 @@
 
     <ul>
 
-      <li v-for="(item,index) in pienum" :key="index" > (次)<span>&nbsp;&nbsp;{{item.value}}</span>  </li>
-      <li style="font-size:14px;color: #0f0f0f;"> 次数合计 <span>&nbsp;&nbsp;{{  cnt }}</span>（次） </li>
+      <li v-for="(item,index) in pienum" :key="index" > <span>&nbsp;&nbsp;{{item.value}}</span>(次)  </li>
+      <li style="font-size:14px;color: #0f0f0f;"> 总次数合计 <span>&nbsp;&nbsp;{{  cnt }}</span>（次） </li>
 
     </ul>
     </div>
@@ -146,11 +146,12 @@ export default {
     position: absolute;
     width: 177px;
     height: 157px;
-    right: 102px;
-    top: 52px;
+    right: 145px;
+    top: 47px;
+    text-align: right;
     font-size: 12px;
     z-index: 10;
-    pointer-events: none;
+    pointer-events:none;
   }
   li{
     height: 24px;

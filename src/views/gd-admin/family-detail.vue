@@ -198,27 +198,26 @@ export default {
           label: '申请通话时间',
           prop: 'meetingTime',
           slotName: 'meetingTime',
-          minWidth: 120
-          // minWidth: '40'
+           minWidth: '40'
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          // minWidth: '30'
+          minWidth: '30'
         },
         {
           label: '家属',
           prop: 'names',
-          // minWidth: '30'
+          minWidth: '30'
         },
         {
           label: '申请状态',
           prop: 'statusStr',
-          // minWidth: '20'
+           minWidth: '20'
         }, {
           label: '操作',
           slotName: 'operate',
-          // minWidth: 40,
+           minWidth: 40,
           align: 'center'
         }
 
