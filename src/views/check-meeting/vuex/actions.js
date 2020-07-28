@@ -124,9 +124,33 @@ export default {
   async getMeetingStatics({ commit }, params) {
     try {
       const res = await http.getMeetingStatics(params)
+
       const { item, list, totalCount } = res.data
-      commit('setMeetingStatistics', list || [])
-      commit('setMeetingStatisticTotalItem', item || {})
+
+      const percentProps = [
+        'noAuthToExpiredPercentShowValue',
+        'finishedPercentShowValue',
+        'deniedPercentShowValue',
+        'authedToExpiredPercentShowValue'
+      ]
+
+      const data = [[item], list]
+
+      const usefullData = data.map(element => {
+        return (
+          element.map(subItem => {
+            percentProps.forEach(prop => {
+              subItem[prop] = `${ (+(subItem[prop].replace('%', ''))) }%`
+            })
+            return subItem
+          })
+        )
+      })
+
+      commit('setMeetingStatistics', usefullData[1] || [])
+
+      commit('setMeetingStatisticTotalItem', ...usefullData[0] || {})
+
       return totalCount || 0
     }
     catch (err) {

@@ -51,6 +51,8 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
+import Moment from 'moment'
+
 const chartTypes = {
   PIE: 'pie',
   BAR: 'bar',
@@ -59,6 +61,9 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
+    const endDate = Moment().format('YYYY-MM-DD')
+
+    const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
       totalCount: 0,
       chartTypes,
@@ -67,12 +72,18 @@ export default {
       meetingStatistics:[],
       meetingStatisticTotalItem:{},
       filter: {},
+      filterInit: {
+        startDate,
+        endDate
+      },
       searchItems: {
         time: {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
-          clearable:"true"
+          clearable:"true",
+          value: [startDate, endDate],
+          unlinkPanels: true
         }
       },
       tableCols: [
@@ -198,21 +209,21 @@ export default {
       this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
       this.loading = false
     },
-    currentDate(type) {
-      var now = new Date();
-      if(type){
-        now.setTime(now.getTime()-30*24*60*60*1000);
-      }
-      var year = now.getFullYear(); //得到年份
-      var month = now.getMonth();//得到月份
-      var date = now.getDate();//得到日期
-      month = month + 1;
-      if (month < 10) month = "0" + month;
-      if (date < 10) date = "0" + date;
-      var time = "";
-      return  time = year + "-" + month + "-" + date
+    // currentDate(type) {
+    //   var now = new Date();
+    //   if(type){
+    //     now.setTime(now.getTime()-30*24*60*60*1000);
+    //   }
+    //   var year = now.getFullYear(); //得到年份
+    //   var month = now.getMonth();//得到月份
+    //   var date = now.getDate();//得到日期
+    //   month = month + 1;
+    //   if (month < 10) month = "0" + month;
+    //   if (date < 10) date = "0" + date;
+    //   var time = "";
+    //   return  time = year + "-" + month + "-" + date
 
-    },
+    // },
     async onSearch() {
       const { rows } = this.pagination
       this.loading = true
@@ -224,23 +235,40 @@ export default {
     async getDatas() {
       const { page, rows } = this.pagination
       this.filter.provincesId=`20`
-      if ( !this.filter.startDate ) {
-        this.filter.startDate = this.currentDate(true)
-        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
-      }
-      if ( !this.filter.endDate ) {
-        this.filter.endDate = this.currentDate(false)
-      }
-      const { data}  = await http.getFamilyStatistics({
+      // if ( !this.filter.startDate ) {
+      //   this.filter.startDate = this.currentDate(true)
+      //   this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
+      // }
+      // if ( !this.filter.endDate ) {
+      //   this.filter.endDate = this.currentDate(false)
+      // }
+      const { data }  = await http.getFamilyStatistics({
         ...this.filter,
         ...this.pagination
       })
       const { item, list, totalCount }= data
+      const dataLists = [[item], list]
+      const percentProps = [
+        'noAuthToExpiredPercentShowValue',
+        'finishedPercentShowValue',
+        'deniedPercentShowValue',
+        'authedToExpiredPercentShowValue'
+      ]
+      const usefullData = dataLists.map(element => {
+        return (
+          element.map(subItem => {
+            percentProps.forEach(prop => {
+              subItem[prop] = `${ (+(subItem[prop].replace('%', ''))) }%`
+            })
+            return subItem
+          })
+        )
+      })
       this.totalCount = totalCount ? totalCount + 1 : 0
-      this.meetingStatistics=list
+      this.meetingStatistics = usefullData[1] || []
       this.tableDatas = this.meetingStatistics.slice(0)
-      this.meetingStatisticTotalItem=item
-      if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
+      this.meetingStatisticTotalItem = usefullData[0]
+      if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(...this.meetingStatisticTotalItem || {})
     }
   },
   async mounted() {
