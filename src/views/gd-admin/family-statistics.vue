@@ -267,8 +267,8 @@ export default {
       this.totalCount = totalCount ? totalCount + 1 : 0
       this.meetingStatistics = usefullData[1] || []
       this.tableDatas = this.meetingStatistics.slice(0)
-      this.meetingStatisticTotalItem = usefullData[0]
-      if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(...this.meetingStatisticTotalItem || {})
+      this.meetingStatisticTotalItem = usefullData[0][0]
+      if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem || {})
     }
   },
   async mounted() {
@@ -278,7 +278,7 @@ export default {
   computed: {
     pieArr: function () {
       let arr = []
-      arr.push( {name:'总和' ,vals:this.meetingStatisticTotalItem.cnt} )
+      arr.push( {name:'总和' ,vals: this.meetingStatisticTotalItem.cnt} )
       arr.push( {name:'未授权次数(未审核数)' ,vals:this.meetingStatisticTotalItem.pend} )
       arr.push( {name:'已通过审核待见通话次数' ,vals:this.meetingStatisticTotalItem.passed} )
       arr.push( {name:'审核被拒绝次数' ,vals:this.meetingStatisticTotalItem.denied} )
@@ -364,7 +364,7 @@ export default {
                   this.pieArr.forEach((item, index) => {
                     if (item.name == '审核通过后取消') {
                     } else {
-                      val = name + `                 ${this.pieArr[1].vals}` + `         总数${this.pieArr[0].vals}（次）`
+                      val = name + `                 ${this.pieArr[1].vals}` + `         总数 ${this.pieArr[0].vals}（次）`
                     }
                   })
                 } else {
