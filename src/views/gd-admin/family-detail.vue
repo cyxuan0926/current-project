@@ -228,7 +228,7 @@ export default {
             slotName: 'status'
           },
           {
-            label: '会见时长',
+            label: '通话时长',
             slotName: 'duration'
           },
           {
