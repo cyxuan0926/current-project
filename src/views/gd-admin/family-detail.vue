@@ -23,7 +23,7 @@
         <template
           slot-scope="scope"
           slot="meetingTime">
-          <span >{{ scope.row.meetingTime || scope.row.createdAt }}123</span>
+          <span >{{ scope.row.meetingTime || scope.row.createdAt }}</span>
         </template>
         <template
           slot-scope="scope"
@@ -183,6 +183,7 @@ export default {
         {
           label: '申请通话时间',
           prop: 'meetingTime',
+          slotName:"meetingTime",
           minWidth: '40'
         },
         {

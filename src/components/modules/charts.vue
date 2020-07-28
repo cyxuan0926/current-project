@@ -6,8 +6,16 @@
       :id="id"
       :style="{ width, height }"
     >
-
   </div>
+    <div v-if="cnt" class="legend" >
+
+    <ul>
+
+      <li v-for="(item,index) in pienum" :key="index" > (次)<span>&nbsp;&nbsp;{{item.value}}</span>  </li>
+      <li style="font-size:14px;color: #0f0f0f;"> 次数合计 <span>&nbsp;&nbsp;{{  cnt }}</span>（次） </li>
+
+    </ul>
+    </div>
   </div>
 
 </template>
@@ -29,7 +37,10 @@ export default {
       type: Boolean,
       default: false
     },
-
+    cnt:{
+      type:Number,
+      default:0
+    },
     options: {
       type: Object,
       default: () => ({})
@@ -57,9 +68,14 @@ export default {
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed
-    })
+    }),
+    pienum(){
+      console.log(this.options.series)
+      let arr=this.options.series[0].data
+      console.log(arr)
+      return arr
+    },
   },
-
   watch: {
     loading(val) {
       if (val) {
@@ -99,13 +115,13 @@ export default {
       this.instance.setOption({ legend:  {selected}})
     })
     var option =  this.instance.getOption()
-    console.log(option )
   },
   beforeDestroy() {
     this.instance.dispose()
     this.instance = null
     window.removeEventListener('resize', this.resizeHandler)
   },
+
 
   methods: {
     init() {
@@ -119,10 +135,27 @@ export default {
 
       window.addEventListener('resize', this.resizeHandler)
     },
-
     resize() {
       this.instance && this.instance.resize()
     }
   }
 }
 </script>
+<style scoped>
+  .legend{
+    position: absolute;
+    width: 177px;
+    height: 157px;
+    right: 102px;
+    top: 52px;
+    font-size: 12px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  li{
+    height: 24px;
+  }
+  span{
+    color: rgb(0, 82, 204);
+  }
+</style>
