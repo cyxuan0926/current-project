@@ -38,45 +38,40 @@
             <el-button class="btn-fullscreen" type="primary" icon="el-icon-full-screen" @click="handleToggle" v-if="$fullscreen.support && !isFullscreen">全屏展示</el-button>
             <div class="gd-home-map-loading" v-loading="isDrawMap"></div>
           </section>
+          <section class="gd-home-statistics">
+            <m-chart-block>
+              <template v-slot:content>
+                <h3 class="gd-home-block-title"><span>广东省亲情电话统计曲线</span></h3>
+                <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
+              </template>
+            </m-chart-block>
+          </section>  
         </section>
-        <section class="gd-home__right"> 
-            <section class="gd-home-top8-layout">
-                <m-chart-block>
-                    <template v-slot:content>
-                        <div class="gd-home-top8">
-                            <el-date-picker
-                                class="gd-home-top8-datepicker"
-                                v-model="datePickerVal"
-                                type="daterange"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                :clearable="false"
-                                :picker-options="pickerOptions"
-                                @change="handleDateChange"
-                                value-format="yyyy-MM-dd">
-                            </el-date-picker>
-                            <div class="gd-home-block-title-layout">
-                                <h3 class="gd-home-block-title" :class="{ 'selected' : barTabSelected == 0 }" @click="handleTabBarSelected(0)"><span>申请通话次数TOP8</span></h3>
-                                <h3 class="gd-home-block-title" :class="{ 'selected' : barTabSelected == 1 }" @click="handleTabBarSelected(1)"><span>完成通话次数TOP8</span></h3>
-                                <div class="gd-home-block-title-line" :class="{ 'selected' : barTabSelected == 1 }"></div>
-                            </div>
-                            
-                            <div class="gd-home-top8-block" id="top8-apply"></div>
-                            <!-- <h3 class="gd-home-block-title"><span>完成通话次数TOP8</span></h3>
-                            <div class="gd-home-top8-block" id="top8-complete"></div> -->
-                        </div>
-                    </template>
-                </m-chart-block>
-            </section>
-            <section class="gd-home-statistics">
-                <m-chart-block>
-                    <template v-slot:content>
-                        <h3 class="gd-home-block-title"><span>广东省亲情电话统计曲线</span></h3>
-                        <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
-                    </template>
-                </m-chart-block>
-            </section> 
+        <section class="gd-home__right">
+          <section>
+            <m-chart-block :style="{left: '30px', right: '30px', top: '16px', bottom: '16px'}">
+              <template v-slot:content>
+                <div class="gd-home-top8">
+                  <el-date-picker
+                    class="gd-home-top8-datepicker"
+                    v-model="datePickerVal"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :clearable="false"
+                    :picker-options="pickerOptions"
+                    @change="drawTop8"
+                    value-format="yyyy-MM-dd">
+                  </el-date-picker>
+                  <h3 class="gd-home-block-title"><span>申请通话次数TOP8</span></h3>
+                  <div class="gd-home-top8-block" id="top8-apply"></div>
+                  <h3 class="gd-home-block-title"><span>完成通话次数TOP8</span></h3>
+                  <div class="gd-home-top8-block" id="top8-complete"></div>
+                </div>
+              </template>
+            </m-chart-block>
+          </section>
         </section>
       </el-container>
     </el-container>
@@ -98,11 +93,10 @@
         mapChartOptions: {},
         mapTooltips: {},
         isShowDevice: false,
-        barTabSelected: 0,
-        barChart: null,
-        totalTop: [],
-        finishedTotalTop: [],
-        barChartOptions: {},
+        barChartApply: null,
+        barChartApplyOptions: {},
+        barChartComplete: null,
+        barChartCompleteOptions: {},
         lineChart: null,
         lineChartOptions: {},
         lineChartStatus: [
@@ -145,7 +139,7 @@
 
       setCellStyle({row}) {
         return {
-          'background-color': row.status == 'offline' ? '#999899' : (row.status == 'online' ? '#4EF901' : '#00FBFF')
+          'background-color': row.status == 'offline' ? '#eb6100' : (row.status == 'online' ? '#6CDFF5' : '#4BF26F')
         }
       },
 
@@ -196,42 +190,53 @@
         return res
       },
 
-      async handleDateChange() {
+      async drawTop8() {
         let { totalTop = [], finishedTotalTop = [] } = await http.getHometop({
-            startDate: this.datePickerVal[0],
-            endDate: this.datePickerVal[1],
-            topN: 8
+          startDate: this.datePickerVal[0],
+          endDate: this.datePickerVal[1],
+          topN: 8
         })
-        this.totalTop = totalTop.reverse()
-        this.finishedTotalTop = finishedTotalTop.reverse()
-        this.drawTop8()
-      },
+        totalTop.reverse()
+        finishedTotalTop.reverse()
 
-      handleTabBarSelected(flag) {
-          this.barTabSelected = flag;
-          this.drawTop8()
-      },
-
-      drawTop8() {
-        this.barChartOptions = getRankBarChart({
-          itemColor: new echarts.graphic.LinearGradient(
-            0, 0, 1, 1,
-            [
-              {offset: 0, color: this.barTabSelected == 0 ? '#0043F4' : '#80C654'},
-              {offset: 1, color: this.barTabSelected == 0 ? '#48AEF8' : '#B8E2C0'}
-            ]
-          ),
-          labelColor: this.barTabSelected == 0 ? '#4FA5E4' : '#B7E1BF',
-          formatter: '{c}次'
-        })
-        this.barChartOptions.yAxis.data = ( this.barTabSelected == 0 ? this.totalTop : this.finishedTotalTop ).map(t => t.jailName)
-        this.barChartOptions.series[0].data = ( this.barTabSelected == 0 ? this.totalTop : this.finishedTotalTop ).map(t => t.total)
-        this.barChart.setOption(this.barChartOptions)
+        // 申请通话次数
+        this.barChartApplyOptions.yAxis.data = totalTop.map(t => t.jailName)
+        this.barChartApplyOptions.series[0].data = totalTop.map( t => t.total )
+        this.barChartApply.setOption(this.barChartApplyOptions)
+        // 完成通话次数
+        this.barChartCompleteOptions.yAxis.data = finishedTotalTop.map(t => t.jailName)
+        this.barChartCompleteOptions.series[0].data = finishedTotalTop.map( t => t.total )
+        this.barChartComplete.setOption(this.barChartCompleteOptions)
       },
 
       initTop8() {
-        this.barChart = echarts.init(document.getElementById('top8-apply'))
-        this.handleDateChange()
+        this.barChartApply = echarts.init(document.getElementById('top8-apply'))
+        this.barChartApplyOptions = getRankBarChart({
+          itemColor: new echarts.graphic.LinearGradient(
+            0, 0, 1, 1,
+            [
+              {offset: 0, color: '#0043F4'},
+              {offset: 1, color: '#48AEF8'}
+            ]
+          ),
+          labelColor: '#4FA5E4',
+          formatter: '{c}次'
+        })
+
+        this.barChartComplete = echarts.init(document.getElementById('top8-complete'))
+        this.barChartCompleteOptions = getRankBarChart({
+          itemColor: new echarts.graphic.LinearGradient(
+            0, 0, 1, 1,
+            [
+              {offset: 0, color: '#80C654'},
+              {offset: 1, color: '#B8E2C0'}
+            ]
+          ),
+          labelColor: '#B7E1BF',
+          formatter: '{c}次'
+        })
+
+        this.drawTop8()
       },
 
       async drawLineChart() {
@@ -347,13 +352,13 @@
           if( d.status == 'offline' ) {
             offlineArr.push(Object.assign(opt, {
               itemStyle: {
-                borderColor: '#999899'
+                borderColor: '#eb6100'
               }
             }))
           }else {
             onlineArr.push(Object.assign(opt, {
               itemStyle: {
-                borderColor: '#4EF901'
+                borderColor: '#6CDFF5'
               }
             }))
           }
@@ -400,9 +405,9 @@
               symbolSize: 20,
               label: {
                 show: true,
-                color: '#154002',
+                color: '#fff',
                 position: 'top',
-                backgroundColor: '#4EF901',
+                backgroundColor: '#70186C',
                 borderRadius: 7,
                 padding: [4, 7],
                 formatter: '{b}'
@@ -425,20 +430,15 @@
                 show: true,
                 color: '#fff',
                 position: 'top',
-                backgroundColor: '#999899',
+                backgroundColor: '#eb6100',
                 borderRadius: 7,
                 padding: [4, 7],
-                formatter: '{b}',
-                shadowColor: '#003F87',
-                shadowBlur: 5,
-                shadowOffsetX: 1,
-                shadowOffsetY: 3
+                formatter: '{b}'
               },
               data: [],
               itemStyle: {
-                opacity: 1,
                 color: '#fff',
-                borderWidth: 4,
+                borderWidth: 4
               },
               zlevel: 1
             }
@@ -479,7 +479,8 @@
       handleResize() {
         this.mapChart.resize()
         this.lineChart.resize()
-        this.barChart.resize()
+        this.barChartApply.resize()
+        this.barChartComplete.resize()
       }
     },
     mounted() {
@@ -497,7 +498,8 @@
     destroyed() {
       this.mapChart = null
       this.lineChart = null
-      this.barChart = null
+      this.barChartApply = null
+      this.barChartComplete = null
       clearInterval(this.drawMapInterval)
       clearTimeout( this.drawMapTimeout )
       window.removeEventListener('resize', this.winHandleResize)
@@ -535,11 +537,12 @@
     }
 
     &__left {
-      width: 60%;
+      width: 55%;
       display: flex;
+      flex-direction: column;
 
       .gd-home-map {
-        flex: 1;
+        flex: 3;
         position: relative;
 
         &-container {
@@ -589,19 +592,12 @@
           color: #6CDFF5;
         }
       }
-    }
-
-    &__right {
-      width: 40%;
-      margin-left: -30px;
-      display: flex;
-      flex-direction: column;
 
       .gd-home-statistics {
         flex: 2;
         position: relative;
 
-        &-linechart {   
+        &-linechart {
           position: absolute;
           left: 16px;
           right: 16px;
@@ -610,56 +606,14 @@
         }
       }
 
-      .gd-home-top8-layout {
-        flex: 3;
-        position: relative;
-      }
-
     }
 
-    &-block-title-layout {
-        width: 252px;
-        display: flex;
-        margin: 0 auto;
-        position: relative;
-        margin-top: 16px;
-
-        .gd-home-block-title {
-            opacity: .5;
-            transition: opacity .3s;
-            cursor: pointer;
-
-            &:first-child {
-                margin-right: 20px;
-            }
-
-            &.selected {
-                opacity: 1;
-            }
-
-            span:after {
-                display: none;
-            }
-        }
-
-        .gd-home-block-title-line {
-            width: 116px;
-            height: 1px;
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            overflow: hidden;
-            background-image: linear-gradient(to right, #3F7FE2, #6CDFF5);
-            transition: transform 0.3s ease-in;
-            
-            &.selected {
-                //left: 132px;
-                transform: translateX(136px);
-                
-            }
-        }
+    &__right {
+      width: 45%;
+      margin-left: -30px;
+      position: relative;
     }
-    
+
     &-block-title {
       height: 27px;
       text-align: center;
@@ -683,7 +637,6 @@
           height: 1px;
           bottom: 0;
           left: 0;
-          overflow: hidden;
           background-image: linear-gradient(to right, #3F7FE2, #6CDFF5);
         }
       }
