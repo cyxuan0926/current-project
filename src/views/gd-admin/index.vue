@@ -96,6 +96,10 @@
         deviceStyle: {},
         mapChart: null,
         mapChartOptions: {},
+        jailList: [],
+        mapEffectIndex: 0,
+        mapEffectInterval: null,
+        mapHoverTimeout: null,
         mapTooltips: {},
         isShowDevice: false,
         barTabSelected: 0,
@@ -331,41 +335,63 @@
         this.drawLineChart()
       },
 
+      drawEffectByIndex(index) {
+        if( typeof index !== 'undefined' ) {
+          this.mapEffectIndex = index
+        }
+        console.log( this.mapEffectIndex )
+        this.mapChartOptions.series[0].data = [ Object.assign({}, this.jailList[ this.mapEffectIndex ]) ]
+        this.mapChart.setOption(this.mapChartOptions)
+      },
+
+      drawEffectMap() {
+        if( this.jailList.length < 2 ) {
+          return
+        }
+        if( this.mapEffectInterval ) {
+          clearInterval(this.mapEffectInterval)
+        }
+        this.mapEffectInterval = setInterval(() => {
+          if( this.mapEffectIndex >= this.jailList.length - 1 ) {
+            this.mapEffectIndex = 0
+          }
+          this.drawEffectByIndex()
+          this.mapEffectIndex++
+        }, 5000)
+      },
+
       async drawMap() {
         if( this.isDrawMap ) {
           return
         }
         this.isDrawMap = true
+        clearInterval(this.mapEffectInterval)
         const { jailList = [] } = await http.getJailstatus()
-        const onlineArr = []
-        const offlineArr = []
+        this.jailList = []
         jailList.forEach((d) => {
-          let opt = {
-            name: d.name,
-            value: [d.longitude, d.latitude, d.jailId]
-          }
-          if( d.status == 'offline' ) {
-            offlineArr.push(Object.assign(opt, {
-              itemStyle: {
-                borderColor: '#999899'
-              }
-            }))
-          }else {
-            onlineArr.push(Object.assign(opt, {
-              itemStyle: {
-                borderColor: '#4EF901'
-              }
-            }))
-          }
+          this.jailList.push(Object.assign({
+              name: d.name,
+              value: [d.longitude, d.latitude, d.jailId]
+            }, {
+            itemStyle: {
+              borderColor: d.status == 'offline' ? '#999899' : '#4EF901'
+            },
+            label: {
+              color: d.status == 'offline' ? '#fff' : '#154002',
+              backgroundColor: d.status == 'offline' ? '#999899' : '#4EF901'
+            }
+          }))
         })
-        this.mapChartOptions.series[0].data = onlineArr
-        this.mapChartOptions.series[1].data = offlineArr
+        this.mapChartOptions.series[1].data = this.jailList
         this.mapChart.setOption(this.mapChartOptions)
+        this.drawEffectByIndex(0)
+        this.mapEffectIndex = 1
         if( this.drawMapTimeout ) {
           clearTimeout( this.drawMapTimeout )
         }
         this.drawMapTimeout = setTimeout(() => {
           this.isDrawMap = false
+          this.drawEffectMap()
         }, 2000)
       },
 
@@ -400,9 +426,7 @@
               symbolSize: 20,
               label: {
                 show: true,
-                color: '#154002',
                 position: 'top',
-                backgroundColor: '#4EF901',
                 borderRadius: 7,
                 padding: [4, 7],
                 formatter: '{b}'
@@ -415,17 +439,15 @@
                 borderWidth: 5
               },
               showEffectOn: 'render',
-              zlevel: 1
+              zlevel: 3
             },
             {
               type: 'scatter',
               coordinateSystem: 'geo',
               symbolSize: 12,
               label: {
-                show: true,
-                color: '#fff',
+                show: false,
                 position: 'top',
-                backgroundColor: '#999899',
                 borderRadius: 7,
                 padding: [4, 7],
                 formatter: '{b}',
@@ -445,7 +467,7 @@
           ]
         }
 
-        this.mapChart.on('click', 'series', async ({ data, event }) => {
+        this.mapChart.on('click', 'series', async ({data, event}) => {
           if( !this.isShowDevice ) {
             const { terminalList = [] } = await http.getTerminalList({
               name: data.name,
@@ -456,13 +478,19 @@
               data: terminalList
               //data: this.deviceData
             }
+            console.log( this.mapEffectInterval )
+            // clearInterval(this.mapEffectInterval)
+            let _index = this.jailList.findIndex(d => d.name == data.name)
+            this.drawEffectByIndex(_index)
             this.setFitview(event.offsetX, event.offsetY)
             this.isShowDevice = true
           }
         })
 
-        document.body.onclick = () => {
+        document.body.onclick = (e) => {
+          console.log(e)
           this.isShowDevice = false
+          // this.drawEffectMap()
         }
 
         this.drawMap()
@@ -490,6 +518,7 @@
       this.initMap()
       this.initLineChart()
       this.initTop8()
+      this.drawEffectMap()
       this.drawMapInterval = setInterval(this.drawMap, 5 * 60 * 1000)
       this.winHandleResize = debounce(this.handleResize, 400)
       window.addEventListener('resize', this.winHandleResize)
@@ -499,7 +528,9 @@
       this.lineChart = null
       this.barChart = null
       clearInterval(this.drawMapInterval)
-      clearTimeout( this.drawMapTimeout )
+      clearTimeout(this.drawMapTimeout)
+      clearInterval(this.mapEffectInterval)
+      clearTimeout(this.mapHoverTimeout)
       window.removeEventListener('resize', this.winHandleResize)
     }
   }
