@@ -15,10 +15,14 @@
             label="通话总量分析饼图"
             :value="chartTypes.PIE" />
       </el-select>
-      <m-excel-download
+      <el-button 
+        class="m-excel-download"
+        type="primary"
         slot="append"
-        path="/download/export"
-        :params="filter" />
+        :loading="downloading"
+        @click="onDownloadExcel">
+        导出execl
+      </el-button>
     </m-search>
     <m-charts
       :visible="!!total"
@@ -43,7 +47,14 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
+
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+import { tokenExcel } from '@/utils/token-excel'
+
+import { helper } from '@/utils'
+
+// import Moment from 'moment'
 
 const chartTypes = {
   PIE: 'pie',
@@ -53,17 +64,25 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
+    // const endDate = Moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')
+
+    // const startDate = Moment().subtract(1, 'months').startOf('day').format('YYYY-MM-DD HH:mm:ss')
     return {
       total: 0,
       chartTypes,
       chartType: chartTypes.BAR,
       loading: true,
       filter: {},
+      // filterInit: {
+      //   startDate,
+      //   endDate
+      // },
       searchItems: {
         time: {
           type: 'datetimerange',
           start: 'startDate',
           end: 'endDate'
+          // value: [startDate, endDate]
         }
       },
       tableCols: [
@@ -147,11 +166,36 @@ export default {
       ],
       barData: [],
       barXAxisData: [],
-      tableDatas: []
+      tableDatas: [],
+      downloading: false
     }
   },
   methods: {
     ...mapActions(['getMeetingStatics']),
+    async onDownloadExcel() {
+      this.downloading = true
+
+       const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+
+      // const { startDate, endDate } = this.filter
+
+      const formater = menuName => {
+        return `${menuName + times}`
+        // return `${menuName + startDate + '-' + endDate}`
+      }
+
+      await tokenExcel({
+        params: this.filter,
+        actionName: 'exportMeetingStatistics',
+        menuName: '可视亲情电话数据统计表',
+        formater
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
+
     filterBarData() {
       const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
       this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])

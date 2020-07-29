@@ -6,6 +6,7 @@ import store from './store'
 import filters from './filters'
 import components from '@/components'
 import urls from '@/service/urls'
+import fullscreen from 'vue-fullscreen'
 
 import '@/assets/fonts/iconfont.css'
 // import 'element-ui/lib/theme-chalk/index.css'
@@ -15,6 +16,7 @@ import '@/assets/css/main.scss'
 import '@/assets/css/index.scss'
 
 Vue.use(ElementUI)
+Vue.use(fullscreen)
 
 Vue.config.productionTip = false
 

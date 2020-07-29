@@ -43,3 +43,18 @@
     box-shadow: none !important;
   }
 }
+
+/* transition */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+.modal-enter, .modal-leave-to {
+  transform: translate(50px, 0), scale(.8);
+  opacity: 0;
+}
+
+.modal-leave, .modal-enter-to {
+  transform: translate(0, 0), scale(1);
+  opacity: 1;
+}

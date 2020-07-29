@@ -42,10 +42,18 @@
           show-overflow-tooltip
         />
         <el-table-column
-          prop="name"
           show-overflow-tooltip
           label="家属姓名"
           min-width="55"
+        >
+          <template slot-scope="scope">
+            <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
+          </template>
+        </el-table-column>  
+        <el-table-column
+          v-if="isInWhitelist"
+          prop="phone"
+          label="家属电话"
         />
         <el-table-column
           width="148px"
@@ -93,6 +101,13 @@
           show-overflow-tooltip
           label="罪犯编号"
           min-width="50"
+        />
+        <el-table-column
+          v-if="isInWhitelist"
+          prop="prisonerName"
+          show-overflow-tooltip
+          label="罪犯姓名"
+          min-width="55"
         />
         <el-table-column
           prop="prisonArea"
@@ -376,7 +391,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
@@ -492,6 +507,7 @@ export default {
       'registrations',
       'registRemarks',
       'notification']),
+    ...mapGetters(['isInWhitelist']),
 
       relationalWidth() {
         const widthConstent = {
@@ -524,7 +540,6 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
     handleAuthorization(e) {
-      console.log(e)
       this.toAuthorize = e
       this.show.agree = false
       this.show.disagree = false

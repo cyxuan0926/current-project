@@ -1,6 +1,10 @@
 import { Message } from 'element-ui'
 import router from '@/router'
 import logout from '@/utils/logout'
+
+import { responseURLWhiteLists } from '@/common/constants/const'
+
+import { agency } from '@/service/config/service'
 // import store from '@/store'
 
 const tips = (msg = '操作失败！', type = 'error') => {
@@ -18,11 +22,18 @@ const tips = (msg = '操作失败！', type = 'error') => {
   * next: Function数据处理
   * resData: Boolean是否将相应的数据返回，默认false
 **/
+
+const urlWhiteList = [
+  '/prisoners/processing',
+  '/upload/uploadfile',
+  '/prisoners/validate',
+  '/ywgk/homepage/queryjailstatus'
+]
 const codes = {
   200: {
     resData: true,
     next: (params, url) => {
-      if (url.indexOf('/prisoners/processing') > -1 || url.indexOf('/upload/uploadfile') > -1 || url.indexOf('/prisoners/validate') > -1) {
+      if (urlWhiteList.includes(url)) {
         Message.closeAll()
         // tips('导入的Excel罪犯数据解析完成', 'success')
       }
@@ -129,7 +140,7 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
-  if (params.config.url.includes('/feedbacks/download') || params.config.url.includes('/authorFamily/export')) if (params.status === 200 && !params.data.code) return params
+  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, ''))) if (params.status === 200 && !params.data.code) return params
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {

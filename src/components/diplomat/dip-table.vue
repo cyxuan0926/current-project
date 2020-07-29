@@ -27,7 +27,7 @@
             :total="tableDatas.total"
             @onPageChange="handlePageChange" />
         <el-dialog
-            title="姓名：令狐冲"
+            :title="'姓名：' + currentData.name"
             width="530px"
             :visible.sync="detailsVisible"
             class="dip-dialog"
@@ -88,7 +88,8 @@
                     },
                     {
                         label: '监狱名称',
-                        prop: 'jailName'
+                        prop: 'jailName',
+                        showOverflowTooltip: true
                     },
                     {
                         label: '姓名',
@@ -97,21 +98,24 @@
                     },
                     {
                         label: '所在机构/馆名',
-                        prop: 'orgName'
+                        prop: 'orgName',
+                        showOverflowTooltip: true,
+                        minWidth: 110
                     },
                     {
                         label: '申请时间',
-                        prop: 'applicationDate'
+                        prop: 'applicationDate',
+                        minWidth: 110
                     },
                     {
                         label: '申请通话时间',
                         prop: 'meetingTime',
                         sortable: 'custom',
+                        minWidth: 110
                     },
                     {
                         label: '申请时长',
-                        prop: 'applyTimes',
-                        width: '80px'
+                        prop: 'applyTimes'
                     },
                     {
                         label: '申请状态',
@@ -120,7 +124,8 @@
                     },
                     {
                         label: '操作',
-                        slotName: 'operation'
+                        slotName: 'operation',
+                        minWidth: 80
                     }
                 ]
 

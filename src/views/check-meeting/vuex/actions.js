@@ -71,6 +71,7 @@ export default {
   meetingApplyDealing({ commit }, params) {
     commit('meetingApplyDealing', params)
   },
+  // 会见调整处理
   meetingAdjustDealing({ commit }, params) {
     commit('meetingAdjustDealing', params)
   },
@@ -108,12 +109,48 @@ export default {
 
     return data
   },
+  async getFamilyDetail({ commit }, params) {
+    try {
+      const res = await http.getFamilyMeetingDetail(params)
+      const { item, meetings, total } = res.data
+      commit('setFamilyMeetingDetail', meetings || [])
+      commit('setgdmeetingStatisticTotalItem', item || {})
+      return total || 0
+    }
+    catch (err) {
+      throw err
+    }
+  },
   async getMeetingStatics({ commit }, params) {
     try {
       const res = await http.getMeetingStatics(params)
+
       const { item, list, totalCount } = res.data
-      commit('setMeetingStatistics', list || [])
-      commit('setMeetingStatisticTotalItem', item || {})
+
+      const percentProps = [
+        'noAuthToExpiredPercentShowValue',
+        'finishedPercentShowValue',
+        'deniedPercentShowValue',
+        'authedToExpiredPercentShowValue'
+      ]
+
+      const data = [[item], list]
+
+      const usefullData = data.map(element => {
+        return (
+          element.map(subItem => {
+            percentProps.forEach(prop => {
+              subItem[prop] = `${ (+(subItem[prop].replace('%', ''))) }%`
+            })
+            return subItem
+          })
+        )
+      })
+
+      commit('setMeetingStatistics', usefullData[1] || [])
+
+      commit('setMeetingStatisticTotalItem', ...usefullData[0] || {})
+
       return totalCount || 0
     }
     catch (err) {

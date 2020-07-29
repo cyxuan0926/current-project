@@ -18,6 +18,7 @@ import table from './modules/table'
 import TableNew from './modules/table-new'
 import Filter from './modules/filter'
 import Charts from './modules/charts'
+import ChartBlock from './modules/chart-block'
 import Draggable from './modules/draggable'
 import excelUpload from './modules/excel-upload'
 export default {
@@ -41,6 +42,7 @@ export default {
   TableNew,
   Filter,
   Charts,
+  ChartBlock,
   Draggable,
   excelUpload
 }

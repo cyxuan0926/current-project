@@ -1,11 +1,23 @@
 <template>
-  <div
-    class="m-charts"
-    v-show="visible"
-    :id="id"
-    :style="{ width, height }"
-  >
+  <div style="position: relative">
+    <div
+      class="m-charts"
+      v-show="visible"
+      :id="id"
+      :style="{ width, height }"
+    >
   </div>
+    <div v-if="cnt" class="legend" >
+
+    <ul>
+
+      <li v-for="(item,index) in pienum" :key="index" > <span>&nbsp;&nbsp;{{item.value}}</span>(次)  </li>
+      <li style="font-size:14px;color: #0f0f0f;"> 总次数合计 <span>&nbsp;&nbsp;{{  cnt }}</span>（次） </li>
+
+    </ul>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -25,7 +37,10 @@ export default {
       type: Boolean,
       default: false
     },
-
+    cnt:{
+      type:Number,
+      default:0
+    },
     options: {
       type: Object,
       default: () => ({})
@@ -53,9 +68,14 @@ export default {
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed
-    })
+    }),
+    pienum(){
+      console.log(this.options.series)
+      let arr=this.options.series[0].data
+      console.log(arr)
+      return arr
+    },
   },
-
   watch: {
     loading(val) {
       if (val) {
@@ -90,13 +110,18 @@ export default {
 
   mounted() {
     this.init()
+    this.instance.on('legendselectchanged', ({selected,name}) => {
+      selected[name] = true
+      this.instance.setOption({ legend:  {selected}})
+    })
+    var option =  this.instance.getOption()
   },
-
   beforeDestroy() {
     this.instance.dispose()
     this.instance = null
     window.removeEventListener('resize', this.resizeHandler)
   },
+
 
   methods: {
     init() {
@@ -110,10 +135,28 @@ export default {
 
       window.addEventListener('resize', this.resizeHandler)
     },
-
     resize() {
       this.instance && this.instance.resize()
     }
   }
 }
 </script>
+<style scoped>
+  .legend{
+    position: absolute;
+    width: 177px;
+    height: 157px;
+    right: 145px;
+    top: 46px;
+    text-align: right;
+    font-size: 12px;
+    z-index: 10;
+    pointer-events:none;
+  }
+  li{
+    height: 24px;
+  }
+  span{
+    color: rgb(0, 82, 204);
+  }
+</style>

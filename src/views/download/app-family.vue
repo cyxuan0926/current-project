@@ -15,7 +15,7 @@
               <el-button><i class="iconfont icon-android" />Android下载</el-button>
             </a>
             <img
-              src="../../assets/images/yuwutong_f.png"
+              src="../../assets/images/yuwutong_pro_download.png"
               alt="">
           </div>
           <div class="download ios">
@@ -23,7 +23,7 @@
               <el-button><i class="iconfont icon-ios" />iPhone下载</el-button>
             </a>
             <img
-              src="../../assets/images/yuwutong-ios.png"
+              src="../../assets/images/yuwutong_pro_download.png"
               alt="">
           </div>
         </div>

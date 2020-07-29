@@ -15,5 +15,8 @@ export default {
   POLICE_LITERATURE_AUDITOR: 'police_literature_auditor',
 
   // 家属作品审核人员
-  FAMILY_LITERATURE_AUDITOR: 'family_literature_auditor'
+  FAMILY_LITERATURE_AUDITOR: 'family_literature_auditor',
+
+  // 监狱白名单
+  JAIL_WHITELIST: ['4411']
 }

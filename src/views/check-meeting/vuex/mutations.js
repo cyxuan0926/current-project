@@ -40,6 +40,7 @@ export default {
     }
     else state.meetingRefresh = false
   },
+  // 会见调整处理
   meetingAdjustDealing(state, params) {
     state.meetingAdjustRefresh = params
   },
@@ -53,6 +54,13 @@ export default {
   },
   setMeetingStatistics: (state, meetingStatistics) => {
     state.meetingStatistics = meetingStatistics
+  },
+  setFamilyMeetingDetail: (state, FamilyMeetingDetail) => {
+    state.getFamilyMeetingDetail = FamilyMeetingDetail
+  },
+
+  setgdmeetingStatisticTotalItem: (state, gdmeetingStatisticTotalItem) => {
+    state.gdmeetingStatisticTotalItem = gdmeetingStatisticTotalItem
   },
   setMeetingStatisticTotalItem: (state, meetingStatisticTotalItem) => {
     state.meetingStatisticTotalItem = meetingStatisticTotalItem

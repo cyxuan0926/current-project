@@ -55,5 +55,16 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  async exportMeetingStatistics({ commit }, params) {
+    try {
+      const { data } = await http.exportMeetingStatistics(params)
+
+      return data
+    }
+    catch (err) {
+      throw err
+    }
   }
 }
