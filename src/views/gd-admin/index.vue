@@ -54,6 +54,7 @@
                                 :clearable="false"
                                 :picker-options="pickerOptions"
                                 @change="handleDateChange"
+                                @focus="handleFocus"
                                 value-format="yyyy-MM-dd">
                             </el-date-picker>
                             <div class="gd-home-block-title-layout">
@@ -198,6 +199,13 @@
           res.unshift(`${ y }-${ this.add_0_prefix(m) }`)
         }
         return res
+      },
+
+      handleFocus() {
+        const elPicker = document.querySelector('.el-date-range-picker')
+        if ( this.isFullscreen ) {
+          document.querySelector('.fullscreen-layout').appendChild(elPicker)
+        }
       },
 
       async handleDateChange() {
@@ -470,6 +478,7 @@
         }
 
         this.mapChart.on('click', 'series', async ({data, event}) => {
+          this.isShowDevice = false
           if( !this.isShowDevice ) {
             const { terminalList = [] } = await http.getTerminalList({
               name: data.name,

@@ -282,7 +282,7 @@ export default {
       let arr = []
       arr.push( {name:'总和' ,vals: this.meetingStatisticTotalItem.cnt} )
       arr.push( {name:'未授权次数(未审核数)' ,vals:this.meetingStatisticTotalItem.pend} )
-      arr.push( {name:'已通过审核待见通话次数' ,vals:this.meetingStatisticTotalItem.passed} )
+      arr.push( {name:'已通过审核待通话次数' ,vals:this.meetingStatisticTotalItem.passed} )
       arr.push( {name:'审核被拒绝次数' ,vals:this.meetingStatisticTotalItem.denied} )
       arr.push( {name:'未审核过期次数' ,vals:this.meetingStatisticTotalItem.noAuthToExpired} )
       arr.push( {name:'审核通过未通话过期次数' ,vals:this.meetingStatisticTotalItem.authedToExpired} )
@@ -378,7 +378,7 @@ export default {
                     if (name == `未授权(未审核数)`) {
                       val = this.pieArr[1].name
                     }
-                    if (name == `已通过审核待见通话`) {
+                    if (name == `已通过审核待通话`) {
                       val = this.pieArr[2].name
                     }
                     if (name == `审核被拒绝`) {
@@ -436,7 +436,7 @@ export default {
                   value: this.meetingStatisticTotalItem['pend']
                 },
                 {
-                  name: '已通过审核待见通话',
+                  name: '已通过审核待通话',
                   value: this.meetingStatisticTotalItem['passed']
                 },
                 {
