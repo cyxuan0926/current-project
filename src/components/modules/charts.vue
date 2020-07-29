@@ -147,7 +147,7 @@ export default {
     width: 177px;
     height: 157px;
     right: 145px;
-    top: 47px;
+    top: 46px;
     text-align: right;
     font-size: 12px;
     z-index: 10;

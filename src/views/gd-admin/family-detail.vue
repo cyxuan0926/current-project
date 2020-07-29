@@ -59,11 +59,14 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+import Moment from 'moment'
 
 export default {
   mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
+    const createEndDate = Moment().format('YYYY-MM-DD')
+    const createStartDate = Moment().subtract(7, 'days').format('YYYY-MM-DD')
     const freeMeetingsOptions = [
       {
         label: '是',
@@ -77,6 +80,10 @@ export default {
     return {
       total: 0,
       filter: {},
+      filterInit: {
+        createStartDate,
+        createEndDate
+      },
       loading: true,
       searchItems: {
         time: {
@@ -85,6 +92,7 @@ export default {
           start: 'createStartDate',
           end: 'createEndDate',
           clearable:"true",
+          value: [createStartDate, createEndDate],
           // miss: true,
           // value: ''
         },
@@ -246,21 +254,6 @@ export default {
       this.toShow.id = ''
       if (this.meetingRefresh) this.getDatas('onCloseShow')
     },
-    currentDate(type) {
-            var now = new Date();
-            if(type){
-              now.setTime(now.getTime()-7*24*60*60*1000);
-            }
-            var year = now.getFullYear(); //得到年份
-            var month = now.getMonth();//得到月份
-            var date = now.getDate();//得到日期
-                month = month + 1;
-              if (month < 10) month = "0" + month;
-              if (date < 10) date = "0" + date;
-               var time = "";
-            return  time = year + "-" + month + "-" + date
-
-    },
     async onSearch() {
       const { rows } = this.pagination
       this.loading = true
@@ -273,14 +266,6 @@ export default {
       const {page, rows} = this.pagination
       this.filter.provincesId = `20`
       this.filter.orderField = 'createTime'
-      if ( !this.filter.createStartDate ) {
-        this.filter.createStartDate = this.currentDate(true)
-        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
-      }
-      if ( !this.filter.createEndDate ) {
-        this.filter.createEndDate = this.currentDate(false)
-        //this.searchItems.time.=this.currentDate(false)
-      }
       const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination
