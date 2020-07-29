@@ -21,7 +21,7 @@
           <!--<span v-if="row.jailId">{{ $index | handleGetIndex(pagination.rows, pagination.page) }}</span>-->
         <!--</template>-->
         <template #meetingTime="{ row }">
-          <span >{{ row.applicationDate }}</span>
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
         <template
           slot-scope="scope"
@@ -39,67 +39,18 @@
       :total="total"
       @onPageChange="getDatas"/>
     <el-dialog
-      :visible.sync="show.detail"
-      title="查看详情"
-      width="630px"
+      :visible.sync="toShow.id ? true : false"
+      :title="'家属：' + toShow.name"
+      width="530px"
       class="authorize-dialog"
       @close="onCloseShow">
-      <div
+      <family-to-show
         :elItems="familyShows"
         :showData="toShow">
-        <el-form  label-width="120px">
-          <div style="display: flex">
-            <div  style="flex: 1">
-              <el-form-item label="监狱名称:">
-                {{toShow.jailName}}
-              </el-form-item>
-              <el-form-item label="罪犯编号:">
-                {{toShow.prisonerNumber}}
-              </el-form-item>
-              <el-form-item label="申请时间:">
-                {{toShow.createdAt}}
-              </el-form-item>
-              <el-form-item label="申请通话时间:">
-                {{toShow.applicationDate}}
-              </el-form-item>
-            </div>
-            <div style="flex: 1">
-              <el-form-item label="家属姓名:">
-                {{toShow.name}}
-              </el-form-item>
-              <el-form-item label="犯罪姓名:">
-                {{toShow.prisonerName}}
-              </el-form-item>
-              <el-form-item label="申请状态:">
-              <span v-if="toShow.status=='PENDING'">
-                未授权
-              </span>
-                <span v-if="toShow.status=='CANCELED'">
-                已取消
-              </span>
-                <span v-if="toShow.status=='DENIED'">
-                已拒绝
-              </span>
-                <span v-if="toShow.status=='EXPIRED'">
-                已过期
-              </span>
-                <span v-if="toShow.status=='FINISHED'">
-                已完成
-              </span>
-                <span v-if="toShow.status=='MEETING_ON'">
-                通话中
-              </span>
-                <span v-if="toShow.status=='PASSED'">
-                已通过
-              </span>
-              </el-form-item>
-              <el-form-item label="监区:">
-                {{toShow.prisonArea}}
-              </el-form-item>
-            </div>
-          </div>
-        </el-form>
-      </div>
+        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
+        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
+        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
+      </family-to-show>
     </el-dialog>
   </el-row>
 </template>
@@ -107,11 +58,15 @@
 
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+import Moment from 'moment'
 
 export default {
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
+    const createEndDate = Moment().format('YYYY-MM-DD')
+    const createStartDate = Moment().subtract(7, 'days').format('YYYY-MM-DD')
     const freeMeetingsOptions = [
       {
         label: '是',
@@ -125,6 +80,10 @@ export default {
     return {
       total: 0,
       filter: {},
+      filterInit: {
+        createStartDate,
+        createEndDate
+      },
       loading: true,
       searchItems: {
         time: {
@@ -133,6 +92,7 @@ export default {
           start: 'createStartDate',
           end: 'createEndDate',
           clearable:"true",
+          value: [createStartDate, createEndDate],
           // miss: true,
           // value: ''
         },
@@ -182,27 +142,27 @@ export default {
           label: '申请通话时间',
           prop: 'meetingTime',
           slotName: 'meetingTime',
-          minWidth: 120
-          // minWidth: '40'
+           minWidth: '40'
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          // minWidth: '30'
+          minWidth: '30'
         },
         {
           label: '家属',
           prop: 'names',
-          // minWidth: '30'
+          showOverflowTooltip: true,
+          minWidth: '30'
         },
         {
           label: '申请状态',
           prop: 'statusStr',
-          // minWidth: '20'
+           minWidth: '20'
         }, {
           label: '操作',
           slotName: 'operate',
-          // minWidth: 40,
+           minWidth: 40,
           align: 'center'
         }
 
@@ -273,7 +233,7 @@ export default {
             slotName: 'status'
           },
           {
-            label: '会见时长',
+            label: '通话时长',
             slotName: 'duration'
           },
           {
@@ -284,32 +244,15 @@ export default {
         ], params = { meetingId: e.id}
       this.getMeettingsDetail(params).then(res => {
         if (!res) return
-        //this.toShow = Object.assign({}, res)
-        this.toShow=e
-        this.show.detail=true
+        this.toShow = Object.assign({}, res)
         this.familyShows = this.toShow.status !== 'DENIED'
           ? constFamilyShows.slice(0, constFamilyShows.length - 1)
           : constFamilyShows
       })
     },
     onCloseShow() {
-      this.show.detail=false
+      this.toShow.id = ''
       if (this.meetingRefresh) this.getDatas('onCloseShow')
-    },
-    currentDate(type) {
-            var now = new Date();
-            if(type){
-              now.setTime(now.getTime()-7*24*60*60*1000);
-            }
-            var year = now.getFullYear(); //得到年份
-            var month = now.getMonth();//得到月份
-            var date = now.getDate();//得到日期
-                month = month + 1;
-              if (month < 10) month = "0" + month;
-              if (date < 10) date = "0" + date;
-               var time = "";
-            return  time = year + "-" + month + "-" + date
-
     },
     async onSearch() {
       const { rows } = this.pagination
@@ -323,14 +266,6 @@ export default {
       const {page, rows} = this.pagination
       this.filter.provincesId = `20`
       this.filter.orderField = 'createTime'
-      if ( !this.filter.createStartDate ) {
-        this.filter.createStartDate = this.currentDate(true)
-        this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
-      }
-      if ( !this.filter.createEndDate ) {
-        this.filter.createEndDate = this.currentDate(false)
-        //this.searchItems.time.=this.currentDate(false)
-      }
       const total = await this.getFamilyDetail({
         ...this.filter,
         ...this.pagination
@@ -371,5 +306,10 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
+.flex-dialog {
+  display: flex;
+  flex-wrap: wrap;
+}
 </style>
+
