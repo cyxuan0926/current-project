@@ -287,6 +287,9 @@
             bottom: 0,
             containLabel: true
           },
+          tooltip: {
+            trigger: 'axis'
+          },
           legend: {
             top: 5,
             data: this.lineChartStatus.map(d => ({
@@ -339,7 +342,6 @@
         if( typeof index !== 'undefined' ) {
           this.mapEffectIndex = index
         }
-        console.log( this.mapEffectIndex )
         this.mapChartOptions.series[0].data = [ Object.assign({}, this.jailList[ this.mapEffectIndex ]) ]
         this.mapChart.setOption(this.mapChartOptions)
       },
@@ -357,7 +359,7 @@
           }
           this.drawEffectByIndex()
           this.mapEffectIndex++
-        }, 5000)
+        }, 3000)
       },
 
       async drawMap() {
@@ -476,10 +478,7 @@
             this.mapTooltips = {
               name: data.name,
               data: terminalList
-              //data: this.deviceData
             }
-            console.log( this.mapEffectInterval )
-            // clearInterval(this.mapEffectInterval)
             let _index = this.jailList.findIndex(d => d.name == data.name)
             this.drawEffectByIndex(_index)
             this.setFitview(event.offsetX, event.offsetY)
@@ -488,9 +487,7 @@
         })
 
         document.body.onclick = (e) => {
-          console.log(e)
           this.isShowDevice = false
-          // this.drawEffectMap()
         }
 
         this.drawMap()
