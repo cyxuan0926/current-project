@@ -114,9 +114,9 @@ export default {
     next();
   },
 
-  created() {
+  async created() {
     this.adjustDate = this.defaultDate()
-    this.getConfigs();
+    await this.getConfigs();
   },
 
   beforeDestroy() {

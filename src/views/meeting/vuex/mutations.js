@@ -5,6 +5,7 @@ export default {
   getRemoteNormalConfig(state, params) {
     state.normalConfig = params
   },
+  // 远程特殊日期配置
   getRemoteSpecialConfig(state, params) {
     state.specialConfig = params
   },

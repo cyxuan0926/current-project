@@ -15,6 +15,7 @@ export default {
     }
     catch (err) { console.log(err) }
   },
+  // 获取远程常规配置
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return
@@ -23,27 +24,37 @@ export default {
         return true
       }
       res.normalConfig.forEach(config => {
+        // 配置的队列 二维数组
         config.queue = []
-        config.config.forEach(c => config.queue.push(c.split('-')))
+        config.config.forEach(c => {
+          config.queue.push(c.split('-'))
+        })
       })
       commit('getRemoteNormalConfig', res)
       return true
     })
   },
+  // 更新远程通话常规配置
   updateRemoteNormalConfig: ({ commit }, params) => {
     return http.updateRemoteNormalConfig(params).then(res => res)
   },
+  // 获取远程特殊日期配置
   getRemoteSpecialConfig: ({ commit }, params) => {
     return http.getRemoteSpecialConfig(params).then(res => {
       if (!res) return
       if (!res.complexSpecialConfigs || !res.complexSpecialConfigs.length) {
+        // enabledMeeting： 默认是支持会见
         commit('getRemoteSpecialConfig', [{ enabledMeeting: 1, day: '', config: [], queue: [] }])
         return true
       }
       res.complexSpecialConfigs.forEach(config => {
+        // 通话时间段 二维数组结构
         config.queue = []
+        // 初始化的特殊日期
         config.oldDay = config.day
+        // 初始化的是否支持通话申请
         config.oldEnabled = config.enabledMeeting
+        // 支持通话申请 把通话时间变成二维数组的结构
         if (config.enabledMeeting) config.config.forEach(c => config.queue.push(c.split('-')))
         else {
           config.config = []
