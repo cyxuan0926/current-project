@@ -290,7 +290,7 @@
               <el-input
                 type="textarea"
                 show-word-limit
-                maxlength="200"
+                maxlength="15"
                 placeholder="请输入驳回原因..."
                 v-model.trim="refuseForm.anotherRemarks" />
             </el-form-item>

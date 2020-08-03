@@ -441,9 +441,9 @@ export default {
           autosize: { minRows: 2 },
           rules: [
             'required',
-            'lengthRange-200'
+            'lengthRange-15'
           ],
-          maxlength: 200,
+          maxlength: 15,
           showWordLimit: true,
           isTrim: true,
           noLabel: true,
