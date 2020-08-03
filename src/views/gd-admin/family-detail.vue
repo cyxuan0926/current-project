@@ -130,7 +130,8 @@ export default {
         {
           label: '监区',
           prop: 'prisonArea',
-          minWidth: '15'
+          minWidth: '15',
+          showOverflowTooltip: true
         },
         {
           label: '申请时间',

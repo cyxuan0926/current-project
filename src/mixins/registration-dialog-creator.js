@@ -68,10 +68,10 @@ export default {
 
           rules: [
             'required',
-            'lengthRange-15'
+            'lengthRange-200'
           ],
 
-          maxlength: 15,
+          maxlength: 200,
 
           showWordLimit: true,
 

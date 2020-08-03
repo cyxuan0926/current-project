@@ -216,6 +216,14 @@ export default {
       {
         label: '未授权',
         name: 'PENDING'
+      },
+      {
+        label: '审核已通过',
+        name: 'PENDING'
+      },
+      {
+        label: '审核未通过',
+        name: 'PENDING'
       }
     ]
     // 证件照片class
