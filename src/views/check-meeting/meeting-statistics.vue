@@ -290,7 +290,7 @@ export default {
               top: '16%',
               data: [
                 '未授权次数(未审核数)',
-                '已通过审核待见通话次数',
+                '已通过审核待通话次数',
                 '审核被拒绝次数',
                 '狱警未审核过期次数',
                 '审核通过未通话过期次数',
@@ -312,7 +312,7 @@ export default {
                   value: this.meetingStatisticTotalItem['pend']
                 },
                 {
-                  name: '已通过审核待见通话次数',
+                  name: '已通过审核待通话次数',
                   value: this.meetingStatisticTotalItem['passed']
                 },
                 {

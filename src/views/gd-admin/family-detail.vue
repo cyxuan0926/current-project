@@ -118,51 +118,46 @@ export default {
         {
           label: '监狱名称',
           prop: 'jailName',
-          minWidth: '15%',
           showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          minWidth: '20',
           showOverflowTooltip: true
         },
         {
           label: '监区',
           prop: 'prisonArea',
-          minWidth: '15'
+          showOverflowTooltip: true
         },
         {
           label: '申请时间',
           prop: 'createdAt',
           sortable: 'custom',
-          minWidth: '40'
+          minWidth: 110
         },
         {
           label: '申请通话时间',
           prop: 'meetingTime',
           slotName: 'meetingTime',
-           minWidth: '40'
+          minWidth: 120
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          minWidth: '30'
+          showOverflowTooltip: true
         },
         {
           label: '家属',
           prop: 'names',
           showOverflowTooltip: true,
-          minWidth: '30'
         },
         {
           label: '申请状态',
           prop: 'statusStr',
-           minWidth: '20'
         }, {
           label: '操作',
           slotName: 'operate',
-           minWidth: 40,
           align: 'center'
         }
 
@@ -180,7 +175,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getMeettingsDetail','getFamilyDetail']),
+    ...mapActions(['getMeettingsDetail','gdGetFamilyMeetingDetail']),
     sortChange({ column, prop, order }) {
       if (!prop && !order) {
         this.sortObj = {}
@@ -266,7 +261,7 @@ export default {
       const {page, rows} = this.pagination
       this.filter.provincesId = `20`
       this.filter.orderField = 'createTime'
-      const total = await this.getFamilyDetail({
+      const total = await this.gdGetFamilyMeetingDetail({
         ...this.filter,
         ...this.pagination
       })
