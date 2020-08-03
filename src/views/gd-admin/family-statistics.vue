@@ -21,7 +21,7 @@
         slot="append"
         :loading="downloading"
         @click="onDownloadExcel">
-        导出execl
+        导出Excel
       </el-button>
     </m-search>
     <m-charts
