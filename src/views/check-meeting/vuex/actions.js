@@ -109,7 +109,7 @@ export default {
 
     return data
   },
-  async getFamilyDetail({ commit }, params) {
+  async gdGetFamilyMeetingDetail({ commit }, params) {
     try {
       const res = await http.getFamilyMeetingDetail(params)
       const { item, meetings, total } = res.data
