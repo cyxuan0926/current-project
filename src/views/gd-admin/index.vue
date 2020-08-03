@@ -202,10 +202,12 @@
       },
 
       handleFocus() {
-        const elPicker = document.querySelector('.el-date-range-picker')
-        if ( this.isFullscreen ) {
-          document.querySelector('.fullscreen-layout').appendChild(elPicker)
-        }
+        this.$nextTick(() => {
+          const elPicker = document.querySelector('.el-date-range-picker')
+          if ( this.isFullscreen ) {
+            document.querySelector('.fullscreen-layout').appendChild(elPicker)
+          }
+        })
       },
 
       async handleDateChange() {
@@ -479,20 +481,18 @@
 
         this.mapChart.on('click', 'series', async ({data, event}) => {
           this.isShowDevice = false
-          if( !this.isShowDevice ) {
-            const { terminalList = [] } = await http.getTerminalList({
-              name: data.name,
-              jailId: data.value[2]
-            })
-            this.mapTooltips = {
-              name: data.name,
-              data: terminalList
-            }
-            let _index = this.jailList.findIndex(d => d.name == data.name)
-            this.drawEffectByIndex(_index)
-            this.setFitview(event.offsetX, event.offsetY)
-            this.isShowDevice = true
+          const { terminalList = [] } = await http.getTerminalList({
+            name: data.name,
+            jailId: data.value[2]
+          })
+          this.mapTooltips = {
+            name: data.name,
+            data: terminalList
           }
+          let _index = this.jailList.findIndex(d => d.name == data.name)
+          this.drawEffectByIndex(_index)
+          this.setFitview(event.offsetX, event.offsetY)
+          this.isShowDevice = true
         })
 
         document.body.onclick = (e) => {
