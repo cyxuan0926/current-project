@@ -21,7 +21,7 @@
           type="primary"
           size="mini"
           v-if="!config.queue.length && config.days.length && !disabled"
-          @click="handleConfig(index)">配置时间段参数</el-button>
+          @click="handleConfig(index)">配置会见时间</el-button>
         <el-button
           plain
           type="danger"
@@ -29,63 +29,11 @@
           v-if="config.queue.length && !disabled"
           @click="handleDeleteConfig(index)">删除当前日期配置</el-button>
       </div>
-
-      <div style="overflow: hidden; margin-bottom: 10px;">
-          <label class="c-label">通话时长</label>
-          <div
-            style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-            <el-input placeholder="请输入通话时长" v-model="talkTime" style="width: 180px">
-              <template slot="append">分钟</template>
-            </el-input>
-          </div>
-          <label class="c-label">间隔时间</label>
-          <div
-            style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-            <el-input placeholder="请输入间隔时间" v-model="intervalTime" style="width: 180px">
-              <template slot="append">分钟</template>
-            </el-input>
-          </div>
-          <template v-for="(t, i) in  testconfig">
-            <label class="c-label">时间段{{ i + 1 }}</label>
-            <div
-              style="float: left; width: calc(100% - 80px); overflow: hidden;">
-              <m-time-range-selector
-                type="queue"
-                :val="testconfig[i]"
-                :prev="testconfig[i - 1]"
-                :next="testconfig[i + 1]"
-                @handleBlur="handleTimeSelBlur"
-              >
-              </m-time-range-selector>
-              <template v-if="i == testconfig.length - 1">
-                <el-button
-                  v-if="testconfig[testconfig.length - 1][1] !== '23:59'"
-                  type="primary"
-                  size="mini"
-                  @click="handleAddTime"
-                  >新增时间段</el-button>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleCreateTime"
-                  >生成通话时间段</el-button>
-                <el-button
-                  v-if="!!i"
-                  plain
-                  type="danger"
-                  size="mini"
-                  @click="handleDelTime"
-                  >删除时间段</el-button>
-              </template>
-            </div>
-          </template>
-      </div>
-      
       <!-- 当有配置时间队列并且flag-->
       <div
         v-if="config.queue.length && flag"
         style="overflow: hidden; margin-bottom: 10px;">
-        <label class="c-label">时间段分配</label>
+        <label class="c-label">常规配置</label>
         <div
           style="float: left; width: calc(100% - 80px); overflow: hidden;">
           <!-- 时间范围选择器 -->
@@ -169,12 +117,6 @@ import roles from '@/common/constants/roles'
 export default {
   data() {
     return {
-      testconfig: [
-        ['09:00','12:00']
-      ],
-      duringList: [],
-      talkTime: '25',
-      intervalTime: '5',
       // 监狱id: 信息管理员角色 是从用户里面取监狱id 其余是从路由里面取
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
       // '周'的选项
@@ -336,13 +278,13 @@ export default {
       e.queue = [this.queue]
     },
     // 计算下一个配置时间段
-    getNextRange(e, dur = 180) {
+    getNextRange(e) {
       // e：是当前日子配置时间段的最后一个时间段
       let sh = parseInt(e[0]),  // 开始时间
         eh = parseInt(e[1]),  // 结束时间
         sm = parseInt(e[0].split(':')[1]), // 开始的时
         em = parseInt(e[1].split(':')[1]), // 结束的时
-        // dur = (eh - sh) * min + em - sm, // 时间间隔(秒)
+        dur = (eh - sh) * 60 + em - sm, // 时间间隔(秒)
         time = Moment(new Date(2000, 0, 1, eh, em)).add(dur, 'minutes') // 下一个的时间段的结束时间
       if (time.date() !== 1) {
         // 如果新增时间段的结束时间跨天的话 就是当天最后的时间
@@ -373,94 +315,6 @@ export default {
     // 返回操作
     onGoBack() {
       this.$router.back()
-    },
-
-    // 以下 v2.6.4 新增方法
-    // 新增时间段
-    handleAddTime() {
-      this.testconfig.push(this.getNextRange(this.testconfig[this.testconfig.length - 1]))
-    },
-
-    // 时间段修改
-    handleTimeSelBlur(e) {
-      this.testconfig[this.testconfig.length - 1] = e
-    },
-
-    // 删除时间段
-    handleDelTime() {
-      if( this.testconfig.length > 1 ) {
-        this.testconfig.pop()
-      }
-    },
-
-    checkDuring(time, during) {
-      let res = false
-      if( time.length ) {
-        res = time.some((t) => {
-          const st = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const et = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[1].split(':')[0]),
-            parseInt(t[1].split(':')[1])
-          ])
-          return et.diff(st, 'minutes') < during
-        })
-      }
-      return res
-    },
-
-    generateDuring(talkT, intervalT) {
-      if( this.testconfig.length ) {
-        this.testconfig.forEach((t, i) => {
-          const ct = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const st = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const et = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[1].split(':')[0]),
-            parseInt(t[1].split(':')[1])
-          ])
-          while( ct.diff(et) < 0 && ct.add(talkT, 'm').diff(et) < 0 ) {
-            this.duringList.push([
-              st.format('HH:mm'),
-              st.add(talkT, 'm').format('HH:mm')
-            ])
-            st.add(intervalT, 'm')
-            ct.add(intervalT, 'm')
-          }
-        })
-      }
-    },
-
-    // 生成时间段
-    handleCreateTime() {
-      if(this.checkDuring(this.testconfig, this.talkTime)) {
-        console.log('时间段不能小于通话时长')
-        return
-      }
-      this.generateDuring( parseInt(this.talkTime), parseInt(this.intervalTime) )
-      console.log(this.duringList)
     }
   }
 }
@@ -473,9 +327,6 @@ export default {
   .config-box+.config-box{
     border-top: 1px solid #dcdfe6;
     padding-top: 10px;
-  }
-  .day-box {
-    margin-bottom: 10px;
   }
   label.c-label{
     width: 70px;
