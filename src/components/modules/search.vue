@@ -187,7 +187,7 @@ export default {
       })
     },
     onSelectChange(selectKey, value) {
-      this.$emit('onSelectChange', selectKey, value)
+      this.$emit('searchSelectChange', selectKey, value)
     },
     onClear() {
       Object.keys(this.items).forEach(key => {
