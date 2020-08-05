@@ -216,7 +216,16 @@ export default {
       {
         label: '未授权',
         name: 'PENDING'
+      },
+      {
+        label: '审核已通过',
+        name: 'PASSED'
+      },
+      {
+        label: '审核未通过',
+        name: 'DENIED'
       }
+
     ]
     // 证件照片class
     // const idCardClassName = 'img-idCard'
