@@ -11,6 +11,7 @@
       :clearable="false"
       :format="format"
       :value-format="format"
+      v-bind="configs['prev'] && configs['prev']['attrs']"
       size="mini"
       :disabled="next.length > 0 || disabled"
       :picker-options="startPickerOptions"
@@ -21,6 +22,7 @@
     <el-time-picker
       v-model="endTime"
       ref="end"
+      v-bind="configs['next'] && configs['next']['attrs']"
       class="endClass"
       :disabled="!startTime || next.length > 0 || disabled"
       :clearable="false"
@@ -37,7 +39,23 @@
 import Moment from 'moment'
 // import Clickoutside from '@/utils/clickoutside'
 export default {
+  inheritAttrs: false,
   props: {
+    configs: {
+      type: Object,
+      default: () => (
+        {
+          prev: {
+            attrs: {},
+            events: {}
+          },
+          next: {
+            attrs: {},
+            events: {}
+          }
+        }
+      )
+    },
     // 前一个时间段
     prev: {
       type: Array,

@@ -11,7 +11,7 @@
         class="remote-visit-form">
         <remote-visit-day
           v-model="advanceDayLimit_"
-          @submit="handleUpdateAdvanceDayLimit"
+          :on-submit="handleUpdateAdvanceDayLimit"
         />
       </div>
       <template v-for="item in tabMapOptions">
@@ -68,7 +68,7 @@ export default {
           key: 'times'
         }
       ],
-      advanceDayLimit_: 1 // 实际操作的远程探视申请需提前天数
+      advanceDayLimit_: [2, 15] // 实际操作的远程探视申请需提前天数
     }
   },
   computed: {
@@ -96,7 +96,7 @@ export default {
     advanceDayLimit: {
       immediate: true,
       handler(val) {
-        this.advanceDayLimit_ = val
+        this.advanceDayLimit_ = val.slice(0)
       }
     }
   },
@@ -138,10 +138,13 @@ export default {
       }
     },
     // 亲情电话申请需求提前天数 更新操作实际调用的方法
-    handleUpdateAdvanceDayLimit(day) {
+    handleUpdateAdvanceDayLimit() {
+      const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
+
       this.updateRemoteAdvanceDayLimit({
         jailId: this.jailId,
-        advanceDayLimit: day
+        advanceDayLimit,
+        dayInLimit
       })
     }
   }

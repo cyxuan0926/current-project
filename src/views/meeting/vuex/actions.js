@@ -4,7 +4,10 @@ export default {
   getRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       const res = await http.getRemoteAdvanceDayLimit(params)
-      res && commit('setAdvanceDayLimit', res.advanceDayLimit)
+      let { advanceDayLimit, dayInLimit } = res
+      if (!advanceDayLimit) advanceDayLimit = 2
+      if (!dayInLimit) dayInLimit = 15
+      res && commit('setAdvanceDayLimit', [advanceDayLimit, dayInLimit])
     }
     catch (err) { console.log(err) }
   },
@@ -16,23 +19,80 @@ export default {
     catch (err) { console.log(err) }
   },
   // 获取远程常规配置
-  getRemoteNormalConfig: ({ commit }, params) => {
-    return http.getRemoteNormalConfig(params).then(res => {
-      if (!res) return
-      if (!res.normalConfig || !res.normalConfig.length) {
-        commit('getRemoteNormalConfig', { jailId: params.jailId, normalConfig: [{ days: [], config: [], queue: [] }] })
-        return true
-      }
-      res.normalConfig.forEach(config => {
-        // 配置的队列 二维数组
-        config.queue = []
-        config.config.forEach(c => {
-          config.queue.push(c.split('-'))
-        })
+  // getRemoteNormalConfig: ({ commit }, params) => {
+  //   return http.getRemoteNormalConfig(params).then(res => {
+  //     if (!res) return
+  //     if (!res.normalConfig || !res.normalConfig.length) {
+  //       commit('getRemoteNormalConfig', { jailId: params.jailId, normalConfig: [{ days: [], config: [], queue: [] }] })
+  //       return true
+  //     }
+  //     res.normalConfig.forEach(config => {
+  //       // 配置的队列 二维数组
+  //       config.queue = []
+  //       config.config.forEach(c => {
+  //         config.queue.push(c.split('-'))
+  //       })
+  //     })
+  //     commit('getRemoteNormalConfig', res)
+  //     return true
+  //   })
+  // },
+  // 远程常规配置(调整)
+  getRemoteNormalConfigs: async({ commit }, params) => {
+    try {
+      let {
+        jailId,
+        configBefore,
+        configAfter,
+        enabledAt,
+        id
+      } = await http.getRemoteNormalConfig(params)
+
+      const allConfigs = [configBefore, configAfter]
+
+      const filterAllConfigs = allConfigs.map(configs => {
+        if (!configs || (Array.isArray(configs) && !configs.length)) {
+          return [{ days: [], interval: 5, duration: 25, timeperiod: [], config: [], queue: [], timeperiodQueue: [] }]
+        }
+        else {
+          return configs.map(config => {
+            const filterParams = [
+              {
+                key: 'config',
+                value: 'queue'
+              },
+              {
+                key: 'timeperiod',
+                value: 'timeperiodQueue'
+              }
+            ]
+            filterParams.forEach(params => {
+              config[params['value']] = []
+              if (config[params['key']]) {
+                config[params['key']].forEach(c => {
+                  config[params['value']].push(c.split('-'))
+                })
+              }
+              else {
+                config[params['key']] = []
+              }
+            })
+            return config
+          })
+        }
       })
-      commit('getRemoteNormalConfig', res)
+      commit('setRemoteNormalConfigs', {
+        jailId,
+        enabledAt,
+        id,
+        configBefore: filterAllConfigs[0],
+        configAfter: filterAllConfigs[1]
+      })
       return true
-    })
+    }
+    catch (err) {
+      throw err
+    }
   },
   // 更新远程通话常规配置
   updateRemoteNormalConfig: ({ commit }, params) => {
