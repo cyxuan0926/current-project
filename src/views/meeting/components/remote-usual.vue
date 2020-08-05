@@ -21,7 +21,7 @@
           type="primary"
           size="mini"
           v-if="!config.queue.length && config.days.length && !disabled"
-          @click="handleConfig(index)">配置时间段参数</el-button>
+          @click="handleConfig(config, index)">配置时间段参数</el-button>
         <el-button
           plain
           type="danger"
@@ -30,65 +30,98 @@
           @click="handleDeleteConfig(index)">删除当前日期配置</el-button>
       </div>
 
-      <div style="overflow: hidden; margin-bottom: 10px;">
-          <label class="c-label">通话时长</label>
-          <div
-            style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-            <el-input placeholder="请输入通话时长" v-model="talkTime" style="width: 180px">
-              <template slot="append">分钟</template>
-            </el-input>
-          </div>
+      <div style="overflow: hidden; margin-bottom: 10px;" v-if="config.timequeue.length">
+          <template v-if="!index">
+            <label class="c-label">通话时长</label>
+            <div
+              style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
+              <el-input 
+                placeholder="请输入通话时长" 
+                v-model="config.duration" 
+                style="width: 180px"
+                :disabled="disabled || !!config.queue.length">
+                <template slot="append">分钟</template>
+              </el-input>
+            </div>
+          </template>
           <label class="c-label">间隔时间</label>
           <div
             style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-            <el-input placeholder="请输入间隔时间" v-model="intervalTime" style="width: 180px">
+            <el-input 
+              placeholder="请输入间隔时间" 
+              v-model="config.interval" 
+              style="width: 180px"
+              :disabled="disabled || !!config.queue.length">
               <template slot="append">分钟</template>
             </el-input>
           </div>
-          <template v-for="(t, i) in  testconfig">
+          <template v-for="(t, i) in  config.timequeue">
             <label class="c-label">时间段{{ i + 1 }}</label>
             <div
               style="float: left; width: calc(100% - 80px); overflow: hidden;">
               <m-time-range-selector
                 type="queue"
-                :val="testconfig[i]"
-                :prev="testconfig[i - 1]"
-                :next="testconfig[i + 1]"
-                @handleBlur="handleTimeSelBlur"
-              >
-              </m-time-range-selector>
-              <template v-if="i == testconfig.length - 1">
+                :val="config.timequeue[i]"
+                :disabled="!!config.queue.length"
+                :prev="config.timequeue[i - 1]"
+                :next="config.timequeue[i + 1]"
+                @handleBlur="handleTimeSelBlur($event, config)" />
+              <template v-if="i == config.timequeue.length - 1 && !config.queue.length && !disabled">
                 <el-button
-                  v-if="testconfig[testconfig.length - 1][1] !== '23:59'"
+                  v-if="config.timequeue[config.timequeue.length - 1][1] !== '23:59'"
                   type="primary"
                   size="mini"
-                  @click="handleAddTime"
+                  @click="handleAddTime(config)"
                   >新增时间段</el-button>
                 <el-button
                   type="primary"
                   size="mini"
-                  @click="handleCreateTime"
+                  @click="handleCreateTime(config)"
                   >生成通话时间段</el-button>
                 <el-button
                   v-if="!!i"
                   plain
                   type="danger"
                   size="mini"
-                  @click="handleDelTime"
+                  @click="handleDelTime(config)"
                   >删除时间段</el-button>
               </template>
             </div>
           </template>
       </div>
       
+      <div style="overflow: hidden; margin-bottom: 10px;" v-if="!!config.queue.length">
+        <label class="c-label">时间段分配</label>
+        <div
+          style="float: left; width: calc(100% - 80px); overflow: hidden;">
+          <m-time-range-selector
+            v-for="(d, i) in config.queue"
+            :key="i"
+            :val="d"
+            disabled
+            type="queue"/>
+          <el-button
+            style="margin-right: 10px"
+            size="mini"
+            class="button-float"
+            @click="handleResetTime(config)">重置时间段</el-button>
+          <el-button
+            v-if="index === configs.length - 1 && canAddDay && !disabled"
+            size="mini"
+            type="success"
+            class="button-float"
+            @click="onAddDay">新增工作日</el-button>
+        </div>
+      </div>
+
       <!-- 当有配置时间队列并且flag-->
-      <div
+      <!-- <div
         v-if="config.queue.length && flag"
         style="overflow: hidden; margin-bottom: 10px;">
         <label class="c-label">时间段分配</label>
         <div
           style="float: left; width: calc(100% - 80px); overflow: hidden;">
-          <!-- 时间范围选择器 -->
+          
           <m-time-range-selector
             v-for="(queue, o) in config.queue"
             :key="o"
@@ -98,7 +131,7 @@
             :next="config.queue[o + 1]"
             type="queue"
             @handleBlur="handleBlur($event, config.queue, index)" />
-          <!--配置的时间段的最后一个时间段的结束时间是不是23:59并且是国科服务管理员角色-->
+          
           <el-button
             v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
             type="primary"
@@ -106,14 +139,14 @@
             class="button-float"
             style="margin-right: 10px;"
             @click="onAddRange(config.queue)">新增会见时间段</el-button>
-          <!-- 国科服务管理员角色 -->
+          
           <el-button
             v-if="!disabled"
             size="mini"
             class="button-float"
             :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
             @click="onRestQueue(config)">重置会见时间段</el-button>
-          <!-- 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 -->
+          
           <el-button
             v-if="index === configs.length - 1 && canAddDay && !disabled"
             size="mini"
@@ -121,7 +154,7 @@
             class="button-float"
             @click="onAddDay">新增工作日</el-button>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="button-box">
       <el-button
@@ -169,12 +202,7 @@ import roles from '@/common/constants/roles'
 export default {
   data() {
     return {
-      testconfig: [
-        ['09:00','12:00']
-      ],
-      duringList: [],
-      talkTime: '25',
-      intervalTime: '5',
+      timequeue: ['09:00','12:00'],
       // 监狱id: 信息管理员角色 是从用户里面取监狱id 其余是从路由里面取
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
       // '周'的选项
@@ -190,12 +218,7 @@ export default {
       // 配置参数
       configs: [
         {
-          // 工作日
-          days: [],
-          // 配置时间段
-          config: [],
-          // 时间段队列
-          queue: []
+          days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: []
         }
       ],
       // 默认初始的时间队列
@@ -245,8 +268,8 @@ export default {
       // 获取远程通话常规配置
       this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
-        this.configs = this.normalConfig.normalConfig
-        this.orignConfigs = cloneDeep(this.normalConfig.normalConfig)
+        this.configs = this.normalConfig.configAfter
+        this.orignConfigs = cloneDeep(this.normalConfig.configAfter)
       })
     }
   },
@@ -257,17 +280,7 @@ export default {
       // 更新通话常规配置
       'updateRemoteNormalConfig'
     ]),
-    // 参数化
-    filterParams(params) {
-      let result = []
-      params.forEach(config => {
-        if (!config.days.length || !config.queue.length) return
-        let c = []
-        config.queue.forEach(q => c.push(q.join('-')))
-        result.push({ days: config.days, config: c })
-      })
-      return result
-    },
+
     // 更新按钮的方法
     onUpdate() {
       // 最新的通话配置
@@ -287,6 +300,7 @@ export default {
       // 展示提示对话框
       else this.visible = true
     },
+
     // 更新常规配置
     onSubmit(e) {
       const params = this.filterParams(this.configs)
@@ -295,7 +309,8 @@ export default {
         this.updateRemoteNormalConfig({
           id: this.normalConfig.id,
           jailId: this.normalConfig.jailId,
-          normalConfig: params
+          // normalConfig: params
+          configAfter: params
         }).then(res => {
           this.loading = false
           if (!res) return
@@ -305,30 +320,16 @@ export default {
       // 触发父组件的submit事件
       else this.$emit('submit', params)
     },
-    // 新增一个时间段 配置默认的会见时间段
-    handleConfig(e) {
-      this.configs[e].queue = [this.queue]
-    },
     // 时间范围选择器组件 自定义的handleblur事件实际触发方法
     handleBlur(e, queue) {
       this.flag = false
       queue[queue.length - 1] = e
       this.flag = true
     },
-    // 删除当前常规配置
-    handleDeleteConfig(e) {
-      if (this.configs.length > 1) this.configs.splice(e, 1)
-      else this.configs = [{ days: [], config: [], queue: [] }]
-    },
     // 新增通话时间段
     onAddRange(e) {
       // e: 当前日子的时间队列
       e.push(this.getNextRange(e[e.length - 1]))
-    },
-    // 新增工作日
-    onAddDay() {
-      // 在常规配置里面新增一个初始化的配置
-      this.configs.push({ days: [], config: [], queue: [] })
     },
     // 重置时间段
     onRestQueue(e) {
@@ -375,24 +376,80 @@ export default {
       this.$router.back()
     },
 
-    // 以下 v2.6.4 新增方法
-    // 新增时间段
-    handleAddTime() {
-      this.testconfig.push(this.getNextRange(this.testconfig[this.testconfig.length - 1]))
+    // 以下 v2.6.4 需求  u-修改 a-新增
+    // 入参结构 (update)
+    filterParams(params) {
+      let result = []
+      params.forEach(config => {
+        if (!config.days.length || !config.timequeue.length || !config.queue.length) return
+        let c = [], t = []
+        config.queue.forEach(q => c.push(q.join('-')))
+        config.timequeue.forEach(q => t.push(q.join('-')))
+        result.push({
+          days: config.days,
+          interval: config.interval,
+          duration: config.duration,
+          timeperiod: t,
+          config: c
+        })
+      })
+      return result
     },
 
-    // 时间段修改
-    handleTimeSelBlur(e) {
-      this.testconfig[this.testconfig.length - 1] = e
-    },
-
-    // 删除时间段
-    handleDelTime() {
-      if( this.testconfig.length > 1 ) {
-        this.testconfig.pop()
+    // 选择的工作日后 新增配置时间段参数 (update)
+    handleConfig(current, i) {
+      //this.configs[e].queue = [this.queue]
+      current.timequeue = [this.timequeue]
+      if ( !!i ) {
+        current.interval = this.configs[0].interval
+        current.duration = this.configs[0].duration
       }
     },
 
+    // 删除当前常规配置 (update)
+    handleDeleteConfig(i) {
+      // if (this.configs.length > 1) this.configs.splice(e, 1)
+      // else this.configs = [{ days: [], config: [], queue: [] }]
+      if ( this.configs.length > 1 ) {
+        this.configs.splice(i, 1)
+      }
+      else {
+        this.configs = [ this.getInitParmas() ]
+      }
+    },
+
+    // 新增工作日 (update)
+    onAddDay() {
+      // 在常规配置里面新增一个初始化的配置
+      // this.configs.push({ days: [], config: [], queue: [] })
+      this.configs.push( this.getInitParmas() )
+    },
+
+    // 初始化时间段配置参数 (add)
+    getInitParmas() {
+      return {
+        days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: []
+      }
+    },
+
+    // 新增时间段 (add)
+    handleAddTime(current) {
+      current.timequeue.push(this.getNextRange(current.timequeue[current.timequeue.length - 1]))
+    },
+
+    // 时间段修改 (add)
+    handleTimeSelBlur(e, current) {
+      current.timequeue[current.timequeue.length - 1] = e
+    },
+
+    // 删除时间段 (add)
+    handleDelTime(current) {
+      if( current.timequeue.length > 1 ) {
+        current.timequeue.pop()
+      }
+    },
+
+    // 检测时间段是否大于通话时长 (add)
     checkDuring(time, during) {
       let res = false
       if( time.length ) {
@@ -417,9 +474,10 @@ export default {
       return res
     },
 
-    generateDuring(talkT, intervalT) {
-      if( this.testconfig.length ) {
-        this.testconfig.forEach((t, i) => {
+    // 根据通话时长生成时间段 (add)
+    generateDuring(current, talkT, intervalT) {
+      if( current.timequeue.length ) {
+        current.timequeue.forEach((t, i) => {
           const ct = Moment([
             2000,
             0,
@@ -442,7 +500,7 @@ export default {
             parseInt(t[1].split(':')[1])
           ])
           while( ct.diff(et) < 0 && ct.add(talkT, 'm').diff(et) < 0 ) {
-            this.duringList.push([
+            current.queue.push([
               st.format('HH:mm'),
               st.add(talkT, 'm').format('HH:mm')
             ])
@@ -453,14 +511,18 @@ export default {
       }
     },
 
-    // 生成时间段
-    handleCreateTime() {
-      if(this.checkDuring(this.testconfig, this.talkTime)) {
+    // 生成时间段 (add)
+    handleCreateTime(current) {
+      if(this.checkDuring(current.timequeue, current.duration)) {
         console.log('时间段不能小于通话时长')
         return
       }
-      this.generateDuring( parseInt(this.talkTime), parseInt(this.intervalTime) )
-      console.log(this.duringList)
+      this.generateDuring(current, parseInt(current.duration), parseInt(current.interval))
+    },
+
+    // 重置时间段 (add)
+    handleResetTime() {
+      current.timequeue = []
     }
   }
 }

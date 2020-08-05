@@ -15,19 +15,23 @@ export default {
     }
     catch (err) { console.log(err) }
   },
-  // 获取远程常规配置
+  // v2.6.4 获取远程常规配置
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return
-      if (!res.normalConfig || !res.normalConfig.length) {
-        commit('getRemoteNormalConfig', { jailId: params.jailId, normalConfig: [{ days: [], config: [], queue: [] }] })
+      if (!res.configAfter || !res.configAfter.length) {
+        commit('getRemoteNormalConfig', { jailId: res.jailId, id: res.id, configAfter: [{ days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: [] }] })
         return true
       }
-      res.normalConfig.forEach(config => {
+      res.configAfter.forEach(config => {
         // 配置的队列 二维数组
         config.queue = []
         config.config.forEach(c => {
           config.queue.push(c.split('-'))
+        })
+        config.timequeue = []
+        config.timeperiod.forEach(t => {
+          config.timequeue.push(t.split('-'))
         })
       })
       commit('getRemoteNormalConfig', res)
