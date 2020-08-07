@@ -1,160 +1,22 @@
 <template>
   <div class="m-container">
-    <div
-      v-for="(config, index) in configs"
-      :key="index"
-      class="config-box">
-      <div class="day-box">
-        <label class="c-label">选择工作日</label>
-        <!-- 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 -->
-        <el-checkbox-group
-          v-model="config.days"
-          :disabled="config.queue.length > 0 || disabled">
-          <template v-for="(w, i) in week">
-            <el-checkbox
-              :key="i"
-              v-if="showWeek(w, config, index)"
-              :label="w.value">{{ w.label }}</el-checkbox>
-            </template>
-        </el-checkbox-group>
-        <el-button
-          type="primary"
-          size="mini"
-          v-if="!config.queue.length && config.days.length && !disabled"
-          @click="handleConfig(config, index)">配置时间段参数</el-button>
-        <el-button
-          plain
-          type="danger"
-          size="mini"
-          v-if="config.queue.length && !disabled"
-          @click="handleDeleteConfig(index)">删除当前日期配置</el-button>
+    <!-- 当前配置 configBefore -->
+    <remote-config :configs="configsBefore" :disabled="permissonDisabled || configsBeforeDisabled" />
+    <!-- 即将生效的配置 configAfter -->
+    <h3 class="remote-config-title" v-if="configs">{{ updatedAt }}调整后的时间段配置，{{ enabledAt }}生效</h3>
+    <remote-config v-if="configs" :configs="configs" :disabled="permissonDisabled" />
+    <div class="config-box" v-if="isShowEnabledAt">
+      <div style="overflow: hidden; margin-bottom: 10px;">
+        <label class="c-label">生效日期</label>
+        <el-date-picker
+          style="width: 180px"
+          v-model="enabledAt"
+          type="date"
+          placeholder="请选择生效日期"
+          :disabled="permissonDisabled"
+          :picker-options="pickerOptions">
+        </el-date-picker>
       </div>
-
-      <div style="overflow: hidden; margin-bottom: 10px;" v-if="config.timequeue.length">
-          <template v-if="!index">
-            <label class="c-label">通话时长</label>
-            <div
-              style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-              <el-input 
-                placeholder="请输入通话时长" 
-                v-model="config.duration" 
-                style="width: 180px"
-                :disabled="disabled || !!config.queue.length">
-                <template slot="append">分钟</template>
-              </el-input>
-            </div>
-          </template>
-          <label class="c-label">间隔时间</label>
-          <div
-            style="float: left; width: calc(100% - 80px); overflow: hidden; margin-bottom: 10px;">
-            <el-input 
-              placeholder="请输入间隔时间" 
-              v-model="config.interval" 
-              style="width: 180px"
-              :disabled="disabled || !!config.queue.length">
-              <template slot="append">分钟</template>
-            </el-input>
-          </div>
-          <template v-for="(t, i) in  config.timequeue">
-            <label class="c-label">时间段{{ i + 1 }}</label>
-            <div
-              style="float: left; width: calc(100% - 80px); overflow: hidden;">
-              <m-time-range-selector
-                type="queue"
-                :val="config.timequeue[i]"
-                :disabled="!!config.queue.length"
-                :prev="config.timequeue[i - 1]"
-                :next="config.timequeue[i + 1]"
-                @handleBlur="handleTimeSelBlur($event, config)" />
-              <template v-if="i == config.timequeue.length - 1 && !config.queue.length && !disabled">
-                <el-button
-                  v-if="config.timequeue[config.timequeue.length - 1][1] !== '23:59'"
-                  type="primary"
-                  size="mini"
-                  @click="handleAddTime(config)"
-                  >新增时间段</el-button>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleCreateTime(config)"
-                  >生成通话时间段</el-button>
-                <el-button
-                  v-if="!!i"
-                  plain
-                  type="danger"
-                  size="mini"
-                  @click="handleDelTime(config)"
-                  >删除时间段</el-button>
-              </template>
-            </div>
-          </template>
-      </div>
-      
-      <div style="overflow: hidden; margin-bottom: 10px;" v-if="!!config.queue.length">
-        <label class="c-label">时间段分配</label>
-        <div
-          style="float: left; width: calc(100% - 80px); overflow: hidden;">
-          <m-time-range-selector
-            v-for="(d, i) in config.queue"
-            :key="i"
-            :val="d"
-            disabled
-            type="queue"/>
-          <el-button
-            style="margin-right: 10px"
-            size="mini"
-            class="button-float"
-            @click="handleResetTime(config)">重置时间段</el-button>
-          <el-button
-            v-if="index === configs.length - 1 && canAddDay && !disabled"
-            size="mini"
-            type="success"
-            class="button-float"
-            @click="onAddDay">新增工作日</el-button>
-        </div>
-      </div>
-
-      <!-- 当有配置时间队列并且flag-->
-      <!-- <div
-        v-if="config.queue.length && flag"
-        style="overflow: hidden; margin-bottom: 10px;">
-        <label class="c-label">时间段分配</label>
-        <div
-          style="float: left; width: calc(100% - 80px); overflow: hidden;">
-          
-          <m-time-range-selector
-            v-for="(queue, o) in config.queue"
-            :key="o"
-            :val="queue"
-            :disabled="disabled"
-            :prev="config.queue[o - 1]"
-            :next="config.queue[o + 1]"
-            type="queue"
-            @handleBlur="handleBlur($event, config.queue, index)" />
-          
-          <el-button
-            v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
-            type="primary"
-            size="mini"
-            class="button-float"
-            style="margin-right: 10px;"
-            @click="onAddRange(config.queue)">新增会见时间段</el-button>
-          
-          <el-button
-            v-if="!disabled"
-            size="mini"
-            class="button-float"
-            :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
-            @click="onRestQueue(config)">重置会见时间段</el-button>
-          
-          <el-button
-            v-if="index === configs.length - 1 && canAddDay && !disabled"
-            size="mini"
-            type="success"
-            class="button-float"
-            @click="onAddDay">新增工作日</el-button>
-        </div>
-      </div> -->
     </div>
     <div class="button-box">
       <el-button
@@ -163,7 +25,7 @@
         @click="onGoBack">返回</el-button>
       <!-- 权限是编辑并且是国科服务管理人员并且至少有一个通话时间配置 -->
       <el-button
-        v-if="configs[0].queue.length && !disabled && permission === 'edit'"
+        v-if="isShowEnabledAt"
         size="small"
         type="primary"
         @click="onUpdate">更新</el-button>
@@ -199,30 +61,24 @@ import Moment from 'moment'
 import isEqual from 'lodash/isEqual'
 import cloneDeep from 'lodash/cloneDeep'
 import roles from '@/common/constants/roles'
+import remoteConfig from './remote-config'
 export default {
+  components: {
+    remoteConfig
+  },
   data() {
     return {
-      timequeue: ['09:00','12:00'],
+      updatedAt: '',
+      enabledAt: '',
+      isEnabledAt: false,
+      enabledAtPick: [],
       // 监狱id: 信息管理员角色 是从用户里面取监狱id 其余是从路由里面取
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
-      // '周'的选项
-      week: [
-        { label: '星期一', value: 1 },
-        { label: '星期二', value: 2 },
-        { label: '星期三', value: 3 },
-        { label: '星期四', value: 4 },
-        { label: '星期五', value: 5 },
-        { label: '星期六', value: 6 },
-        { label: '星期日', value: 0 }
-      ],
       // 配置参数
-      configs: [
-        {
-          days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: []
-        }
-      ],
-      // 默认初始的时间队列
-      queue: ['09:00', '09:30'],
+      configs: [],
+      configsBefore: [],
+      permissonDisabled: true,
+      configsBeforeDisabled: true,
       flag: true,
       // 确定更新按钮加载
       loading: false,
@@ -231,45 +87,60 @@ export default {
       // 提示对话框显示属性
       visible: false,
       // 原始的配置信息
-      orignConfigs: []
+      orignConfigs: [],
+      pickerOptions: {
+        disabledDate: (time) => {
+          let t = time.getTime()
+          return t < this.enabledAtPick[0].valueOf() || t > this.enabledAtPick[1].valueOf();
+        },
+      }
     }
   },
   computed: {
     // 常规配置
-    ...mapState(['normalConfig']),
-    // 能否新增工作日
-    canAddDay() {
-      let days = []
-      this.configs.forEach(config => {
-        days = days.concat(config.days)
-      })
-      return days.length < 7
-    },
+    ...mapState(['normalConfig', 'dayLimit']),
     // 国科服务管理员
     superAdmin() {
       return this.$store.getters.role === roles.SUPER_ADMIN
+    },
+    isShowEnabledAt() {
+      return !this.permissonDisabled && this.permission === 'edit' && (this.configsBeforeDisabled ? this.configs : this.configsBefore).some(c => !!c.queue.length)
     }
   },
   watch: {
-    'configs.0': {
-      handler: function(val) {
-        this.$emit('canAdd', val.queue.length > 0)
-      },
-      deep: true
+    // 'configs.0': {
+    //   handler: function(val) {
+    //     this.$emit('canAdd', val.queue.length > 0)
+    //   },
+    //   deep: true
+    // }
+    dayLimit(val) {
+      this.setEnabledAt(this.enabledAt)
     }
   },
   // 激活状态
   activated() {
     // 国科服务管理员
-    if (this.$route.meta.role === '0') this.disabled = false
+    if (this.$route.meta.role === '0') {
+      this.permissonDisabled = false
+      this.configsBeforeDisabled = false
+    }
     // 国科服务管理员权限/信息管理人员权限
-    if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
+    if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') {
+      this.permission = 'edit'
+    }
+    // 获取远程通话常规配置
     if (this.permission === 'edit') {
-      // 获取远程通话常规配置
       this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
         this.configs = this.normalConfig.configAfter
-        this.orignConfigs = cloneDeep(this.normalConfig.configAfter)
+        this.configsBefore = this.normalConfig.configBefore
+        this.orignConfigs = cloneDeep(this.configs && this.configs.length ? this.configs : this.configsBefore)
+        this.setEnabledAt(this.normalConfig.enabledAt)
+        this.updatedAt = this.normalConfig.updatedAt
+        if (this.configs && this.configs.length && this.configs[0].config.length) {
+          this.configsBeforeDisabled = true
+        }
       })
     }
   },
@@ -284,7 +155,7 @@ export default {
     // 更新按钮的方法
     onUpdate() {
       // 最新的通话配置
-      const configs = this.filterParams(this.configs)
+      const configs = this.filterParams(this.configs && this.configs.length ? this.configs : this.configsBefore)
       // 初始的通话配置
       const orignConfigs = this.filterParams(this.orignConfigs)
       // 是否发生变化
@@ -303,13 +174,13 @@ export default {
 
     // 更新常规配置
     onSubmit(e) {
-      const params = this.filterParams(this.configs)
+      const params = this.filterParams(this.configs && this.configs.length ? this.configs : this.configsBefore)
       if (e) {
         this.loading = true
         this.updateRemoteNormalConfig({
           id: this.normalConfig.id,
           jailId: this.normalConfig.jailId,
-          // normalConfig: params
+          enabledAt: this.enabledAt,
           configAfter: params
         }).then(res => {
           this.loading = false
@@ -319,57 +190,6 @@ export default {
       }
       // 触发父组件的submit事件
       else this.$emit('submit', params)
-    },
-    // 时间范围选择器组件 自定义的handleblur事件实际触发方法
-    handleBlur(e, queue) {
-      this.flag = false
-      queue[queue.length - 1] = e
-      this.flag = true
-    },
-    // 新增通话时间段
-    onAddRange(e) {
-      // e: 当前日子的时间队列
-      e.push(this.getNextRange(e[e.length - 1]))
-    },
-    // 重置时间段
-    onRestQueue(e) {
-      // e: 是当前配置信息
-      e.queue = [this.queue]
-    },
-    // 计算下一个配置时间段
-    getNextRange(e, dur = 180) {
-      // e：是当前日子配置时间段的最后一个时间段
-      let sh = parseInt(e[0]),  // 开始时间
-        eh = parseInt(e[1]),  // 结束时间
-        sm = parseInt(e[0].split(':')[1]), // 开始的时
-        em = parseInt(e[1].split(':')[1]), // 结束的时
-        // dur = (eh - sh) * min + em - sm, // 时间间隔(秒)
-        time = Moment(new Date(2000, 0, 1, eh, em)).add(dur, 'minutes') // 下一个的时间段的结束时间
-      if (time.date() !== 1) {
-        // 如果新增时间段的结束时间跨天的话 就是当天最后的时间
-        return [e[1], '23:59']
-      }
-      // 否则 上一个的结束时间是新的时间段的开始时间 计算后的时间就是新的时间段的结束时间
-      return [e[1], time.format('HH:mm')]
-    },
-    // 显示的日 w: 日子对象 config：当前配置信息 index： 当前索引
-    showWeek(w, config, index) {
-      // 配置信息的时间段队列存在的话
-      if (config.queue.length) {
-        // 存在就显示
-        return config.days.some(v => v === w.value)
-      }
-      // 没有配置时间(新增工作日)
-      else {
-        let days = []
-        // 新增后的常规配置信息
-        this.configs.forEach((config, i) => {
-          // 已经配置了的日期
-          if (i !== index) days = days.concat(config.days)
-        })
-        // 过滤已经配置了的日子
-        return !days.some(v => v === w.value)
-      }
     },
     // 返回操作
     onGoBack() {
@@ -396,149 +216,38 @@ export default {
       return result
     },
 
-    // 选择的工作日后 新增配置时间段参数 (update)
-    handleConfig(current, i) {
-      //this.configs[e].queue = [this.queue]
-      current.timequeue = [this.timequeue]
-      if ( !!i ) {
-        current.interval = this.configs[0].interval
-        current.duration = this.configs[0].duration
-      }
-    },
-
-    // 删除当前常规配置 (update)
-    handleDeleteConfig(i) {
-      // if (this.configs.length > 1) this.configs.splice(e, 1)
-      // else this.configs = [{ days: [], config: [], queue: [] }]
-      if ( this.configs.length > 1 ) {
-        this.configs.splice(i, 1)
+    // 设置修改有效期
+    setEnabledAt(enabledAt) {
+      let cur = Moment()
+      let enat
+      if ( !enabledAt || (enat = Moment(enabledAt)) && cur.diff(enat) > 0 ) {
+        this.enabledAtPick.push(cur.add(1, 'd'), cur.add(this.dayLimit.dayInLimit, 'd'))
       }
       else {
-        this.configs = [ this.getInitParmas() ]
+        this.enabledAtPick.push(cur, enat)
       }
-    },
-
-    // 新增工作日 (update)
-    onAddDay() {
-      // 在常规配置里面新增一个初始化的配置
-      // this.configs.push({ days: [], config: [], queue: [] })
-      this.configs.push( this.getInitParmas() )
-    },
-
-    // 初始化时间段配置参数 (add)
-    getInitParmas() {
-      return {
-        days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: []
-      }
-    },
-
-    // 新增时间段 (add)
-    handleAddTime(current) {
-      current.timequeue.push(this.getNextRange(current.timequeue[current.timequeue.length - 1]))
-    },
-
-    // 时间段修改 (add)
-    handleTimeSelBlur(e, current) {
-      current.timequeue[current.timequeue.length - 1] = e
-    },
-
-    // 删除时间段 (add)
-    handleDelTime(current) {
-      if( current.timequeue.length > 1 ) {
-        current.timequeue.pop()
-      }
-    },
-
-    // 检测时间段是否大于通话时长 (add)
-    checkDuring(time, during) {
-      let res = false
-      if( time.length ) {
-        res = time.some((t) => {
-          const st = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const et = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[1].split(':')[0]),
-            parseInt(t[1].split(':')[1])
-          ])
-          return et.diff(st, 'minutes') < during
-        })
-      }
-      return res
-    },
-
-    // 根据通话时长生成时间段 (add)
-    generateDuring(current, talkT, intervalT) {
-      if( current.timequeue.length ) {
-        current.timequeue.forEach((t, i) => {
-          const ct = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const st = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[0].split(':')[0]),
-            parseInt(t[0].split(':')[1])
-          ])
-          const et = Moment([
-            2000,
-            0,
-            1,
-            parseInt(t[1].split(':')[0]),
-            parseInt(t[1].split(':')[1])
-          ])
-          while( ct.diff(et) < 0 && ct.add(talkT, 'm').diff(et) < 0 ) {
-            current.queue.push([
-              st.format('HH:mm'),
-              st.add(talkT, 'm').format('HH:mm')
-            ])
-            st.add(intervalT, 'm')
-            ct.add(intervalT, 'm')
-          }
-        })
-      }
-    },
-
-    // 生成时间段 (add)
-    handleCreateTime(current) {
-      if(this.checkDuring(current.timequeue, current.duration)) {
-        console.log('时间段不能小于通话时长')
-        return
-      }
-      this.generateDuring(current, parseInt(current.duration), parseInt(current.interval))
-    },
-
-    // 重置时间段 (add)
-    handleResetTime() {
-      current.timequeue = []
+      this.enabledAt = this.enabledAtPick[1].format('YYYY-MM-DD')
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .m-container{
+  .remote-config-title {
+    padding: 10px 0;
+    border-bottom: 1px solid #dcdfe6;
+    border-top: 1px solid #dcdfe6;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+  }
   .config-box{
     overflow: hidden;
   }
-  .config-box+.config-box{
-    border-top: 1px solid #dcdfe6;
-    padding-top: 10px;
-  }
-  .day-box {
-    margin-bottom: 10px;
-  }
+  // .config-box+.config-box{
+  //   border-top: 1px solid #dcdfe6;
+  //   padding-top: 10px;
+  // }
   label.c-label{
     width: 70px;
     text-align: right;
@@ -547,11 +256,6 @@ export default {
     color: #606266;
     line-height: 28px;
     margin-right: 10px;
-  }
-  .button-float{
-    float: left;
-    margin-bottom: 10px;
-    margin-left: 0;
   }
   .button-box{
     padding-bottom: 20px;

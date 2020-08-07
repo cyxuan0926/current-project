@@ -4,14 +4,14 @@ export default {
   getRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       const res = await http.getRemoteAdvanceDayLimit(params)
-      res && commit('setAdvanceDayLimit', res.advanceDayLimit)
+      res && commit('setAdvanceDayLimit', res)
     }
     catch (err) { console.log(err) }
   },
   updateRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
-      commit('setAdvanceDayLimit', params.advanceDayLimit)
+      commit('setAdvanceDayLimit', params)
     }
     catch (err) { console.log(err) }
   },
@@ -19,21 +19,33 @@ export default {
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return
-      if (!res.configAfter || !res.configAfter.length) {
-        commit('getRemoteNormalConfig', { jailId: res.jailId, id: res.id, configAfter: [{ days: [], interval: '5', duration: '25', timeperiod: [], config: [], queue: [], timequeue: [] }] })
-        return true
+      if (res.configBefore && res.configBefore.length) {
+        res.configBefore.forEach(config => {
+          config.queue = []
+          config.config.forEach(c => {
+            config.queue.push(c.split('-'))
+          })
+          config.timequeue = []
+          config.timeperiod.forEach(t => {
+            config.timequeue.push(t.split('-'))
+          })
+        })
       }
-      res.configAfter.forEach(config => {
-        // 配置的队列 二维数组
-        config.queue = []
-        config.config.forEach(c => {
-          config.queue.push(c.split('-'))
+
+      if (res.configAfter && res.configAfter.length) {
+        res.configAfter.forEach(config => {
+          // 配置的队列 二维数组
+          config.queue = []
+          config.config.forEach(c => {
+            config.queue.push(c.split('-'))
+          })
+          config.timequeue = []
+          config.timeperiod.forEach(t => {
+            config.timequeue.push(t.split('-'))
+          })
         })
-        config.timequeue = []
-        config.timeperiod.forEach(t => {
-          config.timequeue.push(t.split('-'))
-        })
-      })
+      }
+
       commit('getRemoteNormalConfig', res)
       return true
     })
@@ -48,24 +60,26 @@ export default {
       if (!res) return
       if (!res.complexSpecialConfigs || !res.complexSpecialConfigs.length) {
         // enabledMeeting： 默认是支持会见
-        commit('getRemoteSpecialConfig', [{ enabledMeeting: 1, day: '', config: [], queue: [] }])
+        res.complexSpecialConfigs = [{ enabledMeeting: 1, day: '', interval: '5', duration: '25', config: [], queue: [], timeperiod: [], timequeue: [] }]
+        commit('getRemoteSpecialConfig', res)
         return true
       }
-      res.complexSpecialConfigs.forEach(config => {
-        // 通话时间段 二维数组结构
-        config.queue = []
+      res.complexSpecialConfigs.forEach(c => {
+        // 时间段
+        c.queue = []
+        // 通话时长
+        c.timequeue = []
         // 初始化的特殊日期
-        config.oldDay = config.day
+        c.oldDay = c.day
         // 初始化的是否支持通话申请
-        config.oldEnabled = config.enabledMeeting
+        c.oldEnabled = c.enabledMeeting
         // 支持通话申请 把通话时间变成二维数组的结构
-        if (config.enabledMeeting) config.config.forEach(c => config.queue.push(c.split('-')))
-        else {
-          config.config = []
-          config.queue = []
+        if (c.enabledMeeting) {
+          c.config.forEach(q => c.queue.push(q.split('-')))
+          c.timeperiod.forEach(t => c.timequeue.push(t.split('-')))
         }
       })
-      commit('getRemoteSpecialConfig', res.complexSpecialConfigs)
+      commit('getRemoteSpecialConfig', res)
       return true
     })
   },

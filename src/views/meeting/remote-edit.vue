@@ -10,7 +10,7 @@
         v-if="activeName === 'usual'"
         class="remote-visit-form">
         <remote-visit-day
-          v-model="advanceDayLimit_"
+          v-model="dayLimit"
           @submit="handleUpdateAdvanceDayLimit"
         />
       </div>
@@ -68,12 +68,16 @@ export default {
           key: 'times'
         }
       ],
-      advanceDayLimit_: 1 // 实际操作的远程探视申请需提前天数
+      // 实际操作的远程探视申请需提前天数
+      dayLimit_: {
+        advanceDayLimit: 2,
+        dayInLimit: 15
+      }
     }
   },
   computed: {
     // 最开始的远程探视申请需提前天数
-    ...mapState(['advanceDayLimit']),
+    ...mapState(['dayLimit']),
     // 监狱id
     jailId() {
       return this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
@@ -91,14 +95,14 @@ export default {
           this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
         }
       }
-    },
-    // 初始化实际操作的远程探视申请需提前天数
-    advanceDayLimit: {
-      immediate: true,
-      handler(val) {
-        this.advanceDayLimit_ = val
-      }
     }
+    // // 初始化实际操作的远程探视申请需提前天数
+    // dayLimit: {
+    //   immediate: true,
+    //   handler(val) {
+    //     this.dayLimit_ = val
+    //   }
+    // }
   },
   // 获取申请提前天数
   created() {
@@ -138,10 +142,10 @@ export default {
       }
     },
     // 亲情电话申请需求提前天数 更新操作实际调用的方法
-    handleUpdateAdvanceDayLimit(day) {
+    handleUpdateAdvanceDayLimit() {
       this.updateRemoteAdvanceDayLimit({
         jailId: this.jailId,
-        advanceDayLimit: day
+        ...this.dayLimit
       })
     }
   }
