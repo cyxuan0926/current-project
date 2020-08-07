@@ -192,7 +192,7 @@
             // 生成时间段 (add)
             handleCreateTime(current) {
                 if(this.checkDuring(current.timequeue, current.duration)) {
-                    console.log('时间段不能小于通话时长')
+                    this.$message.error('时间段不能小于通话时长')
                     return
                 }
                 this.generateDuring(current, parseInt(current.duration), parseInt(current.interval))
