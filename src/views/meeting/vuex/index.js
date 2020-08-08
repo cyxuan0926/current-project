@@ -2,13 +2,16 @@ import actions from './actions'
 import mutations from './mutations'
 
 let state = {
-  // 远程探视申请需提前天数
+  // 远程探视申请需提前天数(hb)
   dayLimit: {
     advanceDayLimit: 2,
     dayInLimit: 15
   },
+  // advanceDayLimit: [2, 15], // 远程探视申请需提前天数(cy)
   normalConfig: [{ days: [], config: [] }], // new
+  normalCongigs: {},
   specialConfig: [], // new
+  specialConfigs: [],
   prisonVisitConfigDetail: { queue: [] }, // new
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },

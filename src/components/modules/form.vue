@@ -7,7 +7,10 @@
       :inline="items.formConfigs ? items.formConfigs.inline : false"
       :label-width="items.formConfigs ? items.formConfigs.labelWidth : ''"
       :model="fields"
-      :rules="rules">
+      :rules="rules"
+      :inline-message="items.formConfigs && items.formConfigs.inlineMessage"
+      :hide-required-asterisk="items.formConfigs && items.formConfigs.hideRequiredAsterisk"
+    >
       <template v-for="(item, key) in items">
         <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
           <form-item
@@ -112,6 +115,12 @@ export default {
       handler: function(val) {
         val && this.render()
       }
+    },
+    fields: {
+      handler: function(val) {
+         this.$emit('response', val)
+      },
+      deep: true
     }
   },
   data() {
@@ -133,6 +142,15 @@ export default {
     onPrevClick(e) {
       this.$router.back()
     },
+
+    async onCheck() {
+      try {
+        return await this.$refs.form.validate()
+      } catch (err) {
+        Promise.reject(err)
+      }
+    },
+
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) this.$emit('submit', helper.trimObject(this.fields))
@@ -223,6 +241,8 @@ export default {
           return { validator: validator.phone }
         case 'tempNumber':
           return { validator: validator.tempNumber }
+        case 'isPositiveIntegers':
+          return { validator: validator.isPositiveIntegers }
         default:
           return {}
       }

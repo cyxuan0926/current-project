@@ -31,13 +31,13 @@
         @click="onUpdate">更新</el-button>
     </div>
     <el-dialog
+      class="authorize-dialog"
       :visible.sync="visible"
-      width="400px">
+      width="45%">
       <span
         slot="title"
-        style="display: block; text-align: center; font-weight: bold;">提示</span>
-      <div style="text-align: center;">修改常规配置后，将重新分配相关待会见时间段，调整后会以短信形式通知相关家属。</div>
-      <div style="text-align: center;">注意：若预约日期无法在当日分配时间段，系统将自动取消该条待会见申请，并以短信形式通知相关家属，请确认是否继续操作！</div>
+        style="display: block; text-align: center; font-weight: bold;font-size: 14px">提示</span>
+      <div>修改常规配置后，如有家属已预约，将重新分配相关可视亲情电话时间段，调整后会以短信形式通知相关家属。若预约日期无法在当日分配时间段，系统将自动取消该家属申请，并以短信形式通知相关家属！请确认是否继续操作！</div>
       <div
         slot="footer"
         class="button-box"
@@ -263,6 +263,13 @@ export default {
     justify-content: flex-end;
     align-items: center;
     clear: both;
+  }
+  .authorize-dialog {
+    /deep/ .button-box {
+      button {
+        width: 14% !important;
+      }
+    }
   }
 }
 </style>

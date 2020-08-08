@@ -6,6 +6,7 @@
       class="min-height-400"
       @tab-click="handleClick">
       <!-- 常规配置才有亲情电话申请提前天数这个配置 -->
+      <!-- hb -->
       <div
         v-if="activeName === 'usual'"
         class="remote-visit-form">
@@ -13,6 +14,9 @@
           v-model="dayLimit"
           @submit="handleUpdateAdvanceDayLimit"
         />
+        <!-- cy: fix confict -->
+        <!-- v-model="advanceDayLimit_"
+          :on-submit="handleUpdateAdvanceDayLimit" -->
       </div>
       <template v-for="item in tabMapOptions">
         <el-tab-pane
@@ -33,8 +37,11 @@
 </template>
 
 <script>
+// import remoteVisitDay from './components/remote-visit-day-cy'
 import remoteVisitDay from './components/remote-visit-day'
+// import usual from './components/remote-usual-cy'
 import usual from './components/remote-usual'
+// import special from './components/remote-special-cy'
 import special from './components/remote-special'
 import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';
@@ -68,11 +75,13 @@ export default {
           key: 'times'
         }
       ],
-      // 实际操作的远程探视申请需提前天数
+      // 实际操作的远程探视申请需提前天数(hb)
       dayLimit_: {
         advanceDayLimit: 2,
         dayInLimit: 15
       }
+
+      // advanceDayLimit_: [2, 15] // 实际操作的远程探视申请需提前天数(cy)
     }
   },
   computed: {
@@ -96,11 +105,11 @@ export default {
         }
       }
     }
-    // // 初始化实际操作的远程探视申请需提前天数
-    // dayLimit: {
+    // 初始化实际操作的远程探视申请需提前天数(cy)
+    // advanceDayLimit: {
     //   immediate: true,
     //   handler(val) {
-    //     this.dayLimit_ = val
+    //     this.advanceDayLimit_ = val.slice(0)
     //   }
     // }
   },
@@ -143,10 +152,20 @@ export default {
     },
     // 亲情电话申请需求提前天数 更新操作实际调用的方法
     handleUpdateAdvanceDayLimit() {
+      // hb
       this.updateRemoteAdvanceDayLimit({
         jailId: this.jailId,
         ...this.dayLimit
       })
+
+      //cy: fix conflict
+      // const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
+
+      // this.updateRemoteAdvanceDayLimit({
+      //   jailId: this.jailId,
+      //   advanceDayLimit,
+      //   dayInLimit
+      // })
     }
   }
 }

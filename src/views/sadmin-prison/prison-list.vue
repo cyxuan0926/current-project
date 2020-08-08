@@ -79,7 +79,7 @@ export default {
     },
     onVisit(e, type) {
       if (type === 'visit') this.$router.push(`/prison/visit/${ e }`)
-      else this.$router.push(`/remote/edit/${ e }`)
+      else this.$router.push(`/remote/edit/${ e }?tag=usual`)
     }
   }
 }

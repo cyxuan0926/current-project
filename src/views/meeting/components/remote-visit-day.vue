@@ -1,6 +1,6 @@
 <template>
   <el-form>
-    <el-form-item label="亲情电话申请需提前">
+    <el-form-item label="亲情电话预约日期管理">
       <div class="remote-visit-box">
         <el-select v-model="value.advanceDayLimit" :disabled="disabled" size="small">
           <el-option
