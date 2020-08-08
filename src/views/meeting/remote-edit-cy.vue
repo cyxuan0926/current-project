@@ -6,13 +6,12 @@
       class="min-height-400"
       @tab-click="handleClick">
       <!-- 常规配置才有亲情电话申请提前天数这个配置 -->
-      <!-- hb -->
       <div
         v-if="activeName === 'usual'"
         class="remote-visit-form">
         <remote-visit-day
-          v-model="dayLimit"
-          @submit="handleUpdateAdvanceDayLimit"
+          v-model="advanceDayLimit_"
+          :on-submit="handleUpdateAdvanceDayLimit"
         />
       </div>
       <template v-for="item in tabMapOptions">
@@ -34,9 +33,9 @@
 </template>
 
 <script>
-import remoteVisitDay from './components/remote-visit-day'
-import usual from './components/remote-usual'
-import special from './components/remote-special'
+import remoteVisitDay from './components/remote-visit-day-cy'
+import usual from './components/remote-usual-cy'
+import special from './components/remote-special-cy'
 import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';
 export default {
@@ -69,18 +68,12 @@ export default {
           key: 'times'
         }
       ],
-      // 实际操作的远程探视申请需提前天数(hb)
-      dayLimit_: {
-        advanceDayLimit: 2,
-        dayInLimit: 15
-      }
-
-      // advanceDayLimit_: [2, 15] // 实际操作的远程探视申请需提前天数(cy)
+      advanceDayLimit_: [2, 15] // 实际操作的远程探视申请需提前天数(cy)
     }
   },
   computed: {
     // 最开始的远程探视申请需提前天数
-    ...mapState(['dayLimit']),
+    ...mapState(['advanceDayLimit']),
     // 监狱id
     jailId() {
       return this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
@@ -95,14 +88,21 @@ export default {
         // 为常规配置的时候
         if (query.tag === 'usual') {
           // 获取亲情电话申请需提前天数
-          this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
+          this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
         }
+      }
+    },
+    // 初始化实际操作的远程探视申请需提前天数(cy)
+    advanceDayLimit: {
+      immediate: true,
+      handler(val) {
+        this.advanceDayLimit_ = val.slice(0)
       }
     }
   },
   // 获取申请提前天数
   created() {
-    this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
+    this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
   },
   // 渲染组件
   mounted() {
@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getRemoteAdvanceDayLimit',
+      'getRemoteAdvanceDayLimits',
       'updateRemoteAdvanceDayLimit'
     ]),
     // 进入不同的标签页
@@ -139,10 +139,12 @@ export default {
     },
     // 亲情电话申请需求提前天数 更新操作实际调用的方法
     handleUpdateAdvanceDayLimit() {
-      // hb
+      const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
+
       this.updateRemoteAdvanceDayLimit({
         jailId: this.jailId,
-        ...this.dayLimit
+        advanceDayLimit,
+        dayInLimit
       })
     }
   }

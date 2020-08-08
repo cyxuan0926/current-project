@@ -7,7 +7,7 @@ let state = {
     advanceDayLimit: 2,
     dayInLimit: 15
   },
-  // advanceDayLimit: [2, 15], // 远程探视申请需提前天数(cy)
+  advanceDayLimit: [2, 15], // 远程探视申请需提前天数(cy)
   normalConfig: [{ days: [], config: [] }], // new
   normalCongigs: {},
   specialConfig: [], // new

@@ -1,4 +1,8 @@
 export default {
+  setAdvanceDayLimits(state, advanceDayLimit) {
+    state.advanceDayLimit = advanceDayLimit
+  },
+
   setAdvanceDayLimit(state, dayLimit) {
     state.dayLimit = dayLimit
   },
