@@ -9,6 +9,12 @@ export default {
   setRemoteNormalConfigs(state, params) {
     state.normalCongigs = { ...params }
   },
+
+  // 设置远程特殊日期配置
+  setRemoteSpecialConfigs(state, params) {
+    state.specialConfigs = { ...params }
+  },
+
   // 远程特殊日期配置
   getRemoteSpecialConfig(state, params) {
     state.specialConfig = params

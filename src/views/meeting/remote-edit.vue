@@ -33,8 +33,11 @@
 </template>
 
 <script>
+// import remoteVisitDay from './components/remote-visit-day-cy'
 import remoteVisitDay from './components/remote-visit-day'
+// import usual from './components/remote-usual-cy'
 import usual from './components/remote-usual'
+// import special from './components/remote-special-cy'
 import special from './components/remote-special'
 import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';

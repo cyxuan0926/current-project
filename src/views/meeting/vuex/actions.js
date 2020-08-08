@@ -45,17 +45,21 @@ export default {
         configBefore,
         configAfter,
         enabledAt,
+        dayInLimit,
+        updatedAt,
         id
       } = await http.getRemoteNormalConfig(params)
 
       const allConfigs = [configBefore, configAfter]
 
-      const filterAllConfigs = allConfigs.map(configs => {
+      const filterAllConfigs = allConfigs.map((configs, index) => {
         if (!configs || (Array.isArray(configs) && !configs.length)) {
-          return [{ days: [], interval: 5, duration: 25, timeperiod: [], config: [], queue: [], timeperiodQueue: [] }]
+          return [{ days: [], interval: 5, duration: 25, timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [], type: index }]
         }
         else {
           return configs.map(config => {
+            config['showError'] = new Array(config.timeperiod.length).fill(false)
+
             const filterParams = [
               {
                 key: 'config',
@@ -81,10 +85,13 @@ export default {
           })
         }
       })
+
       commit('setRemoteNormalConfigs', {
         jailId,
         enabledAt,
         id,
+        updatedAt,
+        dayInLimit,
         configBefore: filterAllConfigs[0],
         configAfter: filterAllConfigs[1]
       })
@@ -94,10 +101,12 @@ export default {
       throw err
     }
   },
+
   // 更新远程通话常规配置
   updateRemoteNormalConfig: ({ commit }, params) => {
     return http.updateRemoteNormalConfig(params).then(res => res)
   },
+
   // 获取远程特殊日期配置
   getRemoteSpecialConfig: ({ commit }, params) => {
     return http.getRemoteSpecialConfig(params).then(res => {
@@ -125,6 +134,99 @@ export default {
       return true
     })
   },
+
+  // 新的 数据初始化
+  // 正在使用的通话时长
+  // 要处理相同配置的
+  // beforeDuration ：正在使用的通话时长
+  // afterDuration：即将使用的通话时长
+  async getRemoteSpecialConfigs({ commit }, params) {
+    try {
+      // complexNormalConfig:常规配置 unMeetingDays：不可以申请的日期 complexSpecialConfigs：特使日期配置
+      const { complexNormalConfig, complexSpecialConfigs, unMeetingDays } = await http.getRemoteSpecialConfig(params)
+      // configAfter: 将要生效的常规配置, configBefore：正在生效的常规配置, enabledAt：生效日期 , enabledAt
+      const { configAfter, configBefore, enabledAt } = complexNormalConfig
+      let afterDuration = 25, beforeDuration = 25, filterConfigs = []
+      if (configAfter && configAfter.length && configAfter[0].config && configAfter[0].config.length) {
+        afterDuration = configAfter[0].duration
+      }
+      if (configBefore && configBefore.length && configBefore[0].config && configBefore[0].config.length) {
+        beforeDuration = configBefore[0].duration
+      }
+      // 初始化
+
+      if (!complexSpecialConfigs || !complexSpecialConfigs.length) {
+        filterConfigs = [
+          {
+            enabledMeeting: 1,
+            day: '',
+            config: [],
+            queue: [],
+            duration: 25,
+            interval: 5,
+            timeperiod: [],
+            timeperiodQueue: [],
+            showError: [],
+            isBefore: false
+          }
+        ]
+      }
+      else {
+        filterConfigs = complexSpecialConfigs.map(config => {
+          const { enabledMeeting, day } = config
+
+          const length = config.timeperiod ? config.timeperiod.length : 1
+
+          config['showError'] = new Array(length).fill(false)
+
+          config['isBefore'] = true
+
+          config['oldDay'] = day
+
+          config['oldEnabled'] = enabledMeeting
+
+          const filterParams = [
+            {
+              key: 'config',
+              value: 'queue'
+            },
+            {
+              key: 'timeperiod',
+              value: 'timeperiodQueue'
+            }
+          ]
+
+          filterParams.forEach(params => {
+            config[params['value']] = []
+            if (config[params['key']]) {
+              config[params['key']].forEach(c => {
+                config[params['value']].push(c.split('-'))
+              })
+            }
+            else {
+              config[params['key']] = []
+            }
+          })
+          return config
+        })
+      }
+
+      commit('setRemoteSpecialConfigs', {
+        afterDuration,
+        beforeDuration,
+        unMeetingDays,
+        enabledAt,
+        configAfter,
+        complexSpecialConfigs: filterConfigs
+      })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
   deleteSpecialConfig: ({ commit }, params) => {
     return http.deleteSpecialConfig(params).then(res => res)
   },

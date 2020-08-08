@@ -143,8 +143,12 @@ export default {
       this.$router.back()
     },
 
-    onCheck() {
-      return this.$refs.form.validate()
+    async onCheck() {
+      try {
+        return await this.$refs.form.validate()
+      } catch (err) {
+        Promise.reject(err)
+      }
     },
 
     onSubmit(e) {

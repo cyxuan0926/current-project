@@ -6,6 +6,7 @@ let state = {
   normalConfig: [{ days: [], config: [] }], // new
   normalCongigs: {},
   specialConfig: [], // new
+  specialConfigs: [],
   prisonVisitConfigDetail: { queue: [] }, // new
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },

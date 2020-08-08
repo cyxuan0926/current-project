@@ -2,43 +2,23 @@
   <el-form>
     <el-form-item label="亲情电话预约日期管理">
       <div class="remote-visit-box">
-        <el-select
-          v-model="advanceDayLimit_[0]"
-          :disabled="disabled"
-          size="small"
-        >
+        <el-select v-model="advanceDayLimit_" :disabled="disabled" size="small" placeholder="">
           <el-option
-            v-for="item in beginDays"
+            v-for="item in 7"
             :key="item"
             :label="item"
             :value="item">
           </el-option>
         </el-select>
-        &nbsp;&nbsp;天后 &nbsp;&nbsp;&nbsp;至 &nbsp;&nbsp;&nbsp;
-        <el-select 
-          v-model="advanceDayLimit_[1]"
-          :disabled="disabled"
-          size="small"
-        >
-          <el-option
-            v-for="item in endDays"
-            :key="item"
-            :label="item + beginDayLimit_"
-            :value="item + beginDayLimit_">
-          </el-option>
-        </el-select>
-        &nbsp;&nbsp;天内(包含)
+        &nbsp;&nbsp;天
         <p v-if="!disabled" class="tip">
           *家属预约亲情电话日期设置，以自然日为单位
         </p>
-        <div
-          v-if="!disabled && hasUpdateBtn && hasChange"
-          class="operate"
-        >
+        <div v-if="!disabled && hasUpdateBtn && hasChange" class="operate">
           <el-button
             type="primary"
             size="small"
-            @click="onSubmit"
+            @click="handleSubmit"
           >
             更新
           </el-button>
@@ -50,45 +30,28 @@
 
 <script>
 import { mapState } from 'vuex';
-import isEqual from 'lodash/isEqual'
 export default {
   props: {
     // v-model的值
-    value: Array,
+    value: Number,
     // 是否有更新按钮-暂时不知道啥用
     hasUpdateBtn: {
       type: Boolean,
       default: true
-    },
-    onSubmit: {
-      type: Function,
-      default: () => () => {}
     }
   },
   data() {
     return {
       // 实际提前的天数
-      advanceDayLimit_: [2, 15],
+      advanceDayLimit_: null
     }
   },
   computed: {
     ...mapState(['advanceDayLimit', 'global']),
-    endDayLimit_() {
-      return this.advanceDayLimit_[1]
-    },
-    beginDayLimit_() {
-      return this.advanceDayLimit_[0]
-    },
-    beginDays() {
-      return this.endDayLimit_ ? this.endDayLimit_ - 1 : 60
-    },
-    endDays() {
-      return this.beginDayLimit_ ? 60 - this.beginDayLimit_ : 60
-    },
     // 是否修改了亲情电话申请提前天数
     hasChange() {
       // 不等于默认的配置天数
-      return !isEqual(this.advanceDayLimit_, this.advanceDayLimit)
+      return this.advanceDayLimit !== this.advanceDayLimit_
     },
     // 当角色不是 国科服务管理人员的时候 为禁止状态
     disabled() {
@@ -106,6 +69,12 @@ export default {
       handler(val) {
         this.advanceDayLimit_ = val
       }
+    }
+  },
+  methods: {
+    // 更新操作 调用父组件的 submit事件
+    handleSubmit() {
+      this.$emit("submit", this.advanceDayLimit_)
     }
   }
 }
