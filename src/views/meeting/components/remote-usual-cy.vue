@@ -16,7 +16,7 @@
             <!-- 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 -->
             <el-checkbox-group
               v-model="config.days"
-              :disabled="!!config.timeperiodQueue.length || disabled || (!config.timeperiodQueue.length && !!config.queue.length)">
+              :disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)">
               <template v-for="(w, i) in week">
                 <el-checkbox
                   :key="i"
@@ -27,13 +27,13 @@
             <el-button
               type="primary"
               size="mini"
-              v-if="!config.timeperiodQueue.length && config.days.length && !disabled && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+              v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
               @click="handleConfig(index, type)">配置时间段参数</el-button>
             <el-button
               plain
               type="danger"
               size="mini"
-              v-if="config.timeperiodQueue.length && !disabled  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+              v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
               @click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>
           </div>
 
@@ -70,7 +70,7 @@
                       } 
                     }
                   }"
-                  :disabled="disabled || !!config.queue.length"
+                  :disabled="!!config.queue.length"
                   :prev="config.timeperiodQueue[o - 1]"
                   :next="config.timeperiodQueue[o + 1]"
                   type="queue"
@@ -81,7 +81,7 @@
                   class="error__tip">时间段区间小于通话时长</div>
               </div>
           
-              <template v-if="o === config.timeperiodQueue.length -1 && !disabled && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
+              <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
                 <el-button
                   v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
                   type="primary"
@@ -128,14 +128,14 @@
                         @click="onAddRange(config.queue)">新增会见时间段</el-button> -->
                 <!-- 国科服务管理员角色 -->
                 <el-button
-                  v-if="!disabled  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                  v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"
                   size="mini"
                   class="button-float"
                   :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
                   @click="onRestQueue(config)">重置时间段</el-button>
                 <!-- 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 -->
                 <el-button
-                  v-if="index === configs.length - 1 && canAddDay(configs) && !disabled  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                  v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
                   size="mini"
                   type="success"
                   class="button-float"
@@ -156,6 +156,7 @@
         v-model="computedEffectiveDate"
         :picker-options="pickerOptions"
         type="date"
+        :clearable="false"
         :value-format="'yyyy-MM-dd'"
         placeholder="选择日期">
       </el-date-picker>
@@ -166,7 +167,7 @@
         size="small"
         @click="onGoBack">返回</el-button>
       <el-button
-        v-if="!updateShow && !disabled && permission === 'edit'"
+        v-if="!updateShow && permission === 'edit'"
         size="small"
         type="primary"
         @click="onUpdate">更新</el-button>
@@ -199,8 +200,6 @@
   </div>
 </template>
 <script>
-// 只有正在使用的 那么就是改变后 并且有有效日期的时候 有生效日期
-// 如果有新的 那么默认就显示 并且可以选择
 import { mapActions, mapState } from 'vuex'
 
 import normalMixins from '../mixins'
@@ -210,6 +209,8 @@ import Moment from 'moment'
 import isEqual from 'lodash/isEqual'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import { Message } from 'element-ui'
 
 export default {
   mixins: [normalMixins],
@@ -244,7 +245,6 @@ export default {
       flag: true,
       // 确定更新按钮加载
       loading: false,
-      disabled: true,
       permission: 'add',
       // 提示对话框显示属性
       visible: false,
@@ -377,8 +377,6 @@ export default {
 
   // 激活状态
   async activated() {
-    // 国科服务管理员
-    if (this.$route.meta.role === '0') this.disabled = false
     // 国科服务管理员权限/信息管理人员权限
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
     if (this.permission === 'edit') {
@@ -402,6 +400,8 @@ export default {
 
     async initConfigs() {
       await this.getRemoteNormalConfigs({ jailId: this.jailId })
+
+      Message.closeAll()
 
       const { configBefore, configAfter, enabledAt } = this.normalCongigs
 
@@ -486,13 +486,15 @@ export default {
     // 只有before
     onUpdate() {
       let hasNoChanged
+
       const [before, after] = this.allConfigs
+
       const { configBefore, configAfter, enabledAt } = this.normalCongigs
-      if (!this.hasOriginConfigAfter) {
-        hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && enabledAt === this.computedEffectiveDate
-      } else {
-        hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
-      }
+
+      if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+
+      else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+
       if (hasNoChanged) {
         this.$message({
           showClose: true,
@@ -547,13 +549,11 @@ export default {
         showError
       }
 
-      const target = this.allConfigs[type][index]
-
       const keys = ['duration', 'timeperiodQueue', 'interval', 'showError']
 
       keys.forEach(key => {
         this.$nextTick(function() {
-          this.$set(target, key, values[key])
+          this.$set(this.allConfigs[type][index], key, values[key])
         })
       })
     },
@@ -562,9 +562,11 @@ export default {
     handleDeleteConfig(params) {
       let { configs, index, type } = params
 
-      if (configs.length > 1) this.allConfigs[type].splice(index, 1)
+      this.$nextTick(function() {
+        if (configs.length > 1) this.allConfigs[type].splice(index, 1)
 
-      else this.$set(this.allConfigs, type, [this.basicConfig])
+        else this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+      })
     },
 
     // 新增工作日

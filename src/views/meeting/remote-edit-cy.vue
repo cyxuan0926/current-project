@@ -37,7 +37,7 @@ import remoteVisitDay from './components/remote-visit-day-cy'
 import usual from './components/remote-usual-cy'
 import special from './components/remote-special-cy'
 import times from './components/remote-times'
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 export default {
   components: {
     // 可视亲情电话提前天数
@@ -113,6 +113,9 @@ export default {
       'getRemoteAdvanceDayLimits',
       'updateRemoteAdvanceDayLimit'
     ]),
+
+    ...mapMutations((['setAdvanceDayLimits'])),
+
     // 进入不同的标签页
     handleClick() {
       this.$router.replace({ query: { tag: this.activeName } })
@@ -138,14 +141,16 @@ export default {
       }
     },
     // 亲情电话申请需求提前天数 更新操作实际调用的方法
-    handleUpdateAdvanceDayLimit() {
+    async handleUpdateAdvanceDayLimit() {
       const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
 
-      this.updateRemoteAdvanceDayLimit({
+      const isSucess = await this.updateRemoteAdvanceDayLimit({
         jailId: this.jailId,
         advanceDayLimit,
         dayInLimit
       })
+
+      if (isSucess) this.setAdvanceDayLimits(this.advanceDayLimit_)
     }
   }
 }

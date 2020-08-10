@@ -8,38 +8,60 @@
       class="config-box">
       <div class="day-box">
         <label class="c-label">选择日期</label>
+        <el-tooltip
+          v-if="showTooltip[index]"
+          effect="light"
+          popper-class="color-transprant__tooltip"
+          :content="config.day.join(',')"
+          placement="top-start"
+        >
+          <el-date-picker
+            v-model="config.day"
+            size="mini"
+            type="dates"
+            :disabled="!!config.id"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期"
+            :picker-options="pickerOptions"
+            @change="onSureDates($event, config, index)"
+          />
+        </el-tooltip>
+
         <el-date-picker
+          v-else
+          class="none-2"
           v-model="config.day"
           size="mini"
           type="dates"
-          :disabled="disabled || config.isBefore"
+          :disabled="!!config.id"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :picker-options="pickerOptions"
-          @change="onSureDates($event, config)" />
+          @change="onSureDates($event, config, index)"
+        />
+        
         <el-radio-group
           v-model="config.enabledMeeting"
-          :disabled="disabled"
           @change="handleDate(config, currentDuration)">
-          <el-radio :label="1">支持会见申请</el-radio>
-          <el-radio :label="0">不支持会见</el-radio>
+          <el-radio :label="1">支持预约申请</el-radio>
+          <el-radio :label="0">不支持预约申请</el-radio>
         </el-radio-group>
         <!--（不支持通话申请或者支持通话申请并且通话时间段已经初始化）并且是国科服务管理员-->
         <el-button
           plain
           type="danger"
           size="mini"
-          v-if="(config.enabledMeeting === 0 || config.queue.length) && !disabled"
+          v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
         <!--可保存状态并且是国科服务管理员并且是编辑状态-->
         <el-button
-          v-if="canSave(config) && !disabled && permission === 'edit'"
+          v-if="canSave(config) && permission === 'edit'"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>
         <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
         <el-button
-          v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day && !disabled)"
+          v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day)"
           size="mini"
           type="success"
           class="button-float"
@@ -91,7 +113,7 @@
                   } 
                 }
               }"
-              :disabled="disabled || !!config.queue.length"
+              :disabled="!!config.queue.length"
               :prev="config.timeperiodQueue[o - 1]"
               :next="config.timeperiodQueue[o + 1]"
               type="queue"
@@ -102,7 +124,7 @@
               class="error__tip">时间段区间小于通话时长</div>
             </div>
           
-            <template v-if="o === config.timeperiodQueue.length -1 && !disabled && !config.queue.length ">
+            <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length ">
               <el-button
                 v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
                 type="primary"
@@ -139,14 +161,13 @@
             />
             <!-- 通常规时间配置 -->
             <el-button
-              v-if="!disabled"
               size="mini"
               class="button-float"
               :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
               @click="onRestQueue(config)">重置会见时间段</el-button>
             <!--编辑状态并且支持通话并且选择了日期并且国科服务管理员角色并且是最新配置并且初始化了通话时间段-->
             <el-button
-              v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0 && !disabled)"
+              v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0)"
               size="mini"
               type="success"
               class="button-float"
@@ -186,8 +207,7 @@ export default {
       interval: 5,
       timeperiod: [],
       timeperiodQueue: [],
-      showError: [],
-      isBefore: false
+      showError: []
     }
     return {
       // data里面的特殊日期配置
@@ -204,14 +224,14 @@ export default {
         disabledDate: (time) => {
           const { unMeetingDays } = this.specialConfigs
           let t = Moment(new Date(time)).format('YYYY-MM-DD')
-          return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day === t ))
+          return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day.applicationDate === t ))
         }
       },
-      disabled: true,
       // 页面权限
       permission: 'add',
       basicConfig,
-      currentDuration: 25
+      currentDuration: 25,
+      showTooltip: []
     }
   },
 
@@ -249,17 +269,11 @@ export default {
     }
   },
   async activated() {
-    // 国科服务管理员
-    if (this.$route.meta.role === '0') this.disabled = false
     // 国科服务管理员权限/信息管理人员权限
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
     if (this.permission === 'edit') {
       // 获取特殊日期配置
-      await this.getRemoteSpecialConfigs({ jailId: this.jailId })
-
-      const { complexSpecialConfigs } = this.specialConfigs
-
-      this.configs = cloneDeep(complexSpecialConfigs)
+      await this.initData()
     }
   },
   methods: {
@@ -274,9 +288,19 @@ export default {
       'getRemoteSpecialConfigs'
     ]),
 
+    async initData() {
+      await this.getRemoteSpecialConfigs({ jailId: this.jailId })
+
+      const { complexSpecialConfigs } = this.specialConfigs
+
+      this.configs = cloneDeep(complexSpecialConfigs)
+
+      this.showTooltip = new Array(this.configs.length).fill(false)
+    },
+
     // 选择日期确定后
     // 先要判断是否选择得日期 有交叉得部分
-    onSureDates(e, configs) {
+    onSureDates(e, configs, index) {
       const {
         beforeDuration,
         afterDuration,
@@ -319,8 +343,12 @@ export default {
         }
       }
       else {
-        this.currentDuration = beforeDuration
+        this.currentDuration = beforeDuration || configs.duration
       }
+
+      if (e && Array.isArray(e) && e.length > 1) this.showTooltip[index] = true
+
+      else this.showTooltip[index] = false
 
       this.$set(configs, 'queue', [])
 
@@ -428,13 +456,15 @@ export default {
       }
       // 新增配置
       else {
-        this.addSpecialConfig(params).then(res => {
+        this.addSpecialConfig(params).then(async res => {
           if (!res) return
-          config.oldDay = params.day
-          config.jailId = params.jailId
-          config.config = params.config || []
-          config.timeperiod = params.timeperiod || []
-          config.id = res.id
+
+          await this.initData()
+          // config.oldDay = params.day
+          // config.jailId = params.jailId
+          // config.config = params.config || []
+          // config.timeperiod = params.timeperiod || []
+          // config.id = res.id
           // this.$forceUpdate()
           this.show = false
           this.show = true
@@ -475,7 +505,7 @@ export default {
         this.configs.splice(index, 1)
       }
       else {
-        this.configs = [this.basicConfig]
+        this.configs = cloneDeep([this.basicConfig])
       }
     },
 
@@ -510,21 +540,21 @@ export default {
     },
 
     onAddDay() {
-      this.configs.push(this.basicConfig)
+      this.configs.push(cloneDeep(this.basicConfig))
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.m-container{
-  .config-box{
+.m-container {
+  .config-box {
     overflow: hidden;
   }
-  .config-box+.config-box{
+  .config-box+.config-box {
     border-top: 1px solid #dcdfe6;
     padding-top: 10px;
   }
-  label.c-label{
+  label.c-label {
     width: 70px;
     text-align: right;
     font-weight: normal;
@@ -533,12 +563,12 @@ export default {
     line-height: 28px;
     margin-right: 10px;
   }
-  .button-float{
+  .button-float {
     float: left;
     margin-bottom: 10px;
     margin-left: 0;
   }
-  .button-box{
+  .button-box {
     padding-bottom: 20px;
     display: flex;
     justify-content: flex-end;
@@ -629,6 +659,5 @@ export default {
         margin-bottom: 15px;
       }
     }
-    
   }
 </style>

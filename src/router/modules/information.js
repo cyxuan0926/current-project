@@ -207,7 +207,7 @@ let infomation = [{
     path: '/remote/edit',
     name: 'remote-edit-information',
     meta: { role: '3', permission: 'visit.remote-visit-configure.search', breadcrumbName: '亲情电话配置' },
-    component: 'meeting/remote-edit'
+    component: 'meeting/remote-edit-cy'
     // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
     // component: helper.loadView('meeting/remote-edit')
   }]

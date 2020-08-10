@@ -4,7 +4,6 @@
       <div class="remote-visit-box">
         <el-select
           v-model="advanceDayLimit_[0]"
-          :disabled="disabled"
           size="small"
         >
           <el-option
@@ -17,7 +16,6 @@
         &nbsp;&nbsp;天后 &nbsp;&nbsp;&nbsp;至 &nbsp;&nbsp;&nbsp;
         <el-select 
           v-model="advanceDayLimit_[1]"
-          :disabled="disabled"
           size="small"
         >
           <el-option
@@ -28,11 +26,11 @@
           </el-option>
         </el-select>
         &nbsp;&nbsp;天内(包含)
-        <p v-if="!disabled" class="tip">
+        <p class="tip">
           *家属预约亲情电话日期设置，以自然日为单位
         </p>
         <div
-          v-if="!disabled && hasUpdateBtn && hasChange"
+          v-if="hasUpdateBtn && hasChange"
           class="operate"
         >
           <el-button
@@ -89,10 +87,6 @@ export default {
     hasChange() {
       // 不等于默认的配置天数
       return !isEqual(this.advanceDayLimit_, this.advanceDayLimit)
-    },
-    // 当角色不是 国科服务管理人员的时候 为禁止状态
-    disabled() {
-      return parseInt(this.global.user.role) !== 0
     }
   },
   watch: {

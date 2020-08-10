@@ -26,6 +26,7 @@ export default {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
       commit('setAdvanceDayLimit', params)
+      return true
     }
     catch (err) { console.log(err) }
   },
@@ -195,8 +196,7 @@ export default {
             interval: 5,
             timeperiod: [],
             timeperiodQueue: [],
-            showError: [],
-            isBefore: false
+            showError: []
           }
         ]
       }
@@ -207,8 +207,6 @@ export default {
           const length = config.timeperiod ? config.timeperiod.length : 1
 
           config['showError'] = new Array(length).fill(false)
-
-          config['isBefore'] = true
 
           config['oldDay'] = day
 
