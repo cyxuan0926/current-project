@@ -19,6 +19,12 @@
           label="家属注册"
           name="first" />
         <el-tab-pane
+          label="审核已通过"
+          name="PASSED" />
+        <el-tab-pane
+          label="审核未通过"
+          name="DENIED" />
+        <el-tab-pane
           label="未授权"
           name="PENDING" />
       </el-tabs>
