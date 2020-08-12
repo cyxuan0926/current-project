@@ -28,7 +28,7 @@
               type="primary"
               size="mini"
               v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
-              @click="handleConfig(index, type)">配置时间段参数</el-button>
+              @click="handleConfig(index, type, configs)">配置时间段参数</el-button>
             <el-button
               plain
               type="danger"
@@ -533,7 +533,7 @@ export default {
     },
 
     // 新增一个时间段 配置默认的会见时间段(update)
-    handleConfig(index, type) {
+    handleConfig(index, type, configs) {
       const duration = this.filterDuration[type]
 
       const timeperiodQueue = [this.queue]
@@ -562,10 +562,20 @@ export default {
     handleDeleteConfig(params) {
       let { configs, index, type } = params
 
+      const { configBefore } = this.normalCongigs
+
+      const beforDuration = cloneDeep(configBefore)[0].duration
+
+      const initDuration = beforDuration
+
       this.$nextTick(function() {
         if (configs.length > 1) this.allConfigs[type].splice(index, 1)
 
-        else this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+        else {
+          this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+
+          this.$set(this.filterDuration, type, initDuration)
+        }
       })
     },
 
