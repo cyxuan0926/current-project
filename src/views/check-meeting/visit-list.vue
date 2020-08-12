@@ -128,6 +128,7 @@
           <el-form-item prop="refuseRemark">
             <el-input
               type="textarea"
+              show-word-limit
               placeholder="请输入驳回原因..."
               :autosize="{ minRows: 5 }"
               v-model="refuseForm.refuseRemark" />
@@ -158,6 +159,7 @@
         <el-form-item prop="remarks">
           <el-input
             type="textarea"
+            show-word-limit
             :autosize="{ minRows: 6 }"
             placeholder="请输入撤回理由"
             v-model="withdraw.remarks" />

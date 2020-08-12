@@ -349,6 +349,8 @@ export default {
       withdrawFormItems: {
         remarks: {
           type: 'textarea',
+          maxlength: 200,
+          showWordLimit: true,
           autosize: { minRows: 6 },
           rules: ['required'],
           noLabel: true,
@@ -369,6 +371,8 @@ export default {
       authorizeFormItems: {
         refuseRemark: {
           type: 'textarea',
+          maxlength: 200,
+          showWordLimit: true,
           autosize: { minRows: 5 },
           rules: [
             'required',

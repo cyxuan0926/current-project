@@ -311,6 +311,8 @@ export default {
       withdrawFormItems: {
         remarks: {
           type: 'textarea',
+          showWordLimit: true,
+          maxlength: 200,
           autosize: { minRows: 6 },
           rules: ['required'],
           noLabel: true,
