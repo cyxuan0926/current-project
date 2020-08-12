@@ -86,7 +86,11 @@ export default {
         }
         else {
           return configs.map(config => {
-            config['showError'] = new Array(config.timeperiod.length).fill(false)
+            const { timeperiod } = config
+
+            const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+            config['showError'] = new Array(length).fill(false)
 
             const filterParams = [
               {
@@ -100,7 +104,7 @@ export default {
             ]
             filterParams.forEach(params => {
               config[params['value']] = []
-              if (config[params['key']]) {
+              if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
                 config[params['key']].forEach(c => {
                   config[params['value']].push(c.split('-'))
                 })
@@ -202,15 +206,25 @@ export default {
       }
       else {
         filterConfigs = complexSpecialConfigs.map(config => {
-          const { enabledMeeting, day } = config
+          const {
+            enabledMeeting,
+            day,
+            timeperiod,
+            interval,
+            duration
+          } = config
 
-          const length = config.timeperiod ? config.timeperiod.length : 1
+          const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
 
           config['showError'] = new Array(length).fill(false)
 
           config['oldDay'] = day
 
-          config['oldEnabled'] = enabledMeeting
+          config['oldEnabled'] = enabledMeeting || 0
+
+          config['duration'] = duration || 25
+
+          config['interval'] = interval || 5
 
           const filterParams = [
             {
@@ -225,7 +239,7 @@ export default {
 
           filterParams.forEach(params => {
             config[params['value']] = []
-            if (config[params['key']]) {
+            if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
               config[params['key']].forEach(c => {
                 config[params['value']].push(c.split('-'))
               })
