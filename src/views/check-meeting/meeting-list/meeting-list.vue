@@ -93,12 +93,66 @@
       <div
         v-if="!show.agree && !show.disagree"
         class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
+
+        <el-table
+          :data="meetingAdjustmentCopy.terminals"
+          border
+          stripe
+          @cell-click="cellClick"
+          :row-class-name="tableRowClassName"
+          style="width:100%"
+          max-height="250">
+          <el-table-column
+            fixed
+            prop="prisonConfigName"
+            label="监区"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            fixed
+            prop="terminalNumber"
+            label="终端号"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
+            :prop="item"
+            :label="item"
+            width="120">
+          </el-table-column>
+
+        </el-table>
+
       </div>
+        <span   v-if="!show.agree && !show.disagree"  slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
+          <el-button @click="closeAuthorize">取 消</el-button>
+        </span>
       <div
         v-if="show.agree"
         class="button-box">
-        <repetition-el-buttons :buttonItems="showAgreeButtons" />
+        <el-table
+          :data="meetingAdjustment.terminals"
+          style="width: 100%"
+          max-height="250">
+          <el-table-column
+            fixed
+            prop="prisonConfigName"
+            label="日期"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="jailName"
+            label="姓名"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="省份"
+            width="120">
+          </el-table-column>
+        </el-table>
+          <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
       <div
         v-if="show.disagree"
@@ -135,10 +189,103 @@
     </el-dialog>
     <el-dialog
       :visible.sync="toShow.id ? true : false"
-      :title="'家属：' + toShow.name"
-      width="530px"
+      title="详情"
+      width="600px"
       class="authorize-dialog"
       @close="onCloseShow">
+      <!--<div>-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
+          <!--<div class="family-detail">基本信息</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
+          <!--<div class="family-detail">1</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none" ><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
+            <!--<p class="detail-message-family" v-if="toShow.status=='DENIED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ toShow.remarks }}</span></p>-->
+            <!--<p class="detail-message-family" v-if="toShow.status=='FINISHED'||toShow.status=='MEETING_ON'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">通话时长</span><span class="family-nameDetail">{{ toShow.duration | time }}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none">-->
+              <!--<span class="family-name">申请状态</span>-->
+              <!--<span class="family-nameDetail" v-if="toShow.status=='PASSED'">已通过</span>-->
+              <!--<span class="family-nameDetail" v-if="toShow.status=='DENIED'">已拒绝</span>-->
+              <!--<span class="family-nameDetail" v-if="toShow.status=='EXPIRED'">已过期</span>-->
+              <!--<span class="family-nameDetail" v-if="toShow.status=='FINISHED'">已完成</span>-->
+              <!--<span class="family-nameDetail" v-if="toShow.status=='MEETING_ON'">通话中</span>-->
+            <!--</p>-->
+          <!--</div>-->
+        <!--</div>-->
+
+      <!--</div>-->
+      <!--已拒绝-->
+      <!--<div v-if="toShow.status=='DENIED'">-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
+          <!--<div class="family-detail">基本信息</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
+          <!--<div class="family-detail">1</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
+            <!--<p class="detail-message-family"><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ toShow.remarks }}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
+            <!--<p class="detail-message-family"><span class="family-name">申请状态</span><span class="family-nameDetail">已拒绝</span></p>-->
+          <!--</div>-->
+        <!--</div>-->
+
+      <!--</div>-->
+<!--已过期-->
+      <!--<div v-if="toShow.status=='EXPIRED'">-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
+          <!--<div class="family-detail">基本信息</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
+          <!--<div class="family-detail">1</div>-->
+          <!--<div class="detail-message">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none" ><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
+          <!--</div>-->
+          <!--<div class="detail-content">-->
+            <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
+            <!--<p class="detail-message-family" style="border: none"><span class="family-name">申请状态</span><span class="family-nameDetail">已过期</span></p>-->
+          <!--</div>-->
+        <!--</div>-->
+
+      <!--</div>-->
+
+      <!--<div>-->
+        <!--{{toShow}}-->
+      <!--</div>-->
+
+
       <family-to-show
         :elItems="familyShows"
         :showData="toShow">
@@ -146,6 +293,8 @@
         <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
         <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
       </family-to-show>
+
+
     </el-dialog>
     <el-dialog
       title="家属信息"
@@ -315,6 +464,7 @@ export default {
       toShow: {},
       family: {},
       sortObj: {},
+      submitSuccessParams:{},
       familyShows: [],
       // 撤回对话框表单组件
       withdrawFormItems: {
@@ -376,7 +526,87 @@ export default {
         //   prop: 'familyRelationalProofUrl',
         //   definedClass: idCardClassName
         // }
-      ]
+      ],
+      meetingAdjustment: {
+        meetingQueue: ["19:00-19:05", "19:30-19:35", "10:30-11:35"],
+        meetings:[{meetingTime:"2020-08-11 19:00-19:05",
+                   terminalNumber: "12334",name: "吕能仕"},
+                 {meetingTime:"2020-08-11 10:30-11:35",
+                   terminalNumber: "1233",name: "吕仕"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "1233",name: "了解"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "1211",name: "了解"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "12551",name: "了a解"}
+        ],
+        terminals:[
+          {
+            prisonConfigName: '一监区',
+            address: '上海市普陀区金沙江路 1518 弄',
+            terminalNumber:1233,
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '2监区',
+            address: '上海市普陀区金沙江路 1518 弄',
+            terminalNumber:12334,
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '1监区',
+            terminalNumber:1211,
+            address: '上海市普陀区金沙江路 1518 弄',
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '3监区',
+            terminalNumber:12551,
+            address: '上海市普陀区金沙江路 1518 弄',
+            jailName: "梅溪湖大监狱"
+          },
+        ]
+      },
+      meetingAdjustmentCopy: {
+        meetingQueue: ["19:00-19:05", "19:30-19:35", "10:30-11:35"],
+        meetings:[{meetingTime:"2020-08-11 19:00-19:05",
+          terminalNumber: "12334",name: "吕能仕"},
+          {meetingTime:"2020-08-11 10:30-11:35",
+            terminalNumber: "1233",name: "吕仕"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "1233",name: "了解"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "1211",name: "了解"},
+          {meetingTime:"2020-08-11 19:30-19:35",
+            terminalNumber: "12551",name: "了a解"}
+        ],
+        terminals:[
+          {
+            prisonConfigName: '一监区',
+            address: '上海市普陀区金沙江路 1518 弄',
+            terminalNumber:1233,
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '2监区',
+            address: '上海市普陀区金沙江路 1518 弄',
+            terminalNumber:12334,
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '1监区',
+            terminalNumber:1211,
+            address: '上海市普陀区金沙江路 1518 弄',
+            jailName: "梅溪湖大监狱"
+          },
+          {
+            prisonConfigName: '3监区',
+            terminalNumber:12551,
+            address: '上海市普陀区金沙江路 1518 弄',
+            jailName: "梅溪湖大监狱"
+          },
+        ]
+      },
     }
   },
   computed: {
@@ -528,8 +758,49 @@ export default {
       'withdrawMeeting',
       'getMeetingsFamilyDetail',
       'getMeettingsDetail',
-      'meetingApplyDealing'
+
     ]),
+    tableRowClassName ({row, rowIndex}) {
+      //把每一行的索引放进row
+      // console.log(row,rowIndex)
+      row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
+      return 'row-remarks'  //className(类名)
+    },
+    cellClick(row, column,cell,event){
+      let cellStr=cell.querySelector(".cell").textContent
+
+     if(cellStr){
+     }else{
+       cell.querySelector(".cell").style.color="#67c23a"
+       this.meetingAdjustmentCopy.terminals.filter(item=>{
+         this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
+             if(item[val]==this.toAuthorize.name){
+               item[val]=""
+             }
+         })
+       } )
+       console.log(this.toAuthorize)
+       row[column.label]=this.toAuthorize.name
+       console.log(row)
+       this.$set(this.meetingAdjustmentCopy.terminals, row.index,row)
+     }
+      for (let index in row) {
+        if(row[index]==this.toAuthorize.name){
+          this.submitSuccessParams={terminalId:row.terminalNumber,meetingTime:index}
+        }
+      }
+
+      console.log(this.submitSuccessParams)
+    },
+    setMeetingAdjustment({meetingQueue,meetings,terminals}){
+      terminals.filter(item=>{
+        meetings.forEach(val=>{
+          if(item.terminalNumber==val.terminalNumber){
+            item[val.meetingTime.slice(-11)]= val.name
+          }
+        })
+      })
+    },
     getDatas(e) {
       if (this.tabs !== 'first') this.filter.status = this.tabs
       const params = {
@@ -559,6 +830,10 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.authorize = true
+
+      this.submitSuccessParams=null
+      this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
+      this.setMeetingAdjustment(this.meetingAdjustmentCopy)
     },
     handleWithdraw(e) {
       this.toAuthorize = e
@@ -643,6 +918,8 @@ export default {
     },
     //覆盖mixin 授权对话框同意情况下的确认操作
     onPassedAuthorize() {
+
+
       this.onAuthorization('PASSED')
     },
     //覆盖mixin 授权对话框同意情况下的返回操作
@@ -663,7 +940,6 @@ export default {
         else params.remarks = this.remarks
         if (params.remarks) this.handleSubmit(params)
       }
-      else this.handleSubmit(params)
     },
     handleSubmit(params) {
       this.buttonLoading = true
@@ -674,6 +950,10 @@ export default {
         this.toAuthorize = {}
         this.getDatas('handleSubmit')
       })
+    },
+    submitSuccess(){
+        let params={meetingId:this.toAuthorize.id,terminalId:this.submitSuccessParams.terminalId,meetingTime:this.submitSuccessParams.meetingTime}
+        alert(22)
     },
     onWithdraw(arg) {
       const { remarks } = arg
@@ -745,6 +1025,41 @@ export default {
     padding: 5px 0 3px !important;
   }
 }
+  .family-detail{
+    width: 100px;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    border-right: 1px solid #E4E7ED
+  }
+  .detail-message{
+    width: 280px;
+  }
+  .detail-message-family{
+    display: flex;
+    line-height: 30px ;
+    font-size: 12px;
+    border-bottom: 1px solid #E4E7ED;
+    .family-name{
+        width: 90px;
+        background: #F5F7FA;
+        text-align: right;
+         border-right: 1px solid #E4E7ED;
+    }
+
+  }
+  .detail-content{
+    flex: 1;
+    line-height: 30px ;
+    font-size: 12px;
+    border-bottom: 1px solid #E4E7ED;
+    .family-name{
+      width: 90px;
+      background: #F5F7FA;
+      text-align: right;
+      border-right: 1px solid #E4E7ED;
+    }
+  }
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>
