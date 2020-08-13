@@ -11,16 +11,16 @@
         <el-date-picker
           v-model="config.day"
           size="mini"
-          type="dates"
+          type="date"
           :disabled="disabled"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :picker-options="pickerOptions"
-          @change="handleDatePicker($event, config, index)" />
+          @change="handleDate(config)" />
         <el-radio-group
           v-model="config.enabledMeeting"
           :disabled="disabled"
-          @change="handleDate(config, index)">
+          @change="handleDate(config)">
           <el-radio :label="1">支持会见申请</el-radio>
           <el-radio :label="0">不支持会见</el-radio>
         </el-radio-group>
@@ -36,7 +36,7 @@
           v-if="canSave(config) && !disabled && permission === 'edit'"
           type="primary"
           size="mini"
-          @click="handleSubmit(config)">保存</el-button>
+          @click="onSubmit(config, index)">保存</el-button>
         <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
         <el-button
           v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day && !disabled)"
@@ -45,16 +45,46 @@
           class="button-float"
           @click="onAddDay">新增特殊日期</el-button>
       </div>
-      <remote-timeprid-config v-if="config.enabledMeeting" :index="index" :disabled="disabled" :config="config" :durationDisabled="true">
-        <template v-slot:addButton>
-            <el-button
-              v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0 && !disabled)"
-              size="mini"
-              type="success"
-              @click="onAddDay">新增特殊日期</el-button>
-        </template>
-      </remote-timeprid-config>
-
+      <!-- 可配置/时间段存在 -->
+      <div
+        v-if="config.enabledMeeting && config.queue.length && flag"
+        style="overflow: hidden; margin-bottom: 10px;">
+        <label class="c-label">配置</label>
+        <div
+          style="float: left; width: calc(100% - 80px); overflow: hidden;">
+          <m-time-range-selector
+            v-for="(queue, o) in config.queue"
+            :key="o"
+            :val="queue"
+            :disabled="disabled"
+            :prev="config.queue[o - 1]"
+            :next="config.queue[o + 1]"
+            type="queue"
+            @handleBlur="handleBlur($event, config.queue, index)" />
+          <!-- 通常规时间配置 -->
+          <el-button
+            v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
+            type="primary"
+            size="mini"
+            class="button-float"
+            style="margin-right: 10px;"
+            @click="onAddRange(config.queue)">新增会见时间段</el-button>
+          <!-- 通常规时间配置 -->
+          <el-button
+            v-if="!disabled"
+            size="mini"
+            class="button-float"
+            :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+            @click="onRestQueue(config)">重置会见时间段</el-button>
+          <!--编辑状态并且支持通话并且选择了日期并且国科服务管理员角色并且是最新配置并且初始化了通话时间段-->
+          <el-button
+            v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0 && !disabled)"
+            size="mini"
+            type="success"
+            class="button-float"
+            @click="onAddDay">新增特殊日期</el-button>
+        </div>
+      </div>
     </div>
     <div
       class="button-box"
@@ -67,21 +97,11 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
-import isEqual from 'lodash/isEqual'
 import Moment from 'moment'
 import roles from '@/common/constants/roles'
-import remoteTimepridConfig from './remote-timeprid-config'
 export default {
-  components: {
-    remoteTimepridConfig
-  },
-
   data() {
     return {
-      timequeue: ['09:00','12:00'],
-      complexNormalConfig: {},
-      configAfter: null,
-      configBefore: null,
       // 监狱id: 信息管理员角色 是从用户里面取监狱id 其余是从路由里面取
       jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
       // data里面的特殊日期配置
@@ -122,10 +142,7 @@ export default {
       // 获取特殊日期配置
       this.getRemoteSpecialConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
-        this.configs = this.specialConfig.complexSpecialConfigs
-        this.complexNormalConfig = this.specialConfig.complexNormalConfig
-        this.configAfter = this.complexNormalConfig.configAfter
-        this.configBefore = this.complexNormalConfig.configBefore
+        this.configs = [...this.specialConfig]
       })
     }
   },
@@ -183,92 +200,21 @@ export default {
       })
       this.$emit('submit', params)
     },
-
-    handleSubmit(config) {
-      let c = [], t = [],
-      params = {
-        day: config.day,
-        enabledMeeting: config.enabledMeeting,
-        jailId: config.jailId,
-        duration: config.duration,
-        interval: config.interval
-      }
-      if ( config.enabledMeeting ) {
-        config.queue.forEach(q => c.push(q.join('-')))
-        config.timequeue.forEach(q => t.push(q.join('-')))
-        params.config = c
-        params.timeperiod = t
-      }
-      if ( (params.id = config.id) ) {
-        this.updateSpecialConfig(params).then(res => {
-          if (!res) return
-          config.oldDay = params.day
-        })
-      }
-      else {
-        this.addSpecialConfig(params).then(res => {
-          if (!res) return
-          config.oldDay = params.day
-          config.jailId = params.jailId
-          config.id = res.id
-        })
-      }
-    },
-
-    getInitParmas() {
-      return { enabledMeeting: 1, day: '', interval: '5', duration: '25', config: [], queue: [], timeperiod: [], timequeue: [] }
-    },
-
     // 选择日期后 初始化时间段
-    handleDate(current, i) {
+    handleDate(config) {
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
-      if (current.day && !!current.enabledMeeting) {
-        current.timequeue = [this.timequeue]
-        if ( !!i ) {
-          current.interval = this.configs[0].interval
-          current.duration = this.configs[0].duration
-        }
+      if (config.day && config.enabledMeeting && config.queue.length < 1) {
+        config.queue.push(this.queue)
       }
     },
-
-    // 选择日期后 初始化时间段
-    handleDatePicker(val, config, i) {
-      let enat = Moment(this.complexNormalConfig.enabledAt)
-      let inEnat = 0
-      let outEnat = 0
-      let durationList = []
-      if (val.length) {
-        val.forEach(v => {
-          if ( Moment(v).diff(enat) > 0 ) {
-            outEnat++
-            if ( this.configAfter && this.configAfter.length ) {
-              durationList[1] = this.configAfter[0].duration
-            }
-            durationList[1] = this.configBefore && this.configBefore.length && this.configBefore[0].duration
-          }
-          else {
-            inEnat++
-            durationList[0] = this.configBefore && this.configBefore.length && this.configBefore[0].duration
-          }
-        })
-
-        if ( outEnat && inEnat && durationList[1] != durationList[0] ) {
-          this.$message.error('所选日期常规配置中的通话时长不同，请分开配置！')
-          return
-        }
-        else if ( inEnat ) {
-          config.duration = durationList[0]
-        }
-        else if ( outEnat ) {
-          config.duration = durationList[1]
-        }
-
-        this.handleDate(config, i)
-      }
+    // 时间范围选择器组件 自定义的handleblur事件实际触发方法
+    handleBlur(e, queue) {
+      this.flag = false
+      queue[queue.length - 1] = e
+      this.flag = true
     },
-
     // 删除特殊日期配置
-    handleDeleteConfig(config, i) {
+    handleDeleteConfig(config, index) {
       if (config.id) {
         this.$confirm('是否确认删除？', '提示', {
           confirmButtonText: '确定',
@@ -277,27 +223,23 @@ export default {
         }).then(() => {
           this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
             if (!res) return
-            this.doDeleteConfig(i)
+            this.splice(index)
           })
         }).catch(() => {})
       }
       else {
-        this.doDeleteConfig(i)
+        this.splice(index)
       }
     },
     // 删除配置
-    doDeleteConfig(i) {
-      this.configs.splice(i, 1)
-      if( !this.configs.length ) {
-        this.configs.push(this.getInitParmas())
+    splice(index) {
+      if (this.configs.length > 1) {
+        this.configs.splice(index, 1)
+      }
+      else {
+        this.configs = [{ enabledMeeting: 1, day: '', config: [], queue: [] }]
       }
     },
-
-    // 新增特殊日期
-    onAddDay() {
-      this.configs.push( this.getInitParmas() )
-    },
-
     // 可保存状态 本质是一个特殊日期的实际变化
     canSave(config) {
       // config：当前特殊配置信息
@@ -316,17 +258,38 @@ export default {
         return false
       }
       // 新增的特殊日期配置 或者 是新增了通话时间段 或者是更换了新的配置日期
-      else if (!config.id || config.config.length !== config.queue.length || !isEqual(config.day, config.oldDay)) {
+      else if (!config.id || config.config.length !== config.queue.length || config.day !== config.oldDay) {
         return true
       }
       // 修改了某个通话时间段
       else {
+        console.log(4)
         for (let i = 0; i < config.queue.length; i++) {
           if (config.queue[i].join('-') !== config.config[i]) return true
         }
       }
     },
-
+    onAddRange(e) {
+      e.push(this.getNextRange(e[e.length - 1]))
+    },
+    onAddDay() {
+      this.configs.push({ day: '', config: [], queue: [], enabledMeeting: 1 })
+    },
+    onRestQueue(e) {
+      e.queue = [this.queue]
+    },
+    getNextRange(e) {
+      let sh = parseInt(e[0]),
+        eh = parseInt(e[1]),
+        sm = parseInt(e[0].split(':')[1]),
+        em = parseInt(e[1].split(':')[1]),
+        dur = (eh - sh) * 60 + em - sm,
+        time = Moment(new Date(2000, 0, 1, eh, em)).add(dur, 'minutes')
+      if (time.date() !== 1) {
+        return [e[1], '23:59']
+      }
+      return [e[1], time.format('HH:mm')]
+    },
     onGoBack() {
       this.$router.back()
     }

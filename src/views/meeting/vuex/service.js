@@ -14,7 +14,7 @@ export default {
   updateRemoteAdvanceDayLimit: (params) => {
     const defaultParams = {
       jailId: '', // 监狱id
-      advanceDayLimit: 1 // 提前预约天数
+      advanceDayLimit: [2, 15] // 提前预约天数
     }
     params = Object.assign({}, defaultParams, params)
 

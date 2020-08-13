@@ -1,18 +1,28 @@
 <template>
   <el-form>
-    <el-form-item label="亲情电话申请需提前">
+    <el-form-item label="亲情电话预约日期管理">
       <div class="remote-visit-box">
-        <el-select v-model="advanceDayLimit_" :disabled="disabled" size="small" placeholder="">
+        <el-select v-model="value.advanceDayLimit" :disabled="disabled" size="small">
           <el-option
-            v-for="item in 7"
+            v-for="item in advanceDayLimit_opt"
             :key="item"
             :label="item"
             :value="item">
           </el-option>
         </el-select>
-        &nbsp;&nbsp;天
+        &nbsp;&nbsp;天后
+        <span style="margin: 0 10px;">至</span>
+        <el-select v-model="value.dayInLimit" :disabled="disabled" size="small">
+          <el-option
+            v-for="item in dayInLimit_opt"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
+        &nbsp;&nbsp;天内（包含）
         <p v-if="!disabled" class="tip">
-          *每位家属需提前预约可视亲情电话天数（以自然日为单位）
+          *家属预约亲情电话日期设置，以自然日为单位
         </p>
         <div v-if="!disabled && hasUpdateBtn && hasChange" class="operate">
           <el-button
@@ -33,7 +43,7 @@ import { mapState } from 'vuex';
 export default {
   props: {
     // v-model的值
-    value: Number,
+    value: Object,
     // 是否有更新按钮-暂时不知道啥用
     hasUpdateBtn: {
       type: Boolean,
@@ -43,15 +53,18 @@ export default {
   data() {
     return {
       // 实际提前的天数
-      advanceDayLimit_: null
+      advanceDayLimit_: null,
+      dayInLimit_: null,
+      advanceDayLimit_opt: [],
+      dayInLimit_opt: []
     }
   },
   computed: {
-    ...mapState(['advanceDayLimit', 'global']),
+    ...mapState(['global']),
     // 是否修改了亲情电话申请提前天数
     hasChange() {
       // 不等于默认的配置天数
-      return this.advanceDayLimit !== this.advanceDayLimit_
+      return this.advanceDayLimit_ && this.value.advanceDayLimit !== this.advanceDayLimit_ || this.dayInLimit_ && this.value.dayInLimit !== this.dayInLimit_
     },
     // 当角色不是 国科服务管理人员的时候 为禁止状态
     disabled() {
@@ -60,22 +73,62 @@ export default {
   },
   watch: {
     // 当数据变化后 驱动 input 事件 响应 v-model的值双向绑定
-    advanceDayLimit_(val) {
-      this.$emit('input', val)
-    },
-    // v-model 语法糖的本质
-    value: {
-      immediate: true,
+    // advanceDayLimit_(val) {
+    //   this.dayInLimit_opt = []
+    //   for(let i = val; i <= 15; i++) {
+    //     this.dayInLimit_opt.push(i)
+    //   }
+    //   if( val > this.dayInLimit_ ) {
+    //     this.dayInLimit_ = val
+    //   }
+    //   this.$emit('input', {
+    //     advanceDayLimit: val,
+    //     dayInLimit: this.dayInLimit
+    //   })
+    // },
+    'value.advanceDayLimit': {
+      deep: true,
       handler(val) {
-        this.advanceDayLimit_ = val
+        this.dayInLimit_opt = []
+        for(let i = val; i <= 15; i++) {
+          this.dayInLimit_opt.push(i)
+        }
+        if( val > this.value.dayInLimit ) {
+          this.value.dayInLimit = val
+        }
       }
     }
+
+    // dayInLimit_(val) {
+    //   this.$emit('input', {
+    //     advanceDayLimit: this.advanceDayLimit,
+    //     dayInLimit: val
+    //   })
+    // },
+
+    // v-model 语法糖的本质
+    // value: {
+    //   immediate: true,
+    //   handler(val) {
+    //     console.log('value======', val)
+    //     this.advanceDayLimit_ = val.advanceDayLimit
+    //     this.dayInLimit_ = val.dayInLimit
+    //   }
+    // }
   },
   methods: {
     // 更新操作 调用父组件的 submit事件
     handleSubmit() {
-      this.$emit("submit", this.advanceDayLimit_)
+      this.$emit("submit")
     }
+  },
+  mounted() {
+    this.advanceDayLimit_opt = []
+    for(let i = 2; i <= 15; i++) {
+      this.advanceDayLimit_opt.push(i)
+    }
+    this.advanceDayLimit_ = this.value.advanceDayLimit
+    this.dayInLimit_ = this.value.dayInLimit
   }
 }
 </script>

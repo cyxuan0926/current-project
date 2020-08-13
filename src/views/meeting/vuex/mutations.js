@@ -1,10 +1,24 @@
 export default {
-  setAdvanceDayLimit(state, advanceDayLimit) {
+  setAdvanceDayLimits(state, advanceDayLimit) {
     state.advanceDayLimit = advanceDayLimit
+  },
+
+  setAdvanceDayLimit(state, dayLimit) {
+    state.dayLimit = dayLimit
   },
   getRemoteNormalConfig(state, params) {
     state.normalConfig = params
   },
+  // 设置远程常规配置
+  setRemoteNormalConfigs(state, params) {
+    state.normalCongigs = { ...params }
+  },
+
+  // 设置远程特殊日期配置
+  setRemoteSpecialConfigs(state, params) {
+    state.specialConfigs = { ...params }
+  },
+
   // 远程特殊日期配置
   getRemoteSpecialConfig(state, params) {
     state.specialConfig = params

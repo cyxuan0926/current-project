@@ -524,7 +524,7 @@ export default {
       } else {
         // 不同意
         if (this.remarks === '其他') this.$refs.refuseForm.onSubmit()
-        else this.onAuthorization({ id, remarks: this.remarks }, 'DENIED')
+        else this.onAuthorization({ id, remarks: this.remarks.replace(/\s*/g, '') }, 'DENIED')
       }
     },
 
@@ -540,6 +540,7 @@ export default {
     // 审批操作
     async onAuthorization(...args) {
       const [ filterParams, status ] = args
+      console.log(args)
 
       let params
 
@@ -559,14 +560,18 @@ export default {
 
           params = {
             ...params,
-            remarks: refuseRemark
+            remarks: refuseRemark.replace(/\s*/g, '')
           }
         }
 
         if (status === 'WITHDRAW') {
+          let { withdrawReason } = filterParams
+
+          withdrawReason = withdrawReason.replace(/\s*/g, '')
+
           params = {
             ...params,
-            ...filterParams
+            withdrawReason
           }
         }
       }

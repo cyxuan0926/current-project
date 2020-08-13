@@ -539,6 +539,8 @@ export default {
           items = Object.assign({},{
             reason: {
               type: 'textarea',
+              maxlength: 200,
+              showWordLimit: true,
               noLabel: true,
               placeholder: '请输入加入黑名单理由',
               autosize: { minRows: 5 },
