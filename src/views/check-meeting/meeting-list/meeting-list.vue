@@ -651,9 +651,9 @@ export default {
       if (e === 'DENIED') {
         if (this.remarks === '其他') {
           const { refuseRemark } = args
-          params.remarks = refuseRemark
+          params.remarks = refuseRemark.replace(/\s*/g, '')
         }
-        else params.remarks = this.remarks
+        else params.remarks = this.remarks.replace(/\s*/g, '')
         if (params.remarks) this.handleSubmit(params)
       }
       else this.handleSubmit(params)

@@ -292,7 +292,7 @@
                 show-word-limit
                 maxlength="200"
                 placeholder="请输入驳回原因..."
-                v-model.trim="refuseForm.anotherRemarks" />
+                v-model="refuseForm.anotherRemarks" />
             </el-form-item>
           </el-form>
           <el-button
@@ -345,7 +345,7 @@
                 show-word-limit
                 maxlength="200"
                 placeholder="请输入撤回理由..."
-                v-model.trim="withdrawForm.withdrawReason" />
+                v-model="withdrawForm.withdrawReason" />
             </el-form-item>
           </el-form>
           <el-button
@@ -554,14 +554,14 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if (this.remarks === '其他' && e !== 'WITHDRAW') {
           this.$refs.refuseForm.validate(valid => {
-            if (valid) params.remarks = this.refuseForm.anotherRemarks
+            if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
         else params.remarks = this.remarks
         if (e === 'WITHDRAW') {
           this.$refs.withdrawForm.validate(valid => {
-            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason
+            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }

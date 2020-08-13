@@ -75,8 +75,6 @@ export default {
 
           showWordLimit: true,
 
-          isTrim: true,
-
           noLabel: true,
 
           label: '驳回原因'
