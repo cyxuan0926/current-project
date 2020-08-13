@@ -86,10 +86,10 @@
             />
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="身份证件有效期至"
           prop="validDate"
-        />
+        /> -->
         <el-table-column
           label="家属类型"
           prop="domicileName"
@@ -103,18 +103,25 @@
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
-          prop="prisonerNumber"
-          show-overflow-tooltip
-          label="罪犯编号"
-          min-width="50"
-        />
-        <el-table-column
-          v-if="isInWhitelist"
+          v-if="isShowPrisonerName"
           prop="prisonerName"
           show-overflow-tooltip
           label="罪犯姓名"
           min-width="55"
         />
+        <el-table-column
+          prop="prisonerNumber"
+          show-overflow-tooltip
+          label="罪犯编号"
+          min-width="50"
+        />
+        <!-- <el-table-column
+          v-if="isInWhitelist"
+          prop="prisonerName"
+          show-overflow-tooltip
+          label="罪犯姓名"
+          min-width="55"
+        /> -->
         <el-table-column
           prop="prisonArea"
           show-overflow-tooltip
@@ -177,6 +184,11 @@
               @click="handleCallback(scope.row)">撤回
             </el-button>
             <el-button
+              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'DENIED'"
+              size="mini"
+              @click="handleAuthorDetail(scope.row.id)">详情
+            </el-button>
+            <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
               @click="onView(scope.row)">查看</el-button>
@@ -188,6 +200,20 @@
       ref="pagination"
       :total="registrations.total"
       @onPageChange="getDatas" />
+    <el-dialog
+      :visible.sync="showDetail"
+      class="authorize-dialog"
+      title="详情"
+      @close="showDetail = false"
+      width="530px">
+      <registration-detail :toAuthorize="authorizeDetData" />
+      <div class="button-box view-box">
+        <el-button
+          type="danger"
+          plain
+          @click="showDetail = false">关闭</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
@@ -401,14 +427,18 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
+import registrationDetail from './registration-detail'
+import http from '@/service'
 
 export default {
+  components: {
+    registrationDetail
+  },
   mixins: [prisonFilterCreator],
   data() {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
-    return {
-      searchItems: {
+    const _items = {
         name: {
           type: 'input',
           label: '家属姓名'
@@ -434,7 +464,7 @@ export default {
           label: '审核状态',
           options: this.$store.state.registStatus,
           miss: true,
-          no: ['DENIED'],
+          // no: ['DENIED'],
           value: ''
         },
         auditAt: {
@@ -448,7 +478,16 @@ export default {
           options: switches['nationality'],
           value: ''
         }
-      },
+      }
+    return {
+      showDetail: true,
+      authorizeDetData: {},
+      searchItems: Object.assign(_items, this.isShowPrisonerName ? {
+        prisonerName: {
+          type: 'input',
+          label: '罪犯编号'
+        },
+      } : {}),
       toAuthorize: {},
       show: {
         authorize: false,
@@ -513,7 +552,7 @@ export default {
       'registrations',
       'registRemarks',
       'notification']),
-    ...mapGetters(['isInWhitelist']),
+    ...mapGetters(['isInWhitelist', 'isShowPrisonerName']),
 
       relationalWidth() {
         const widthConstent = {
@@ -539,8 +578,12 @@ export default {
 
       const params = { ...this.filter, ...this.pagination }
 
-      if (this.hasAllPrisonQueryAuth) this.getRegistrationsAll(params)
-      else this.getRegistrations(params)
+      if (this.hasAllPrisonQueryAuth) {
+        this.getRegistrationsAll(params)
+      }
+      else {
+        this.getRegistrations(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -584,6 +627,10 @@ export default {
           this.getDatas()
         }
       })
+    },
+    async handleAuthorDetail(id) {
+      this.authorizeDetData = await http.getRegistrationsDetail({ id })
+      this.showDetail = true
     },
     handleCallback(e) {
       this.toAuthorize = e
