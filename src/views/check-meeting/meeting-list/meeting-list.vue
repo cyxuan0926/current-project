@@ -93,7 +93,12 @@
       <div
         v-if="!show.agree && !show.disagree"
         class="button-box">
+        <repetition-el-buttons :buttonItems="authorizeButtons" />
+      </div>
 
+      <div
+        v-if="show.agree"
+        class="button-box">
         <el-table
           :data="meetingAdjustmentCopy.terminals"
           border
@@ -120,40 +125,12 @@
             :label="item"
             width="120">
           </el-table-column>
-
         </el-table>
-
       </div>
-        <span   v-if="!show.agree && !show.disagree"  slot="footer" class="dialog-footer">
+      <span   v-if="show.agree" slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
           <el-button @click="closeAuthorize">取 消</el-button>
         </span>
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <el-table
-          :data="meetingAdjustment.terminals"
-          style="width: 100%"
-          max-height="250">
-          <el-table-column
-            fixed
-            prop="prisonConfigName"
-            label="日期"
-            width="150">
-          </el-table-column>
-          <el-table-column
-            prop="jailName"
-            label="姓名"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="省份"
-            width="120">
-          </el-table-column>
-        </el-table>
-          <repetition-el-buttons :buttonItems="showAgreeButtons" />
-      </div>
       <div
         v-if="show.disagree"
         class="button-box">
@@ -353,6 +330,7 @@ import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+import http from '@/service'
 
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
@@ -529,86 +507,8 @@ export default {
         //   definedClass: idCardClassName
         // }
       ],
-      meetingAdjustment: {
-        meetingQueue: ["19:00-19:05", "19:30-19:35", "10:30-11:35"],
-        meetings:[{meetingTime:"2020-08-11 19:00-19:05",
-                   terminalNumber: "12334",name: "吕能仕"},
-                 {meetingTime:"2020-08-11 10:30-11:35",
-                   terminalNumber: "1233",name: "吕仕"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "1233",name: "了解"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "1211",name: "了解"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "12551",name: "了a解"}
-        ],
-        terminals:[
-          {
-            prisonConfigName: '一监区',
-            address: '上海市普陀区金沙江路 1518 弄',
-            terminalNumber:1233,
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '2监区',
-            address: '上海市普陀区金沙江路 1518 弄',
-            terminalNumber:12334,
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '1监区',
-            terminalNumber:1211,
-            address: '上海市普陀区金沙江路 1518 弄',
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '3监区',
-            terminalNumber:12551,
-            address: '上海市普陀区金沙江路 1518 弄',
-            jailName: "梅溪湖大监狱"
-          },
-        ]
-      },
-      meetingAdjustmentCopy: {
-        meetingQueue: ["19:00-19:05", "19:30-19:35", "10:30-11:35"],
-        meetings:[{meetingTime:"2020-08-11 19:00-19:05",
-          terminalNumber: "12334",name: "吕能仕"},
-          {meetingTime:"2020-08-11 10:30-11:35",
-            terminalNumber: "1233",name: "吕仕"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "1233",name: "了解"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "1211",name: "了解"},
-          {meetingTime:"2020-08-11 19:30-19:35",
-            terminalNumber: "12551",name: "了a解"}
-        ],
-        terminals:[
-          {
-            prisonConfigName: '一监区',
-            address: '上海市普陀区金沙江路 1518 弄',
-            terminalNumber:1233,
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '2监区',
-            address: '上海市普陀区金沙江路 1518 弄',
-            terminalNumber:12334,
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '1监区',
-            terminalNumber:1211,
-            address: '上海市普陀区金沙江路 1518 弄',
-            jailName: "梅溪湖大监狱"
-          },
-          {
-            prisonConfigName: '3监区',
-            terminalNumber:12551,
-            address: '上海市普陀区金沙江路 1518 弄',
-            jailName: "梅溪湖大监狱"
-          },
-        ]
-      },
+      meetingAdjustment: {},
+      meetingAdjustmentCopy: {},
     }
   },
   computed: {
@@ -781,18 +681,15 @@ export default {
              }
          })
        } )
-       console.log(this.toAuthorize)
        row[column.label]=this.toAuthorize.name
-       console.log(row)
        this.$set(this.meetingAdjustmentCopy.terminals, row.index,row)
      }
+     console.log(row)
       for (let index in row) {
         if(row[index]==this.toAuthorize.name){
-          this.submitSuccessParams={terminalId:row.terminalNumber,meetingTime:index}
+          this.submitSuccessParams={terminalId:row.id,meetingTime:index}
         }
       }
-
-      console.log(this.submitSuccessParams)
     },
     setMeetingAdjustment({meetingQueue,meetings,terminals}){
       terminals.filter(item=>{
@@ -831,11 +728,13 @@ export default {
       this.toAuthorize = e
       this.show.agree = false
       this.show.disagree = false
-      this.show.authorize = true
-
       this.submitSuccessParams=null
-      this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
-      this.setMeetingAdjustment(this.meetingAdjustmentCopy)
+      http.getMeetTimeConfig({id:this.toAuthorize.id}).then(res=>{
+        this.show.authorize = true
+        this.meetingAdjustment=res
+        this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
+        this.setMeetingAdjustment(this.meetingAdjustmentCopy)
+      })
     },
     handleWithdraw(e) {
       this.toAuthorize = e
@@ -920,8 +819,6 @@ export default {
     },
     //覆盖mixin 授权对话框同意情况下的确认操作
     onPassedAuthorize() {
-
-
       this.onAuthorization('PASSED')
     },
     //覆盖mixin 授权对话框同意情况下的返回操作
@@ -955,7 +852,13 @@ export default {
     },
     submitSuccess(){
         let params={meetingId:this.toAuthorize.id,terminalId:this.submitSuccessParams.terminalId,meetingTime:this.submitSuccessParams.meetingTime}
-        alert(22)
+      http.meetingSelectAuthorize(params).then(res=>{
+        if (!res) return
+        this.closeAuthorize()
+        this.toAuthorize = {}
+        this.submitSuccessParams=null
+        this.getDatas('handleSubmit')
+      })
     },
     onWithdraw(arg) {
       const { remarks } = arg
