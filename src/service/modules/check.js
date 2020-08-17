@@ -242,5 +242,13 @@ export default {
   // 会见申请管理-远程会见申请-单条审核通过
   authorizeSingleMeeting: params => {
     return service.post('/meetings/singleAuthorize', params)
+  },
+  // 情亲会见申请管理-审核通过
+  meetingSelectAuthorize: params => {
+    return service.post('/meetings/selectAuthorize', params)
+  },
+  // 情亲会见申请管理-终端会见配置时间列表
+  getMeetTimeConfig: params => {
+    return service.get('/meetings/query-meettime-config', params).then(res => res && res.data)
   }
 }

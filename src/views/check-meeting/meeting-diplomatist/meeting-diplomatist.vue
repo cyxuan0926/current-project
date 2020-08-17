@@ -130,7 +130,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为"{{clashTime}}",外交领事馆可视电话时间请勿与之冲突</p>
+          <p style="margin-bottom: 22px;height: 40px;line-height: 40px"><label style="margin-right: 4px;color:#f56c6c ">*</label>提示：当前监狱家属可视电话时间段为 <span>{{ clashTime.join('，') }}</span>,外交领事馆可视电话时间请勿与之冲突</p>
         </el-form>
         <repetition-el-buttons :buttonItems="showAgreeButtons" />
       </div>
@@ -332,7 +332,7 @@ export default {
       startTime:"",
       endTime:"",
       selectValue:"",
-      clashTime:"",
+      clashTime:[],
       selectOptions: [],
       tabs: '',
       searchItems: {
@@ -441,9 +441,9 @@ export default {
           autosize: { minRows: 2 },
           rules: [
             'required',
-            'lengthRange-15'
+            'lengthRange-200'
           ],
-          maxlength: 15,
+          maxlength: 200,
           showWordLimit: true,
           isTrim: true,
           noLabel: true,
@@ -718,13 +718,6 @@ export default {
     }
   },
   mounted() {
-    // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-    //   this.$set(this.searchItems.applicationDate, 'miss', true)
-    //   this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-    // } else {
-    //   this.$set(this.searchItems.applicationDate, 'miss', false)
-    //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
-    // }
     this.getDatas('mounted')
   },
   created(){
@@ -850,7 +843,7 @@ export default {
     },
     getClashTime(){
       let params={jailId:this.toAuthorize.jailId,meetingDay:this.toAuthorize.meetingTime}
-        this.clashTime=""
+        this.clashTime=[]
       http.getMeetingsDiplomatsfamilyMeetingTimes(params).then(res => {
         this.clashTime=res
       })
