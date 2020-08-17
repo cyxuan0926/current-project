@@ -1,5 +1,48 @@
 <template>
-  <div>
+  <section>
+    <div class="meeting-list">
+      <div class="meeting-list-deviceNo">
+        <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
+        <div class="meeting-list-cell meeting-list-th">23625</div>
+        <div class="meeting-list-cell meeting-list-th">23626</div>
+        <div class="meeting-list-cell meeting-list-th">23627</div>
+      </div>
+      <div class="meeting-list-deviceName">
+        <h3 class="meeting-list-cell meeting-list-th">终端别名</h3>
+        <div class="meeting-list-cell">哈哈</div>
+        <div class="meeting-list-cell">啦啦啦</div>
+        <div class="meeting-list-cell">啦啦啦</div>
+      </div>
+      <div class="meeting-list-jailArea">
+        <h3 class="meeting-list-cell meeting-list-th">监区</h3>
+        <div class="meeting-list-cell">监区1213</div>
+        <div class="meeting-list-cell">监区565665</div>
+        <div class="meeting-list-cell">监区7879</div>
+      </div>
+      <div class="meeting-list-block">
+        <div class="meeting-list-block-scroller" style="width: 1000px">
+          <div class="meeting-list-block__head">
+            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
+            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
+            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
+            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
+          </div>
+          <div class="meeting-list-block__body">
+            <div class="meeting-list-cell"></div>
+            <div class="meeting-list-cell"></div>
+            <div class="meeting-list-cell draggable">吕能仕（囚）吕能仕（亲）</div>
+            <div class="meeting-list-cell"></div>
+            <div class="meeting-list-cell"></div>
+            <div class="meeting-list-cell"></div>
+            <div class="meeting-list-cell"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div>
     <div
       class="meeting-table meeting-table__header"
       v-show="hasTerminal && hasMeetingQueue"
@@ -48,6 +91,8 @@
       </m-draggable>
     </div>
   </div>
+  </section>
+
 </template>
 
 <script>
@@ -263,6 +308,69 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.meeting-list {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+
+  .meeting-list-deviceNo {
+    .meeting-list-cell {
+      width: 120px;
+    }
+  }
+
+  .meeting-list-jailArea {
+    .meeting-list-cell {
+      width: 150px;
+    }
+  }
+
+  .meeting-list-block {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .meeting-list-block__head,
+  .meeting-list-block__body {
+    width: 100%;
+
+    .meeting-list-cell {
+      float: left;
+    }
+  }
+
+  .meeting-list-block__body {
+    .meeting-list-cell {
+      margin-top: 0;
+
+      &.draggable {
+        color: #fff;
+        background-color: #3c8dbc;
+        cursor: move;
+      }
+    }
+  }
+
+  .meeting-list-cell {
+    width: 220px;
+    background-color: #f4f4f5;
+    height: 42px;
+    margin: 8px 4px;
+    border-radius: 3px;
+    line-height: 42px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0px 0px 2px rgba(0,0,0,0.382);
+  }
+
+  .meeting-list-th {
+    background-color: #f4f4f5;
+    font-size: 14px;
+  }
+}
+
+
 .meeting-table {
   display: flex;
   color: #606266;
