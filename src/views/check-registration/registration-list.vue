@@ -44,7 +44,7 @@
         <el-table-column
           show-overflow-tooltip
           label="家属姓名"
-          min-width="55"
+          min-width="50"
         >
           <template slot-scope="scope">
             <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
@@ -53,6 +53,7 @@
         <el-table-column
           v-if="isInWhitelist"
           prop="phone"
+          min-width="90"
           label="家属电话"
         />
         <el-table-column
@@ -88,7 +89,7 @@
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="80"
+          min-width="70"
         />
         <el-table-column
           label="申请时间"

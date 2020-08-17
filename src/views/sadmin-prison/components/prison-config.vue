@@ -234,11 +234,19 @@ export default {
             message: '请输入监区名称',
             required: true,
             validator: validator.required
-          }]},
+          }]
+        },
         agreement: {
           type: 'switch',
           label: '线上签署《亲情电话告知书》',
           disabled,
+          value: 0
+        },
+        family_phone: {
+          type: 'switch',
+          label: '显示家属电话',
+          disabled,
+          rules: ['required'],
           value: 0
         },
         meeting: {
