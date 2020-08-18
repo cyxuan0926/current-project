@@ -49,9 +49,9 @@
             />
             </div>
         </template>
-        <div style="margin-bottom: 10px;">{{ toAuthorize.status === '' }}审核未通过原因：</div>
-        <div class="img-box"></div>
-        <div style="margin-bottom: 10px;">审核时间：</div>
+        <div style="margin-bottom: 10px;">审核未通过原因：</div>
+        <div class="img-box">{{ toAuthorize.remarks }}</div>
+        <div style="margin-bottom: 10px;">审核时间：{{ toAuthorize.auditAt }}</div>
     </div>
 </template>
 
@@ -70,6 +70,18 @@
                 }
             }
             this.toAuthorize.relationalProofUrls = _relationalProofUrls
+        },
+        computed: {
+            relationalWidth() {
+                const widthConstent = {
+                    0: '0%',
+                    1: '32%',
+                    2: '48%',
+                    3: '32%',
+                    4: '24%'
+                }
+                return widthConstent[this.toAuthorize.relationalProofUrls.length]
+            }
         }
     }
 </script>

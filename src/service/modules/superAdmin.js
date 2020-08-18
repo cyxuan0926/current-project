@@ -116,6 +116,10 @@ export default {
   enableTerminal: params => {
     return service.postObj('/terminals/enabled', params).then(res => res && res.code === 200)
   },
+  // 终端管理-编辑终端别名
+  updateTerminalName: params => {
+    return service.postObj('/terminals/edit/terminalName', params).then(res => res && res.code === 200)
+  },
   // 版本管理-列表
   getVersions: params => {
     return service.get('/versions/page', params).then(res => res && res.data)

@@ -1,48 +1,59 @@
 <template>
   <section>
-    <div class="meeting-list">
+    <div class="meeting-list" v-show="hasTerminal && hasMeetingQueue">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
-        <div class="meeting-list-cell meeting-list-th">23625</div>
-        <div class="meeting-list-cell meeting-list-th">23626</div>
-        <div class="meeting-list-cell meeting-list-th">23627</div>
+        <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
       </div>
       <div class="meeting-list-deviceName">
         <h3 class="meeting-list-cell meeting-list-th">终端别名</h3>
-        <div class="meeting-list-cell">哈哈</div>
-        <div class="meeting-list-cell">啦啦啦</div>
-        <div class="meeting-list-cell">啦啦啦</div>
+        <div class="meeting-list-cell meeting-list-cell__tername" v-for="t in terminals" :key="t.id">
+          <template v-if="!t.isEdit">
+            <span class="meeting-list-cell__tername__flex">{{ t.terminalName || '暂无' }}</span>
+            <el-button class="meeting-list-cell__tername__edit" type="text" icon="el-icon-edit-outline" @click="handleEditTername(t)"></el-button>
+          </template>
+          <template v-else>
+            <el-input
+              class="meeting-list-cell__tername__flex meeting-list-cell__tername__inp"
+              placeholder="请输入终端别名"
+              v-model="t.terminalName"
+              clearable>
+            </el-input>
+            <el-button class="meeting-list-cell__tername__btn" type="text" @click="handleSaveTername(t)">保存</el-button>
+          </template>
+        </div>
       </div>
       <div class="meeting-list-jailArea">
         <h3 class="meeting-list-cell meeting-list-th">监区</h3>
-        <div class="meeting-list-cell">监区1213</div>
-        <div class="meeting-list-cell">监区565665</div>
-        <div class="meeting-list-cell">监区7879</div>
+        <div class="meeting-list-cell" v-for="t in terminals" :key="t.id">{{ t.prisonConfigName }}</div>
       </div>
       <div class="meeting-list-block">
-        <div class="meeting-list-block-scroller" style="width: 1000px">
-          <div class="meeting-list-block__head">
-            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
-            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
-            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
-            <div class="meeting-list-cell meeting-list-th">09:00-09:25</div>
-          </div>
-          <div class="meeting-list-block__body">
-            <div class="meeting-list-cell"></div>
-            <div class="meeting-list-cell"></div>
-            <div class="meeting-list-cell draggable">吕能仕（囚）吕能仕（亲）</div>
-            <div class="meeting-list-cell"></div>
-            <div class="meeting-list-cell"></div>
-            <div class="meeting-list-cell"></div>
-            <div class="meeting-list-cell"></div>
-          </div>
+        <div class="meeting-list-block-scroller" style="width: 9000px">
+          
+          <section class="meeting-list-block__wrap" v-for="(meetings, i) in meetingsData" 
+            :key="meetings.id || uuId()">
+            <div class="meeting-list-block__head">
+              <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
+            </div>
+            <m-draggable class="meeting-list-block__body" :options="dragOptions">
+              <div class="meeting-list-cell" 
+                v-for="m in meetings"
+                :key="m.id || uuId()"
+                :class="[ m.id ? 'draggable' : 'undraggable' ]"
+                :data-meeting-time="m.meetingTime"
+                :data-terminal-id="m.terminalId"
+                :data-terminal-number="m.terminalNumber"
+                :__MEETING__.prop="m"><span v-if="m.prisonerName">{{ m.prisonerName }}（囚）</span><span v-if="m.name">{{ m.name }}（亲）</span></div>
+            </m-draggable>
+          </section>
+          
         </div>
       </div>
     </div>
 
 
 
-    <div>
+    <!-- <div>
     <div
       class="meeting-table meeting-table__header"
       v-show="hasTerminal && hasMeetingQueue"
@@ -90,14 +101,14 @@
         </div>
       </m-draggable>
     </div>
-  </div>
+  </div> -->
   </section>
 
 </template>
 
 <script>
 import { uuId } from "@/utils/helper";
-
+import http from '@/service'
 export default {
   props: {
     meetingAdjustment: {
@@ -114,7 +125,15 @@ export default {
   },
 
   data() {
-    return {};
+    return {
+      terminals: []
+    };
+  },
+
+  created() {
+    this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
+      isEdit: false
+    }))
   },
 
   computed: {
@@ -144,9 +163,13 @@ export default {
     },
 
     // 终端
-    terminals() {
-      return this.meetingAdjustment.terminals || [];
-    },
+    // terminals: {
+    //   get() {
+    //     return this.meetingAdjustment.terminals.map(t => Object.assign(t, {
+    //       isEdit: false
+    //     })) || [];
+    //   }
+    // },
 
     // 通话纪录
     meetings() {
@@ -189,6 +212,25 @@ export default {
   },
 
   methods: {
+    setTerStatus(ter, flag) {
+      this.terminals = this.terminals.map(t => {
+        if( t.id === ter.id ) {
+          ter.isEdit = flag
+          return ter
+        }
+        return t
+      })
+    },
+
+    handleEditTername(ter) {
+      this.setTerStatus(ter, true)
+    },
+
+    async handleSaveTername(ter) {
+      this.setTerStatus(ter, false)
+      await http.updateTerminalName(ter)
+    },
+
     uuId,
 
     onEnd(evt) {
@@ -328,16 +370,12 @@ export default {
   .meeting-list-block {
     flex: 1;
     overflow: hidden;
+    overflow-x: auto;
     position: relative;
   }
 
-  .meeting-list-block__head,
-  .meeting-list-block__body {
-    width: 100%;
-
-    .meeting-list-cell {
-      float: left;
-    }
+  .meeting-list-block__wrap {
+    float: left;
   }
 
   .meeting-list-block__body {
@@ -348,6 +386,11 @@ export default {
         color: #fff;
         background-color: #3c8dbc;
         cursor: move;
+      }
+
+      &.swap-target {
+        color: #fff;
+        background-color: #f56c6c;
       }
     }
   }
@@ -367,6 +410,28 @@ export default {
   .meeting-list-th {
     background-color: #f4f4f5;
     font-size: 14px;
+  }
+
+  .meeting-list-cell__tername {
+    display: flex;
+
+    &__flex {
+      flex: 1;
+      text-align: center;
+    }
+
+    &__edit {
+      margin-right: 6px;
+    }
+
+    /deep/ &_inp input {
+      border: none;
+      margin: 0 6px;
+    }
+
+    &_btn {
+      margin-right: 6px;
+    }
   }
 }
 

@@ -72,6 +72,10 @@ export default {
           prop: 'terminalNumber'
         },
         {
+          label: '终端别名',
+          prop: 'terminalName'
+        },
+        {
           label: '终端类型',
           slotName: 'terminalType'
         },

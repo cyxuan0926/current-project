@@ -29,6 +29,6 @@ export default {
   },
 
   isShowPrisonerName(state) {
-    return state.user.showPrisonerName === '1'
+    return state.user.showPrisonerName === 1
   }
 }

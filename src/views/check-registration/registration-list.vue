@@ -480,7 +480,7 @@ export default {
         }
       }
     return {
-      showDetail: true,
+      showDetail: false,
       authorizeDetData: {},
       searchItems: Object.assign(_items, this.isShowPrisonerName ? {
         prisonerName: {
