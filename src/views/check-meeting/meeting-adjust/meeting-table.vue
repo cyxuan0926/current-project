@@ -29,29 +29,86 @@
       </div>
       <div class="meeting-list-block">
         <div class="meeting-list-block-scroller" style="width: 9000px">
-          
           <section class="meeting-list-block__wrap" v-for="(meetings, i) in meetingsData" 
             :key="meetings.id || uuId()">
             <div class="meeting-list-block__head">
               <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
             </div>
             <m-draggable class="meeting-list-block__body" :options="dragOptions">
-              <div class="meeting-list-cell" 
+              <div class="meeting-list-cell meeting-list-cell__drag" 
                 v-for="m in meetings"
                 :key="m.id || uuId()"
                 :class="[ m.id ? 'draggable' : 'undraggable' ]"
                 :data-meeting-time="m.meetingTime"
                 :data-terminal-id="m.terminalId"
                 :data-terminal-number="m.terminalNumber"
-                :__MEETING__.prop="m"><span v-if="m.prisonerName">{{ m.prisonerName }}（囚）</span><span v-if="m.name">{{ m.name }}（亲）</span></div>
+                :__MEETING__.prop="m">
+                  <template v-if="!!m.id">
+                    <div class="meeting-list-cell__names">{{ m | getMeetingsName }}</div>
+                    <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m)"></el-button>
+                  </template>
+              </div>
             </m-draggable>
           </section>
-          
         </div>
       </div>
     </div>
 
-
+    <el-dialog
+      title="亲情电话申请调整"
+      :visible.sync="meetingVisible"
+      width="640px">
+      <section>
+        <div class="across-filter">
+          <label class="filter__label">调整日期</label>
+          <el-date-picker
+            style="width: 150px; margin-right: 10px;"
+            v-model="acrossAdjustDate"
+            type="date"
+            format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd"
+            :clearable="false"
+            :picker-options="pickerOptions"
+          />
+          <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button>
+        </div>
+      </section>
+      <el-table
+        class="across-table"
+        :data="crossMeetingData"
+        @cell-click="handleCellClick"
+        border
+        style="width: 100%">
+        <el-table-column
+          fixed
+          prop="terminalNumber"
+          label="终端号"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          fixed
+          prop="terminalName"
+          label="终端别名"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          v-for="t in crossMeetingQueue"
+          align="center"
+          width="120"
+          :key="t"
+          :prop="t"
+          :label="t">
+          <template slot-scope="scope">
+            <span v-if="scope.row[t]">已申请</span>
+            <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross()">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="meetingVisible = false">取 消</el-button>
+        <el-button type="primary" @click="meetingVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <!-- <div>
     <div
@@ -109,6 +166,7 @@
 <script>
 import { uuId } from "@/utils/helper";
 import http from '@/service'
+import Monent from 'moment'
 export default {
   props: {
     meetingAdjustment: {
@@ -126,7 +184,20 @@ export default {
 
   data() {
     return {
-      terminals: []
+      terminals: [],
+      crossMeetingData: [],
+      crossMeetings: [],
+      crossTerminals: [],
+      crossMeetingQueue: [],
+      crossMeetingCurrent: {},
+      meetingVisible: false,
+      acrossAdjustDate: '',
+      pickerOptions: {
+        // 仅支持 2 天后的会见申请调整
+        disabledDate(time) {
+          return time.getTime() < Date.now() + 24 * 3600 * 1000;
+        }
+      }
     };
   },
 
@@ -134,6 +205,9 @@ export default {
     this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
       isEdit: false
     }))
+    this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
+    this.handleGetConfigs()
+    console.log( this.acrossAdjustDate )
   },
 
   computed: {
@@ -211,7 +285,79 @@ export default {
     }
   },
 
+  filters: {
+    getMeetingsName(m) {
+      console.log(m)
+      let names = ''
+      if (m.prisonerName) {
+        names += `${m.prisonerName}（囚）`
+      }
+      if (m.name) {
+        names += `${m.name}（亲）`
+      }
+      return names
+    }
+  },
+
   methods: {
+    handleCellClick(row, column, cell, event) {
+      let els = document.querySelectorAll('.acrosssel-btn')
+      els.forEach(el => el.classList.remove('selected'))
+      cell.querySelector('.acrosssel-btn').classList.add('selected')
+    },
+
+    handleShowacross(m) {
+      this.crossMeetingCurrent = m
+      this.meetingVisible = true
+    },
+    handleSelectAcross() {
+      console.log('选择')
+    },
+
+    async handleGetConfigs() {
+      let { data } = await http.getMeetingConfigs(this.acrossAdjustDate)
+      console.log(data)
+      let applyList = {}
+      this.crossMeetings = data.meetings
+      this.crossTerminals = data.terminals
+      this.crossMeetingQueue = data.meetingQueue
+
+      let message = ""
+
+      if (!this.crossMeetings || !this.crossMeetings.length) {
+        message = "该日无申请"
+      } else if (!this.crossTerminals || !this.crossTerminals.length) {
+        message = "该日无可用终端"
+      } else if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
+        message = "该日无可调整时间段"
+      }
+
+      if (message) {
+        this.$message.closeAll()
+        this.$message.warning(message)
+      }
+
+      if (this.crossMeetings) {
+        this.crossMeetings.forEach(m => {
+          applyList[m.terminalNumber + m.meetingTime.split(' ')[1]] = true
+        })
+      }
+
+      if (this.crossTerminals && this.crossMeetingQueue) {
+        this.crossTerminals.forEach(c => {
+          let m = {
+            terminalNumber: c.terminalNumber,
+            terminalName: c.terminalName,
+          }
+          this.crossMeetingQueue.forEach(q => {
+            m[q] = !!applyList[c.terminalNumber + q]
+          })
+          this.crossMeetingData.push(m)
+        })
+      }
+
+    },
+
     setTerStatus(ter, flag) {
       this.terminals = this.terminals.map(t => {
         if( t.id === ter.id ) {
@@ -385,7 +531,6 @@ export default {
       &.draggable {
         color: #fff;
         background-color: #3c8dbc;
-        cursor: move;
       }
 
       &.swap-target {
@@ -421,20 +566,65 @@ export default {
     }
 
     &__edit {
-      margin-right: 6px;
+      margin-right: 10px;
     }
 
-    /deep/ &_inp input {
+    /deep/ &__inp input {
       border: none;
-      margin: 0 6px;
     }
 
-    &_btn {
+    &__btn {
       margin-right: 6px;
+    }
+  }
+
+  .meeting-list-cell__drag {
+    display: flex;
+
+    .meeting-list-cell__names {
+      flex: 1;
+      cursor: move;
+    }
+    .meeting-list-cell__acrossdate {
+      color: #fff;
+      cursor: pointer;
+      margin-right: 10px;
     }
   }
 }
 
+.across-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .filter__label {
+    font-size: 12px;
+    margin-right: 10px;
+    color: #666;
+  }
+}
+
+.across-table {
+  /deep/ td {
+    border-bottom: 1px solid #e6e6e6 !important;
+    position: relative;
+  }
+
+  .acrosssel-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+
+    &.selected {
+      color: #fff;
+      background-color: #3c8dbc;
+    }
+  }
+}
 
 .meeting-table {
   display: flex;
