@@ -14,6 +14,7 @@
           </template>
           <template v-else>
             <el-input
+              maxlength="10"
               class="meeting-list-cell__tername__flex meeting-list-cell__tername__inp"
               placeholder="请输入终端别名"
               v-model="t.terminalName"
@@ -197,7 +198,7 @@ export default {
       pickerOptions: {
         // 仅支持 2 天后的会见申请调整
         disabledDate(time) {
-          return time.getTime() < Date.now() + 72 * 3600 * 1000;
+          return time.getTime() < Date.now() + 24 * 3600 * 1000;
         }
       }
     };
@@ -208,7 +209,7 @@ export default {
       isEdit: false
     }))
     this.meetingsData = this.getMeetingsData()
-    this.acrossAdjustDate = Monent().add(3, 'd').format('YYYY-MM-DD')
+    this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
     this.handleGetConfigs()
   },
 
@@ -259,7 +260,8 @@ export default {
     // 通话日期
     meetingDate() {
       if (this.hasMeetings) {
-        return this.meetings[0].applicationDate;
+        // return this.meetings[0].applicationDate;
+        return this.meetings[0].meetingTime.split(' ')[0];
       }
 
       return "";
@@ -399,8 +401,10 @@ export default {
     },
 
     async handleSaveTername(ter) {
-      this.setTerStatus(ter, false)
-      await http.updateTerminalName(ter)
+      let res = await http.updateTerminalName(ter)
+      if ( res ) {
+        this.setTerStatus(ter, false)
+      }
     },
 
     uuId,

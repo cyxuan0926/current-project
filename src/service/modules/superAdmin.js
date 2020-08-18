@@ -118,7 +118,7 @@ export default {
   },
   // 终端管理-编辑终端别名
   updateTerminalName: params => {
-    return service.postObj('/terminals/edit/terminalName', params).then(res => res && res.code === 200)
+    return service.postObj('/terminals/edit/terminalName', params).then(res => res)
   },
   // 版本管理-列表
   getVersions: params => {
