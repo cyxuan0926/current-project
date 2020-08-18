@@ -18,6 +18,7 @@
       ref="meetingTable"
       :meetingAdjustment="meetingAdjustment"
       :on-drag-finish="onDragFinish"
+      @on-get-configs="getConfigs"
     />
 
     <div class="operates" v-show="hasMeetings">
