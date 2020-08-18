@@ -242,7 +242,7 @@ export default {
           disabled,
           value: 0
         },
-        family_phone: {
+        familyPhone: {
           type: 'switch',
           label: '显示家属电话',
           disabled,

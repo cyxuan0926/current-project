@@ -57,7 +57,7 @@
           </template>
         </el-table-column>  
         <el-table-column
-          v-if="isInWhitelist"
+          v-if="isShowPhone"
           prop="phone"
           min-width="90"
           label="家属电话"
@@ -564,6 +564,10 @@ export default {
           4: '24%'
         }
         return widthConstent[this.toAuthorize.relationalProofUrls.length]
+      },
+
+      isShowPhone() {
+        return !!this.$store.state.global.user.familyPhone
       }
   },
   methods: {
