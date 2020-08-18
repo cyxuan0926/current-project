@@ -1,6 +1,7 @@
 import Moment from 'moment'
 import switches from '@/filters/modules/switches'
 import urls from '@/service/urls'
+import { parseInt } from 'lodash'
 
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
@@ -299,4 +300,98 @@ export function toCurrencyString(amount, decimalDigit = 2) {
 
 export function uuId() {
   return `uuid-${ Math.floor(Math.random() * Date.now()) }`
+}
+
+/**
+ *
+ * 计算最多会见的次数
+ * @export
+ * @param {*} totalTime 总的时间长度
+ * @param {*} duration 通话时长
+ * @param {*} interval 时间间隔
+ * @returns 最多分配的会见次数
+ */
+export function countTimes(totalTime, duration, interval) {
+  const oneFullTime = (+duration) + (+interval)
+
+  const maxParams = (+totalTime) + (+interval)
+
+  const minParams = totalTime - duration
+
+  const minValue = Math.ceil(minParams / oneFullTime)
+
+  const maxValue = Math.floor(maxParams / oneFullTime)
+
+  return Math.max(minValue, maxValue)
+}
+
+export function countNextQueue(queue, duration, interver) {
+  const prev = queue[queue.length - 1]
+
+  const oneTimes = (+duration) + (+interver)
+
+  const prevSt = prev[0]
+
+  const prevEd = prev[1]
+
+  const nextTimeSt = Moment(prevSt, 'HH:mm').add(oneTimes, 'minutes').format('HH:mm')
+
+  const nextTimeEnd = Moment(prevEd, 'HH:mm').add(oneTimes, 'minutes').format('HH:mm')
+
+  return [...queue, [nextTimeSt, nextTimeEnd]]
+}
+
+/**
+ *
+ *
+ * @export
+ * @param {*} queue 当前的时间段
+ * @param {*} duration 时长
+ * @param {*} interval 时间间隔
+ * @param {*} times 最大会见时间段次数
+ */
+export function getNextQueue(queue = [], duration = 25, interval = 5, times = 1, result = []) {
+  Array.apply(null, { length: times }).map((item, index) => {
+    if (index === 0) {
+      const timeQueueStart = queue[0]
+
+      const endTime = Moment(timeQueueStart, 'HH:mm').add(duration, 'minutes').format('HH:mm')
+
+      result = [[timeQueueStart, endTime]]
+    }
+    else {
+      result = countNextQueue(result, duration, interval)
+    }
+  })
+  return result
+}
+
+export function convertToChinaNum(num) {
+    const arr1 = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+    const arr2 = ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿']
+    if (!num || isNaN(num)) {
+      return '零'
+    }
+    const english = num.toString().split('')
+    let result = ''
+    for (var i = 0; i < english.length; i++) {
+        let des = english.length - 1 - i,
+          arrIndex = english[des]
+        result = arr2[i] + result
+        result = arr1[arrIndex] + result
+    }
+
+    result = result.replace(/零(千|百|十)/g, '零').replace(/十零/g, '十')
+
+    result = result.replace(/零+/g, '零')
+
+    result = result.replace(/零亿/g, '亿').replace(/零万/g, '万')
+
+    result = result.replace(/亿万/g, '亿')
+
+    result = result.replace(/零+$/, '')
+
+    result = result.replace(/^一十/g, '十')
+
+    return result
 }

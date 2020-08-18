@@ -50,15 +50,16 @@
         <el-table-column
           show-overflow-tooltip
           label="家属姓名"
-          min-width="55"
+          min-width="50"
         >
           <template slot-scope="scope">
             <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
           </template>
         </el-table-column>  
         <el-table-column
-          v-if="isInWhitelist"
+          v-if="isShowPhone"
           prop="phone"
+          min-width="90"
           label="家属电话"
         />
         <el-table-column
@@ -94,7 +95,7 @@
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="80"
+          min-width="70"
         />
         <el-table-column
           label="申请时间"
@@ -324,7 +325,7 @@
                 show-word-limit
                 maxlength="200"
                 placeholder="请输入驳回原因..."
-                v-model.trim="refuseForm.anotherRemarks" />
+                v-model="refuseForm.anotherRemarks" />
             </el-form-item>
           </el-form>
           <el-button
@@ -361,7 +362,7 @@
               <el-input
                 type="textarea"
                 show-word-limit
-                maxlength="15"
+                maxlength="200"
                 placeholder="请选择撤回原因..."
                 v-model.trim="refuseForm.anotherRemarks" />
             </el-form-item>
@@ -375,9 +376,9 @@
               <el-input
                 type="textarea"
                 show-word-limit
-                maxlength="15"
+                maxlength="200"
                 placeholder="请输入撤回理由..."
-                v-model.trim="withdrawForm.withdrawReason" />
+                v-model="withdrawForm.withdrawReason" />
             </el-form-item>
           </el-form>
           <el-button
@@ -563,6 +564,10 @@ export default {
           4: '24%'
         }
         return widthConstent[this.toAuthorize.relationalProofUrls.length]
+      },
+
+      isShowPhone() {
+        return !!this.$store.state.global.user.familyPhone
       }
   },
   methods: {
@@ -603,14 +608,14 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if (this.remarks === '其他' && e !== 'WITHDRAW') {
           this.$refs.refuseForm.validate(valid => {
-            if (valid) params.remarks = this.refuseForm.anotherRemarks
+            if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
         else params.remarks = this.remarks
         if (e === 'WITHDRAW') {
           this.$refs.withdrawForm.validate(valid => {
-            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason
+            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }

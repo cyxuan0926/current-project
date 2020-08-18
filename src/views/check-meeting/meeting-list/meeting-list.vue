@@ -64,11 +64,11 @@
           slot-scope="scope"
           slot="operate">
           <el-button
-            v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
+            v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth==true"
             size="mini"
             @click="handleAuthorization(scope.row)">授权</el-button>
           <el-button
-            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
+            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth==true"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
           <el-button
@@ -403,9 +403,9 @@ export default {
           // miss: true,
           // value: ''
         },
-        auditName: {
+        prisonerName: {
           type: 'input',
-          label: '审核人',
+          label: '罪犯姓名',
           miss: true,
           value: ''
         },
@@ -438,6 +438,7 @@ export default {
         detail: false,
         familiesDetialInform: false
       },
+      operateQueryAuth:false,
       toAuthorize: {},
       toShow: {},
       family: {},
@@ -448,6 +449,8 @@ export default {
       withdrawFormItems: {
         remarks: {
           type: 'textarea',
+          showWordLimit: true,
+          maxlength: 200,
           autosize: { minRows: 6 },
           rules: ['required'],
           noLabel: true,
@@ -577,6 +580,7 @@ export default {
         }
 
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+          this.operateQueryAuth=false
           let cols = [
             {
               label: '省份',
@@ -586,14 +590,23 @@ export default {
             ...basicCols
           ]
 
-          if (this.tabs === 'first') cols = [ ...cols, terminaUniquelId ]
+          if (this.tabs === 'first' ||this.tabs === 'PASSED' ) {
+            cols = [ ...cols, terminaUniquelId,...noAllPrisonQueryAuthLeadingCols]
+          }
+          else if(this.tabs === 'PENDING' ) {
 
+            }else{
+            cols=[...cols, ...noAllPrisonQueryAuthLeadingCols]
+          }
           return cols
         }
-        else return [
-          ...basicCols,
-          ...noAllPrisonQueryAuthLeadingCols
-        ]
+        else{
+          this.operateQueryAuth=true
+          return [
+            ...basicCols,
+            ...noAllPrisonQueryAuthLeadingCols
+          ]
+        }
     }
   },
   watch: {
@@ -604,20 +617,7 @@ export default {
     },
     tabs(val) {
       this.$refs.search.onSearch('tabs')
-      if (val !== 'first') {
-        this.searchItems.isFree.miss = true
-        this.searchItems.status.miss = true
-        this.searchItems.auditAt.miss = true
-        this.searchItems.auditName.miss = true
-        delete this.filter.auditAt
-        delete this.filter.auditName
-        delete this.filter.isFree
-        this.searchItems.auditName.value = ''
-        this.searchItems.auditAt.value = ''
-        this.searchItems.status.value = ''
-        this.searchItems.isFree.value = ''
-      }
-      else {
+      if (val !== 'PENDING') {
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
           this.searchItems.isFree.miss = false
         } else {
@@ -627,8 +627,21 @@ export default {
         }
         delete this.filter.status
         this.searchItems.status.miss = false
-        this.searchItems.auditName.miss = false
+        this.searchItems.prisonerName.miss = false
         this.searchItems.auditAt.miss = false
+      }
+      else {
+        this.searchItems.isFree.miss = true
+        this.searchItems.status.miss = true
+        this.searchItems.auditAt.miss = true
+        this.searchItems.prisonerName.miss = true
+        delete this.filter.auditAt
+        delete this.filter.prisonerName
+        delete this.filter.isFree
+        this.searchItems.prisonerName.value = ''
+        this.searchItems.auditAt.value = ''
+        this.searchItems.status.value = ''
+        this.searchItems.isFree.value = ''
       }
       this.onSearch()
     },
@@ -682,7 +695,6 @@ export default {
        row[column.label]=this.toAuthorize.name
        this.$set(this.meetingAdjustmentCopy.terminals, row.index,row)
      }
-     console.log(row)
       for (let index in row) {
         if(row[index]==this.toAuthorize.name){
           this.submitSuccessParams={terminalId:row.id,meetingTime:index}
@@ -832,9 +844,9 @@ export default {
       if (e === 'DENIED') {
         if (this.remarks === '其他') {
           const { refuseRemark } = args
-          params.remarks = refuseRemark
+          params.remarks = refuseRemark.replace(/\s*/g, '')
         }
-        else params.remarks = this.remarks
+        else params.remarks = this.remarks.replace(/\s*/g, '')
         if (params.remarks) this.handleSubmit(params)
       }
     },

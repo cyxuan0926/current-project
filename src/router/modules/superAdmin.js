@@ -98,7 +98,7 @@ superAdmin = [{
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
-      component: 'meeting/remote-edit'
+      component: 'meeting/remote-edit-cy'
       // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
       // component: helper.loadView('meeting/remote-edit')
     }, {

@@ -1,70 +1,273 @@
 import http from './service'
 
 export default {
+  getRemoteAdvanceDayLimits: async({ commit }, params) => {
+    try {
+      const res = await http.getRemoteAdvanceDayLimit(params)
+
+      let { advanceDayLimit, dayInLimit } = res
+
+      if (!advanceDayLimit) advanceDayLimit = 2
+
+      if (!dayInLimit) dayInLimit = 15
+      res && commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
+    }
+    catch (err) { console.log(err) }
+  },
+
   getRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       const res = await http.getRemoteAdvanceDayLimit(params)
-      res && commit('setAdvanceDayLimit', res.advanceDayLimit)
+      res && commit('setAdvanceDayLimit', res)
     }
     catch (err) { console.log(err) }
   },
   updateRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
-      commit('setAdvanceDayLimit', params.advanceDayLimit)
+      commit('setAdvanceDayLimit', params)
+      return true
     }
     catch (err) { console.log(err) }
   },
-  // 获取远程常规配置
+  // v2.6.4 获取远程常规配置(hb)
   getRemoteNormalConfig: ({ commit }, params) => {
     return http.getRemoteNormalConfig(params).then(res => {
       if (!res) return
-      if (!res.normalConfig || !res.normalConfig.length) {
-        commit('getRemoteNormalConfig', { jailId: params.jailId, normalConfig: [{ days: [], config: [], queue: [] }] })
-        return true
-      }
-      res.normalConfig.forEach(config => {
-        // 配置的队列 二维数组
-        config.queue = []
-        config.config.forEach(c => {
-          config.queue.push(c.split('-'))
+      if (res.configBefore && res.configBefore.length) {
+        res.configBefore.forEach(config => {
+          config.queue = []
+          config.config.forEach(c => {
+            config.queue.push(c.split('-'))
+          })
+          config.timequeue = []
+          config.timeperiod.forEach(t => {
+            config.timequeue.push(t.split('-'))
+          })
         })
-      })
+      }
+
+      if (res.configAfter && res.configAfter.length) {
+        res.configAfter.forEach(config => {
+          // 配置的队列 二维数组
+          config.queue = []
+          config.config.forEach(c => {
+            config.queue.push(c.split('-'))
+          })
+          config.timequeue = []
+          config.timeperiod.forEach(t => {
+            config.timequeue.push(t.split('-'))
+          })
+        })
+      }
+
       commit('getRemoteNormalConfig', res)
       return true
     })
   },
+  // 远程常规配置(调整)(cy)
+  getRemoteNormalConfigs: async({ commit }, params) => {
+    try {
+      let {
+        jailId,
+        configBefore,
+        configAfter,
+        enabledAt,
+        dayInLimit,
+        updatedAt,
+        id
+      } = await http.getRemoteNormalConfig(params)
+
+      const allConfigs = [configBefore, configAfter]
+
+      const filterAllConfigs = allConfigs.map((configs, index) => {
+        if (!configs || (Array.isArray(configs) && !configs.length)) {
+          return [{ days: [], interval: 5, duration: 25, timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [], type: index }]
+        }
+        else {
+          return configs.map(config => {
+            const { timeperiod } = config
+
+            const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+            config['showError'] = new Array(length).fill(false)
+
+            const filterParams = [
+              {
+                key: 'config',
+                value: 'queue'
+              },
+              {
+                key: 'timeperiod',
+                value: 'timeperiodQueue'
+              }
+            ]
+            filterParams.forEach(params => {
+              config[params['value']] = []
+              if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
+                config[params['key']].forEach(c => {
+                  config[params['value']].push(c.split('-'))
+                })
+              }
+              else {
+                config[params['key']] = []
+              }
+            })
+            return config
+          })
+        }
+      })
+
+      commit('setRemoteNormalConfigs', {
+        jailId,
+        enabledAt,
+        id,
+        updatedAt,
+        dayInLimit,
+        configBefore: filterAllConfigs[0],
+        configAfter: filterAllConfigs[1]
+      })
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+
   // 更新远程通话常规配置
   updateRemoteNormalConfig: ({ commit }, params) => {
     return http.updateRemoteNormalConfig(params).then(res => res)
   },
-  // 获取远程特殊日期配置
+
+  // 获取远程特殊日期配置(hb)
   getRemoteSpecialConfig: ({ commit }, params) => {
     return http.getRemoteSpecialConfig(params).then(res => {
       if (!res) return
       if (!res.complexSpecialConfigs || !res.complexSpecialConfigs.length) {
         // enabledMeeting： 默认是支持会见
-        commit('getRemoteSpecialConfig', [{ enabledMeeting: 1, day: '', config: [], queue: [] }])
+        res.complexSpecialConfigs = [{ enabledMeeting: 1, day: '', interval: '5', duration: '25', config: [], queue: [], timeperiod: [], timequeue: [] }]
+        commit('getRemoteSpecialConfig', res)
         return true
       }
-      res.complexSpecialConfigs.forEach(config => {
-        // 通话时间段 二维数组结构
-        config.queue = []
+      res.complexSpecialConfigs.forEach(c => {
+        // 时间段
+        c.queue = []
+        // 通话时长
+        c.timequeue = []
         // 初始化的特殊日期
-        config.oldDay = config.day
+        c.oldDay = c.day
         // 初始化的是否支持通话申请
-        config.oldEnabled = config.enabledMeeting
+        c.oldEnabled = c.enabledMeeting
         // 支持通话申请 把通话时间变成二维数组的结构
-        if (config.enabledMeeting) config.config.forEach(c => config.queue.push(c.split('-')))
-        else {
-          config.config = []
-          config.queue = []
+        if (c.enabledMeeting) {
+          c.config.forEach(q => c.queue.push(q.split('-')))
+          c.timeperiod.forEach(t => c.timequeue.push(t.split('-')))
         }
       })
-      commit('getRemoteSpecialConfig', res.complexSpecialConfigs)
+      commit('getRemoteSpecialConfig', res)
       return true
     })
   },
+
+  // 新的 数据初始化
+  // 正在使用的通话时长
+  // 要处理相同配置的
+  // beforeDuration ：正在使用的通话时长
+  // afterDuration：即将使用的通话时长(cy)
+  async getRemoteSpecialConfigs({ commit }, params) {
+    try {
+      // complexNormalConfig:常规配置 unMeetingDays：不可以申请的日期 complexSpecialConfigs：特使日期配置
+      const { complexNormalConfig, complexSpecialConfigs, unMeetingDays } = await http.getRemoteSpecialConfig(params)
+      // configAfter: 将要生效的常规配置, configBefore：正在生效的常规配置, enabledAt：生效日期 , enabledAt
+      const { configAfter, configBefore, enabledAt } = complexNormalConfig
+      let afterDuration = 25, beforeDuration = 25, filterConfigs = []
+      if (configAfter && configAfter.length && configAfter[0].config && configAfter[0].config.length) {
+        afterDuration = configAfter[0].duration
+      }
+      if (configBefore && configBefore.length && configBefore[0].config && configBefore[0].config.length) {
+        beforeDuration = configBefore[0].duration
+      }
+      // 初始化
+
+      if (!complexSpecialConfigs || !complexSpecialConfigs.length) {
+        filterConfigs = [
+          {
+            enabledMeeting: 1,
+            day: '',
+            config: [],
+            queue: [],
+            duration: 25,
+            interval: 5,
+            timeperiod: [],
+            timeperiodQueue: [],
+            showError: []
+          }
+        ]
+      }
+      else {
+        filterConfigs = complexSpecialConfigs.map(config => {
+          const {
+            enabledMeeting,
+            day,
+            timeperiod,
+            interval,
+            duration
+          } = config
+
+          const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+          config['showError'] = new Array(length).fill(false)
+
+          config['oldDay'] = day
+
+          config['oldEnabled'] = enabledMeeting || 0
+
+          config['duration'] = duration || 25
+
+          config['interval'] = interval || 5
+
+          const filterParams = [
+            {
+              key: 'config',
+              value: 'queue'
+            },
+            {
+              key: 'timeperiod',
+              value: 'timeperiodQueue'
+            }
+          ]
+
+          filterParams.forEach(params => {
+            config[params['value']] = []
+            if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
+              config[params['key']].forEach(c => {
+                config[params['value']].push(c.split('-'))
+              })
+            }
+            else {
+              config[params['key']] = []
+            }
+          })
+          return config
+        })
+      }
+
+      commit('setRemoteSpecialConfigs', {
+        afterDuration,
+        beforeDuration,
+        unMeetingDays,
+        enabledAt,
+        configAfter,
+        complexSpecialConfigs: filterConfigs
+      })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
   deleteSpecialConfig: ({ commit }, params) => {
     return http.deleteSpecialConfig(params).then(res => res)
   },

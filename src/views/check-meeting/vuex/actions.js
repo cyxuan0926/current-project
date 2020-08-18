@@ -46,12 +46,18 @@ export default {
   withdrawMeeting({ commit }, params) {
     return http.withdrawMeeting(params).then(res => res)
   },
-  getMeetingConfigs({ commit }, params) {
-    return http.getMeetingConfigs(params).then(res => {
-      if (!res) return
-      commit('getMeetingConfigs', res)
+
+  async getMeetingConfigs({ commit }, params) {
+    try {
+      const { data } = await http.getMeetingConfigs(params)
+
+      commit('getMeetingConfigs', data)
+
       return true
-    })
+    }
+    catch (err) {
+      throw err
+    }
   },
   adjustMeeting({ commit }, params) {
     return http.adjustMeeting(params).then(res => res)
@@ -109,7 +115,7 @@ export default {
 
     return data
   },
-  async getFamilyDetail({ commit }, params) {
+  async gdGetFamilyMeetingDetail({ commit }, params) {
     try {
       const res = await http.getFamilyMeetingDetail(params)
       const { item, meetings, total } = res.data

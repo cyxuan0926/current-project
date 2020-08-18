@@ -282,6 +282,7 @@ export default {
           items = Object.assign({},{
             blackListReason: {
               type: 'textarea',
+              maxlength: 200,
               noLabel: true,
               placeholder: '请输入加入黑名单理由',
               autosize: { minRows: 5 },
