@@ -1,6 +1,9 @@
 <template>
   <section>
-    <div class="meeting-list" v-show="hasTerminal && hasMeetingQueue">
+    {{terminals}}
+    {{hasTerminal}}
+    {{hasMeetingQueue}}
+    <div class="meeting-list">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
         <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
@@ -204,16 +207,11 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
       isEdit: false
     }))
     this.meetingsData = this.getMeetingsData()
-    this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
-    this.handleGetConfigs()
-  },
-
-  mounted() {
     document.querySelector('.meeting-list-block-scroller').style.width = 228 * this.meetingsData.length + 'px'
   },
 
@@ -318,8 +316,12 @@ export default {
     },
 
     handleShowacross(m) {
-      this.crossMeetingCurrent = m
+      this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
       this.meetingVisible = true
+      this.handleGetConfigs()
+      .then(() => {
+        this.crossMeetingCurrent = m
+      })
     },
     handleSelectAcross(terNum, time) {
       this.crossDateSelect = {
@@ -365,6 +367,7 @@ export default {
         this.$message.warning(message)
       }
 
+      this.crossMeetingData = []
       if (this.crossMeetings) {
         this.crossMeetings.forEach(m => {
           applyList[m.terminalNumber + m.meetingTime.split(' ')[1]] = true

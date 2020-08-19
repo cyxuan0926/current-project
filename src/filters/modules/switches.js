@@ -40,7 +40,12 @@ let switches = {
   registStatus: [
     { value: 'PENDING', label: '未授权' },
     { value: 'DENIED', label: '已拒绝' },
+    { value: 'WITHDRAW', label: '已撤回' },
     { value: 'PASSED', label: '已通过' }
+  ],
+  refuseStatus: [
+    { value: 'DENIED', label: '已拒绝' },
+    { value: 'WITHDRAW', label: '已撤回' }
   ],
   payStatus: [
     { value: 1, label: '支付成功' },

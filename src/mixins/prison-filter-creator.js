@@ -114,7 +114,6 @@ export default {
     },
 
     async searchSelectChange(selectKey, value) {
-      console.log(selectKey, value)
       if (selectKey === 'jailId') {
         if (this.searchItems.prisonArea) {
           if (value) {
