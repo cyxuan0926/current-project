@@ -16,7 +16,7 @@
 
     <meeting-table
       ref="meetingTable"
-      :meetingAdjustment="meetingAdjustment"
+      :adjustDate="adjustDate"
       :on-drag-finish="onDragFinish"
       @on-get-configs="getConfigs"
     />
@@ -35,7 +35,7 @@ import MeetingTable from "./meeting-table";
 
 import { mapActions, mapState } from "vuex";
 import helper from "@/filters/modules/date";
-
+import Monent from 'moment'
 export default {
   name: "MeetingAjust",
 
@@ -49,8 +49,7 @@ export default {
       pickerOptions: {
         // 仅支持 2 天后的会见申请调整
         disabledDate(time) {
-          // return time.getTime() < Date.now() + 24 * 3600 * 1000;
-          return time.getTime() < Date.now()
+          return time.getTime() < Date.now() - 24 * 3600 * 1000;
         }
       }
     };

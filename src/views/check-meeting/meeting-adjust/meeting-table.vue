@@ -1,9 +1,6 @@
 <template>
   <section>
-    {{terminals}}
-    {{hasTerminal}}
-    {{hasMeetingQueue}}
-    <div class="meeting-list">
+    <div class="meeting-list" v-show="hasTerminal && hasMeetingQueue">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
         <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
@@ -91,6 +88,7 @@
         </el-table-column>
         <el-table-column
           fixed
+          show-overflow-tooltip
           prop="terminalName"
           label="终端别名"
           width="100">
@@ -170,16 +168,11 @@
 <script>
 import { uuId } from "@/utils/helper";
 import http from '@/service'
-import Monent from 'moment'
+import Moment from 'moment'
+import { mapActions, mapState } from "vuex";
 export default {
   props: {
-    meetingAdjustment: {
-      type: Object,
-      default: () => {
-        return { meetingQueue: [], terminals: [], meetings: [] };
-      }
-    },
-
+    adjustDate: String,
     onDragFinish: {
       type: Function,
       default: function() {}
@@ -198,24 +191,23 @@ export default {
       crossDateSelect: '',
       meetingVisible: false,
       acrossAdjustDate: '',
-      pickerOptions: {
-        // 仅支持 2 天后的会见申请调整
-        disabledDate(time) {
-          return time.getTime() < Date.now() + 24 * 3600 * 1000;
-        }
-      }
+      pickerOptions: {}
     };
   },
 
-  mounted() {
-    this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
-      isEdit: false
-    }))
-    this.meetingsData = this.getMeetingsData()
-    document.querySelector('.meeting-list-block-scroller').style.width = 228 * this.meetingsData.length + 'px'
+  watch: {
+    'meetingAdjustment.terminals'() {
+      this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
+        isEdit: false
+      }))
+      this.meetingsData = this.getMeetingsData()
+      document.querySelector('.meeting-list-block-scroller').style.width = 228 * this.meetingsData.length + 'px'
+    }
   },
 
   computed: {
+    ...mapState(["meetingAdjustment"]),
+
     hasMeetingQueue() {
       return this.meetingQueue.length > 0;
     },
@@ -316,11 +308,17 @@ export default {
     },
 
     handleShowacross(m) {
-      this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
-      this.meetingVisible = true
+      let _this = this
+      this.acrossAdjustDate = Moment(this.adjustDate).add(1, 'd').format('YYYY-MM-DD')
+      this.pickerOptions = {
+        disabledDate(time) {
+          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate;
+        }
+      }
+      this.crossMeetingCurrent = m
       this.handleGetConfigs()
       .then(() => {
-        this.crossMeetingCurrent = m
+        this.meetingVisible = true
       })
     },
     handleSelectAcross(terNum, time) {
@@ -341,6 +339,7 @@ export default {
       this.$emit('on-get-configs')
     },
     handleCancelAcross() {
+      this.removeSelClass()
       this.crossDateSelect = ''
       this.meetingVisible = false
     },
