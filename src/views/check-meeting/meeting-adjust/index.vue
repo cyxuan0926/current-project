@@ -11,13 +11,14 @@
         :picker-options="pickerOptions"
       />
       <el-button type="primary" @click="getConfigs">确定</el-button>
-      <label class="filter__tip">注：仅支持2天后的申请调整</label>
+      <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
 
     <meeting-table
       ref="meetingTable"
       :meetingAdjustment="meetingAdjustment"
       :on-drag-finish="onDragFinish"
+      @on-get-configs="getConfigs"
     />
 
     <div class="operates" v-show="hasMeetings">
@@ -48,7 +49,8 @@ export default {
       pickerOptions: {
         // 仅支持 2 天后的会见申请调整
         disabledDate(time) {
-          return time.getTime() < Date.now() + 24 * 3600 * 1000;
+          // return time.getTime() < Date.now() + 24 * 3600 * 1000;
+          return time.getTime() < Date.now()
         }
       }
     };
@@ -231,7 +233,8 @@ export default {
 
     // 默认日期
     defaultDate() {
-      return helper.dateFormate(Date.now() + 2 * 24 * 3600 * 1000)
+      // return helper.dateFormate(Date.now() + 2 * 24 * 3600 * 1000)
+      return helper.dateFormate(Date.now())
     }
   }
 };

@@ -249,6 +249,12 @@ export default {
           rules: ['required'],
           value: 0
         },
+        // showPrisonerName: {
+        //   type: 'switch',
+        //   label: '显示罪犯姓名',
+        //   disabled,
+        //   value: 0
+        // },
         meeting: {
           type: 'switch',
           label: '亲情电话模块开放',

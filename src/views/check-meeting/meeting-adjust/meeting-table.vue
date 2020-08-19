@@ -1,6 +1,9 @@
 <template>
   <section>
-    <div class="meeting-list" v-show="hasTerminal && hasMeetingQueue">
+    {{terminals}}
+    {{hasTerminal}}
+    {{hasMeetingQueue}}
+    <div class="meeting-list">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
         <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
@@ -9,11 +12,12 @@
         <h3 class="meeting-list-cell meeting-list-th">终端别名</h3>
         <div class="meeting-list-cell meeting-list-cell__tername" v-for="t in terminals" :key="t.id">
           <template v-if="!t.isEdit">
-            <span class="meeting-list-cell__tername__flex">{{ t.terminalName || '暂无' }}</span>
+            <span class="meeting-list-cell__tername__flex">{{ t.terminalName }}</span>
             <el-button class="meeting-list-cell__tername__edit" type="text" icon="el-icon-edit-outline" @click="handleEditTername(t)"></el-button>
           </template>
           <template v-else>
             <el-input
+              maxlength="10"
               class="meeting-list-cell__tername__flex meeting-list-cell__tername__inp"
               placeholder="请输入终端别名"
               v-model="t.terminalName"
@@ -100,13 +104,13 @@
           :label="t">
           <template slot-scope="scope">
             <span v-if="scope.row[t]">已申请</span>
-            <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross()">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+            <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
           </template>
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="meetingVisible = false">取 消</el-button>
-        <el-button type="primary" @click="meetingVisible = false">确 定</el-button>
+        <el-button @click="handleCancelAcross">取 消</el-button>
+        <el-button type="primary" @click="handleSaveAcross" :disabled="!crossDateSelect">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -184,12 +188,14 @@ export default {
 
   data() {
     return {
+      meetingsData: [],
       terminals: [],
       crossMeetingData: [],
       crossMeetings: [],
       crossTerminals: [],
       crossMeetingQueue: [],
       crossMeetingCurrent: {},
+      crossDateSelect: '',
       meetingVisible: false,
       acrossAdjustDate: '',
       pickerOptions: {
@@ -201,13 +207,12 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
       isEdit: false
     }))
-    this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
-    this.handleGetConfigs()
-    console.log( this.acrossAdjustDate )
+    this.meetingsData = this.getMeetingsData()
+    document.querySelector('.meeting-list-block-scroller').style.width = 228 * this.meetingsData.length + 'px'
   },
 
   computed: {
@@ -253,14 +258,30 @@ export default {
     // 通话日期
     meetingDate() {
       if (this.hasMeetings) {
-        return this.meetings[0].applicationDate;
+        // return this.meetings[0].applicationDate;
+        return this.meetings[0].meetingTime.split(' ')[0];
       }
 
       return "";
-    },
+    }
+  },
 
+  filters: {
+    getMeetingsName(m) {
+      let names = ''
+      if (m.prisonerName) {
+        names += `${m.prisonerName} `
+      }
+      if (m.name) {
+        names += `${m.name}`
+      }
+      return names
+    }
+  },
+
+  methods: {
     // 通话数据
-    meetingsData() {
+    getMeetingsData() {
       if (!this.hasMeetingQueue || !this.hasTerminal) {
         return [];
       }
@@ -282,41 +303,50 @@ export default {
           return { ...meeting, terminalId: terminal.id };
         });
       });
-    }
-  },
+    },
 
-  filters: {
-    getMeetingsName(m) {
-      console.log(m)
-      let names = ''
-      if (m.prisonerName) {
-        names += `${m.prisonerName}（囚）`
-      }
-      if (m.name) {
-        names += `${m.name}（亲）`
-      }
-      return names
-    }
-  },
-
-  methods: {
-    handleCellClick(row, column, cell, event) {
+    removeSelClass() {
       let els = document.querySelectorAll('.acrosssel-btn')
       els.forEach(el => el.classList.remove('selected'))
+    },
+
+    handleCellClick(row, column, cell, event) {
+      this.removeSelClass()
       cell.querySelector('.acrosssel-btn').classList.add('selected')
     },
 
     handleShowacross(m) {
-      this.crossMeetingCurrent = m
+      this.acrossAdjustDate = Monent().add(1, 'd').format('YYYY-MM-DD')
       this.meetingVisible = true
+      this.handleGetConfigs()
+      .then(() => {
+        this.crossMeetingCurrent = m
+      })
     },
-    handleSelectAcross() {
-      console.log('选择')
+    handleSelectAcross(terNum, time) {
+      this.crossDateSelect = {
+        name: this.crossMeetingCurrent.name,
+        id: this.crossMeetingCurrent.id,
+        meetingTime: `${this.acrossAdjustDate} ${time}`,
+        terminalId: this.crossMeetingCurrent.terminalId,
+        terminalNumber: terNum,
+        adjustStatus: 0
+      }
+    },
+    async handleSaveAcross() {
+      await http.adjustMeeting([this.crossDateSelect])
+      this.removeSelClass()
+      this.crossDateSelect = ''
+      this.meetingVisible = false
+      this.$emit('on-get-configs')
+    },
+    handleCancelAcross() {
+      this.crossDateSelect = ''
+      this.meetingVisible = false
     },
 
     async handleGetConfigs() {
       let { data } = await http.getMeetingConfigs(this.acrossAdjustDate)
-      console.log(data)
       let applyList = {}
       this.crossMeetings = data.meetings
       this.crossTerminals = data.terminals
@@ -337,6 +367,7 @@ export default {
         this.$message.warning(message)
       }
 
+      this.crossMeetingData = []
       if (this.crossMeetings) {
         this.crossMeetings.forEach(m => {
           applyList[m.terminalNumber + m.meetingTime.split(' ')[1]] = true
@@ -373,8 +404,10 @@ export default {
     },
 
     async handleSaveTername(ter) {
-      this.setTerStatus(ter, false)
-      await http.updateTerminalName(ter)
+      let res = await http.updateTerminalName(ter)
+      if ( res ) {
+        this.setTerStatus(ter, false)
+      }
     },
 
     uuId,

@@ -23,7 +23,7 @@
           name="PASSED" />
         <el-tab-pane
           label="审核未通过"
-          name="DENIED" />
+          name="DENIED,WITHDRAW" />
         <el-tab-pane
           label="未授权"
           name="PENDING" />
@@ -104,7 +104,6 @@
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
-          v-if="isShowPrisonerName"
           prop="prisonerName"
           show-overflow-tooltip
           label="罪犯姓名"
@@ -439,10 +438,17 @@ export default {
   data() {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
-    const _items = {
+    return {
+      showDetail: false,
+      authorizeDetData: {},
+      searchItems: {
         name: {
           type: 'input',
           label: '家属姓名'
+        },
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名'
         },
         prisonerNumber: {
           type: 'input',
@@ -479,16 +485,7 @@ export default {
           options: switches['nationality'],
           value: ''
         }
-      }
-    return {
-      showDetail: false,
-      authorizeDetData: {},
-      searchItems: Object.assign(_items, this.isShowPrisonerName ? {
-        prisonerName: {
-          type: 'input',
-          label: '罪犯编号'
-        },
-      } : {}),
+      },
       toAuthorize: {},
       show: {
         authorize: false,
@@ -527,8 +524,14 @@ export default {
     tabs(val) {
       this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
-        this.searchItems.status.miss = true
-        this.searchItems.auditName.miss = true
+        if ( val === 'DENIED,WITHDRAW' ) {
+          delete this.filter.status
+          this.searchItems.status.miss = false
+          this.searchItems.status.options = this.$store.state.refuseStatus
+        }
+        else {
+          this.searchItems.status.miss = true
+        }
         this.searchItems.auditAt.miss = true
         delete this.filter.auditName
         delete this.filter.auditAt
@@ -538,9 +541,11 @@ export default {
       }
       else {
         delete this.filter.status
+        this.searchItems.status.value = ''
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.auditAt.miss = false
+        this.searchItems.status.options = this.$store.state.registStatus
       }
       this.onSearch()
     }
@@ -553,7 +558,7 @@ export default {
       'registrations',
       'registRemarks',
       'notification']),
-    ...mapGetters(['isInWhitelist', 'isShowPrisonerName']),
+    ...mapGetters(['isInWhitelist']),
 
       relationalWidth() {
         const widthConstent = {
@@ -579,7 +584,11 @@ export default {
       'getRegistrationNotificationDetail'
     ]),
     getDatas() {
-      if (this.tabs !== 'first') this.filter.status = this.tabs
+      if (this.tabs !== 'first') {
+        if (this.tabs !== 'DENIED,WITHDRAW' || !this.filter.status) {
+          this.filter.status = this.tabs
+        }
+      }
 
       const params = { ...this.filter, ...this.pagination }
 
