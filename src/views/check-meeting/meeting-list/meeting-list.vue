@@ -88,7 +88,7 @@
       :visible.sync="show.agree"
       class="authorize-dialog"
       @close="closeAuthorize"
-      title="授权"
+      title="请选择通话时间段"
       width="900px">
       <div
         v-if="show.agree"
@@ -102,21 +102,21 @@
           class="tableBorder">
           <el-table-column
             fixed
-            prop="prisonConfigName"
-            label="监区"
-            width="150">
+            prop="terminalNumber"
+            label="终端号"
+            min-width="80">
           </el-table-column>
           <el-table-column
             fixed
-            prop="terminalNumber"
-            label="终端号"
-            width="100">
+            prop="prisonConfigName"
+            label="监区"
+            min-width="110">
           </el-table-column>
           <el-table-column
             v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
             :prop="item"
             :label="item"
-            min-width="80">
+            min-width="84">
           </el-table-column>
         </el-table>
       </div>
@@ -411,7 +411,7 @@
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
-            miss: true,
+            miss: false,
             value: ''
           },
           status: {
@@ -622,7 +622,34 @@
       },
       tabs(val) {
         this.$refs.search.onSearch('tabs')
-        if (val !== 'PENDING') {
+        if (val == 'PENDING') {
+          this.searchItems.isFree.miss = true
+          this.searchItems.status.miss = true
+          this.searchItems.auditAt.miss = true
+          this.searchItems.prisonerName.miss = false
+          delete this.filter.auditAt
+          delete this.filter.prisonerName
+          delete this.filter.isFree
+          this.searchItems.prisonerName.value = ''
+          this.searchItems.auditAt.value = ''
+          this.searchItems.status.value = ''
+          this.searchItems.isFree.value = ''
+        }
+        else if(val == 'PASSED') {
+          this.searchItems.isFree.miss = true
+          this.searchItems.status.miss = true
+          this.searchItems.auditAt.miss = false
+          this.searchItems.prisonerName.miss = false
+          delete this.filter.auditAt
+          delete this.filter.prisonerName
+          delete this.filter.isFree
+          this.searchItems.prisonerName.value = ''
+          this.searchItems.auditAt.value = ''
+          this.searchItems.status.value = ''
+          this.searchItems.isFree.value = ''
+        }
+        else{
+          //options
           if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
             this.searchItems.isFree.miss = false
           } else {
@@ -634,19 +661,12 @@
           this.searchItems.status.miss = false
           this.searchItems.prisonerName.miss = false
           this.searchItems.auditAt.miss = false
-        }
-        else {
-          this.searchItems.isFree.miss = true
-          this.searchItems.status.miss = true
-          this.searchItems.auditAt.miss = true
-          this.searchItems.prisonerName.miss = true
-          delete this.filter.auditAt
-          delete this.filter.prisonerName
-          delete this.filter.isFree
-          this.searchItems.prisonerName.value = ''
-          this.searchItems.auditAt.value = ''
-          this.searchItems.status.value = ''
-          this.searchItems.isFree.value = ''
+          if(val == 'DENIED'){
+            this.searchItems.status.options=this.$store.state.deniedStatus
+          }else{
+            this.searchItems.status.options=this.$store.state.applyStatus
+          }
+
         }
         this.onSearch()
       },
@@ -687,7 +707,7 @@
         // 状态列字体颜色
         if(row[column.label]){
           if(row[column.label]==this.toAuthorize.name){
-            return "background:#E6A23C"
+            return "background:#fae9db"
           }else{
             return  'background:#DCDFE6'
           }
@@ -697,11 +717,9 @@
         let cellStr=cell.querySelector(".cell").textContent
         if(cellStr){
         }else{
-          console.log(column)
           if(column.label=='监区'){
             return false
           }else{
-            cell.style.color="#67c23a"
             this.meetingAdjustmentCopy.terminals.filter(item=>{
               this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
@@ -857,7 +875,17 @@
       onDisagreeAuthorizeGoBack() {
         this.closeAuthorize('back')
       },
-      onAuthorization(e, args) {
+        // 比较时间大小
+      compareDate(date1,date2) {
+        let oDate1 = new Date(date1);
+        let oDate2 = new Date(date2);
+        if (oDate1.getTime() > oDate2.getTime()) {
+          return true; //第一个大
+        } else {
+          return false; //第二个大
+        }
+      },
+        onAuthorization(e, args) {
         let params = { id: this.toAuthorize.id, status: e }
         if (e === 'DENIED') {
           if (this.remarks === '其他') {
@@ -878,16 +906,31 @@
           this.getDatas('handleSubmit')
         })
       },
-      submitSuccess(){
-        let params={meetingId:this.toAuthorize.id,terminalId:this.submitSuccessParams.terminalId,meetingTime:this.submitSuccessParams.meetingTime}
-        http.meetingSelectAuthorize(params).then(res=>{
-          if (!res) return
-          this.closeAuthorize()
-          this.toAuthorize = {}
-          this.submitSuccessParams=null
-          this.show.agree=false;
-          this.getDatas('handleSubmit')
-        })
+      submitSuccess: function () {
+        //第一个是当前系统时间，第二个提交时间
+        if (this.compareDate(new Date(), `${this.toAuthorize.meetingTime || this.toAuthorize.applicationDate} ` + this.submitSuccessParams.meetingTime.toString().substring(0, 5))) {
+          this.$message.closeAll()
+          this.$message({
+            showClose: true,
+            message: '请选择其他通话时间段',
+            type: 'error'
+          });
+          this.handleAuthorization(this.toAuthorize)
+        } else {
+          let params = {
+            meetingId: this.toAuthorize.id,
+            terminalId: this.submitSuccessParams.terminalId,
+            meetingTime: this.submitSuccessParams.meetingTime
+          }
+          http.meetingSelectAuthorize(params).then(res => {
+            if (!res) return
+            this.closeAuthorize()
+            this.toAuthorize = {}
+            this.submitSuccessParams = null
+            this.show.agree = false;
+            this.getDatas('handleSubmit')
+          })
+        }
       },
       onWithdraw(arg) {
         const { remarks } = arg

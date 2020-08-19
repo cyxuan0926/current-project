@@ -42,6 +42,10 @@ let switches = {
     { value: 'DENIED', label: '已拒绝' },
     { value: 'PASSED', label: '已通过' }
   ],
+  deniedStatus: [
+    { value: 'CANCELED', label: '已取消' },
+    { value: 'DENIED', label: '已拒绝' }
+  ],
   payStatus: [
     { value: 1, label: '支付成功' },
     { value: -1, label: '支付失败' }
