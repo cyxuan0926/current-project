@@ -184,14 +184,18 @@
               @click="handleCallback(scope.row)">撤回
             </el-button>
             <el-button
-              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'DENIED'"
+              v-if="!hasAllPrisonQueryAuth && (scope.row.status == 'DENIED' || scope.row.status == 'WITHDRAW')"
               size="mini"
               @click="handleAuthorDetail(scope.row.id)">详情
             </el-button>
+            <!-- <el-button
+              v-if="hasProvinceQueryAuth"
+              size="mini"
+              @click="onView(scope.row)">查看</el-button> -->
             <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
-              @click="onView(scope.row)">查看</el-button>
+              @click="handleAuthorDetail(scope.row.id)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -643,8 +647,12 @@ export default {
       })
     },
     async handleAuthorDetail(id) {
-      this.authorizeDetData = await http.getRegistrationsDetail({ id })
-      this.showDetail = true
+      let _authorizeDetData = await http.getRegistrationsDetail({ id })
+      if ( _authorizeDetData ) {
+        console.log('_authorizeDetData====')
+        this.authorizeDetData = _authorizeDetData
+        this.showDetail = true
+      }
     },
     handleCallback(e) {
       this.toAuthorize = e

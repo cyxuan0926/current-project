@@ -49,16 +49,18 @@
             />
             </div>
         </template>
-        <div style="margin-bottom: 10px;">{{ toAuthorize.status === 'WITHDRAW' ? '撤回原因：' : '审核未通过原因：' }}</div>
+        <div style="margin-bottom: 10px;" v-if="toAuthorize.remarks">{{ toAuthorize.status === 'WITHDRAW' ? '撤回原因：' : '审核未通过原因：' }}</div>
         <div class="img-box">{{ toAuthorize.remarks }}</div>
-        <div style="margin-bottom: 10px;">{{ toAuthorize.status === 'WITHDRAW' ? '撤回' : '审核' }}时间：{{ toAuthorize.auditAt }}</div>
+        <div style="margin-bottom: 10px;" v-if="toAuthorize.status === 'WITHDRAW' || toAuthorize.status === 'DENIED'">{{ toAuthorize.status === 'WITHDRAW' ? '撤回' : '审核' }}时间：{{ toAuthorize.auditAt }}</div>
     </div>
 </template>
 
 <script>
     export default {
         props: {
-            toAuthorize: Object
+            toAuthorize: {
+                type: Object
+            }
         },
         created() {
             let _relationalProofUrls = []
@@ -80,12 +82,28 @@
                     3: '32%',
                     4: '24%'
                 }
-                return widthConstent[this.toAuthorize.relationalProofUrls.length]
+                return widthConstent[this.toAuthorize.relationalProofUrls && this.toAuthorize.relationalProofUrls.length || 0]
             }
         }
     }
 </script>
 
-<style lang="scss" scoped>
-
+<style type="text/stylus" lang="stylus" scoped>
+.authorize-dialog
+  .img-box
+    .el-image
+      width: 32%;
+      height: 110px;
+      margin-bottom: 5px;
+      >>> img
+           width: 100%;
+           height: 100%;
+           cursor: pointer;
+.button-box 
+  .el-button
+    &:first-of-type
+      margin-left: 0px !important;
+.view-box
+  display: flex;
+  flex-direction: row-reverse;
 </style>
