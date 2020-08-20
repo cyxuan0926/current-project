@@ -173,6 +173,7 @@ import { mapActions, mapState } from "vuex";
 export default {
   props: {
     adjustDate: String,
+    dayinLimit: String,
     onDragFinish: {
       type: Function,
       default: function() {}
@@ -309,10 +310,11 @@ export default {
 
     handleShowacross(m) {
       let _this = this
-      this.acrossAdjustDate = Moment(this.adjustDate).add(1, 'd').format('YYYY-MM-DD')
+      let _adjustDate = Moment(this.adjustDate)
+      this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate;
+          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
       }
       this.crossMeetingCurrent = m

@@ -649,7 +649,6 @@ export default {
     async handleAuthorDetail(id) {
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
       if ( _authorizeDetData ) {
-        console.log('_authorizeDetData====')
         this.authorizeDetData = _authorizeDetData
         this.showDetail = true
       }
