@@ -118,6 +118,13 @@
             :label="item"
             min-width="84">
           </el-table-column>
+          <el-table-column
+            v-if="show.meetingQueue"
+            prop="noTimes"
+            label="当日没有可选时间段"
+            min-width="84">
+          </el-table-column>
+
         </el-table>
       </div>
       <span   v-if="show.agree" slot="footer" class="dialog-footer">
@@ -351,7 +358,7 @@
         },
         {
           label: '审核未通过',
-          name: 'DENIED'
+          name: 'DENIED,CANCELED'
         },
         {
           label: '未授权',
@@ -441,6 +448,7 @@
           disagree: false,
           withdraw: false,
           detail: false,
+          meetingQueue:false,
           familiesDetialInform: false
         },
         operateQueryAuth:false,
@@ -657,11 +665,14 @@
             delete this.filter.isFree
             this.searchItems.isFree.value = ''
           }
-          delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.prisonerName.miss = false
           this.searchItems.auditAt.miss = false
-          if(val == 'DENIED'){
+          delete this.filter.status
+          delete this.filter.prisonerName
+          this.searchItems.status.value = ''
+          this.searchItems.prisonerName.value = ''
+          if(val == 'DENIED,CANCELED'){
             this.searchItems.status.options=this.$store.state.deniedStatus
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
@@ -719,7 +730,10 @@
         }else{
           if(column.label=='监区'){
             return false
-          }else{
+          }else if(column.label=='当日没有可选时间段'){
+            return false
+          }
+          else{
             this.meetingAdjustmentCopy.terminals.filter(item=>{
               this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
@@ -744,10 +758,15 @@
               item[val.meetingTime.slice(-11)]= val.name
             }
           })
+          item.noTimes='已没有可安排的通话时间段'
         })
       },
       getDatas(e) {
-        if (this.tabs !== 'first') this.filter.status = this.tabs
+        if (this.tabs !== 'first') {
+          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+            this.filter.status = this.tabs
+          }
+        }
         const params = {
           ...this.filter,
           ...this.pagination
@@ -778,6 +797,7 @@
         http.getMeetTimeConfig({id:this.toAuthorize.id}).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
+          this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
           this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
         })
