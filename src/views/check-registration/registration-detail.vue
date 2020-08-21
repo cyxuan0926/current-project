@@ -59,19 +59,9 @@
     export default {
         props: {
             toAuthorize: {
-                type: Object
+                type: Object,
+                default: {}
             }
-        },
-        created() {
-            let _relationalProofUrls = []
-            for (let index = 0; index < 4; index++) {
-                if (index === 0 && this.toAuthorize.relationalProofUrl) _relationalProofUrls.push({ url: this.toAuthorize.relationalProofUrl })
-                else {
-                const num = `relationalProofUrl${ index + 1 }`
-                this.toAuthorize[num] && _relationalProofUrls.push({ url: this.toAuthorize[num] })
-                }
-            }
-            this.toAuthorize.relationalProofUrls = _relationalProofUrls
         },
         computed: {
             relationalWidth() {

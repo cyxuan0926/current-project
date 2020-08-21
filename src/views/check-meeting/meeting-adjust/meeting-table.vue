@@ -35,7 +35,7 @@
             <div class="meeting-list-block__head">
               <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
             </div>
-            <m-draggable class="meeting-list-block__body" :options="dragOptions">
+            <m-draggable class="meeting-list-block__body meetings-col" :options="dragOptions">
               <div class="meeting-list-cell meeting-list-cell__drag" 
                 v-for="m in meetings"
                 :key="m.id || uuId()"
@@ -476,7 +476,6 @@ export default {
     hasMeetingChanged(el) {
       const meetingParams = this.getMeetingParams(el);
       const { terminalNumber, meetingTime } = el.__MEETING__;
-
       // 通话时间段/终端号不同 就说明这个元素调整了会见
       return (
         terminalNumber !== meetingParams["data-terminal-number"] ||

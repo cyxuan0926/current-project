@@ -646,10 +646,27 @@ export default {
         }
       })
     },
+
+    set_relationalProofUrls(authorizeDetData) {
+      if ( authorizeDetData ) {
+        let _relationalProofUrls = []
+        for (let index = 0; index < 4; index++) {
+          if (index === 0 && authorizeDetData.relationalProofUrl) _relationalProofUrls.push({ url: authorizeDetData.relationalProofUrl })
+          else {
+            const num = `relationalProofUrl${ index + 1 }`
+            authorizeDetData[num] && _relationalProofUrls.push({ url: authorizeDetData[num] })
+          }
+        }
+        authorizeDetData.relationalProofUrls = _relationalProofUrls
+        return authorizeDetData
+      }
+      return {}
+    },
+
     async handleAuthorDetail(id) {
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
       if ( _authorizeDetData ) {
-        this.authorizeDetData = _authorizeDetData
+        this.authorizeDetData = this.set_relationalProofUrls(_authorizeDetData)
         this.showDetail = true
       }
     },
