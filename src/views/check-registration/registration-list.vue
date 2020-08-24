@@ -10,7 +10,13 @@
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch" />
+      @search="onSearch">
+      <template #append v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)">
+        <el-button type="primary" @click="onDownload('all')">
+          下载关系证明
+        </el-button>
+      </template>
+    </m-search>
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -31,7 +37,7 @@
       <el-table
         :data="registrations.contents"
         stripe
-        class="mini-td-padding"
+        class="mini-td-padding registration-table"
         style="width: 100%">
         <el-table-column
           v-if="hasProvinceQueryAuth"
@@ -178,11 +184,14 @@
               size="mini"
               @click="handleAuthorization(scope.row)">授权
             </el-button>
-            <el-button
-              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PASSED'"
-              size="mini"
-              @click="handleCallback(scope.row)">撤回
-            </el-button>
+            <template v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PASSED'">
+              <el-button
+                size="mini"
+                @click="handleCallback(scope.row)">撤回</el-button>
+              <el-button
+                size="mini"
+                @click="onDownload(scope.row)">下载</el-button>
+            </template>
             <el-button
               v-if="!hasAllPrisonQueryAuth && scope.row.status == 'DENIED'"
               size="mini"
@@ -429,6 +438,8 @@ import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
 import registrationDetail from './registration-detail'
 import http from '@/service'
+
+import { tokenExcel } from '@/utils/token-excel'
 
 export default {
   components: {
@@ -684,6 +695,55 @@ export default {
       this.toAuthorize = e
       this.dialogTitle = '查看'
       this.show.authorize = true
+    },
+
+    // 下载
+    async onDownload(contents) {
+      let params, type = 'pdf'
+
+      // 下载当前页的
+      if (contents === 'all') {
+        params = this.filterDownloadParams(this.registrations.contents)
+
+        type = 'zip'
+      }
+
+      // 下载单条的
+      else params = this.filterDownloadParams([contents])
+
+      await tokenExcel({
+        actionName: 'downloadRelationshipFile',
+        menuName: '家属关系证明电子文档',
+        params,
+        type
+      })
+    },
+
+    // 过滤参数
+    filterDownloadParams(data) {
+      const paramsKeys = [
+        'avatarUrl',
+        'idCardBack',
+        'idCardFront',
+        'meetNoticeUrl',
+        'name',
+        'prisonerName',
+        'relationalProofUrl',
+        'relationalProofUrl2',
+        'relationalProofUrl3',
+        'relationalProofUrl4',
+        'relationship'
+      ]
+
+      return data.map(item => {
+        let filterParams = {}
+
+        paramsKeys.forEach(key => {
+          filterParams[key] = item[key]
+        })
+
+        return filterParams
+      })
     }
   }
 }
@@ -720,4 +780,8 @@ export default {
 .view-box
   display: flex;
   flex-direction: row-reverse;
+.registration-table
+  >>> .el-button + .el-button
+        margin-left: 0px;
+        margin-top: 5px;
 </style>

@@ -2,7 +2,13 @@ import { helper } from '@/utils'
 
 import _Store from '@/store'
 
-export const tokenExcel = async({ params = {}, actionName = '', menuName = '', formater = function() {} }) => {
+export const tokenExcel = async({
+    params = {},
+    actionName = '',
+    menuName = '',
+    type = 'xls',
+    formater = function(input = menuName) { return input }
+  }) => {
   let link = document.createElement('a')
 
   const res = await _Store.dispatch(actionName, params)
@@ -15,7 +21,7 @@ export const tokenExcel = async({ params = {}, actionName = '', menuName = '', f
 
   link.id = 'linkId'
 
-  link.setAttribute('download', `${ fileName }.xls`)
+  link.setAttribute('download', `${ fileName }.${ type }`)
 
   document.body.appendChild(link)
 

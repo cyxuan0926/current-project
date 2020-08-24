@@ -90,7 +90,7 @@ const config = {
   },
   phl: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://192.168.0.144:8021',
+    apiHost: 'http://192.168.0.110:8021',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
