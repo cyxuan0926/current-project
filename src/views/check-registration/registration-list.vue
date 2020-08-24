@@ -134,7 +134,7 @@
           min-width="50"
           show-overflow-tooltip 
         />
-        <el-table-column label="家属亲情电话告知书" min-width="65">
+        <el-table-column label="家属可视电话告知书" min-width="65">
           <template slot-scope="scope">
             <span
               :class="[
@@ -264,12 +264,12 @@
         </div>
       </template>
       <template v-if="!!toAuthorize.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
-            title="亲情电话通知单"
+            title="可视电话通知单"
           />
         </div>
       </template>
@@ -324,6 +324,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
+                :autosize="{ minRows: 4 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -380,6 +381,7 @@
                 type="textarea"
                 show-word-limit
                 maxlength="200"
+                :autosize="{ minRows: 4 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -405,7 +407,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
-      title="亲情电话告知书"
+      title="可视电话告知书"
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
@@ -434,6 +436,8 @@ import switches from '@/filters/modules/switches'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
+import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+
 export default {
   components: {
     registrationDetail
@@ -443,6 +447,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
+      withdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -498,10 +503,10 @@ export default {
         callback: false
       },
       withdrawForm: {
-        withdrawReason: ''
+        withdrawReason: withdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: ''
+        anotherRemarks: withdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -637,14 +642,15 @@ export default {
       else this.handleSubmit(params)
     },
     handleSubmit(params) {
-      this.authorizeRegistrations(params).then(res => {
-        this.btnDisable = false
-        if (res) {
-          this.closeWithdraw()
-          this.toAuthorize = {}
-          this.getDatas()
-        }
-      })
+      console.log(params)
+      // this.authorizeRegistrations(params).then(res => {
+      //   this.btnDisable = false
+      //   if (res) {
+      //     this.closeWithdraw()
+      //     this.toAuthorize = {}
+      //     this.getDatas()
+      //   }
+      // })
     },
 
     set_relationalProofUrls(authorizeDetData) {
@@ -682,8 +688,8 @@ export default {
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
-      this.withdrawForm.withdrawReason = ''
-      this.refuseForm.anotherRemarks = ''
+      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },

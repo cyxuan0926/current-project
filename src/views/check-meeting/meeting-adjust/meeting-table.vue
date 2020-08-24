@@ -57,7 +57,7 @@
 
     <el-dialog
       class="cross-meeting-dialog"
-      title="亲情电话申请调整"
+      title="可视电话申请调整"
       :visible.sync="meetingVisible"
       width="702px">
       <section>
@@ -356,7 +356,7 @@ export default {
 
       let message = ""
       if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
-        message = "该日不可申请亲情电话"
+        message = "该日不可申请可视电话"
       } else if (!this.crossMeetings || !this.crossMeetings.length) {
         message = "该日无申请"
       } else if (!this.crossTerminals || !this.crossTerminals.length) {
