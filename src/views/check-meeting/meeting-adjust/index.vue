@@ -116,7 +116,7 @@ export default {
     this.adjustDate = this.defaultDate()
     await this.getConfigs();
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
-    limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 14
+    limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
     this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
     this.pickerOptions = {
       disabledDate(time) {
@@ -189,14 +189,13 @@ export default {
 
       let message = "";
 
-      if (!this.hasMeetings) {
+      if ( !this.hasMeetingQueue ) {
+        message = "该日不可申请亲情电话";
+      } else if (!this.hasMeetings) {
         message = "该日无申请";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
-      } else if (!this.hasMeetingQueue) {
-        message = "该日无可调整时间段";
       }
-
       if (message) {
         this.$message.closeAll();
         this.$message.warning(message);

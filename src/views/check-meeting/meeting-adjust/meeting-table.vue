@@ -56,9 +56,10 @@
     </div>
 
     <el-dialog
+      class="cross-meeting-dialog"
       title="亲情电话申请调整"
       :visible.sync="meetingVisible"
-      width="640px">
+      width="702px">
       <section>
         <div class="across-filter">
           <label class="filter__label">调整日期</label>
@@ -75,11 +76,11 @@
         </div>
       </section>
       <el-table
+        v-if="crossMeetingQueue && crossMeetingQueue.length"
         class="across-table"
         :data="crossMeetingData"
         @cell-click="handleCellClick"
-        border
-        style="width: 100%">
+        border>
         <el-table-column
           fixed
           prop="terminalNumber"
@@ -354,13 +355,12 @@ export default {
       this.crossMeetingQueue = data.meetingQueue
 
       let message = ""
-
-      if (!this.crossMeetings || !this.crossMeetings.length) {
+      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
+        message = "该日不可申请亲情电话"
+      } else if (!this.crossMeetings || !this.crossMeetings.length) {
         message = "该日无申请"
       } else if (!this.crossTerminals || !this.crossTerminals.length) {
         message = "该日无可用终端"
-      } else if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
-        message = "该日无可调整时间段"
       }
 
       if (message) {
@@ -638,7 +638,17 @@ export default {
   }
 }
 
+.cross-meeting-dialog {
+  /deep/ .el-dialog__body::after {
+    display: table;
+    content: ' ';
+    clear: both;
+  }
+}
+
 .across-table {
+  width: auto;
+  float: left;
   /deep/ td {
     border-bottom: 1px solid #e6e6e6 !important;
     position: relative;
