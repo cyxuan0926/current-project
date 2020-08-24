@@ -17,6 +17,7 @@
     <meeting-table
       ref="meetingTable"
       :adjustDate="adjustDate"
+      :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
       @on-get-configs="getConfigs"
     />
@@ -35,7 +36,7 @@ import MeetingTable from "./meeting-table";
 
 import { mapActions, mapState } from "vuex";
 import helper from "@/filters/modules/date";
-import Monent from 'moment'
+import Moment from 'moment'
 export default {
   name: "MeetingAjust",
 
@@ -46,12 +47,8 @@ export default {
       loading: false,
       // 默认展现两天后的会见申请数据
       adjustDate: '',
-      pickerOptions: {
-        // 仅支持 2 天后的会见申请调整
-        disabledDate(time) {
-          return time.getTime() < Date.now() - 24 * 3600 * 1000;
-        }
-      }
+      dayinLimit: '',
+      pickerOptions: {}
     };
   },
 
@@ -94,7 +91,7 @@ export default {
 
     if (meetings.length > 0) {
       try {
-        await this.$confirm("可视亲情电话申请调整未确认，请确认调整！", "提示", {
+        await this.$confirm("可视电话申请调整未确认，请确认调整！", "提示", {
           distinguishCancelAndClose: true,
           closeOnClickModal: false,
           closeOnPressEscape: false,
@@ -118,6 +115,14 @@ export default {
   async created() {
     this.adjustDate = this.defaultDate()
     await this.getConfigs();
+    let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
+    limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
+    this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
+    this.pickerOptions = {
+      disabledDate(time) {
+        return time.getTime() < Date.now() - 24 * 3600 * 1000 ||  time.getTime() > Date.now() + limitDay * 24 * 3600 * 1000;
+      }
+    }
   },
 
   beforeDestroy() {
@@ -184,14 +189,13 @@ export default {
 
       let message = "";
 
-      if (!this.hasMeetings) {
+      if ( !this.hasMeetingQueue ) {
+        message = "该日不可申请可视电话";
+      } else if (!this.hasMeetings) {
         message = "该日无申请";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
-      } else if (!this.hasMeetingQueue) {
-        message = "该日无可调整时间段";
       }
-
       if (message) {
         this.$message.closeAll();
         this.$message.warning(message);

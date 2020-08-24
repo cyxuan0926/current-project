@@ -40,36 +40,28 @@
             </div>
         </template>
         <template v-if="!!toAuthorize.meetNoticeUrl">
-            <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+            <div style="margin-bottom: 10px;">可视电话通知单:</div>
             <div class="img-box">
             <m-img-viewer
                 :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
                 :url="toAuthorize.meetNoticeUrl"
-                title="亲情电话通知单"
+                title="可视电话通知单"
             />
             </div>
         </template>
-        <div style="margin-bottom: 10px;">{{ toAuthorize.status === 'WITHDRAW' ? '撤回原因：' : '审核未通过原因：' }}</div>
+        <div style="margin-bottom: 10px;" v-if="toAuthorize.remarks">{{ toAuthorize.status === 'WITHDRAW' ? '撤回原因：' : '审核未通过原因：' }}</div>
         <div class="img-box">{{ toAuthorize.remarks }}</div>
-        <div style="margin-bottom: 10px;">{{ toAuthorize.status === 'WITHDRAW' ? '撤回' : '审核' }}时间：{{ toAuthorize.auditAt }}</div>
+        <div style="margin-bottom: 10px;" v-if="toAuthorize.status === 'WITHDRAW' || toAuthorize.status === 'DENIED'">{{ toAuthorize.status === 'WITHDRAW' ? '撤回' : '审核' }}时间：{{ toAuthorize.auditAt }}</div>
     </div>
 </template>
 
 <script>
     export default {
         props: {
-            toAuthorize: Object
-        },
-        created() {
-            let _relationalProofUrls = []
-            for (let index = 0; index < 4; index++) {
-                if (index === 0 && this.toAuthorize.relationalProofUrl) _relationalProofUrls.push({ url: this.toAuthorize.relationalProofUrl })
-                else {
-                const num = `relationalProofUrl${ index + 1 }`
-                this.toAuthorize[num] && _relationalProofUrls.push({ url: this.toAuthorize[num] })
-                }
+            toAuthorize: {
+                type: Object,
+                default: {}
             }
-            this.toAuthorize.relationalProofUrls = _relationalProofUrls
         },
         computed: {
             relationalWidth() {
@@ -80,12 +72,28 @@
                     3: '32%',
                     4: '24%'
                 }
-                return widthConstent[this.toAuthorize.relationalProofUrls.length]
+                return widthConstent[this.toAuthorize.relationalProofUrls && this.toAuthorize.relationalProofUrls.length || 0]
             }
         }
     }
 </script>
 
-<style lang="scss" scoped>
-
+<style type="text/stylus" lang="stylus" scoped>
+.authorize-dialog
+  .img-box
+    .el-image
+      width: 32%;
+      height: 110px;
+      margin-bottom: 5px;
+      >>> img
+           width: 100%;
+           height: 100%;
+           cursor: pointer;
+.button-box 
+  .el-button
+    &:first-of-type
+      margin-left: 0px !important;
+.view-box
+  display: flex;
+  flex-direction: row-reverse;
 </style>

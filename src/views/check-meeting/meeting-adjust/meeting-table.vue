@@ -35,7 +35,7 @@
             <div class="meeting-list-block__head">
               <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
             </div>
-            <m-draggable class="meeting-list-block__body" :options="dragOptions">
+            <m-draggable class="meeting-list-block__body meetings-col" :options="dragOptions">
               <div class="meeting-list-cell meeting-list-cell__drag" 
                 v-for="m in meetings"
                 :key="m.id || uuId()"
@@ -56,9 +56,10 @@
     </div>
 
     <el-dialog
-      title="亲情电话申请调整"
+      class="cross-meeting-dialog"
+      title="可视电话申请调整"
       :visible.sync="meetingVisible"
-      width="640px">
+      width="702px">
       <section>
         <div class="across-filter">
           <label class="filter__label">调整日期</label>
@@ -75,11 +76,11 @@
         </div>
       </section>
       <el-table
+        v-if="crossMeetingQueue && crossMeetingQueue.length"
         class="across-table"
         :data="crossMeetingData"
         @cell-click="handleCellClick"
-        border
-        style="width: 100%">
+        border>
         <el-table-column
           fixed
           prop="terminalNumber"
@@ -173,6 +174,7 @@ import { mapActions, mapState } from "vuex";
 export default {
   props: {
     adjustDate: String,
+    dayinLimit: String,
     onDragFinish: {
       type: Function,
       default: function() {}
@@ -309,10 +311,11 @@ export default {
 
     handleShowacross(m) {
       let _this = this
-      this.acrossAdjustDate = Moment(this.adjustDate).add(1, 'd').format('YYYY-MM-DD')
+      let _adjustDate = Moment(this.adjustDate)
+      this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate;
+          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
       }
       this.crossMeetingCurrent = m
@@ -352,13 +355,12 @@ export default {
       this.crossMeetingQueue = data.meetingQueue
 
       let message = ""
-
-      if (!this.crossMeetings || !this.crossMeetings.length) {
+      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
+        message = "该日不可申请可视电话"
+      } else if (!this.crossMeetings || !this.crossMeetings.length) {
         message = "该日无申请"
       } else if (!this.crossTerminals || !this.crossTerminals.length) {
         message = "该日无可用终端"
-      } else if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
-        message = "该日无可调整时间段"
       }
 
       if (message) {
@@ -474,7 +476,6 @@ export default {
     hasMeetingChanged(el) {
       const meetingParams = this.getMeetingParams(el);
       const { terminalNumber, meetingTime } = el.__MEETING__;
-
       // 通话时间段/终端号不同 就说明这个元素调整了会见
       return (
         terminalNumber !== meetingParams["data-terminal-number"] ||
@@ -637,7 +638,17 @@ export default {
   }
 }
 
+.cross-meeting-dialog {
+  /deep/ .el-dialog__body::after {
+    display: table;
+    content: ' ';
+    clear: both;
+  }
+}
+
 .across-table {
+  width: auto;
+  float: left;
   /deep/ td {
     border-bottom: 1px solid #e6e6e6 !important;
     position: relative;

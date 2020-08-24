@@ -196,14 +196,18 @@
                 @click="onDownload(scope.row)">下载</el-button>
             </template>
             <el-button
-              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'DENIED'"
+              v-if="!hasAllPrisonQueryAuth && (scope.row.status == 'DENIED' || scope.row.status == 'WITHDRAW')"
               size="mini"
               @click="handleAuthorDetail(scope.row.id)">详情
             </el-button>
+            <!-- <el-button
+              v-if="hasProvinceQueryAuth"
+              size="mini"
+              @click="onView(scope.row)">查看</el-button> -->
             <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
-              @click="onView(scope.row)">查看</el-button>
+              @click="handleAuthorDetail(scope.row.id)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -272,12 +276,12 @@
         </div>
       </template>
       <template v-if="!!toAuthorize.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
-            title="亲情电话通知单"
+            title="可视电话通知单"
           />
         </div>
       </template>
@@ -332,6 +336,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
+                :autosize="{ minRows: 4 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -388,6 +393,7 @@
                 type="textarea"
                 show-word-limit
                 maxlength="200"
+                :autosize="{ minRows: 4 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -413,7 +419,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
-      title="亲情电话告知书"
+      title="可视电话告知书"
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
@@ -442,7 +448,11 @@ import switches from '@/filters/modules/switches'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
+<<<<<<< HEAD
 import { tokenExcel } from '@/utils/token-excel'
+=======
+import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+>>>>>>> dev
 
 export default {
   components: {
@@ -453,6 +463,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
+      withdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -508,10 +519,10 @@ export default {
         callback: false
       },
       withdrawForm: {
-        withdrawReason: ''
+        withdrawReason: withdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: ''
+        anotherRemarks: withdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -647,18 +658,39 @@ export default {
       else this.handleSubmit(params)
     },
     handleSubmit(params) {
-      this.authorizeRegistrations(params).then(res => {
-        this.btnDisable = false
-        if (res) {
-          this.closeWithdraw()
-          this.toAuthorize = {}
-          this.getDatas()
-        }
-      })
+      console.log(params)
+      // this.authorizeRegistrations(params).then(res => {
+      //   this.btnDisable = false
+      //   if (res) {
+      //     this.closeWithdraw()
+      //     this.toAuthorize = {}
+      //     this.getDatas()
+      //   }
+      // })
     },
+
+    set_relationalProofUrls(authorizeDetData) {
+      if ( authorizeDetData ) {
+        let _relationalProofUrls = []
+        for (let index = 0; index < 4; index++) {
+          if (index === 0 && authorizeDetData.relationalProofUrl) _relationalProofUrls.push({ url: authorizeDetData.relationalProofUrl })
+          else {
+            const num = `relationalProofUrl${ index + 1 }`
+            authorizeDetData[num] && _relationalProofUrls.push({ url: authorizeDetData[num] })
+          }
+        }
+        authorizeDetData.relationalProofUrls = _relationalProofUrls
+        return authorizeDetData
+      }
+      return {}
+    },
+
     async handleAuthorDetail(id) {
-      this.authorizeDetData = await http.getRegistrationsDetail({ id })
-      this.showDetail = true
+      let _authorizeDetData = await http.getRegistrationsDetail({ id })
+      if ( _authorizeDetData ) {
+        this.authorizeDetData = this.set_relationalProofUrls(_authorizeDetData)
+        this.showDetail = true
+      }
     },
     handleCallback(e) {
       this.toAuthorize = e
@@ -672,8 +704,8 @@ export default {
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
-      this.withdrawForm.withdrawReason = ''
-      this.refuseForm.anotherRemarks = ''
+      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },

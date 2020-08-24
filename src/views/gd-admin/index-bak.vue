@@ -1,7 +1,7 @@
 <template>
   <fullscreen class="fullscreen-layout" ref="fullscreen" @change="handleFullscreenChange">
     <el-container class="gd-home">
-      <el-header class="gd-home-title" v-show="isFullscreen"><h3>广东省可视亲情电话数据分析</h3></el-header>
+      <el-header class="gd-home-title" v-show="isFullscreen"><h3>广东省可视电话数据分析</h3></el-header>
       <el-container>
         <section class="gd-home__left">
           <section class="gd-home-map">
@@ -41,7 +41,7 @@
           <section class="gd-home-statistics">
             <m-chart-block>
               <template v-slot:content>
-                <h3 class="gd-home-block-title"><span>广东省亲情电话统计曲线</span></h3>
+                <h3 class="gd-home-block-title"><span>广东省可视电话统计曲线</span></h3>
                 <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
               </template>
             </m-chart-block>

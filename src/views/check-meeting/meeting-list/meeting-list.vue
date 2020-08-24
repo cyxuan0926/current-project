@@ -158,7 +158,7 @@
           v-if="remarks === '其他'"
           class="withdraw-box"
           ref="refuseForm"
-          :items="authorizeFormItems"
+          :items="localAuthorizeFormItems"
           @submit="onAuthorization('DENIED', $event)" />
         <repetition-el-buttons :buttonItems="showDisagreebuttons" />
       </div>
@@ -327,7 +327,7 @@
           <div class="img-items">
             <m-img-viewer
               :url="scope.meetNoticeUrl"
-              title="亲情电话通知单"
+              title="可视电话通知单"
             />
           </div>
         </template>
@@ -344,13 +344,15 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
+  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
       // 标签元素
       const tabsItems = [
         {
-          label: '亲情电话申请',
+          label: '可视电话申请',
           name: 'first' },
         {
           label: '审核已通过',
@@ -381,6 +383,7 @@
         }
       ]
       return {
+        withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
         searchItems: {
@@ -467,7 +470,8 @@
             autosize: { minRows: 6 },
             rules: ['required'],
             noLabel: true,
-            label: '撤回理由'
+            label: '撤回理由',
+            value: withdrawOrAnthorinputReason
           },
           buttons: [
             {
@@ -501,7 +505,7 @@
             definedClass: 'img-box'
           },
           {
-            label: '亲情电话通知单',
+            label: '可视电话通知单',
             prop: 'familyMeetNoticeInformation',
             definedClass: 'img-box'
           }
@@ -531,6 +535,22 @@
         'frontRemarks',
         'meetingRefresh'
       ]),
+
+      // 本地实例化的授权表单组件元素
+      localAuthorizeFormItems() {
+        const { refuseRemark } = this.authorizeFormItems
+
+        return ({
+          refuseRemark: {
+            ...refuseRemark,
+            autosize: {
+              minRows: 4
+            },
+            value: this.withdrawOrAnthorinputReason
+          }
+        })
+      },
+
       tableCols() {
         const basicCols = [
             {
