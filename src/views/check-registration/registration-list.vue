@@ -140,7 +140,10 @@
           min-width="50"
           show-overflow-tooltip 
         />
-        <el-table-column label="家属亲情电话告知书" min-width="65">
+        <el-table-column
+          label="家属亲情电话告知书"
+          min-width="65"
+        >
           <template slot-scope="scope">
             <span
               :class="[
