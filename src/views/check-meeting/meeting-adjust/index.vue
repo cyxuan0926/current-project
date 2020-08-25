@@ -19,7 +19,7 @@
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
-      @on-get-configs="getConfigs"
+      @on-across-submit="onAcrossSubmit"
     />
 
     <div class="operates" v-show="hasMeetings">
@@ -143,6 +143,14 @@ export default {
       } else {
         this.removePageunloadListener();
       }
+    },
+
+    onAcrossSubmit() {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.getConfigs()
+      }, 3000);
     },
 
     // 确认调整

@@ -82,13 +82,28 @@
         @cell-click="handleCellClick"
         border>
         <el-table-column
+          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
           fixed
           prop="terminalNumber"
           label="终端号"
           width="80">
         </el-table-column>
         <el-table-column
+          v-else
+          prop="terminalNumber"
+          label="终端号"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
           fixed
+          show-overflow-tooltip
+          prop="terminalName"
+          label="终端别名"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          v-else
           show-overflow-tooltip
           prop="terminalName"
           label="终端别名"
@@ -339,7 +354,7 @@ export default {
       this.removeSelClass()
       this.crossDateSelect = ''
       this.meetingVisible = false
-      this.$emit('on-get-configs')
+      this.$emit('on-across-submit')
     },
     handleCancelAcross() {
       this.removeSelClass()
