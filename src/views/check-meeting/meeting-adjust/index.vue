@@ -196,16 +196,14 @@ export default {
       this.meetingAdjustDealing(false);
 
       let message = "";
+      this.$message.closeAll();
 
       if ( !this.hasMeetingQueue ) {
         message = "该日不可申请亲情电话";
-      } else if (!this.hasMeetings) {
-        message = "该日无申请";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
       }
       if (message) {
-        this.$message.closeAll();
         this.$message.warning(message);
       }
     },
