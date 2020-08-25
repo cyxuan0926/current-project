@@ -59,7 +59,7 @@
       class="cross-meeting-dialog"
       title="亲情电话申请调整"
       :visible.sync="meetingVisible"
-      width="702px">
+      width="802px">
       <section>
         <div class="across-filter">
           <label class="filter__label">调整日期</label>
@@ -71,8 +71,9 @@
             value-format="yyyy-MM-dd"
             :clearable="false"
             :picker-options="pickerOptions"
+            @change="handleGetConfigs"
           />
-          <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button>
+          <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
         </div>
       </section>
       <el-table
@@ -107,6 +108,21 @@
           show-overflow-tooltip
           prop="terminalName"
           label="终端别名"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
+          fixed
+          show-overflow-tooltip
+          prop="prisonConfigName"
+          label="监区"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          v-else
+          show-overflow-tooltip
+          prop="prisonConfigName"
+          label="监区"
           width="100">
         </el-table-column>
         <el-table-column

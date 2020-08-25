@@ -9,8 +9,9 @@
         value-format="yyyy-MM-dd"
         :clearable="false"
         :picker-options="pickerOptions"
+        @change="getConfigs"
       />
-      <el-button type="primary" @click="getConfigs">确定</el-button>
+      <!-- <el-button type="primary" @click="getConfigs">确定</el-button> -->
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
 
