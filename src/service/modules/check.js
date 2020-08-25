@@ -5,6 +5,10 @@ export default {
   getRegistrations: params => {
     return service.get('/registrations/page', params).then(res => res && res.data)
   },
+  // 家属注册管理-详情
+  getRegistrationsDetail: params => {
+    return service.get('/registrations/getDetail', params).then(res => res && res.data)
+  },
   // 家属注册管理-未审核-会见告知书详情
   getRegistrationNotificationDetail: params => {
     return service.get('/notification/detail-registration', params).then(res => res && res.data)
@@ -238,5 +242,13 @@ export default {
   // 会见申请管理-远程会见申请-单条审核通过
   authorizeSingleMeeting: params => {
     return service.post('/meetings/singleAuthorize', params)
+  },
+  // 情亲会见申请管理-审核通过
+  meetingSelectAuthorize: params => {
+    return service.post('/meetings/selectAuthorize', params)
+  },
+  // 情亲会见申请管理-终端会见配置时间列表
+  getMeetTimeConfig: params => {
+    return service.get('/meetings/query-meettime-config', params).then(res => res && res.data)
   }
 }

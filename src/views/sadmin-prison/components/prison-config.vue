@@ -234,13 +234,27 @@ export default {
             message: '请输入监区名称',
             required: true,
             validator: validator.required
-          }]},
+          }]
+        },
         agreement: {
           type: 'switch',
           label: '线上签署《亲情电话告知书》',
           disabled,
           value: 0
         },
+        familyPhone: {
+          type: 'switch',
+          label: '显示家属电话',
+          disabled,
+          rules: ['required'],
+          value: 0
+        },
+        // showPrisonerName: {
+        //   type: 'switch',
+        //   label: '显示罪犯姓名',
+        //   disabled,
+        //   value: 0
+        // },
         meeting: {
           type: 'switch',
           label: '亲情电话模块开放',

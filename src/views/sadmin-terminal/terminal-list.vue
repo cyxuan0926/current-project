@@ -72,13 +72,20 @@ export default {
           prop: 'terminalNumber'
         },
         {
+          label: '终端别名',
+          prop: 'terminalName',
+          showOverflowTooltip: true,
+          minWidth: 70
+        },
+        {
           label: '终端类型',
-          slotName: 'terminalType'
+          slotName: 'terminalType',
+          minWidth: 70
         },
         {
           label: '终端唯一标识',
           prop: 'terminalSn',
-          minWidth: 95
+          minWidth: 100
         },
         {
           label: '会议室号',
@@ -87,31 +94,33 @@ export default {
         {
           label: '所属监狱',
           prop: 'jailName',
-          minWidth: 110
+          showOverflowTooltip: true,
+          minWidth: 90
         },
         {
           label: '监区',
-          prop: 'prisonConfigName'
+          prop: 'prisonConfigName',
+          minWidth: 55,
+          showOverflowTooltip: true
         },
         {
           label: '主持人密码',
-          prop: 'hostPassword',
-          minWidth: 70
+          prop: 'hostPassword'
         },
         {
           label: '参会密码',
-          prop: 'mettingPassword',
-          minWidth: 60
+          prop: 'mettingPassword'
         },
         {
           label: '狱警通话开关',
           prop: 'meetingEnabled',
-          slotName: 'meetingEnabled'
+          slotName: 'meetingEnabled',
+          minWidth: 95
         },
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 112
+          minWidth: 120
         }
       ]
     }

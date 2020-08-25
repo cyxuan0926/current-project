@@ -19,6 +19,12 @@
           label="家属注册"
           name="first" />
         <el-tab-pane
+          label="审核已通过"
+          name="PASSED" />
+        <el-tab-pane
+          label="审核未通过"
+          name="DENIED,WITHDRAW" />
+        <el-tab-pane
           label="未授权"
           name="PENDING" />
       </el-tabs>
@@ -44,15 +50,16 @@
         <el-table-column
           show-overflow-tooltip
           label="家属姓名"
-          min-width="55"
+          min-width="50"
         >
           <template slot-scope="scope">
             <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
           </template>
         </el-table-column>  
         <el-table-column
-          v-if="isInWhitelist"
+          v-if="isShowPhone"
           prop="phone"
+          min-width="90"
           label="家属电话"
         />
         <el-table-column
@@ -80,15 +87,15 @@
             />
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="身份证件有效期至"
           prop="validDate"
-        />
+        /> -->
         <el-table-column
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
-          min-width="80"
+          min-width="70"
         />
         <el-table-column
           label="申请时间"
@@ -97,18 +104,24 @@
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
         <el-table-column
-          prop="prisonerNumber"
-          show-overflow-tooltip
-          label="罪犯编号"
-          min-width="50"
-        />
-        <el-table-column
-          v-if="isInWhitelist"
           prop="prisonerName"
           show-overflow-tooltip
           label="罪犯姓名"
           min-width="55"
         />
+        <el-table-column
+          prop="prisonerNumber"
+          show-overflow-tooltip
+          label="罪犯编号"
+          min-width="50"
+        />
+        <!-- <el-table-column
+          v-if="isInWhitelist"
+          prop="prisonerName"
+          show-overflow-tooltip
+          label="罪犯姓名"
+          min-width="55"
+        /> -->
         <el-table-column
           prop="prisonArea"
           show-overflow-tooltip
@@ -171,9 +184,18 @@
               @click="handleCallback(scope.row)">撤回
             </el-button>
             <el-button
+              v-if="!hasAllPrisonQueryAuth && (scope.row.status == 'DENIED' || scope.row.status == 'WITHDRAW')"
+              size="mini"
+              @click="handleAuthorDetail(scope.row.id)">详情
+            </el-button>
+            <!-- <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
-              @click="onView(scope.row)">查看</el-button>
+              @click="onView(scope.row)">查看</el-button> -->
+            <el-button
+              v-if="hasProvinceQueryAuth"
+              size="mini"
+              @click="handleAuthorDetail(scope.row.id)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -182,6 +204,20 @@
       ref="pagination"
       :total="registrations.total"
       @onPageChange="getDatas" />
+    <el-dialog
+      :visible.sync="showDetail"
+      class="authorize-dialog"
+      title="详情"
+      @close="showDetail = false"
+      width="530px">
+      <registration-detail :toAuthorize="authorizeDetData" />
+      <div class="button-box view-box">
+        <el-button
+          type="danger"
+          plain
+          @click="showDetail = false">关闭</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
@@ -288,6 +324,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
+                :autosize="{ minRows: 4 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -344,6 +381,7 @@
                 type="textarea"
                 show-word-limit
                 maxlength="200"
+                :autosize="{ minRows: 4 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -395,17 +433,31 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
+import registrationDetail from './registration-detail'
+import http from '@/service'
+
+import { withdrawOrAnthorinputReason } from '@/common/constants/const'
 
 export default {
+  components: {
+    registrationDetail
+  },
   mixins: [prisonFilterCreator],
   data() {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
+      withdrawOrAnthorinputReason,
+      showDetail: false,
+      authorizeDetData: {},
       searchItems: {
         name: {
           type: 'input',
           label: '家属姓名'
+        },
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名'
         },
         prisonerNumber: {
           type: 'input',
@@ -428,7 +480,7 @@ export default {
           label: '审核状态',
           options: this.$store.state.registStatus,
           miss: true,
-          no: ['DENIED'],
+          // no: ['DENIED'],
           value: ''
         },
         auditAt: {
@@ -451,10 +503,10 @@ export default {
         callback: false
       },
       withdrawForm: {
-        withdrawReason: ''
+        withdrawReason: withdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: ''
+        anotherRemarks: withdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -481,8 +533,14 @@ export default {
     tabs(val) {
       this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
-        this.searchItems.status.miss = true
-        this.searchItems.auditName.miss = true
+        if ( val === 'DENIED,WITHDRAW' ) {
+          delete this.filter.status
+          this.searchItems.status.miss = false
+          this.searchItems.status.options = this.$store.state.refuseStatus
+        }
+        else {
+          this.searchItems.status.miss = true
+        }
         this.searchItems.auditAt.miss = true
         delete this.filter.auditName
         delete this.filter.auditAt
@@ -492,9 +550,11 @@ export default {
       }
       else {
         delete this.filter.status
+        this.searchItems.status.value = ''
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.auditAt.miss = false
+        this.searchItems.status.options = this.$store.state.registStatus
       }
       this.onSearch()
     }
@@ -518,6 +578,10 @@ export default {
           4: '24%'
         }
         return widthConstent[this.toAuthorize.relationalProofUrls.length]
+      },
+
+      isShowPhone() {
+        return !!this.$store.state.global.user.familyPhone
       }
   },
   methods: {
@@ -529,12 +593,20 @@ export default {
       'getRegistrationNotificationDetail'
     ]),
     getDatas() {
-      if (this.tabs !== 'first') this.filter.status = this.tabs
+      if (this.tabs !== 'first') {
+        if (this.tabs !== 'DENIED,WITHDRAW' || !this.filter.status) {
+          this.filter.status = this.tabs
+        }
+      }
 
       const params = { ...this.filter, ...this.pagination }
 
-      if (this.hasAllPrisonQueryAuth) this.getRegistrationsAll(params)
-      else this.getRegistrations(params)
+      if (this.hasAllPrisonQueryAuth) {
+        this.getRegistrationsAll(params)
+      }
+      else {
+        this.getRegistrations(params)
+      }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -579,6 +651,30 @@ export default {
         }
       })
     },
+
+    set_relationalProofUrls(authorizeDetData) {
+      if ( authorizeDetData ) {
+        let _relationalProofUrls = []
+        for (let index = 0; index < 4; index++) {
+          if (index === 0 && authorizeDetData.relationalProofUrl) _relationalProofUrls.push({ url: authorizeDetData.relationalProofUrl })
+          else {
+            const num = `relationalProofUrl${ index + 1 }`
+            authorizeDetData[num] && _relationalProofUrls.push({ url: authorizeDetData[num] })
+          }
+        }
+        authorizeDetData.relationalProofUrls = _relationalProofUrls
+        return authorizeDetData
+      }
+      return {}
+    },
+
+    async handleAuthorDetail(id) {
+      let _authorizeDetData = await http.getRegistrationsDetail({ id })
+      if ( _authorizeDetData ) {
+        this.authorizeDetData = this.set_relationalProofUrls(_authorizeDetData)
+        this.showDetail = true
+      }
+    },
     handleCallback(e) {
       this.toAuthorize = e
       this.show.authorize = true
@@ -591,8 +687,8 @@ export default {
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
-      this.withdrawForm.withdrawReason = ''
-      this.refuseForm.anotherRemarks = ''
+      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },

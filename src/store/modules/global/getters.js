@@ -26,5 +26,9 @@ export default {
 
   isInWhitelist(state) {
     return roles.JAIL_WHITELIST.includes(state.user.jailCode)
+  },
+
+  isShowPrisonerName(state) {
+    return state.user.showPrisonerName === 1
   }
 }

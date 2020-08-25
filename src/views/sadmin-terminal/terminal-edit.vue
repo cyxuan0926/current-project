@@ -16,6 +16,14 @@
             v-model="terminal.terminalNumber"
             placeholder="请填写终端号" />
         </el-form-item>
+        <el-form-item
+          label="终端别名"
+          prop="terminalName">
+          <el-input
+            v-model="terminal.terminalName"
+            maxlength="10"
+            placeholder="请填写终端别名" />
+        </el-form-item>
         <el-form-item label="终端类型" prop="terminalType">
           <el-select v-model="terminal.terminalType" placeholder="请选择终端类型">
             <el-option

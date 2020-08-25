@@ -11,13 +11,15 @@
         :picker-options="pickerOptions"
       />
       <el-button type="primary" @click="getConfigs">确定</el-button>
-      <label class="filter__tip">注：仅支持2天后的申请调整</label>
+      <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
 
     <meeting-table
       ref="meetingTable"
-      :meetingAdjustment="meetingAdjustment"
+      :adjustDate="adjustDate"
+      :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
+      @on-across-submit="onAcrossSubmit"
     />
 
     <div class="operates" v-show="hasMeetings">
@@ -34,7 +36,7 @@ import MeetingTable from "./meeting-table";
 
 import { mapActions, mapState } from "vuex";
 import helper from "@/filters/modules/date";
-
+import Moment from 'moment'
 export default {
   name: "MeetingAjust",
 
@@ -45,12 +47,8 @@ export default {
       loading: false,
       // 默认展现两天后的会见申请数据
       adjustDate: '',
-      pickerOptions: {
-        // 仅支持 2 天后的会见申请调整
-        disabledDate(time) {
-          return time.getTime() < Date.now() + 24 * 3600 * 1000;
-        }
-      }
+      dayinLimit: '',
+      pickerOptions: {}
     };
   },
 
@@ -117,6 +115,14 @@ export default {
   async created() {
     this.adjustDate = this.defaultDate()
     await this.getConfigs();
+    let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
+    limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
+    this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
+    this.pickerOptions = {
+      disabledDate(time) {
+        return time.getTime() < Date.now() - 24 * 3600 * 1000 ||  time.getTime() > Date.now() + limitDay * 24 * 3600 * 1000;
+      }
+    }
   },
 
   beforeDestroy() {
@@ -137,6 +143,14 @@ export default {
       } else {
         this.removePageunloadListener();
       }
+    },
+
+    onAcrossSubmit() {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.getConfigs()
+      }, 3000);
     },
 
     // 确认调整
@@ -182,17 +196,14 @@ export default {
       this.meetingAdjustDealing(false);
 
       let message = "";
+      this.$message.closeAll();
 
-      if (!this.hasMeetings) {
-        message = "该日无申请";
+      if ( !this.hasMeetingQueue ) {
+        message = "该日不可申请亲情电话";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
-      } else if (!this.hasMeetingQueue) {
-        message = "该日无可调整时间段";
       }
-
       if (message) {
-        this.$message.closeAll();
         this.$message.warning(message);
       }
     },
@@ -231,7 +242,8 @@ export default {
 
     // 默认日期
     defaultDate() {
-      return helper.dateFormate(Date.now() + 2 * 24 * 3600 * 1000)
+      // return helper.dateFormate(Date.now() + 2 * 24 * 3600 * 1000)
+      return helper.dateFormate(Date.now())
     }
   }
 };
