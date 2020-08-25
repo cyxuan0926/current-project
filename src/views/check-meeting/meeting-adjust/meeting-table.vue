@@ -321,7 +321,10 @@ export default {
 
     handleCellClick(row, column, cell, event) {
       this.removeSelClass()
-      cell.querySelector('.acrosssel-btn').classList.add('selected')
+      let elBtn = cell.querySelector('.acrosssel-btn')
+      if( elBtn ) {
+        elBtn.classList.add('selected')
+      }
     },
 
     handleShowacross(m) {
@@ -344,7 +347,7 @@ export default {
         name: this.crossMeetingCurrent.name,
         id: this.crossMeetingCurrent.id,
         meetingTime: `${this.acrossAdjustDate} ${time}`,
-        terminalId: this.crossMeetingCurrent.terminalId,
+        terminalId: this.terminals.find(t => t.terminalNumber == terNum).id,
         terminalNumber: terNum,
         adjustStatus: 0
       }
@@ -370,16 +373,14 @@ export default {
       this.crossMeetingQueue = data.meetingQueue
 
       let message = ""
+      this.$message.closeAll()
       if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
         message = "该日不可申请亲情电话"
-      } else if (!this.crossMeetings || !this.crossMeetings.length) {
-        message = "该日无申请"
       } else if (!this.crossTerminals || !this.crossTerminals.length) {
         message = "该日无可用终端"
       }
 
       if (message) {
-        this.$message.closeAll()
         this.$message.warning(message)
       }
 
