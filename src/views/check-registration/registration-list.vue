@@ -324,6 +324,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
+                :autosize="{ minRows: 4 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -380,6 +381,7 @@
                 type="textarea"
                 show-word-limit
                 maxlength="200"
+                :autosize="{ minRows: 4 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -434,6 +436,8 @@ import switches from '@/filters/modules/switches'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
+import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+
 export default {
   components: {
     registrationDetail
@@ -443,6 +447,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
+      withdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -498,10 +503,10 @@ export default {
         callback: false
       },
       withdrawForm: {
-        withdrawReason: ''
+        withdrawReason: withdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: ''
+        anotherRemarks: withdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -637,14 +642,15 @@ export default {
       else this.handleSubmit(params)
     },
     handleSubmit(params) {
-      this.authorizeRegistrations(params).then(res => {
-        this.btnDisable = false
-        if (res) {
-          this.closeWithdraw()
-          this.toAuthorize = {}
-          this.getDatas()
-        }
-      })
+      console.log(params)
+      // this.authorizeRegistrations(params).then(res => {
+      //   this.btnDisable = false
+      //   if (res) {
+      //     this.closeWithdraw()
+      //     this.toAuthorize = {}
+      //     this.getDatas()
+      //   }
+      // })
     },
 
     set_relationalProofUrls(authorizeDetData) {
@@ -682,8 +688,8 @@ export default {
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
-      this.withdrawForm.withdrawReason = ''
-      this.refuseForm.anotherRemarks = ''
+      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
