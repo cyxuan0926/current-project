@@ -91,7 +91,7 @@ export default {
 
     if (meetings.length > 0) {
       try {
-        await this.$confirm("可视电话申请调整未确认，请确认调整！", "提示", {
+        await this.$confirm("可视亲情电话申请调整未确认，请确认调整！", "提示", {
           distinguishCancelAndClose: true,
           closeOnClickModal: false,
           closeOnPressEscape: false,
@@ -190,7 +190,7 @@ export default {
       let message = "";
 
       if ( !this.hasMeetingQueue ) {
-        message = "该日不可申请可视电话";
+        message = "该日不可申请亲情电话";
       } else if (!this.hasMeetings) {
         message = "该日无申请";
       } else if (!this.hasTerminal) {

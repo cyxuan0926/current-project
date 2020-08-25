@@ -200,7 +200,7 @@ export default {
         totalCost: {
           slotName: 'totalCost',
           attrs: {
-            label: '申请可视电话总费用'
+            label: '申请亲情电话总费用'
           }
         },
         onceMoney: {
@@ -238,7 +238,7 @@ export default {
         },
         agreement: {
           type: 'switch',
-          label: '线上签署《可视电话告知书》',
+          label: '线上签署《亲情电话告知书》',
           disabled,
           value: 0
         },
@@ -257,7 +257,7 @@ export default {
         // },
         meeting: {
           type: 'switch',
-          label: '可视电话模块开放',
+          label: '亲情电话模块开放',
           disabled,
           rules: ['required'],
           value: 1

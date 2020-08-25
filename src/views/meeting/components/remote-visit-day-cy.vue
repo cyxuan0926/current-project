@@ -1,6 +1,6 @@
 <template>
   <el-form>
-    <el-form-item label="可视电话预约日期管理">
+    <el-form-item label="亲情电话预约日期管理">
       <div class="remote-visit-box">
         <el-select
           v-model="advanceDayLimit_[0]"
@@ -27,7 +27,7 @@
         </el-select>
         &nbsp;&nbsp;天内(包含)
         <p class="tip">
-          *家属预约可视电话日期设置，以自然日为单位
+          *家属预约亲情电话日期设置，以自然日为单位
         </p>
         <div
           v-if="hasUpdateBtn && hasChange"
@@ -83,7 +83,7 @@ export default {
     endDays() {
       return this.beginDayLimit_ ? 60 - this.beginDayLimit_ : 60
     },
-    // 是否修改了可视电话申请提前天数
+    // 是否修改了亲情电话申请提前天数
     hasChange() {
       // 不等于默认的配置天数
       return !isEqual(this.advanceDayLimit_, this.advanceDayLimit)
