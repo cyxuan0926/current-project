@@ -344,7 +344,7 @@ export default {
         name: this.crossMeetingCurrent.name,
         id: this.crossMeetingCurrent.id,
         meetingTime: `${this.acrossAdjustDate} ${time}`,
-        terminalId: this.crossMeetingCurrent.terminalId,
+        terminalId: this.terminals.find(t => t.terminalNumber == terNum).id,
         terminalNumber: terNum,
         adjustStatus: 0
       }
