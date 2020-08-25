@@ -642,15 +642,14 @@ export default {
       else this.handleSubmit(params)
     },
     handleSubmit(params) {
-      console.log(params)
-      // this.authorizeRegistrations(params).then(res => {
-      //   this.btnDisable = false
-      //   if (res) {
-      //     this.closeWithdraw()
-      //     this.toAuthorize = {}
-      //     this.getDatas()
-      //   }
-      // })
+      this.authorizeRegistrations(params).then(res => {
+        this.btnDisable = false
+        if (res) {
+          this.closeWithdraw()
+          this.toAuthorize = {}
+          this.getDatas()
+        }
+      })
     },
 
     set_relationalProofUrls(authorizeDetData) {
