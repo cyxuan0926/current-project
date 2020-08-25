@@ -428,6 +428,13 @@
         <div style="width: 100%;"><label>与服刑人员关系：</label><span>{{ notification.familyRelationship }}</span></div>
         <div style="width: 100%;"><label>协议编号：</label><span>{{ notification.protoNum }}</span></div>
         <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
+        <div style="width: 100%;">
+          <label>告知书：</label>
+          <m-img-viewer
+            :url="''"
+            title="告知书"
+          />
+        </div>
       </div>
       <el-row :gutter="0">
         <el-button
@@ -448,11 +455,9 @@ import switches from '@/filters/modules/switches'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
-<<<<<<< HEAD
 import { tokenExcel } from '@/utils/token-excel'
-=======
+
 import { withdrawOrAnthorinputReason } from '@/common/constants/const'
->>>>>>> dev
 
 export default {
   components: {
@@ -658,15 +663,14 @@ export default {
       else this.handleSubmit(params)
     },
     handleSubmit(params) {
-      console.log(params)
-      // this.authorizeRegistrations(params).then(res => {
-      //   this.btnDisable = false
-      //   if (res) {
-      //     this.closeWithdraw()
-      //     this.toAuthorize = {}
-      //     this.getDatas()
-      //   }
-      // })
+      this.authorizeRegistrations(params).then(res => {
+        this.btnDisable = false
+        if (res) {
+          this.closeWithdraw()
+          this.toAuthorize = {}
+          this.getDatas()
+        }
+      })
     },
 
     set_relationalProofUrls(authorizeDetData) {

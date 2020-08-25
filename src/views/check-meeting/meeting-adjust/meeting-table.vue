@@ -26,7 +26,7 @@
       </div>
       <div class="meeting-list-jailArea">
         <h3 class="meeting-list-cell meeting-list-th">监区</h3>
-        <div class="meeting-list-cell" v-for="t in terminals" :key="t.id">{{ t.prisonConfigName }}</div>
+        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.prisonConfigName }}</div>
       </div>
       <div class="meeting-list-block">
         <div class="meeting-list-block-scroller" style="width: 9000px">
@@ -45,7 +45,7 @@
                 :data-terminal-number="m.terminalNumber"
                 :__MEETING__.prop="m">
                   <template v-if="!!m.id">
-                    <div class="meeting-list-cell__names">{{ m | getMeetingsName }}</div>
+                    <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
                     <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m)"></el-button>
                   </template>
               </div>
@@ -82,13 +82,28 @@
         @cell-click="handleCellClick"
         border>
         <el-table-column
+          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
           fixed
           prop="terminalNumber"
           label="终端号"
           width="80">
         </el-table-column>
         <el-table-column
+          v-else
+          prop="terminalNumber"
+          label="终端号"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
           fixed
+          show-overflow-tooltip
+          prop="terminalName"
+          label="终端别名"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          v-else
           show-overflow-tooltip
           prop="terminalName"
           label="终端别名"
@@ -203,7 +218,7 @@ export default {
         isEdit: false
       }))
       this.meetingsData = this.getMeetingsData()
-      document.querySelector('.meeting-list-block-scroller').style.width = 228 * this.meetingsData.length + 'px'
+      document.querySelector('.meeting-list-block-scroller').style.width = 188 * this.meetingsData.length + 'px'
     }
   },
 
@@ -339,7 +354,7 @@ export default {
       this.removeSelClass()
       this.crossDateSelect = ''
       this.meetingVisible = false
-      this.$emit('on-get-configs')
+      this.$emit('on-across-submit')
     },
     handleCancelAcross() {
       this.removeSelClass()
@@ -536,7 +551,7 @@ export default {
 
   .meeting-list-deviceNo {
     .meeting-list-cell {
-      width: 120px;
+      width: 90px;
     }
   }
 
@@ -574,7 +589,7 @@ export default {
   }
 
   .meeting-list-cell {
-    width: 220px;
+    width: 180px;
     background-color: #f4f4f5;
     height: 42px;
     margin: 8px 4px;
