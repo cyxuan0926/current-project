@@ -327,7 +327,7 @@
           <div class="img-items">
             <m-img-viewer
               :url="scope.meetNoticeUrl"
-              title="可视电话通知单"
+              title="亲情电话通知单"
             />
           </div>
         </template>
@@ -352,7 +352,7 @@
       // 标签元素
       const tabsItems = [
         {
-          label: '可视电话申请',
+          label: '亲情电话申请',
           name: 'first' },
         {
           label: '审核已通过',
@@ -505,7 +505,7 @@
             definedClass: 'img-box'
           },
           {
-            label: '可视电话通知单',
+            label: '亲情电话通知单',
             prop: 'familyMeetNoticeInformation',
             definedClass: 'img-box'
           }

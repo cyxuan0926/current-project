@@ -40,12 +40,12 @@
             </div>
         </template>
         <template v-if="!!toAuthorize.meetNoticeUrl">
-            <div style="margin-bottom: 10px;">可视电话通知单:</div>
+            <div style="margin-bottom: 10px;">亲情电话通知单:</div>
             <div class="img-box">
             <m-img-viewer
                 :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
                 :url="toAuthorize.meetNoticeUrl"
-                title="可视电话通知单"
+                title="亲情电话通知单"
             />
             </div>
         </template>
