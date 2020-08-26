@@ -1017,6 +1017,7 @@ export default {
       this.deletePrisoners = val
     },
     // 根据角色来区分监区数据
+    // 其实现在数据都是从user里面读取 暂时不修改了
     async handleRolePrisonArea(element, prop, type = 'props',operation = 'search', role = this.user.role) {
       if (role === '-1') {
         // 租户管理员
@@ -1025,8 +1026,8 @@ export default {
         this.$set(element[prop], 'options', this.prisonConfigs)
         this.$set(element[prop], type, options)
       }
-      if (role === '1') {
-        // 监狱审核人员
+      else {
+        // 其他角色
         const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
         this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
         this.$set(element[prop], type, options)
