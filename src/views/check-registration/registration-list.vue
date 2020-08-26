@@ -428,10 +428,14 @@
         <div style="width: 100%;"><label>与服刑人员关系：</label><span>{{ notification.familyRelationship }}</span></div>
         <div style="width: 100%;"><label>协议编号：</label><span>{{ notification.protoNum }}</span></div>
         <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
-        <div style="width: 100%;">
+        <div
+          v-if="notification.meetingNotificationUrl"
+          style="width: 100%; display: flex;"
+        >
           <label>告知书：</label>
+
           <m-img-viewer
-            :url="''"
+            :url="notification.meetingNotificationUrl"
             title="告知书"
           />
         </div>

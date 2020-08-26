@@ -319,16 +319,19 @@
       />
 
       <!-- 有告知书图片的才显示 -->
-      <div v-if="true" class="notification__content">
+      <div
+        v-if="notificationForm.meetingNotificationUrl"
+        class="notification__content"
+      >
           <label>告知书：</label>
 
           <m-img-viewer
-            :url="''"
+            :url="notificationForm.meetingNotificationUrl"
             title="告知书"
           />
       </div>
 
-      <template v-if="notificationIsNew">
+      <template v-if="!notificationForm.protoNum">
         <el-row :gutter="0">
           <el-button
             class="button-add"
@@ -508,10 +511,6 @@ export default {
     ...mapState({
       user: state => state.global.user
     }),
-
-    notificationIsNew() {
-      return this.notificationFamily.familyId !== this.notification.familyId
-    },
 
     dialogContent() {
       const genderOptions = [
@@ -734,7 +733,8 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪名',
@@ -779,23 +779,19 @@ export default {
   watch: {
     notificationFamily: {
       handler: function(val) {
-        if (val && val.familyId) {
-          this.formItems.familyName.disabled = true
-          this.formItems.familyRelationship.disabled = true
-          this.formItems.familyUuid.disabled = true
-        }
-        else {
-          this.formItems.familyName.disabled = false
-          this.formItems.familyRelationship.disabled = false
-          this.formItems.familyUuid.disabled = false
-        }
-        if (!this.notificationIsNew) {
-          this.formItems.protoNum.disabled = true
-          this.formItems.signDate.disabled = true
-        } else {
-          this.formItems.protoNum.disabled = false
-          this.formItems.signDate.disabled = false
-        }
+        const disabled = !!(val && val.familyId)
+
+        const otherDisabled = !!(val && val.protoNum)
+
+        this.formItems.familyName.disabled = disabled
+
+        this.formItems.familyRelationship.disabled = disabled
+
+        this.formItems.familyUuid.disabled = disabled
+
+        this.formItems.protoNum.disabled = otherDisabled
+
+        this.formItems.signDate.disabled = otherDisabled
       },
       deep: true,
       immediate: true
@@ -832,7 +828,10 @@ export default {
       // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
       // this.isIndeterminate = false 不要删除
 
-      const params = { ...this.filter, ...this.pagination }
+      const params = {
+        ...this.filter,
+        ...this.pagination
+      }
 
       if (this.hasAllPrisonQueryAuth) {
         this.getPrisonersAll(params)
@@ -891,15 +890,25 @@ export default {
       }).catch(() => {})
     },
     onSelectChange(e) {
-      if (e && e.familyId) {
-        this.notificationForm = Object.assign({}, e)
-      }
+      if (e && e.familyId) this.notificationForm = Object.assign({}, e)
+
       else {
         this.notificationForm.familyId = ''
+
         this.notificationForm.familyName = ''
+
         this.notificationForm.familyRelationship = ''
+
         this.notificationForm.familyUuid = ''
+
+        this.notificationForm.meetingNotificationUrl = ''
+
+        this.notificationForm.protoNum = ''
+
+        this.notificationForm.signDate = ''
       }
+
+      this.$refs.notification && this.$refs.notification.onClearValidate()
     },
     // 家属亲情电话告知书 查看/签订
     handleSign(e, prisoner) {
@@ -919,13 +928,17 @@ export default {
           if (!res) return
           // 表单组件初始化的数值
           this.notificationForm = this.notification
+
           this.notificationFamily = Object.assign({}, this.notification)
+
           this.notificationShow = true
         })
       }
       else {
         this.notificationForm = {}
+
         this.notificationShow = true
+
         this.$refs.notification && this.$refs.notification.onClearValidate()
       }
     },
@@ -1102,9 +1115,9 @@ export default {
         this.$refs.notification.onClearValidate()
       }
 
-      this.notificationForm = {}
-
       this.notificationShow = false
+
+      this.notificationForm = {}
     }
     // 自定义的全选操作 不要删除
     // handleCheckAllChange(val) {
@@ -1162,4 +1175,6 @@ export default {
       cursor: pointer;
 .el-image.relation_img
   width: 24% !important;
+.notification__content
+  display: flex;
 </style>

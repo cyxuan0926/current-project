@@ -140,7 +140,9 @@ export default {
   },
   methods: {
     onClearValidate() {
-      this.$refs.form.clearValidate()
+      this.$nextTick(function() {
+        this.$refs.form.clearValidate()
+      })
     },
 
     onPrevClick(e) {
