@@ -282,7 +282,9 @@
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
       :title="'亲情电话告知书-' + notificationPrisoner.name"
-      width="530px">
+      width="530px"
+      @close="onCloseNotificationDialog"
+    >
       <div class="el-form el-form--inline">
         <div class="el-form-item">
           <label class="el-fotm-item__label">可选家属</label>
@@ -296,35 +298,62 @@
               clearable
               value-key="familyId"
               :loading="selectLoading"
-              @change="onSelectChange">
+              @change="onSelectChange"
+            >
               <el-option
                 v-for="item in notificationFamilies"
                 :key="item.familyId"
                 :label="item.familyName"
-                :value="item"/>
+                :value="item"
+              />
             </el-select>
           </div>
         </div>
       </div>
 
       <m-form
-        v-if="notificationShow"
         ref="notification"
         :items="formItems"
         @submit="onSubmit"
-        :values="notificationForm" />
-      <el-row :gutter="0">
-        <el-button
-          class="button-add"
-          size="mini"
-          type="danger"
-          @click="notificationShow = false">取消</el-button>
-        <el-button
-          class="button-add"
-          :loading="submitting"
-          size="mini"
-          @click="handleSureSign">确定</el-button>
-      </el-row>
+        :values="notificationForm"
+      />
+
+      <!-- 有告知书图片的才显示 -->
+      <div
+        v-if="notificationForm.meetingNotificationUrl"
+        class="notification__content"
+      >
+          <label>告知书：</label>
+
+          <m-img-viewer
+            :url="notificationForm.meetingNotificationUrl"
+            title="告知书"
+          />
+      </div>
+
+      <template v-if="!notificationForm.protoNum">
+        <el-row :gutter="0">
+          <el-button
+            class="button-add"
+            size="mini"
+            type="danger"
+            @click="onCloseNotificationDialog">取消</el-button>
+          <el-button
+            class="button-add"
+            :loading="submitting"
+            size="mini"
+            @click="handleSureSign">确定</el-button>
+        </el-row>
+      </template>
+
+      <template v-else>
+        <el-row :gutter="0">
+          <el-button
+            class="button-add"
+            size="mini"
+            @click="onCloseNotificationDialog">返回</el-button>
+        </el-row>
+      </template>
     </el-dialog>
     <el-dialog
       @close="handleCloseDialog"
@@ -482,6 +511,7 @@ export default {
     ...mapState({
       user: state => state.global.user
     }),
+
     dialogContent() {
       const genderOptions = [
         {
@@ -703,7 +733,8 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪名',
@@ -748,25 +779,31 @@ export default {
   watch: {
     notificationFamily: {
       handler: function(val) {
-        if (val && val.familyId) {
-          this.formItems.familyName.disabled = true
-          this.formItems.familyRelationship.disabled = true
-          this.formItems.familyUuid.disabled = true
-        }
-        else {
-          this.formItems.familyName.disabled = false
-          this.formItems.familyRelationship.disabled = false
-          this.formItems.familyUuid.disabled = false
-        }
+        const disabled = !!(val && val.familyId)
+
+        const otherDisabled = !!(val && val.protoNum)
+
+        this.formItems.familyName.disabled = disabled
+
+        this.formItems.familyRelationship.disabled = disabled
+
+        this.formItems.familyUuid.disabled = disabled
+
+        this.formItems.protoNum.disabled = otherDisabled
+
+        this.formItems.signDate.disabled = otherDisabled
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
   },
   async mounted() {
     await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
+
     this.filter = Object.assign({}, this.filter, {
       status: 1
     })
+
     await this.getDatas()
   },
   methods: {
@@ -791,7 +828,10 @@ export default {
       // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
       // this.isIndeterminate = false 不要删除
 
-      const params = { ...this.filter, ...this.pagination }
+      const params = {
+        ...this.filter,
+        ...this.pagination
+      }
 
       if (this.hasAllPrisonQueryAuth) {
         this.getPrisonersAll(params)
@@ -850,34 +890,56 @@ export default {
       }).catch(() => {})
     },
     onSelectChange(e) {
-      if (e && e.familyId) {
-        this.notificationForm = Object.assign({}, e)
-      }
+      if (e && e.familyId) this.notificationForm = Object.assign({}, e)
+
       else {
         this.notificationForm.familyId = ''
+
         this.notificationForm.familyName = ''
+
         this.notificationForm.familyRelationship = ''
+
         this.notificationForm.familyUuid = ''
+
+        this.notificationForm.meetingNotificationUrl = ''
+
+        this.notificationForm.protoNum = ''
+
+        this.notificationForm.signDate = ''
       }
+
+      this.$refs.notification && this.$refs.notification.onClearValidate()
     },
+    // 家属亲情电话告知书 查看/签订
     handleSign(e, prisoner) {
+      // e: 告知书id prisoner: 当前行信息
+      // 告知书罪犯信息
       this.notificationPrisoner = prisoner
-      this.notificationFamily = {}
+
       this.selectLoading = true
+      // 获取对应罪犯家属列表
       this.getNotificationFamilies({ prisonerId: prisoner.id }).then(res => {
         this.selectLoading = false
       })
+      // 查看告知书
       if (e) {
+        // 告知书详情
         this.getNotification({ id: e }).then(res => {
           if (!res) return
+          // 表单组件初始化的数值
           this.notificationForm = this.notification
-          this.notificationFamily = this.notification
+
+          this.notificationFamily = Object.assign({}, this.notification)
+
           this.notificationShow = true
         })
       }
       else {
         this.notificationForm = {}
+
         this.notificationShow = true
+
+        this.$refs.notification && this.$refs.notification.onClearValidate()
       }
     },
     handleSureSign() {
@@ -1032,6 +1094,30 @@ export default {
         this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
         this.$set(element[prop], type, options)
       }
+    },
+    // 关闭亲情电话告知对话框
+    onCloseNotificationDialog() {
+      // 告知书家属信息
+      this.notificationFamily = {}
+
+      if (this.$refs.notification) {
+        const item = {
+          controlProps: [
+            'familyName',
+            'familyRelationship',
+            'familyUuid',
+            'protoNum',
+            'signDate'
+          ]
+        }
+        this.$refs.notification.selectChangeEvent('', '', item)
+
+        this.$refs.notification.onClearValidate()
+      }
+
+      this.notificationShow = false
+
+      this.notificationForm = {}
     }
     // 自定义的全选操作 不要删除
     // handleCheckAllChange(val) {
@@ -1089,4 +1175,6 @@ export default {
       cursor: pointer;
 .el-image.relation_img
   width: 24% !important;
+.notification__content
+  display: flex;
 </style>

@@ -139,6 +139,12 @@ export default {
     this.destroyed = true
   },
   methods: {
+    onClearValidate() {
+      this.$nextTick(function() {
+        this.$refs.form.clearValidate()
+      })
+    },
+
     onPrevClick(e) {
       this.$router.back()
     },

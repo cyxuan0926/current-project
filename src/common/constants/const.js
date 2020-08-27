@@ -1,4 +1,9 @@
-export const responseURLWhiteLists = ['/feedbacks/download', '/authorFamily/export', '/download/province/export']
+export const responseURLWhiteLists = [
+  '/feedbacks/download',
+  '/authorFamily/export',
+  '/download/province/export',
+  '/registrations/getRelationshipFile'
+]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。
 2、每月只能申请一次会见，该服刑人员本月已会见。

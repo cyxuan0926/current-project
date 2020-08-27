@@ -552,6 +552,8 @@
       },
 
       tableCols() {
+        // const { applicationStartDate, applicationEndDate } = this.filter
+
         const basicCols = [
             {
               label: '罪犯编号',
@@ -568,6 +570,7 @@
             },
             {
               label: '申请通话时间',
+              prop: 'meetingTime',
               slotName: 'meetingTime',
               sortable: 'custom',
               minWidth: 135
@@ -611,6 +614,14 @@
           prop: 'terminalNo',
           minWidth: 100
         }
+        // if (!applicationStartDate || !applicationEndDate) {
+        //   for(let i = 0; i < basicCols.length; i++) {
+        //     if (basicCols[i].prop === 'meetingTime') {
+        //       delete basicCols[i].sortable
+        //       break
+        //     }
+        //   }
+        // }
 
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
           this.operateQueryAuth=false

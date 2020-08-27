@@ -21,6 +21,12 @@ export default {
   authorizeRegistrations: params => {
     return service.post('/registrations/authorize', params).then(res => res && res.code === 200)
   },
+
+  // 家属注册-下载电子关系证明
+  downloadRelationshipFile: params => {
+    return service.postObj('/registrations/getRelationshipFile', params, { responseType: 'blob' })
+  },
+
   // 家属会见申请-列表
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
