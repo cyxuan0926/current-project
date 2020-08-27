@@ -349,7 +349,7 @@ export default {
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
+          return time.getTime() < Date.now() - 24 * 3600 * 1000 || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
       }
       this.crossMeetingCurrent = m
