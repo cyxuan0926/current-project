@@ -728,8 +728,15 @@ export default {
         })
       }
       else {
-        const { notifyId } = row
-        this.getNotification({ id: notifyId }).then(res => {
+        const {
+          notifyId,
+          id
+        } = row
+
+        this.getNotification({
+          id: notifyId,
+          rid: id
+        }).then(res => {
           if (!res) return
           this.notificationShow = true
         })
