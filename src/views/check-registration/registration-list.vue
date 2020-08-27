@@ -462,6 +462,7 @@ import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
 import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+import moment from 'moment'
 
 export default {
   components: {
@@ -742,21 +743,34 @@ export default {
 
     // 下载
     async onDownload(contents) {
-      let params, type = 'pdf'
+      let params,
+        type = 'pdf',
+        basicMenuName = '关系证明电子文档',
+        menuName
 
       // 下载当前页的
       if (contents === 'all') {
+        const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
+
         params = this.filterDownloadParams(this.registrations.contents)
 
-        type = 'zip'
+        type = 'zip',
+
+        menuName = `${ basicMenuName }${ dayNow }`
       }
 
       // 下载单条的
-      else params = this.filterDownloadParams([contents])
+      else {
+        const { name } = contents
+
+        params = this.filterDownloadParams([contents])
+
+        menuName = `${ name }${ basicMenuName }`
+      }
 
       await tokenExcel({
         actionName: 'downloadRelationshipFile',
-        menuName: '家属关系证明电子文档',
+        menuName,
         params,
         type
       })

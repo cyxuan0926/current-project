@@ -380,6 +380,7 @@ import validator from '@/utils'
 import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
+import moment from 'moment'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
@@ -890,7 +891,13 @@ export default {
       }).catch(() => {})
     },
     onSelectChange(e) {
-      if (e && e.familyId) this.notificationForm = Object.assign({}, e)
+      if (e && e.familyId) {
+        const { protoNum, signDate } = e
+
+        const initSignDate = protoNum ? signDate : moment(Date.now()).format('YYYY-MM-DD')
+
+        this.notificationForm = Object.assign({}, e, { signDate: initSignDate})
+      }
 
       else {
         this.notificationForm.familyId = ''

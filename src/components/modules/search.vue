@@ -187,8 +187,6 @@ export default {
       })
     },
     onSelectChange(selectKey, value) {
-      console.log(selectKey)
-      console.log(value)
       this.$emit('searchSelectChange', selectKey, value)
     },
     onClear() {
