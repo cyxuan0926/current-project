@@ -43,6 +43,11 @@ let switches = {
     { value: 'WITHDRAW', label: '已撤回' },
     { value: 'PASSED', label: '已通过' }
   ],
+  canceledStatus: [
+    { value: '1', label: '家属' },
+    { value: '2', label: '狱警' },
+    { value: '3', label: '系统' }
+  ],
   deniedStatus: [
     { value: 'CANCELED', label: '已取消' },
     { value: 'DENIED', label: '已拒绝' }

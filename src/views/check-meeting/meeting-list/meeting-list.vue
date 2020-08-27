@@ -177,45 +177,58 @@
         @cancel=" show.withdraw = false " />
     </el-dialog>
     <el-dialog
-      :visible.sync="toShow.id ? true : false"
+      :visible.sync="show.dialog"
       title="详情"
-      width="600px"
+      width="750px"
       class="authorize-dialog"
       @close="onCloseShow">
-      <!--<div>-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
-      <!--<div class="family-detail">基本信息</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
-      <!--<div class="family-detail">1</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none" ><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
-      <!--<p class="detail-message-family" v-if="toShow.status=='DENIED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ toShow.remarks }}</span></p>-->
-      <!--<p class="detail-message-family" v-if="toShow.status=='FINISHED'||toShow.status=='MEETING_ON'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">通话时长</span><span class="family-nameDetail">{{ toShow.duration | time }}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none">-->
-      <!--<span class="family-name">申请状态</span>-->
-      <!--<span class="family-nameDetail" v-if="toShow.status=='PASSED'">已通过</span>-->
-      <!--<span class="family-nameDetail" v-if="toShow.status=='DENIED'">已拒绝</span>-->
-      <!--<span class="family-nameDetail" v-if="toShow.status=='EXPIRED'">已过期</span>-->
-      <!--<span class="family-nameDetail" v-if="toShow.status=='FINISHED'">已完成</span>-->
-      <!--<span class="family-nameDetail" v-if="toShow.status=='MEETING_ON'">通话中</span>-->
-      <!--</p>-->
-      <!--</div>-->
-      <!--</div>-->
+      <div>
+      <div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">
+      <div class="family-detail">基本信息</div>
+      <div class="detail-message">
+      <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
+      <p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.createTime}}</span></p>
+      </div>
+      <div class="detail-content">
+      <p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relation}}</span></p>
+      <p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>
+      </div>
+      </div>
 
-      <!--</div>-->
+
+      <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED">
+      <div class="family-detail">{{index+1}}</div>
+      <div class="detail-message">
+      <p class="detail-message-family">
+        <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
+        <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
+        <span class="family-nameDetail">{{item.operateAccount}}</span></p>
+      <p class="detail-message-family" style="border: none" >
+        <span class="family-name"  v-if="item.status!='CANCELED'">审核时间</span>
+        <span class="family-name"  v-if="item.status=='CANCELED'">取消时间</span>
+        <span class="family-nameDetail">{{ item.operateTime | Date }}</span></p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ item.remark }}</span></p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">取消原因</span><span class="family-nameDetail">{{ item.remark }}</span></p>
+      <p class="detail-message-family" v-if="item.status=='FINISHED'||item.status=='MEETING_ON'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">通话时长</span><span class="family-nameDetail">{{ toShow.duration | time }}</span></p>
+      </div>
+      <div class="detail-content">
+      <p class="detail-message-family">
+        <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
+        <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
+        <span class="family-nameDetail">{{item.operateName}}</span></p>
+      <p class="detail-message-family" style="border: none">
+      <span class="family-name">申请状态</span>
+      <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
+        <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
+      <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
+      <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+      <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
+      <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+      </p>
+      </div>
+      </div>
+
+      </div>
       <!--已拒绝-->
       <!--<div v-if="toShow.status=='DENIED'">-->
       <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
@@ -275,14 +288,16 @@
       <!--</div>-->
 
 
-      <family-to-show
-        :elItems="familyShows"
-        :showData="toShow">
-        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
-        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
-        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
-      </family-to-show>
-
+      <!--<family-to-show-->
+        <!--:elItems="familyShows"-->
+        <!--:showData="toShow">-->
+        <!--<template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>-->
+        <!--<template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>-->
+        <!--<template #duration="{ toShow }">{{ toShow.duration | time }}</template>-->
+      <!--</family-to-show>-->
+      <span  slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="show.dialog=false">关 闭</el-button>
+        </span>
 
     </el-dialog>
     <el-dialog
@@ -429,6 +444,14 @@
             label: '申请状态',
             options: this.$store.state.applyStatus,
             miss: true,
+            correlation:"status",
+            value: ''
+          },
+          changerType:{
+            type: 'select',
+            label: '取消操作人',
+            options: this.$store.state.canceledStatus,
+            miss: true,
             value: ''
           },
           auditAt: {
@@ -451,6 +474,7 @@
           disagree: false,
           withdraw: false,
           detail: false,
+          dialog:false,
           meetingQueue:false,
           familiesDetialInform: false
         },
@@ -661,6 +685,10 @@
       },
       tabs(val) {
         this.$refs.search.onSearch('tabs')
+        this.searchItems.changerType.miss = true
+        delete this.filter.changerType
+        this.searchItems.changerType.value = ''
+        this.toShow.changerType=false
         if (val == 'PENDING') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
@@ -705,6 +733,8 @@
           this.searchItems.prisonerName.value = ''
           if(val == 'DENIED,CANCELED'){
             this.searchItems.status.options=this.$store.state.deniedStatus
+            this.toShow.changerType=true
+            this.filter.changerType = '2'
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
@@ -812,6 +842,9 @@
         }
       },
       onSearch() {
+        if (this.toShow.changerType === true) {
+          this.filter.changerType = '2'
+        }
         if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
         else {
           this.$refs.elTable && this.$refs.elTable.clearSort()
@@ -882,6 +915,8 @@
         this.getMeettingsDetail(params).then(res => {
           if (!res) return
           this.toShow = Object.assign({}, res)
+          console.log(this.toShow)
+          this.show.dialog=true
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
             : constFamilyShows
@@ -889,6 +924,7 @@
       },
       onCloseShow() {
         this.toShow.id = ''
+        this.show.dialog=false
         if (this.meetingRefresh) this.getDatas('onCloseShow')
       },
       closeFamilyDetail() {
@@ -1067,11 +1103,11 @@
     border-right: 1px solid #E4E7ED
   }
   .detail-message{
-    width: 280px;
+    width: 400px;
   }
   .detail-message-family{
     display: flex;
-    line-height: 30px ;
+    line-height: 40px ;
     font-size: 12px;
     border-bottom: 1px solid #E4E7ED;
     .family-name{

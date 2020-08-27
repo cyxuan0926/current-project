@@ -9,12 +9,12 @@
       <el-tabs
         v-model="tabs"
         type="card">
-        <el-tab-pane
-          label="罪犯数据导入"
-          name="first" />
-        <el-tab-pane
-          label="狱政科模版罪犯数据导入"
-          name="second" />
+        <!--<el-tab-pane-->
+          <!--label="罪犯数据导入"-->
+          <!--name="first" />-->
+        <!--<el-tab-pane-->
+          <!--label="狱政科模版罪犯数据导入"-->
+          <!--name="second" />-->
       </el-tabs>
     </el-col>
     <el-row
@@ -24,7 +24,7 @@
         :span="22"
         :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">罪犯信息导入模板</a>&nbsp;&nbsp;
+        <a :href="prisonerHref">罪犯信息导入(狱政科模板)</a>&nbsp;&nbsp;
         <span
           v-if="tabs === 'second'"
           style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中，修改相应监区名称)</span>
@@ -174,12 +174,12 @@
   export default {
     data() {
       return {
-        tabs: 'first',
+        tabs: 'second',
         loading: false,
         fileList: [],
         visible: false,
         onProgress: false,
-        prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`,
+        prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`,
         active: 1,
         tabMapOptions: [
           { label: '读取excel' },
