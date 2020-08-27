@@ -58,13 +58,14 @@ export default {
   getMeetingsFamilyDetail: params => {
     return service.get('/meetings/familyDetail', params).then(res => res && res.data)
   },
-  // 家属会见申请-会见详情
+  // 家属会见申请-会见详情 //详情接口修改
   getMeettingsDetail: params => {
-    return service.get('/meetings/detail', params).then(res => res && res.data.meetings)
-  },
+    return service.get('/meetings/meeting-changelog', params).then(res => res && res.data)
+      // return service.get('/meetings/detail', params).then(res => res && res.data.meetings)
+    },
   // 家属会见申请-授权
   authorizeMeeting: params => {
-    // return service.post('/meetings/authorize', params).then(res => res && res.code === 200)
+    // return service.post('/meetings/authorize',params).then(res => res && res.code === 200)
     return service.post('/meetings/authorize', params)
   },
   // 家属会见申请-获取会见信息

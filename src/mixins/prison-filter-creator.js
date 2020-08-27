@@ -114,7 +114,7 @@ export default {
     },
 
     async searchSelectChange(selectKey, value) {
-      if (selectKey === 'jailId') {
+        if (selectKey === 'jailId') {
         if (this.searchItems.prisonArea) {
           if (value) {
             await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
@@ -150,6 +150,22 @@ export default {
 
         this.$set(this.searchItems['jailId'], 'getting', false)
       }
+
+      if (selectKey === 'status') {
+        if (value === 'CANCELED') {
+          if (this.toShow.changerType === true) {
+            this.searchItems.changerType.miss = true
+          }
+          else {
+            this.searchItems.changerType.miss = false
+            delete this.filter.changerType
+            this.searchItems.changerType.value = ''
+          }
+        }
+        else {
+          this.searchItems.changerType.miss = true
+        }
+        }
     }
   }
 }
