@@ -430,7 +430,7 @@
         <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
         <div
           v-if="notification.meetingNotificationUrl"
-          style="width: 100%; display: flex;"
+          class="block__meetingNotificationUrl"
         >
           <label>告知书：</label>
 
@@ -841,4 +841,9 @@ export default {
   >>> .el-button + .el-button
         margin-left: 0px;
         margin-top: 5px;
+.block__meetingNotificationUrl
+  width: 100%;
+  display: flex;
+  >>> .el-image
+    height: auto;
 </style>

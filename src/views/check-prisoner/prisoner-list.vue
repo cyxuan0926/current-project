@@ -1184,4 +1184,6 @@ export default {
   width: 24% !important;
 .notification__content
   display: flex;
+  >>> .el-image
+    height: auto;
 </style>
