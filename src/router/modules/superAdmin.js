@@ -75,7 +75,7 @@ superAdmin = [{
       meta: {
         role: '0',
         permission: 'visit.prison.filed-visit-config.search',
-        breadcrumbName: '监狱会见预约配置',
+        breadcrumbName: '监狱现场探视预约配置',
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },

@@ -214,12 +214,12 @@ let infomation = [{
 }, {
   path: '/visit',
   name: 'visit',
-  meta: { hidden: true, breadcrumbName: '会见预约信息' },
+  meta: { hidden: true, breadcrumbName: '现场探视预约信息' },
   children: [{
     path: '/visit/config',
     name: 'visit-config',
     props: { role: 3 },
-    meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '会见预约配置' },
+    meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '现场探视预约配置' },
     component: 'meeting/visit-config'
     // component: resolve => require(['@/views/meeting/visit-config'], resolve)
     // component: helper.loadView('meeting/visit-config')

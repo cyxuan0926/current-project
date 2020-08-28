@@ -62,7 +62,7 @@ let check = [{
     // component: helper.loadView('check-meeting/visit-list'),
     component: 'check-meeting/visit-list',
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
-    meta: { permission: 'visit.field-visit.search', breadcrumbName: '会见预约列表' }
+    meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
   }]
 }, {
   path: '/meeting-report',
