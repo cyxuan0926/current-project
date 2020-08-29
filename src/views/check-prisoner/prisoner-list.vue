@@ -235,11 +235,11 @@
         </div>
       </template>
       <template v-if="family.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :url="family.meetNoticeUrl"
-            title="亲情电话通知单"
+            title="可视电话通知单"
           />
         </div>
       </template>
@@ -281,7 +281,7 @@
     <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
-      :title="'亲情电话告知书-' + notificationPrisoner.name"
+      :title="'可视电话告知书-' + notificationPrisoner.name"
       width="530px"
       @close="onCloseNotificationDialog"
     >
@@ -380,6 +380,7 @@ import validator from '@/utils'
 import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
+import moment from 'moment'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
@@ -434,7 +435,7 @@ export default {
         },
         isNotify: {
           type: 'select',
-          label: '亲情电话告知书',
+          label: '可视电话告知书',
           noPlaceholder: true,
           options: notifyOptions
         },
@@ -762,7 +763,7 @@ export default {
           slotName: 'families'
         },
         {
-          label: '家属亲情电话告知书',
+          label: '家属可视电话告知书',
           minWidth: 125,
           slotName: 'notifyId'
         },
@@ -890,7 +891,13 @@ export default {
       }).catch(() => {})
     },
     onSelectChange(e) {
-      if (e && e.familyId) this.notificationForm = Object.assign({}, e)
+      if (e && e.familyId) {
+        const { protoNum, signDate } = e
+
+        const initSignDate = protoNum ? signDate : moment(Date.now()).format('YYYY-MM-DD')
+
+        this.notificationForm = Object.assign({}, e, { signDate: initSignDate})
+      }
 
       else {
         this.notificationForm.familyId = ''
@@ -910,7 +917,7 @@ export default {
 
       this.$refs.notification && this.$refs.notification.onClearValidate()
     },
-    // 家属亲情电话告知书 查看/签订
+    // 家属可视电话告知书 查看/签订
     handleSign(e, prisoner) {
       // e: 告知书id prisoner: 当前行信息
       // 告知书罪犯信息
@@ -1095,7 +1102,7 @@ export default {
         this.$set(element[prop], type, options)
       }
     },
-    // 关闭亲情电话告知对话框
+    // 关闭可视电话告知对话框
     onCloseNotificationDialog() {
       // 告知书家属信息
       this.notificationFamily = {}
@@ -1177,4 +1184,6 @@ export default {
   width: 24% !important;
 .notification__content
   display: flex;
+  >>> .el-image
+    height: auto;
 </style>

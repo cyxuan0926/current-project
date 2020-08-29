@@ -141,7 +141,7 @@
           show-overflow-tooltip 
         />
         <el-table-column
-          label="家属亲情电话告知书"
+          label="家属可视电话告知书"
           min-width="65"
         >
           <template slot-scope="scope">
@@ -276,12 +276,12 @@
         </div>
       </template>
       <template v-if="!!toAuthorize.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
-            title="亲情电话通知单"
+            title="可视电话通知单"
           />
         </div>
       </template>
@@ -419,7 +419,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
-      title="亲情电话告知书"
+      title="可视电话告知书"
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
@@ -430,7 +430,7 @@
         <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
         <div
           v-if="notification.meetingNotificationUrl"
-          style="width: 100%; display: flex;"
+          class="block__meetingNotificationUrl"
         >
           <label>告知书：</label>
 
@@ -462,6 +462,7 @@ import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
 import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+import moment from 'moment'
 
 export default {
   components: {
@@ -727,8 +728,15 @@ export default {
         })
       }
       else {
-        const { notifyId } = row
-        this.getNotification({ id: notifyId }).then(res => {
+        const {
+          notifyId,
+          id
+        } = row
+
+        this.getNotification({
+          id: notifyId,
+          rid: id
+        }).then(res => {
           if (!res) return
           this.notificationShow = true
         })
@@ -742,21 +750,34 @@ export default {
 
     // 下载
     async onDownload(contents) {
-      let params, type = 'pdf'
+      let params,
+        type = 'pdf',
+        basicMenuName = '关系证明电子文档',
+        menuName
 
       // 下载当前页的
       if (contents === 'all') {
+        const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
+
         params = this.filterDownloadParams(this.registrations.contents)
 
-        type = 'zip'
+        type = 'zip',
+
+        menuName = `${ basicMenuName }${ dayNow }`
       }
 
       // 下载单条的
-      else params = this.filterDownloadParams([contents])
+      else {
+        const { name } = contents
+
+        params = this.filterDownloadParams([contents])
+
+        menuName = `${ name }${ basicMenuName }`
+      }
 
       await tokenExcel({
         actionName: 'downloadRelationshipFile',
-        menuName: '家属关系证明电子文档',
+        menuName,
         params,
         type
       })
@@ -827,4 +848,9 @@ export default {
   >>> .el-button + .el-button
         margin-left: 0px;
         margin-top: 5px;
+.block__meetingNotificationUrl
+  width: 100%;
+  display: flex;
+  >>> .el-image
+    height: auto;
 </style>

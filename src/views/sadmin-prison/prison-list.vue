@@ -30,11 +30,11 @@
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row.id, 'remote')">亲情电话配置</el-button>
+        @click="onVisit(row.id, 'remote')">可视电话配置</el-button>
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row.id, 'visit')">会见预约配置</el-button>
+        @click="onVisit(row.id, 'visit')">现场探视预约配置</el-button>
     </template>
   </m-table-new>
 </template>
@@ -60,12 +60,13 @@ export default {
         },
         {
           label: '所在地区',
-          slotName: 'location'
+          slotName: 'location',
+          minWidth: 200
         },
         {
           label: '操作',
           slotName: 'operation',
-          width: 260
+          minWidth: 170
         }
       ]
     }

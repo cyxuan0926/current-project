@@ -187,7 +187,7 @@ export default {
       await tokenExcel({
         params: this.filter,
         actionName: 'exportMeetingStatistics',
-        menuName: '可视亲情电话数据统计表',
+        menuName: '可视电话数据统计表',
         formater
       })
 
