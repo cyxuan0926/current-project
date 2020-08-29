@@ -2,15 +2,16 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
-      path="/download/exportMettings"
-      :params="filter" />
     <m-search
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch" />
+      @search="onSearch">
+      <m-excel-download
+        slot="append"
+        path="/download/exportMettings"
+        :params="filter" />
+    </m-search>
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -179,10 +180,11 @@
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
-      width="750px"
+      width="780px"
       class="authorize-dialog"
+      lock-scroll
       @close="onCloseShow">
-      <div>
+      <div style="max-height:380px;overflow: auto">
       <div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">
       <div class="family-detail">基本信息</div>
       <div class="detail-message">
@@ -199,24 +201,46 @@
       <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED">
       <div class="family-detail">{{index+1}}</div>
       <div class="detail-message">
-      <p class="detail-message-family">
+      <p class="detail-message-family" v-if="item.operateAccount">
         <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
         <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
         <span class="family-nameDetail">{{item.operateAccount}}</span></p>
+        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
+        <!--<p class="detail-message-family" >-->
+            <!--<span class="family-name">通话时长</span>-->
+            <!--<span class="family-nameDetail">{{ val.callDuration | time }}</span>-->
+        <!--</p>-->
+          <p class="detail-message-family" >
+            <span class="family-name">通话时间</span>
+            <span class="family-nameDetail">{{ val.callTime }}</span>
+          </p>
+          <p class="detail-message-family" v-if="val.remark" style="border-bottom: none;border-top: 1px solid #E4E7ED" >
+            <span class="family-name">结束原因</span>
+            <span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ val.remark }}</span>
+          </p>
+        </label>
       <p class="detail-message-family" style="border: none" >
-        <span class="family-name"  v-if="item.status!='CANCELED'">审核时间</span>
+        <span class="family-name"  v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
         <span class="family-name"  v-if="item.status=='CANCELED'">取消时间</span>
-        <span class="family-nameDetail">{{ item.operateTime | Date }}</span></p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ item.remark }}</span></p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">取消原因</span><span class="family-nameDetail">{{ item.remark }}</span></p>
-      <p class="detail-message-family" v-if="item.status=='FINISHED'||item.status=='MEETING_ON'" style="border-top:  1px solid #E4E7ED;" ><span class="family-name">通话时长</span><span class="family-nameDetail">{{ toShow.duration | time }}</span></p>
+        <span class="family-name"  v-if="item.status=='EXPIRED'">过期时间</span>
+        <span class="family-nameDetail" v-if="!item.meetingCalls"  >{{ item.operateTime | Date }}</span>
+      </p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px" ><span class="family-name">拒绝原因</span><span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;border-bottom: none" ><span class="family-name">取消原因</span><span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
       </div>
       <div class="detail-content">
-      <p class="detail-message-family">
+      <p class="detail-message-family"  v-if="item.operateName">
         <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
         <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
         <span class="family-nameDetail">{{item.operateName}}</span></p>
-      <p class="detail-message-family" style="border: none">
+
+        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
+          <p class="detail-message-family" >
+            <span class="family-name">通话时长</span>
+            <span class="family-nameDetail">{{ val.callDuration | time }}</span>
+          </p>
+        </label>
+      <p class="detail-message-family">
       <span class="family-name">申请状态</span>
       <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
         <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
@@ -227,76 +251,8 @@
       </p>
       </div>
       </div>
-
       </div>
-      <!--已拒绝-->
-      <!--<div v-if="toShow.status=='DENIED'">-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
-      <!--<div class="family-detail">基本信息</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
-      <!--<div class="family-detail">1</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
-      <!--<p class="detail-message-family"><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none" ><span class="family-name">拒绝原因</span><span class="family-nameDetail">{{ toShow.remarks }}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
-      <!--<p class="detail-message-family"><span class="family-name">申请状态</span><span class="family-nameDetail">已拒绝</span></p>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-      <!--已过期-->
-      <!--<div v-if="toShow.status=='EXPIRED'">-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">-->
-      <!--<div class="family-detail">基本信息</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.name}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.meetingTime}}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relationship}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div  style="display: flex;border: 1px solid #E4E7ED">-->
-      <!--<div class="family-detail">1</div>-->
-      <!--<div class="detail-message">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人员账号</span><span class="family-nameDetail">{{toShow.auditUserName}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none" ><span class="family-name">审核时间</span><span class="family-nameDetail">{{ toShow.auditAt | Date }}</span></p>-->
-      <!--</div>-->
-      <!--<div class="detail-content">-->
-      <!--<p class="detail-message-family"><span class="family-name">审核人姓名</span><span class="family-nameDetail">{{toShow.auditRealName}}</span></p>-->
-      <!--<p class="detail-message-family" style="border: none"><span class="family-name">申请状态</span><span class="family-nameDetail">已过期</span></p>-->
-      <!--</div>-->
-      <!--</div>-->
-
-      <!--</div>-->
-
-      <!--<div>-->
-      <!--{{toShow}}-->
-      <!--</div>-->
-
-
-      <!--<family-to-show-->
-        <!--:elItems="familyShows"-->
-        <!--:showData="toShow">-->
-        <!--<template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>-->
-        <!--<template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>-->
-        <!--<template #duration="{ toShow }">{{ toShow.duration | time }}</template>-->
-      <!--</family-to-show>-->
       <span  slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="show.dialog=false">关 闭</el-button>
         </span>
 
     </el-dialog>
@@ -1103,7 +1059,7 @@
     border-right: 1px solid #E4E7ED
   }
   .detail-message{
-    width: 400px;
+    width: 380px;
   }
   .detail-message-family{
     display: flex;
@@ -1111,10 +1067,16 @@
     font-size: 12px;
     border-bottom: 1px solid #E4E7ED;
     .family-name{
-      width: 90px;
+      width: 120px;
       background: #F5F7FA;
       text-align: right;
+      padding-right: 10px;
       border-right: 1px solid #E4E7ED;
+    }
+    .family-nameDetail{
+      flex: 1;
+      padding-left: 10px;
+      border-right: 1px solid #E4E7ED
     }
 
   }
@@ -1122,10 +1084,10 @@
     flex: 1;
     line-height: 30px ;
     font-size: 12px;
-    border-bottom: 1px solid #E4E7ED;
     .family-name{
-      width: 90px;
+      width: 120px;
       background: #F5F7FA;
+      padding-right: 10px;
       text-align: right;
       border-right: 1px solid #E4E7ED;
     }
