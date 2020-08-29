@@ -42,14 +42,14 @@ superAdmin = [{
     props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' },
     meta: {
       permission: 'visit.visit-statistic.province.search',
-      breadcrumbName: '可视亲情电话统计报表'
+      breadcrumbName: '可视电话统计报表'
     }
   }, {
     path: '/family-meeting-detail',
     component: 'gd-admin/family-detail',
     meta: {
       permission: 'visit.visit-statistic.province.search',
-      breadcrumbName: '可视亲情电话申请详情'
+      breadcrumbName: '可视电话申请详情'
     },
      props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' }
   }]
@@ -94,7 +94,7 @@ superAdmin = [{
       meta: {
         role: '0',
         permission: 'visit.prison.visit-config.search',
-        breadcrumbName: '监狱可视亲情电话配置',
+        breadcrumbName: '监狱可视电话配置',
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
@@ -341,7 +341,7 @@ superAdmin = [{
       component: 'check-meeting/meeting-achievements',
       meta: {
         permission: 'visit.visit-statistic.all-prison.cost-save.search',
-        breadcrumbName: '亲情电话节约成本统计表'
+        breadcrumbName: '可视电话节约成本统计表'
       }
     }, {
       path: '/prison-data/registrations',
@@ -359,7 +359,7 @@ superAdmin = [{
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison.remote-visit.search',
-        breadcrumbName: '亲情电话申请'
+        breadcrumbName: '可视电话申请'
       },
       // component: 'check-meeting/meeting-list'
       component: 'check-meeting/meeting-list/meeting-list'
@@ -370,7 +370,7 @@ superAdmin = [{
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison.search',
-        breadcrumbName: '监狱亲情电话统计'
+        breadcrumbName: '监狱可视电话统计'
       },
       component: 'meeting-report/prison-report'
       // component: helper.loadView('meeting-report/prison-report')
@@ -380,7 +380,7 @@ superAdmin = [{
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison-area.search',
-        breadcrumbName: '监区亲情电话统计'
+        breadcrumbName: '监区可视电话统计'
       },
       component: 'meeting-report/prison-area-report'
       // component: helper.loadView('meeting-report/prison-area-report')
@@ -416,7 +416,7 @@ superAdmin = [{
       name: 'prison-data_meeting-reconciliation',
       props: { hasOnlyAllPrisonQueryAuth: true },
       meta: {
-        breadcrumbName: '亲情电话对账报表',
+        breadcrumbName: '可视电话对账报表',
         permission: 'visit.meeting.reconciliation.search'
       },
       component: 'check-meeting/meeting-reconciliation-list'

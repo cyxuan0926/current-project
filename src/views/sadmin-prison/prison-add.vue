@@ -38,7 +38,7 @@ export default {
       tabMapOptions: [
         { label: '基本信息', key: 'prisonBase' },
         { label: '配置信息', key: 'prisonConfig' },
-        { label: '可视亲情电话', key: 'prisonRemote' }
+        { label: '可视电话', key: 'prisonRemote' }
       ]
     }
   },

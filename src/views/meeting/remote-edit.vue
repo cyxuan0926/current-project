@@ -5,7 +5,7 @@
       type="border-card"
       class="min-height-400"
       @tab-click="handleClick">
-      <!-- 常规配置才有亲情电话申请提前天数这个配置 -->
+      <!-- 常规配置才有可视电话申请提前天数这个配置 -->
       <!-- hb -->
       <div
         v-if="activeName === 'usual'"
@@ -41,7 +41,7 @@ import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';
 export default {
   components: {
-    // 可视亲情电话提前天数
+    // 可视可视电话提前天数
     remoteVisitDay,
     // 常规配置
     usual,
@@ -94,7 +94,7 @@ export default {
       handler(query) {
         // 为常规配置的时候
         if (query.tag === 'usual') {
-          // 获取亲情电话申请需提前天数
+          // 获取可视电话申请需提前天数
           this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
         }
       }
@@ -137,7 +137,7 @@ export default {
         }
       }
     },
-    // 亲情电话申请需求提前天数 更新操作实际调用的方法
+    // 可视电话申请需求提前天数 更新操作实际调用的方法
     handleUpdateAdvanceDayLimit() {
       // hb
       this.updateRemoteAdvanceDayLimit({

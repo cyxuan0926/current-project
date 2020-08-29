@@ -141,7 +141,7 @@
           show-overflow-tooltip 
         />
         <el-table-column
-          label="家属亲情电话告知书"
+          label="家属可视电话告知书"
           min-width="65"
         >
           <template slot-scope="scope">
@@ -276,12 +276,12 @@
         </div>
       </template>
       <template v-if="!!toAuthorize.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">亲情电话通知单:</div>
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
           <m-img-viewer
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
-            title="亲情电话通知单"
+            title="可视电话通知单"
           />
         </div>
       </template>
@@ -419,7 +419,7 @@
     </el-dialog>
     <el-dialog
       :visible.sync="notificationShow"
-      title="亲情电话告知书"
+      title="可视电话告知书"
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">

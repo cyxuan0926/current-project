@@ -31,7 +31,7 @@ let check = [{
 }, {
   path: '/meeting',
   name: 'meeting-manage',
-  meta: { hidden: true, breadcrumbName: '亲情电话申请管理' },
+  meta: { hidden: true, breadcrumbName: '可视电话申请管理' },
   children: [{
     path: '/meeting/list',
     name: 'meeting-list',
@@ -39,7 +39,7 @@ let check = [{
     // component: 'check-meeting/meeting-list',
     component: 'check-meeting/meeting-list/meeting-list',
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
-    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '亲情电话申请列表' }
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '可视电话申请列表' }
   }, {
     path: '/meeting/diplomatist',
     name: 'meeting-diplomatist',
@@ -54,7 +54,7 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-adjust'),
     component: 'check-meeting/meeting-adjust/index',
     // component: resolve => require(['@/views/check-meeting/meeting-adjust'], resolve),
-    meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '亲情电话申请调整' }
+    meta: { permission: 'visit.remote-visit-application.view', breadcrumbName: '可视电话申请调整' }
     // component: resolve => require(['@/views/check-meeting/ws'], resolve)
   }, {
     path: '/visit/list',
@@ -92,7 +92,7 @@ let check = [{
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',
-    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '亲情电话节约成本统计' }
+    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '可视电话节约成本统计' }
 
   }, {
     path: '/meeting-report/meeting-diplomatist-detail',
