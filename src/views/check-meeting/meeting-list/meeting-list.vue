@@ -179,13 +179,13 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.dialog"
-      title="详情"
+      title="详情"dialogdialog
       width="780px"
       class="authorize-dialog"
       lock-scroll
       @close="onCloseShow">
       <div style="max-height:380px;overflow: auto">
-      <div  style="display: flex;border: 1px solid #E4E7ED;border-bottom: none">
+      <div  style="display: flex;border: 1px solid #E4E7ED;">
       <div class="family-detail">基本信息</div>
       <div class="detail-message">
       <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
@@ -198,7 +198,7 @@
       </div>
 
 
-      <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED">
+      <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED;border-top: none">
       <div class="family-detail">{{index+1}}</div>
       <div class="detail-message">
       <p class="detail-message-family" v-if="item.operateAccount">
@@ -206,27 +206,23 @@
         <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
         <span class="family-nameDetail">{{item.operateAccount}}</span></p>
         <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
-        <!--<p class="detail-message-family" >-->
-            <!--<span class="family-name">通话时长</span>-->
-            <!--<span class="family-nameDetail">{{ val.callDuration | time }}</span>-->
-        <!--</p>-->
           <p class="detail-message-family" >
             <span class="family-name">通话时间</span>
             <span class="family-nameDetail">{{ val.callTime }}</span>
           </p>
-          <p class="detail-message-family" v-if="val.remark" style="border-bottom: none;border-top: 1px solid #E4E7ED" >
+          <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
             <span class="family-name">结束原因</span>
-            <span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ val.remark }}</span>
+            <span class="family-nameDetail" :ref="`itemHeigh+${keys}`" style="padding: 10px;text-align: justify;line-height: 15px;">{{ val.remark }}</span>
           </p>
         </label>
       <p class="detail-message-family" style="border: none" >
         <span class="family-name"  v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
         <span class="family-name"  v-if="item.status=='CANCELED'">取消时间</span>
         <span class="family-name"  v-if="item.status=='EXPIRED'">过期时间</span>
-        <span class="family-nameDetail" v-if="!item.meetingCalls"  >{{ item.operateTime | Date }}</span>
+        <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'"  >{{ item.operateTime | Date }}</span>
       </p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px" ><span class="family-name">拒绝原因</span><span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;border-bottom: none" ><span class="family-name">取消原因</span><span class="family-nameDetail" style="padding-right: 10px;padding-top: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px" ><span class="family-name">拒绝原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
+        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;border-bottom: none" ><span class="family-name">取消原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
       </div>
       <div class="detail-content">
       <p class="detail-message-family"  v-if="item.operateName">
@@ -234,11 +230,17 @@
         <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
         <span class="family-nameDetail">{{item.operateName}}</span></p>
 
-        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
+        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys  >
           <p class="detail-message-family" >
             <span class="family-name">通话时长</span>
             <span class="family-nameDetail">{{ val.callDuration | time }}</span>
           </p>
+          <label v-if="val.remark">
+            <p class="detail-message-family" v-if="keys!=item.meetingCalls.length-1" :style="{height:val.itemHeigh}">
+              <span class="family-name">&nbsp;</span>
+              <span class="family-nameDetail">&nbsp;</span>
+            </p>
+          </label>
         </label>
       <p class="detail-message-family">
       <span class="family-name">申请状态</span>
@@ -715,6 +717,7 @@
       //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
       this.getDatas('mounted')
+
     },
     methods: {
       ...mapActions([
@@ -873,10 +876,19 @@
           this.toShow = Object.assign({}, res)
           console.log(this.toShow)
           this.show.dialog=true
+          console.log(this.$refs)
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
             : constFamilyShows
         })
+      },
+      isDevelop(val, key) {//判断当前是否展开
+        console.log(val,key)
+        this.$nextTick(() => {
+          console.log(this.$refs[`itemHeigh+${key}`][0])
+          val.itemHeigh=this.$refs[`itemHeigh+${key}`][0].clientHeight
+        })
+        return val.remark
       },
       onCloseShow() {
         this.toShow.id = ''
