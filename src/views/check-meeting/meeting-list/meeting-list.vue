@@ -186,15 +186,15 @@
       @close="onCloseShow">
       <div style="max-height:380px;overflow: auto">
       <div  style="display: flex;border: 1px solid #E4E7ED;">
-      <div class="family-detail">基本信息</div>
-      <div class="detail-message">
-      <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
-      <p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.createTime}}</span></p>
-      </div>
-      <div class="detail-content">
-      <p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relation}}</span></p>
-      <p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>
-      </div>
+          <div class="family-detail">基本信息</div>
+          <div class="detail-message">
+            <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
+            <p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.createTime}}</span></p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relation}}</span></p>
+            <p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>
+          </div>
       </div>
 
 
@@ -236,7 +236,7 @@
             <span class="family-nameDetail">{{ val.callDuration | time }}</span>
           </p>
           <label v-if="val.remark">
-            <p class="detail-message-family" v-if="keys!=item.meetingCalls.length-1" :style="{height:val.itemHeigh}">
+            <p class="detail-message-family" v-if="keys!=item.meetingCalls.length-1" :style="{height:val.itemHeigh+'px'}">
               <span class="family-name">&nbsp;</span>
               <span class="family-nameDetail">&nbsp;</span>
             </p>
@@ -876,17 +876,16 @@
           this.toShow = Object.assign({}, res)
           console.log(this.toShow)
           this.show.dialog=true
-          console.log(this.$refs)
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
             : constFamilyShows
         })
       },
-      isDevelop(val, key) {//判断当前是否展开
-        console.log(val,key)
+      isDevelop(val, key) {//判断结束原因是否存在多行
         this.$nextTick(() => {
-          console.log(this.$refs[`itemHeigh+${key}`][0])
-          val.itemHeigh=this.$refs[`itemHeigh+${key}`][0].clientHeight
+          if(this.$refs[`itemHeigh+${key}`]){
+            this.$set(val,'itemHeigh', this.$refs[`itemHeigh+${key}`][0].clientHeight)
+          }
         })
         return val.remark
       },
