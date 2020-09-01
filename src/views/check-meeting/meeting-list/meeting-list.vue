@@ -643,6 +643,8 @@
       },
       tabs(val) {
         this.$refs.search.onSearch('tabs')
+        const { jailId } = this.$store.state.global.user
+        this.filter.jailId=jailId
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -782,6 +784,7 @@
         })
       },
       getDatas(e) {
+        this
         if (this.tabs !== 'first') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
