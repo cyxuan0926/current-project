@@ -10,6 +10,7 @@
       <m-excel-download
         slot="append"
         path="/download/exportMettings"
+        :filterParams="filterParams"
         :params="filter" />
     </m-search>
     <el-col :span="24">
@@ -643,8 +644,6 @@
       },
       tabs(val) {
         this.$refs.search.onSearch('tabs')
-        const { jailId } = this.$store.state.global.user
-        this.filter.jailId=jailId
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -784,7 +783,6 @@
         })
       },
       getDatas(e) {
-        this
         if (this.tabs !== 'first') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
@@ -814,6 +812,28 @@
           delete this.filter.orderField
         }
         this.$refs.pagination.handleCurrentChange(1)
+      },
+      filterParams(){
+        //下载表格查询条件处理
+        this.$refs.search.onGetFilter()
+        if (this.toShow.changerType === true) {
+          this.filter.changerType = '2'
+        }
+        if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+        else {
+          this.$refs.elTable && this.$refs.elTable.clearSort()
+          delete this.filter.sortDirection
+          delete this.filter.orderField
+        }
+        if (this.tabs !== 'first') {
+          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+            this.filter.status = this.tabs
+          }
+        }
+        const { jailId } = this.$store.state.global.user
+        this.filter.jailId=jailId
+
+       return this.filter
       },
       handleAuthorization(e) {
         this.toAuthorize = e
