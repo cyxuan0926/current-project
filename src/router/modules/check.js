@@ -49,6 +49,12 @@ let check = [{
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '外交领事官员可视电话申请列表 ' }
   }, {
+    path: '/meeting/deploy',
+    name: 'meeting-deploy',
+    component: 'check-meeting/meeting-deploy/meeting-deploy',
+    // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '监狱配置管理 ' }
+  }, {
     path: '/meeting/adjust',
     name: 'meeting-adjust',
     // component: helper.loadView('check-meeting/meeting-adjust'),
