@@ -813,7 +813,7 @@
         }
         this.$refs.pagination.handleCurrentChange(1)
       },
-      filterParams(){
+      filterParams () {
         //下载表格查询条件处理
         this.$refs.search.onGetFilter()
         if (this.toShow.changerType === true) {
@@ -830,10 +830,11 @@
             this.filter.status = this.tabs
           }
         }
-        const { jailId } = this.$store.state.global.user
-        this.filter.jailId=jailId
-
-       return this.filter
+        let {jailId} = this.$store.state.global.user
+        //判断是不是超级管理员
+         jailId == -1 ? jailId = '': jailId = jailId
+        this.filter.jailId = jailId
+        return this.filter
       },
       handleAuthorization(e) {
         this.toAuthorize = e
