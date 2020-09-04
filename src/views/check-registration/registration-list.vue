@@ -759,7 +759,9 @@ export default {
       if (contents === 'all') {
         const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
 
-        params = this.filterDownloadParams(this.registrations.contents)
+        const passedData = this.registrations.contents.filter(content => content.status == 'PASSED')
+
+        params = this.filterDownloadParams(passedData)
 
         type = 'zip',
 
