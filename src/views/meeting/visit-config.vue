@@ -1,14 +1,14 @@
 <template>
   <div class="w80">
     <div class="el-form-item is-required">
-      <label class="el-form-item__label">实地探监窗口个数</label>
+      <label class="el-form-item__label">现场探视窗口个数</label>
       <div style="float: left; width: calc(100% - 150px); position: relative;">
         <el-input
           v-model="prisonVisitConfigDetail.windowSize"
           :disabled="!canEdit"
           class="part-right"
           size="small"
-          placeholder="请填写会见预约窗口个数">
+          placeholder="请填写现场探视窗口个数">
           <template slot="append">/个</template>
         </el-input>
         <span
@@ -34,12 +34,12 @@
           type="primary"
           size="mini"
           class="button-float"
-          @click="onAddRange(prisonVisitConfigDetail.queue)">新增实地会见批次</el-button>
+          @click="onAddRange(prisonVisitConfigDetail.queue)">新增现场探视批次</el-button>
         <el-button
           v-if="canEdit && hasLocalTimeConfig"
           size="mini"
           class="button-float"
-          @click="onRestQueue(prisonVisitConfigDetail)">重置实地会见时间段</el-button>
+          @click="onRestQueue(prisonVisitConfigDetail)">重置现场探视时间段</el-button>
       </div>
     </div>
     <div class="button-box">
@@ -93,7 +93,7 @@ export default {
           if (!msg) msg = v.message
         }
       }
-      validator.required({ message: '请填写实地探监窗口个数' }, this.prisonVisitConfigDetail.windowSize, handleValid)
+      validator.required({ message: '请填写现场探视窗口个数' }, this.prisonVisitConfigDetail.windowSize, handleValid)
       validator.isNumber({}, this.prisonVisitConfigDetail.windowSize, handleValid)
       validator.numberRange({ min: 1, max: 20 }, this.prisonVisitConfigDetail.windowSize, handleValid)
       return msg
