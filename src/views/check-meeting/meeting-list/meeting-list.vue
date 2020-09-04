@@ -6,11 +6,13 @@
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <m-excel-download
         slot="append"
         path="/download/exportMettings"
-        :params="filter" />
+        :params="excelFilter"
+      />
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -20,7 +22,8 @@
           <el-tab-pane
             :key="index"
             :label="tab.label"
-            :name="tab.name" />
+            :name="tab.name"
+          />
         </template>
       </el-tabs>
       <m-table-new
@@ -179,84 +182,162 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.dialog"
-      title="详情"dialogdialog
+      title="详情"
       width="780px"
       class="authorize-dialog"
       lock-scroll
       @close="onCloseShow">
       <div style="max-height:380px;overflow: auto">
-      <div  style="display: flex;border: 1px solid #E4E7ED;">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
+
           <div class="detail-message">
-            <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
-            <p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.createTime}}</span></p>
-          </div>
-          <div class="detail-content">
-            <p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relation}}</span></p>
-            <p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>
-          </div>
-      </div>
+            <p class="detail-message-family">
+              <span class="family-name">家属</span>
 
-
-      <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED;border-top: none">
-      <div class="family-detail">{{index+1}}</div>
-      <div class="detail-message">
-      <p class="detail-message-family" v-if="item.operateAccount">
-        <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
-        <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
-        <span class="family-nameDetail">{{item.operateAccount}}</span></p>
-        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
-          <p class="detail-message-family" >
-            <span class="family-name">通话时间</span>
-            <span class="family-nameDetail">{{ val.callTime }}</span>
-          </p>
-          <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
-            <span class="family-name">结束原因</span>
-            <span class="family-nameDetail" :ref="`itemHeigh+${keys}`" style="padding: 10px;text-align: justify;line-height: 15px;">{{ val.remark }}</span>
-          </p>
-        </label>
-      <p class="detail-message-family" style="border: none" >
-        <span class="family-name"  v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
-        <span class="family-name"  v-if="item.status=='CANCELED'">取消时间</span>
-        <span class="family-name"  v-if="item.status=='EXPIRED'">过期时间</span>
-        <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'"  >{{ item.operateTime | Date }}</span>
-      </p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px" ><span class="family-name">拒绝原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;border-bottom: none" ><span class="family-name">取消原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
-      </div>
-      <div class="detail-content">
-      <p class="detail-message-family"  v-if="item.operateName">
-        <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
-        <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
-        <span class="family-nameDetail">{{item.operateName}}</span></p>
-
-        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys  >
-          <p class="detail-message-family" >
-            <span class="family-name">通话时长</span>
-            <span class="family-nameDetail">{{ val.callDuration | time }}</span>
-          </p>
-          <label v-if="val.remark">
-            <p class="detail-message-family" v-if="keys!=item.meetingCalls.length-1" :style="{height:val.itemHeigh+'px'}">
-              <span class="family-name">&nbsp;</span>
-              <span class="family-nameDetail">&nbsp;</span>
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
-          </label>
-        </label>
-      <p class="detail-message-family">
-      <span class="family-name">申请状态</span>
-      <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
-        <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
-      <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
-      <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
-      <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
-      <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
-      </p>
-      </div>
-      </div>
-      </div>
-      <span  slot="footer" class="dialog-footer">
-        </span>
 
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">预约时间</span>
+
+              <span class="family-nameDetail">{{toShow.createTime}}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">与罪犯关系</span>
+
+              <span class="family-nameDetail">{{toShow.relation}}</span>
+            </p>
+
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">终端号</span>
+
+              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-for="(item,index) in toShow.changeLogs"
+          :key=index
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+
+          <div class="detail-message">
+            <p class="detail-message-family" v-if="item.operateAccount">
+
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
+
+              <span class="family-nameDetail">{{item.operateAccount}}</span>
+            </p>
+
+            <template v-if="item.meetingCalls" >
+              <label v-for="(val,keys) in item.meetingCalls" :key=keys >
+                <p class="detail-message-family" >
+                  <span class="family-name">通话时间</span>
+
+                  <span class="family-nameDetail">{{ val.callTime }}</span>
+                </p>
+
+                <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
+                  <span class="family-name">结束原因</span>
+
+                  <span
+                    class="family-nameDetail"
+                    :ref="`itemHeigh+${keys}`"
+                    style="padding: 10px;text-align: justify;line-height: 15px;">
+                    {{ val.remark }}
+                  </span>
+                </p>
+              </label>
+            </template>
+
+            <p class="detail-message-family" style="border: none" >
+              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
+
+              <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
+
+              <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='DENIED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px">
+              <span class="family-name">拒绝原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='CANCELED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none"
+            >
+              <span class="family-name">取消原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family"  v-if="item.operateName">
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
+
+              <span class="family-nameDetail">{{item.operateName}}</span></p>
+
+              <template v-if="item.meetingCalls">
+                <label v-for="(val,keys) in item.meetingCalls" :key=keys  >
+                  <p class="detail-message-family" >
+                    <span class="family-name">通话时长</span>
+
+                    <span class="family-nameDetail">{{ val.callDuration | time }}</span>
+                  </p>
+
+                  <label v-if="val.remark">
+                    <p
+                      v-if="keys!=item.meetingCalls.length-1"
+                      class="detail-message-family"
+                      :style="{height:val.itemHeigh+'px'}"
+                    >
+                      <span class="family-name">&nbsp;</span>
+
+                      <span class="family-nameDetail">&nbsp;</span>
+                    </p>
+                  </label>
+                </label>
+              </template>
+
+            <p class="detail-message-family">
+              <span class="family-name">申请状态</span>
+
+              <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
+
+              <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
+
+              <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
+
+              <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              
+              <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
+
+              <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
     <el-dialog
       title="家属信息"
@@ -326,7 +407,8 @@
       const tabsItems = [
         {
           label: '可视电话申请',
-          name: 'first' },
+          name: 'first'
+        },
         {
           label: '审核已通过',
           name: 'PASSED'
@@ -517,6 +599,18 @@
         'frontRemarks',
         'meetingRefresh'
       ]),
+
+      // excel的参数 需要添加当前标签页的label
+      excelFilter() {
+        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+
+        const TABName = tabItem[0]['label']
+
+        return {
+          ...this.filter,
+          TABName
+        }
+      },
 
       // 本地实例化的授权表单组件元素
       localAuthorizeFormItems() {
@@ -877,7 +971,6 @@
         this.getMeettingsDetail(params).then(res => {
           if (!res) return
           this.toShow = Object.assign({}, res)
-          console.log(this.toShow)
           this.show.dialog=true
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
@@ -1036,7 +1129,7 @@
         })
       },
       sortChange({ column, prop, order }) {
-        if (!prop && !order) {
+        if (!prop || !order) {
           this.sortObj = {}
           delete this.filter.sortDirection
           delete this.filter.orderField

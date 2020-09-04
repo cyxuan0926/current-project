@@ -11,10 +11,12 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportPrisonuser"
-      :params="filter" />
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    />
     <el-col :span="24">
       <m-table-new
         stripe
@@ -50,7 +52,8 @@
     <m-pagination
       ref="pagination"
       :total="prisonUsers.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -58,6 +61,8 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  name: 'AccountList',
+
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
     hasAllPrisonQueryAuth: Boolean

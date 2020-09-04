@@ -8,7 +8,8 @@ export default {
       1: roles.AUDITOR,
       3: roles.INFORMATION_ADMIN,
       5: roles.POLICE_LITERATURE_AUDITOR,
-      6: roles.FAMILY_LITERATURE_AUDITOR
+      6: roles.FAMILY_LITERATURE_AUDITOR,
+      7: roles.ADVANCED_AUDITOR
     }
 
     return rolesMap[parseInt(state.user.role)]

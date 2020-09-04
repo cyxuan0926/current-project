@@ -171,10 +171,20 @@ export default {
 
   getDiplomatist: params => {
     return service.get('/diplomats/org-list', params)
-  }
+  },
   // 监狱管理-监狱基本信息-监狱是否可以修改监狱是否分监区状态
   // getBranchStatus: params => {
   //   return service.postObj('/jails/getBranchStatus', params)
   // }
+
+  // 监狱管理-人脸识别配置-获取
+  getFaceRecognitionConfigs: params => {
+    return service.get('', params)
+  },
+
+  // 监狱管理-人脸识别配置-更新
+  updateFaceRecognitionConfigs: params => {
+    return service.postObj('', params)
+  }
 }
 

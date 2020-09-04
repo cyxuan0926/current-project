@@ -18,7 +18,8 @@ let switches = {
     { role: '3', label: '信息管理人员' },
     { role: '4', label: '监狱管理员' },
     { role: '5', label: '监狱作品审核人员' },
-    { role: '6', label: '家属作品审核人员' }
+    { role: '6', label: '家属作品审核人员' },
+    { role: '7', label: '高级审核人员' }
   ],
   goodsCategory: [
     { value: 1, label: '洗化日用' },

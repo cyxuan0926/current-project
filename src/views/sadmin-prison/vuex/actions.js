@@ -44,7 +44,7 @@ export default {
   },
   createJailByBindTenant: ({ commit }, params) => {
     return http.createJailByBindTenant(params).then(res => res)
-  }
+  },
   // getBranchStatus: async({ commit }, params) => {
   //   try {
   //     const res = await http.getBranchStatus(params)
@@ -54,4 +54,30 @@ export default {
   //     throw err
   //   }
   // }
+
+  // 获取人脸识别配置
+  getFaceRecognitionConfigs: async({ commit }, params) => {
+    try {
+      await http.getFaceRecognitionConfigs(params)
+
+      commit('setFaceRecognitionConfigs', {})
+
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+
+  // 更新人脸配置
+  updateFaceRecognitionConfigs: async({ commit }, params) => {
+    try {
+      await http.updateFaceRecognitionConfigs(params)
+
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  }
 }

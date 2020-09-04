@@ -18,5 +18,8 @@ export default {
   FAMILY_LITERATURE_AUDITOR: 'family_literature_auditor',
 
   // 监狱白名单
-  JAIL_WHITELIST: ['4411']
+  JAIL_WHITELIST: ['4411'],
+
+  // 高级审核人员
+  ADVANCED_AUDITOR: 'advanced_auditor'
 }

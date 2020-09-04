@@ -9,21 +9,37 @@ let admin = [{
     path: '/account/list',
     name: 'account-list',
     props: { role: '4' },
-    meta: { permission: 'visit.account.current-prison.search', breadcrumbName: '账户列表' },
+    meta: {
+      permission: 'visit.account.current-prison.search',
+      breadcrumbName: '账户列表',
+      componentsToKeepAlive: ['AccountList']
+    },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
     // component: helper.loadView('sadmin-prison-user/prison-user-list')
     component: 'sadmin-prison-user/prison-user-list'
   }, {
     path: '/account/add',
     name: 'account-add',
-    meta: { role: '4', deep: true, permission: 'visit.account.add', breadcrumbName: '新增账户' },
+    meta: {
+      role: '4',
+      deep: true,
+      permission: 'visit.account.add',
+      breadcrumbName: '新增账户',
+      componentsUnRemoveKeepAlive: ['AccountList']
+    },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-add'], resolve)
     // component: helper.loadView('sadmin-prison-user/prison-user-add')
     component: 'sadmin-prison-user/prison-user-add'
   }, {
     path: '/account/edit/:id',
     name: 'account-edit',
-    meta: { role: '4', deep: true, permission: 'visit.account.update', breadcrumbName: '编辑账户' },
+    meta: {
+      role: '4',
+      deep: true,
+      permission: 'visit.account.update',
+      breadcrumbName: '编辑账户',
+      componentsUnRemoveKeepAlive: ['AccountList']
+    },
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-edit'], resolve)
     // component: helper.loadView('sadmin-prison-user/prison-user-edit')
     component: 'sadmin-prison-user/prison-user-edit'
