@@ -47,7 +47,8 @@
           </template>
           <template #description="{ row }">
             <el-input
-              type="text"
+              type="textarea"
+              :autosize="{ minRows: 2 }"
               v-model="row.description"
               :disabled="!row.isCheck" />
           </template>
