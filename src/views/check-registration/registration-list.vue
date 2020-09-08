@@ -429,7 +429,7 @@
         <div style="width: 100%;"><label>协议编号：</label><span>{{ notification.protoNum }}</span></div>
         <div style="width: 100%;"><label>签署日期：</label><span>{{ notification.signDate }}</span></div>
         <div
-          v-if="notification.meetingNotificationUrl"
+          v-show="notification.meetingNotificationUrl"
           class="block__meetingNotificationUrl"
         >
           <label>告知书：</label>
@@ -723,6 +723,7 @@ export default {
       if (status === 'PENDING') {
         const { id } = row
         this.getRegistrationNotificationDetail({ id }).then(res => {
+          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
@@ -737,6 +738,7 @@ export default {
           id: notifyId,
           rid: id
         }).then(res => {
+          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
@@ -759,7 +761,9 @@ export default {
       if (contents === 'all') {
         const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
 
-        params = this.filterDownloadParams(this.registrations.contents)
+        const passedData = this.registrations.contents.filter(content => content.status == 'PASSED')
+
+        params = this.filterDownloadParams(passedData)
 
         type = 'zip',
 

@@ -320,7 +320,7 @@
 
       <!-- 有告知书图片的才显示 -->
       <div
-        v-if="notificationForm.meetingNotificationUrl"
+        v-show="notificationForm.meetingNotificationUrl"
         class="notification__content"
       >
           <label>告知书：</label>
