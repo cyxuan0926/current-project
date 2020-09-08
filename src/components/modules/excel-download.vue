@@ -23,8 +23,10 @@ export default {
   },
   methods: {
      onDownloadExcel() {
-      this.$parent.onGetFilter()
-       if(this.filterParams()){
+       if(this.$parent.onGetFilter){
+         this.$parent.onGetFilter()
+       }
+       if(this.filterParams){
          const query = qs.stringify(this.filterParams())
          const { apiHost, apiPath } = urls
          location.href = apiHost + apiPath + this.path + (query && '?' + query)
