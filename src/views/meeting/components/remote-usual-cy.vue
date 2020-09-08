@@ -1,11 +1,22 @@
 <template>
   <div class="container">
-    <template v-for="(configs, type) in allConfigs">
+    <div>
+      <el-form>
+        <el-form-item label="是否分生产区和监舍区">
+          <el-switch
+            v-model="prisonShow"
+            active-color="#13ce66">
+          </el-switch>
+        </el-form-item>
+      </el-form>
+    </div>
+    <template v-if="!prisonShow" v-for="(configs, type) in allConfigs">
       <div
         v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
         class="m-container"
         :key="type"
       >
+
         <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>
         <div
           v-for="(config, index) in configs"
@@ -146,6 +157,33 @@
         </div>
       </div>
     </template>
+    <template v-if="prisonShow">
+      <div>
+        <el-form>
+        <el-form-item label="请选择生产区设备:" style="width:440px">
+            <div class="prisonlabel">
+              <el-button v-for="(item,index) in selectOption"
+                         :key=index size="mini"
+                         style="margin-left: 5px"
+                         @click="open(item)">{{item.selectArr}} <i class="el-icon-circle-close"/>
+              </el-button>
+
+            </div>
+            <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow()">选择设备</el-button>
+        </el-form-item>
+        </el-form>
+
+      </div>
+
+      <!--<div>-->
+        <!--<p>-->
+          <!--请选择监区设备: <label class="prisonlabel"> <span></span></label>-->
+          <!--<el-button type="primary">选择设备</el-button>-->
+        <!--</p>-->
+      <!--</div>-->
+
+
+    </template>
     <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
       <label
         class="c-label"
@@ -197,6 +235,58 @@
           @click="onSubmit">确定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="prisonDetil"
+      class="authorize-dialog"
+      @close=""
+      title="请选择设备"
+      width="900px">
+      <div
+        class="button-box">
+        <el-table
+          ref="multipleTable"
+          :data="tableData"
+          tooltip-effect="dark"
+          style="width: 100%"
+          max-height="300px"
+          @selection-change="handleSelectionChange">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+          <el-table-column
+            label="终端号"
+            prop="terminalNumber">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="终端别名"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="prisonArea"
+            label="监区">
+          </el-table-column>
+          <el-table-column
+            prop="name1"
+            label="分监区">
+          </el-table-column>
+          <el-table-column
+            prop="name2"
+            label="楼栋">
+          </el-table-column>
+          <el-table-column
+            prop="name3"
+            label="楼层">
+          </el-table-column>
+        </el-table>
+
+      </div>
+      <span   slot="footer" class="dialog-footer">
+          <el-button type="primary"  @click="setPrimary()" :disabled="false">确 定</el-button>
+          <el-button @click="prisonDetil=false">取 消</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -214,7 +304,6 @@ import { Message } from 'element-ui'
 
 export default {
   mixins: [normalMixins],
-
   data() {
     const basicConfig = {
       // 工作日
@@ -244,6 +333,10 @@ export default {
       queue: ['09:00', '10:00'],
       flag: true,
       // 确定更新按钮加载
+      prisonShow : false,
+      // 确定是否分生产区跟监舍区
+      prisonDetil : false,
+      // 确定是否分生产区跟监舍区
       loading: false,
       permission: 'add',
       // 提示对话框显示属性
@@ -259,7 +352,31 @@ export default {
       basicConfig,
       effectiveDate: '',
       dateValue: '',
-      updateShow: false
+      updateShow: false,
+      tableData: [{
+        terminalNumber: '123',
+        name: '453',
+        prisonArea: '223',
+        name1: '554',
+        name2: '232',
+        name3: '楼44层',
+      },{
+        terminalNumber: '22',
+        name: '',
+        prisonArea: '34',
+        name1: '44',
+        name2: '22',
+        name3: '',
+      },{
+          terminalNumber: '终端号',
+          name: '终端别名',
+          prisonArea: '监区',
+          name1: '分监区',
+          name2: '',
+          name3: '',
+        }],
+      selectOption:[],
+      multipleSelection:[]
     }
   },
 
@@ -603,7 +720,63 @@ export default {
         // 过滤已经配置了的日子
         return !days.some(v => v === w.value)
       }
-    }
+    },
+    //全选
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    //选择设备显示表
+    tableShow(){
+      this.prisonDetil=true
+      if( this.selectOption.length!=0){
+        this.$refs.multipleTable.clearSelection();
+      }
+      this.selectOption.forEach((item,key)=>{
+        this.$refs.multipleTable.toggleRowSelection(item,true);
+      })
+    },
+    //关闭设备显示表
+    tableClose(){
+      this.prisonDetil=false
+    },
+    //删除按扭
+    open(item) {
+      const confirmText = ['是否将'+item.selectArr+'"设备，从选中的设备项中移出？',  '注意：删除终端后，将重新分配通话时间段，如预约日期无法分配时间段，系统将自动取消通话申请，调整后会以短信的形式通知相关家属 ，请确认是否继续操作？']
+      const newDatas = []
+      const h = this.$createElement
+      for (const i in confirmText) {
+        newDatas.push(h('p', null, confirmText[i]))
+      }
+      this.$confirm( '提示', {
+        title: '提示',
+        message: h('div', null, newDatas),
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.selectOption=this.selectOption.filter(val=> val!=item)
+        console.log(this.selectOption)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    //修改按钮对应值
+    setPrimary(){
+      this.multipleSelection.forEach((item,key)=>{
+        item.selectArr=`${item.terminalNumber}${item.name?'-'+item.name:""}${item.name2?'-'+item.name2:""}${item.name3?'-'+item.name3:""}`
+       // option[key].selectArr=item[key]
+       // option[key].str
+      })
+      this.selectOption=this.multipleSelection
+      this.prisonDetil=false
+    },
   }
 }
 </script>
@@ -633,7 +806,6 @@ export default {
     margin-left: 0;
   }
   .button-box{
-    padding-bottom: 20px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -702,6 +874,15 @@ export default {
       }
     }
     
+  }
+  .prisonlabel{
+     width: 240px;
+    display: inline-block;
+    min-height:34px ;
+    margin-top: 4px;
+    border: 1px solid #dcdfe6 ;
+    border-radius: 5px;
+    float: left;
   }
 }
 

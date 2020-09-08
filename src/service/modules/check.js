@@ -257,5 +257,14 @@ export default {
   // 情亲会见申请管理-终端会见配置时间列表
   getMeetTimeConfig: params => {
     return service.get('/meetings/query-meettime-config', params).then(res => res && res.data)
+  },
+  // 监狱配置管理查询
+  getMeetDeploy: params => {
+    return service.get('/jails/getAutoAuthorizeMeeting', params).then(res => res && res)
+  },
+  // 监狱配置管理查询
+  getMeetDeployUpdate: params => {
+    return service.post('/jails/updateAutoAuthorizeMeeting', params).then(res => res && res.data)
   }
+
 }

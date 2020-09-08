@@ -7,20 +7,39 @@
       type="border-card" >
       <el-tab-pane label="用户管理" name="first">
         <el-form>
-        <el-form-item label="活动名称" prop="type">
+        <el-form-item label="可视电话申请自动审核" class="labelTit">
           <el-switch
-          v-model="value"
-          active-color="#13ce66"
-          inactive-color="#ff4949">
+          v-model="autoAuthorizeMeeting"
+          active-color="#13ce66">
           </el-switch>
         </el-form-item>
-          <el-form-item label="活动名称" ></el-form-item>
-          <el-form-item label="活动名称" ></el-form-item>
-          <el-form-item label="活动名称" ></el-form-item>
-          <el-form-item label="活动名称" ></el-form-item>
-        </el-form>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item ></el-form-item>
+          <el-form-item >
+            <el-button type="primary" style="float: right; margin-right: 60px;" @click="submitTit()">提交</el-button>
+          </el-form-item>
+          </el-form>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="500px">
+      <span>“监狱配置已开启二级审核，当开启自动审核后，二级审核将失效，确认开启自动审核吗？” </span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="closeDeploy()">取 消</el-button>
+    <el-button type="primary" @click="submitDeploy()">确 定</el-button>
+  </span>
+    </el-dialog>
  </el-row>
 </template>
 
@@ -36,14 +55,52 @@
       ]
       return {
         tabs:"first",
-        value: true
+        dialogVisible:false,
+        params:false,
+        autoAuthorizeMeeting: true,
       }
     },
     computed: {
     },
     mounted() {
+     this.getDeploy()
     },
     methods: {
+      getDeploy(){
+        http.getMeetDeploy().then(res => {
+          this.dialogVisible = false
+          this.autoAuthorizeMeeting=res.data?true:false
+        })
+      },
+      submitTit(){
+        //判断
+        if(this.autoAuthorizeMeeting==true){
+          this.dialogVisible=true
+        }else{
+          this.submitDeploy()
+        }
+      },
+      closeDeploy(){
+        this.dialogVisible = false
+      },
+      submitDeploy(){
+        let params = {
+          autoAuthorizeMeeting: this.autoAuthorizeMeeting?1:0,
+        }
+        http.getMeetDeployUpdate(params).then(res => {
+          console.log(res)
+          this.getDeploy()
+        })
+      }
     }
   }
 </script>
+<style scoped>
+ .labelTit.el-form-item::before{
+    content: '*';
+    color: #F56C6C;
+    float: left;
+    margin-top: 10px;
+    margin-right: 4px;
+  }
+</style>
