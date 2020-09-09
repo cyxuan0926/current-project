@@ -181,7 +181,7 @@
           label="操作" 
           min-width="60"
         >
-        <!-- 是否具备高级审批功能：没有的话 按照原逻辑走；有的话 就要判断是什么审核人员 -->
+
           <template slot-scope="scope">
             <template v-if="!hasAllPrisonQueryAuth">
               <el-button
@@ -294,7 +294,6 @@
         </div>
       </template>
 
-      <!-- 审核纪录：初级审核人员 提交到二级审核人员 或者 高级审核人员审核初级审核人员的 -->
       <template v-if="isAdvancedAuditor && toAuthorize.changeList">
         <m-multistage-records :values="toAuthorize.changeList"/>
       </template>
