@@ -67,7 +67,7 @@
                     prev: {
                       attrs: {
                         prefixIcon: 'ower-cssName'
-                      } 
+                      }
                     }
                   }"
                   :disabled="!!config.queue.length"
@@ -80,7 +80,7 @@
                   v-if="config['showError'][o]"
                   class="error__tip">时间段区间小于通话时长</div>
               </div>
-          
+
               <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
                 <el-button
                   v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
@@ -701,7 +701,7 @@ export default {
         margin-bottom: 15px;
       }
     }
-    
+
   }
 }
 
