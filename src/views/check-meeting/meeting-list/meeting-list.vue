@@ -67,16 +67,17 @@
         <template
           slot-scope="scope"
           slot="operate">
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
           <el-button
-            v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth==true"
+            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
             size="mini"
             @click="handleAuthorization(scope.row)">授权</el-button>
           <el-button
-            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth==true"
+            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
           <el-button
-            v-if="scope.row.status != 'PENDING'"
+            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             type="text"
             size="mini"
             class="button-detail"
@@ -87,7 +88,8 @@
     <m-pagination
       ref="pagination"
       :total="meetings.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
     <el-dialog
       :visible.sync="show.agree"
       class="authorize-dialog"
@@ -142,8 +144,8 @@
       @close="closeAuthorize"
       title="授权"
       width="530px">
-      <template v-if="isAdvancedAuditor && toAuthorize.changeList">
-        <m-multistage-records :values="toAuthorize.changeList"/>
+      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
+        <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
 
       <div
@@ -620,7 +622,17 @@
           // }
         ],
         meetingAdjustment: {},
-        meetingAdjustmentCopy: {}
+        meetingAdjustmentCopy: {},
+
+        multistageExamineKeys: {
+          userName: 'operateName',
+
+          reamrks: 'remark',
+
+          createAt: 'operateTime',
+
+          status: 'status'
+        }
       }
     },
     computed: {

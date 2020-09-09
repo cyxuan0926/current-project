@@ -185,12 +185,11 @@
           <template slot-scope="scope">
             <template v-if="!hasAllPrisonQueryAuth">
               <el-button
-                v-if="scope.row.status == 'PENDING' && !scope.row.showDetail"
+                v-if="scope.row.status == 'PENDING' && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
                 size="mini"
                 @click="handleAuthorization(scope.row)">授权
               </el-button>
               <template v-if="scope.row.status == 'PASSED'">
-                <!--  v-if="!(scope.row.authorizeLevel === 2 && isAuditor) || isAdvancedAuditor" -->
                 <el-button
                   v-if="!!scope.row.canWithdraw"
                   size="mini"
@@ -516,7 +515,7 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -529,7 +528,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
-      withdrawOrAnthorinputReason,
+      registrationWithdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -586,10 +585,10 @@ export default {
         multistageExamine: false
       },
       withdrawForm: {
-        withdrawReason: withdrawOrAnthorinputReason
+        withdrawReason: registrationWithdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: withdrawOrAnthorinputReason
+        anotherRemarks: registrationWithdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -879,8 +878,8 @@ export default {
       this.show.authorize = false
       this.remarks = '身份信息错误'
       this.$set(this.multistageExamineForm, 'remarks', '')
-      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
-      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
+      this.withdrawForm.withdrawReason = this.registrationWithdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.registrationWithdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
       if (this.$refs.multistageExamineForm) this.$refs.multistageExamineForm.clearValidate()
