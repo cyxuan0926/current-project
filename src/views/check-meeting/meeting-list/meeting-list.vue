@@ -286,8 +286,8 @@
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
-              style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px">
-              <span class="family-name">拒绝原因</span>
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px">
+              <span class="family-name" style="line-height: 40px">拒绝原因</span>
 
               <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
             </p>
@@ -295,9 +295,18 @@
             <p
               v-if="item.remark && item.status=='CANCELED'"
               class="detail-message-family"
-              style="border-top:  1px solid #E4E7ED;border-bottom: none"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
             >
-              <span class="family-name">取消原因</span>
+              <span class="family-name"  style="line-height: 40px">取消原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+            <p
+              v-if="item.remark && item.status=='SUBMIT'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
+            >
+              <span class="family-name"  style="line-height: 40px">初审意见</span>
 
               <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
             </p>
@@ -323,7 +332,7 @@
                     <p
                       v-if="keys!=item.meetingCalls.length-1"
                       class="detail-message-family"
-                      :style="{height:val.itemHeigh+'px'}"
+                      :style="{height:parseInt( val.itemHeigh+1)+'px'}"
                     >
                       <span class="family-name">&nbsp;</span>
 
@@ -347,6 +356,7 @@
               <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
 
               <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+              <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
             </p>
           </div>
         </div>
