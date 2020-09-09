@@ -8,7 +8,7 @@ export default {
   // 信息管理员
   INFORMATION_ADMIN: 'information_admin',
 
-  // 审核人员
+  // 审核人员(初级)
   AUDITOR: 'auditor',
 
   // 狱警作品审核人员

@@ -1,17 +1,12 @@
 <template>
   <div class="face-recognition-configs">
     <div class="face-recognition-configs__main">
-      <m-form
-        class="cofigs__form"
-        ref="m_form"
-        :items="formItems"
-        :values="{}"
-        @submit="onUpdate"
-      >
-        <template #test>
+      <!-- <el-form class="cofigs__form" ref="m_form" :label-width="'120px'" :hide-required-asterisk="hideRequiredAsterisk">
+        <el-form-item class="threshold__configs" label="人脸识别阈值设置" prop="thresholdConfigs">
+          <template >
           <el-col :span="24">
-            <el-form-item label="IOS配置" prop="AFRIOSSetValue">
-              <el-select v-model="formData.AFRIOSSetValue" placeholder="请选择IOS阈值配置">
+            <el-form-item label="IOS配置" prop="afrIOSSetValue">
+              <el-select v-model="formData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
                 <el-option 
                   v-for="configs in faceRecognitionValues"
                   :key="configs"
@@ -22,8 +17,48 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="安卓配置" prop="AFRAndroidSetValue">
-              <el-select v-model="formData.AFRAndroidSetValue" placeholder="请选择安卓阈值配置">
+            <el-form-item label="安卓配置" prop="afrAndroidSetValue">
+              <el-select v-model="formData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
+                <el-option 
+                  v-for="configs in faceRecognitionValues"
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </template>
+        </el-form-item>
+        <el-form-item label="人脸检索间隔时间" prop="afrInterval">
+          <el-input placeholder="请输入人脸检索间隔时间" v-model="formData.afrInterval">
+            <template slot="append">秒</template>
+          </el-input>
+        </el-form-item>
+      </el-form> -->
+      <m-form
+        class="cofigs__form"
+        ref="m_form"
+        :items="formItems"
+        :values="values"
+        @submit="onUpdate"
+      >
+        <template #test>
+          <el-col :span="24">
+            <el-form-item label="IOS配置" prop="afrIOSSetValue">
+              <el-select v-model="formData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
+                <el-option 
+                  v-for="configs in faceRecognitionValues"
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="安卓配置" prop="afrAndroidSetValue">
+              <el-select v-model="formData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
                 <el-option 
                   v-for="configs in faceRecognitionValues"
                   :key="configs"
@@ -44,18 +79,22 @@ import { faceRecognitionValues } from '@/common/constants/const'
 
 import { mapActions, mapState } from 'vuex'
 
+import cloneDeep from 'lodash/cloneDeep'
+
 export default {
   data() {
     return {
       faceRecognitionValues,
 
       formData: {
-        AFRIOSSetValue: '0.2',
+        afrIOSSetValue: '0.2',
 
-        AFRAndroidSetValue: '0.4'
+        afrAndroidSetValue: '0.4'
       },
 
-      updateLoading: false
+      updateLoading: false,
+
+      values: {}
     }
   },
 
@@ -66,6 +105,7 @@ export default {
       return {
         formConfigs: {
           labelWidth: '120px',
+
           hideRequiredAsterisk: true
         },
 
@@ -79,12 +119,14 @@ export default {
           }
         },
 
-        AFRInterval: {
+        afrInterval: {
           label: '人脸检索间隔时间',
 
           type: 'input',
 
           rules: ['required', 'isPositiveIntegers'],
+
+          append: '秒',
 
           value: '60'
         },
@@ -104,21 +146,36 @@ export default {
 
     // 更新
     async onUpdate(params) {
-      console.log(params, this.formData)
-      // this.updateLoading = true
+      this.updateLoading = true
 
-      // await this.updateFaceRecognitionConfigs()
+      this.values = { ...params }
 
-      // this.updateLoading = false
+      await this.updateFaceRecognitionConfigs({ ...params, ...this.formData })
+
+      this.updateLoading = false
     }
   },
 
-  created() {
-    const { AFRIOSSetValue, AFRAndroidSetValue } = this.faceRecognitionConfigs
+  watch: {
+    faceRecognitionConfigs: {
+      handler: function(val) {
+        const {
+          afrIOSSetValue,
+          afrAndroidSetValue,
+          afrInterval
+        } = val
 
-    this.$set(this.formData, 'AFRAndroidSetValue', AFRAndroidSetValue)
+        this.$set(this.formData, 'afrAndroidSetValue', afrAndroidSetValue)
 
-    this.$set(this.formData, 'AFRIOSSetValue', AFRIOSSetValue)
+        this.$set(this.formData, 'afrIOSSetValue', afrIOSSetValue)
+
+        this.values = cloneDeep(val)
+      },
+
+      immediate: true,
+
+      deep: true
+    }
   }
 }
 </script>

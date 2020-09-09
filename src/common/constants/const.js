@@ -12,3 +12,38 @@ export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明�
 
 // 人脸识别阈值范围
 export const faceRecognitionValues = [ '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1' ]
+
+// 多级审批管理菜单名称/路由
+export const multistageExamineDropdownItems = [
+  {
+    menuName: '家属注册管理',
+
+    path: { path: '/registration/list' },
+
+    paramsKey: 'regTotal'
+  },
+
+  {
+    menuName: '外交领事官员注册管理',
+
+    path: { path: '/diplomatic-consul-official/list' },
+
+    paramsKey: 'regDiplomatsTotal'
+  },
+
+  {
+    menuName: '可视电话申请列表',
+
+    path: { path: '/meeting/list' },
+
+    paramsKey: 'meetingTotal'
+  },
+
+  {
+    menuName: '外交领事官员可视电话申请列表',
+
+    path: { path: '/meeting/diplomatist' },
+
+    paramsKey: 'meetingDiplomatsTotal'
+  }
+]

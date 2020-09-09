@@ -58,9 +58,9 @@ export default {
   // 获取人脸识别配置
   getFaceRecognitionConfigs: async({ commit }, params) => {
     try {
-      await http.getFaceRecognitionConfigs(params)
+      const { data } = await http.getFaceRecognitionConfigs(params)
 
-      commit('setFaceRecognitionConfigs', {})
+      commit('setFaceRecognitionConfigs', data)
 
       return true
     }

@@ -9,11 +9,11 @@ let state = {
 
   // 人脸识别配置
   faceRecognitionConfigs: {
-    AFRIOSSetValue: '0.2',
+    afrIOSSetValue: '0.2',
 
-    AFRAndroidSetValue: '0.4',
+    afrAndroidSetValue: '0.4',
 
-    AFRInterval: '60'
+    afrInterval: '60'
   }
 }
 

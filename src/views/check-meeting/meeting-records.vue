@@ -94,15 +94,18 @@ export default {
       const jailerFamilyFreeMeetingsTableCols = [
         {
           label: '家属姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          showOverflowTooltip: true
         },
         {
           label: '警员姓名',
-          prop: 'policeName'
+          prop: 'policeName',
+          showOverflowTooltip: true
         },
         {
           label: '警员编号',
-          prop: 'policeNumber'
+          prop: 'policeNumber',
+          showOverflowTooltip: true
         },
         {
           label: '通话时间',
@@ -120,25 +123,30 @@ export default {
         },
         {
           label: '家属所在省',
-          prop: 'province'
+          prop: 'province',
+          showOverflowTooltip: true
         },
         {
           label: '家属所在市',
-          prop: 'city'
+          prop: 'city',
+          showOverflowTooltip: true
         }
       ]
       const familyFreeMeetingstableCols = [
         {
           label: '家属姓名',
-          prop: 'name'
+          prop: 'name',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
+          showOverflowTooltip: true,
           minWidth: 92
         },
         {
@@ -150,7 +158,8 @@ export default {
         {
           label: '监区',
           prop: 'prisonArea',
-          minWidth: 92
+          minWidth: 92,
+          showOverflowTooltip: true
         },
         {
           label: '通话时长',
@@ -164,11 +173,13 @@ export default {
         },
         {
           label: '家属所在省',
-          prop: 'province'
+          prop: 'province',
+          showOverflowTooltip: true
         },
         {
           label: '家属所在市',
-          prop: 'city'
+          prop: 'city',
+          showOverflowTooltip: true
         }
       ]
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingstableCols

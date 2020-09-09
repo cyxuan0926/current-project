@@ -1,3 +1,5 @@
 export default {
-  pageData: { content: [], totalCount: 0 }
+  pageData: { content: [], totalCount: 0 },
+
+  isSuccessDiplomaticFirstLevelAuthorize: false
 }

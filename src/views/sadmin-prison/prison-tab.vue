@@ -146,7 +146,9 @@ export default {
       }
       // 人脸识别配置
       else {
-        // this.getFaceRecognitionConfigs()
+        (async () => {
+          await this.getFaceRecognitionConfigs()
+        })()
       }
     },
 

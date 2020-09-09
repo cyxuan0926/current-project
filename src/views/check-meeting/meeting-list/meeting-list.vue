@@ -131,7 +131,7 @@
 
         </el-table>
       </div>
-      <span   v-if="show.agree" slot="footer" class="dialog-footer">
+      <span v-if="show.agree" slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
@@ -143,10 +143,24 @@
       title="授权"
       width="530px">
       <div
-        v-if="!show.agree && !show.disagree"
+        v-if="!show.agree && !show.disagree && !show.multistageExamine"
         class="button-box">
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
+      
+      <div v-if="show.multistageExamine" class="button-box more-button__box">
+        <div style="margin-bottom: 10px;">初审意见：</div>
+
+        <m-form
+          class="multistage_examine-form"
+          ref="multistage_examine-form"
+          :items="localFirstLevelExamineFormItems"
+          @submit="onMultistageExamineCheck"
+        />
+
+        <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
+      </div>
+
       <div
         v-if="show.disagree"
         class="button-box">
@@ -163,7 +177,8 @@
           class="withdraw-box"
           ref="refuseForm"
           :items="localAuthorizeFormItems"
-          @submit="onAuthorization('DENIED', $event)" />
+          @submit="onAuthorization('DENIED', $event)"
+        />
         <repetition-el-buttons :buttonItems="showDisagreebuttons" />
       </div>
     </el-dialog>
@@ -516,7 +531,8 @@
           detail: false,
           dialog:false,
           meetingQueue:false,
-          familiesDetialInform: false
+          familiesDetialInform: false,
+          multistageExamine: false
         },
         operateQueryAuth:false,
         toAuthorize: {},
@@ -590,16 +606,25 @@
           // }
         ],
         meetingAdjustment: {},
-        meetingAdjustmentCopy: {},
+        meetingAdjustmentCopy: {}
       }
     },
     computed: {
       ...mapState([
         'meetings',
         'frontRemarks',
-        'meetingRefresh'
+        'meetingRefresh',
+        'isSuccessFirstLevelSubmitMeeting'
       ]),
 
+      localFirstLevelExamineFormItems() {
+        const { remarks } = this.firstLevelExamineFormItems
+
+        return {
+          remark: remarks
+        }
+      },
+  
       // excel的参数 需要添加当前标签页的label
       excelFilter() {
         const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
@@ -823,7 +848,7 @@
         'withdrawMeeting',
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
-
+        'firstLevelAuthorize'
       ]),
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
@@ -909,12 +934,28 @@
         }
         this.$refs.pagination.handleCurrentChange(1)
       },
-      handleAuthorization(e) {
-        this.toAuthorize = e
+
+      // 获取数据
+      async onGetDetailAndInitData(meetingId) {
+        // 这个地方到底用哪个详情接口
+        const res = await this.getMeettingsDetail({ meetingId })
+
+        if (!res) return
+
+        return res
+      },
+
+      async handleAuthorization(e) {
+        const { id } = e
+
+        // 这个地方到底用哪个详情接口
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+
         this.show.agree = false
         this.show.disagree = false
-        this.submitSuccessParams=null
-        http.getMeetTimeConfig({id:this.toAuthorize.id}).then(res=>{
+        this.show.multistageExamine = false
+        this.submitSuccessParams = null
+        http.getMeetTimeConfig({ id }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
           this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
@@ -922,8 +963,12 @@
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
         })
       },
-      handleWithdraw(e) {
-        this.toAuthorize = e
+
+      async handleWithdraw(e) {
+        const { id } = e
+
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+
         this.show.withdraw = true
       },
       onDetail(e) {
@@ -971,7 +1016,7 @@
         this.getMeettingsDetail(params).then(res => {
           if (!res) return
           this.toShow = Object.assign({}, res)
-          this.show.dialog=true
+          this.show.dialog = true
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
             : constFamilyShows
@@ -1019,12 +1064,59 @@
       },
       //覆盖mixin 授权对话框同意情况下的返回操作
       onAgreeAuthorizeGoBack() {
-        this.show.agree=false
+        this.show.agree = false
       },
       //覆盖mixin 授权对话框不同意情况下的返回操作
       onDisagreeAuthorizeGoBack() {
         this.closeAuthorize('back')
       },
+
+      // 覆盖mixin 高级审批提交情况下的提交操作
+      onMultistageExamineGoSubmit() {
+        this.show.multistageExamine = true
+
+        this.buttonLoading = false
+      },
+
+      // 覆盖mixin 高级审批提交情况下的返回操作
+      onMultistageExamineGoBack() {
+        this.show.multistageExamine = false
+
+        this.$refs['multistage_examine-form'].handleResetField()
+      },
+
+      // 覆盖mixin 高级审批提交情况下的确认操作
+      onMultistageExamineSubmit() {
+        this.$refs['multistage_examine-form'].onSubmit()
+      },
+
+      async onMultistageExamineCheck(params) {
+        const { id } = this.toAuthorize
+
+        const { remark } = params
+
+        this.buttonLoading = true
+
+        await this.firstLevelAuthorize({
+          params: {
+            meetingId: id,
+            remark
+          },
+
+          url: '/meetings/submitMeeting',
+
+          mutationName: 'setIsSuccessFirstLevelSubmitMeeting'
+        })
+
+        this.buttonLoading = false
+
+        if (this.isSuccessFirstLevelSubmitMeeting) {
+          this.closeAuthorize()
+          this.toAuthorize = {}
+          this.getDatas('handleSubmit')
+        }
+      },
+
         // 比较时间大小
       compareDate(date1,date2) {
         let oDate1 = new Date(date1);
@@ -1035,7 +1127,7 @@
           return false; //第二个大
         }
       },
-        onAuthorization(e, args) {
+      onAuthorization(e, args) {
         let params = { id: this.toAuthorize.id, status: e }
         if (e === 'DENIED') {
           if (this.remarks === '其他') {
@@ -1244,7 +1336,11 @@
       border-bottom: 1px solid #f4f4f4 !important;
   .button-box
     >>> .el-button
-      width: 24% !important;
+      width: 23% !important;
       &:first-of-type
         margin-left: 0px !important;
+  .more-button__box
+    >>> .el-button
+      &:first-of-type
+        width: 31% !important;
 </style>

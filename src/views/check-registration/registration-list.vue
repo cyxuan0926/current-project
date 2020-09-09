@@ -181,25 +181,30 @@
           label="操作" 
           min-width="60"
         >
+        <!-- 是否具备高级审批功能：没有的话 按照原逻辑走；有的话 就要判断是什么审核人员 -->
           <template slot-scope="scope">
-            <el-button
-              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PENDING'"
-              size="mini"
-              @click="handleAuthorization(scope.row)">授权
-            </el-button>
-            <template v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PASSED'">
+            <template v-if="!hasAllPrisonQueryAuth">
               <el-button
+                v-if="scope.row.status == 'PENDING' && !scope.row.showDetail"
                 size="mini"
-                @click="handleCallback(scope.row)">撤回</el-button>
+                @click="handleAuthorization(scope.row)">授权
+              </el-button>
+              <template v-if="scope.row.status == 'PASSED'">
+                <!--  v-if="!(scope.row.authorizeLevel === 2 && isAuditor) || isAdvancedAuditor" -->
+                <el-button
+                  v-if="!!scope.row.canWithdraw"
+                  size="mini"
+                  @click="handleCallback(scope.row)">撤回</el-button>
+                <el-button
+                  size="mini"
+                  @click="onDownload(scope.row)">下载</el-button>
+              </template>
               <el-button
+                v-if="!!scope.row.showDetail"
                 size="mini"
-                @click="onDownload(scope.row)">下载</el-button>
+                @click="handleAuthorDetail(scope.row.id)">详情
+              </el-button>
             </template>
-            <el-button
-              v-if="!hasAllPrisonQueryAuth && (scope.row.status == 'DENIED' || scope.row.status == 'WITHDRAW')"
-              size="mini"
-              @click="handleAuthorDetail(scope.row.id)">详情
-            </el-button>
             <!-- <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
@@ -221,7 +226,7 @@
       class="authorize-dialog"
       title="详情"
       @close="showDetail = false"
-      width="530px">
+    >
       <registration-detail :toAuthorize="authorizeDetData" />
       <div class="button-box view-box">
         <el-button
@@ -235,9 +240,12 @@
       class="authorize-dialog"
       :title="dialogTitle"
       @close="closeWithdraw"
-      width="530px">
+    >
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
-      <div class="img-box" :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}">
+      <div
+        class="img-box"
+        :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}"
+      >
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.idCardFront}]"
@@ -285,9 +293,42 @@
           />
         </div>
       </template>
+
+      <!-- 审核纪录：初级审核人员 提交到二级审核人员 或者 高级审核人员审核初级审核人员的 -->
+      <template v-if="isAdvancedAuditor">
+        <div style="margin-bottom: 10px;">审核纪录:</div>
+
+        <div class="multistage_examine-main">
+          <div class="multistage_examine-item">
+          <div class="family-detail">1</div>
+
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">审核人员账号</span>
+
+              <span class="family-nameDetail">9999_sh</span></p>
+            <p class="detail-message-family item-no-bottom">
+              <span class="family-name">审核意见</span>
+
+              <span class="family-nameDetail">一级审批</span></p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">审核时间</span>
+
+              <span class="family-nameDetail">2020-08-16 10:39:23</span></p>
+            <p class="detail-message-family item-no-bottom">
+              <span class="family-name">申请状态</span>
+
+              <span class="family-nameDetail">已提交二级审批</span></p>
+          </div>
+          </div>
+        </div>
+      </template>
       <template v-if="!hasAllPrisonQueryAuth">
         <div
-          v-if="!show.agree && !show.disagree && !show.callback"
+          v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
           class="button-box">
           <el-button
             plain
@@ -295,11 +336,51 @@
           <el-button
             plain
             @click="show.disagree = true">不同意</el-button>
+          <!-- 这个监狱开启多级审批并且是初级审核人员 -->
+          <el-button
+            v-if="!isAdvancedAuditor && haveMultistageExamine"
+            plain
+            @click="show.multistageExamine = true">提交</el-button>
           <el-button
             type="danger"
             plain
             @click="show.authorize = false">关闭</el-button>
         </div>
+
+        <!-- 提交到二级审批 -->
+        <div v-if="show.multistageExamine" class="button-box multistage-examine_button_box">
+          <div style="margin-bottom: 10px;">初审意见：</div>
+
+          <el-form
+            :model="multistageExamineForm"
+            :rules="multistageExamineRule"
+            ref="multistageExamineForm"
+            class="withdraw-box"
+          >
+            <el-form-item prop="remarks">
+              <el-input
+                :autosize="{ minRows: 2 }"
+                type="textarea"
+                show-word-limit
+                maxlength="50"
+                placeholder="请输入初审意见"
+                v-model="multistageExamineForm.remarks"
+              />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorizeFirstLevel">确认提交二级审批吗？</el-button>
+          <el-button
+            plain
+            @click="onAuthorizeFirstLevelGoBack">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="onFirstLevelClose">关闭</el-button>
+        </div>
+
         <!-- 同意 -->
         <div
           v-if="show.agree"
@@ -310,12 +391,13 @@
             @click="onAuthorization('PASSED')">确定申请通过？</el-button>
           <el-button
             plain
-            @click="show.agree=false">返回</el-button>
+            @click="show.agree = false">返回</el-button>
           <el-button
             type="danger"
             plain
             @click="show.authorize = false">关闭</el-button>
         </div>
+
         <!-- 不同意 -->
         <div
           v-if="show.disagree"
@@ -341,7 +423,8 @@
                 show-word-limit
                 maxlength="200"
                 placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks" />
+                v-model="refuseForm.anotherRemarks"
+              />
             </el-form-item>
           </el-form>
           <el-button
@@ -462,6 +545,7 @@ import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
 import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+
 import moment from 'moment'
 
 export default {
@@ -526,7 +610,8 @@ export default {
         authorize: false,
         agree: false,
         disagree: false,
-        callback: false
+        callback: false,
+        multistageExamine: false
       },
       withdrawForm: {
         withdrawReason: withdrawOrAnthorinputReason
@@ -552,7 +637,21 @@ export default {
       btnDisable: false, // 按钮禁用与启用
       tabs: 'PENDING',
       notificationShow: false,
-      dialogTitle: ''
+      dialogTitle: '',
+
+      multistageExamineForm: {
+        remarks: ''
+      },
+
+      multistageExamineRule: {
+        remarks: [
+          {
+            required: true,
+
+            message: '请输入初审意见'
+          }
+        ]
+      }
     }
   },
   watch: {
@@ -592,8 +691,16 @@ export default {
     ...mapState([
       'registrations',
       'registRemarks',
-      'notification']),
-    ...mapGetters(['isInWhitelist']),
+      'notification',
+      'isSuccessFirstLevelAuthorize'
+    ]),
+
+    ...mapGetters([
+      'isInWhitelist',
+      'isAuditor',
+      'isAdvancedAuditor',
+      'haveMultistageExamine'
+    ]),
 
       relationalWidth() {
         const widthConstent = {
@@ -616,8 +723,30 @@ export default {
       'getRegistrationsAll',
       'authorizeRegistrations',
       'getNotification',
-      'getRegistrationNotificationDetail'
+      'getRegistrationNotificationDetail',
+      'firstLevelAuthorize'
     ]),
+
+    onAuthorizeFirstLevelGoBack() {
+      this.$refs['multistageExamineForm'].clearValidate()
+
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
+
+      this.show.multistageExamine = false
+    },
+
+    onFirstLevelClose() {
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
+
+      this.$refs['multistageExamineForm'].clearValidate()
+
+      this.show.authorize = false
+    },
+
     getDatas() {
       if (this.tabs !== 'first') {
         if (this.tabs !== 'DENIED,WITHDRAW' || !this.filter.status) {
@@ -637,15 +766,39 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    handleAuthorization(e) {
-      this.toAuthorize = e
+
+    // 获取家属注册详情信息
+    async onGetRegistrationDetail(id) {
+      let result = {}
+
+      let _authorizeDetData = await http.getRegistrationsDetail({ id })
+
+      if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+
+      return result
+    },
+
+    // 点击授权按钮
+     async handleAuthorization(e) {
+      const { id } = e
+
+      this.toAuthorize = await this.onGetRegistrationDetail(id)
+
       this.show.agree = false
+
       this.show.disagree = false
+
       this.show.callback = false
+
+      this.show.multistageExamine = false
+
       this.remarks = '身份信息错误'
+
       this.show.authorize = true
+
       this.dialogTitle = '授权'
     },
+
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
@@ -667,15 +820,46 @@ export default {
       }
       else this.handleSubmit(params)
     },
+
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
         this.btnDisable = false
-        if (res) {
-          this.closeWithdraw()
-          this.toAuthorize = {}
-          this.getDatas()
-        }
+        if (res) this.onCloseWithdrawDialog()
       })
+    },
+
+    onCloseWithdrawDialog() {
+      this.closeWithdraw()
+
+      this.toAuthorize = {}
+
+      this.getDatas()
+    },
+
+    // 提交到二级审批
+    async onAuthorizeFirstLevel() {
+      try {
+        const { id } = this.toAuthorize
+
+        const { remarks } = this.multistageExamineForm
+
+        await this.$refs.multistageExamineForm.validate() &&  (this.btnDisable = true) && await this.firstLevelAuthorize({
+          params: {
+            id,
+            remarks
+          },
+
+          url: '/registrations/firstLevelAuthorize',
+
+          mutationName: 'setIsSuccessFirstLevelAuthorize'
+        })
+
+        this.btnDisable = false
+
+        if (this.isSuccessFirstLevelAuthorize) this.onCloseWithdrawDialog()
+      } catch (err) {
+        Promise.reject(err)
+      }
     },
 
     set_relationalProofUrls(authorizeDetData) {
@@ -695,29 +879,41 @@ export default {
     },
 
     async handleAuthorDetail(id) {
-      let _authorizeDetData = await http.getRegistrationsDetail({ id })
-      if ( _authorizeDetData ) {
-        this.authorizeDetData = this.set_relationalProofUrls(_authorizeDetData)
-        this.showDetail = true
-      }
+      this.authorizeDetData = await this.onGetRegistrationDetail(id)
+
+      this.showDetail = true
     },
-    handleCallback(e) {
-      this.toAuthorize = e
+
+    // 点击撤回按钮
+    async handleCallback(e) {
+      const { id } = e
+
+      this.toAuthorize = await this.onGetRegistrationDetail(id)
+
       this.show.authorize = true
+
       this.show.agree = false
+
       this.show.disagree = false
+
       this.show.callback = true
+
       this.dialogTitle = '撤回'
+
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
+
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
+      this.$set(this.multistageExamineForm, 'remarks', '')
       this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
       this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+      if (this.$refs.multistageExamineForm) this.$refs.multistageExamineForm.clearValidate()
     },
+
     showSign(row) {
       const { status } = row
       if (status === 'PENDING') {
@@ -742,6 +938,7 @@ export default {
         })
       }
     },
+
     onView(e) {
       this.toAuthorize = e
       this.dialogTitle = '查看'
@@ -841,6 +1038,10 @@ export default {
   .el-button
     &:first-of-type
       margin-left: 0px !important;
+.multistage-examine_button_box
+  .el-button
+    &:first-of-type
+      width: 31% !important;
 .view-box
   display: flex;
   flex-direction: row-reverse;
@@ -853,4 +1054,64 @@ export default {
   display: flex;
   >>> .el-image
     height: auto;
+</style>
+
+<style lang="scss" scoped>
+ .family-detail{
+    display: flex;
+    width: 12%;
+    align-items:center;
+    justify-content: center;
+    border-right: 1px solid #E4E7ED
+  }
+
+  .detail-message {
+    width: 52%;
+  }
+
+  .detail-message-family{
+    display: flex;
+    line-height: 40px ;
+    font-size: 12px;
+    border-bottom: 1px solid #E4E7ED;
+    .family-name{
+      width: 83px;
+      background: #F5F7FA;
+      text-align: right;
+      padding-right: 10px;
+      border-right: 1px solid #E4E7ED;
+    }
+    .family-nameDetail{
+      flex: 1;
+      padding-left: 10px;
+      border-right: 1px solid #E4E7ED
+    }
+
+  }
+  .detail-content{
+    flex: 1;
+    line-height: 30px ;
+    font-size: 12px;
+    .family-name{
+      background: #F5F7FA;
+      padding-right: 10px;
+      text-align: right;
+      border-right: 1px solid #E4E7ED;
+    }
+  }
+.multistage_examine-main {
+  display: flex;
+  border: 1px solid #E4E7ED;
+  margin-bottom: 10px;
+
+  .multistage_examine-item {
+    display: flex;
+    width: 100%;
+    border-left: 1px solid #E4E7ED;
+  }
+
+  .item-no-bottom {
+    border-bottom: none;
+  }
+}
 </style>

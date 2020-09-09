@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import { toCurrencyString } from '@/utils/helper'
 import roles from '@/common/constants/roles'
 
@@ -74,9 +74,7 @@ export default {
       'meetingCostSaving',
       'provincesAll']),
 
-    isSuperAdmin() {
-      return this.$store.getters.role === roles.SUPER_ADMIN
-    },
+    ...mapGetters(['isSuperAdmin']),
 
     hasPrisonArea() {
       return this.$store.getters.hasPrisonArea

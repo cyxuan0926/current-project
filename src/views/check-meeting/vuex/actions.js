@@ -1,4 +1,5 @@
 import http from '@/service'
+
 import repeatAPI from '@/service/modules/repeat'
 
 export default {
@@ -249,6 +250,21 @@ export default {
     }
     catch (err) {
       throw err
+    }
+  },
+
+  async firstLevelSubmitMeeting({ commit }, params) {
+    try {
+      const { code } = await http.firstLevelSubmitMeeting(params)
+
+      const isSuccess = code === 200
+
+      commit('setIsSuccessFirstLevelSubmitMeeting', isSuccess)
+
+      return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
     }
   }
 }

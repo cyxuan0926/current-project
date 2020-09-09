@@ -121,11 +121,24 @@
 
       <template>
         <div
-          v-if="!show.agree && !show.disagree && !show.callback"
+          v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
           class="button-box">
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
       </template>
+
+      <div v-if="show.multistageExamine" class="button-box more-button__box">
+        <div style="margin-bottom: 10px;">初审意见：</div>
+
+        <m-form
+          class="multistage_examine-form"
+          ref="diplomatic-multistage_examine-form"
+          :items="firstLevelExamineFormItems"
+          @submit="onMultistageExamineCheck"
+        />
+
+        <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
+      </div>
 
       <template>
         <div
@@ -258,7 +271,9 @@ export default {
 
         disagree: false,
 
-        callback: false
+        callback: false,
+
+        multistageExamine: false
       },
 
       registrationInformationItems: [
@@ -325,7 +340,7 @@ export default {
   },
 
   computed: {
-    ...mapState('diplomaticConsulOfficial', ['pageData']),
+    ...mapState('diplomaticConsulOfficial', ['pageData', 'isSuccessDiplomaticFirstLevelAuthorize']),
 
     ...mapState([
       'registRemarks',
@@ -437,7 +452,7 @@ export default {
       'registrationAuthorize'
     ]),
 
-    ...mapActions(['getOrgName']),
+    ...mapActions(['getOrgName', 'firstLevelAuthorize']),
 
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
@@ -585,7 +600,53 @@ export default {
 
         this.getDatas()
       }
-    }
+    },
+
+    async onMultistageExamineCheck(params) {
+      const { id } = this.registrant
+
+        const { remarks } = params
+
+        this.buttonLoading = true
+
+        await this.firstLevelAuthorize({
+          params: {
+            id,
+            remarks
+          },
+
+          url: '/diplomats/registrations/firstLevelAuthorize',
+
+          mutationName: 'diplomaticConsulOfficial/setIsSuccessDiplomaticFirstLevelAuthorize'
+        })
+
+        this.buttonLoading = false
+
+        if (this.isSuccessDiplomaticFirstLevelAuthorize) {
+          this.onCloseAuthorize()
+
+          this.getDatas()
+        }
+    },
+
+    // 覆盖mixin 高级审批提交情况下的提交操作
+      onMultistageExamineGoSubmit() {
+        this.show.multistageExamine = true
+
+        this.buttonLoading = false
+      },
+
+      // 覆盖mixin 高级审批提交情况下的返回操作
+      onMultistageExamineGoBack() {
+        this.show.multistageExamine = false
+
+        this.$refs['diplomatic-multistage_examine-form'].handleResetField()
+      },
+
+      // 覆盖mixin 高级审批提交情况下的确认操作
+      onMultistageExamineSubmit() {
+        this.$refs['diplomatic-multistage_examine-form'].onSubmit()
+      },
   },
 
   async mounted() {
@@ -631,9 +692,16 @@ export default {
 }
 .button-box {
   /deep/ .el-button {
-    width: 24% !important;
+    width: 23% !important;
     &:first-of-type {
       margin-left: 0px !important;
+    }
+  }
+}
+.more-button__box {
+  /deep/ .el-button {
+    &:first-of-type {
+      width: 31% !important;
     }
   }
 }

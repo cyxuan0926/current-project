@@ -27,6 +27,11 @@ export default {
     return service.postObj('/registrations/getRelationshipFile', params, { responseType: 'blob' })
   },
 
+  // 家属注册管理-一级授权
+  authorizeFirstLevel: params => {
+    return service.post('/registrations/firstLevelAuthorize', params)
+  },
+
   // 家属会见申请-列表
   getMeetings: params => {
     return service.get('/meetings/page', params).then(res => res && res.data)
@@ -74,6 +79,12 @@ export default {
     // return service.post('/meetings/authorize',params).then(res => res && res.code === 200)
     return service.post('/meetings/authorize', params)
   },
+
+  //  可视电话申请-一级审批
+  firstLevelSubmitMeeting: params => {
+    return service.post('/meetings/submitMeeting', params)
+  },
+
   // 家属会见申请-获取会见信息
   getMeetingConfigs: params => {
     return service.get(`/meetings/adjustment?inputDate=${ params }`)

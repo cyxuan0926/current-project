@@ -179,12 +179,12 @@ export default {
 
   // 监狱管理-人脸识别配置-获取
   getFaceRecognitionConfigs: params => {
-    return service.get('', params)
+    return service.get('/dict', params)
   },
 
   // 监狱管理-人脸识别配置-更新
   updateFaceRecognitionConfigs: params => {
-    return service.postObj('', params)
+    return service.putObj('/dict', params)
   }
 }
 
