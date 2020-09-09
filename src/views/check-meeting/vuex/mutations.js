@@ -72,5 +72,9 @@ export default {
   },
   setMeetingTimes: (state, meetingTimes) => {
     state.meetingTimes = meetingTimes
+  },
+
+  setIsSuccessFirstLevelSubmitMeeting(state, isSuccessFirstLevelSubmitMeeting) {
+    state.isSuccessFirstLevelSubmitMeeting = isSuccessFirstLevelSubmitMeeting
   }
 }

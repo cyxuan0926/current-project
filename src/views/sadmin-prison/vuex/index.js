@@ -5,7 +5,16 @@ let state = {
   prisons: { contents: [], total: 0 },
   prison: { imageUrl: '', usual: [null], weekend: [null], special: [{ date: '', queue: [null] }] },
   tenants: { contents: [], total: 0 },
-  branchStatus: true
+  branchStatus: true,
+
+  // 人脸识别配置
+  faceRecognitionConfigs: {
+    afrIOSSetValue: '0.2',
+
+    afrAndroidSetValue: '0.4',
+
+    afrInterval: '60'
+  }
 }
 
 export default {

@@ -8,7 +8,7 @@ export default {
   // 信息管理员
   INFORMATION_ADMIN: 'information_admin',
 
-  // 审核人员
+  // 审核人员(初级)
   AUDITOR: 'auditor',
 
   // 狱警作品审核人员
@@ -18,5 +18,8 @@ export default {
   FAMILY_LITERATURE_AUDITOR: 'family_literature_auditor',
 
   // 监狱白名单
-  JAIL_WHITELIST: ['4411']
+  JAIL_WHITELIST: ['4411'],
+
+  // 高级审核人员
+  ADVANCED_AUDITOR: 'advanced_auditor'
 }

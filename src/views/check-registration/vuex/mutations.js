@@ -22,5 +22,9 @@ export default {
       return registration
     })
     state.registrations.total = params.total
+  },
+
+  setIsSuccessFirstLevelAuthorize(state, isSuccessFirstLevelAuthorize) {
+    state.isSuccessFirstLevelAuthorize = isSuccessFirstLevelAuthorize
   }
 }

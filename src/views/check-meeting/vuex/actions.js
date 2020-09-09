@@ -1,4 +1,5 @@
 import http from '@/service'
+
 import repeatAPI from '@/service/modules/repeat'
 
 export default {
@@ -70,6 +71,9 @@ export default {
   },
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)
+  },
+  getMeettingsChangelogDetail({ commit }, params) {
+    return http.getMeettingsChangelogDetail(params).then(res => res)
   },
   getMeettingsDetail({ commit }, params) {
     return http.getMeettingsDetail(params).then(res => res)

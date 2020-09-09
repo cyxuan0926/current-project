@@ -5,5 +5,9 @@ export default {
     state.pageData.content = registrations
 
     state.pageData.totalCount = total
+  },
+
+  setIsSuccessDiplomaticFirstLevelAuthorize: (state, isSuccessDiplomaticFirstLevelAuthorize) => {
+    state.isSuccessDiplomaticFirstLevelAuthorize = isSuccessDiplomaticFirstLevelAuthorize
   }
 }

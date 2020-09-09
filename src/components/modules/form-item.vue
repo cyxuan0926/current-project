@@ -145,6 +145,11 @@ export default {
     'radio-change-event': {
       type: Function,
       default: () => () => {}
+    },
+
+    'set-field-value': {
+      type: Function,
+      default: () => () => {}
     }
   },
   methods: {
