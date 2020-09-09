@@ -143,4 +143,16 @@ let switches = {
   ]
 }
 
+// 多级审批
+const multistageExamineRegistStatus = [
+  ...switches['registStatus'],
+
+  {
+    label: '已提交二级审批',
+    value: 'SUBMIT'
+  }
+]
+
+switches = { ...switches, multistageExamineRegistStatus }
+
 export default switches
