@@ -181,16 +181,15 @@
           label="操作" 
           min-width="60"
         >
-        <!-- 是否具备高级审批功能：没有的话 按照原逻辑走；有的话 就要判断是什么审核人员 -->
+
           <template slot-scope="scope">
             <template v-if="!hasAllPrisonQueryAuth">
               <el-button
-                v-if="scope.row.status == 'PENDING' && !scope.row.showDetail"
+                v-if="scope.row.status == 'PENDING' && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
                 size="mini"
                 @click="handleAuthorization(scope.row)">授权
               </el-button>
               <template v-if="scope.row.status == 'PASSED'">
-                <!--  v-if="!(scope.row.authorizeLevel === 2 && isAuditor) || isAdvancedAuditor" -->
                 <el-button
                   v-if="!!scope.row.canWithdraw"
                   size="mini"
@@ -294,7 +293,6 @@
         </div>
       </template>
 
-      <!-- 审核纪录：初级审核人员 提交到二级审核人员 或者 高级审核人员审核初级审核人员的 -->
       <template v-if="isAdvancedAuditor && toAuthorize.changeList">
         <m-multistage-records :values="toAuthorize.changeList"/>
       </template>
@@ -517,7 +515,7 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -530,7 +528,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
-      withdrawOrAnthorinputReason,
+      registrationWithdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -587,10 +585,10 @@ export default {
         multistageExamine: false
       },
       withdrawForm: {
-        withdrawReason: withdrawOrAnthorinputReason
+        withdrawReason: registrationWithdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: withdrawOrAnthorinputReason
+        anotherRemarks: registrationWithdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -880,8 +878,8 @@ export default {
       this.show.authorize = false
       this.remarks = '身份信息错误'
       this.$set(this.multistageExamineForm, 'remarks', '')
-      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
-      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
+      this.withdrawForm.withdrawReason = this.registrationWithdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.registrationWithdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
       if (this.$refs.multistageExamineForm) this.$refs.multistageExamineForm.clearValidate()
@@ -1027,98 +1025,4 @@ export default {
   display: flex;
   >>> .el-image
     height: auto;
-</style>
-
-<style lang="scss" scoped>
- .detail-index {
-    display: flex;
-    width: 12%;
-    align-items:center;
-    justify-content: center;
-    border-right: 1px solid #E4E7ED
-  }
-
-  .detail-message {
-    width: 52%;
-  }
-
-  .detail-message-family{
-    display: flex;
-    font-size: 12px;
-    border-bottom: 1px solid #E4E7ED;
-    .family-name{
-      width: 83px;
-      background: #F5F7FA;
-      text-align: right;
-      padding-right: 10px;
-      border-right: 1px solid #E4E7ED;
-    }
-    .family-nameDetail{
-      flex: 1;
-      padding-left: 10px;
-      border-right: 1px solid #E4E7ED
-    }
-
-  }
-  .detail-content{
-    flex: 1;
-    font-size: 12px;
-    .family-name{
-      background: #F5F7FA;
-      padding-right: 10px;
-      text-align: right;
-      border-right: 1px solid #E4E7ED;
-    }
-  }
-.multistage_examine-main {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #E4E7ED;
-  margin-bottom: 10px;
-
-  .multistage_examine-item {
-    display: flex;
-    width: 100%;
-    border-left: 1px solid #E4E7ED;
-  }
-
-  .detail-content {
-    flex: 1;
-  }
-
-  .label {
-    background: #F5F7FA;
-
-    border-right: 1px solid #E4E7ED;
-  }
-
-  .item-no-bottom {
-    border-bottom: none;
-  }
-
-  span {
-    font-size: 12px;
-
-    padding: 10px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-  }
-
-  .time-status {
-    display: flex;
-
-    flex-direction: column;
-    .detail-status {
-      flex: 1;
-    }
-  }
-
-  .border-bottom {
-    border-bottom: 1px solid #E4E7ED;
-  }
-}
 </style>
