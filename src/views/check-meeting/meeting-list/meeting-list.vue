@@ -848,7 +848,8 @@
         'withdrawMeeting',
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
-        'firstLevelAuthorize'
+        'firstLevelAuthorize',
+        'getMeettingsChangelogDetail'
       ]),
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
@@ -937,7 +938,6 @@
 
       // 获取数据
       async onGetDetailAndInitData(meetingId) {
-        // 这个地方到底用哪个详情接口
         const res = await this.getMeettingsDetail({ meetingId })
 
         if (!res) return
@@ -948,7 +948,6 @@
       async handleAuthorization(e) {
         const { id } = e
 
-        // 这个地方到底用哪个详情接口
         this.toAuthorize = await this.onGetDetailAndInitData(id)
 
         this.show.agree = false
@@ -1013,7 +1012,7 @@
             }
           ],
           params = { meetingId: e.id }
-        this.getMeettingsDetail(params).then(res => {
+        this.getMeettingsChangelogDetail(params).then(res => {
           if (!res) return
           this.toShow = Object.assign({}, res)
           this.show.dialog = true

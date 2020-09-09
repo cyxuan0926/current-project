@@ -72,6 +72,9 @@ export default {
   getMeetingsFamilyDetail({ commit }, params) {
     return http.getMeetingsFamilyDetail(params).then(res => res)
   },
+  getMeettingsChangelogDetail({ commit }, params) {
+    return http.getMeettingsChangelogDetail(params).then(res => res)
+  },
   getMeettingsDetail({ commit }, params) {
     return http.getMeettingsDetail(params).then(res => res)
   },
@@ -250,21 +253,6 @@ export default {
     }
     catch (err) {
       throw err
-    }
-  },
-
-  async firstLevelSubmitMeeting({ commit }, params) {
-    try {
-      const { code } = await http.firstLevelSubmitMeeting(params)
-
-      const isSuccess = code === 200
-
-      commit('setIsSuccessFirstLevelSubmitMeeting', isSuccess)
-
-      return isSuccess
-    }
-    catch (err) {
-      Promise.reject(err)
     }
   }
 }

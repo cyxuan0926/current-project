@@ -127,7 +127,7 @@
         </div>
       </template>
 
-      <div v-if="show.multistageExamine" class="button-box more-button__box">
+      <!-- <div v-if="show.multistageExamine" class="button-box more-button__box">
         <div style="margin-bottom: 10px;">初审意见：</div>
 
         <m-form
@@ -138,7 +138,7 @@
         />
 
         <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
-      </div>
+      </div> -->
 
       <template>
         <div
@@ -555,7 +555,6 @@ export default {
     // 审批操作
     async onAuthorization(...args) {
       const [ filterParams, status ] = args
-      console.log(args)
 
       let params
 

@@ -304,7 +304,7 @@
 
           <div class="detail-content">
             <p class="detail-message-family">
-              <span class="family-name">审核人员账号</span>
+              <span class="family-name">审核员账号</span>
 
               <span class="family-nameDetail">9999_sh</span></p>
             <p class="detail-message-family item-no-bottom">

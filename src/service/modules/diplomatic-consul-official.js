@@ -10,9 +10,4 @@ export default {
   registrationAuthorize: params => {
     return post('/diplomats/registrations/authorize', params)
   }
-
-  // // 一级授权
-  // registrationFirstLevelAuthorize: params => {
-  //   return post('/diplomats/registrations/firstLevelAuthorize', params)
-  // }
 }
