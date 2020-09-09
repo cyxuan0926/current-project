@@ -142,6 +142,10 @@
       @close="closeAuthorize"
       title="授权"
       width="530px">
+      <template v-if="isAdvancedAuditor && toAuthorize.changeList">
+        <m-multistage-records :values="toAuthorize.changeList"/>
+      </template>
+
       <div
         v-if="!show.agree && !show.disagree && !show.multistageExamine"
         class="button-box">
