@@ -295,37 +295,10 @@
       </template>
 
       <!-- 审核纪录：初级审核人员 提交到二级审核人员 或者 高级审核人员审核初级审核人员的 -->
-      <template v-if="isAdvancedAuditor">
-        <div style="margin-bottom: 10px;">审核纪录:</div>
-
-        <div class="multistage_examine-main">
-          <div class="multistage_examine-item">
-          <div class="family-detail">1</div>
-
-          <div class="detail-content">
-            <p class="detail-message-family">
-              <span class="family-name">审核员账号</span>
-
-              <span class="family-nameDetail">9999_sh</span></p>
-            <p class="detail-message-family item-no-bottom">
-              <span class="family-name">审核意见</span>
-
-              <span class="family-nameDetail">一级审批</span></p>
-          </div>
-
-          <div class="detail-content">
-            <p class="detail-message-family">
-              <span class="family-name">审核时间</span>
-
-              <span class="family-nameDetail">2020-08-16 10:39:23</span></p>
-            <p class="detail-message-family item-no-bottom">
-              <span class="family-name">申请状态</span>
-
-              <span class="family-nameDetail">已提交二级审批</span></p>
-          </div>
-          </div>
-        </div>
+      <template v-if="isAdvancedAuditor && toAuthorize.changeList">
+        <m-multistage-records :values="toAuthorize.changeList"/>
       </template>
+
       <template v-if="!hasAllPrisonQueryAuth">
         <div
           v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
@@ -1057,7 +1030,7 @@ export default {
 </style>
 
 <style lang="scss" scoped>
- .family-detail{
+ .detail-index {
     display: flex;
     width: 12%;
     align-items:center;
@@ -1071,7 +1044,6 @@ export default {
 
   .detail-message-family{
     display: flex;
-    line-height: 40px ;
     font-size: 12px;
     border-bottom: 1px solid #E4E7ED;
     .family-name{
@@ -1090,7 +1062,6 @@ export default {
   }
   .detail-content{
     flex: 1;
-    line-height: 30px ;
     font-size: 12px;
     .family-name{
       background: #F5F7FA;
@@ -1101,6 +1072,7 @@ export default {
   }
 .multistage_examine-main {
   display: flex;
+  flex-direction: column;
   border: 1px solid #E4E7ED;
   margin-bottom: 10px;
 
@@ -1110,8 +1082,43 @@ export default {
     border-left: 1px solid #E4E7ED;
   }
 
+  .detail-content {
+    flex: 1;
+  }
+
+  .label {
+    background: #F5F7FA;
+
+    border-right: 1px solid #E4E7ED;
+  }
+
   .item-no-bottom {
     border-bottom: none;
+  }
+
+  span {
+    font-size: 12px;
+
+    padding: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+  }
+
+  .time-status {
+    display: flex;
+
+    flex-direction: column;
+    .detail-status {
+      flex: 1;
+    }
+  }
+
+  .border-bottom {
+    border-bottom: 1px solid #E4E7ED;
   }
 }
 </style>

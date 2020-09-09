@@ -686,6 +686,10 @@
               slotName: 'families',
               minWidth: 115
             },
+            // {
+            //   label: '家属电话',
+            //   prop: ''
+            // },
             {
               label: '申请状态',
               slotName: 'content',
