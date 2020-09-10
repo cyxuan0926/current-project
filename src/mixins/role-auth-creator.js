@@ -1,15 +1,10 @@
 
-import roles from '@/common/constants/roles'
+import { mapGetters } from 'vuex'
 
 export default {
 
   computed: {
-
-    // 租户管理员
-    isTenantAdmin() {
-      return this.$store.getters.role === roles.TENANT_ADMIN
-    }
-
+    ...mapGetters(['isTenantAdmin'])
   },
 
   methods: {

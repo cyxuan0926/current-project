@@ -61,3 +61,8 @@ export function verificateSecurityQuestionAnswers({ username, questionAnswers })
 export function modifyMyPasswordByToken({ token, newPassword }) {
   return put('/users/password/by-token', { token, newPassword })
 }
+
+// 获取用户信息
+export function getPublicUsers(params) {
+  return get('/users', params)
+}

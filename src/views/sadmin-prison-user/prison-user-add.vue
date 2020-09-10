@@ -69,6 +69,10 @@
       </el-form>
       <el-button
         class="submit"
+        @click="onGoBack"
+        >返回</el-button>
+        <el-button
+        class="submit"
         type="primary"
         @click="onSubmit"
         >新增</el-button>
@@ -129,11 +133,17 @@ export default {
           })
         }
       })
+    },
+
+    onGoBack() {
+      this.$router.back()
     }
   }
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
-
+<style lang="scss" scoped>
+.page-edit {
+  padding-top: 5%;
+}
 </style>

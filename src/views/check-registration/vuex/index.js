@@ -15,7 +15,9 @@ let state = {
     '与服刑人员关系不符',
     '身份证照片模糊',
     '其他'
-  ]
+  ],
+
+  isSuccessFirstLevelAuthorize: false
 }
 
 export default {

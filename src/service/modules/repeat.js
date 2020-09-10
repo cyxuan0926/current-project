@@ -82,5 +82,12 @@ export default {
   // 可视可视电话统计报表-导出excel
   exportMeetingStatistics: params => {
     return service.get('/download/province/export', params, { responseType: 'blob' })
+  },
+
+  // 初级授权
+  firstLevelAuthorize: inputs => {
+    const { url, params } = inputs
+
+    return service.post(url, params)
   }
 }

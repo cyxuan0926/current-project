@@ -70,9 +70,8 @@ export default {
       isCollapsed: state => state.layout.isCollapsed
     }),
     pienum(){
-      console.log(this.options.series)
       let arr=this.options.series[0].data
-      console.log(arr)
+
       return arr
     },
   },

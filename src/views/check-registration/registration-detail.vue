@@ -49,6 +49,12 @@
             />
             </div>
         </template>
+
+
+      <template v-if="toAuthorize.changeList">
+        <m-multistage-records :values="toAuthorize.changeList"/>
+      </template>
+
         <div style="margin-bottom: 10px;" v-if="toAuthorize.remarks">{{ toAuthorize.status === 'WITHDRAW' ? '撤回原因：' : '审核未通过原因：' }}</div>
         <div class="img-box">{{ toAuthorize.remarks }}</div>
         <div style="margin-bottom: 10px;" v-if="toAuthorize.status === 'WITHDRAW' || toAuthorize.status === 'DENIED'">{{ toAuthorize.status === 'WITHDRAW' ? '撤回' : '审核' }}时间：{{ toAuthorize.auditAt }}</div>

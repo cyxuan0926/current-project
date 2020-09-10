@@ -97,7 +97,8 @@ export const transitionRoleId = (val) => {
       { roleList: [3], role: '3' },
       { roleList: [4], role: '4' },
       { roleList: [5], role: '5' },
-      { roleList: [6], role: '6' }
+      { roleList: [6], role: '6' },
+      { roleList: [7], role: '7' }
     ], controlArg = true
   for (let value of val) {
     let { roleName } = value, roleId, isOwn = switches['role'].filter(roles => {
@@ -117,7 +118,7 @@ export const transitionRoleId = (val) => {
     else {
       controlArg = true
       for (let value of roles[index].roleList) {
-        if (arr.some((item, index) => value === item)) continue
+        if (arr.some(item => value === item)) continue
         else {
           controlArg = false
           break

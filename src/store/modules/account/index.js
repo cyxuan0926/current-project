@@ -1,6 +1,6 @@
 import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken } from '@/service-public/api/account'
+  modifyMyPasswordByToken, getPublicUsers } from '@/service-public/api/account'
 import { helper } from '@/utils'
 import jwtDecode from 'jwt-decode'
 
@@ -15,7 +15,10 @@ const state = {
   securityQuestions: [], // 所有的安全问题,
   passwordToken: (localStorage.getItem('passwordToken') && JSON.parse(localStorage.getItem('passwordToken'))) || '', // 安全问题密码重置的token
   findPasswordUsername: (localStorage.getItem('findPasswordUsername') && JSON.parse(localStorage.getItem('findPasswordUsername'))) || '', // 找回密码的用户名
-  isStep: (localStorage.getItem('isStep') && JSON.parse(localStorage.getItem('isStep'))) || 0 // 找回密码当前的步数 0表示别的页面 1 第一页 2 第二页 3 第三页
+  isStep: (localStorage.getItem('isStep') && JSON.parse(localStorage.getItem('isStep'))) || 0, // 找回密码当前的步数 0表示别的页面 1 第一页 2 第二页 3 第三页
+
+  // 某个监狱是否配置了高级审核人员
+  isHaveAdvancedAuditor: false
 }
 
 const mutations = {
@@ -29,7 +32,12 @@ const mutations = {
   setSecurityQuestions: (state, securityQuestions) => { state.securityQuestions = securityQuestions },
   setPasswordToken: (state, passwordToken) => { state.passwordToken = passwordToken },
   setFindPasswordUsername: (state, findPasswordUsername) => { state.findPasswordUsername = findPasswordUsername },
-  setIsStep: (state, isStep) => { state.isStep = isStep }
+  setIsStep: (state, isStep) => { state.isStep = isStep },
+
+  // 设置是否配置了高级审批人员
+  setIsHaveAdvancedAuditor: (state, isHaveAdvancedAuditor) => {
+    state.isHaveAdvancedAuditor = isHaveAdvancedAuditor
+  }
 }
 
 const actions = {
@@ -184,6 +192,30 @@ const actions = {
     }
     catch (err) {
       throw err
+    }
+  },
+
+  // 查询某个监狱下面的是否含有特定角色用户并且用户是可用的
+  async judgeAssignUsers({ commit }, arg) {
+    try {
+      const { params, configs } = arg
+
+      const { userRoles, mutationName } = configs
+
+      const { content } = await getPublicUsers(params)
+
+      const isHaveAssignUsers = content.some(item => {
+        return item.status === 'ENABLED' && item.userRoles.some(user => {
+          return userRoles.includes(user.roleName)
+        })
+      })
+
+      commit(mutationName, isHaveAssignUsers)
+
+      return isHaveAssignUsers
+    }
+    catch (err) {
+      Promise.reject(err)
     }
   }
 }
