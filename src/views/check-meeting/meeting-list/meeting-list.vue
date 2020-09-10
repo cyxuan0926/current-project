@@ -92,6 +92,7 @@
       @onPageChange="getDatas"
     />
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
       @close="closeAuthorize"
@@ -144,6 +145,7 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="授权"
+      :close-on-click-modal="false"
       width="530px">
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
@@ -194,6 +196,7 @@
       @close="closeWithdraw"
       class="authorize-dialog"
       title="撤回"
+      :close-on-click-modal="false"
       width="530px">
       <m-form
         ref="dialogForm"

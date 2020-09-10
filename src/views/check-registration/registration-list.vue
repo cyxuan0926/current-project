@@ -239,6 +239,7 @@
       class="authorize-dialog"
       :title="dialogTitle"
       @close="closeWithdraw"
+      :close-on-click-modal="false"
     >
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
       <div
@@ -389,7 +390,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
-                :autosize="{ minRows: 4 }"
+                :autosize="{ minRows: 2 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -438,6 +439,7 @@
             </el-form-item>
           </el-form> -->
           <el-form
+            v-if="remarks === '其他'"
             :model="withdrawForm"
             :rules="withdrawRule"
             ref="withdrawForm"
@@ -781,7 +783,7 @@ export default {
           })
         }
         else params.remarks = this.remarks
-        if (e === 'WITHDRAW') {
+        if (e === 'WITHDRAW' && this.remarks === '其他') {
           this.$refs.withdrawForm.validate(valid => {
             if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
