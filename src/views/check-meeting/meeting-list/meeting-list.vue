@@ -12,8 +12,8 @@
         slot="append"
         path="/download/exportMettings"
         :filterParams="filterParams"
-        :params="excelFilter"
       />
+      <!-- :params="excelFilter" -->
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -653,16 +653,16 @@
       },
   
       // excel的参数 需要添加当前标签页的label
-      excelFilter() {
-        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+      // excelFilter() {
+      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
 
-        const TABName = tabItem[0]['label']
+      //   const TABName = tabItem[0]['label']
 
-        return {
-          ...this.filter,
-          TABName
-        }
-      },
+      //   return {
+      //     ...this.filter,
+      //     TABName
+      //   }
+      // },
 
       // 本地实例化的授权表单组件元素
       localAuthorizeFormItems() {
@@ -966,6 +966,10 @@
 
       filterParams () {
         //下载表格查询条件处理
+        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+
+        const TABName = tabItem[0]['label']
+
         this.$refs.search.onGetFilter()
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'
@@ -985,7 +989,10 @@
         //判断是不是超级管理员
          jailId == -1 ? jailId = '': jailId = jailId
         this.filter.jailId = jailId
-        return this.filter
+        return {
+          ...this.filter,
+          TABName
+        }
       },
 
       // 获取数据
