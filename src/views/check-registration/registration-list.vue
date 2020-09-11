@@ -508,7 +508,12 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters,
+  mapMutations
+} from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
@@ -700,6 +705,8 @@ export default {
       'firstLevelAuthorize'
     ]),
 
+    ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
     onAuthorizeFirstLevelGoBack() {
       this.$refs['multistageExamineForm'].clearValidate()
 
@@ -797,7 +804,10 @@ export default {
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
         this.btnDisable = false
-        if (res) this.onCloseWithdrawDialog()
+        if (res) {
+          this.onCloseWithdrawDialog()
+          this.setIsRefreshMultistageExamineMessageBell(true)
+        }
       })
     },
 
@@ -892,7 +902,6 @@ export default {
       if (status === 'PENDING') {
         const { id } = row
         this.getRegistrationNotificationDetail({ id }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
@@ -907,7 +916,6 @@ export default {
           id: notifyId,
           rid: id
         }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })

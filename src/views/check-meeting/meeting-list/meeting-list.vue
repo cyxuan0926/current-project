@@ -426,7 +426,11 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
+  import {
+    mapActions,
+    mapState,
+    mapMutations
+  } from 'vuex'
   import validator, { helper } from '@/utils'
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
   import prisons from '@/common/constants/prisons'
@@ -883,6 +887,9 @@
         'firstLevelAuthorize',
         'getMeettingsChangelogDetail'
       ]),
+
+      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -1120,9 +1127,9 @@
         this.buttonLoading = false
       },
       //覆盖mixin 授权对话框同意情况下的确认操作
-      onPassedAuthorize() {
-        this.onAuthorization('PASSED')
-      },
+      // onPassedAuthorize() {
+      //   this.onAuthorization('PASSED')
+      // },
       //覆盖mixin 授权对话框同意情况下的返回操作
       onAgreeAuthorizeGoBack() {
         this.show.agree = false
@@ -1205,6 +1212,7 @@
           this.buttonLoading = false
           if (!res) return
           this.closeAuthorize()
+          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1229,6 +1237,7 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
+            this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.show.agree = false;
             this.getDatas('handleSubmit')
