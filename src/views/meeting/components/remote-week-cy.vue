@@ -1,320 +1,161 @@
 <template>
-  <div class="container">
-    <div>
-      <el-form>
-        <el-form-item label="是否分生产区和监舍区">
-          <el-switch
-            v-model="prisonShow"
-            active-color="#13ce66">
-          </el-switch>
-        </el-form-item>
-      </el-form>
-    </div>
-
-     <remote-week-cy v-if="!prisonShow" />
-
-    <template v-if="prisonShow">
-      <div>
-        <el-form>
-          <el-form-item label="请选择生产区设备:" style="width:440px">
-            <div class="prisonlabel">
-              <el-button v-for="(item,index) in selectOption"
-                         :key=index size="mini"
-                         style="margin-left: 5px"
-                         @click="open(item)">{{item.selectArr}} <i class="el-icon-circle-close"/>
-              </el-button>
-
-            </div>
-            <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow()">选择设备</el-button>
-          </el-form-item>
-        </el-form>
-        <remote-week-cy v-if="prisonShow" />
-      </div>
-
-
-      <!--<div>-->
-      <!--<p>-->
-      <!--请选择监区设备: <label class="prisonlabel"> <span></span></label>-->
-      <!--<el-button type="primary">选择设备</el-button>-->
-      <!--</p>-->
-      <!--</div>-->
-
-
-    </template>
-
-
-    <!--<template v-if="!prisonShow" v-for="(configs, type) in allConfigs">-->
-      <!--<div-->
-        <!--v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"-->
-        <!--class="m-container"-->
-        <!--:key="type"-->
-      <!--&gt;-->
-
-        <!--<div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>-->
-        <!--<div-->
-          <!--v-for="(config, index) in configs"-->
-          <!--:key="index"-->
-          <!--class="config-box">-->
-          <!--<div class="day-box">-->
-            <!--<label class="c-label">选择工作日</label>-->
-            <!--&lt;!&ndash; 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 &ndash;&gt;-->
-            <!--<el-checkbox-group-->
-              <!--v-model="config.days"-->
-              <!--:disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)">-->
-              <!--<template v-for="(w, i) in week">-->
-                <!--<el-checkbox-->
-                  <!--:key="i"-->
-                  <!--v-if="showWeek(w, config, index, configs)"-->
-                  <!--:label="w.value">{{ w.label }}</el-checkbox>-->
-              <!--</template>-->
-            <!--</el-checkbox-group>-->
-            <!--<el-button-->
-              <!--type="primary"-->
-              <!--size="mini"-->
-              <!--v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-              <!--@click="handleConfig(index, type, configs)">配置时间段参数</el-button>-->
-            <!--<el-button-->
-              <!--plain-->
-              <!--type="danger"-->
-              <!--size="mini"-->
-              <!--v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-              <!--@click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>-->
-          <!--</div>-->
-
-          <!--<template v-if="config.timeperiodQueue.length">-->
-            <!--&lt;!&ndash; 通话时长/时间间隔 &ndash;&gt;-->
-
-            <!--<div v-if="!superAdmin" class="none_superAdmin">-->
-              <!--<label >通话时长</label>-->
-              <!--<span>{{ config.duration }} 分钟</span>-->
-            <!--</div>-->
-
-            <!--<m-form-->
-              <!--class="duration-interval-form"-->
-              <!--:items="durationIntervalItems[type][index]"-->
-              <!--:values="{ index: index, duration: config.duration, interval: config.interval, type: type }"-->
-              <!--@response="onResponse"-->
-              <!--:ref="`${type}form${index}`"-->
-            <!--/>-->
-
-            <!--<div-->
-              <!--class="timeperiod"-->
-              <!--v-for="(queue, o) in config.timeperiodQueue"-->
-              <!--:key="o"-->
-            <!--&gt;-->
-              <!--<label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>-->
-
-              <!--<div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">-->
-                <!--<m-time-range-selector-->
-                  <!--:val="queue"-->
-                  <!--:configs="{-->
-                    <!--prev: {-->
-                      <!--attrs: {-->
-                        <!--prefixIcon: 'ower-cssName'-->
-                      <!--}-->
-                    <!--}-->
-                  <!--}"-->
-                  <!--:disabled="!!config.queue.length"-->
-                  <!--:prev="config.timeperiodQueue[o - 1]"-->
-                  <!--:next="config.timeperiodQueue[o + 1]"-->
-                  <!--type="queue"-->
-                  <!--@handleBlur="handleBlur($event, config.timeperiodQueue, index)"-->
-                <!--/>-->
-                <!--<div-->
-                  <!--v-if="config['showError'][o]"-->
-                  <!--class="error__tip">时间段区间小于通话时长</div>-->
-              <!--</div>-->
-
-              <!--<template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">-->
-                <!--<el-button-->
-                  <!--v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"-->
-                  <!--type="primary"-->
-                  <!--size="mini"-->
-                  <!--style="margin-right: 10px;"-->
-                  <!--@click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index, type)">新增时间段</el-button>-->
-                <!--<el-button-->
-                  <!--type="primary"-->
-                  <!--size="mini"-->
-                  <!--@click="onFigureOut(config, index, type)">生成通话时间段</el-button>-->
-                <!--<el-button-->
-                  <!--v-if="config.timeperiodQueue.length > 1"-->
-                  <!--size="mini"-->
-                  <!--type="danger"-->
-                  <!--@click="onDelTimePriod(config)">删除时间段</el-button>-->
-              <!--</template>-->
-            <!--</div>-->
-
-            <!--&lt;!&ndash; 当有配置时间队列并且flag &ndash;&gt;-->
-            <!--<div-->
-              <!--v-if="config.queue.length && flag"-->
-              <!--style="overflow: hidden; margin-bottom: 10px;"-->
-            <!--&gt;-->
-              <!--<label class="c-label">时间段分配</label>-->
-              <!--<div-->
-                <!--style="float: left; width: calc(100% - 80px); overflow: hidden;">-->
-                <!--&lt;!&ndash; 时间范围选择器 &ndash;&gt;-->
-                <!--<m-time-range-selector-->
-                  <!--v-for="(queue, o) in config.queue"-->
-                  <!--:key="o"-->
-                  <!--:val="queue"-->
-                  <!--:disabled="true"-->
-                  <!--:prev="config.queue[o - 1]"-->
-                  <!--:next="config.queue[o + 1]"-->
-                  <!--type="queue"-->
-                <!--/>-->
-                <!--&lt;!&ndash;配置的时间段的最后一个时间段的结束时间是不是23:59并且是国科服务管理员角色&ndash;&gt;-->
-                <!--&lt;!&ndash; <el-button-->
-                        <!--v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"-->
-                        <!--type="primary"-->
-                        <!--size="mini"-->
-                        <!--class="button-float"-->
-                        <!--style="margin-right: 10px;"-->
-                        <!--@click="onAddRange(config.queue)">新增会见时间段</el-button> &ndash;&gt;-->
-                <!--&lt;!&ndash; 国科服务管理员角色 &ndash;&gt;-->
-                <!--<el-button-->
-                  <!--v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"-->
-                  <!--size="mini"-->
-                  <!--class="button-float"-->
-                  <!--:style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"-->
-                  <!--@click="onRestQueue(config)">重置时间段</el-button>-->
-                <!--&lt;!&ndash; 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 &ndash;&gt;-->
-                <!--<el-button-->
-                  <!--v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-                  <!--size="mini"-->
-                  <!--type="success"-->
-                  <!--class="button-float"-->
-                  <!--@click="onAddDay(type)">新增工作日</el-button>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</template>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</template>-->
-
-
-
-    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
-      <label
-        class="c-label"
-        style="line-height: 35px"
-      >生效日期</label>
-
-      <el-date-picker
-        v-model="computedEffectiveDate"
-        :picker-options="pickerOptions"
-        type="date"
-        :clearable="false"
-        :value-format="'yyyy-MM-dd'"
-        placeholder="选择日期">
-      </el-date-picker>
-    </div>
-    <div class="button-box">
-      <el-button
-        v-if="superAdmin"
-        size="small"
-        @click="onGoBack">返回</el-button>
-      <el-button
-        v-if="!updateShow && permission === 'edit'"
-        size="small"
-        type="primary"
-        @click="onUpdate">更新</el-button>
-    </div>
-    <el-dialog
-      class="authorize-dialog"
-      :visible.sync="visible"
-      width="45%"
-      @close="onClose"
+  <label>
+    <span  v-for="(configs, type) in allConfigs">
+    <div
+      v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
+      class="m-container"
+      :key="type"
     >
-      <span
-        slot="title"
-        style="display: block; text-align: center; font-weight: bold;font-size: 14px">提示</span>
-      <div>修改常规配置后，如有家属已预约，将重新分配相关可视电话时间段，调整后会以短信形式通知相关家属。若预约日期无法在当日分配时间段，系统将自动取消该家属申请，并以短信形式通知相关家属！请确认是否继续操作！</div>
-      <div
-        slot="footer"
-        class="button-box"
-        style="padding-bottom: 0;">
-        <el-button
-          type="default"
-          size="mini"
-          @click="onClose">取消</el-button>
-        <el-button
-          type="primary"
-          size="mini"
-          :loading="loading"
-          @click="onSubmit">确定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="prisonDetil"
-      class="authorize-dialog"
-      @close=""
-      title="请选择设备"
-      width="900px">
-      <div
-        class="button-box">
-        <el-table
-          ref="multipleTable"
-          :data="tableData"
-          tooltip-effect="dark"
-          style="width: 100%"
-          max-height="300px"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-            label="终端号"
-            prop="terminalNumber">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="终端别名"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="prisonArea"
-            label="监区">
-          </el-table-column>
-          <el-table-column
-            prop="name1"
-            label="分监区">
-          </el-table-column>
-          <el-table-column
-            prop="name2"
-            label="楼栋">
-          </el-table-column>
-          <el-table-column
-            prop="name3"
-            label="楼层">
-          </el-table-column>
-        </el-table>
 
+      <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>
+      <div
+        v-for="(config, index) in configs"
+        :key="index"
+        class="config-box">
+        <div class="day-box">
+          <label class="c-label">选择工作日</label>
+          <!-- 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 -->
+          <el-checkbox-group
+            v-model="config.days"
+            :disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)">
+            <template v-for="(w, i) in week">
+              <el-checkbox
+                :key="i"
+                v-if="showWeek(w, config, index, configs)"
+                :label="w.value">{{ w.label }}</el-checkbox>
+            </template>
+          </el-checkbox-group>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+            @click="handleConfig(index, type, configs)">配置时间段参数</el-button>
+          <el-button
+            plain
+            type="danger"
+            size="mini"
+            v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+            @click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>
+        </div>
+
+        <template v-if="config.timeperiodQueue.length">
+          <!-- 通话时长/时间间隔 -->
+
+          <div v-if="!superAdmin" class="none_superAdmin">
+            <label >通话时长</label>
+            <span>{{ config.duration }} 分钟</span>
+          </div>
+
+          <m-form
+            class="duration-interval-form"
+            :items="durationIntervalItems[type][index]"
+            :values="{ index: index, duration: config.duration, interval: config.interval, type: type }"
+            @response="onResponse"
+            :ref="`${type}form${index}`"
+          />
+
+          <div
+            class="timeperiod"
+            v-for="(queue, o) in config.timeperiodQueue"
+            :key="o"
+          >
+            <label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>
+
+            <div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">
+              <m-time-range-selector
+                :val="queue"
+                :configs="{
+                    prev: {
+                      attrs: {
+                        prefixIcon: 'ower-cssName'
+                      }
+                    }
+                  }"
+                :disabled="!!config.queue.length"
+                :prev="config.timeperiodQueue[o - 1]"
+                :next="config.timeperiodQueue[o + 1]"
+                type="queue"
+                @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
+              />
+              <div
+                v-if="config['showError'][o]"
+                class="error__tip">时间段区间小于通话时长</div>
+            </div>
+
+            <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
+              <el-button
+                v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
+                type="primary"
+                size="mini"
+                style="margin-right: 10px;"
+                @click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index, type)">新增时间段</el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="onFigureOut(config, index, type)">生成通话时间段</el-button>
+              <el-button
+                v-if="config.timeperiodQueue.length > 1"
+                size="mini"
+                type="danger"
+                @click="onDelTimePriod(config)">删除时间段</el-button>
+            </template>
+          </div>
+
+          <!-- 当有配置时间队列并且flag -->
+          <div
+            v-if="config.queue.length && flag"
+            style="overflow: hidden; margin-bottom: 10px;"
+          >
+            <label class="c-label">时间段分配</label>
+            <div
+              style="float: left; width: calc(100% - 80px); overflow: hidden;">
+              <!-- 时间范围选择器 -->
+              <m-time-range-selector
+                v-for="(queue, o) in config.queue"
+                :key="o"
+                :val="queue"
+                :disabled="true"
+                :prev="config.queue[o - 1]"
+                :next="config.queue[o + 1]"
+                type="queue"
+              />
+              <!--配置的时间段的最后一个时间段的结束时间是不是23:59并且是国科服务管理员角色-->
+              <!-- <el-button
+                      v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
+                      type="primary"
+                      size="mini"
+                      class="button-float"
+                      style="margin-right: 10px;"
+                      @click="onAddRange(config.queue)">新增会见时间段</el-button> -->
+              <!-- 国科服务管理员角色 -->
+              <el-button
+                v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"
+                size="mini"
+                class="button-float"
+                :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+                @click="onRestQueue(config)">重置时间段</el-button>
+              <!-- 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 -->
+              <el-button
+                v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                size="mini"
+                type="success"
+                class="button-float"
+                @click="onAddDay(type)">新增工作日</el-button>
+            </div>
+          </div>
+        </template>
       </div>
-      <span   slot="footer" class="dialog-footer">
-          <el-button type="primary"  @click="setPrimary()" :disabled="false">确 定</el-button>
-          <el-button @click="prisonDetil=false">取 消</el-button>
-        </span>
-    </el-dialog>
-  </div>
+    </div>
+    </span>
+  </label>
 </template>
 <script>
   import { mapActions, mapState } from 'vuex'
-
   import normalMixins from '../mixins'
-
-  import Moment from 'moment'
-
-  import isEqual from 'lodash/isEqual'
-
-  import cloneDeep from 'lodash/cloneDeep'
-
   import { Message } from 'element-ui'
-  import remoteWeekCy from './remote-week-cy'
+  import cloneDeep from 'lodash/cloneDeep'
   export default {
-    components: {
-      remoteWeekCy
-    },
+
     mixins: [normalMixins],
     data() {
       const basicConfig = {
@@ -345,10 +186,7 @@
         queue: ['09:00', '10:00'],
         flag: true,
         // 确定更新按钮加载
-        prisonShow : false,
-        // 确定是否分生产区跟监舍区
-        prisonDetil : false,
-        // 确定是否分生产区跟监舍区
+        prisonShow : false,//$
         loading: false,
         permission: 'add',
         // 提示对话框显示属性
@@ -360,7 +198,7 @@
         filterDuration: [25, 25],
         // 即将生效的配置
         configsAfter: [basicConfig],
-        allConfigs: [],
+        allConfigs: [],//$
         basicConfig,
         effectiveDate: '',
         dateValue: '',
@@ -419,12 +257,12 @@
         return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length
       },
 
-      // 是否存在即将生效的配置
+      // 是否存在即将生效的配置 $$
       hasConfigAfter() {
         return this.allConfigs[1] && this.allConfigs[1].length && this.allConfigs[1][0].days.length && this.allConfigs[1][0].timeperiodQueue.length && this.allConfigs[1][0].queue.length
       },
 
-      // 原来是否用after
+      // 原来是否用after $$
       hasOriginConfigAfter() {
         return this.normalCongigs['configAfter'] && this.normalCongigs['configAfter'].length && this.normalCongigs['configAfter'][0].days.length && this.normalCongigs['configAfter'][0].timeperiodQueue.length && this.normalCongigs['configAfter'][0].queue.length
       },
@@ -467,7 +305,7 @@
         }
       },
 
-      // 通话时长和间隔时间
+      // 通话时长和间隔时间 $$
       durationIntervalItems() {
         const item = {
           formConfigs: {
@@ -558,7 +396,7 @@
         this.allConfigs[type][index].showError.push(false)
       },
 
-      // form组件数据
+      // form组件数据 $$
       onResponse(params) {
         const { index, duration, interval, type } = params
 
@@ -661,7 +499,7 @@
         })
       },
 
-      // 新增一个时间段 配置默认的会见时间段(update)
+      // 新增一个时间段 配置默认的会见时间段(update) $$
       handleConfig(index, type, configs) {
         const duration = this.filterDuration[type]
 
@@ -687,7 +525,7 @@
         })
       },
 
-      // 删除当前常规配置(update)
+      // 删除当前常规配置(update) $$
       handleDeleteConfig(params) {
         let { configs, index, type } = params
 
