@@ -58,6 +58,7 @@
         dialogVisible:false,
         params:false,
         autoAuthorizeMeeting: true,
+        multistageExamine:false
       }
     },
     computed: {
@@ -69,12 +70,13 @@
       getDeploy(){
         http.getMeetDeploy().then(res => {
           this.dialogVisible = false
-          this.autoAuthorizeMeeting=res.data?true:false
+          this.autoAuthorizeMeeting=res.data.autoAuthorizeMeeting?true:false
+          this.multistageExamine=res.data.multistageExamine?true:false
         })
       },
       submitTit(){
         //判断
-        if(this.autoAuthorizeMeeting==true){
+        if(this.autoAuthorizeMeeting==true&&this.multistageExamine==true){
           this.dialogVisible=true
         }else{
           this.submitDeploy()
