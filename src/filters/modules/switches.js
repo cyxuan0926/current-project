@@ -113,12 +113,16 @@ let switches = {
       value: 'PENDING'
     },
     {
-      label: '已通过',
-      value: 'PASSED'
+      label: '已拒绝',
+      value: 'DENIED'
     },
     {
       label: '已撤回',
-      value: 'DENIED'
+      value: 'WITHDRAW'
+    },
+    {
+      label: '已通过',
+      value: 'PASSED'
     }
   ],
   nationality: [
