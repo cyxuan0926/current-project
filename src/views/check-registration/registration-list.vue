@@ -181,25 +181,29 @@
           label="操作" 
           min-width="60"
         >
+
           <template slot-scope="scope">
-            <el-button
-              v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PENDING'"
-              size="mini"
-              @click="handleAuthorization(scope.row)">授权
-            </el-button>
-            <template v-if="!hasAllPrisonQueryAuth && scope.row.status == 'PASSED'">
+            <template v-if="!hasAllPrisonQueryAuth">
               <el-button
+                v-if="scope.row.status == 'PENDING' && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
                 size="mini"
-                @click="handleCallback(scope.row)">撤回</el-button>
+                @click="handleAuthorization(scope.row)">授权
+              </el-button>
+              <template v-if="scope.row.status == 'PASSED'">
+                <el-button
+                  v-if="!!scope.row.canWithdraw"
+                  size="mini"
+                  @click="handleCallback(scope.row)">撤回</el-button>
+                <el-button
+                  size="mini"
+                  @click="onDownload(scope.row)">下载</el-button>
+              </template>
               <el-button
+                v-if="!!scope.row.showDetail"
                 size="mini"
-                @click="onDownload(scope.row)">下载</el-button>
+                @click="handleAuthorDetail(scope.row.id)">详情
+              </el-button>
             </template>
-            <el-button
-              v-if="!hasAllPrisonQueryAuth && (scope.row.status == 'DENIED' || scope.row.status == 'WITHDRAW')"
-              size="mini"
-              @click="handleAuthorDetail(scope.row.id)">详情
-            </el-button>
             <!-- <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
@@ -221,8 +225,8 @@
       class="authorize-dialog"
       title="详情"
       @close="showDetail = false"
-      width="530px">
-      <registration-detail :toAuthorize="authorizeDetData" />
+    >
+      <registration-detail  :toAuthorize="authorizeDetData" />
       <div class="button-box view-box">
         <el-button
           type="danger"
@@ -235,9 +239,13 @@
       class="authorize-dialog"
       :title="dialogTitle"
       @close="closeWithdraw"
-      width="530px">
+      :close-on-click-modal="false"
+    >
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
-      <div class="img-box" :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}">
+      <div
+        class="img-box"
+        :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}"
+      >
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.idCardFront}]"
@@ -285,9 +293,14 @@
           />
         </div>
       </template>
+
+      <template v-if="isAdvancedAuditor && toAuthorize.changeList">
+        <m-multistage-records :values="toAuthorize.changeList"/>
+      </template>
+
       <template v-if="!hasAllPrisonQueryAuth">
         <div
-          v-if="!show.agree && !show.disagree && !show.callback"
+          v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
           class="button-box">
           <el-button
             plain
@@ -295,11 +308,51 @@
           <el-button
             plain
             @click="show.disagree = true">不同意</el-button>
+          <!-- 这个监狱开启多级审批并且是初级审核人员 -->
+          <el-button
+            v-if="!isAdvancedAuditor && haveMultistageExamine"
+            plain
+            @click="show.multistageExamine = true">提交</el-button>
           <el-button
             type="danger"
             plain
             @click="show.authorize = false">关闭</el-button>
         </div>
+
+        <!-- 提交到二级审批 -->
+        <div v-if="show.multistageExamine" class="button-box multistage-examine_button_box">
+          <div style="margin-bottom: 10px;">初审意见：</div>
+
+          <el-form
+            :model="multistageExamineForm"
+            :rules="multistageExamineRule"
+            ref="multistageExamineForm"
+            class="withdraw-box"
+          >
+            <el-form-item prop="remarks">
+              <el-input
+                :autosize="{ minRows: 2 }"
+                type="textarea"
+                show-word-limit
+                maxlength="50"
+                placeholder="请输入初审意见"
+                v-model="multistageExamineForm.remarks"
+              />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorizeFirstLevel">确认提交二级审批吗？</el-button>
+          <el-button
+            plain
+            @click="onAuthorizeFirstLevelGoBack">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="onFirstLevelClose">关闭</el-button>
+        </div>
+
         <!-- 同意 -->
         <div
           v-if="show.agree"
@@ -310,12 +363,13 @@
             @click="onAuthorization('PASSED')">确定申请通过？</el-button>
           <el-button
             plain
-            @click="show.agree=false">返回</el-button>
+            @click="show.agree = false">返回</el-button>
           <el-button
             type="danger"
             plain
             @click="show.authorize = false">关闭</el-button>
         </div>
+
         <!-- 不同意 -->
         <div
           v-if="show.disagree"
@@ -336,12 +390,13 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
-                :autosize="{ minRows: 4 }"
+                :autosize="{ minRows: 2 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
                 placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks" />
+                v-model="refuseForm.anotherRemarks"
+              />
             </el-form-item>
           </el-form>
           <el-button
@@ -384,6 +439,7 @@
             </el-form-item>
           </el-form> -->
           <el-form
+            v-if="remarks === '其他'"
             :model="withdrawForm"
             :rules="withdrawRule"
             ref="withdrawForm"
@@ -452,7 +508,12 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters,
+  mapMutations
+} from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
@@ -461,7 +522,8 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
+
 import moment from 'moment'
 
 export default {
@@ -473,7 +535,7 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
-      withdrawOrAnthorinputReason,
+      registrationWithdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -526,13 +588,14 @@ export default {
         authorize: false,
         agree: false,
         disagree: false,
-        callback: false
+        callback: false,
+        multistageExamine: false
       },
       withdrawForm: {
-        withdrawReason: withdrawOrAnthorinputReason
+        withdrawReason: registrationWithdrawOrAnthorinputReason
       },
       refuseForm: {
-        anotherRemarks: withdrawOrAnthorinputReason
+        anotherRemarks: registrationWithdrawOrAnthorinputReason
       },
       withdrawRule: {
         anotherRemarks: [
@@ -552,7 +615,21 @@ export default {
       btnDisable: false, // 按钮禁用与启用
       tabs: 'PENDING',
       notificationShow: false,
-      dialogTitle: ''
+      dialogTitle: '',
+
+      multistageExamineForm: {
+        remarks: ''
+      },
+
+      multistageExamineRule: {
+        remarks: [
+          {
+            required: true,
+
+            message: '请输入初审意见'
+          }
+        ]
+      }
     }
   },
   watch: {
@@ -592,8 +669,16 @@ export default {
     ...mapState([
       'registrations',
       'registRemarks',
-      'notification']),
-    ...mapGetters(['isInWhitelist']),
+      'notification',
+      'isSuccessFirstLevelAuthorize'
+    ]),
+
+    ...mapGetters([
+      'isInWhitelist',
+      'isAuditor',
+      'isAdvancedAuditor',
+      'haveMultistageExamine'
+    ]),
 
       relationalWidth() {
         const widthConstent = {
@@ -616,8 +701,32 @@ export default {
       'getRegistrationsAll',
       'authorizeRegistrations',
       'getNotification',
-      'getRegistrationNotificationDetail'
+      'getRegistrationNotificationDetail',
+      'firstLevelAuthorize'
     ]),
+
+    ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
+    onAuthorizeFirstLevelGoBack() {
+      this.$refs['multistageExamineForm'].clearValidate()
+
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
+
+      this.show.multistageExamine = false
+    },
+
+    onFirstLevelClose() {
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
+
+      this.$refs['multistageExamineForm'].clearValidate()
+
+      this.show.authorize = false
+    },
+
     getDatas() {
       if (this.tabs !== 'first') {
         if (this.tabs !== 'DENIED,WITHDRAW' || !this.filter.status) {
@@ -637,15 +746,39 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    handleAuthorization(e) {
-      this.toAuthorize = e
+
+    // 获取家属注册详情信息
+    async onGetRegistrationDetail(id) {
+      let result = {}
+
+      let _authorizeDetData = await http.getRegistrationsDetail({ id })
+
+      if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+
+      return result
+    },
+
+    // 点击授权按钮
+     async handleAuthorization(e) {
+      const { id } = e
+
+      this.toAuthorize = await this.onGetRegistrationDetail(id)
+
       this.show.agree = false
+
       this.show.disagree = false
+
       this.show.callback = false
+
+      this.show.multistageExamine = false
+
       this.remarks = '身份信息错误'
+
       this.show.authorize = true
+
       this.dialogTitle = '授权'
     },
+
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
@@ -657,7 +790,7 @@ export default {
           })
         }
         else params.remarks = this.remarks
-        if (e === 'WITHDRAW') {
+        if (e === 'WITHDRAW' && this.remarks === '其他') {
           this.$refs.withdrawForm.validate(valid => {
             if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
@@ -667,15 +800,49 @@ export default {
       }
       else this.handleSubmit(params)
     },
+
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
         this.btnDisable = false
         if (res) {
-          this.closeWithdraw()
-          this.toAuthorize = {}
-          this.getDatas()
+          this.onCloseWithdrawDialog()
+          this.setIsRefreshMultistageExamineMessageBell(true)
         }
       })
+    },
+
+    onCloseWithdrawDialog() {
+      this.closeWithdraw()
+
+      this.toAuthorize = {}
+
+      this.getDatas()
+    },
+
+    // 提交到二级审批
+    async onAuthorizeFirstLevel() {
+      try {
+        const { id } = this.toAuthorize
+
+        const { remarks } = this.multistageExamineForm
+
+        await this.$refs.multistageExamineForm.validate() &&  (this.btnDisable = true) && await this.firstLevelAuthorize({
+          params: {
+            id,
+            remarks
+          },
+
+          url: '/registrations/firstLevelAuthorize',
+
+          mutationName: 'setIsSuccessFirstLevelAuthorize'
+        })
+
+        this.btnDisable = false
+
+        if (this.isSuccessFirstLevelAuthorize) this.onCloseWithdrawDialog()
+      } catch (err) {
+        Promise.reject(err)
+      }
     },
 
     set_relationalProofUrls(authorizeDetData) {
@@ -695,35 +862,46 @@ export default {
     },
 
     async handleAuthorDetail(id) {
-      let _authorizeDetData = await http.getRegistrationsDetail({ id })
-      if ( _authorizeDetData ) {
-        this.authorizeDetData = this.set_relationalProofUrls(_authorizeDetData)
-        this.showDetail = true
-      }
+      this.authorizeDetData = await this.onGetRegistrationDetail(id)
+
+      this.showDetail = true
     },
-    handleCallback(e) {
-      this.toAuthorize = e
+
+    // 点击撤回按钮
+    async handleCallback(e) {
+      const { id } = e
+
+      this.toAuthorize = await this.onGetRegistrationDetail(id)
+
       this.show.authorize = true
+
       this.show.agree = false
+
       this.show.disagree = false
+
       this.show.callback = true
+
       this.dialogTitle = '撤回'
+
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
     },
+
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = '身份信息错误'
-      this.withdrawForm.withdrawReason = this.withdrawOrAnthorinputReason
-      this.refuseForm.anotherRemarks = this.withdrawOrAnthorinputReason
+      this.$set(this.multistageExamineForm, 'remarks', '')
+      this.withdrawForm.withdrawReason = this.registrationWithdrawOrAnthorinputReason
+      this.refuseForm.anotherRemarks = this.registrationWithdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+      if (this.$refs.multistageExamineForm) this.$refs.multistageExamineForm.clearValidate()
     },
+
     showSign(row) {
       const { status } = row
       if (status === 'PENDING') {
         const { id } = row
         this.getRegistrationNotificationDetail({ id }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
@@ -738,12 +916,12 @@ export default {
           id: notifyId,
           rid: id
         }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
       }
     },
+
     onView(e) {
       this.toAuthorize = e
       this.dialogTitle = '查看'
@@ -845,6 +1023,10 @@ export default {
   .el-button
     &:first-of-type
       margin-left: 0px !important;
+.multistage-examine_button_box
+  .el-button
+    &:first-of-type
+      width: 31% !important;
 .view-box
   display: flex;
   flex-direction: row-reverse;

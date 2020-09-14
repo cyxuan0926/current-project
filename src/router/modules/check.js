@@ -65,6 +65,14 @@ let check = [{
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
   }]
 }, {
+  path: '/meeting/deploy',
+  redirect: { path: '/meeting/deploy/deploy' },
+  children: [{
+    path: '/meeting/deploy/deploy',
+    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '监狱配置管理 ' },
+    component: 'check-meeting/meeting-deploy/meeting-deploy'
+  }]
+}, {
   path: '/meeting-report',
   name: 'meeting-report-check',
   meta: { hidden: true, breadcrumbName: '可视电话统计' },

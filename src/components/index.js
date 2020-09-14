@@ -21,6 +21,7 @@ import Charts from './modules/charts'
 import ChartBlock from './modules/chart-block'
 import Draggable from './modules/draggable'
 import excelUpload from './modules/excel-upload'
+import multistageRecords from './multistage_examine-records'
 export default {
   audio,
   Form,
@@ -44,5 +45,6 @@ export default {
   Charts,
   ChartBlock,
   Draggable,
-  excelUpload
+  excelUpload,
+  multistageRecords
 }

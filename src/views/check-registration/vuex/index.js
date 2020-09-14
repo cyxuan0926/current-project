@@ -12,10 +12,12 @@ let state = {
   ],
   registRemarks: [
     '身份信息错误',
-    '与服刑人员关系不符',
+    '上传的资料不足以证明与服刑人员的关系',
     '身份证照片模糊',
     '其他'
-  ]
+  ],
+
+  isSuccessFirstLevelAuthorize: false
 }
 
 export default {

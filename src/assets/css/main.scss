@@ -535,3 +535,24 @@ body .el-table colgroup.gutter{
     }
   }
 }
+
+.bell-dropdown-menu {
+  .el-dropdown-menu__item {
+    display: flex;
+
+    justify-content: space-between;
+
+    width: 220px;
+    .bell__count { 
+      color: red;
+
+      font-weight: bold;
+    }
+  }
+}
+
+.multistage_examine__message_box {
+  .el-message-box__headerbtn {
+    top: 6px !important;
+  }
+}

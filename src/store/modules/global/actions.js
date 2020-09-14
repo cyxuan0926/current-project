@@ -1,5 +1,7 @@
 import api from '@/service/modules/global'
 
+import repeatAPI from '@/service/modules/repeat'
+
 const getUrls = (params) => {
   let { urls, contents } = params
   for (var i = 0; i < urls.length; i++) {
@@ -96,6 +98,28 @@ export default {
       commit('uploadFile', res)
       return true
     })
+  },
+
+  // 初级授权
+  async firstLevelAuthorize({ commit }, inputs) {
+    try {
+      const {
+        url,
+        params,
+        mutationName
+      } = inputs
+
+      const { code } = await repeatAPI.firstLevelAuthorize({ url, params })
+
+      const isSuccess = code === 200
+
+      commit(mutationName, isSuccess)
+
+      return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

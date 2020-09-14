@@ -14,5 +14,10 @@ export default {
   getTenants(state, params) {
     state.tenants.contents = params.tenants
     state.tenants.total = params.tenantsSize
+  },
+
+  // 设置人脸识别配置
+  setFaceRecognitionConfigs(state, configs) {
+    state.faceRecognitionConfigs = Object.assign({}, configs)
   }
 }

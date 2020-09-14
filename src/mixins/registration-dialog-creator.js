@@ -1,5 +1,7 @@
 // 注册页面 对话框操作 封装的组件
 
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     // 授权对话框的关闭按钮
@@ -27,35 +29,6 @@ export default {
 
     return {
       goBackButton,
-
-      // 授权按钮元素
-      authorizeButtons: [
-        {
-          text: '同意',
-
-          attrs: {
-            plain: true
-          },
-
-          events: {
-            click: this.onAgreeAuthorize
-          }
-        },
-
-        {
-          text: '不同意',
-
-          attrs: {
-            plain: true
-          },
-
-          events: {
-            click: this.onDisagreeAuthorize
-          }
-        },
-
-        closeButton
-      ],
 
       // 授权对话框表单组件
       authorizeFormItems: {
@@ -85,7 +58,31 @@ export default {
 
       remarks: '身份信息错误',
 
-      closeButton
+      closeButton,
+
+      // 初级审批时候初审意见表单组件
+      firstLevelExamineFormItems: {
+        remarks: {
+          type: 'textarea',
+
+          autosize: {
+            minRows: 2
+          },
+
+          rules: [
+            'required',
+            'lengthRange-50'
+          ],
+
+          maxlength: 50,
+
+          showWordLimit: true,
+
+          noLabel: true,
+
+          label: '初审意见'
+        }
+      }
     }
   },
 
@@ -210,10 +207,21 @@ export default {
     onDeniedSubmit() {},
 
     // 授权对话框不同意情况下的返回操作
-    onDisagreeAuthorizeGoBack() {}
+    onDisagreeAuthorizeGoBack() {},
+
+    // 高级审批提交情况下的返回操作
+    onMultistageExamineGoBack() {},
+
+    // 高级审批提交情况下的确认操作
+    onMultistageExamineSubmit() {},
+
+    // 高级审批提交情况下的提交操作
+    onMultistageExamineGoSubmit() {}
   },
 
   computed: {
+    ...mapGetters(['isAdvancedAuditor', 'haveMultistageExamine']),
+
     // 授权同意情况下按钮元素
     showAgreeButtons() {
       return [
@@ -265,6 +273,80 @@ export default {
 
         this.closeButton
       ]
-    }
+    },
+
+    // 高级审批提交情况下的按钮元素
+    showMultistageExamineButtons() {
+      return [
+        {
+          text: '确认提交二级审批吗？',
+
+          attrs: {
+            plain: true,
+
+            loading: this.buttonLoading
+          },
+
+          events: {
+            click: this.onMultistageExamineSubmit
+          }
+        },
+
+        {
+          ...this.goBackButton,
+          events: {
+            click: this.onMultistageExamineGoBack
+          }
+        },
+
+        this.closeButton
+      ]
+    },
+
+     // 授权按钮元素
+     authorizeButtons() {
+       let items = [
+        {
+          text: '同意',
+
+          attrs: {
+            plain: true
+          },
+
+          events: {
+            click: this.onAgreeAuthorize
+          }
+        },
+
+        {
+          text: '不同意',
+
+          attrs: {
+            plain: true
+          },
+
+          events: {
+            click: this.onDisagreeAuthorize
+          }
+        },
+
+        {
+          text: '提交',
+
+          attrs: {
+            plain: true
+          },
+
+          events: {
+            click: this.onMultistageExamineGoSubmit
+          }
+        },
+
+        this.closeButton
+      ]
+      if (!(!this.isAdvancedAuditor && this.haveMultistageExamine)) items.splice(2, 1)
+
+      return items
+     }
   }
 }

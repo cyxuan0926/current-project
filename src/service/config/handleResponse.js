@@ -29,11 +29,16 @@ const urlWhiteList = [
   '/prisoners/validate',
   '/ywgk/homepage/queryjailstatus'
 ]
+
+const noMessageUrlLists = [
+  '/jails/getPendingCount'
+]
+
 const codes = {
   200: {
     resData: true,
-    next: (params, url) => {
-      if (urlWhiteList.includes(url)) {
+    next: (params, url, baseURL) => {
+      if (urlWhiteList.includes(url) || noMessageUrlLists.includes(url.replace(`${ baseURL + agency }`, ''))) {
         Message.closeAll()
         // tips('导入的Excel罪犯数据解析完成', 'success')
       }
@@ -151,6 +156,6 @@ export default params => {
     tips(params.data ? params.data.msg : handleErrorMessage(params.message))
     return false
   }
-  result.next && result.next(params.data, params.config.url)
+  result.next && result.next(params.data, params.config.url, params.config.baseURL)
   if (result.resData) return params.data
 }

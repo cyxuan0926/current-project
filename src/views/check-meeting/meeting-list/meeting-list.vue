@@ -6,12 +6,14 @@
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <m-excel-download
         slot="append"
         path="/download/exportMettings"
         :filterParams="filterParams"
-        :params="filter" />
+      />
+      <!-- :params="excelFilter" -->
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -21,7 +23,8 @@
           <el-tab-pane
             :key="index"
             :label="tab.label"
-            :name="tab.name" />
+            :name="tab.name"
+          />
         </template>
       </el-tabs>
       <m-table-new
@@ -65,16 +68,17 @@
         <template
           slot-scope="scope"
           slot="operate">
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
           <el-button
-            v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth==true"
+            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
             size="mini"
             @click="handleAuthorization(scope.row)">授权</el-button>
           <el-button
-            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth==true"
+            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
           <el-button
-            v-if="scope.row.status != 'PENDING'"
+            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             type="text"
             size="mini"
             class="button-detail"
@@ -85,8 +89,10 @@
     <m-pagination
       ref="pagination"
       :total="meetings.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
       @close="closeAuthorize"
@@ -129,7 +135,7 @@
 
         </el-table>
       </div>
-      <span   v-if="show.agree" slot="footer" class="dialog-footer">
+      <span v-if="show.agree" slot="footer" class="dialog-footer">
           <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
@@ -139,12 +145,31 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="授权"
+      :close-on-click-modal="false"
       width="530px">
+      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
+        <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
+      </template>
+
       <div
-        v-if="!show.agree && !show.disagree"
+        v-if="!show.agree && !show.disagree && !show.multistageExamine"
         class="button-box">
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
+      
+      <div v-if="show.multistageExamine" class="button-box more-button__box">
+        <div style="margin-bottom: 10px;">初审意见：</div>
+
+        <m-form
+          class="multistage_examine-form"
+          ref="multistage_examine-form"
+          :items="localFirstLevelExamineFormItems"
+          @submit="onMultistageExamineCheck"
+        />
+
+        <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
+      </div>
+
       <div
         v-if="show.disagree"
         class="button-box">
@@ -161,7 +186,8 @@
           class="withdraw-box"
           ref="refuseForm"
           :items="localAuthorizeFormItems"
-          @submit="onAuthorization('DENIED', $event)" />
+          @submit="onAuthorization('DENIED', $event)"
+        />
         <repetition-el-buttons :buttonItems="showDisagreebuttons" />
       </div>
     </el-dialog>
@@ -170,6 +196,7 @@
       @close="closeWithdraw"
       class="authorize-dialog"
       title="撤回"
+      :close-on-click-modal="false"
       width="530px">
       <m-form
         ref="dialogForm"
@@ -180,84 +207,172 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.dialog"
-      title="详情"dialogdialog
+      title="详情"
       width="780px"
       class="authorize-dialog"
       lock-scroll
       @close="onCloseShow">
       <div style="max-height:380px;overflow: auto">
-      <div  style="display: flex;border: 1px solid #E4E7ED;">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
+
           <div class="detail-message">
-            <p class="detail-message-family"><span class="family-name">家属</span><span class="family-nameDetail">{{toShow.familyName}}</span></p>
-            <p class="detail-message-family" style="border: none"><span class="family-name">预约时间</span><span class="family-nameDetail">{{toShow.createTime}}</span></p>
-          </div>
-          <div class="detail-content">
-            <p class="detail-message-family"><span class="family-name">与罪犯关系</span><span class="family-nameDetail">{{toShow.relation}}</span></p>
-            <p class="detail-message-family" style="border: none"><span class="family-name">终端号</span><span class="family-nameDetail">{{toShow.terminalNumber}}</span></p>
-          </div>
-      </div>
+            <p class="detail-message-family">
+              <span class="family-name">家属</span>
 
-
-      <div v-for="(item,index) in toShow.changeLogs" :key=index  style="display: flex;border: 1px solid #E4E7ED;border-top: none">
-      <div class="family-detail">{{index+1}}</div>
-      <div class="detail-message">
-      <p class="detail-message-family" v-if="item.operateAccount">
-        <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
-        <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
-        <span class="family-nameDetail">{{item.operateAccount}}</span></p>
-        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys >
-          <p class="detail-message-family" >
-            <span class="family-name">通话时间</span>
-            <span class="family-nameDetail">{{ val.callTime }}</span>
-          </p>
-          <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
-            <span class="family-name">结束原因</span>
-            <span class="family-nameDetail" :ref="`itemHeigh+${keys}`" style="padding: 10px;text-align: justify;line-height: 15px;">{{ val.remark }}</span>
-          </p>
-        </label>
-      <p class="detail-message-family" style="border: none" >
-        <span class="family-name"  v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
-        <span class="family-name"  v-if="item.status=='CANCELED'">取消时间</span>
-        <span class="family-name"  v-if="item.status=='EXPIRED'">过期时间</span>
-        <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'"  >{{ item.operateTime | Date }}</span>
-      </p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='DENIED'" style="border-top:  1px solid #E4E7ED;border-bottom: none;padding-right: 10px;text-align: justify;line-height: 18px" ><span class="family-name">拒绝原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
-        <p class="detail-message-family" v-if="item.remark && item.status=='CANCELED'" style="border-top:  1px solid #E4E7ED;border-bottom: none" ><span class="family-name">取消原因</span><span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span></p>
-      </div>
-      <div class="detail-content">
-      <p class="detail-message-family"  v-if="item.operateName">
-        <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
-        <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
-        <span class="family-nameDetail">{{item.operateName}}</span></p>
-
-        <label v-if="item.meetingCalls" v-for="(val,keys) in item.meetingCalls" :key=keys  >
-          <p class="detail-message-family" >
-            <span class="family-name">通话时长</span>
-            <span class="family-nameDetail">{{ val.callDuration | time }}</span>
-          </p>
-          <label v-if="val.remark">
-            <p class="detail-message-family" v-if="keys!=item.meetingCalls.length-1" :style="{height:val.itemHeigh+'px'}">
-              <span class="family-name">&nbsp;</span>
-              <span class="family-nameDetail">&nbsp;</span>
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
-          </label>
-        </label>
-      <p class="detail-message-family">
-      <span class="family-name">申请状态</span>
-      <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
-        <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
-      <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
-      <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
-      <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
-      <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
-      </p>
-      </div>
-      </div>
-      </div>
-      <span  slot="footer" class="dialog-footer">
-        </span>
 
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">预约时间</span>
+
+              <span class="family-nameDetail">{{toShow.createTime}}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">与罪犯关系</span>
+
+              <span class="family-nameDetail">{{toShow.relation}}</span>
+            </p>
+
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">终端号</span>
+
+              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-for="(item,index) in toShow.changeLogs"
+          :key=index
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+
+          <div class="detail-message">
+            <p class="detail-message-family" v-if="item.operateAccount">
+
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
+
+              <span class="family-nameDetail">{{item.operateAccount}}</span>
+            </p>
+
+            <template v-if="item.meetingCalls" >
+              <label v-for="(val,keys) in item.meetingCalls" :key=keys >
+                <p class="detail-message-family" >
+                  <span class="family-name">通话时间</span>
+
+                  <span class="family-nameDetail">{{ val.callTime }}</span>
+                </p>
+
+                <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
+                  <span class="family-name">结束原因</span>
+
+                  <span
+                    class="family-nameDetail"
+                    :ref="`itemHeigh+${keys}`"
+                    style="padding: 10px;text-align: justify;line-height: 15px;">
+                    {{ val.remark }}
+                  </span>
+                </p>
+              </label>
+            </template>
+
+            <p class="detail-message-family" style="border: none" >
+              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
+
+              <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
+
+              <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='DENIED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px">
+              <span class="family-name" style="line-height: 40px">拒绝原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='CANCELED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
+            >
+              <span class="family-name"  style="line-height: 40px">取消原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+            <p
+              v-if="item.remark && item.status=='SUBMIT'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
+            >
+              <span class="family-name"  style="line-height: 40px">初审意见</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family"  v-if="item.operateName">
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
+
+              <span class="family-nameDetail">{{item.operateName}}</span></p>
+
+              <template v-if="item.meetingCalls">
+                <label v-for="(val,keys) in item.meetingCalls" :key=keys  >
+                  <p class="detail-message-family" >
+                    <span class="family-name">通话时长</span>
+
+                    <span class="family-nameDetail">{{ val.callDuration | time }}</span>
+                  </p>
+
+                  <label v-if="val.remark">
+                    <p
+                      v-if="keys!=item.meetingCalls.length-1"
+                      class="detail-message-family"
+                      :style="{height:parseInt( val.itemHeigh+1)+'px'}"
+                    >
+                      <span class="family-name">&nbsp;</span>
+
+                      <span class="family-nameDetail">&nbsp;</span>
+                    </p>
+                  </label>
+                </label>
+              </template>
+
+            <p class="detail-message-family">
+              <span class="family-name">申请状态</span>
+
+              <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
+
+              <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
+
+              <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
+
+              <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              
+              <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
+
+              <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+              <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
     <el-dialog
       title="家属信息"
@@ -311,7 +426,11 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
+  import {
+    mapActions,
+    mapState,
+    mapMutations
+  } from 'vuex'
   import validator, { helper } from '@/utils'
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
   import prisons from '@/common/constants/prisons'
@@ -327,7 +446,8 @@
       const tabsItems = [
         {
           label: '可视电话申请',
-          name: 'first' },
+          name: 'first'
+        },
         {
           label: '审核已通过',
           name: 'PASSED'
@@ -435,7 +555,8 @@
           detail: false,
           dialog:false,
           meetingQueue:false,
-          familiesDetialInform: false
+          familiesDetialInform: false,
+          multistageExamine: false
         },
         operateQueryAuth:false,
         toAuthorize: {},
@@ -510,14 +631,45 @@
         ],
         meetingAdjustment: {},
         meetingAdjustmentCopy: {},
+
+        multistageExamineKeys: {
+          userName: 'operateName',
+
+          reamrks: 'remark',
+
+          createAt: 'operateTime',
+
+          status: 'status'
+        }
       }
     },
     computed: {
       ...mapState([
         'meetings',
         'frontRemarks',
-        'meetingRefresh'
+        'meetingRefresh',
+        'isSuccessFirstLevelSubmitMeeting'
       ]),
+
+      localFirstLevelExamineFormItems() {
+        const { remarks } = this.firstLevelExamineFormItems
+
+        return {
+          remark: remarks
+        }
+      },
+  
+      // excel的参数 需要添加当前标签页的label
+      // excelFilter() {
+      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+
+      //   const TABName = tabItem[0]['label']
+
+      //   return {
+      //     ...this.filter,
+      //     TABName
+      //   }
+      // },
 
       // 本地实例化的授权表单组件元素
       localAuthorizeFormItems() {
@@ -568,6 +720,10 @@
               slotName: 'families',
               minWidth: 115
             },
+            // {
+            //   label: '家属电话',
+            //   prop: ''
+            // },
             {
               label: '申请状态',
               slotName: 'content',
@@ -728,8 +884,12 @@
         'withdrawMeeting',
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
-
+        'firstLevelAuthorize',
+        'getMeettingsChangelogDetail'
       ]),
+
+      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -813,8 +973,13 @@
         }
         this.$refs.pagination.handleCurrentChange(1)
       },
+
       filterParams () {
         //下载表格查询条件处理
+        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+
+        const TABName = tabItem[0]['label']
+
         this.$refs.search.onGetFilter()
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'
@@ -834,14 +999,31 @@
         //判断是不是超级管理员
          jailId == -1 ? jailId = '': jailId = jailId
         this.filter.jailId = jailId
-        return this.filter
+        return {
+          ...this.filter,
+          TABName
+        }
       },
-      handleAuthorization(e) {
-        this.toAuthorize = e
+
+      // 获取数据
+      async onGetDetailAndInitData(meetingId) {
+        const res = await this.getMeettingsDetail({ meetingId })
+
+        if (!res) return
+
+        return res
+      },
+
+      async handleAuthorization(e) {
+        const { id } = e
+
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+
         this.show.agree = false
         this.show.disagree = false
-        this.submitSuccessParams=null
-        http.getMeetTimeConfig({id:this.toAuthorize.id}).then(res=>{
+        this.show.multistageExamine = false
+        this.submitSuccessParams = null
+        http.getMeetTimeConfig({ id }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
           this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
@@ -849,8 +1031,12 @@
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
         })
       },
-      handleWithdraw(e) {
-        this.toAuthorize = e
+
+      async handleWithdraw(e) {
+        const { id } = e
+
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+
         this.show.withdraw = true
       },
       onDetail(e) {
@@ -895,11 +1081,10 @@
             }
           ],
           params = { meetingId: e.id }
-        this.getMeettingsDetail(params).then(res => {
+        this.getMeettingsChangelogDetail(params).then(res => {
           if (!res) return
           this.toShow = Object.assign({}, res)
-          console.log(this.toShow)
-          this.show.dialog=true
+          this.show.dialog = true
           this.familyShows = this.toShow.status !== 'DENIED'
             ? constFamilyShows.slice(0, constFamilyShows.length - 1)
             : constFamilyShows
@@ -942,17 +1127,64 @@
         this.buttonLoading = false
       },
       //覆盖mixin 授权对话框同意情况下的确认操作
-      onPassedAuthorize() {
-        this.onAuthorization('PASSED')
-      },
+      // onPassedAuthorize() {
+      //   this.onAuthorization('PASSED')
+      // },
       //覆盖mixin 授权对话框同意情况下的返回操作
       onAgreeAuthorizeGoBack() {
-        this.show.agree=false
+        this.show.agree = false
       },
       //覆盖mixin 授权对话框不同意情况下的返回操作
       onDisagreeAuthorizeGoBack() {
         this.closeAuthorize('back')
       },
+
+      // 覆盖mixin 高级审批提交情况下的提交操作
+      onMultistageExamineGoSubmit() {
+        this.show.multistageExamine = true
+
+        this.buttonLoading = false
+      },
+
+      // 覆盖mixin 高级审批提交情况下的返回操作
+      onMultistageExamineGoBack() {
+        this.show.multistageExamine = false
+
+        this.$refs['multistage_examine-form'].handleResetField()
+      },
+
+      // 覆盖mixin 高级审批提交情况下的确认操作
+      onMultistageExamineSubmit() {
+        this.$refs['multistage_examine-form'].onSubmit()
+      },
+
+      async onMultistageExamineCheck(params) {
+        const { id } = this.toAuthorize
+
+        const { remark } = params
+
+        this.buttonLoading = true
+
+        await this.firstLevelAuthorize({
+          params: {
+            meetingId: id,
+            remark
+          },
+
+          url: '/meetings/submitMeeting',
+
+          mutationName: 'setIsSuccessFirstLevelSubmitMeeting'
+        })
+
+        this.buttonLoading = false
+
+        if (this.isSuccessFirstLevelSubmitMeeting) {
+          this.closeAuthorize()
+          this.toAuthorize = {}
+          this.getDatas('handleSubmit')
+        }
+      },
+
         // 比较时间大小
       compareDate(date1,date2) {
         let oDate1 = new Date(date1);
@@ -963,7 +1195,7 @@
           return false; //第二个大
         }
       },
-        onAuthorization(e, args) {
+      onAuthorization(e, args) {
         let params = { id: this.toAuthorize.id, status: e }
         if (e === 'DENIED') {
           if (this.remarks === '其他') {
@@ -980,6 +1212,7 @@
           this.buttonLoading = false
           if (!res) return
           this.closeAuthorize()
+          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1004,6 +1237,7 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
+            this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.show.agree = false;
             this.getDatas('handleSubmit')
@@ -1057,7 +1291,7 @@
         })
       },
       sortChange({ column, prop, order }) {
-        if (!prop && !order) {
+        if (!prop || !order) {
           this.sortObj = {}
           delete this.filter.sortDirection
           delete this.filter.orderField
@@ -1172,7 +1406,11 @@
       border-bottom: 1px solid #f4f4f4 !important;
   .button-box
     >>> .el-button
-      width: 24% !important;
+      width: 23% !important;
       &:first-of-type
         margin-left: 0px !important;
+  .more-button__box
+    >>> .el-button
+      &:first-of-type
+        width: 31% !important;
 </style>

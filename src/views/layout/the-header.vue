@@ -7,11 +7,13 @@
         { 'collapsed': isCollapsed }]">
       <span class="bold">国科服务</span>管理平台
     </div>
-    <div class="header-right">
+    <div :class="[ 'header-right', { 'header-right-no__regisition': multistageExamineCountConfigs.total } ]">
       <i
         class="iconfont icon-category bold"
-        @click="handleCollapse" />
-      <div>
+        @click="handleCollapse"
+      />
+
+      <div class="mine__box">
         <el-dropdown
           trigger="click"
           @command="handleCommand">
@@ -26,6 +28,44 @@
             <el-dropdown-item :command="'setSecurityQuestions'">设置安全问题</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+
+        <!-- 消息铃铛 -->
+        <el-dropdown
+          v-if="isAdvancedAuditor"
+          class="bell__dropdown"
+          trigger="click"
+          @command="handleCommand"
+        >
+          <el-badge
+            :class="[
+              'item',
+              'bell__badge',
+              { 'no__regisition': !multistageExamineCountConfigs.total }
+            ]"
+            :value="multistageExamineCountConfigs.total"
+            :max="99"
+          >
+            <i class="el-icon-bell icon-bell" />
+          </el-badge>
+
+          <el-dropdown-menu
+            slot="dropdown"
+            class="bell-dropdown-menu"
+          >
+            <template v-for="item in multistageExamineDropdownItems">
+              <el-dropdown-item
+                v-if="multistageExamineCountConfigs[item['paramsKey']]"
+                :command="item.path"
+                :key="item.menuName"
+              >
+                <span>{{ item.menuName }}</span>
+
+                <span class="bell__count">{{ +multistageExamineCountConfigs[item['paramsKey']] > 99 ? '99+' : multistageExamineCountConfigs[item['paramsKey']] }}</span>
+              </el-dropdown-item>
+            </template>
+          </el-dropdown-menu>
+        </el-dropdown>
+
         <i
           class="iconfont icon-tuichu"
           @click="handleLogout" />
@@ -44,31 +84,67 @@
         @submit="handleSubmit"
         :values='values'
         ref="dialogForm"
-        @cancel="visible = false"/>
+        @cancel="visible = false"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import questionAnswersSetter from '@/mixins/question-answers-setter'
-import { mapActions, mapState } from 'vuex'
+
+import {
+  mapActions,
+  mapState,
+  mapGetters
+} from 'vuex'
+
 import logout from '@/utils/logout'
+
+import { multistageExamineDropdownItems } from '@/common/constants/const'
+
 export default {
   mixins: [questionAnswersSetter],
   data() {
     return {
-      visible: false
+      visible: false,
+
+      multistageExamineDropdownItems
     }
   },
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
-      publicUserInfo: state => state.account.publicUserInfo
-    })
+
+      publicUserInfo: state => state.account.publicUserInfo,
+
+      multistageExamineCountConfigs: state => state.layout.multistageExamineCountConfigs,
+
+      isRefreshMultistageExamineMessageBell: state => state.global.isRefreshMultistageExamineMessageBell
+    }),
+
+    ...mapGetters(['isAdvancedAuditor'])
   },
+
+  watch: {
+    isRefreshMultistageExamineMessageBell(val) {
+      if (val) {
+        (async () => {
+          await this.getMultistageExamineCountConfigs()
+        })()
+      }
+    }
+  },
+
   methods: {
-    ...mapActions(['handleCollapse', 'closeWebsocket']),
+    ...mapActions([
+      'handleCollapse',
+      'closeWebsocket',
+      'getMultistageExamineCountConfigs'
+    ]),
+
     ...mapActions('account', ['setUserSecurityQuestionAnswers', 'getUserSecurityQuestionAnswers']),
+
     handleCommand(e) {
       if (e === 'setSecurityQuestions') {
         (async () => {
@@ -111,6 +187,10 @@ export default {
     handleCloseDialog() {
      this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
     }
+  },
+
+  async created() {
+    if (this.isAdvancedAuditor) await this.getMultistageExamineCountConfigs()
   }
 }
 </script>
@@ -118,5 +198,34 @@ export default {
 @import "../../assets/css/layout";
 .all-dialog__style {
   line-height: 24px;
+}
+
+.header-right-no__regisition {
+  line-height: 45px;
+}
+
+.mine__box {
+  display: flex;
+
+  justify-content: space-between;
+  .bell__badge {
+    .icon-bell {
+      font-size: 18px;
+    }
+
+    /deep/ .is-fixed {
+      transform: translateX(4%) translateX(38%);
+    }
+
+    /deep/ .el-badge__content {
+      background-color: red;
+    }
+
+    &.no__regisition {
+      /deep/ .el-badge__content {
+        display: none;
+      }
+    }
+  }
 }
 </style>

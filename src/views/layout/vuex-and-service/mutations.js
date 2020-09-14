@@ -12,5 +12,10 @@ export default {
   },
   hideLoading: state => {
     state.loading = false
+  },
+
+  // 设置多级审批数目配置
+  setMultistageExamineCountConfigs: (state, configs) => {
+    state.multistageExamineCountConfigs = Object.assign({}, configs)
   }
 }

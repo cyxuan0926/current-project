@@ -108,7 +108,7 @@
             <slot :name="item.slotName" />
           </template>
       </template>
-      <template v-if="items">
+      <template v-if="showSearchIcon">
         <slot name="pre" /> 
         <el-button
           v-if="buttonText"
@@ -142,6 +142,7 @@ export default {
     },
     clearable: Boolean
   },
+
   data() {
     return {
       startValue: null,
@@ -167,13 +168,31 @@ export default {
             picker.$emit('pick', date)
           }
         }]
-      }
+      },
+
+      showSearchIcon: true
     }
   },
+
+  watch: {
+    items: {
+      handler(val) {
+        // 是否显示查询的按钮
+        this.showSearchIcon = val && !Object.values(val).every(item => item.miss)
+      },
+
+      deep: true,
+
+      immediate: true
+    }
+  },
+
   directives: { autowidth },
+
   mounted() {
     this.$parent.$parent.filter = Object.assign({}, this.$parent.$parent.filterInit)
   },
+
   methods: {
     onSearch(e) {
       this.onGetFilter()
@@ -186,9 +205,11 @@ export default {
         this.items[prop][key] = e[key]
       })
     },
+
     onSelectChange(selectKey, value) {
       this.$emit('searchSelectChange', selectKey, value)
     },
+
     onClear() {
       Object.keys(this.items).forEach(key => {
         if (this.items[key].miss) return
@@ -218,6 +239,7 @@ export default {
 
       this.$parent.$parent.filter = {}
     },
+
     onGetFilter() {
       if (this.items) {
         let params = {}

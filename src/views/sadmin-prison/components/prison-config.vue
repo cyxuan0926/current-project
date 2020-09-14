@@ -361,6 +361,20 @@ export default {
             required: true
           }
         },
+        multistageExamine: {
+          label: '多级审核配置',
+          type: 'switch',
+          disabled,
+          value: 0,
+          setValueConfigs: [
+            {
+              props: 'multistageExamine',
+              setValue: 0
+            }
+          ],
+          invokeCondition: 1,
+          func: this.onMultistageExamineSwitch
+        }
       }, formButton),
       values: {},
       permission,
@@ -401,6 +415,9 @@ export default {
     ...mapState([
       'prison',
       'branchStatus']),
+
+    ...mapState('account', ['isHaveAdvancedAuditor']),
+
     typeTotalCost() {
       const { normalQueue } = this.values
       if (normalQueue && Array.isArray(normalQueue) && normalQueue.length) {
@@ -490,6 +507,9 @@ export default {
     ...mapActions([
       'getPrisonDetail',
       'updatePrison']),
+
+    ...mapActions('account', ['judgeAssignUsers']),
+
     onSubmit(e) {
       const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
@@ -584,6 +604,71 @@ export default {
     },
     onDiplomatistChargeChange(e, prop, item) {
       this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
+    },
+
+    // 多级审核配置
+    async onMultistageExamineSwitch(value, prop, item) {
+      // autoAuthorizeMeeting 是否开启自动审批
+      // zipcode: 监狱编号 对应给公共服务的租户编号
+      const { autoAuthorizeMeeting, zipcode } = this.prison
+
+      const options = {
+        closeOnClickModal: false,
+
+        closeOnPressEscape: false,
+
+        customClass: 'multistage_examine__message_box'
+      }
+
+      const have_automatic_audit = {
+        message: '监狱配置已开启自动审核，当开启多级审核后，自动审核将失效，确认开启多级审核吗？',
+
+        options: {
+          ...options,
+
+          callback: (action) => {
+            if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, item)
+          }
+        }
+      }
+
+      const have_no_advanced_auditor = {
+        message: '监狱没有高级审核人员账号，请先增加高级审核人员！',
+
+        options: {
+          ...options,
+
+          closeOnClickModal: true,
+
+          showCancelButton: false,
+
+          callback: (action) => {
+            this.$refs['prison-config_form'].setFieldValue(value, prop, item)
+          }
+        }
+      }
+
+      if (value === 1) {
+        await this.judgeAssignUsers({
+          params: {
+            tenantCode: zipcode
+          },
+
+          configs: {
+            // 这个地方要和公共服务的角色名保存一致
+            userRoles: ['高级审核人员'],
+
+            mutationName: 'setIsHaveAdvancedAuditor'
+          }
+        })
+
+        if (!this.isHaveAdvancedAuditor) {
+          this.$confirm(have_no_advanced_auditor['message'], have_no_advanced_auditor['options'])
+        }
+        else {
+          if (autoAuthorizeMeeting) this.$confirm(have_automatic_audit['message'], have_automatic_audit['options'])
+        }
+      }
     }
   }
 }

@@ -23,6 +23,7 @@
             :select-change-event="selectChangeEvent"
             :radio-change-event="radioChangeEvent"
             :reset-field-value="resetFieldValue"
+            :set-field-value="setFieldValue"
             @validateField="validateField" />
         </template>
         <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
@@ -296,6 +297,23 @@ export default {
           }
         })
       }
+    },
+
+    // 主动设置field的值
+    setFieldValue(e, prop, item) {
+      const { setValueConfigs, invokeFunc } = item
+
+      if (setValueConfigs && Array.isArray(setValueConfigs) && setValueConfigs.length) {
+        setValueConfigs.forEach(config => {
+          const { props, setValue } = config
+
+          this.$nextTick(function() {
+            this.$set(this.fields, props, setValue)
+          })
+        })
+      }
+
+      invokeFunc && item.func && item.func(e, prop, item)
     }
   }
 }

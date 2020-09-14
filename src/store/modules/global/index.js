@@ -14,7 +14,10 @@ let state = {
   //   loged: false
   // }
   // 需要缓存的组件名列表（后期如需扩展，可动态修改该列表）
-  componentsKeepAlive: []
+  componentsKeepAlive: [],
+
+  // 是否刷新多级审批消息铃铛
+  isRefreshMultistageExamineMessageBell: false
 }
 
 export default {
