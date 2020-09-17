@@ -57,6 +57,11 @@ let switches = {
     { value: 'DENIED', label: '已拒绝' },
     { value: 'WITHDRAW', label: '已撤回' }
   ],
+  unusualStatus: [
+    { value: 'EXPIRED', label: '已过期' },
+    { value: 'FINISHED', label: '已完成' },
+    { value: 'MEETING_ON', label: '通话中' }
+  ],
   payStatus: [
     { value: 1, label: '支付成功' },
     { value: -1, label: '支付失败' }

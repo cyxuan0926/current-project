@@ -139,7 +139,9 @@
     <el-dialog
       title="修改通话次数"
       :visible.sync="isEditAccessTime"
-      width="600px">
+      width="600px"
+      :close-on-click-modal="false"
+    >
       <el-form
         class="inline-form"
         ref="form"
@@ -356,6 +358,7 @@
       </template>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       @close="handleCloseDialog"
       :visible.sync="visible"
       :title="dialogContent['title']"
@@ -417,12 +420,12 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          belong,
-          value: ''
-        },
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   belong,
+        //   value: ''
+        // },
         name: {
           type: 'input',
           label: '罪犯姓名'
