@@ -31,6 +31,9 @@
           label="审核未通过"
           name="DENIED,WITHDRAW" />
         <el-tab-pane
+          label="通话异常统计"
+          name="" />
+        <el-tab-pane
           label="未授权"
           name="PENDING" />
       </el-tabs>
@@ -551,13 +554,13 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong,
-          value: ''
-        },
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   options,
+        //   belong,
+        //   value: ''
+        // },
         auditName: {
           type: 'input',
           label: '审核人',
@@ -640,6 +643,11 @@ export default {
           delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
+        }
+        if ( val === '' ) {
+          delete this.filter.status
+          this.searchItems.status.miss = false
+          this.searchItems.status.options = this.$store.state.unusualStatus
         }
         else {
           this.searchItems.status.miss = true

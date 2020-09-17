@@ -420,12 +420,12 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          belong,
-          value: ''
-        },
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   belong,
+        //   value: ''
+        // },
         name: {
           type: 'input',
           label: '罪犯姓名'

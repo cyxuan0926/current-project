@@ -457,6 +457,10 @@
           name: 'DENIED,CANCELED'
         },
         {
+          label: '通话异常统计',
+          name: 'EXPIRED,FINISHED,MEETING_ON'
+        },
+        {
           label: '未授权',
           name: 'PENDING'
         }
@@ -850,6 +854,8 @@
             this.searchItems.status.options=this.$store.state.deniedStatus
             this.toShow.changerType=true
             this.filter.changerType = '2'
+          }else if(val == 'EXPIRED,FINISHED,MEETING_ON') {
+            this.searchItems.status.options=this.$store.state.unusualStatus
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
@@ -944,7 +950,7 @@
       },
       getDatas(e) {
         if (this.tabs !== 'first') {
-          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+          if (this.tabs !== 'DENIED,CANCELED' && this.tabs !== 'EXPIRED,FINISHED,MEETING_ON' || !this.filter.status) {
             this.filter.status = this.tabs
           }
         }
