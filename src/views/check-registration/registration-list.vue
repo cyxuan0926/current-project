@@ -688,20 +688,20 @@ export default {
       'haveMultistageExamine'
     ]),
 
-      relationalWidth() {
-        const widthConstent = {
-          0: '0%',
-          1: '32%',
-          2: '48%',
-          3: '32%',
-          4: '24%'
-        }
-        return widthConstent[this.toAuthorize.relationalProofUrls.length]
-      },
-
-      isShowPhone() {
-        return !!this.$store.state.global.user.familyPhone
+    relationalWidth() {
+      const widthConstent = {
+        0: '0%',
+        1: '32%',
+        2: '48%',
+        3: '32%',
+        4: '24%'
       }
+      return widthConstent[this.toAuthorize.relationalProofUrls.length]
+    },
+
+    isShowPhone() {
+      return !!this.$store.state.global.user.familyPhone
+    }
   },
   methods: {
     ...mapActions([

@@ -430,7 +430,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-reconciliation',
       name: 'prison-data_meeting-reconciliation',
-      props: { hasOnlyAllPrisonQueryAuth: true },
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         breadcrumbName: '可视电话对账报表',
         permission: 'visit.meeting.reconciliation.search'
