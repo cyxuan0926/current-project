@@ -25,10 +25,20 @@
 </template>
 
 <script>
+
 import prisonBase from './components/prison-base'
+
 import prisonConfig from './components/prison-config'
+
+import prisonChargeConfig from './components/prison-charge-config'
+
 export default {
-  components: { prisonBase, prisonConfig },
+  components: {
+    prisonBase,
+    prisonConfig,
+    prisonChargeConfig
+  },
+
   data() {
     return {
       activeName: '',
@@ -40,6 +50,10 @@ export default {
         {
           label: '配置信息',
           key: 'prisonConfig'
+        },
+        {
+          label: '收费配置',
+          key: 'prisonChargeConfig'
         }
       ]
     }

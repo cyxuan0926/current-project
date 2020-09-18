@@ -50,3 +50,6 @@ export const multistageExamineDropdownItems = [
     paramsKey: 'meetingDiplomatsTotal'
   }
 ]
+
+// 可选的会见时间段
+export const meetingChargeConfigDurations = [5, 10, 15, 20, 25]

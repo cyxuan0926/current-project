@@ -13,18 +13,20 @@
     >
       <template v-for="(item, key) in items">
         <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
-          <form-item
-            :ref="key"
-            :key="key"
-            :prop="key"
-            :rule="item.rule"
-            :item="item"
-            :fields="fields"
-            :select-change-event="selectChangeEvent"
-            :radio-change-event="radioChangeEvent"
-            :reset-field-value="resetFieldValue"
-            :set-field-value="setFieldValue"
-            @validateField="validateField" />
+          <slot :name="key">
+            <form-item
+              :ref="key"
+              :key="key"
+              :prop="key"
+              :rule="item.rule"
+              :item="item"
+              :fields="fields"
+              :select-change-event="selectChangeEvent"
+              :radio-change-event="radioChangeEvent"
+              :reset-field-value="resetFieldValue"
+              :set-field-value="setFieldValue"
+              @validateField="validateField" />
+          </slot>
         </template>
         <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
           <el-form-item 
