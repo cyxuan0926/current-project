@@ -140,3 +140,15 @@ a{
   background: transparent !important;
   border: 1px solid #DCDFE6 !important;
 }
+
+.across-time-picker {
+  .el-time-range-picker__cell {
+    &:first-child {
+      width: 90%;
+    }
+    
+    &:last-child {
+      display: none;
+    }
+  }
+}

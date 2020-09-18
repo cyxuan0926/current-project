@@ -90,7 +90,7 @@ export default {
 
   // 家属会见申请-获取会见信息
   getMeetingConfigs: params => {
-    return service.get(`/meetings/adjustment?inputDate=${ params }`)
+    return service.get('/meetings/adjustment', params)
   },
   // 家属会见申请-调整
   adjustMeeting: params => {
