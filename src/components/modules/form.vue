@@ -276,13 +276,16 @@ export default {
       item.func && item.func(e, prop, item)
     },
     radioChangeEvent(e, prop, item) {
-      const { relativeProps } = item
+      const { relativeProps = [] } = item
+
       const props = [ prop, ...relativeProps ]
+
       this.dismiss = ['buttons', 'formConfigs']
+
       if (props && Array.isArray(props) && props.length) {
         props.forEach(propItem => {
           const item = this.items[propItem]
-          const { configs } = item
+          const { configs = [] } = item
           if (item && configs && Array.isArray(configs) && configs.length) {
             this.$nextTick(function() {
               configs.forEach(item => {

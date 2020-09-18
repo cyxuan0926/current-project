@@ -4,7 +4,7 @@
     :class="[(item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '', (item.customClass ? item.customClass : '')]"
     :label="item.noLabel ? '' : item.label"
     :prop="prop">
-    <template #[prop]>
+    <slot :name="prop">
       <el-input
         v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
         :type="item.type"
@@ -113,7 +113,7 @@
         :value="fields[prop]"
         tools="allTools"
         @editorChange="tinymceChange" />
-    </template>
+    </slot>
   </el-form-item>
 </template>
 
