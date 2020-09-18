@@ -695,12 +695,17 @@
 
         const basicCols = [
             {
+              label: '监区',
+              prop: 'prisonArea'
+            },
+            {
               label: '罪犯编号',
               prop: 'prisonerNumber'
             },
             {
-              label: '监区',
-              prop: 'prisonArea'
+              label: '罪犯姓名',
+              prop: 'prisonerName',
+              showOverflowTooltip: true
             },
             {
               label: '申请时间',
@@ -715,19 +720,18 @@
               minWidth: 135
             },
             {
-              label: '罪犯姓名',
-              prop: 'prisonerName',
-              showOverflowTooltip: true
-            },
-            {
               label: '家属',
               slotName: 'families',
               minWidth: 115
             },
-            // {
-            //   label: '家属电话',
-            //   prop: ''
-            // },
+            {
+              label: '家属电话',
+              prop: 'phone'
+            },
+            {
+              label: '关系',
+              prop: 'relationship'
+            },
             {
               label: '申请状态',
               slotName: 'content',

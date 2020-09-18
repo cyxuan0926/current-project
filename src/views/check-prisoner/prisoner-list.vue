@@ -3,13 +3,13 @@
     class="row-container"
     :gutter="0">
     <m-excel-export
-      v-if="hasAllPrisonQueryAuth && deletePrisoners.length > 0"
+      v-if="hasAllPrisonQueryAuth && selectPrisoners.length > 0"
       :filename="prisonerExcelConfig.filename"
-      :jsonData="deletePrisoners"
+      :jsonData="selectPrisoners"
       :header="prisonerExcelConfig.header"
       :filterFields="prisonerExcelConfig.filterFields" />
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth && deletePrisoners.length === 0 && filter.jailId"
+      v-if="hasAllPrisonQueryAuth && selectPrisoners.length === 0 && filter.jailId"
       path="/download/exportPrisoners"
       :params="filter" />
     <m-search
@@ -26,6 +26,9 @@
         <el-button
           type="primary"
           @click="showDelPrionser">删除</el-button>
+        <el-button
+          type="primary"
+          @click="onPreChangePrisonConfigs">更换监区</el-button>
       </template>
     </el-row>
     <el-col
@@ -498,10 +501,10 @@ export default {
       visible: false, // 对话框的显示
       showReasonValue: '刑满释放', // 删除框的value
       // allSelectionvalue: false, 删除罪犯全选的控制 不要删掉
-      deletePrisoners: [], // 删除的罪犯数据
+      selectPrisoners: [], // 删除的罪犯数据
       // isIndeterminate: false, // 单选框的样式控制 不要删掉
       // multipleSelection: [], // 多选数据 不要删掉
-      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员
+      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员 5批量更换监区
       prisonerExcelConfig
     }
   },
@@ -586,6 +589,7 @@ export default {
             }
           }, formButton)
           break
+        case 5:
         case 2:
           title = '更换监区'
           formButton.buttons = []
@@ -824,7 +828,8 @@ export default {
       'changePrisonArea',
       'removePrisonerBlacklist',
       'deletePrisonerData',
-      'addPrionser'
+      'addPrionser',
+      'changePrisonAreaBatch'
     ]),
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
@@ -976,19 +981,27 @@ export default {
         })
       }
     },
+
+    // 获取监区数据
+    async onInitPrisonConfigs(filterParams) {
+      await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+
+      this.prisonConfigData = this.prisonConfigs.filter(val => val.name !== filterParams)
+    },
+
     // 展示更换监区对话框
     async showPrisonConfig(e) {
       this.prisoner = Object.assign({}, e)
+
       this.operationType = 2
-      await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
-      this.prisonConfigData = this.prisonConfigs.filter(val => {
-        return e.prisonArea !== val.name
-      })
+
+      await this.onInitPrisonConfigs(e.prisonArea)
+
       this.visible = true
     },
     // 展示删除罪犯对话框
     showDelPrionser() {
-      if(!this.deletePrisoners.length) {
+      if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
           message: '请选择需要删除的数据！',
@@ -1026,7 +1039,7 @@ export default {
       }
       // 删除罪犯
       if(this.operationType === 4) {
-        let deleteReason = val.contents || val.deleteReason, prisonerId = (this.deletePrisoners.map(val => val.id)).join(',')
+        let deleteReason = val.contents || val.deleteReason, prisonerId = (this.selectPrisoners.map(val => val.id)).join(',')
         this.deletePrisonerData({deleteReason, prisonerId}).then(res => {
           if(!res) return
           this.onSearch()
@@ -1051,26 +1064,49 @@ export default {
       }
     },
     // 更换监区
-    handleChangePrisonConfig(e, prop) {
-      if (e) {
+    handleChangePrisonConfig(prisonAreaId, prop) {
+      if (prisonAreaId) {
         this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消通话申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配通话时间段，调整后会以短信形式通知相关家属', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
           customClass: 'prisonConfigMessage'
-        }).then(() => {
+        }).then(async () => {
           let params = {
-            prisonerId: this.prisoner.id,
-            jailId: this.prisoner.jailId,
-            prisonAreaId: e
+            prisonAreaId
+          }, result
+          // 更换监区
+          if (this.operationType === 2) {
+            params = {
+              ...params,
+              prisonerId: this.prisoner.id,
+              jailId: this.prisoner.jailId,
+            }
+
+            const { code } = await this.changePrisonArea(params)
+
+            result = code === 200
           }
-          this.changePrisonArea(params).then(res => {
-            if (res.code !== 200) return
+
+          if (this.operationType === 5) {
+            const temp = this.selectPrisoners.map(prisoner => prisoner.id)
+
+            const prisonerIds = temp.join(',')
+
+            params = {
+              ...params,
+              prisonerIds
+            }
+
+            result = await this.changePrisonAreaBatch(params)
+          }
+
+          if (result) {
             setTimeout(() => {
               this.handleCloseDialog()
               this.onSearch()
             }, 500)
-          })
+          }
         }).catch(() => {
           this.$refs.dialogForm && this.$refs.dialogForm.handleResetField()
         })
@@ -1086,7 +1122,7 @@ export default {
     },
     // 选择删除的罪犯
     handleSelectionChange(val) {
-      this.deletePrisoners = val
+      this.selectPrisoners = val
     },
     // 根据角色来区分监区数据
     // 其实现在数据都是从user里面读取 暂时不修改了
@@ -1128,6 +1164,26 @@ export default {
       this.notificationShow = false
 
       this.notificationForm = {}
+    },
+
+    // 批量更换监区
+    onPreChangePrisonConfigs() {
+      if(!this.selectPrisoners.length) {
+        this.$message({
+          showClose: true,
+          message: '请选择要更换监区的数据！',
+          type: 'warning'
+        })
+      }
+      else {
+        (async () => {
+          this.operationType = 5
+
+          await this.onInitPrisonConfigs()
+
+          this.visible = true
+        })()
+      }
     }
     // 自定义的全选操作 不要删除
     // handleCheckAllChange(val) {
