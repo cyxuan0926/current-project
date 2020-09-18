@@ -605,7 +605,7 @@
           type: 'warning'
         }).then(() => {
           this.selectOption=this.selectOption.filter(val=> val!=item)
-          console.log(this.selectOption)
+
           this.$message({
             type: 'success',
             message: '删除成功!'

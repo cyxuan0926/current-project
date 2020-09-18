@@ -174,7 +174,16 @@ export default {
       const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
         let itemData = {}
         for (let [key, value] of Object.entries(item)) {
-          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          if (![
+            'jailId',
+            'STATUS',
+            'jailName',
+            'meetingId',
+            'provincesName',
+            'meetingTime',
+            'conferenceName',
+            'roomNumber'
+            ].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
           else itemData = Object.assign({}, itemData, { [key]: value })
         }
         return itemData['startTimeConcat'].map((value, index) => (Object.assign({}, { count: itemData['startTimeConcat'].length, orderNumber: index, orderIndex: rows * (page - 1) + num + 1 },

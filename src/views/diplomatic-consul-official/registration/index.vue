@@ -350,7 +350,7 @@ export default {
     defaultRemarks() {
       let copyRemarks = this.registRemarks.slice(0)
 
-      copyRemarks.splice(1, 1)
+      copyRemarks.splice(1, 2)
 
       return copyRemarks
     },
