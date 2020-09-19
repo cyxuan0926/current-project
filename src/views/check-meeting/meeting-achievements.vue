@@ -372,7 +372,7 @@ export default {
             break
         }
       } catch (err) {
-        console.log(err)
+        Promise.reject(err)
       }
     },
 

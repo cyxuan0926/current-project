@@ -14,9 +14,19 @@
       <!-- <el-button type="primary" @click="getConfigs">确定</el-button> -->
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
-
+    <el-tabs
+      v-if="isSeparateByArea"
+      v-model="areaTabs"
+      type="card">
+      <el-tab-pane v-for="t in $store.state.areaOptions"
+        :key="t.value"
+        :label="t.label"
+        :name="t.value" />
+    </el-tabs>
     <meeting-table
       ref="meetingTable"
+      :areaType="areaTabs"
+      :separateByArea="isSeparateByArea"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
@@ -49,7 +59,9 @@ export default {
       // 默认展现两天后的会见申请数据
       adjustDate: '',
       dayinLimit: '',
-      pickerOptions: {}
+      pickerOptions: {},
+      isSeparateByArea: false,
+      areaTabs: '1'
     };
   },
 
@@ -83,6 +95,10 @@ export default {
       if (val === this.adjustDate) {
         this.getConfigs();
       }
+    },
+
+    areaTabs(newVal, oldVal) {
+      this.getConfigs()
     }
   },
 
@@ -115,6 +131,7 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
+    this.isSeparateByArea = this.$store.state.global.user.separateByArea
     await this.getConfigs();
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
     limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
@@ -193,7 +210,10 @@ export default {
     // 获取配置
     async getConfigs() {
       // 获取监狱配置
-      await this.getMeetingConfigs(this.adjustDate);
+      await this.getMeetingConfigs({
+        inputDate: this.adjustDate,
+        area: this.isSeparateByArea ? this.areaTabs : ''
+      });
       this.meetingAdjustDealing(false);
 
       let message = "";

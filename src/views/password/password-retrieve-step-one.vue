@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="passwore-retrieve__icon">
-      <i class="el-icon-info">&nbsp;&nbsp;请输入你需要找回登陆密码的账户名</i>
+      <i class="el-icon-info">&nbsp;&nbsp;请输入你需要找回登录密码的账户名</i>
     </div>
     <!-- https://element.eleme.cn/#/zh-CN/component/form -->
     <el-form

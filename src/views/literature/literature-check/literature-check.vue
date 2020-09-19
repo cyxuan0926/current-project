@@ -229,7 +229,7 @@ export default {
         const isSuccess = await this.passLiterature({ id: literaturesId })
         isSuccess && this.getTableData()
       } catch (err) {
-        console.log(err);
+        Promise.reject(err);
       }
     },
     // 不通过审核

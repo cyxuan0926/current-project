@@ -91,6 +91,8 @@ const codes = {
   502: {
     next: params => {
       tips('Bad Gateway,网关错误！')
+      logout()
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   504: {

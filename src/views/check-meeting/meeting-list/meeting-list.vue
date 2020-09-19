@@ -92,6 +92,7 @@
       @onPageChange="getDatas"
     />
     <el-dialog
+      :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
       @close="closeAuthorize"
@@ -144,6 +145,7 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="授权"
+      :close-on-click-modal="false"
       width="530px">
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
@@ -194,6 +196,7 @@
       @close="closeWithdraw"
       class="authorize-dialog"
       title="撤回"
+      :close-on-click-modal="false"
       width="530px">
       <m-form
         ref="dialogForm"
@@ -423,7 +426,11 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
+  import {
+    mapActions,
+    mapState,
+    mapMutations
+  } from 'vuex'
   import validator, { helper } from '@/utils'
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
   import prisons from '@/common/constants/prisons'
@@ -448,6 +455,10 @@
         {
           label: '审核未通过',
           name: 'DENIED,CANCELED'
+        },
+        {
+          label: '通话异常统计',
+          name: 'EXPIRED,FINISHED,MEETING_ON'
         },
         {
           label: '未授权',
@@ -684,12 +695,17 @@
 
         const basicCols = [
             {
+              label: '监区',
+              prop: 'prisonArea'
+            },
+            {
               label: '罪犯编号',
               prop: 'prisonerNumber'
             },
             {
-              label: '监区',
-              prop: 'prisonArea'
+              label: '罪犯姓名',
+              prop: 'prisonerName',
+              showOverflowTooltip: true
             },
             {
               label: '申请时间',
@@ -704,19 +720,18 @@
               minWidth: 135
             },
             {
-              label: '罪犯姓名',
-              prop: 'prisonerName',
-              showOverflowTooltip: true
-            },
-            {
               label: '家属',
               slotName: 'families',
               minWidth: 115
             },
-            // {
-            //   label: '家属电话',
-            //   prop: ''
-            // },
+            {
+              label: '家属电话',
+              prop: 'phone'
+            },
+            {
+              label: '关系',
+              prop: 'relationship'
+            },
             {
               label: '申请状态',
               slotName: 'content',
@@ -843,6 +858,8 @@
             this.searchItems.status.options=this.$store.state.deniedStatus
             this.toShow.changerType=true
             this.filter.changerType = '2'
+          }else if(val == 'EXPIRED,FINISHED,MEETING_ON') {
+            this.searchItems.status.options=this.$store.state.unusualStatus
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
@@ -880,6 +897,9 @@
         'firstLevelAuthorize',
         'getMeettingsChangelogDetail'
       ]),
+
+      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -934,7 +954,7 @@
       },
       getDatas(e) {
         if (this.tabs !== 'first') {
-          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+          if (this.tabs !== 'DENIED,CANCELED' && this.tabs !== 'EXPIRED,FINISHED,MEETING_ON' || !this.filter.status) {
             this.filter.status = this.tabs
           }
         }
@@ -1117,9 +1137,9 @@
         this.buttonLoading = false
       },
       //覆盖mixin 授权对话框同意情况下的确认操作
-      onPassedAuthorize() {
-        this.onAuthorization('PASSED')
-      },
+      // onPassedAuthorize() {
+      //   this.onAuthorization('PASSED')
+      // },
       //覆盖mixin 授权对话框同意情况下的返回操作
       onAgreeAuthorizeGoBack() {
         this.show.agree = false
@@ -1202,6 +1222,7 @@
           this.buttonLoading = false
           if (!res) return
           this.closeAuthorize()
+          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1226,6 +1247,7 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
+            this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.show.agree = false;
             this.getDatas('handleSubmit')

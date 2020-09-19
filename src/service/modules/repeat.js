@@ -89,5 +89,20 @@ export default {
     const { url, params } = inputs
 
     return service.post(url, params)
+  },
+
+  // 监狱配置 - 获取收费配置
+  getMeetingChargeTemplate: params => {
+    return service.get('/jails/getMeetingChargeTemplate', params)
+  },
+
+  // 监狱配置 - 设置收费配置
+  setMeetingChargeTemplate: params => {
+    return service.postObj('/jails/setMeetingChargeTemplate', params)
+  },
+
+  // 监区管理 - 获取监狱最大层级数
+  getPrisonAreaMaxLevel: () => {
+    return service.get('/prison_config/getMaxLevel')
   }
 }

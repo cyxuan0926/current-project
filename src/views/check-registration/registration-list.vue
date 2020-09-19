@@ -31,6 +31,9 @@
           label="审核未通过"
           name="DENIED,WITHDRAW" />
         <el-tab-pane
+          label="通话异常统计"
+          name="" />
+        <el-tab-pane
           label="未授权"
           name="PENDING" />
       </el-tabs>
@@ -239,6 +242,7 @@
       class="authorize-dialog"
       :title="dialogTitle"
       @close="closeWithdraw"
+      :close-on-click-modal="false"
     >
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
       <div
@@ -389,7 +393,7 @@
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
               <el-input
-                :autosize="{ minRows: 4 }"
+                :autosize="{ minRows: 2 }"
                 type="textarea"
                 show-word-limit
                 maxlength="200"
@@ -438,6 +442,7 @@
             </el-form-item>
           </el-form> -->
           <el-form
+            v-if="remarks === '其他'"
             :model="withdrawForm"
             :rules="withdrawRule"
             ref="withdrawForm"
@@ -506,7 +511,12 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters,
+  mapMutations
+} from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import switches from '@/filters/modules/switches'
@@ -544,13 +554,13 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong,
-          value: ''
-        },
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   options,
+        //   belong,
+        //   value: ''
+        // },
         auditName: {
           type: 'input',
           label: '审核人',
@@ -634,6 +644,11 @@ export default {
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
         }
+        if ( val === '' ) {
+          delete this.filter.status
+          this.searchItems.status.miss = false
+          this.searchItems.status.options = this.$store.state.unusualStatus
+        }
         else {
           this.searchItems.status.miss = true
         }
@@ -673,20 +688,20 @@ export default {
       'haveMultistageExamine'
     ]),
 
-      relationalWidth() {
-        const widthConstent = {
-          0: '0%',
-          1: '32%',
-          2: '48%',
-          3: '32%',
-          4: '24%'
-        }
-        return widthConstent[this.toAuthorize.relationalProofUrls.length]
-      },
-
-      isShowPhone() {
-        return !!this.$store.state.global.user.familyPhone
+    relationalWidth() {
+      const widthConstent = {
+        0: '0%',
+        1: '32%',
+        2: '48%',
+        3: '32%',
+        4: '24%'
       }
+      return widthConstent[this.toAuthorize.relationalProofUrls.length]
+    },
+
+    isShowPhone() {
+      return !!this.$store.state.global.user.familyPhone
+    }
   },
   methods: {
     ...mapActions([
@@ -697,6 +712,8 @@ export default {
       'getRegistrationNotificationDetail',
       'firstLevelAuthorize'
     ]),
+
+    ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
 
     onAuthorizeFirstLevelGoBack() {
       this.$refs['multistageExamineForm'].clearValidate()
@@ -781,7 +798,7 @@ export default {
           })
         }
         else params.remarks = this.remarks
-        if (e === 'WITHDRAW') {
+        if (e === 'WITHDRAW' && this.remarks === '其他') {
           this.$refs.withdrawForm.validate(valid => {
             if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
@@ -795,7 +812,10 @@ export default {
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
         this.btnDisable = false
-        if (res) this.onCloseWithdrawDialog()
+        if (res) {
+          this.onCloseWithdrawDialog()
+          this.setIsRefreshMultistageExamineMessageBell(true)
+        }
       })
     },
 
@@ -890,7 +910,6 @@ export default {
       if (status === 'PENDING') {
         const { id } = row
         this.getRegistrationNotificationDetail({ id }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })
@@ -905,7 +924,6 @@ export default {
           id: notifyId,
           rid: id
         }).then(res => {
-          console.log(res, this.notification)
           if (!res) return
           this.notificationShow = true
         })

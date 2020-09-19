@@ -11,11 +11,13 @@ export default {
   },
 
   // 获取多级审批数目配置
-  getMultistageExamineCountConfigs: async({ commit }) => {
+  getMultistageExamineCountConfigs: async({ rootState, state, commit }) => {
     try {
       const { data } = await api.getMultistageExamineCountConfigs()
 
       commit('setMultistageExamineCountConfigs', data)
+
+      if (rootState.global.isRefreshMultistageExamineMessageBell) commit('setIsRefreshMultistageExamineMessageBell', false)
 
       return true
     }

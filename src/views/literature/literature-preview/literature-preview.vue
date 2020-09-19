@@ -146,7 +146,7 @@ export default {
         })
         isSuccess && this.back()
       } catch (err) {
-        console.log(err);
+        Promise.reject(err);
       }
     },
     onConfirmReject() {

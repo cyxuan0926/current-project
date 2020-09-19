@@ -118,11 +118,24 @@ export default {
 
       publicUserInfo: state => state.account.publicUserInfo,
 
-      multistageExamineCountConfigs: state => state.layout.multistageExamineCountConfigs
+      multistageExamineCountConfigs: state => state.layout.multistageExamineCountConfigs,
+
+      isRefreshMultistageExamineMessageBell: state => state.global.isRefreshMultistageExamineMessageBell
     }),
 
     ...mapGetters(['isAdvancedAuditor'])
   },
+
+  watch: {
+    isRefreshMultistageExamineMessageBell(val) {
+      if (val) {
+        (async () => {
+          await this.getMultistageExamineCountConfigs()
+        })()
+      }
+    }
+  },
+
   methods: {
     ...mapActions([
       'handleCollapse',

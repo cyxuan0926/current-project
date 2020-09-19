@@ -186,8 +186,10 @@
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 export default {
+  mixins: [prisonFilterCreator],
   data() {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
@@ -209,12 +211,12 @@ export default {
           type: 'input',
           label: '家属姓名'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong
-        }
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   options,
+        //   belong
+        // }
       },
       show: {
         authorize: false,

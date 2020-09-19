@@ -51,5 +51,17 @@ export default {
   },
   addPrionser({ commit }, params) {
     return http.addPrionser(params).then(res => res)
+  },
+
+  // 批量更换监区
+  async changePrisonAreaBatch({ commit }, params) {
+    try {
+      const { code } = await http.changePrisonAreaBatch(params)
+
+      return code === 200
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

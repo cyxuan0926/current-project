@@ -8,7 +8,8 @@ export default {
     hasOnlyAllPrisonQueryAuth: Boolean,
     hasProvinceQueryAuth: Boolean,
     provincesId: String,
-    hasDiplomatQueryAuth: Boolean
+    hasDiplomatQueryAuth: Boolean,
+    hasPrisonAreaAuth: Boolean
   },
   data() {
     return {
@@ -27,6 +28,9 @@ export default {
     if (this.hasAllPrisonQueryAuth) {
       this.createPrisonAreaFilter()
       this.createPrisonFilter()
+    }
+    if (this.hasPrisonAreaAuth) {
+      this.createPrisonAreaFilter()
     }
 
     if (this.hasProvinceQueryAuth) this.createProvinceFilter()
@@ -102,37 +106,94 @@ export default {
     },
 
     createPrisonAreaFilter() {
-      const prisonAreaItem = {
+      const baseItem = {
         type: 'select',
-        label: '监区',
         options: [],
-        belong: { value: 'name', label: 'name' },
+        belong: { value: 'id', label: 'name' },
         value: ''
       }
+      const prisonAreaItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonAreaId',
+        label: '监区'
+      })
 
-      this.searchItems = Object.assign({}, { prisonArea: prisonAreaItem }, this.searchItems)
+      const prisonSubAreaItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonSubAreaId',
+        label: '分监区'
+      })
+
+      const prisonHouseItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonHouseId',
+        label: '楼栋'
+      })
+
+      const prisonFloorItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonFloorId',
+        label: '楼层'
+      })
+
+      this.searchItems = Object.assign({}, {
+        prisonArea: prisonAreaItem,
+        prisonSubArea: prisonSubAreaItem,
+        prisonHouse: prisonHouseItem,
+        prisonFloor: prisonFloorItem
+      }, this.searchItems)
+
+      const _jailId = this.$store.state.global.user.jailId
+      if (_jailId && _jailId !== -1) {
+        this.searchSelectChange('jailId', _jailId)
+      }
+    },
+
+    clearSubPrisonArea(target) {
+      let _list = ['prisonArea', 'prisonSubArea', 'prisonHouse', 'prisonFloor']
+      _list = _list.slice(_list.findIndex(l => l === target))
+      _list.forEach(t => {
+        this.$set(this.searchItems[t], 'value', '')
+        this.$set(this.searchItems[t], 'options', [])
+      })
     },
 
     async searchSelectChange(selectKey, value) {
-        if (selectKey === 'jailId') {
-        if (this.searchItems.prisonArea) {
-          if (value) {
-            await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+      if (selectKey === 'prisonAreaId') {
+        this.clearSubPrisonArea('prisonSubArea')
+        if (value) {
+          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          Message.closeAll()
+          this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
+        }
+      }
 
-            Message.closeAll()
+      if (selectKey === 'prisonSubAreaId') {
+        this.clearSubPrisonArea('prisonHouse')
+        if (value) {
+          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          Message.closeAll()
+          this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
+        }
+      }
 
-            this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
-          }
-          else {
-            this.searchItems.prisonArea.options = []
-          }
+      if (selectKey === 'prisonHouseId') {
+        this.clearSubPrisonArea('prisonFloor')
+        if (value) {
+          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          Message.closeAll()
+          this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
+        }
+      }
 
-          this.searchItems.prisonArea.value = ''
+      if (selectKey === 'jailId') {
+        if (value) {
+          this.clearSubPrisonArea('prisonArea')
+          await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+          Message.closeAll()
+          this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
         }
       }
 
       if (selectKey === 'provincesId') {
         if (value) {
+          this.clearSubPrisonArea('prisonSubArea')
           this.$set(this.searchItems['jailId'], 'value', '')
           if (this.searchItems['prisonArea']) {
             this.$set(this.searchItems['prisonArea'], 'value', '')

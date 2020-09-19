@@ -90,7 +90,7 @@ export default {
 
   // 家属会见申请-获取会见信息
   getMeetingConfigs: params => {
-    return service.get(`/meetings/adjustment?inputDate=${ params }`)
+    return service.get('/meetings/adjustment', params)
   },
   // 家属会见申请-调整
   adjustMeeting: params => {
@@ -164,6 +164,12 @@ export default {
   getNotificationFamilies: params => {
     return service.get('/notification/families', params).then(res => res && res.data)
   },
+
+  // 服刑人员信息管理-批量更换监区
+  changePrisonAreaBatch: params => {
+    return service.post('/prisoners/changePrisonAreaBatch', params)
+  },
+
   // 家属信息管理-列表
   getFamilies: params => {
     return service.get('/families/page', params).then(res => res && res.data)

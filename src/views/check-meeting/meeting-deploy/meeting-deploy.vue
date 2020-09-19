@@ -34,7 +34,7 @@
       title="提示"
       :visible.sync="dialogVisible"
       width="500px">
-      <span>“监狱配置已开启二级审核，当开启自动审核后，二级审核将失效，确认开启自动审核吗？” </span>
+      <span>监狱配置已开启二级审核，当开启自动审核后，二级审核将失效，确认开启自动审核吗？</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="closeDeploy()">取 消</el-button>
     <el-button type="primary" @click="submitDeploy()">确 定</el-button>
@@ -58,6 +58,7 @@
         dialogVisible:false,
         params:false,
         autoAuthorizeMeeting: true,
+        multistageExamine:false
       }
     },
     computed: {
@@ -69,12 +70,13 @@
       getDeploy(){
         http.getMeetDeploy().then(res => {
           this.dialogVisible = false
-          this.autoAuthorizeMeeting=res.data?true:false
+          this.autoAuthorizeMeeting=res.data.autoAuthorizeMeeting?true:false
+          this.multistageExamine=res.data.multistageExamine?true:false
         })
       },
       submitTit(){
         //判断
-        if(this.autoAuthorizeMeeting==true){
+        if(this.autoAuthorizeMeeting==true&&this.multistageExamine==true){
           this.dialogVisible=true
         }else{
           this.submitDeploy()
@@ -88,7 +90,6 @@
           autoAuthorizeMeeting: this.autoAuthorizeMeeting?1:0,
         }
         http.getMeetDeployUpdate(params).then(res => {
-          console.log(res)
           this.getDeploy()
         })
       }
