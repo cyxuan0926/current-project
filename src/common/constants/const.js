@@ -53,3 +53,6 @@ export const multistageExamineDropdownItems = [
 
 // 可选的会见时间段
 export const meetingChargeConfigDurations = [5, 10, 15, 20, 25]
+
+// 监狱层级数
+export const prisonAreaMaxLevel = {}

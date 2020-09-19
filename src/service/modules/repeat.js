@@ -99,5 +99,10 @@ export default {
   // 监狱配置 - 设置收费配置
   setMeetingChargeTemplate: params => {
     return service.postObj('/jails/setMeetingChargeTemplate', params)
+  },
+
+  // 监区管理 - 获取监狱最大层级数
+  getPrisonAreaMaxLevel: () => {
+    return service.get('/prison_config/getMaxLevel')
   }
 }
