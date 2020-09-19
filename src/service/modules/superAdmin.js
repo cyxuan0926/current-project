@@ -120,6 +120,10 @@ export default {
   updateTerminalName: params => {
     return service.postObj('/terminals/edit/terminalName', params).then(res => res)
   },
+  // 查询分配的终端
+  getTerminal: params => {
+    return service.get('/terminals/getUsableTerminals', params).then(res => res && res.data)
+  },
   // 版本管理-列表
   getVersions: params => {
     return service.get('/versions/page', params).then(res => res && res.data)

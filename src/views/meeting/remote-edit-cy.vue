@@ -162,7 +162,6 @@ export default {
 
 .remote-visit-form {
   border-bottom: 1px solid #dcdfe6;
-  margin-bottom: 15px;
 
   /deep/ .el-form-item {
     margin-bottom: 10px;
