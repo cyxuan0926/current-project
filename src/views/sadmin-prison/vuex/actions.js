@@ -79,5 +79,31 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  // 监狱配置 - 获取收费配置
+  getMeetingChargeTemplate: async({ commit }, params) => {
+    try {
+      const { data } = await http.getMeetingChargeTemplate(params)
+
+      commit('setPrisonChargeConfigs', data)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 监狱配置 - 设置收费配置
+  setMeetingChargeTemplate: async({ commit }, params) => {
+    try {
+      const { code } = await http.setMeetingChargeTemplate(params)
+
+      return code === 200
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }
