@@ -115,6 +115,7 @@
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeStart"
+              format="HH:mm"
               :picker-options="selectRange"
               :clearable="false"
               @change="handleTimepickerChange">
@@ -123,6 +124,7 @@
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeEnd"
+              format="HH:mm"
               disabled>
             </el-time-picker>
           </div>
@@ -424,6 +426,14 @@ export default {
       }
     },
 
+    setTimeRange(dateObj) {
+      let _start = Moment(dateObj)
+      let _end = Moment(dateObj).add(this.crossDuration, 'm')
+      let _last = Moment({ hour: '23', minute: '59' })
+      this.timeRangeStart = _start
+      this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
+    },
+
     handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
@@ -435,15 +445,12 @@ export default {
         let em = _timeRange[1].split(':')
         em = Moment({ hour: em[0], minute: em[1] })
         this.crossDuration = em.diff(sm, 'm')
-        let _now = Moment()
-        let _end = Moment().add(this.crossDuration, 'm')
-        let _last = Moment({ hour: '23', minute: '59' })
+        let _now = new Date()
         this.selectRange = {
-          selectableRange: `${_now.format('HH:mm')} - 23:59`
+          selectableRange: `${Moment(_now).format('HH:mm')}:00 - 23:58:00`,
+          format: 'HH:mm'
         }
-        console.log(this.selectRange)
-        this.timeRangeStart = _now
-        this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
+        this.setTimeRange(_now)
       }
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
@@ -459,7 +466,7 @@ export default {
     },
 
     handleTimepickerChange(val) {
-      console.log(val)
+      this.setTimeRange(val)
     },
 
     handleSelectAcross(terNum, time) {
