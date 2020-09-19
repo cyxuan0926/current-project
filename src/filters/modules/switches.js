@@ -149,6 +149,16 @@ let switches = {
       label: '一体机',
       value: 1
     }
+  ],
+  areaOptions: [
+    {
+      label: '监舍区',
+      value: '1'
+    },
+    {
+      label: '生产区',
+      value: '2'
+    }
   ]
 }
 
