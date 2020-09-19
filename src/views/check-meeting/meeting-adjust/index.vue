@@ -15,7 +15,7 @@
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
     <el-tabs
-      v-if="!isSeparateByArea"
+      v-if="isSeparateByArea"
       v-model="areaTabs"
       type="card">
       <el-tab-pane v-for="t in $store.state.areaOptions"

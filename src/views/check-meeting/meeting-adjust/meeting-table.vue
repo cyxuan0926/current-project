@@ -129,12 +129,12 @@
             </el-time-picker>
           </div>
         </section>
-        
+        <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
       </template>
       <template v-else>
         <section>
           <el-tabs
-            v-if="!isSeparateByArea"
+            v-if="isSeparateByArea"
             v-model="areaType"
             type="card">
             <el-tab-pane v-for="t in $store.state.areaOptions"
@@ -284,6 +284,8 @@ export default {
 
   data() {
     return {
+      showTips: '',
+      isShowTips: false,
       timeRangeStart: new Date(),
       timeRangeEnd: new Date(),
       crossDuration: 5,
@@ -299,7 +301,7 @@ export default {
       crossMeetingQueue: [],
       crossMeetingCurrent: {},
       crossDateSelect: '',
-      meetingVisible: true,
+      meetingVisible: false,
       acrossAdjustDate: '',
       pickerOptions: {}
     };
@@ -313,6 +315,10 @@ export default {
       this.meetingsData = this.getMeetingsData()
       this.specialData = this.getMeetingsData('specialQueue')
       document.querySelector('.meeting-list-block-scroller').style.width = 188 * (this.meetingsData.length + this.specialData.length) + 'px'
+    },
+
+    areaType() {
+      this.handleGetConfigs()
     }
   },
 
@@ -426,6 +432,25 @@ export default {
       }
     },
 
+    checkInmeetings() {
+      return this.meetingQueue.some(m => {
+        let {sm, em} = this.getStartandEndTime(m)
+        return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
+      })
+    },
+
+    getStartandEndTime(time) {
+      let _timeRange = time.split('-')
+      let sm = _timeRange[0].split(':')
+      sm = Moment({ hour: sm[0], minute: sm[1] })
+      let em = _timeRange[1].split(':')
+      em = Moment({ hour: em[0], minute: em[1] })
+      return {
+        sm,
+        em
+      }
+    },
+
     setTimeRange(dateObj) {
       let _start = Moment(dateObj)
       let _end = Moment(dateObj).add(this.crossDuration, 'm')
@@ -437,13 +462,9 @@ export default {
     handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
-      this.isSpecial = true // !!flag
+      this.isSpecial = !!flag
       if (this.isSpecial) {
-        let _timeRange = m.meetingTime.split(' ')[1].split('-')
-        let sm = _timeRange[0].split(':')
-        sm = Moment({ hour: sm[0], minute: sm[1] })
-        let em = _timeRange[1].split(':')
-        em = Moment({ hour: em[0], minute: em[1] })
+        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
         this.crossDuration = em.diff(sm, 'm')
         let _now = new Date()
         this.selectRange = {
@@ -451,11 +472,13 @@ export default {
           format: 'HH:mm'
         }
         this.setTimeRange(_now)
+        this.showTips = ''
+        this.isShowTips = false
       }
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() - 24 * 3600 * 1000 || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
+          return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
       }
       this.crossMeetingCurrent = m
@@ -466,6 +489,7 @@ export default {
     },
 
     handleTimepickerChange(val) {
+      this.isShowTips = false
       this.setTimeRange(val)
     },
 
@@ -480,6 +504,30 @@ export default {
       }
     },
     async handleSaveAcross() {
+      if (this.isSpecial) {
+        if (this.checkInmeetings()) {
+          this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
+          this.isShowTips = true
+          return
+        }
+        if ((this.showTips = this.checkCanMeetings())) {
+          this.isShowTips = true
+          return
+        }
+        this.crossDateSelect = {
+          name: this.crossMeetingCurrent.name,
+          id: this.crossMeetingCurrent.id,
+          meetingTime: `${this.acrossAdjustDate} ${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`,
+          terminalId: this.terminalId,
+          terminalNumber: this.terminalNumber,
+          adjustStatus: 0
+        }
+      }
+
+      if (this.isSeparateByArea) {
+        this.crossDateSelect.area = this.areaType
+      }
+
       await http.adjustMeeting([this.crossDateSelect])
       this.removeSelClass()
       this.crossDateSelect = ''
@@ -492,24 +540,27 @@ export default {
       this.meetingVisible = false
     },
 
+    checkCanMeetings() {
+      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
+        return "该日不可申请可视电话"
+      } else if (!this.crossTerminals || !this.crossTerminals.length) {
+        return "该日无可用终端"
+      }
+    },
+
     async handleGetConfigs() {
       let { data } = await http.getMeetingConfigs({
-        inputDate: this.adjustDate,
+        inputDate: this.acrossAdjustDate,
         area: this.isSeparateByArea ? this.areaType : ''
       })
+      this.isShowTips = false
       let applyList = {}
       this.crossMeetings = data.meetings
       this.crossTerminals = data.terminals
       this.crossMeetingQueue = data.meetingQueue
 
-      let message = ""
       this.$message.closeAll()
-      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
-        message = "该日不可申请可视电话"
-      } else if (!this.crossTerminals || !this.crossTerminals.length) {
-        message = "该日无可用终端"
-      }
-
+      let message = this.checkCanMeetings()
       if (message) {
         this.$message.warning(message)
       }
@@ -795,6 +846,12 @@ export default {
     content: ' ';
     clear: both;
   }
+}
+
+.timerange-tips {
+  padding-left: 120px;
+  color: red;
+  font-size: 12px;
 }
 
 .across-table {
