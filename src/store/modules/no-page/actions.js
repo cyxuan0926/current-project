@@ -66,5 +66,45 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  async getPrisonAreaMaxLevel({ commit }) {
+    try {
+      const { data } = await http.getPrisonAreaMaxLevel()
+
+      const { maxLevel } = data
+
+      commit('setPrisonConfigsMaxLevel', maxLevel)
+
+      return true
+    }
+    catch (err) {
+      throw err
+    }
+  },
+
+  async getAllChildPrisonConfigs({ commit }) {
+    try {
+      const { data } = await http.getAllChildPrisonConfigs()
+
+      const filterData = (inputs) => {
+        return inputs.map(item => {
+          if (item.children && item.children.length) filterData(item.children)
+          else delete item.children
+          return item
+        })
+      }
+
+      const { prisonConfigs } = data
+
+      const temp = filterData(prisonConfigs)
+
+      commit('setAllChildPrisonConfigs', temp)
+
+      return temp
+    }
+    catch (err) {
+      throw err
+    }
   }
 }

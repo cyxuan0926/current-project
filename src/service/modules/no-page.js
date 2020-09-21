@@ -28,5 +28,9 @@ export default {
   // 外交领事官员-外交官员组织机构
   getOrgName: params => {
     return service.get('/diplomats/registrations/getOrgName', params)
+  },
+
+  getAllChildPrisonConfigs: () => {
+    return service.get('/prison_config/getAllChildPrisonConfigs')
   }
 }
