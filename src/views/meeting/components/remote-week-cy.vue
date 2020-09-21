@@ -2,18 +2,9 @@
   <label>
     <span  v-for="(configs, type) in allConfigs">
     <div
-      v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
-      class="m-container"
-      :key="type"
-    >
-
-      <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>
-      <div
-        v-for="(config, index) in configs"
-        :key="index"
-        class="config-box">
-        <div class="day-box">
-          <label class="c-label">选择工作日</label>
+      class="config-box">
+      <div class="day-box">
+      <label class="c-label">选择工作日</label>
           <!-- 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 -->
           <el-checkbox-group
             v-model="config.days"
@@ -605,7 +596,7 @@
           type: 'warning'
         }).then(() => {
           this.selectOption=this.selectOption.filter(val=> val!=item)
-
+          console.log(this.selectOption)
           this.$message({
             type: 'success',
             message: '删除成功!'

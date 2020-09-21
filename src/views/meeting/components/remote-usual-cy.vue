@@ -1,34 +1,95 @@
 <template>
   <div class="container">
-    <div>
-      <el-form>
-        <el-form-item label="是否分生产区和监舍区">
-          <el-switch
-            v-model="prisonShow"
-            active-color="#13ce66">
-          </el-switch>
-        </el-form-item>
-      </el-form>
-    </div>
-
-     <remote-week-cy v-if="!prisonShow" />
-
-    <template v-if="prisonShow">
-      <div>
-        <el-form>
-          <el-form-item label="请选择生产区设备:" style="width:440px">
-            <div class="prisonlabel">
-              <el-button v-for="(item,index) in selectOption"
-                         :key=index size="mini"
-                         style="margin-left: 5px"
-                         @click="open(item)">{{item.selectArr}} <i class="el-icon-circle-close"/>
-              </el-button>
-
-            </div>
-            <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow()">选择设备</el-button>
-          </el-form-item>
-        </el-form>
-        <remote-week-cy v-if="prisonShow" />
+    <template v-for="(configs, type) in allConfigs">
+      <div
+        v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
+        class="m-container"
+        :key="type"
+      >
+        <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>
+        <div>
+          <el-form>
+            <el-form-item label="是否分生产区和监舍区">
+              <el-switch
+                v-model="separateByArea"
+                active-color="#13ce66">
+              </el-switch>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div  v-if="separateByArea">
+          <el-form >
+            <el-form-item label="请选择生产区设备:" style="width:440px">
+              <div class="prisonlabel">
+                <label v-if="config.area=='2'" v-for="(config,ind) in configs" :key=ind >
+                <el-button  v-for="(item,index) in config.terminals "
+                           :key=index size="mini"
+                           style="margin-left: 5px"
+                           @click="open(item)">{{item.selectArr}}<i class="el-icon-circle-close"/>
+                </el-button>
+                </label>
+              </div>
+              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2)">选择设备</el-button>
+            </el-form-item>
+          </el-form>
+          <div
+            v-if="config.area=='2'"
+            v-for="(config, index) in configs"
+            :key="index"
+            class="config-box">
+              <remote-week-cy
+                :separateByArea="separateByArea"
+              :allConfigs="allConfigs"
+              :configs="configs"
+              :config="config"
+                :area="config.area"
+              :index="index"
+              :type="type" />
+          </div>
+          <el-form>
+            <el-form-item label="请选择监舍区设备:" style="width:440px">
+              <div class="prisonlabel">
+                <label v-if="config.area=='1'" v-for="(config,ind) in configs" :key=ind >
+                  <el-button v-for="(item,index) in config.terminals "
+                             :key=index size="mini"
+                             style="margin-left: 5px"
+                             @click="open(item)">{{item.selectArr}}<i class="el-icon-circle-close"/>
+                  </el-button>
+                </label>
+              </div>
+              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1)">选择设备</el-button>
+            </el-form-item>
+          </el-form>
+          <div
+            v-if="config.area=='1'"
+            v-for="(config, index) in configs"
+            :key="index"
+            class="config-box">
+            <remote-week-cy
+              :separateByArea="separateByArea"
+              :allConfigs="allConfigs"
+              :configs="configs"
+              :config="config"
+              :area="config.area"
+              :index="index"
+              :type="type" />
+          </div>
+        </div>
+          <!--不分舍监区-->
+        <div
+          v-if="!separateByArea"
+          v-for="(config, index) in configs"
+          :key="index"
+          class="config-box">
+          <remote-week-cy
+            :separateByArea="separateByArea"
+            :allConfigs="allConfigs"
+            :configs="configs"
+            :config="config"
+            :area="0"
+            :index="index"
+            :type="type" />
+        </div>
       </div>
 
 
@@ -767,7 +828,7 @@
           type: 'warning'
         }).then(() => {
           this.selectOption=this.selectOption.filter(val=> val!=item)
-
+          console.log(this.selectOption)
           this.$message({
             type: 'success',
             message: '删除成功!'
