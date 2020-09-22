@@ -262,18 +262,21 @@ export default {
             params[key] = this.items[key].value
           }
         })
-        params.prisonConfigId = params.prisonArea || params.prisonSubArea || params.prisonHouse || params.prisonFloor || ''
-        if ( params.prisonArea ) {
-          delete params.prisonArea
-        }
-        if ( params.prisonSubArea ) {
-          delete params.prisonSubArea
-        }
-        if ( params.prisonHouse ) {
-          delete params.prisonHouse
-        }
-        if ( params.prisonFloor ) {
-          delete params.prisonFloor
+        let _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
+        if ( _prisonConfigId ) {
+          params.prisonConfigId = _prisonConfigId
+          if ( params.prisonArea ) {
+            delete params.prisonArea
+          }
+          if ( params.prisonSubArea ) {
+            delete params.prisonSubArea
+          }
+          if ( params.prisonHouse ) {
+            delete params.prisonHouse
+          }
+          if ( params.prisonFloor ) {
+            delete params.prisonFloor
+          }
         }
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }

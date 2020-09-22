@@ -34,7 +34,7 @@
             :disabled="row.id === '-1'"
             :type=" row.id === '-1' ? 'info' : 'primary' "
             size="mini"
-            @click="handleEdit(row, $index)">编辑</el-button>
+            @click="handleEdit(row.id, $index)">编辑</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -47,44 +47,33 @@
       class="authorize-dialog"
       :title="showContent['title']"
       width="530px">
+      {{this.maxLevel}}
       <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
+        v-if="this.maxLevel >= 1"
         v-model.trim="prisonArea.name"
         placeholder="请输入监区名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
 
       <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
+        v-if="this.maxLevel >= 2"
         v-model.trim="prisonArea.branchname"
         placeholder="请输入分监区名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
       
-
       <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
+        v-if="this.maxLevel >= 3"
         v-model.trim="prisonArea.building"
         placeholder="请输入楼栋名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
 
-        <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
+      <el-input
+        v-if="this.maxLevel >= 4"
         v-model.trim="prisonArea.layer"
         placeholder="请输入楼层名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
+      
+      <div class="el-input-div__error" v-if="!!errTips">{{ errTips }}</div>
       <template slot="footer">
         <el-button
           type="primary"
           size="mini"
           class="button-add"
-          :disabled="!prisonArea.name"
           @click="handleOperate">{{ showContent['text'] }}</el-button>
       </template>
     </el-dialog>
@@ -93,6 +82,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import http from '@/service'
 export default {
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
@@ -114,8 +104,10 @@ export default {
       allPrisonAreas: [],
       index: '',
       dialogPermission: '',
-      validatingRepetition: false,
-      filter: {}
+      validatingError: false,
+      filter: {},
+      errTips: '',
+      maxLevel: 1,
     }
   },
   computed: {
@@ -174,6 +166,8 @@ export default {
   },
   async mounted() {
     this.getDatas()
+    let { data } = await http.queryPrisonAreaMaxlevel()
+    this.maxLevel = data.maxLevel
     if (this.user.role !== '4' && this.user.role !== '-1') {
       await this.getPrisonAll()
       this.searchItems.jailId.options = this.prisonAll
@@ -199,25 +193,76 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-    handleEdit(e, index) {
-      this.prisonArea = Object.assign({}, e)
+    async handleEdit(id, index) {
+      let { data } = await http.queryPrisonArea({ id })
+      this.prisonArea = data.prisonConfigs
       this.dialogPermission = 'edit'
-      this.validatingRepetition = false
+      this.validatingError = false
       this.dialogVisible = true
       this.index = index
     },
+    checkPrisonAreaInputs(val = []) {
+      let hasvalIndex = 0
+      let hasNovalIndex = 'init'
+      let tips = ['监区名称', '分监区名称', '楼栋名称', '楼层名称']
+      val.forEach((v, i) => {
+        if ( !!v ) {
+          hasvalIndex = i
+        } else {
+          (hasNovalIndex === 'init') && (hasNovalIndex = i)
+        }
+      })
+      if (hasNovalIndex === 'init') {
+        return
+      }
+      if ( hasNovalIndex <= hasvalIndex || this.maxLevel && hasNovalIndex <= this.maxLevel - 1 ) {
+        this.errTips = `请输入${ tips[hasNovalIndex] }`
+        return true
+      }
+    },
     handleOperate() {
-      const { id, name } = this.prisonArea
+      const { id, name = '', branchname = '', building = '', layer = ''} = this.prisonArea
+      const _inputs = []
+      if (this.maxLevel >= 1) {
+        _inputs.push(name)
+      }
+      if (this.maxLevel >= 2) {
+        _inputs.push(branchname)
+      }
+      if (this.maxLevel >= 3) {
+        _inputs.push(building)
+      }
+      if (this.maxLevel >= 4) {
+        _inputs.push(layer)
+      }
+      if( this.checkPrisonAreaInputs(_inputs) ) {
+        return
+      }
+      let _fullname = _inputs.join('-')
+      if( this.handleValidate(_fullname) ) {
+        this.errTips = `${ _fullname }，已经存在！`
+        return
+      }
       if(this.dialogPermission === 'edit') {
-        this.updatePrisonArea({id,name}).then(res => {
+        this.updatePrisonArea({
+          id,
+          name,
+          branchname,
+          building,
+          layer
+        }).then(res => {
           if (res.code !== 200) return
-          this.prisonAreas.contents[this.index].name = this.prisonArea.name
-          this.prisonAreas.contents[this.index].updatedAt = res.data.prisonConfig.updatedAt
+          this.getDatas()
           this.dialogVisible = false
         })
       }
-      if(this.dialogPermission === 'add' && !this.validatingRepetition) {
-        this.addPrisonArea({name}).then(res => {
+      if(this.dialogPermission === 'add') {
+        this.addPrisonArea({
+          name,
+          branchname,
+          building,
+          layer
+        }).then(res => {
           if(!res) return
           this.dialogVisible = false
           this.getDatas()
@@ -237,20 +282,20 @@ export default {
       }).catch(() => {})
     },
     async handleAdd() {
-      this.$set(this.prisonArea, 'name', '')
+      this.prisonArea = {}
       this.dialogPermission = 'add'
-      this.validatingRepetition = false
+      this.validatingError = false
       this.dialogVisible = true
       if(!this.allPrisonAreas.length) {
         const res = await this.getPrisonAreas({ params: {...{ jailId: JSON.parse(localStorage['user']).jailId }, ...{ page: 1, rows: 100 }}, defaultMode: 'all' })
         this.allPrisonAreas = res
       }
     },
-    handleValidate(e) {
+    handleValidate(fullname) {
       if(this.dialogPermission === 'edit') return
       if(this.dialogPermission === 'add') {
         if(this.allPrisonAreas.length) {
-          this.validatingRepetition = this.allPrisonAreas.some(val => val.name === this.prisonArea.name)
+          return this.allPrisonAreas.some(val => val.fullname === fullname)
         }
       }
     }
