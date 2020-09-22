@@ -619,12 +619,17 @@ export default {
     },
 
     // 初始化数据
-    onInitData(data) {
+    async onInitData() {
+      await this.getMeetingChargeTemplate({ id: this.id })
+
+      const clonePrisonChargeConfigs = cloneDeep(this.prisonChargeConfigs)
+
       const {
         chargeType,
         diplomatistCharge,
-        prisonMctList
-      } = data
+        prisonMctList,
+        diplomatistMct
+      } = clonePrisonChargeConfigs
 
       this.localChargeType = chargeType
 
@@ -798,7 +803,7 @@ export default {
       const isSuccess = await this.setMeetingChargeTemplate(params)
 
       setTimeout(() => {
-        this.getMeetingChargeTemplate({ id: this.id })
+        this.onInitData()
       }, 500)
     },
 
@@ -809,11 +814,7 @@ export default {
   },
 
   async activated() {
-    await this.getMeetingChargeTemplate({ id: this.id })
-
-    const clonePrisonChargeConfigs = this.prisonChargeConfigs
-
-    this.onInitData(clonePrisonChargeConfigs)
+    await this.onInitData()
   }
 }
 

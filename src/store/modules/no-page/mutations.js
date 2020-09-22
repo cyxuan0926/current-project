@@ -17,5 +17,13 @@ export default {
 
   getOrgName(state, organization = []) {
     state.organizationNames = organization
+  },
+
+  setPrisonConfigsMaxLevel(state, prisonConfigsMaxLevel) {
+    state.prisonConfigsMaxLevel = prisonConfigsMaxLevel
+  },
+
+  setAllChildPrisonConfigs(state, allChildPrisonConfigs) {
+    state.allChildPrisonConfigs = allChildPrisonConfigs.slice(0)
   }
 }

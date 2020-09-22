@@ -40,5 +40,19 @@ export default {
   },
   enableOrDisablePrisonUser: ({ commit }, params) => {
     return http.enableOrDisablePrisonUser(params).then(res => res)
+  },
+
+  // 监区管理 - 级联层级选择
+  getChildPrisonConfigs: async({ commit }, parmas) => {
+    try {
+      const { prisonConfigs = [] } = await http.getJailPrisonSubs(parmas)
+
+      commit('setMultiPrisonConfigs', prisonConfigs)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

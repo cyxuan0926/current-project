@@ -744,21 +744,21 @@ export default {
           prop: 'prisonArea',
           showOverflowTooltip: true
         },
-        {
-          label: '罪名',
-          prop: 'crimes',
-          showOverflowTooltip: true
-        },
+        // {
+        //   label: '罪名',
+        //   prop: 'crimes',
+        //   showOverflowTooltip: true
+        // },
         {
           label: '通话次数/月',
           minWidth: 85,
           slotName: 'accessTime'
         },
-        {
-          label: '刑期起止',
-          minWidth: 140,
-          slotName: 'prisonTerm'
-        },
+        // {
+        //   label: '刑期起止',
+        //   minWidth: 140,
+        //   slotName: 'prisonTerm'
+        // },
         {
           label: '服刑人员状态',
           minWidth: 90,

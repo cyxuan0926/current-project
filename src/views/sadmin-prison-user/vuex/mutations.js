@@ -5,5 +5,10 @@ export default {
   },
   getPrisonUserDetail: (state, params) => {
     state.prisonUser = Object.assign({}, { prisonConfigIds: [] }, params)
+  },
+
+  // 设置监区层级
+  setMultiPrisonConfigs: (state, multiPrisonConfigs) => {
+    state.multiPrisonConfigs = multiPrisonConfigs.slice(0)
   }
 }
