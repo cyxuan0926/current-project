@@ -51,6 +51,7 @@
         class="prisonAreas-inp"
         v-if="checkIsShow(1)"
         v-model.trim="prisonArea.name"
+        :disabled="checkIsDisabled(1)"
         maxlength="30"
         placeholder="请输入监区名称" />
 
@@ -58,6 +59,7 @@
         class="prisonAreas-inp"
         v-if="checkIsShow(2)"
         v-model.trim="prisonArea.branchname"
+        :disabled="checkIsDisabled(2)"
         maxlength="30"
         placeholder="请输入分监区名称" />
       
@@ -65,6 +67,7 @@
         class="prisonAreas-inp"
         v-if="checkIsShow(3)"
         v-model.trim="prisonArea.building"
+        :disabled="checkIsDisabled(3)"
         maxlength="30"
         placeholder="请输入楼栋名称" />
 
@@ -72,6 +75,7 @@
         class="prisonAreas-inp"
         v-if="checkIsShow(4)"
         v-model.trim="prisonArea.layer"
+        :disabled="checkIsDisabled(4)"
         maxlength="30"
         placeholder="请输入楼层名称" />
       
@@ -214,6 +218,9 @@ export default {
     },
     checkIsShow(level) {
       return this.dialogPermission === 'add' || this.dialogPermission === 'edit' && this.maxLevel && this.maxLevel >= level
+    },
+    checkIsDisabled(level) {
+      return this.dialogPermission === 'edit' && this.maxLevel && this.maxLevel > level
     },
     checkPrisonAreaInputs(val = [], isEdit) {
       let hasvalIndex = 0

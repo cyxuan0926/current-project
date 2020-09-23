@@ -31,9 +31,6 @@
           label="审核未通过"
           name="DENIED,WITHDRAW" />
         <el-tab-pane
-          label="通话异常统计"
-          name="" />
-        <el-tab-pane
           label="未授权"
           name="PENDING" />
       </el-tabs>
