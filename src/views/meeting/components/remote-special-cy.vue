@@ -26,7 +26,6 @@
             @change="onSureDates($event, config, index)"
           />
         </el-tooltip>
-
         <el-date-picker
           v-else
           class="none-2"
@@ -39,7 +38,6 @@
           :picker-options="pickerOptions"
           @change="onSureDates($event, config, index)"
         />
-        
         <el-radio-group
           v-model="config.enabledMeeting"
           @change="handleDate(config, currentDuration)">
@@ -67,6 +65,43 @@
           class="button-float"
           @click="onAddDay">新增特殊日期</el-button>
       </div>
+
+        <div>
+          <el-form>
+            <el-form-item label="是否分生产区和监舍区">
+              <el-switch
+                v-model="config.show"
+                :disabled="true"
+                active-color="#13ce66">
+              </el-switch>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div  v-if="config.show">
+          <el-form >
+            <el-form-item label="生产区设备:" style="width:450px">
+              <div class="prisonlabel">
+                <el-button  v-for="(item,index) in terminals[0] "
+                           :key='index' size="mini"
+                           style="margin-left: 5px"
+                           >{{item.selectArr}} 
+                </el-button>
+              </div>
+              </el-form-item>
+          </el-form>
+            <el-form>
+            <el-form-item label="请选择监舍区设备:" style="width:450px">
+              <div class="prisonlabel">
+               <el-button  v-for="(item,index) in terminals[1] "
+                           :key='index' size="mini"
+                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="type === 1 && hasOriginConfigAfter" @click="open(item)" class="el-icon-circle-close"/>
+                </el-button>
+              </div>
+              <el-button  v-if="type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+
       <!-- 选择的日期 -->
       <!-- <div class="config-days__selected">
         <label >配置日期</label>
@@ -219,6 +254,7 @@ export default {
       flag: true,
       loading: false,
       // 选择日期的选择选项配置
+      terminals:[[],[]],
       pickerOptions: {
         // 不可选的时间: 今天之前的 或者是已经选择了的日期
         disabledDate: (time) => {
@@ -290,14 +326,54 @@ export default {
 
     async initData() {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
-
-      const { complexSpecialConfigs } = this.specialConfigs
-
-      this.configs = cloneDeep(complexSpecialConfigs)
+   const { complexSpecialConfigs } = this.specialConfigs
+     this.configs = cloneDeep(complexSpecialConfigs)
+      let beforearea1=[],beforearea2=[]
+      this.configs.forEach(item=>{
+        if(item.area){
+          item.show=true
+          if( item.area==1){
+            console.log(item.terminals)
+            item.terminals.forEach(val=>{
+                beforearea1.push(val)
+            })
+          }
+          if( item.area==2){
+             item.terminals.forEach(val=>{
+                beforearea2.push(val)
+            })
+          }
+        }else{
+           item.show=false
+        }
+      })
+      if(beforearea1.length>0){
+         beforearea1=this.arrindex(beforearea1)
+         beforearea2=this.arrindex(beforearea2)
+          this.setPrimary(beforearea1)
+           this.setPrimary(beforearea2)
+          this.terminals[0].push(beforearea1)
+          this.terminals[1].push(beforearea2)
+      }
+    console.log( this.terminals)
     console.log(this.configs)
       this.showTooltip = new Array(this.configs.length).fill(false)
-    },
-
+    },//修改按钮对应值
+      setPrimary( obj){
+        let multipleSelection=obj
+        multipleSelection.forEach((item,key)=>{
+          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
+        })
+      },
+    //数组去重
+      arrindex(arr){
+        let obj = {};
+          let peon = arr.reduce((cur,next) => {
+              obj[next.terminalId] ? "" : obj[next.terminalId] = true && cur.push(next);
+              return cur;
+          },[])
+        return peon
+      },
     // 选择日期确定后
     // 先要判断是否选择得日期 有交叉得部分
     onSureDates(e, configs, index) {
