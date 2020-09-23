@@ -89,12 +89,10 @@ export default {
         roleIds: [{ required: true, message: '请选择角色' }]
       },
       hasPrisonArea: false,
-
       prisonConfigIdsProps: {
         label: 'name',
         value: 'id',
-        multiple: true,
-        // checkStrictly: true
+        multiple: true
       }
     }
   },
@@ -124,6 +122,12 @@ export default {
         if (valid) {
           let {id, policeNumber, prisonConfigIds, realName, roleIds, username} = this.prisonUser, params = { id, policeNumber, prisonConfigIds, realName, roleIds:[roleIds], username}
           if (!this.hasPrisonArea || !params.prisonConfigIds.length) params.prisonConfigIds = null
+          else {
+            params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
+              return prisonConfigId[prisonConfigId.length - 1]
+            })
+          }
+
           this.updatePrisonUser(params).then(res => {
             if (!res) return
             this.$router.push('/account/list')

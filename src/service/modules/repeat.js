@@ -104,5 +104,10 @@ export default {
   // 监区管理 - 获取监狱最大层级数
   getPrisonAreaMaxLevel: () => {
     return service.get('/prison_config/getMaxLevel')
+  },
+
+  // 监区管理 - 获取监区层级结构
+  getDetailMany: params => {
+    return service.get('/prison_config/detailMany', params)
   }
 }

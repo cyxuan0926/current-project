@@ -55,4 +55,63 @@ export const multistageExamineDropdownItems = [
 export const meetingChargeConfigDurations = [5, 10, 15, 20, 25]
 
 // 监狱层级数
-export const prisonAreaMaxLevel = {}
+export const prisonAreaLevelObject = {
+  // 这里面的属性可以自己更换
+  // 监区
+  prisonArea: {
+    label: '监区',
+
+    prop: 'areaId',
+
+    gettingData: false,
+
+    options: [],
+
+    childNode: 'prisonBranch',
+
+    level: 1
+  },
+
+  // 分监区
+  prisonBranch: {
+    label: '分监区',
+
+    prop: 'branchId',
+
+    gettingData: false,
+
+    options: [],
+
+    childNode: 'prisonBuilding',
+
+    level: 2
+  },
+
+  // 楼栋
+  prisonBuilding: {
+    label: '楼栋',
+
+    prop: 'buildingId',
+
+    gettingData: false,
+
+    options: [],
+
+    childNode: 'prisonLayer',
+
+    level: 3
+  },
+
+  // 楼层
+  prisonLayer: {
+    label: '楼层',
+
+    prop: 'layerId',
+
+    gettingData: false,
+
+    options: [],
+
+    level: 4
+  }
+}

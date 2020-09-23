@@ -106,5 +106,20 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  async getDetailMany({ commit }, params) {
+    try {
+      const { data } = await http.getDetailMany(params)
+
+      const { prisonConfigs = {} } = data
+
+      commit('setDetailManyConfigs', prisonConfigs)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

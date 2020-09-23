@@ -12,7 +12,9 @@ let state = {
 
   prisonConfigsMaxLevel: 1,
 
-  allChildPrisonConfigs: []
+  allChildPrisonConfigs: [],
+
+  detailManyConfigs: {}
 }
 
 export default {

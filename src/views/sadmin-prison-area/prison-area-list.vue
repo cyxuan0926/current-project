@@ -49,36 +49,12 @@
       width="530px">
       <el-input
         :class="validatingRepetition ? 'input__error' : ''"
+        @blur="handleValidate"
         v-model.trim="prisonArea.name"
         placeholder="请输入监区名称" />
         <div
           class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
-
-      <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
-        v-model.trim="prisonArea.branchname"
-        placeholder="请输入分监区名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
-      
-
-      <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
-        v-model.trim="prisonArea.building"
-        placeholder="请输入楼栋名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
-
-        <el-input
-        :class="validatingRepetition ? 'input__error' : ''"
-        v-model.trim="prisonArea.layer"
-        placeholder="请输入楼层名称" />
-        <div
-          class="el-input-div__error"
-          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>
+          v-if="validatingRepetition">{{ '“' + prisonArea.name + '”' + ' 已经存在！' }}</div>     
       <template slot="footer">
         <el-button
           type="primary"
@@ -149,7 +125,7 @@ export default {
         },
         {
           label: '监区名称',
-          prop: 'name'
+          prop: 'fullName'
         },
         {
           label: '创建时间',
@@ -283,10 +259,5 @@ export default {
   color: #f56c6c;
   line-height: 1;
   padding-top: 4px;
-}
-.el-input {
-  & + .el-input {
-    margin-top: 20px !important;
-  }
 }
 </style>

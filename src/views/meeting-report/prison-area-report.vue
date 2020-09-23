@@ -11,10 +11,10 @@
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
+      <!--  show-summary
+        :summary-method="summaryMethod" -->
       <m-table-new
         stripe
-        show-summary
-        :summary-method="summaryMethod"
         :data="prisonAreaReportList.contents"
         :cols="tableCols">
         <template #total="{ row }">{{ row.total }} 次</template>
@@ -118,7 +118,7 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'fullname'
         },
         {
           label: '申请次数',

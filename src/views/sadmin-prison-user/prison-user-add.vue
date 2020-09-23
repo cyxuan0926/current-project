@@ -97,12 +97,11 @@ export default {
         roleIds: [{ required: true, message: '请选择角色' }]
       },
       hasPrisonArea: true,
-      prisonUser: { prisonConfigIds: [] },
+      prisonUser: { prisonConfigIds: [] }
       // prisonConfigIdsProps: {
       //   label: 'name',
       //   value: 'id',
       //   multiple: true,
-      //   // checkStrictly: true
       // }
     }
   },
@@ -122,8 +121,6 @@ export default {
         multiple: true,
 
         lazy: true,
-
-        checkStrictly: true,
 
         lazyLoad: async(node, resolve) => {
           let temp = []
@@ -170,6 +167,11 @@ export default {
           if(!res) return
           let params = Object.assign({}, this.prisonUser, {roleIds: [this.prisonUser.roleIds]})
           if (!this.hasPrisonArea) delete params.prisonConfigIds
+          else {
+            params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
+              return prisonConfigId[prisonConfigId.length - 1]
+            })
+          }
           this.addPrisonUser(params).then(res => {
             if (!res) return
             this.$router.push('/account/list')

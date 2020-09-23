@@ -50,6 +50,7 @@
           <el-select
             v-model="terminal.jailId"
             filterable
+            :loading="gettingPrison"
             placeholder="请选择监狱"
             @change="onPrisonChange">
             <el-option
@@ -59,23 +60,30 @@
               :value="prison.id"/>
           </el-select>
         </el-form-item>
-        <el-form-item
-          v-if="isPrisonArea"
-          label="监区"
-          prop="prisonConfigId">
-          <el-select
-            v-model="terminal.prisonConfigId"
-            filterable
-            :disabled="!hasPrisonArea"
-            :loading="gettingPrisonArea"
-            placeholder="请选择监区">
-            <el-option
-              v-for="prisonArea in jailPrisonAreas"
-              :key="prisonArea.id"
-              :label="prisonArea.name"
-              :value="prisonArea.id"/>
-          </el-select>
-        </el-form-item>
+
+        <template v-for="(localPrisonAreaLevel, key) in localPrisonAreaLevelObject">
+          <el-form-item
+            v-if="localPrisonAreaLevel.options.length"
+            :key="localPrisonAreaLevel.prop"
+            :label="localPrisonAreaLevel.label"
+            :prop="localPrisonAreaLevel.prop">
+            <el-select
+              v-model="terminal[localPrisonAreaLevel.prop]"
+              filterable
+              :loading="localPrisonAreaLevel.gettingData"
+              :placeholder="'请选择' + localPrisonAreaLevel.label"
+              @change="onPrisonAreaLevelDataChange({ key, parentId: terminal[localPrisonAreaLevel.prop], budingObject: terminal })"
+            >
+              <el-option
+                v-for="item in localPrisonAreaLevel.options"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </template>
+
         <el-form-item
           label="主持人密码"
           prop="hostPassword">
@@ -122,7 +130,11 @@ import validate from '@/utils'
 
 import switches from '@/filters/modules/switches'
 
+import prisonAreaLevel from '@/mixins/prison-area-level'
+
 export default {
+  mixins: [prisonAreaLevel],
+
   data() {
     return {
       terminal: {},
@@ -136,9 +148,21 @@ export default {
           required: true,
           message: '请选择监狱'
         }],
-        prisonConfigId: [{
+        areaId: [{
           required: true,
           message: '请选择监区'
+        }],
+        branchId: [{
+          required: true,
+          message: '请选择分监区'
+        }],
+        buildingId: [{
+          required: true,
+          message: '请选择楼栋'
+        }],
+        layerId: [{
+          required: true,
+          message: '请选择楼层'
         }],
         hostPassword: [{
           required: true,
@@ -163,28 +187,62 @@ export default {
           }
         ]
       },
-      hasPrisonArea: false,
+
       gettingPrison: true,
-      gettingPrisonArea: true,
-      isPrisonArea: false,
 
       terminalTypes: switches.terminalTypes
     }
   },
+
   computed: {
     ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
   },
+
   mounted() {
     this.getPrisonAllWithBranchPrison().then(() => {
       this.gettingPrison = false
     })
   },
+
   methods: {
     ...mapActions(['addTerminal', 'getJailPrisonAreas', 'getPrisonAllWithBranchPrison']),
     onSubmit() {
       this.$refs.terminal.validate(valid => {
         if (valid) {
-          this.addTerminal(this.terminal).then(res => {
+          const {
+            terminalNumber,
+            terminalName,
+            terminalType,
+            terminalSn,
+            roomNumber,
+            hostPassword,
+            jailId,
+            mettingPassword,
+            meetingEnabled
+          } = this.terminal
+
+          let params = {
+            terminalNumber,
+            terminalName,
+            terminalType,
+            terminalSn,
+            roomNumber,
+            hostPassword,
+            jailId,
+            mettingPassword,
+            meetingEnabled
+          }
+
+          if (this.prisonConfigIdKey) {
+            const prop = this.localPrisonAreaLevelObject[this.prisonConfigIdKey]['prop']
+
+            params = {
+              ...params,
+              prisonConfigId: this.terminal[prop]
+            }
+          }
+
+          this.addTerminal(params).then(res => {
             if (!res) return
             this.$router.push('/terminal/list')
           })
@@ -192,22 +250,22 @@ export default {
       })
     },
     onPrisonChange(e) {
-      delete this.terminal.prisonConfigId
-      this.isPrisonArea = false
-      this.gettingPrisonArea = true
+      this.clearSubPrisonArea('prisonArea', this.terminal)
+
       let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)
       if (prison.branchPrison === 1) {
-        this.isPrisonArea = true
+
+        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
         this.getJailPrisonAreas({ jailId: e }).then(res => {
+          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+
           if (!res) return
+
+          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+
           if (this.jailPrisonAreas.length === 0) {
             this.$message.warning('请先导入罪犯数据')
-            this.hasPrisonArea = false
           }
-          else {
-            this.hasPrisonArea = true
-          }
-          this.gettingPrisonArea = false
         })
       }
     },
