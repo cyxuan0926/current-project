@@ -111,7 +111,6 @@ export default {
     values: {
       handler: function(val) {
         this.fields = Object.assign({}, this.fields, val)
-        console.log( this.fields )
       },
       deep: true
     },
