@@ -220,21 +220,22 @@ export default {
           rules: ['required'],
           value: 1,
           tips: '开启监狱分监区，请及时通知该监狱人员，为监狱审核人员分配监区权限',
-          controlTheOther: true
+          func: this.onBranchPrisonSwitch
+          // controlTheOther: true
         },
-        prisonAreaList: {
-          type: 'input',
-          label: '监区名称',
-          disabled,
-          placeholder: '请输入各监区名称，以逗号隔开',
-          disableDependingProp: 'branchPrison',
-          dependingRelation: false,
-          changeRules: [{
-            message: '请输入监区名称',
-            required: true,
-            validator: validator.required
-          }]
-        },
+        // prisonAreaList: {
+        //   type: 'input',
+        //   label: '监区名称',
+        //   disabled,
+        //   placeholder: '请输入各监区名称，以逗号隔开',
+        //   disableDependingProp: 'branchPrison',
+        //   dependingRelation: false,
+        //   changeRules: [{
+        //     message: '请输入监区名称',
+        //     required: true,
+        //     validator: validator.required
+        //   }]
+        // },
         agreement: {
           type: 'switch',
           label: '线上签署《可视电话告知书》',
@@ -371,7 +372,7 @@ export default {
               setValue: 0
             }
           ],
-          invokeCondition: 1,
+
           func: this.onMultistageExamineSwitch
         },
 
@@ -447,12 +448,12 @@ export default {
           const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
           this.$set(this.values, 'prisonAreaList', prisonAreaList)
         }
-        if (this.$store.getters.role !== roles.INFORMATION_ADMIN) {
-          if (!this.branchStatus) {
-            this.$set(this.formItems['branchPrison'], 'disabled', true)
-            this.$set(this.formItems['prisonAreaList'], 'disabled', true)
-          }
-        }
+        // if (this.$store.getters.role !== roles.INFORMATION_ADMIN) {
+        //   if (!this.branchStatus) {
+        //     this.$set(this.formItems['branchPrison'], 'disabled', true)
+        //     this.$set(this.formItems['prisonAreaList'], 'disabled', true)
+        //   }
+        // }
         // delete this.formItems.dissMissConfigs
         // // 判断是什么收费情况 来初始化
         // if (this.values.chargeType === 2) {
@@ -519,19 +520,19 @@ export default {
     onSubmit(e) {
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
-        if(e.prisonAreaList && e.prisonAreaList.length) {
-          // 这里就是分监区的情况
-          const prisonAreas = e.prisonAreaList.replace(/，/g, ',').split(',')
-          let uniquePrisonAreas = [...new Set(prisonAreas)]
+        // if(e.prisonAreaList && e.prisonAreaList.length) {
+        //   // 这里就是分监区的情况
+        //   const prisonAreas = e.prisonAreaList.replace(/，/g, ',').split(',')
+        //   let uniquePrisonAreas = [...new Set(prisonAreas)]
 
-          if (prisonAreas.length !== uniquePrisonAreas.length) {
-            this.$message.error('监区名不能重复');
-            return
-          }
+        //   if (prisonAreas.length !== uniquePrisonAreas.length) {
+        //     this.$message.error('监区名不能重复');
+        //     return
+        //   }
 
-          e.prisonAreaList = uniquePrisonAreas.map(val => val && ({name: helper.trimString(val)}))
-        }
-        else e.prisonAreaList = []
+        //   e.prisonAreaList = uniquePrisonAreas.map(val => val && ({name: helper.trimString(val)}))
+        // }
+        // else e.prisonAreaList = []
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
@@ -611,6 +612,43 @@ export default {
     // onDiplomatistChargeChange(e, prop, item) {
     //   this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     // },
+
+    // 是否分监区
+    onBranchPrisonSwitch(value, prop, item) {
+      const branchPrisonItemObject = {
+        [0]: {
+          setValueConfigs: [
+            {
+              props: 'branchPrison',
+              setValue: 1
+            }
+          ],
+        },
+
+        [1]: {
+          setValueConfigs: [
+            {
+              props: 'branchPrison',
+              setValue: 0
+            }
+          ]
+        }
+      }
+
+      const setValueConfigs = branchPrisonItemObject[value]['setValueConfigs']
+
+      this.$set(this.formItems['branchPrison'], 'setValueConfigs', setValueConfigs)
+
+      this.$confirm('调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？', {
+        closeOnClickModal: false,
+
+        closeOnPressEscape: false,
+
+        callback: (action) => {
+            if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
+          }
+      })
+    },
 
     // 多级审核配置
     async onMultistageExamineSwitch(value, prop, item) {

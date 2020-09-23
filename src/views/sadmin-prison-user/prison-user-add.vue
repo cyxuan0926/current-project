@@ -13,19 +13,22 @@
           v-if="hasPrisonArea"
           label="监区"
           prop="prisonConfigIds">
-          <el-select
-            v-model="prisonUser.prisonConfigIds"
-            filterable
+          <!-- <el-cascader
+            :options="allChildPrisonConfigs"
+            :props="prisonConfigIdsProps"
+            placeholder="请选择监区"
             clearable
-            multiple
-            :loading="gettingPrisonArea"
-            placeholder="请选择监区">
-            <el-option
-              v-for="prisonArea in jailPrisonAreas"
-              :key="prisonArea.id"
-              :label="prisonArea.name"
-              :value="prisonArea.id"/>
-          </el-select>
+            filterable
+            separator="-"
+          /> -->
+          <el-cascader
+            v-model="prisonUser.prisonConfigIds"
+            :props="prisonConfigIdsProps"
+            placeholder="请选择监区"
+            clearable
+            filterable
+            separator="-"
+          />
         </el-form-item>
         <el-form-item
           label="狱警号"
@@ -93,32 +96,69 @@ export default {
         username: [{ validator: validator.containerLetter }],
         roleIds: [{ required: true, message: '请选择角色' }]
       },
-      gettingPrisonArea: true,
-      hasPrisonArea: false,
+      hasPrisonArea: true,
       prisonUser: { prisonConfigIds: [] }
+      // prisonConfigIdsProps: {
+      //   label: 'name',
+      //   value: 'id',
+      //   multiple: true,
+      // }
     }
   },
   computed: {
     ...mapState({
       rolesList: state => state.account.rolesList
     }),
-    ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
+
+    ...mapState([
+      'prisonAllWithBranchPrison',
+      'multiPrisonConfigs',
+      'allChildPrisonConfigs'
+    ]),
+
+    prisonConfigIdsProps() {
+      return ({
+        multiple: true,
+
+        lazy: true,
+
+        lazyLoad: async(node, resolve) => {
+          let temp = []
+
+          const {
+            level,
+            value,
+            label,
+            root,
+            isLeaf
+          } = node
+
+          if (!isLeaf) {
+            if (root) await this.getChildPrisonConfigs()
+
+            else await this.getChildPrisonConfigs({ parentId: value })
+
+            this.hasPrisonArea = !!this.multiPrisonConfigs.length
+
+            temp = this.multiPrisonConfigs.map(item => ({
+              label: item.name,
+              value: item.id,
+              leaf: item.leaf === '1'
+            }))
+          }
+
+          resolve(temp)
+        }
+      })
+    }
   },
-  mounted() {
-    this.getJailPrisonAreas().then(res => {
-      if (!res) return
-      if (this.jailPrisonAreas.length === 0) {
-        this.hasPrisonArea = false
-      }
-      else {
-        this.hasPrisonArea = true
-      }
-      this.gettingPrisonArea = false
-    })
-    this.getRolesList()
+
+  async mounted() {
+    await this.getRolesList()
   },
+
   methods: {
-    ...mapActions(['addPrisonUser', 'getJailPrisonAreas']),
+    ...mapActions(['addPrisonUser', 'getChildPrisonConfigs', 'getAllChildPrisonConfigs']),
     ...mapActions('account', ['estimateUsername', 'getRolesList']),
     onSubmit() {
       this.$refs.prisonUser.validate(async valid => {
@@ -127,6 +167,11 @@ export default {
           if(!res) return
           let params = Object.assign({}, this.prisonUser, {roleIds: [this.prisonUser.roleIds]})
           if (!this.hasPrisonArea) delete params.prisonConfigIds
+          else {
+            params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
+              return prisonConfigId[prisonConfigId.length - 1]
+            })
+          }
           this.addPrisonUser(params).then(res => {
             if (!res) return
             this.$router.push('/account/list')

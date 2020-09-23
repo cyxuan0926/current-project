@@ -99,7 +99,7 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonConfigName',
+          prop: 'fullname',
           minWidth: 55,
           showOverflowTooltip: true
         },

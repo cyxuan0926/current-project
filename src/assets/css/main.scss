@@ -151,6 +151,13 @@ body .row-container .cell img{
     margin-right: 10px;
   }
 }
+
+.page-edit {
+  /deep/ .el-cascader {
+    width: 100%;
+  }
+}
+
 .separate + .separate::before{
   content: '/ ';
   color: #ddd;

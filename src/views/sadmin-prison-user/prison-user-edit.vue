@@ -13,19 +13,15 @@
           v-if="hasPrisonArea"
           label="监区"
           prop="prisonConfigIds">
-          <el-select
+          <el-cascader
             v-model="prisonUser.prisonConfigIds"
-            filterable
+            :options="allChildPrisonConfigs"
+            :props="prisonConfigIdsProps"
+            placeholder="请选择监区"
             clearable
-            multiple
-            :loading="gettingPrisonArea"
-            placeholder="请选择监区">
-            <el-option
-              v-for="prisonArea in jailPrisonAreas"
-              :key="prisonArea.id"
-              :label="prisonArea.name"
-              :value="prisonArea.id"/>
-          </el-select>
+            filterable
+            separator="-"
+          />
         </el-form-item>
         <el-form-item
           label="狱警号"
@@ -92,37 +88,46 @@ export default {
         username: [{ required: true, message: '请填写用户名' }],
         roleIds: [{ required: true, message: '请选择角色' }]
       },
-      gettingPrisonArea: true,
-      hasPrisonArea: false
+      hasPrisonArea: false,
+      prisonConfigIdsProps: {
+        label: 'name',
+        value: 'id',
+        multiple: true
+      }
     }
   },
   computed: {
-    ...mapState(['jailPrisonAreas', 'prisonUser']),
+    ...mapState(['prisonUser', 'allChildPrisonConfigs']),
     ...mapState({
       rolesList: state => state.account.rolesList
     })
   },
   async mounted() {
     await this.getRolesList()
-    this.getJailPrisonAreas().then(res => {
+    this.getAllChildPrisonConfigs().then(res => {
       if (!res) return
       this.getPrisonUserDetail(this.$route.params.id).then(res => {
         if (!res) return
-        if (this.jailPrisonAreas.length !== 0) {
+        if (this.allChildPrisonConfigs.length !== 0) {
           this.hasPrisonArea = true
         }
-        this.gettingPrisonArea = false
       })
     })
   },
   methods: {
-    ...mapActions(['updatePrisonUser', 'getJailPrisonAreas', 'getPrisonUserDetail']),
+    ...mapActions(['updatePrisonUser', 'getAllChildPrisonConfigs', 'getPrisonUserDetail', 'getChildPrisonConfigs']),
     ...mapActions('account', ['getRolesList']),
     onSubmit() {
       this.$refs.prisonUser.validate(valid => {
         if (valid) {
           let {id, policeNumber, prisonConfigIds, realName, roleIds, username} = this.prisonUser, params = { id, policeNumber, prisonConfigIds, realName, roleIds:[roleIds], username}
           if (!this.hasPrisonArea || !params.prisonConfigIds.length) params.prisonConfigIds = null
+          else {
+            params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
+              return prisonConfigId[prisonConfigId.length - 1]
+            })
+          }
+
           this.updatePrisonUser(params).then(res => {
             if (!res) return
             this.$router.push('/account/list')

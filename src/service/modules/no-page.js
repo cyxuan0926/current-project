@@ -25,8 +25,16 @@ export default {
   getJailPrisonSubs: params => {
     return service.get(`/prison_config/getChildPrisonConfigs`, params).then(res => res && res.data)
   },
+  // 监区-根据上一级id 查询 分监区 楼栋 楼层 动态展示
+  getJailPrisonSubsAuth: params => {
+    return service.get(`/prison_config/getAuthChildPrisonConfigs`, params).then(res => res && res.data)
+  },
   // 外交领事官员-外交官员组织机构
   getOrgName: params => {
     return service.get('/diplomats/registrations/getOrgName', params)
+  },
+
+  getAllChildPrisonConfigs: () => {
+    return service.get('/prison_config/getAllChildPrisonConfigs')
   }
 }

@@ -136,7 +136,7 @@ export default {
   mounted() {
     if (this.user.prisonConfigList && this.user.prisonConfigList.length) {
       this.prisonerAreas = this.user.prisonConfigList.reduce((pre, cur) => {
-        return pre.concat([cur.prisonConfigName])
+        return pre.concat([cur.fullname])
       }, [])
     }
   },

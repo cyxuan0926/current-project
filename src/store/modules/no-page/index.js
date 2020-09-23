@@ -8,7 +8,13 @@ let state = {
   cities: [],
   jailPrisonAreas: [],
 
-  organizationNames: []
+  organizationNames: [],
+
+  prisonConfigsMaxLevel: 1,
+
+  allChildPrisonConfigs: [],
+
+  detailManyConfigs: {}
 }
 
 export default {

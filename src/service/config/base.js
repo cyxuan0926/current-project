@@ -21,7 +21,7 @@ export default {
   // get 请求参数
   // params: {},
   // 设置请求超时时间
-  timeout: 50000,
+  timeout: 120000,
   // 请求数据返回类型
   // responseType: 'json',
   // 设置跨域请求的令牌
