@@ -368,7 +368,7 @@
       class="authorize-dialog all-dialog__style"
       width="530px">
       <m-form
-        v-if=" !(operationType === 2 && prisonConfigs.length < 1)"
+        v-if=" !((operationType === 2 || operationType === 5) && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
         @submit="handleSubmit"
         ref="dialogForm"
@@ -557,6 +557,12 @@ export default {
           rules: ['required']
         }
       }
+
+      const changePrisonConfigsProps = {
+        label: 'name',
+        value: 'id'
+      }
+
       let title,
         items = {},
         formButton = { buttons: [] }
@@ -592,7 +598,9 @@ export default {
         case 5:
         case 2:
           title = '更换监区'
+
           formButton.buttons = []
+
           items = Object.assign({}, {
             prisonAreaId: {
               type: 'select',
@@ -600,12 +608,39 @@ export default {
               placeholder: '请选择监区',
               options: this.prisonConfigData,
               label: '监区',
-              props: {
-                label: 'name',
-                value: 'id'
-              },
+              props: changePrisonConfigsProps,
               func: this.handleChangePrisonConfig
-            }
+            },
+
+            // prisonBranchId: {
+            //   type: 'select',
+            //   noLabel: true,
+            //   placeholder: '请选择分监区',
+            //   options: this.prisonConfigData,
+            //   label: '分监区',
+            //   props: changePrisonConfigsProps,
+            //   // func: this.handleChangePrisonConfig
+            // },
+
+            // prisonBuildingId: {
+            //   type: 'select',
+            //   noLabel: true,
+            //   placeholder: '请选择楼栋',
+            //   options: this.prisonConfigData,
+            //   label: '楼栋',
+            //   props: changePrisonConfigsProps,
+            //   // func: this.handleChangePrisonConfig
+            // },
+
+            // prisonLayerId: {
+            //   type: 'select',
+            //   noLabel: true,
+            //   placeholder: '请选择楼层',
+            //   options: this.prisonConfigData,
+            //   label: '楼层',
+            //   props: changePrisonConfigsProps,
+            //   // func: this.handleChangePrisonConfig
+            // }
           }, formButton)
           break
         case 3:

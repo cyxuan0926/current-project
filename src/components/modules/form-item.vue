@@ -44,7 +44,7 @@
         <el-option
           v-for="option in item.options"
           :key="item.props ? option[item.props.value] : option.value"
-          :label="item.props && tem.props.label ? option[item.props.label] : option.label"
+          :label="item.props && item.props.label ? option[item.props.label] : option.label"
           :value="item.props && item.props.value ? option[item.props.value] : option.value"
         />
       </el-select>
