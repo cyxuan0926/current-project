@@ -11,25 +11,25 @@
           <el-form>
             <el-form-item label="是否分生产区和监舍区">
               <el-switch
-                v-model="separateByArea"
-                active-color="#13ce66">
+                v-model="separateByArea[type]"
+                active-color="#13ce66"
+                :disabled="Boolean(type === 0 && hasOriginConfigAfter) ">
               </el-switch>
             </el-form-item>
           </el-form>
         </div>
-        <div  v-if="separateByArea">
+        <div  v-if="separateByArea[type]">
           <el-form >
-            <el-form-item label="请选择生产区设备:" style="width:440px">
+            <el-form-item label="请选择生产区设备:" style="width:450px">
               <div class="prisonlabel">
-                <label v-if="config.area=='2'" v-for="(config,ind) in configs" :key=ind >
-                <el-button  v-for="(item,index) in config.terminals "
-                           :key=index size="mini"
+                  
+                <el-button  v-for="(item,index) in terminals[type][1] "
+                           :key='index' size="mini"
                            style="margin-left: 5px"
-                           @click="open(item)">{{item.selectArr}}<i class="el-icon-circle-close"/>
+                           >{{item.selectArr}} <i  v-if="type === 1 && hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item)"/>
                 </el-button>
-                </label>
               </div>
-              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2)">选择设备</el-button>
+              <el-button  v-if="type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -38,26 +38,24 @@
             :key="index"
             class="config-box">
               <remote-week-cy
-                :separateByArea="separateByArea"
+                :separateByArea="separateByArea[type]"
               :allConfigs="allConfigs"
               :configs="configs"
               :config="config"
                 :area="config.area"
               :index="index"
+              :durations='durations'
               :type="type" />
           </div>
           <el-form>
-            <el-form-item label="请选择监舍区设备:" style="width:440px">
+            <el-form-item label="请选择监舍区设备:" style="width:450px">
               <div class="prisonlabel">
-                <label v-if="config.area=='1'" v-for="(config,ind) in configs" :key=ind >
-                  <el-button v-for="(item,index) in config.terminals "
-                             :key=index size="mini"
-                             style="margin-left: 5px"
-                             @click="open(item)">{{item.selectArr}}<i class="el-icon-circle-close"/>
-                  </el-button>
-                </label>
+               <el-button  v-for="(item,index) in terminals[type][0] "
+                           :key='index' size="mini"
+                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="type === 1 && hasOriginConfigAfter" @click="open(item)" class="el-icon-circle-close"/>
+                </el-button>
               </div>
-              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1)">选择设备</el-button>
+              <el-button  v-if="type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -66,194 +64,36 @@
             :key="index"
             class="config-box">
             <remote-week-cy
-              :separateByArea="separateByArea"
+              :separateByArea="separateByArea[type]"
               :allConfigs="allConfigs"
               :configs="configs"
               :config="config"
               :area="config.area"
+              :durations='durations'
               :index="index"
               :type="type" />
           </div>
         </div>
           <!--不分舍监区-->
         <div
-          v-if="!separateByArea"
+          v-if="!separateByArea[type]"
           v-for="(config, index) in configs"
           :key="index"
           class="config-box">
           <remote-week-cy
-            :separateByArea="separateByArea"
+            :separateByArea="separateByArea[type]"
             :allConfigs="allConfigs"
             :configs="configs"
             :config="config"
+            :durations='durations'
             :area="0"
             :index="index"
             :type="type" />
         </div>
       </div>
 
-
-      <!--<div>-->
-      <!--<p>-->
-      <!--请选择监区设备: <label class="prisonlabel"> <span></span></label>-->
-      <!--<el-button type="primary">选择设备</el-button>-->
-      <!--</p>-->
-      <!--</div>-->
-
-
     </template>
-
-
-    <!--<template v-if="!prisonShow" v-for="(configs, type) in allConfigs">-->
-      <!--<div-->
-        <!--v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"-->
-        <!--class="m-container"-->
-        <!--:key="type"-->
-      <!--&gt;-->
-
-        <!--<div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">{{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}</div>-->
-        <!--<div-->
-          <!--v-for="(config, index) in configs"-->
-          <!--:key="index"-->
-          <!--class="config-box">-->
-          <!--<div class="day-box">-->
-            <!--<label class="c-label">选择工作日</label>-->
-            <!--&lt;!&ndash; 当前工作日有配置时间段或者不是国科服务管理员的时候disabled状态 &ndash;&gt;-->
-            <!--<el-checkbox-group-->
-              <!--v-model="config.days"-->
-              <!--:disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)">-->
-              <!--<template v-for="(w, i) in week">-->
-                <!--<el-checkbox-->
-                  <!--:key="i"-->
-                  <!--v-if="showWeek(w, config, index, configs)"-->
-                  <!--:label="w.value">{{ w.label }}</el-checkbox>-->
-              <!--</template>-->
-            <!--</el-checkbox-group>-->
-            <!--<el-button-->
-              <!--type="primary"-->
-              <!--size="mini"-->
-              <!--v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-              <!--@click="handleConfig(index, type, configs)">配置时间段参数</el-button>-->
-            <!--<el-button-->
-              <!--plain-->
-              <!--type="danger"-->
-              <!--size="mini"-->
-              <!--v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-              <!--@click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>-->
-          <!--</div>-->
-
-          <!--<template v-if="config.timeperiodQueue.length">-->
-            <!--&lt;!&ndash; 通话时长/时间间隔 &ndash;&gt;-->
-
-            <!--<div v-if="!superAdmin" class="none_superAdmin">-->
-              <!--<label >通话时长</label>-->
-              <!--<span>{{ config.duration }} 分钟</span>-->
-            <!--</div>-->
-
-            <!--<m-form-->
-              <!--class="duration-interval-form"-->
-              <!--:items="durationIntervalItems[type][index]"-->
-              <!--:values="{ index: index, duration: config.duration, interval: config.interval, type: type }"-->
-              <!--@response="onResponse"-->
-              <!--:ref="`${type}form${index}`"-->
-            <!--/>-->
-
-            <!--<div-->
-              <!--class="timeperiod"-->
-              <!--v-for="(queue, o) in config.timeperiodQueue"-->
-              <!--:key="o"-->
-            <!--&gt;-->
-              <!--<label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>-->
-
-              <!--<div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">-->
-                <!--<m-time-range-selector-->
-                  <!--:val="queue"-->
-                  <!--:configs="{-->
-                    <!--prev: {-->
-                      <!--attrs: {-->
-                        <!--prefixIcon: 'ower-cssName'-->
-                      <!--}-->
-                    <!--}-->
-                  <!--}"-->
-                  <!--:disabled="!!config.queue.length"-->
-                  <!--:prev="config.timeperiodQueue[o - 1]"-->
-                  <!--:next="config.timeperiodQueue[o + 1]"-->
-                  <!--type="queue"-->
-                  <!--@handleBlur="handleBlur($event, config.timeperiodQueue, index)"-->
-                <!--/>-->
-                <!--<div-->
-                  <!--v-if="config['showError'][o]"-->
-                  <!--class="error__tip">时间段区间小于通话时长</div>-->
-              <!--</div>-->
-
-              <!--<template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">-->
-                <!--<el-button-->
-                  <!--v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"-->
-                  <!--type="primary"-->
-                  <!--size="mini"-->
-                  <!--style="margin-right: 10px;"-->
-                  <!--@click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index, type)">新增时间段</el-button>-->
-                <!--<el-button-->
-                  <!--type="primary"-->
-                  <!--size="mini"-->
-                  <!--@click="onFigureOut(config, index, type)">生成通话时间段</el-button>-->
-                <!--<el-button-->
-                  <!--v-if="config.timeperiodQueue.length > 1"-->
-                  <!--size="mini"-->
-                  <!--type="danger"-->
-                  <!--@click="onDelTimePriod(config)">删除时间段</el-button>-->
-              <!--</template>-->
-            <!--</div>-->
-
-            <!--&lt;!&ndash; 当有配置时间队列并且flag &ndash;&gt;-->
-            <!--<div-->
-              <!--v-if="config.queue.length && flag"-->
-              <!--style="overflow: hidden; margin-bottom: 10px;"-->
-            <!--&gt;-->
-              <!--<label class="c-label">时间段分配</label>-->
-              <!--<div-->
-                <!--style="float: left; width: calc(100% - 80px); overflow: hidden;">-->
-                <!--&lt;!&ndash; 时间范围选择器 &ndash;&gt;-->
-                <!--<m-time-range-selector-->
-                  <!--v-for="(queue, o) in config.queue"-->
-                  <!--:key="o"-->
-                  <!--:val="queue"-->
-                  <!--:disabled="true"-->
-                  <!--:prev="config.queue[o - 1]"-->
-                  <!--:next="config.queue[o + 1]"-->
-                  <!--type="queue"-->
-                <!--/>-->
-                <!--&lt;!&ndash;配置的时间段的最后一个时间段的结束时间是不是23:59并且是国科服务管理员角色&ndash;&gt;-->
-                <!--&lt;!&ndash; <el-button-->
-                        <!--v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"-->
-                        <!--type="primary"-->
-                        <!--size="mini"-->
-                        <!--class="button-float"-->
-                        <!--style="margin-right: 10px;"-->
-                        <!--@click="onAddRange(config.queue)">新增会见时间段</el-button> &ndash;&gt;-->
-                <!--&lt;!&ndash; 国科服务管理员角色 &ndash;&gt;-->
-                <!--<el-button-->
-                  <!--v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"-->
-                  <!--size="mini"-->
-                  <!--class="button-float"-->
-                  <!--:style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"-->
-                  <!--@click="onRestQueue(config)">重置时间段</el-button>-->
-                <!--&lt;!&ndash; 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 &ndash;&gt;-->
-                <!--<el-button-->
-                  <!--v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"-->
-                  <!--size="mini"-->
-                  <!--type="success"-->
-                  <!--class="button-float"-->
-                  <!--@click="onAddDay(type)">新增工作日</el-button>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</template>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</template>-->
-
-
-
+    <!--v-if="hasOriginConfigAfter || hasConfigBeforeChange"-->
     <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
       <label
         class="c-label"
@@ -274,8 +114,8 @@
         v-if="superAdmin"
         size="small"
         @click="onGoBack">返回</el-button>
+      <!--v-if="!updateShow && permission === 'edit'"-->
       <el-button
-        v-if="!updateShow && permission === 'edit'"
         size="small"
         type="primary"
         @click="onUpdate">更新</el-button>
@@ -316,7 +156,6 @@
         <el-table
           ref="multipleTable"
           :data="tableData"
-          tooltip-effect="dark"
           style="width: 100%"
           max-height="300px"
           @selection-change="handleSelectionChange">
@@ -329,7 +168,7 @@
             prop="terminalNumber">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="terminalName"
             label="终端别名"
             width="120">
           </el-table-column>
@@ -338,25 +177,27 @@
             label="监区">
           </el-table-column>
           <el-table-column
-            prop="name1"
+            prop="prisonChildAreaName"
             label="分监区">
           </el-table-column>
           <el-table-column
-            prop="name2"
+            prop="prisonBuildingName"
             label="楼栋">
           </el-table-column>
           <el-table-column
-            prop="name3"
+            prop="prisonFloorName"
             label="楼层">
           </el-table-column>
         </el-table>
 
       </div>
       <span   slot="footer" class="dialog-footer">
-          <el-button type="primary"  @click="setPrimary()" :disabled="false">确 定</el-button>
+          <el-button type="primary"  @click="setPrimary(false,area)" :disabled="false">确 定</el-button>
           <el-button @click="prisonDetil=false">取 消</el-button>
-        </span>
+      </span>
     </el-dialog>
+
+
   </div>
 </template>
 <script>
@@ -372,6 +213,7 @@
 
   import { Message } from 'element-ui'
   import remoteWeekCy from './remote-week-cy'
+  import http from '@/service'
   export default {
     components: {
       remoteWeekCy
@@ -389,8 +231,11 @@
         timeperiodQueue: [],
         interval: 5,
         duration: 25,
+        area:0,
         showError: []
       }
+      let beforeTerminals=[],
+      afterTerminals=[]
       return {
         // '周'的选项
         week: [
@@ -406,7 +251,7 @@
         queue: ['09:00', '10:00'],
         flag: true,
         // 确定更新按钮加载
-        prisonShow : false,
+        separateByArea : [],
         // 确定是否分生产区跟监舍区
         prisonDetil : false,
         // 确定是否分生产区跟监舍区
@@ -418,7 +263,7 @@
         orignConfigs: [],
         // 正在生效的配置
         configsBefore: [basicConfig],
-        filterDuration: [25, 25],
+        durations: [],
         // 即将生效的配置
         configsAfter: [basicConfig],
         allConfigs: [],
@@ -426,36 +271,19 @@
         effectiveDate: '',
         dateValue: '',
         updateShow: false,
-        tableData: [{
-          terminalNumber: '123',
-          name: '453',
-          prisonArea: '223',
-          name1: '554',
-          name2: '232',
-          name3: '楼44层',
-        },{
-          terminalNumber: '22',
-          name: '',
-          prisonArea: '34',
-          name1: '44',
-          name2: '22',
-          name3: '',
-        },{
-          terminalNumber: '终端号',
-          name: '终端别名',
-          prisonArea: '监区',
-          name1: '分监区',
-          name2: '',
-          name3: '',
-        }],
-        selectOption:[],
-        multipleSelection:[]
+        tableData: [],
+        terminals:[beforeTerminals,afterTerminals],
+        area:0,//区分选中的舍监区还是生产区
+        // selectOptionProduction :[],//选中生产区设备集合
+        // selectOptionDormitory :[],//选中舍监区
+        multipleSelection:[],
       }
     },
 
     watch: {
       allConfigs: {
         handler: function (value) {
+          console.log(value)
           if (this.hasOriginConfigAfter) {
             this.updateShow = value[1].some(item => {
               return !item.queue.length
@@ -474,15 +302,14 @@
     computed: {
       // 常规配置
       ...mapState(['normalCongigs']),
-
       // 是否存在正在生效的配置 现在默认情况下 是肯定有的
       hasConfigBefore() {
-        return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length
+        return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length&&this.allConfigs[0].area
       },
 
       // 是否存在即将生效的配置
       hasConfigAfter() {
-        return this.allConfigs[1] && this.allConfigs[1].length && this.allConfigs[1][0].days.length && this.allConfigs[1][0].timeperiodQueue.length && this.allConfigs[1][0].queue.length
+        return this.allConfigs[1] && this.allConfigs[1].length && this.allConfigs[1][0].days.length && this.allConfigs[1][0].timeperiodQueue.length && this.allConfigs[1][0].queue.length&&this.allConfigs[1].area
       },
 
       // 原来是否用after
@@ -513,59 +340,60 @@
         }
       },
 
-      // 生效日期的默认值
-      computedEffectiveDate: {
-        get() {
-          const limitDays = this.normalCongigs['dayInLimit']
+     // 生效日期的默认值
+    computedEffectiveDate: {
+      get() {
+        const limitDays = this.normalCongigs['dayInLimit']
 
-          this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(limitDays, 'days').format('YYYY-MM-DD'))
+        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(limitDays, 'days').format('YYYY-MM-DD'))
 
-          return this.dateValue
-        },
-
-        set(date) {
-          this.dateValue = date
-        }
+        return this.dateValue
       },
 
-      // 通话时长和间隔时间
-      durationIntervalItems() {
-        const item = {
-          formConfigs: {
-            labelWidth: '81px',
-            hideRequiredAsterisk: true,
-          },
-          duration: {
-            label: '通话时长',
-            type: 'input',
-            append: '分钟',
-            rules: ['required', 'isPositiveIntegers']
-          },
-          interval: {
-            label: '间隔时间',
-            type: 'input',
-            append: '分钟',
-            rules: ['required', 'isNumber']
-          }
-        }
-
-        if (!this.superAdmin) this.$delete(item, 'duration')
-
-        return this.allConfigs.map(configs => {
-          return configs.map((config, index, target) => {
-            const cloneItem = cloneDeep(item)
-
-            if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
-
-            this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
-
-            return cloneItem
-          })
-        })
+      set(date) {
+        this.dateValue = date
       }
     },
 
-    // 激活状态
+    // 通话时长和间隔时间
+    durationIntervalItems() {
+      const item = {
+        formConfigs: {
+          labelWidth: '81px',
+          hideRequiredAsterisk: true,
+        },
+        duration: {
+          label: '通话时长',
+          type: 'input',
+          append: '分钟',
+          rules: ['required', 'isPositiveIntegers']
+        },
+        interval: {
+          label: '间隔时间',
+          type: 'input',
+          append: '分钟',
+          rules: ['required', 'isNumber']
+        }
+      }
+
+      if (!this.superAdmin) this.$delete(item, 'duration')
+
+      return this.allConfigs.map(configs => {
+        return configs.map((config, index, target) => {
+          const cloneItem = cloneDeep(item)
+
+          if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
+
+          this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
+
+          return cloneItem
+        })
+      })
+    }
+  },
+
+  // 激活状态
+
     async activated() {
       // 国科服务管理员权限/信息管理人员权限
       if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
@@ -574,7 +402,6 @@
         await this.initConfigs()
       }
     },
-
     methods: {
       ...mapActions([
         // 获取通话常规配置
@@ -592,16 +419,76 @@
         await this.getRemoteNormalConfigs({ jailId: this.jailId })
 
         Message.closeAll()
-
-        const { configBefore, configAfter, enabledAt } = this.normalCongigs
+        const { configBefore, configAfter, enabledAt ,separateByArea,durations} = this.normalCongigs
 
         this.configsBefore = cloneDeep(configBefore)
 
         this.configsAfter = cloneDeep(configAfter)
 
         this.effectiveDate = enabledAt
-
+        this.durations=[]
+        console.log(durations)
+        durations.forEach(item=>{
+          let obj={label:item,value:item}
+           this.durations.push(obj)
+        })
+          let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
+          this.separateByArea = [false, false]
+        this.configsBefore.forEach(item=>{
+          if(item.area==1){
+            item.terminals.forEach(val=>{
+                beforearea1.push(val)
+            })
+            this.separateByArea[0] = true
+          }
+          if(item.area==2){
+            item.terminals.forEach(val=>{
+                beforearea2.push(val)
+            })
+            this.separateByArea[0] = true
+          }
+        })
+        this.configsAfter.forEach(item=>{
+           if(item.area==1){
+               item.terminals.forEach(val=>{
+                 afterarea1.push(val)
+              })
+              this.separateByArea[1] = true
+            //this.setPrimary(item.terminals,item.area)
+          }
+          if(item.area==2){
+            item.terminals.forEach(val=>{
+                 afterarea2.push(val)
+              })
+              this.separateByArea[1] = true
+          }
+        })
+        if(this.separateByArea[0]){
+            beforearea1=this.arrindex(beforearea1)
+            beforearea2=this.arrindex(beforearea2)
+           this.setPrimary(beforearea1)
+           this.setPrimary(beforearea2)
+          this.terminals[0].push(beforearea1)
+          this.terminals[0].push(beforearea2)
+        }
+        if(this.separateByArea[1]){
+            afterarea1=this.arrindex(afterarea1)
+            afterarea2=this.arrindex(afterarea2)
+           this.setPrimary(afterarea1)
+           this.setPrimary(afterarea2)
+          this.terminals[1].push(afterarea1)
+          this.terminals[1].push(afterarea2)
+        }
         this.allConfigs = [this.configsBefore, this.configsAfter]
+      },
+      //数组去重
+      arrindex(arr){
+        let obj = {};
+          let peon = arr.reduce((cur,next) => {
+              obj[next.terminalId] ? "" : obj[next.terminalId] = true && cur.push(next);
+              return cur;
+          },[])
+        return peon
       },
       // 能否新增工作日
       canAddDay(configs) {
@@ -652,11 +539,28 @@
       // 参数化(update)
       filterParams(params) {
         let result = []
-
         params.forEach(config => {
-          const { duration, interval, days, queue, timeperiodQueue } = config
-
+          const { duration, interval, days, queue, area, timeperiodQueue } = config
           if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
+
+
+console.log(this.terminals[1][0])
+
+console.log(this.terminals[1][1])
+          if(config.area==1){
+            let terminals=[]
+            this.terminals[1][0].forEach(item=>{
+              terminals.push(item.terminalId)
+            })
+            config.terminals=terminals
+          }
+          if(config.area==2){
+            let terminals=[]
+             this.terminals[1][1].forEach(item=>{
+              terminals.push(item.terminalId)
+            })
+            config.terminals=terminals
+          }
 
           let c = []
 
@@ -666,7 +570,7 @@
 
           timeperiodQueue.forEach(t => period.push(t.join('-')))
 
-          result.push({ days, config: c, duration, interval, timeperiod: period })
+          result.push({ days, config: c, terminals: config.terminals,area,duration, interval, timeperiod: period })
         })
 
         return result
@@ -680,11 +584,15 @@
         const [before, after] = this.allConfigs
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
+        console.log(this.allConfigs)
+        console.log(this.filterParams(before))
+        console.log(console.log(this.filterParams(configBefore)))
 
         if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
 
         else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
 
+        console.log(hasNoChanged)
         if (hasNoChanged) {
           this.$message({
             showClose: true,
@@ -701,6 +609,7 @@
       onSubmit() {
         let params
         const [before, after] = this.allConfigs
+
         if (this.hasOriginConfigAfter) {
           params = this.filterParams(after)
         } else {
@@ -709,6 +618,7 @@
         const { id, jailId } = this.normalCongigs
 
         this.loading = true
+        console.log(params)
 
         this.updateRemoteNormalConfig({
           enabledAt: this.computedEffectiveDate,
@@ -799,14 +709,48 @@
         this.multipleSelection = val;
       },
       //选择设备显示表
-      tableShow(){
+      tableShow(area,type){
         this.prisonDetil=true
-        if( this.selectOption.length!=0){
-          this.$refs.multipleTable.clearSelection();
-        }
-        this.selectOption.forEach((item,key)=>{
-          this.$refs.multipleTable.toggleRowSelection(item,true);
+         let params={jailId:this.jailId,area:area}
+        http.getTerminal(params).then( res=>{
+          this.tableData=res
+          this.area=area
+          if(area==2){
+            this.tableData=this.tableData.filter(item=>{
+              return !this.terminals[type][0].find((val)=>{
+                 return item.id == val.terminalId ||item.id == val.id
+              })
+            })
+          }
+          if(area==1){
+            this.tableData=this.tableData.filter(item=>{
+              return !this.terminals[type][1].find((val)=>{
+                return item.id == val.terminalId ||item.id == val.id
+              })
+            })
+          }
+           this.$nextTick(() => {
+            console.log(this.terminals[type])
+            this.tableData.forEach(outerItem => {
+              if(area==2){
+                this.terminals[type][1].forEach((item) => {
+                  if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
+                    console.log(this.$refs)
+                    this.$refs.multipleTable.toggleRowSelection(outerItem, true)
+                  }
+                })
+              }else{
+                this.terminals[type][0].forEach((item) => {
+                  if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
+                    console.log(this.$refs)
+                    this.$refs.multipleTable.toggleRowSelection(outerItem, true);
+                  }
+                })
+              }
+            })
+          })
         })
+
       },
       //关闭设备显示表
       tableClose(){
@@ -827,8 +771,12 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.selectOption=this.selectOption.filter(val=> val!=item)
-          console.log(this.selectOption)
+          if(this.area==2){
+            this.selectOptionProduction=this.selectOptionProduction.filter(val=> val!=item)
+          }else {
+            this.selectOptionDormitory=this.selectOptionDormitory.filter(val=> val!=item)
+          }
+          console.log(this.selectOptionProduction)
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -841,15 +789,21 @@
         });
       },
       //修改按钮对应值
-      setPrimary(){
-        this.multipleSelection.forEach((item,key)=>{
-          item.selectArr=`${item.terminalNumber}${item.name?'-'+item.name:""}${item.name2?'-'+item.name2:""}${item.name3?'-'+item.name3:""}`
-          // option[key].selectArr=item[key]
-          // option[key].str
+      setPrimary( obj,area){
+        let multipleSelection=obj?obj:this.multipleSelection
+        multipleSelection.forEach((item,key)=>{
+          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
         })
-        this.selectOption=this.multipleSelection
+        console.log(area)
+        if(area==1){
+          this.terminals[1][0]=multipleSelection
+        }
+        if(area==2){
+          this.terminals[1][1]=multipleSelection
+        }
+        console.log( this.terminals[1])
         this.prisonDetil=false
-      },
+      }
     }
   }
 </script>

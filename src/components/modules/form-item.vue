@@ -168,7 +168,6 @@ export default {
     // isEmpty(input) {
     //   return isEmpty(input)
     // },
-
     tinymceChange(contents, text, content) {
       if (!content) {
         this.fields[this.prop] = ''

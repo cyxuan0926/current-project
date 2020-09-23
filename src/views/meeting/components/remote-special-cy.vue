@@ -294,7 +294,7 @@ export default {
       const { complexSpecialConfigs } = this.specialConfigs
 
       this.configs = cloneDeep(complexSpecialConfigs)
-
+    console.log(this.configs)
       this.showTooltip = new Array(this.configs.length).fill(false)
     },
 

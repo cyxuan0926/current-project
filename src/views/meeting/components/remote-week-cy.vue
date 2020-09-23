@@ -1,6 +1,5 @@
 <template>
   <label>
-    <span  v-for="(configs, type) in allConfigs">
     <div
       class="config-box">
       <div class="day-box">
@@ -28,7 +27,6 @@
             v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
             @click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>
         </div>
-
         <template v-if="config.timeperiodQueue.length">
           <!-- 通话时长/时间间隔 -->
 
@@ -111,13 +109,13 @@
                 type="queue"
               />
               <!--配置的时间段的最后一个时间段的结束时间是不是23:59并且是国科服务管理员角色-->
-              <!-- <el-button
-                      v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"
-                      type="primary"
-                      size="mini"
-                      class="button-float"
-                      style="margin-right: 10px;"
-                      @click="onAddRange(config.queue)">新增会见时间段</el-button> -->
+               <!--<el-button-->
+                      <!--v-if="config.queue[config.queue.length - 1][1] !== '23:59' && !disabled"-->
+                      <!--type="primary"-->
+                      <!--size="mini"-->
+                      <!--class="button-float"-->
+                      <!--style="margin-right: 10px;"-->
+                      <!--@click="onAddRange(config.queue)">新增会见时间段</el-button>-->
               <!-- 国科服务管理员角色 -->
               <el-button
                 v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"
@@ -126,18 +124,18 @@
                 :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
                 @click="onRestQueue(config)">重置时间段</el-button>
               <!-- 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 -->
+
+<!--index === configs.length - 1 && canAddDay(configs,index) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))-->
               <el-button
-                v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                v-if="canAddDay(configs)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
                 size="mini"
                 type="success"
                 class="button-float"
-                @click="onAddDay(type)">新增工作日</el-button>
+                @click="onAddDay(type,configs)">新增工作日</el-button>
             </div>
           </div>
         </template>
       </div>
-    </div>
-    </span>
   </label>
 </template>
 <script>
@@ -146,7 +144,30 @@
   import { Message } from 'element-ui'
   import cloneDeep from 'lodash/cloneDeep'
   export default {
-
+    props: {
+      allConfigs: {
+        type: Array,
+        default:()=> []
+      },
+      configs: {
+        type: Array,
+        default:()=> []
+      },
+      durations: {
+        type: Array,
+        default:()=> []
+      },config:{
+        type: Object,
+        default:()=> {}
+      },
+      separateByArea:{
+        type:Boolean,
+        default:false
+      },
+      area:[String,Number],
+      index:[String,Number],
+      type:[String,Number]
+    },
     mixins: [normalMixins],
     data() {
       const basicConfig = {
@@ -160,6 +181,7 @@
         timeperiodQueue: [],
         interval: 5,
         duration: 25,
+        area:0,
         showError: []
       }
       return {
@@ -177,23 +199,22 @@
         queue: ['09:00', '10:00'],
         flag: true,
         // 确定更新按钮加载
-        prisonShow : false,//$
         loading: false,
         permission: 'add',
         // 提示对话框显示属性
         visible: false,
+        // 确定是否分生产区跟监舍区
+        prisonDetil : false,
         // 原始的配置信息
         orignConfigs: [],
         // 正在生效的配置
         configsBefore: [basicConfig],
-        filterDuration: [25, 25],
+        filterDuration: [{label:5,value:5},{label:25,value:25}],
         // 即将生效的配置
         configsAfter: [basicConfig],
-        allConfigs: [],//$
         basicConfig,
         effectiveDate: '',
         dateValue: '',
-        updateShow: false,
         tableData: [{
           terminalNumber: '123',
           name: '453',
@@ -217,49 +238,37 @@
           name3: '',
         }],
         selectOption:[],
-        multipleSelection:[]
+        multipleSelection:[],
+        canAddLastIndex: []
       }
     },
-
-    watch: {
-      allConfigs: {
-        handler: function (value) {
-          if (this.hasOriginConfigAfter) {
-            this.updateShow = value[1].some(item => {
-              return !item.queue.length
-            }) || !this.hasConfigAfter
-          }
-          else {
-            this.updateShow = value[0].some(item => {
-              return !item.queue.length
-            }) || !this.hasConfigBefore
-          }
-        },
-        deep: true
-      }
-    },
-
     computed: {
       // 常规配置
       ...mapState(['normalCongigs']),
-
       // 是否存在正在生效的配置 现在默认情况下 是肯定有的
       hasConfigBefore() {
         return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length
       },
 
-      // 是否存在即将生效的配置 $$
+      // 是否存在即将生效的配置
       hasConfigAfter() {
         return this.allConfigs[1] && this.allConfigs[1].length && this.allConfigs[1][0].days.length && this.allConfigs[1][0].timeperiodQueue.length && this.allConfigs[1][0].queue.length
       },
 
-      // 原来是否用after $$
+      // 原来是否用after
       hasOriginConfigAfter() {
-        return this.normalCongigs['configAfter'] && this.normalCongigs['configAfter'].length && this.normalCongigs['configAfter'][0].days.length && this.normalCongigs['configAfter'][0].timeperiodQueue.length && this.normalCongigs['configAfter'][0].queue.length
+       return this.normalCongigs['configAfter'] && this.normalCongigs['configAfter'].length && this.normalCongigs['configAfter'][0].days.length && this.normalCongigs['configAfter'][0].timeperiodQueue.length && this.normalCongigs['configAfter'][0].queue.length
       },
 
       // 当前仅有before config的时候 并且发生改变的时候
       hasConfigBeforeChange() {
+        this.normalCongigs.configBefore.forEach(item=>{
+          if(item.area){
+            item.isarea=true
+          }else{
+            item.isarea=false
+          }
+        })
         return this.hasConfigBefore && !isEqual(this.allConfigs[0], this.normalCongigs['configBefore'])
       },
 
@@ -296,7 +305,7 @@
         }
       },
 
-      // 通话时长和间隔时间 $$
+      // 通话时长和间隔时间
       durationIntervalItems() {
         const item = {
           formConfigs: {
@@ -305,9 +314,11 @@
           },
           duration: {
             label: '通话时长',
-            type: 'input',
+            type: 'select',
             append: '分钟',
-            rules: ['required', 'isPositiveIntegers']
+            rules: ['required', 'isPositiveIntegers'],
+            props:{label:'label',value:'value'},
+            options:this.durations
           },
           interval: {
             label: '间隔时间',
@@ -316,14 +327,14 @@
             rules: ['required', 'isNumber']
           }
         }
-
         if (!this.superAdmin) this.$delete(item, 'duration')
+
 
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
 
-            if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
+            if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !!config.queue.length)
 
             this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
@@ -332,50 +343,55 @@
         })
       }
     },
-
-    // 激活状态
-    async activated() {
-      // 国科服务管理员权限/信息管理人员权限
-      if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
-      if (this.permission === 'edit') {
-        // 获取远程通话常规配置
-        await this.initConfigs()
+    watch: {
+      configs: {
+        handler: function (value) {
+          console.log(value)
+          let productIndex = 0
+          let dormitoryIndex = 0
+          value.forEach((config,i) => {
+              if(this.separateByArea){
+                if(config.area==2){
+                  productIndex = i
+                }
+                if(config.area==1){
+                  dormitoryIndex = i
+                }
+              }
+          })
+          this.canAddLastIndex = [value.length - 1]
+          if (this.separateByArea) {
+            this.canAddLastIndex.push(Math.min(productIndex, dormitoryIndex))
+          }
+        }
       }
     },
-
     methods: {
-      ...mapActions([
-        // 获取通话常规配置
-        'getRemoteNormalConfigs',
-        // 更新通话常规配置
-        'updateRemoteNormalConfig'
-      ]),
-
-      onClose() {
-        this.visible = false
-        this.initConfigs()
-      },
-
-      async initConfigs() {
-        await this.getRemoteNormalConfigs({ jailId: this.jailId })
-
-        Message.closeAll()
-
-        const { configBefore, configAfter, enabledAt } = this.normalCongigs
-
-        this.configsBefore = cloneDeep(configBefore)
-
-        this.configsAfter = cloneDeep(configAfter)
-
-        this.effectiveDate = enabledAt
-
-        this.allConfigs = [this.configsBefore, this.configsAfter]
+      // 是否存在正在生效的配置 现在默认情况下 是肯定有的
+      hasConfigLeng(index) {
+        if(this.canAddLastIndex.length==0){
+          return  true
+        }else{
+          return this.canAddLastIndex.includes(index)
+        }
       },
       // 能否新增工作日
       canAddDay(configs) {
-        let days = []
-        configs.forEach(config => {
-          days = days.concat(config.days)
+        let days = [],productiondays=[],dormitorydays=[]
+        console.log(configs)
+        configs.forEach((config) => {
+        if(this.separateByArea){
+          if(config.area==1){
+            productiondays = productiondays.concat( config.days )
+            days=productiondays
+          }
+          if(config.area==2){
+            dormitorydays = dormitorydays.concat( config.days )
+            days=dormitorydays
+          }
+         } else {
+            days = days.concat(config.days)
+         }
         })
         return days.length < 7
       },
@@ -387,7 +403,7 @@
         this.allConfigs[type][index].showError.push(false)
       },
 
-      // form组件数据 $$
+      // form组件数据
       onResponse(params) {
         const { index, duration, interval, type } = params
 
@@ -401,8 +417,7 @@
       // 生成通话时间段
       async onFigureOut(config, index, type) {
         try {
-          const isChecked = await this.$refs[`${type}form${index}`][0].onCheck()
-
+          const isChecked = await this.$refs[`${type}form${index}`].onCheck()
           if (isChecked) this.getConfigsQueue(config)
 
           else {
@@ -416,7 +431,6 @@
           Promise.reject(err)
         }
       },
-
       // 参数化(update)
       filterParams(params) {
         let result = []
@@ -464,7 +478,6 @@
         // 展示提示对话框
         else this.visible = true
       },
-
       // 更新常规配置
       onSubmit() {
         let params
@@ -489,8 +502,7 @@
           this.visible = false
         })
       },
-
-      // 新增一个时间段 配置默认的会见时间段(update) $$
+      // 新增一个时间段 配置默认的会见时间段(update)
       handleConfig(index, type, configs) {
         const duration = this.filterDuration[type]
 
@@ -515,8 +527,7 @@
           })
         })
       },
-
-      // 删除当前常规配置(update) $$
+      // 删除当前常规配置(update)
       handleDeleteConfig(params) {
         let { configs, index, type } = params
 
@@ -525,22 +536,57 @@
         const beforDuration = cloneDeep(configBefore)[0].duration
 
         const initDuration = beforDuration
-
         this.$nextTick(function() {
-          if (configs.length > 1) this.allConfigs[type].splice(index, 1)
+            if(this.separateByArea){
+              let configs1=[],configs2=[]
+              configs.forEach((item,ind)=>{
+                if( item.area==1){
+                  configs1.push(item)
+                }
+                if( item.area==2){
+                  configs2.push(item)
+                }
+              })
+           configs.forEach((item,ind)=>{
+                 if(ind==index){
+                   if( item.area==1){
+                     if(configs1.length>1){
+                        this.allConfigs[type].splice(index, 1)
+                     }else{
+                       this.basicConfig.area=item.area
+                       this.$set(this.allConfigs[type], index, this.basicConfig)
+                     }
+                   }
+                   if( item.area==2){
+                      if(configs2.length>1){
+                        this.allConfigs[type].splice(index, 1)
+                     }else{
+                       this.basicConfig.area=item.area
+                       this.$set(this.allConfigs[type], index, this.basicConfig)
+                     }
+                   }
+                }
+              })
+            }else{
+              if (configs.length > 1){
+                 this.allConfigs[type].splice(index, 1)
+              }else {
+                this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
 
-          else {
-            this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
-
-            this.$set(this.filterDuration, type, initDuration)
+                this.$set(this.filterDuration, type, initDuration)
+              }
           }
         })
       },
-
       // 新增工作日
-      onAddDay(type) {
+      onAddDay(type,configs) {
         // 在常规配置里面新增一个初始化的配置
-        this.allConfigs[type].push({ days: [], interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
+        //区分是否分生产区跟舍监区
+        if(this.separateByArea){
+          configs.push({ days: [], area:this.area, interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
+        }else{
+          this.allConfigs[type].push({ days: [], interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
+        }
       },
 
       // 显示的日 w: 日子对象 config：当前配置信息 index： 当前索引
@@ -548,75 +594,39 @@
         // 配置信息的时间段队列存在的话
         if (config.timeperiodQueue.length) {
           // 存在就显示
-          return config.days.some(v => v === w.value)
+         return config.days.some(v => v === w.value)
         }
-        // 没有配置时间(新增工作日)
+        // 没有配置时间(新增工作日)s
         else {
-          let days = []
+          let days = [],productiondays=[],dormitorydays=[]
           // 新增后的常规配置信息:key
           configs.forEach((config, i) => {
             // 已经配置了的日期
-            if (i !== index) days = days.concat(config.days)
+            if(i !== index){
+            if(this.separateByArea){
+              if(config.area==2){
+                productiondays = productiondays.concat( config.days )
+              }
+              if(config.area==1){
+                dormitorydays = dormitorydays.concat( config.days )
+              }
+              } else {
+            days = days.concat(config.days)
+           }
+            }
           })
+          if(this.separateByArea){
+            if(config.area==2){
+              return  !productiondays.some(v => v === w.value)
+            }
+            if(config.area==1){
+              return  !dormitorydays.some(v => v === w.value)
+            }
+          }else{
+            return !days.some(v => v === w.value)
+          }
           // 过滤已经配置了的日子
-          return !days.some(v => v === w.value)
         }
-      },
-      //全选
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      //选择设备显示表
-      tableShow(){
-        this.prisonDetil=true
-        if( this.selectOption.length!=0){
-          this.$refs.multipleTable.clearSelection();
-        }
-        this.selectOption.forEach((item,key)=>{
-          this.$refs.multipleTable.toggleRowSelection(item,true);
-        })
-      },
-      //关闭设备显示表
-      tableClose(){
-        this.prisonDetil=false
-      },
-      //删除按扭
-      open(item) {
-        const confirmText = ['是否将'+item.selectArr+'"设备，从选中的设备项中移出？',  '注意：删除终端后，将重新分配通话时间段，如预约日期无法分配时间段，系统将自动取消通话申请，调整后会以短信的形式通知相关家属 ，请确认是否继续操作？']
-        const newDatas = []
-        const h = this.$createElement
-        for (const i in confirmText) {
-          newDatas.push(h('p', null, confirmText[i]))
-        }
-        this.$confirm( '提示', {
-          title: '提示',
-          message: h('div', null, newDatas),
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.selectOption=this.selectOption.filter(val=> val!=item)
-          console.log(this.selectOption)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      },
-      //修改按钮对应值
-      setPrimary(){
-        this.multipleSelection.forEach((item,key)=>{
-          item.selectArr=`${item.terminalNumber}${item.name?'-'+item.name:""}${item.name2?'-'+item.name2:""}${item.name3?'-'+item.name3:""}`
-          // option[key].selectArr=item[key]
-          // option[key].str
-        })
-        this.selectOption=this.multipleSelection
-        this.prisonDetil=false
       },
     }
   }

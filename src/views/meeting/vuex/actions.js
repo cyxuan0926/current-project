@@ -76,6 +76,7 @@ export default {
         dayInLimit,
         updatedAt,
         separateByArea,
+        durations,
         id
       } = await http.getRemoteNormalConfig(params)
 
@@ -126,6 +127,7 @@ export default {
         updatedAt,
         dayInLimit,
         separateByArea,
+        durations,
         configBefore: filterAllConfigs[0],
         configAfter: filterAllConfigs[1]
       })
