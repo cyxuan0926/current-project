@@ -427,7 +427,6 @@
 
         this.effectiveDate = enabledAt
         this.durations=[]
-        console.log(durations)
         durations.forEach(item=>{
           let obj={label:item,value:item}
            this.durations.push(obj)
