@@ -47,28 +47,35 @@
       class="authorize-dialog"
       :title="showContent['title']"
       width="530px">
-      {{this.maxLevel}}
       <el-input
-        v-if="this.maxLevel >= 1"
+        class="prisonAreas-inp"
+        v-if="checkIsShow(1)"
         v-model.trim="prisonArea.name"
+        maxlength="30"
         placeholder="请输入监区名称" />
 
       <el-input
-        v-if="this.maxLevel >= 2"
+        class="prisonAreas-inp"
+        v-if="checkIsShow(2)"
         v-model.trim="prisonArea.branchname"
+        maxlength="30"
         placeholder="请输入分监区名称" />
       
       <el-input
-        v-if="this.maxLevel >= 3"
+        class="prisonAreas-inp"
+        v-if="checkIsShow(3)"
         v-model.trim="prisonArea.building"
+        maxlength="30"
         placeholder="请输入楼栋名称" />
 
       <el-input
-        v-if="this.maxLevel >= 4"
+        class="prisonAreas-inp"
+        v-if="checkIsShow(4)"
         v-model.trim="prisonArea.layer"
+        maxlength="30"
         placeholder="请输入楼层名称" />
       
-      <div class="el-input-div__error" v-if="!!errTips">{{ errTips }}</div>
+      <div class="el-input-div__error" v-if="!!errTips">（{{ errTips }}）</div>
       <template slot="footer">
         <el-button
           type="primary"
@@ -107,7 +114,7 @@ export default {
       validatingError: false,
       filter: {},
       errTips: '',
-      maxLevel: 1,
+      maxLevel: 4
     }
   },
   computed: {
@@ -167,7 +174,9 @@ export default {
   async mounted() {
     this.getDatas()
     let { data } = await http.queryPrisonAreaMaxlevel()
-    this.maxLevel = data.maxLevel
+    if ( data.maxLevel ) {
+      this.maxLevel = data.maxLevel
+    }
     if (this.user.role !== '4' && this.user.role !== '-1') {
       await this.getPrisonAll()
       this.searchItems.jailId.options = this.prisonAll
@@ -196,12 +205,17 @@ export default {
     async handleEdit(id, index) {
       let { data } = await http.queryPrisonArea({ id })
       this.prisonArea = data.prisonConfigs
+      this.maxLevel = this.prisonArea.level
       this.dialogPermission = 'edit'
       this.validatingError = false
       this.dialogVisible = true
       this.index = index
+      this.errTips = ''
     },
-    checkPrisonAreaInputs(val = []) {
+    checkIsShow(level) {
+      return this.dialogPermission === 'add' || this.dialogPermission === 'edit' && this.maxLevel && this.maxLevel >= level
+    },
+    checkPrisonAreaInputs(val = [], isEdit) {
       let hasvalIndex = 0
       let hasNovalIndex = 'init'
       let tips = ['监区名称', '分监区名称', '楼栋名称', '楼层名称']
@@ -223,16 +237,15 @@ export default {
     handleOperate() {
       const { id, name = '', branchname = '', building = '', layer = ''} = this.prisonArea
       const _inputs = []
-      if (this.maxLevel >= 1) {
+      if ( !this.maxLevel ) {
+        _inputs.push(name, branchname, building, layer)
+      } else if (this.maxLevel >= 1) {
         _inputs.push(name)
-      }
-      if (this.maxLevel >= 2) {
+      } else if (this.maxLevel >= 2) {
         _inputs.push(branchname)
-      }
-      if (this.maxLevel >= 3) {
+      } else if (this.maxLevel >= 3) {
         _inputs.push(building)
-      }
-      if (this.maxLevel >= 4) {
+      } else if (this.maxLevel >= 4) {
         _inputs.push(layer)
       }
       if( this.checkPrisonAreaInputs(_inputs) ) {
@@ -286,9 +299,11 @@ export default {
       this.dialogPermission = 'add'
       this.validatingError = false
       this.dialogVisible = true
+      this.maxLevel = null
+      this.errTips = ''
       if(!this.allPrisonAreas.length) {
         const res = await this.getPrisonAreas({ params: {...{ jailId: JSON.parse(localStorage['user']).jailId }, ...{ page: 1, rows: 100 }}, defaultMode: 'all' })
-        this.allPrisonAreas = res
+        this.allPrisonAreas = res.prisonConfigs || []
       }
     },
     handleValidate(fullname) {
@@ -327,6 +342,10 @@ export default {
   font-size: 12px;
   color: #f56c6c;
   line-height: 1;
-  padding-top: 4px;
+  padding-top: 10px;
+  text-align: center;
+}
+.prisonAreas-inp {
+  margin-bottom: 10px;
 }
 </style>
