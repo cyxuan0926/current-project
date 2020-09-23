@@ -95,7 +95,7 @@
       </div>
       <template v-if="isSpecial">
         <section>
-          <div class="across-filter">
+          <div class="across-filter" v-if="isSeparateByArea">
             <label class="filter__label special">选择区域</label>
             <el-select style="width: 200px" v-model="areaType" placeholder="请选择区域">
               <el-option
@@ -823,6 +823,14 @@ export default {
   }
 }
 
+.cross-meeting-dialog {
+  /deep/ .el-dialog__body::after {
+    display: table;
+    content: ' ';
+    clear: both;
+  }
+}
+
 .across-filter {
   display: flex;
   align-items: center;
@@ -837,14 +845,6 @@ export default {
       min-width: 110px;
       text-align: right;
     }
-  }
-}
-
-.cross-meeting-dialog {
-  /deep/ .el-dialog__body::after {
-    display: table;
-    content: ' ';
-    clear: both;
   }
 }
 

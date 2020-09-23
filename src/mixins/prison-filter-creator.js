@@ -1,6 +1,13 @@
 import { Message } from 'element-ui'
 import http from '@/service'
 
+const baseItem = {
+  type: 'select',
+  options: [],
+  belong: { value: 'id', label: 'name' },
+  value: ''
+}
+
 export default {
   props: {
     // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
@@ -105,38 +112,44 @@ export default {
       this.$set(this.searchItems['provincesId'], 'getting', false)
     },
 
+    createPrisonSubArea() {
+      const prisonSubAreaItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonSubAreaId',
+        label: '分监区'
+      })
+      this.searchItems = Object.assign({}, {
+        prisonSubArea: prisonSubAreaItem
+      }, this.searchItems)
+    },
+
+    createPrisonHouseItem() {
+      const prisonHouseItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonHouseId',
+        label: '楼栋'
+      })
+      this.searchItems = Object.assign({}, {
+        prisonHouse: prisonHouseItem
+      }, this.searchItems)
+    },
+
+    createPrisonFloorItem() {
+      const prisonFloorItem = Object.assign({}, baseItem, {
+        selectKey: 'prisonFloorId',
+        label: '楼层'
+      })
+      this.searchItems = Object.assign({}, {
+        prisonFloor: prisonFloorItem
+      }, this.searchItems)
+    },
+
     createPrisonAreaFilter() {
-      const baseItem = {
-        type: 'select',
-        options: [],
-        belong: { value: 'id', label: 'name' },
-        value: ''
-      }
       const prisonAreaItem = Object.assign({}, baseItem, {
         selectKey: 'prisonAreaId',
         label: '监区'
       })
 
-      const prisonSubAreaItem = Object.assign({}, baseItem, {
-        selectKey: 'prisonSubAreaId',
-        label: '分监区'
-      })
-
-      const prisonHouseItem = Object.assign({}, baseItem, {
-        selectKey: 'prisonHouseId',
-        label: '楼栋'
-      })
-
-      const prisonFloorItem = Object.assign({}, baseItem, {
-        selectKey: 'prisonFloorId',
-        label: '楼层'
-      })
-
       this.searchItems = Object.assign({}, {
-        prisonArea: prisonAreaItem,
-        prisonSubArea: prisonSubAreaItem,
-        prisonHouse: prisonHouseItem,
-        prisonFloor: prisonFloorItem
+        prisonArea: prisonAreaItem
       }, this.searchItems)
 
       const _jailId = this.$store.state.global.user.jailId
@@ -149,8 +162,7 @@ export default {
       let _list = ['prisonArea', 'prisonSubArea', 'prisonHouse', 'prisonFloor']
       _list = _list.slice(_list.findIndex(l => l === target))
       _list.forEach(t => {
-        this.$set(this.searchItems[t], 'value', '')
-        this.$set(this.searchItems[t], 'options', [])
+        this.$delete(this.searchItems, t)
       })
     },
 
@@ -158,33 +170,42 @@ export default {
       if (selectKey === 'prisonAreaId') {
         this.clearSubPrisonArea('prisonSubArea')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
           Message.closeAll()
-          this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
+          if (prisonConfigs && prisonConfigs.length) {
+            this.createPrisonSubArea()
+            this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
+          }
         }
       }
 
       if (selectKey === 'prisonSubAreaId') {
         this.clearSubPrisonArea('prisonHouse')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
           Message.closeAll()
-          this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
+          if (prisonConfigs && prisonConfigs.length) {
+            this.createPrisonHouseItem()
+            this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
+          }
         }
       }
 
       if (selectKey === 'prisonHouseId') {
         this.clearSubPrisonArea('prisonFloor')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubs({ parentId: value })
+          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
           Message.closeAll()
-          this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
+          if (prisonConfigs && prisonConfigs.length) {
+            this.createPrisonFloorItem()
+            this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
+          }
         }
       }
 
       if (selectKey === 'jailId') {
         if (value) {
-          this.clearSubPrisonArea('prisonArea')
+          this.clearSubPrisonArea('prisonSubArea')
           await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
           Message.closeAll()
           this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
@@ -197,7 +218,6 @@ export default {
           this.$set(this.searchItems['jailId'], 'value', '')
           if (this.searchItems['prisonArea']) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
-
             this.$set(this.searchItems['prisonArea'], 'options', [])
           }
         }

@@ -101,42 +101,97 @@
       <div
         v-if="show.agree"
         class="button-box">
-        <el-table
-          :data="meetingAdjustmentCopy.terminals"
-          border
-          @cell-click="cellClick"
-          :row-class-name="tableRowClassName"
-          :cell-style="cellStyle"
-          class="tableBorder">
-          <el-table-column
-            fixed
-            prop="terminalNumber"
-            label="终端号"
-            min-width="80">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="prisonConfigName"
-            label="监区"
-            min-width="110">
-          </el-table-column>
-          <el-table-column
-            v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
-            :prop="item"
-            :label="item"
-            min-width="84">
-          </el-table-column>
-          <el-table-column
-            v-if="show.meetingQueue"
-            prop="noTimes"
-            label="当日没有可选时间段"
-            min-width="84">
-          </el-table-column>
+        <section v-show="isSpecial">
+          <div class="across-filter" v-if="isSeparateByArea">
+            <label class="filter__label special">选择区域</label>
+            <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
+              <el-option
+                v-for="item in $store.state.areaOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">通话时长</label>
+            <el-select style="width: 200px" v-model="crossDuration" placeholder="请选择通话时长" @change="handleDurationChange">
+              <el-option
+                v-for="d in durationOptions"
+                :key="d.value"
+                :label="d.label"
+                :value="d.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">可视电话通话时间</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeStart"
+              format="HH:mm"
+              :picker-options="selectRange"
+              :clearable="false"
+              @change="handleTimepickerChange">
+            </el-time-picker>
+            <label style="margin: 0 10px;">至</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeEnd"
+              format="HH:mm"
+              disabled>
+            </el-time-picker>
+          </div>
+          <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
+        </section>
+        <section v-show="!isSpecial">
+          <el-tabs
+            v-if="isSeparateByArea"
+            v-model="areaTabs"
+            type="card">
+            <el-tab-pane v-for="t in $store.state.areaOptions"
+              :key="t.value"
+              :label="t.label"
+              :name="t.value" />
+          </el-tabs>
+          <el-table
+            :data="meetingAdjustmentCopy.terminals"
+            border
+            @cell-click="cellClick"
+            :row-class-name="tableRowClassName"
+            :cell-style="cellStyle"
+            class="tableBorder">
+            <el-table-column
+              fixed
+              prop="terminalNumber"
+              label="终端号"
+              min-width="80">
+            </el-table-column>
+            <el-table-column
+              fixed
+              prop="prisonConfigName"
+              label="监区"
+              min-width="110">
+            </el-table-column>
+            <el-table-column
+              v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
+              :prop="item"
+              :label="item"
+              min-width="84">
+            </el-table-column>
+            <el-table-column
+              v-if="show.meetingQueue"
+              prop="noTimes"
+              label="当日没有可选时间段"
+              min-width="84">
+            </el-table-column>
 
-        </el-table>
+          </el-table>
+        </section>
       </div>
       <span v-if="show.agree" slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
+          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
+          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
     </el-dialog>
@@ -429,8 +484,10 @@
   import {
     mapActions,
     mapState,
-    mapMutations
+    mapMutations,
+    mapGetters
   } from 'vuex'
+  import Moment from 'moment'
   import validator, { helper } from '@/utils'
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
   import prisons from '@/common/constants/prisons'
@@ -481,6 +538,17 @@
         }
       ]
       return {
+        showTips: '',
+        isShowTips: false,
+        selectRange: {},
+        timeRangeStart: new Date(),
+        timeRangeEnd: new Date(),
+        durationOptions: [],
+        crossDuration: '',
+        isSpecial: false,
+        areaTabs: '1',
+        areaTypes: '1',
+        getMeetingId: '',
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
@@ -567,7 +635,7 @@
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams:{},
+        submitSuccessParams: null,
         familyShows: [],
         // 撤回对话框表单组件
         withdrawFormItems: {
@@ -653,6 +721,10 @@
         'frontRemarks',
         'meetingRefresh',
         'isSuccessFirstLevelSubmitMeeting'
+      ]),
+
+      ...mapGetters([
+        'isSeparateByArea'
       ]),
 
       localFirstLevelExamineFormItems() {
@@ -801,6 +873,10 @@
       }
     },
     watch: {
+      areaTabs() {
+        this.submitSuccessParams = null
+        this.getMeetTimeConfig()
+      },
       meetingRefresh(val) {
         if (val) {
           if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
@@ -1024,22 +1100,90 @@
         return res
       },
 
-      async handleAuthorization(e) {
-        const { id } = e
-
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
-
-        this.show.agree = false
-        this.show.disagree = false
-        this.show.multistageExamine = false
-        this.submitSuccessParams = null
-        http.getMeetTimeConfig({ id }).then(res=>{
+      getMeetTimeConfig() {
+        http.getMeetTimeConfig({
+          id: this.getMeetingId,
+          area: this.isSeparateByArea ? this.areaTabs : ''
+        }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
           this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
           this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
+          this.durationOptions = this.meetingAdjustment.meetingChargeTemplates && this.meetingAdjustment.meetingChargeTemplates.map(c => {
+            return {
+              label: c.duration,
+              value: c.duration
+            }
+          })
+          if (this.durationOptions && this.durationOptions.length) {
+            this.crossDuration = this.durationOptions[0].value
+          }
+
+          let _now = new Date()
+          this.selectRange = {
+            selectableRange: `${Moment(_now).format('HH:mm')}:00 - 23:58:00`,
+            format: 'HH:mm'
+          }
+          this.setTimeRange(_now)
         })
+      },
+
+      handleShowOther() {
+        this.isSpecial = !this.isSpecial
+      },
+
+      handleDurationChange(val) {
+        this.crossDuration = val
+        this.setTimeRange(this.timeRangeStart.toDate())
+      },
+
+      handleTimepickerChange(val) {
+        this.isShowTips = false
+        this.setTimeRange(val)
+      },
+
+      checkInmeetings() {
+        return this.meetingAdjustmentCopy.meetingQueue.some(m => {
+          let {sm, em} = this.getStartandEndTime(m)
+          return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
+        })
+      },
+
+      getStartandEndTime(time) {
+        let _timeRange = time.split('-')
+        let sm = _timeRange[0].split(':')
+        sm = Moment({ hour: sm[0], minute: sm[1] })
+        let em = _timeRange[1].split(':')
+        em = Moment({ hour: em[0], minute: em[1] })
+        return {
+          sm,
+          em
+        }
+      },
+
+      setTimeRange(dateObj) {
+        let _start = Moment(dateObj)
+        let _end = Moment(dateObj).add(this.crossDuration, 'm')
+        let _last = Moment({ hour: '23', minute: '59' })
+        this.timeRangeStart = _start
+        this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
+      },
+
+      async handleAuthorization(e) {
+        const { id } = e
+        this.getMeetingId = id
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        this.show.agree = false
+        this.show.disagree = false
+        this.show.multistageExamine = false
+        this.submitSuccessParams = null
+        this.isSpecial = false
+        this.showTips = ''
+        this.isShowTips = false
+        this.areaTabs = '1'
+        this.areaTypes = '1'
+        this.getMeetTimeConfig()
       },
 
       async handleWithdraw(e) {
@@ -1243,7 +1387,18 @@
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
-          http.meetingSelectAuthorize(params).then(res => {
+          if (this.isSeparateByArea) {
+            params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+          }
+          if (this.isSpecial) {
+            if (this.checkInmeetings()) {
+              this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
+              this.isShowTips = true
+              return
+            }
+            params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+          }
+          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
@@ -1371,7 +1526,27 @@
       border-right: 1px solid #E4E7ED;
     }
   }
+  .across-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
 
+    .filter__label {
+      font-size: 12px;
+      margin-right: 10px;
+      color: #666;
+    
+      &.special {
+        min-width: 110px;
+        text-align: right;
+      }
+    }
+  }
+  .timerange-tips {
+    padding-left: 120px;
+    color: red;
+    font-size: 12px;
+  }
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>

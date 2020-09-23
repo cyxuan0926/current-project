@@ -164,6 +164,14 @@ export default {
   addPrisonArea: params => {
     return service.post('/prison_config/add', params).then(res => res && res.code === 200)
   },
+  // 监区管理-查询 分监区-楼栋-楼层
+  queryPrisonArea: params => {
+    return service.get('/prison_config/detailMany', params).then(res => res)
+  },
+  // 监区管理-查询监区最大层级
+  queryPrisonAreaMaxlevel: params => {
+    return service.get('/prison_config/getMaxLevel', params).then(res => res)
+  },
   // 监狱数据查询-监狱会见数据统计表-列表
   getMeetingStatics: params => {
     return service.get('/report/meetings', params)

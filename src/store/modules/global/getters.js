@@ -56,5 +56,9 @@ export default {
   // 是否开启多级审批
   haveMultistageExamine(state) {
     return !!state.user.multistageExamine
+  },
+  // 是否分区域
+  isSeparateByArea(state) {
+    return state.user.separateByArea
   }
 }
