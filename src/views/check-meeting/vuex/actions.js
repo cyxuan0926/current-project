@@ -195,7 +195,8 @@ export default {
             zijingDurationConcat: itemData['zijingDurationConcat'][index],
             endTimeConcat: itemData['endTimeConcat'][index],
             remarksConcat: itemData['remarksConcat'][index],
-            durationConcat: itemData['durationConcat'][index]
+            durationConcat: itemData['durationConcat'][index],
+            conferenceIdConcat: itemData['conferenceIdConcat'][index]
           })))
       })
       commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })

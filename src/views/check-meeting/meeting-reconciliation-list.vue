@@ -94,6 +94,10 @@ export default {
   data() {
     return {
       searchItems: {
+        meetingId: {
+          type: 'input',
+          label: '通话ID'
+        },
         Date: {
           type: 'datetimerange',
           start: 'startTime',
@@ -287,7 +291,14 @@ export default {
 
     // 合并单元格
     onTableSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (['orderIndex', 'jailName', 'meetingId'].includes(column.property)) {
+      if ([
+          'orderIndex',
+          'jailName',
+          'meetingId',
+          'provincesName',
+          'meetingTime',
+          'conferenceName',
+          'roomNumber'].includes(column.property)) {
         if (row.orderNumber % row.count === 0) {
           return {
             rowspan: row.count,

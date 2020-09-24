@@ -851,7 +851,7 @@ export default {
     }
 
     /deep/ .el-table {
-      margin-bottom: 10px !important;
+      margin-bottom: 22px !important;
     }
   }
 }

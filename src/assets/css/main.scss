@@ -563,3 +563,8 @@ body .el-table colgroup.gutter{
     top: 6px !important;
   }
 }
+.el-tooltip__popper.is-dark {
+  background: #e4e4e4;
+  border: 1px solid #c9c9c9;
+  color: #363636;
+}

@@ -293,7 +293,7 @@ export default {
                   if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
                   for (let [key, value] of Object.entries(item.itemConfigs)) {
                     this.dismiss.push(key)
-                    if (this.items[key].func) this.items[key].func(e, prop, item)
+                    if (this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
                     else this.$set(this.fields, key, value)
                   }
                 }
