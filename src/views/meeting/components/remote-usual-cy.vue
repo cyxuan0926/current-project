@@ -55,7 +55,7 @@
                            style="margin-left: 5px">{{item.selectArr}} <i v-if=" type === 1 && hasOriginConfigAfter" @click="open(item,type)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
-              <el-button  v-if=" type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <el-button  v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
