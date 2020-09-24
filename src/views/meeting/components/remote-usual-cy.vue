@@ -26,14 +26,14 @@
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item)"/>
+                           >{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item,type)"/>
                 </el-button>
               </div>
               <el-button  v-if="!hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
-            v-if="config.area=='2' || config.area=='null'"
+             v-if="config.area=='2' || !config.area"
             v-for="(config, index) in configs"
             :key="index"
             class="config-box">
@@ -52,14 +52,14 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" @click="open(item)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" @click="open(item,type)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
               <el-button  v-if="!hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
-             v-if="config.area=='1' || !config.area"
+             v-if="config.area=='1'"
             v-for="(config, index) in configs"
             :key="index"
             class="config-box">
@@ -94,7 +94,7 @@
 
     </template>
     <!--v-if="hasOriginConfigAfter || hasConfigBeforeChange"-->
-    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
+    <div class="effective__date">
       <label
         class="c-label"
         style="line-height: 35px"
@@ -543,16 +543,29 @@
           if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
           if(config.area==1){
             let terminals=[]
-            this.terminals[1][0].forEach(item=>{
-              terminals.push(item.terminalId)
-            })
+            console.log( this.terminals)
+              if(this.terminals[1][0]){
+                  this.terminals[1][0].forEach(item=>{
+                   terminals.push(item.terminalId)
+                   })
+              }else{
+                this.terminals[0][0].forEach(item=>{
+                   terminals.push(item.terminalId)
+                   })
+              }
             config.terminals=terminals
           }
           if(config.area==2){
             let terminals=[]
-             this.terminals[1][1].forEach(item=>{
-              terminals.push(item.terminalId)
-            })
+            if(this.terminals[1][1]){
+              this.terminals[1][1].forEach(item=>{
+                terminals.push(item.terminalId)
+              })
+            }else{
+                  this.terminals[0][1].forEach(item=>{
+                   terminals.push(item.terminalId)
+                  })
+            }
             config.terminals=terminals
           }
 
@@ -751,7 +764,7 @@
         this.prisonDetil=false
       },
       //删除按扭
-      open(item) {
+      open(item,type) {
         const confirmText = ['是否将'+item.selectArr+'"设备，从选中的设备项中移出？',  '注意：删除终端后，将重新分配通话时间段，如预约日期无法分配时间段，系统将自动取消通话申请，调整后会以短信的形式通知相关家属 ，请确认是否继续操作？']
         const newDatas = []
         const h = this.$createElement
@@ -766,11 +779,11 @@
           type: 'warning'
         }).then(() => {
           if(this.area==2){
-            this.selectOptionProduction=this.selectOptionProduction.filter(val=> val!=item)
-          }else {
-            this.selectOptionDormitory=this.selectOptionDormitory.filter(val=> val!=item)
+             this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
           }
-          console.log(this.selectOptionProduction)
+          if(this.area==1) {
+             this.terminals[type][0]=this.terminals[type][0].filter(val=> val!=item)
+          }
           this.$message({
             type: 'success',
             message: '删除成功!'
