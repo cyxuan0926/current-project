@@ -444,10 +444,10 @@ export default {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
         this.values = cloneDeep(this.prison)
-        if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
-          const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
-          this.$set(this.values, 'prisonAreaList', prisonAreaList)
-        }
+        // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
+        //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
+        //   this.$set(this.values, 'prisonAreaList', prisonAreaList)
+        // }
         // if (this.$store.getters.role !== roles.INFORMATION_ADMIN) {
         //   if (!this.branchStatus) {
         //     this.$set(this.formItems['branchPrison'], 'disabled', true)
