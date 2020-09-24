@@ -181,7 +181,7 @@ export default {
   async getRemoteSpecialConfigs({ commit }, params) {
     try {
       // complexNormalConfig:常规配置 unMeetingDays：不可以申请的日期 complexSpecialConfigs：特使日期配置
-      const { complexNormalConfig, complexSpecialConfigs, unMeetingDays } = await http.getRemoteSpecialConfig(params)
+      const { complexNormalConfig, complexSpecialConfigs, unMeetingDays, separateByArea } = await http.getRemoteSpecialConfig(params)
       // configAfter: 将要生效的常规配置, configBefore：正在生效的常规配置, enabledAt：生效日期 , enabledAt
       const { configAfter, configBefore, enabledAt } = complexNormalConfig
       let afterDuration = 25, beforeDuration = 25, filterConfigs = []
@@ -262,6 +262,7 @@ export default {
         unMeetingDays,
         enabledAt,
         configAfter,
+        separateByArea,
         complexSpecialConfigs: filterConfigs
       })
 

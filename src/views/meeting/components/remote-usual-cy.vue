@@ -26,10 +26,10 @@
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item,type)"/>
+                           >{{item.selectArr}} <i  v-if=" type === 1 && hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item,type)"/>
                 </el-button>
               </div>
-              <el-button  v-if="!hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
+              <el-button  v-if=" type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -52,10 +52,10 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="!hasOriginConfigAfter" @click="open(item,type)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i v-if=" type === 1 && hasOriginConfigAfter" @click="open(item,type)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
-              <el-button  v-if="!hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <el-button  v-if=" type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -479,6 +479,7 @@
           this.terminals[1].push(afterarea2)
         }
         this.allConfigs = [this.configsBefore, this.configsAfter]
+        console.log(this.allConfigs)
       },
       //数组去重
       arrindex(arr){
