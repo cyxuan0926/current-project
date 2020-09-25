@@ -209,7 +209,7 @@
         orignConfigs: [],
         // 正在生效的配置
         configsBefore: [basicConfig],
-        filterDuration: [{label:5,value:5},{label:25,value:25}],
+        filterDuration: [this.durations[0].value, this.durations[0].value],
         // 即将生效的配置
         configsAfter: [basicConfig],
         basicConfig,
@@ -318,7 +318,8 @@
             append: '分钟',
             rules: ['required', 'isPositiveIntegers'],
             props:{label:'label',value:'value'},
-            options:this.durations
+            options:this.durations,
+            value:this.durations[0].value
           },
           interval: {
             label: '间隔时间',
@@ -406,7 +407,6 @@
       // form组件数据
       onResponse(params) {
         const { index, duration, interval, type } = params
-
         this.$set(this.filterDuration, type, duration)
 
         this.$set(this.allConfigs[type][index], 'duration', duration)
@@ -537,6 +537,7 @@
 
         const initDuration = beforDuration
         this.$nextTick(function() {
+          console.log(configs)
             if(this.separateByArea){
               let configs1=[],configs2=[]
               configs.forEach((item,ind)=>{
@@ -565,6 +566,10 @@
                        this.$set(this.allConfigs[type], index, this.basicConfig)
                      }
                    }
+                    if(!item.area){
+                      this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
+                       this.$set(this.allConfigs[type], 1, { days: [],config: [], queue: [],timeperiod: [],timeperiodQueue: [], interval: 5, duration: 25,area:2,showError: [] })
+                    }
                 }
               })
             }else{
@@ -583,7 +588,8 @@
         // 在常规配置里面新增一个初始化的配置
         //区分是否分生产区跟舍监区
         if(this.separateByArea){
-          configs.push({ days: [], area:this.area, interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
+          let _config = configs.find(c => c.area === this.area)
+          configs.push({ days: [], area:this.area, interval: 5, duration: !_config ? this.filterDuration[type] : _config.duration , timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
         }else{
           this.allConfigs[type].push({ days: [], interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
         }
