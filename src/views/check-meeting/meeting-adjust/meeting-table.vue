@@ -318,7 +318,7 @@ export default {
     },
 
     areaType() {
-      this.handleGetConfigs()
+      this.meetingVisible && this.handleGetConfigs()
     }
   },
 

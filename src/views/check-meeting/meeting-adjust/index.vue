@@ -97,7 +97,7 @@ export default {
       }
     },
 
-    areaTabs(newVal, oldVal) {
+    areaTabs() {
       this.getConfigs()
     }
   },

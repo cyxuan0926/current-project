@@ -146,7 +146,13 @@ export default {
           slotName: 'deniedTotal'
         }
       ]
-      if (!this.hasAllPrisonQueryAuth) allCols.splice(0, 2)
+      if (!this.hasAllPrisonQueryAuth) {
+        allCols.splice(0, 2)
+
+        const index = allCols.findIndex(col => col.label === '监区')
+
+        this.$set(allCols[index], 'prop', 'prisonArea')
+      }
       return allCols
     }
   },

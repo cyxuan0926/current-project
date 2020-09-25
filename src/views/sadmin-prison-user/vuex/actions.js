@@ -69,7 +69,7 @@ export default {
 
       commit('setMultiPrisonConfigs', prisonConfigs)
 
-      return true
+      return prisonConfigs
     }
     catch (err) {
       Promise.reject(err)

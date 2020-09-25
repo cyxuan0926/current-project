@@ -10,7 +10,7 @@
     >
       <m-excel-download
         slot="append"
-        path="/download/exportMettings"
+        :path="excelDownloadUrl"
         :filterParams="filterParams"
       />
       <!-- :params="excelFilter" -->
@@ -162,13 +162,27 @@
             :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 6"
               fixed
               prop="terminalNumber"
               label="终端号"
               min-width="80">
             </el-table-column>
             <el-table-column
+              v-else
+              prop="terminalNumber"
+              label="终端号"
+              min-width="80">
+            </el-table-column>
+            <el-table-column
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 6"
               fixed
+              prop="prisonConfigName"
+              label="监区"
+              min-width="110">
+            </el-table-column>
+            <el-table-column
+              v-else
               prop="prisonConfigName"
               label="监区"
               min-width="110">
@@ -190,7 +204,7 @@
         </section>
       </div>
       <span v-if="show.agree" slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
+          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
           <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
@@ -543,6 +557,7 @@
         selectRange: {},
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
+        userDefinedDuration: false,
         durationOptions: [],
         crossDuration: '',
         isSpecial: false,
@@ -726,6 +741,10 @@
       ...mapGetters([
         'isSeparateByArea'
       ]),
+
+      excelDownloadUrl() {
+        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
+      },
 
       localFirstLevelExamineFormItems() {
         const { remarks } = this.firstLevelExamineFormItems
@@ -1110,6 +1129,7 @@
           this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
           this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
+          this.userDefinedDuration = this.meetingAdjustment.userDefinedDuration
           this.durationOptions = this.meetingAdjustment.meetingChargeTemplates && this.meetingAdjustment.meetingChargeTemplates.map(c => {
             return {
               label: c.duration,

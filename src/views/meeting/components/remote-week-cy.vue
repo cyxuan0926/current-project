@@ -209,7 +209,7 @@
         orignConfigs: [],
         // 正在生效的配置
         configsBefore: [basicConfig],
-        filterDuration: [this.durations[0].value, this.durations[0].value],
+
         // 即将生效的配置
         configsAfter: [basicConfig],
         basicConfig,
@@ -245,6 +245,13 @@
     computed: {
       // 常规配置
       ...mapState(['normalCongigs']),
+
+      filterDuration() {
+        const duration = (this.durations[0] && this.durations[0].value) || 25
+
+        return [duration, duration]
+      },
+
       // 是否存在正在生效的配置 现在默认情况下 是肯定有的
       hasConfigBefore() {
         return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length
@@ -319,7 +326,7 @@
             rules: ['required', 'isPositiveIntegers'],
             props:{label:'label',value:'value'},
             options:this.durations,
-            value:this.durations[0].value
+            value: (this.durations[0] && this.durations[0].value) || 25
           },
           interval: {
             label: '间隔时间',
