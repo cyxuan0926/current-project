@@ -32,21 +32,24 @@
               <el-button  v-if=" type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
-          <div
-             v-if="config.area=='2' || !config.area"
-            v-for="(config, index) in configs"
-            :key="index"
-            class="config-box">
+
+          <template v-for="(config, index) in configs">
+            <div
+              v-if="config.area=='2' || !config.area"
+              :key="index"
+              class="config-box">
               <remote-week-cy
                 :separateByArea="separateByArea[type]"
-              :allConfigs="allConfigs"
-              :configs="configs"
-              :config="config"
+                :allConfigs="allConfigs"
+                :configs="configs"
+                :config="config"
                 :area="config.area"
-              :index="index"
-              :durations='durations'
-              :type="type" />
-          </div>
+                :index="index"
+                :durations='durations'
+                :type="type" />
+            </div>
+          </template>
+
           <el-form>
             <el-form-item label="请选择监舍区设备:" style="width:450px">
               <div class="prisonlabel">
@@ -58,9 +61,29 @@
               <el-button  v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
+
+          <template v-for="(config, index) in configs">
+            <div
+              v-if="config.area=='1'" 
+              :key="index"
+              class="config-box">
+              <remote-week-cy
+                :separateByArea="separateByArea[type]"
+                :allConfigs="allConfigs"
+                :configs="configs"
+                :config="config"
+                :area="config.area"
+                :durations='durations'
+                :index="index"
+                :type="type" />
+            </div>
+          </template>
+        </div>
+          <!--不分舍监区-->
+
+        <template v-for="(config, index) in configs">
           <div
-             v-if="config.area=='1'"
-            v-for="(config, index) in configs"
+            v-if="!separateByArea[type]"
             :key="index"
             class="config-box">
             <remote-week-cy
@@ -68,28 +91,12 @@
               :allConfigs="allConfigs"
               :configs="configs"
               :config="config"
-              :area="config.area"
               :durations='durations'
+              :area="0"
               :index="index"
               :type="type" />
           </div>
-        </div>
-          <!--不分舍监区-->
-        <div
-          v-if="!separateByArea[type]"
-          v-for="(config, index) in configs"
-          :key="index"
-          class="config-box">
-          <remote-week-cy
-            :separateByArea="separateByArea[type]"
-            :allConfigs="allConfigs"
-            :configs="configs"
-            :config="config"
-            :durations='durations'
-            :area="0"
-            :index="index"
-            :type="type" />
-        </div>
+        </template>
       </div>
 
     </template>

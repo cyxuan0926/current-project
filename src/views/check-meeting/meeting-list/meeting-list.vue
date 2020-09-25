@@ -10,7 +10,7 @@
     >
       <m-excel-download
         slot="append"
-        path="/download/exportMettings"
+        :path="excelDownloadUrl"
         :filterParams="filterParams"
       />
       <!-- :params="excelFilter" -->
@@ -726,6 +726,10 @@
       ...mapGetters([
         'isSeparateByArea'
       ]),
+
+      excelDownloadUrl() {
+        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
+      },
 
       localFirstLevelExamineFormItems() {
         const { remarks } = this.firstLevelExamineFormItems

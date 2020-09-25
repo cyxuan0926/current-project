@@ -233,13 +233,11 @@ export default {
             meetingEnabled
           }
 
-          if (this.prisonConfigIdKey) {
-            const prop = this.localPrisonAreaLevelObject[this.prisonConfigIdKey]['prop']
+          const prisonConfigId = this.prisonConfigIdKey ? this.terminal[this.localPrisonAreaLevelObject[this.prisonConfigIdKey]['prop']] : null
 
-            params = {
-              ...params,
-              prisonConfigId: this.terminal[prop]
-            }
+          params = {
+            ...params,
+            prisonConfigId
           }
 
           this.addTerminal(params).then(res => {
@@ -250,6 +248,8 @@ export default {
       })
     },
     onPrisonChange(e) {
+      this.prisonConfigIdKey = ''
+
       this.clearSubPrisonArea('prisonArea', this.terminal)
 
       let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)

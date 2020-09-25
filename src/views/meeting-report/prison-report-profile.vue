@@ -76,8 +76,11 @@ export default {
         }
       ]
       if (!this.hasAllPrisonQueryAuth) {
-        cols.splice(1, 1)
-        cols.splice(0, 1)
+        cols.splice(0, 2)
+
+        const index = cols.findIndex(col => col.label === '监区')
+
+        this.$set(cols[index], 'prop', 'prisonArea')
       }
       return cols
     }
