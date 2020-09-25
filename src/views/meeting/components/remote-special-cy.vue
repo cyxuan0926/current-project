@@ -51,12 +51,7 @@
           size="mini"
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
-        <!--可保存状态并且是国科服务管理员并且是编辑状态-->
-        <el-button
-          v-if="canSave(config) && permission === 'edit'"
-          type="primary"
-          size="mini"
-          @click="onSubmit(config, index)">保存</el-button>
+       
         <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
         <el-button
           v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day)"
@@ -78,7 +73,6 @@
           </el-form>
         </div>
         <div  v-if="config.show">
-          222222222222222222222
           <el-form >
             <el-form-item label="生产区设备:" style="width:450px">
               <div class="prisonlabel">
@@ -88,8 +82,14 @@
                            >{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow()">配置时间段</el-button>
-              </el-form-item>
+              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
+               <!--可保存状态并且是国科服务管理员并且是编辑状态-->
+            <el-button
+              v-if="canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              @click="onSubmit(config, index)">保存</el-button>
+                  </el-form-item>
           </el-form>
               <div v-if="config.area=='2'">
                 <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
@@ -185,19 +185,23 @@
           </div>
         </div>
                  </template>
-                
-
               </div>
             <el-form>
             <el-form-item label="请选择监舍区设备:" style="width:450px">
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[1] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  v-if="type === 1 && hasOriginConfigAfter" @click="open(item)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow()">配置时间段</el-button>
+              <el-button  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
+            <el-button
+              v-if="canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              @click="onSubmit(config, index)">保存</el-button>
             </el-form-item>
+            
           </el-form>
           <div v-if="config.area=='1'">
                 <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
@@ -527,6 +531,7 @@ export default {
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.separateByArea=separateByArea?true:false
      this.configs = cloneDeep(complexSpecialConfigs)
+     console.log(this.configs)
       let beforearea1=[],beforearea2=[]
       this.configs.forEach(item=>{
         if(item.area){
@@ -546,7 +551,7 @@ export default {
            item.show=false
         }
       })
-      if(beforearea1.length>0){
+      if(beforearea1.length>0||beforearea2.length>0){
          beforearea1=this.arrindex(beforearea1)
          beforearea2=this.arrindex(beforearea2)
           this.setPrimary(beforearea1)
@@ -575,13 +580,26 @@ export default {
       },
     // 选择日期确定后
     // 先要判断是否选择得日期 有交叉得部分
-    onSureDates(e, configs, index) {
+    onSureDates(e, configs, index,area) {
       const {
         beforeDuration,
         afterDuration,
         enabledAt
       } = this.specialConfigs
+      console.log( this.specialConfigs)
+      console.log(configs)
+      if(this.separateByArea){
+        console.log(configs.area)
+        console.log(area)
+        this.$set(configs, 'show', true)
+        if(area==configs.area){
+          this.$set(configs, 'updates',false )
 
+        }else{
+           this.$set(configs, 'updates',true )
+        }
+        this.$set(configs, 'area',area )
+      }
       if (this.hasConfigsAfter && e) {
         // Moment实例化后的数组
         const rangeDates = this.momentInputs(e)
@@ -624,7 +642,6 @@ export default {
       if (e && Array.isArray(e) && e.length > 1) this.showTooltip[index] = true
 
       else this.showTooltip[index] = false
-
       this.$set(configs, 'queue', [])
 
       this.handleDate(configs, this.currentDuration)
@@ -694,16 +711,32 @@ export default {
         day,
         duration,
         interval,
+        area,
         enabledMeeting,
         id,
         queue,
+        updates,
         timeperiodQueue
       } = config
-
+console.log(config)
+      let terminals=[]
+      if(area==1){
+        this.terminals[1].forEach(item=>{
+            terminals.push(item.terminalId)
+        })
+      }
+      if(area==2){
+         this.terminals[0].forEach(item=>{
+            terminals.push(item.terminalId)
+        })
+      }
+      console.log(terminals)
       let params = {
         day,
         duration,
         interval,
+        area,
+        terminals,
         enabledMeeting,
         jailId: Number(this.jailId),
         config: [],
@@ -720,12 +753,27 @@ export default {
       // 更新配置
       if (id) {
         params.id = id
+        if(updates){
+          params.id =null
+          this.addSpecialConfig(params).then(async res => {
+          if (!res) return
+          await this.initData()
+          this.show = false
+          this.show = true
+        })
+        }else{
+          this.updateSpecialConfig(params).then(res => {
+          if (!res) return
+          config.oldDay = params.day
+          config.config = params.config || []
+          config.timeperiod = params.timeperiod || []
+       })
+        }
         this.updateSpecialConfig(params).then(res => {
           if (!res) return
           config.oldDay = params.day
           // config.config = params.config
           config.config = params.config || []
-
           config.timeperiod = params.timeperiod || []
         })
       }
@@ -816,13 +864,15 @@ export default {
 
     onAddDay() {
         if(this.separateByArea){
-          this.basicConfig.area=1
-          this.basicConfig.show=true
-          console.log(this.basicConfig)
-          this.configs.push(cloneDeep(this.basicConfig))
-           this.basicConfig.area=2
-          this.basicConfig.show=true
-          console.log(this.basicConfig)
+
+
+          // this.basicConfig.area=1
+          // this.basicConfig.show=true
+          // console.log(this.basicConfig)
+          // this.configs.push(cloneDeep(this.basicConfig))
+          //  this.basicConfig.area=2
+          // this.basicConfig.show=true
+          // console.log(this.basicConfig)
           this.configs.push(cloneDeep(this.basicConfig))
 
 

@@ -12,6 +12,7 @@
             <el-form-item label="是否分生产区和监舍区">
               <el-switch
                 v-model="separateByArea[type]"
+                @change="switchChange($event,type)"
                 active-color="#13ce66"
                 :disabled="Boolean(type === 0 && hasOriginConfigAfter) ">
               </el-switch>
@@ -26,10 +27,12 @@
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i  v-if=" type === 1 && hasOriginConfigAfter" class="el-icon-circle-close" @click="open(item,type)"/>
+                           >{{item.selectArr}} <i  class="el-icon-circle-close" @click="open(item,type)"/>
                 </el-button>
               </div>
-              <el-button  v-if=" type === 1 && hasOriginConfigAfter" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
+              <!-- v-if=" type === 1 && hasOriginConfigAfter" -->
+              
+              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -52,10 +55,11 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i v-if=" type === 1 && hasOriginConfigAfter" @click="open(item,type)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
-              <el-button  v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <!-- v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " -->
+              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
           <div
@@ -148,7 +152,7 @@
     <el-dialog
       :visible.sync="prisonDetil"
       class="authorize-dialog"
-      @close=""
+      @close="tableClose"
       title="请选择设备"
       width="900px">
       <div
@@ -234,8 +238,6 @@
         area:0,
         showError: []
       }
-      let beforeTerminals=[],
-      afterTerminals=[]
       return {
         // '周'的选项
         week: [
@@ -272,11 +274,12 @@
         dateValue: '',
         updateShow: false,
         tableData: [],
-        terminals:[beforeTerminals,afterTerminals],
+        terminals:[[[],[]],[[],[]]],
         area:0,//区分选中的舍监区还是生产区
         // selectOptionProduction :[],//选中生产区设备集合
         // selectOptionDormitory :[],//选中舍监区
         multipleSelection:[],
+        types:null
       }
     },
 
@@ -409,6 +412,19 @@
         // 更新通话常规配置
         'updateRemoteNormalConfig'
       ]),
+      switchChange($event,type){
+        console.log($event)
+        console.log(this.allConfigs)
+        if($event){
+          this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
+          this.$set(this.allConfigs[type], 1,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
+        }
+        else{
+            this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+        }
+
+
+      },
 
       onClose() {
         this.visible = false
@@ -433,6 +449,7 @@
         })
           let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
           this.separateByArea = [false, false]
+          console.log(this.configsBefore)
         this.configsBefore.forEach(item=>{
           if(item.area==1){
             item.terminals.forEach(val=>{
@@ -723,31 +740,41 @@
         http.getTerminal(params).then( res=>{
           this.tableData=res
           this.area=area
+          this.types=type
+          console.log(this.terminals)
           if(area==2){
+             if(this.terminals[type][0]){
             this.tableData=this.tableData.filter(item=>{
               return !this.terminals[type][0].find((val)=>{
                  return item.id == val.terminalId ||item.id == val.id
               })
             })
+             }
           }
           if(area==1){
-            this.tableData=this.tableData.filter(item=>{
+            if(this.terminals[type][1]){
+               this.tableData=this.tableData.filter(item=>{
+              console.log(this.terminals[type][1])
               return !this.terminals[type][1].find((val)=>{
                 return item.id == val.terminalId ||item.id == val.id
               })
             })
+            }
           }
            this.$nextTick(() => {
             console.log(this.terminals[type])
             this.tableData.forEach(outerItem => {
               if(area==2){
+            if(this.terminals[type][1]){
                 this.terminals[type][1].forEach((item) => {
                   if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
                     console.log(this.$refs)
                     this.$refs.multipleTable.toggleRowSelection(outerItem, true)
                   }
                 })
+            }
               }else{
+                 if(this.terminals[type][0]){
                 this.terminals[type][0].forEach((item) => {
                   if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
                     console.log(this.$refs)
@@ -755,10 +782,10 @@
                   }
                 })
               }
+              }
             })
           })
         })
-
       },
       //关闭设备显示表
       tableClose(){
@@ -804,10 +831,10 @@
         })
         console.log(area)
         if(area==1){
-          this.terminals[1][0]=multipleSelection
+          this.terminals[this.types][0]=multipleSelection
         }
         if(area==2){
-          this.terminals[1][1]=multipleSelection
+          this.terminals[this.types][1]=multipleSelection
         }
         console.log( this.terminals[1])
         this.prisonDetil=false
