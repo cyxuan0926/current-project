@@ -576,13 +576,13 @@
             type: 'input',
             label: '罪犯编号'
           },
-          prisonArea: {
-            type: 'select',
-            label: '监区',
-            options,
-            belong,
-            value: ''
-          },
+          // prisonArea: {
+          //   type: 'select',
+          //   label: '监区',
+          //   options,
+          //   belong,
+          //   value: ''
+          // },
           // applicationDate: {
           //   type: 'date',
           //   label: '申请通话时间',
