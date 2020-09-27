@@ -5,7 +5,8 @@ let state
 state = {
   meetings: { contents: [], total: 0 },
   meetingsDiplomats: { contents: [], total: 0 },
-  meetingAdjustment: { meetingQueue: [], terminals: [], meetings: [], config: {} },
+  // 这里贼坑 会关联到 views/check-visit/vuex/index.js (by hubi的注释 2020-09-27)
+  meetingAdjustment: { meetingQueue: [], specialQueue: [], terminals: [], meetings: [], config: {} },
   freeMeetings: { contents: [], total: 0 },
   meetingRefresh: false,
   meetingAdjustRefresh: false,
