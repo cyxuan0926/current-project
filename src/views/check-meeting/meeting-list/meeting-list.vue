@@ -162,7 +162,7 @@
             :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
-              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 6"
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="terminalNumber"
               label="终端号"
@@ -175,7 +175,7 @@
               min-width="80">
             </el-table-column>
             <el-table-column
-              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 6"
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="prisonConfigName"
               label="监区"
@@ -1119,6 +1119,14 @@
         return res
       },
 
+      setSelectRange() {
+        let _now = new Date()
+        this.selectRange = {
+          selectableRange: `${ this.toAuthorize && this.toAuthorize.applicationDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
+          format: 'HH:mm'
+        }
+      },
+
       getMeetTimeConfig() {
         http.getMeetTimeConfig({
           id: this.getMeetingId,
@@ -1139,18 +1147,15 @@
           if (this.durationOptions && this.durationOptions.length) {
             this.crossDuration = this.durationOptions[0].value
           }
-
-          let _now = new Date()
-          this.selectRange = {
-            selectableRange: `${Moment(_now).format('HH:mm')}:00 - 23:58:00`,
-            format: 'HH:mm'
-          }
-          this.setTimeRange(_now)
         })
       },
 
       handleShowOther() {
         this.isSpecial = !this.isSpecial
+        if( this.isSpecial ) {
+          this.setSelectRange()
+          this.setTimeRange(new Date())
+        }
       },
 
       handleDurationChange(val) {
