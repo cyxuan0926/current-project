@@ -571,7 +571,6 @@
                     }else{
                       terminals.push(item.id)
                     }
-                   
                    })
               }
               config.terminals=terminals
