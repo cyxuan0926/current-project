@@ -51,7 +51,11 @@
           size="mini"
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
-       
+           <el-button
+          v-if="!config.show &&(canSave(config) && permission === 'edit')"
+          type="primary"
+          size="mini"
+          @click="onSubmit(config, index)">保存</el-button>       
         <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
         <el-button
           v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day)"
@@ -82,12 +86,13 @@
                            >{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
+              <el-button  v-if="config.queue.length"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
+              style="margin-top:8px"
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
           </el-form>
@@ -187,18 +192,19 @@
                  </template>
               </div>
             <el-form>
-            <el-form-item label="请选择监舍区设备:" style="width:450px">
+            <el-form-item label="监舍区设备:" style="width:450px">
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[1] "
                            :key='index' size="mini"
                            style="margin-left: 5px">{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
+              <el-button v-if="config.queue.length" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
             <el-button
               v-if="canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
+              style="margin-top:8px"
               @click="onSubmit(config, index)">保存</el-button>
             </el-form-item>
             
@@ -297,11 +303,9 @@
           </div>
         </div>
   </template>
-
           </div>
         </div>
-        <div v-if="!config.show"> 
-          111111111111111111111111111111111
+        <div v-if="!config.show">
           <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
                 <div class="none_superAdmin">
                   <label >通话时长</label>
@@ -755,6 +759,11 @@ console.log(config)
         params.id = id
         if(updates){
           params.id =null
+          if(!Array.isArray(params.day)){
+            console.log(params.day)
+            params.day=[params.day]
+            console.log(params.day)
+          }
           this.addSpecialConfig(params).then(async res => {
           if (!res) return
           await this.initData()
