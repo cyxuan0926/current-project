@@ -54,12 +54,13 @@
           <section class="meeting-list-block__wrap" v-for="(specials, i) in specialData" 
             :key="specials.id || uuId()">
             <div class="meeting-list-block__head">
-              <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
+              <div class="meeting-list-cell meeting-list-th">{{ specialQueue[i] }}</div>
             </div>
-            <div class="meeting-list-cell meeting-list-cell__drag" 
+            <div class="meeting-list-block__body">
+              <div class="meeting-list-cell meeting-list-cell__drag" 
                 v-for="m in specials"
                 :key="m.id || uuId()"
-                :class="[ m.id ? 'draggable' : 'undraggable' ]"
+                :class="[ m.id ? 'special' : '' ]"
                 :data-meeting-time="m.meetingTime"
                 :data-terminal-id="m.terminalId"
                 :data-terminal-number="m.terminalNumber"
@@ -69,6 +70,7 @@
                     <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m, true)"></el-button>
                   </template>
               </div>
+            </div>
           </section>
         </div>  
       </div>
@@ -399,7 +401,6 @@ export default {
       if (!this.hasQueue || !this.hasTerminal) {
         return [];
       }
-
       return this[key].map(timeCell => {
         return this.terminals.map(terminal => {
           let meeting = this.meetings.find(meeting => {
@@ -758,7 +759,8 @@ export default {
     .meeting-list-cell {
       margin-top: 0;
 
-      &.draggable {
+      &.draggable,
+      &.special {
         color: #fff;
         background-color: #3c8dbc;
       }
@@ -815,6 +817,13 @@ export default {
       flex: 1;
       cursor: move;
     }
+
+    &.meeting-list-cell__drag {
+      .meeting-list-cell__names {
+        cursor: default;
+      }
+    }
+
     .meeting-list-cell__acrossdate {
       color: #fff;
       cursor: pointer;
@@ -907,6 +916,11 @@ export default {
       color: #fff;
       background-color: #3c8dbc;
       cursor: move;
+    }
+
+    &.special {
+      color: #fff;
+      background-color: #3c8dbc;
     }
 
     &.swap-target {

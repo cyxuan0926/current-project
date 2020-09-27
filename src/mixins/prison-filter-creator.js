@@ -117,9 +117,11 @@ export default {
         selectKey: 'prisonSubAreaId',
         label: '分监区'
       })
-      this.searchItems = Object.assign({}, {
+      let { prisonArea, ...ret } = this.searchItems
+      this.searchItems = Object.assign({}, ret, {
+        prisonArea,
         prisonSubArea: prisonSubAreaItem
-      }, this.searchItems)
+      })
     },
 
     createPrisonHouseItem() {
@@ -127,9 +129,12 @@ export default {
         selectKey: 'prisonHouseId',
         label: '楼栋'
       })
-      this.searchItems = Object.assign({}, {
+      let { prisonArea, prisonSubArea, ...ret } = this.searchItems
+      this.searchItems = Object.assign({}, ret, {
+        prisonArea,
+        prisonSubArea,
         prisonHouse: prisonHouseItem
-      }, this.searchItems)
+      })
     },
 
     createPrisonFloorItem() {
@@ -137,9 +142,13 @@ export default {
         selectKey: 'prisonFloorId',
         label: '楼层'
       })
-      this.searchItems = Object.assign({}, {
+      let { prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
+      this.searchItems = Object.assign({}, ret, {
+        prisonArea,
+        prisonSubArea,
+        prisonHouse,
         prisonFloor: prisonFloorItem
-      }, this.searchItems)
+      })
     },
 
     createPrisonAreaFilter() {
@@ -148,9 +157,9 @@ export default {
         label: '监区'
       })
 
-      this.searchItems = Object.assign({}, {
+      this.searchItems = Object.assign({}, this.searchItems, {
         prisonArea: prisonAreaItem
-      }, this.searchItems)
+      })
 
       const _jailId = this.$store.state.global.user.jailId
       if (_jailId && _jailId !== -1) {
