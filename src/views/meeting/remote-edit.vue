@@ -41,7 +41,7 @@ import times from './components/remote-times'
 import { mapActions, mapState } from 'vuex';
 export default {
   components: {
-    // 可视可视电话提前天数
+    // 可视电话提前天数
     remoteVisitDay,
     // 常规配置
     usual,

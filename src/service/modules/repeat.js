@@ -79,7 +79,7 @@ export default {
     return service.get('/freeMeetings/page-police', params)
   },
 
-  // 可视可视电话统计报表-导出excel
+  // 可视电话统计报表-导出excel
   exportMeetingStatistics: params => {
     return service.get('/download/province/export', params, { responseType: 'blob' })
   },
