@@ -127,11 +127,24 @@
 
 <!--index === configs.length - 1 && canAddDay(configs,index) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))-->
               <el-button
-                v-if="canAddDay(configs)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                v-if="config.area==1&&canAddDay(configs,1)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
                 size="mini"
                 type="success"
                 class="button-float"
-                @click="onAddDay(type,configs)">新增工作日</el-button>
+                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
+
+                <el-button
+                v-if="config.area==2&&canAddDay(configs,2)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                size="mini"
+                type="success"
+                class="button-float"
+                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
+                <el-button
+                v-if="!config.area&&canAddDay(configs)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                size="mini"
+                type="success"
+                class="button-float"
+                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
             </div>
           </div>
         </template>
@@ -384,24 +397,24 @@
         }
       },
       // 能否新增工作日
-      canAddDay(configs) {
-        let days = [],productiondays=[],dormitorydays=[]
-        console.log(configs)
+      canAddDay(configs,area) {
+        let days = [],productiondays=[],dormitorydays=[],isCanAddDay= false
+        // console.log(configs)
         configs.forEach((config) => {
         if(this.separateByArea){
           if(config.area==1){
             productiondays = productiondays.concat( config.days )
-            days=productiondays
           }
           if(config.area==2){
             dormitorydays = dormitorydays.concat( config.days )
-            days=dormitorydays
           }
+          isCanAddDay = (area == '1' ?  productiondays : dormitorydays).length < 7
          } else {
             days = days.concat(config.days)
+            isCanAddDay = days.length < 7
          }
         })
-        return days.length < 7
+        return isCanAddDay
       },
 
       // 新增时间段(update)

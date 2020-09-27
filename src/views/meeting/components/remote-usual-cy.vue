@@ -452,7 +452,6 @@
         })
           let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
           this.separateByArea = [false, false]
-          console.log(this.configsBefore)
         this.configsBefore.forEach(item=>{
           if(item.area==1){
             item.terminals.forEach(val=>{
@@ -467,7 +466,6 @@
             this.separateByArea[0] = true
           }
         })
-        console.log(this.configsAfter)
         this.configsAfter.forEach(item=>{
            if(item.area==1){
                item.terminals.forEach(val=>{
@@ -829,14 +827,12 @@
         multipleSelection.forEach((item,key)=>{
           this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
         })
-        console.log(area)
         if(area==1){
           this.terminals[this.types][0]=multipleSelection
         }
         if(area==2){
           this.terminals[this.types][1]=multipleSelection
         }
-        console.log( this.terminals[1])
         this.prisonDetil=false
       }
     }
