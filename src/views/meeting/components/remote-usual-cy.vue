@@ -23,16 +23,13 @@
           <el-form >
             <el-form-item label="请选择生产区设备:" style="width:450px">
               <div class="prisonlabel">
-                  
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i  class="el-icon-circle-close" @click="open(item,type)"/>
+                           >{{item.selectArr}} <i v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close" @click="open(item,type)"/>
                 </el-button>
               </div>
-              <!-- v-if=" type === 1 && hasOriginConfigAfter" -->
-              
-              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
+              <el-button v-if="!(hasOriginConfigAfter && type === 0)"   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -58,11 +55,10 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
-              <!-- v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " -->
-              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <el-button v-if="!(hasOriginConfigAfter && type === 0)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -471,13 +467,13 @@
             this.separateByArea[0] = true
           }
         })
+        console.log(this.configsAfter)
         this.configsAfter.forEach(item=>{
            if(item.area==1){
                item.terminals.forEach(val=>{
                  afterarea1.push(val)
               })
               this.separateByArea[1] = true
-            //this.setPrimary(item.terminals,item.area)
           }
           if(item.area==2){
             item.terminals.forEach(val=>{
@@ -491,19 +487,17 @@
             beforearea2=this.arrindex(beforearea2)
            this.setPrimary(beforearea1)
            this.setPrimary(beforearea2)
-          this.terminals[0].push(beforearea1)
-          this.terminals[0].push(beforearea2)
+            this.terminals[0]=[beforearea1,beforearea2]
         }
         if(this.separateByArea[1]){
             afterarea1=this.arrindex(afterarea1)
             afterarea2=this.arrindex(afterarea2)
            this.setPrimary(afterarea1)
            this.setPrimary(afterarea2)
-          this.terminals[1].push(afterarea1)
-          this.terminals[1].push(afterarea2)
+            this.terminals[1]=[afterarea1,afterarea2]
         }
+        console.log(this.terminals)
         this.allConfigs = [this.configsBefore, this.configsAfter]
-        console.log(this.allConfigs)
       },
       //数组去重
       arrindex(arr){
@@ -569,6 +563,7 @@
           if(config.area==1){
             let terminals=[]
             console.log( this.terminals)
+            console.log(this.hasOriginConfigAfter)
               if(this.terminals[1][0]){
                   this.terminals[1][0].forEach(item=>{
                    terminals.push(item.terminalId)
@@ -593,7 +588,6 @@
             }
             config.terminals=terminals
           }
-
           let c = []
 
           let period = []
@@ -616,9 +610,6 @@
         const [before, after] = this.allConfigs
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
-        console.log(this.allConfigs)
-        console.log(this.filterParams(before))
-        console.log(console.log(this.filterParams(configBefore)))
 
         if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
 
@@ -652,16 +643,16 @@
         this.loading = true
         console.log(params)
 
-        this.updateRemoteNormalConfig({
-          enabledAt: this.computedEffectiveDate,
-          id,
-          jailId,
-          configAfter: params
-        }).then(res => {
-          this.loading = false
-          if (!res) return
-          this.visible = false
-        })
+        // this.updateRemoteNormalConfig({
+        //   enabledAt: this.computedEffectiveDate,
+        //   id,
+        //   jailId,
+        //   configAfter: params
+        // }).then(res => {
+        //   this.loading = false
+        //   if (!res) return
+        //   this.visible = false
+        // })
       },
 
       // 新增一个时间段 配置默认的会见时间段(update)
@@ -814,11 +805,13 @@
           type: 'warning'
         }).then(() => {
           if(this.area==2){
-             this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
+            //this.$set( this.terminals[type],1, this.terminals[type][1].filter(val=> val!=item))
+            this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
           }
           if(this.area==1) {
              this.terminals[type][0]=this.terminals[type][0].filter(val=> val!=item)
           }
+           this.$forceUpdate();
           this.$message({
             type: 'success',
             message: '删除成功!'
