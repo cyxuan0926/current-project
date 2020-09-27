@@ -431,7 +431,7 @@
 
       onClose() {
         this.visible = false
-        this.initConfigs()
+        //this.initConfigs()
       },
 
       async initConfigs() {
@@ -555,38 +555,39 @@
       },
 
       // 参数化(update)
-      filterParams(params) {
+      filterParams(params,type) {
         let result = []
         params.forEach(config => {
           const { duration, interval, days, queue, area, timeperiodQueue } = config
           if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
-          if(config.area==1){
-            let terminals=[]
-            console.log( this.terminals)
-            console.log(this.hasOriginConfigAfter)
-              if(this.terminals[1][0]){
-                  this.terminals[1][0].forEach(item=>{
-                   terminals.push(item.terminalId)
-                   })
-              }else{
-                this.terminals[0][0].forEach(item=>{
-                   terminals.push(item.terminalId)
+           config.terminals=[]
+           if(config.area==1){
+              let terminals=[]
+              console.log(this.terminals[type][0])
+              if(this.terminals[type][0]){
+                  this.terminals[type][0].forEach(item=>{
+                    if(item.terminalId){
+                      terminals.push(item.terminalId)
+                    }else{
+                      terminals.push(item.id)
+                    }
+                   
                    })
               }
-            config.terminals=terminals
-          }
+              config.terminals=terminals
+            }
           if(config.area==2){
             let terminals=[]
-            if(this.terminals[1][1]){
-              this.terminals[1][1].forEach(item=>{
-                terminals.push(item.terminalId)
+            if(this.terminals[type][1]){
+              this.terminals[type][1].forEach(item=>{
+                 if(item.terminalId){
+                      terminals.push(item.terminalId)
+                    }else{
+                      terminals.push(item.id)
+                    }
               })
-            }else{
-                  this.terminals[0][1].forEach(item=>{
-                   terminals.push(item.terminalId)
-                  })
-            }
-            config.terminals=terminals
+              config.terminals=terminals
+          }
           }
           let c = []
 
@@ -596,7 +597,7 @@
 
           timeperiodQueue.forEach(t => period.push(t.join('-')))
 
-          result.push({ days, config: c, terminals: config.terminals,area,duration, interval, timeperiod: period })
+          result.push({ days, config: c, terminals:config.terminals, area,duration, interval, timeperiod: period })
         })
 
         return result
@@ -611,9 +612,9 @@
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
 
-        if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+        if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before,0), this.filterParams(configBefore,0)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
 
-        else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+        else hasNoChanged = isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
 
         console.log(hasNoChanged)
         if (hasNoChanged) {
@@ -634,25 +635,25 @@
         const [before, after] = this.allConfigs
 
         if (this.hasOriginConfigAfter) {
-          params = this.filterParams(after)
+          params = this.filterParams(after,1)
         } else {
-          params = this.filterParams(before)
+          params = this.filterParams(before,0)
         }
         const { id, jailId } = this.normalCongigs
 
         this.loading = true
-        console.log(params)
+       console.log(params)
 
-        // this.updateRemoteNormalConfig({
-        //   enabledAt: this.computedEffectiveDate,
-        //   id,
-        //   jailId,
-        //   configAfter: params
-        // }).then(res => {
-        //   this.loading = false
-        //   if (!res) return
-        //   this.visible = false
-        // })
+        this.updateRemoteNormalConfig({
+          enabledAt: this.computedEffectiveDate,
+          id,
+          jailId,
+          configAfter: params
+        }).then(res => {
+          this.loading = false
+          if (!res) return
+          this.visible = false
+        })
       },
 
       // 新增一个时间段 配置默认的会见时间段(update)
