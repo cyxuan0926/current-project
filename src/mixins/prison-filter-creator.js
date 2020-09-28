@@ -176,10 +176,11 @@ export default {
     },
 
     async searchSelectChange(selectKey, value) {
+      let prisonChildApi = this.$store.state.global.user.username === 'ywt_admin' ? 'getJailPrisonSubs' : 'getJailPrisonSubsAuth'
       if (selectKey === 'prisonAreaId') {
         this.clearSubPrisonArea('prisonSubArea')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
+          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonSubArea()
@@ -191,7 +192,7 @@ export default {
       if (selectKey === 'prisonSubAreaId') {
         this.clearSubPrisonArea('prisonHouse')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
+          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonHouseItem()
@@ -203,7 +204,7 @@ export default {
       if (selectKey === 'prisonHouseId') {
         this.clearSubPrisonArea('prisonFloor')
         if (value) {
-          let { prisonConfigs } = await http.getJailPrisonSubsAuth({ parentId: value })
+          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonFloorItem()

@@ -91,7 +91,7 @@
           value-format="yyyy-MM-dd"
           :clearable="false"
           :picker-options="pickerOptions"
-          @change="handleGetConfigs"
+          @change="handlePickerChange"
         />
         <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
       </div>
@@ -460,27 +460,36 @@ export default {
       this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
     },
 
+    setSelectRange() {
+      let _now = new Date()
+      this.selectRange = {
+        selectableRange: `${ this.acrossAdjustDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
+        format: 'HH:mm'
+      }
+    },
+
+    handlePickerChange() {
+      this.setSelectRange()
+      this.handleGetConfigs()
+    },
+
     handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
       this.isSpecial = !!flag
-      if (this.isSpecial) {
-        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
-        this.crossDuration = em.diff(sm, 'm')
-        let _now = new Date()
-        this.selectRange = {
-          selectableRange: `${Moment(_now).format('HH:mm')}:00 - 23:58:00`,
-          format: 'HH:mm'
-        }
-        this.setTimeRange(_now)
-        this.showTips = ''
-        this.isShowTips = false
-      }
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
           return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
+      }
+      if (this.isSpecial) {
+        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
+        this.crossDuration = em.diff(sm, 'm')
+        this.setSelectRange()
+        this.setTimeRange(new Date())
+        this.showTips = ''
+        this.isShowTips = false
       }
       this.crossMeetingCurrent = m
       this.handleGetConfigs()
