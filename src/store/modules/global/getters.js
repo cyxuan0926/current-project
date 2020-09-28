@@ -60,5 +60,10 @@ export default {
   // 是否分区域
   isSeparateByArea(state) {
     return state.user.separateByArea
+  },
+
+  // 是否显示家属电话
+  isShowPhone(state) {
+    return !!state.user.familyPhone
   }
 }

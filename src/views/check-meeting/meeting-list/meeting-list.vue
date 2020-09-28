@@ -739,7 +739,8 @@
       ]),
 
       ...mapGetters([
-        'isSeparateByArea'
+        'isSeparateByArea',
+        'isShowPhone'
       ]),
 
       excelDownloadUrl() {
@@ -860,6 +861,11 @@
         //     }
         //   }
         // }
+
+        if (!this.isShowPhone) {
+          const index = basicCols.findIndex(col => col.label === '家属电话')
+          basicCols.splice(index, 1)
+        }
 
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
           this.operateQueryAuth=false

@@ -682,7 +682,8 @@ export default {
       'isInWhitelist',
       'isAuditor',
       'isAdvancedAuditor',
-      'haveMultistageExamine'
+      'haveMultistageExamine',
+      'isShowPhone'
     ]),
 
     relationalWidth() {
@@ -694,10 +695,6 @@ export default {
         4: '24%'
       }
       return widthConstent[this.toAuthorize.relationalProofUrls.length]
-    },
-
-    isShowPhone() {
-      return !!this.$store.state.global.user.familyPhone
     }
   },
   methods: {
