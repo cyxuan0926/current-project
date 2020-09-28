@@ -26,7 +26,7 @@
     <meeting-table
       ref="meetingTable"
       :areaType="areaTabs"
-      :separateByArea="isSeparateByArea"
+      :isSeparateByArea="isSeparateByArea"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
