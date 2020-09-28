@@ -86,13 +86,13 @@
                            >{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button  v-if="config.queue.length"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
+              <el-button  v-if="config.area=='1'|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
-              v-if="canSave(config) && permission === 'edit'"
+              v-if="config.area=='2'&&canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
-              style="margin-top:8px"
+              style="margin-top:8px;margin-left:15px"
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
           </el-form>
@@ -199,12 +199,12 @@
                            style="margin-left: 5px">{{item.selectArr}} 
                 </el-button>
               </div>
-              <el-button v-if="config.queue.length" type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
-            <el-button
-              v-if="canSave(config) && permission === 'edit'"
+             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
+              <el-button
+              v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
-              style="margin-top:8px"
+              style="margin-top:8px;margin-left:15px"
               @click="onSubmit(config, index)">保存</el-button>
             </el-form-item>
             
@@ -563,8 +563,6 @@ export default {
           this.terminals[0]=beforearea1
           this.terminals[1]=beforearea2
       }
-    console.log( this.terminals)
-    console.log(this.configs)
       this.showTooltip = new Array(this.configs.length).fill(false)
     },//修改按钮对应值
       setPrimary( obj){
@@ -590,15 +588,11 @@ export default {
         afterDuration,
         enabledAt
       } = this.specialConfigs
-      console.log( this.specialConfigs)
-      console.log(configs)
       if(this.separateByArea){
-        console.log(configs.area)
-        console.log(area)
+        this.$set(configs, 'type', !configs.type)
         this.$set(configs, 'show', true)
         if(area==configs.area){
           this.$set(configs, 'updates',false )
-
         }else{
            this.$set(configs, 'updates',true )
         }
