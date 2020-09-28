@@ -3,7 +3,8 @@ import mutations from './mutations'
 
 let state = {
   visits: { contents: [], total: 0 },
-  meetingAdjustment: { meetingQueue: [], terminals: [], meetings: [] }
+  // 这里贼坑 会关联到 views/check-meeting/vuex/index.js (by hubi的注释 2020-09-27)
+  meetingAdjustment: { meetingQueue: [], specialQueue: [], terminals: [], meetings: [] }
 }
 
 export default {

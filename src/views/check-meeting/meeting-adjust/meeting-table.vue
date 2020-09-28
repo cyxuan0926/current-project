@@ -54,12 +54,13 @@
           <section class="meeting-list-block__wrap" v-for="(specials, i) in specialData" 
             :key="specials.id || uuId()">
             <div class="meeting-list-block__head">
-              <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
+              <div class="meeting-list-cell meeting-list-th">{{ specialQueue[i] }}</div>
             </div>
-            <div class="meeting-list-cell meeting-list-cell__drag" 
+            <div class="meeting-list-block__body">
+              <div class="meeting-list-cell meeting-list-cell__drag" 
                 v-for="m in specials"
                 :key="m.id || uuId()"
-                :class="[ m.id ? 'draggable' : 'undraggable' ]"
+                :class="[ m.id ? 'special' : '' ]"
                 :data-meeting-time="m.meetingTime"
                 :data-terminal-id="m.terminalId"
                 :data-terminal-number="m.terminalNumber"
@@ -69,6 +70,7 @@
                     <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m, true)"></el-button>
                   </template>
               </div>
+            </div>
           </section>
         </div>  
       </div>
@@ -89,7 +91,7 @@
           value-format="yyyy-MM-dd"
           :clearable="false"
           :picker-options="pickerOptions"
-          @change="handleGetConfigs"
+          @change="handlePickerChange"
         />
         <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
       </div>
@@ -399,7 +401,6 @@ export default {
       if (!this.hasQueue || !this.hasTerminal) {
         return [];
       }
-
       return this[key].map(timeCell => {
         return this.terminals.map(terminal => {
           let meeting = this.meetings.find(meeting => {
@@ -459,27 +460,36 @@ export default {
       this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
     },
 
+    setSelectRange() {
+      let _now = new Date()
+      this.selectRange = {
+        selectableRange: `${ this.acrossAdjustDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
+        format: 'HH:mm'
+      }
+    },
+
+    handlePickerChange() {
+      this.setSelectRange()
+      this.handleGetConfigs()
+    },
+
     handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
       this.isSpecial = !!flag
-      if (this.isSpecial) {
-        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
-        this.crossDuration = em.diff(sm, 'm')
-        let _now = new Date()
-        this.selectRange = {
-          selectableRange: `${Moment(_now).format('HH:mm')}:00 - 23:58:00`,
-          format: 'HH:mm'
-        }
-        this.setTimeRange(_now)
-        this.showTips = ''
-        this.isShowTips = false
-      }
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
           return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf();
         }
+      }
+      if (this.isSpecial) {
+        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
+        this.crossDuration = em.diff(sm, 'm')
+        this.setSelectRange()
+        this.setTimeRange(new Date())
+        this.showTips = ''
+        this.isShowTips = false
       }
       this.crossMeetingCurrent = m
       this.handleGetConfigs()
@@ -758,7 +768,8 @@ export default {
     .meeting-list-cell {
       margin-top: 0;
 
-      &.draggable {
+      &.draggable,
+      &.special {
         color: #fff;
         background-color: #3c8dbc;
       }
@@ -815,6 +826,13 @@ export default {
       flex: 1;
       cursor: move;
     }
+
+    &.meeting-list-cell__drag {
+      .meeting-list-cell__names {
+        cursor: default;
+      }
+    }
+
     .meeting-list-cell__acrossdate {
       color: #fff;
       cursor: pointer;
@@ -907,6 +925,11 @@ export default {
       color: #fff;
       background-color: #3c8dbc;
       cursor: move;
+    }
+
+    &.special {
+      color: #fff;
+      background-color: #3c8dbc;
     }
 
     &.swap-target {

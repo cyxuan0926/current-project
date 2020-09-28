@@ -23,16 +23,13 @@
           <el-form >
             <el-form-item label="请选择生产区设备:" style="width:450px">
               <div class="prisonlabel">
-                  
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i  class="el-icon-circle-close" @click="open(item,type)"/>
+                           >{{item.selectArr}} <i v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close" @click="open(item,type)"/>
                 </el-button>
               </div>
-              <!-- v-if=" type === 1 && hasOriginConfigAfter" -->
-              
-              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
+              <el-button v-if="!(hasOriginConfigAfter && type === 0)"   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -58,11 +55,10 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
-              <!-- v-if=" (type === 1 && hasOriginConfigAfter )||(type === 0 &&!hasConfigAfter) " -->
-              <el-button   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <el-button v-if="!(hasOriginConfigAfter && type === 0)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -435,7 +431,7 @@
 
       onClose() {
         this.visible = false
-        this.initConfigs()
+        //this.initConfigs()
       },
 
       async initConfigs() {
@@ -456,7 +452,6 @@
         })
           let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
           this.separateByArea = [false, false]
-          console.log(this.configsBefore)
         this.configsBefore.forEach(item=>{
           if(item.area==1){
             item.terminals.forEach(val=>{
@@ -477,7 +472,6 @@
                  afterarea1.push(val)
               })
               this.separateByArea[1] = true
-            //this.setPrimary(item.terminals,item.area)
           }
           if(item.area==2){
             item.terminals.forEach(val=>{
@@ -491,19 +485,17 @@
             beforearea2=this.arrindex(beforearea2)
            this.setPrimary(beforearea1)
            this.setPrimary(beforearea2)
-          this.terminals[0].push(beforearea1)
-          this.terminals[0].push(beforearea2)
+            this.terminals[0]=[beforearea1,beforearea2]
         }
         if(this.separateByArea[1]){
             afterarea1=this.arrindex(afterarea1)
             afterarea2=this.arrindex(afterarea2)
            this.setPrimary(afterarea1)
            this.setPrimary(afterarea2)
-          this.terminals[1].push(afterarea1)
-          this.terminals[1].push(afterarea2)
+            this.terminals[1]=[afterarea1,afterarea2]
         }
+        console.log(this.terminals)
         this.allConfigs = [this.configsBefore, this.configsAfter]
-        console.log(this.allConfigs)
       },
       //数组去重
       arrindex(arr){
@@ -561,39 +553,39 @@
       },
 
       // 参数化(update)
-      filterParams(params) {
+      filterParams(params,type) {
         let result = []
         params.forEach(config => {
           const { duration, interval, days, queue, area, timeperiodQueue } = config
           if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
-          if(config.area==1){
-            let terminals=[]
-            console.log( this.terminals)
-              if(this.terminals[1][0]){
-                  this.terminals[1][0].forEach(item=>{
-                   terminals.push(item.terminalId)
-                   })
-              }else{
-                this.terminals[0][0].forEach(item=>{
-                   terminals.push(item.terminalId)
+           config.terminals=[]
+           if(config.area==1){
+              let terminals=[]
+              console.log(this.terminals[type][0])
+              if(this.terminals[type][0]){
+                  this.terminals[type][0].forEach(item=>{
+                    if(item.terminalId){
+                      terminals.push(item.terminalId)
+                    }else{
+                      terminals.push(item.id)
+                    }
                    })
               }
-            config.terminals=terminals
-          }
+              config.terminals=terminals
+            }
           if(config.area==2){
             let terminals=[]
-            if(this.terminals[1][1]){
-              this.terminals[1][1].forEach(item=>{
-                terminals.push(item.terminalId)
+            if(this.terminals[type][1]){
+              this.terminals[type][1].forEach(item=>{
+                 if(item.terminalId){
+                      terminals.push(item.terminalId)
+                    }else{
+                      terminals.push(item.id)
+                    }
               })
-            }else{
-                  this.terminals[0][1].forEach(item=>{
-                   terminals.push(item.terminalId)
-                  })
-            }
-            config.terminals=terminals
+              config.terminals=terminals
           }
-
+          }
           let c = []
 
           let period = []
@@ -602,7 +594,7 @@
 
           timeperiodQueue.forEach(t => period.push(t.join('-')))
 
-          result.push({ days, config: c, terminals: config.terminals,area,duration, interval, timeperiod: period })
+          result.push({ days, config: c, terminals:config.terminals, area,duration, interval, timeperiod: period })
         })
 
         return result
@@ -616,13 +608,10 @@
         const [before, after] = this.allConfigs
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
-        console.log(this.allConfigs)
-        console.log(this.filterParams(before))
-        console.log(console.log(this.filterParams(configBefore)))
 
-        if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+        if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before,0), this.filterParams(configBefore,0)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
 
-        else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+        else hasNoChanged = isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
 
         console.log(hasNoChanged)
         if (hasNoChanged) {
@@ -643,14 +632,14 @@
         const [before, after] = this.allConfigs
 
         if (this.hasOriginConfigAfter) {
-          params = this.filterParams(after)
+          params = this.filterParams(after,1)
         } else {
-          params = this.filterParams(before)
+          params = this.filterParams(before,0)
         }
         const { id, jailId } = this.normalCongigs
 
         this.loading = true
-        console.log(params)
+       console.log(params)
 
         this.updateRemoteNormalConfig({
           enabledAt: this.computedEffectiveDate,
@@ -814,11 +803,13 @@
           type: 'warning'
         }).then(() => {
           if(this.area==2){
-             this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
+            //this.$set( this.terminals[type],1, this.terminals[type][1].filter(val=> val!=item))
+            this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
           }
           if(this.area==1) {
              this.terminals[type][0]=this.terminals[type][0].filter(val=> val!=item)
           }
+           this.$forceUpdate();
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -836,14 +827,12 @@
         multipleSelection.forEach((item,key)=>{
           this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
         })
-        console.log(area)
         if(area==1){
           this.terminals[this.types][0]=multipleSelection
         }
         if(area==2){
           this.terminals[this.types][1]=multipleSelection
         }
-        console.log( this.terminals[1])
         this.prisonDetil=false
       }
     }

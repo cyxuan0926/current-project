@@ -39,6 +39,7 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-list'),
     // component: 'check-meeting/meeting-list',
     component: 'check-meeting/meeting-list/meeting-list',
+    props: { hasPrisonAreaAuth: true },
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '可视电话申请列表' }
   }, {
