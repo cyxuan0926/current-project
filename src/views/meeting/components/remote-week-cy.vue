@@ -131,20 +131,19 @@
                 size="mini"
                 type="success"
                 class="button-float"
-                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
-
+                @click="onAddDay(type,configs)">新增工作日</el-button>
                 <el-button
                 v-if="config.area==2&&canAddDay(configs,2)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
                 size="mini"
                 type="success"
                 class="button-float"
-                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
+                @click="onAddDay(type,configs)">新增工作日</el-button>
                 <el-button
                 v-if="!config.area&&canAddDay(configs)&&hasConfigLeng(index)&&  (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
                 size="mini"
                 type="success"
                 class="button-float"
-                @click="onAddDay(type,configs)">新增工作日{{config.area}}</el-button>
+                @click="onAddDay(type,configs)">新增工作日</el-button>
             </div>
           </div>
         </template>
@@ -355,7 +354,7 @@
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
 
-            if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !!config.queue.length)
+            if (this.superAdmin ) this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
 
             this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
@@ -366,6 +365,7 @@
     },
     watch: {
       configs: {
+         immediate: true,
         handler: function (value) {
           console.log(value)
           let productIndex = 0
@@ -557,7 +557,6 @@
 
         const initDuration = beforDuration
         this.$nextTick(function() {
-          console.log(configs)
             if(this.separateByArea){
               let configs1=[],configs2=[]
               configs.forEach((item,ind)=>{

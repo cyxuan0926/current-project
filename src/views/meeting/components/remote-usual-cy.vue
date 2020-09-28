@@ -289,7 +289,6 @@
     watch: {
       allConfigs: {
         handler: function (value) {
-          console.log(value)
           if (this.hasOriginConfigAfter) {
             this.updateShow = value[1].some(item => {
               return !item.queue.length
@@ -416,8 +415,6 @@
         'updateRemoteNormalConfig'
       ]),
       switchChange($event,type){
-        console.log($event)
-        console.log(this.allConfigs)
         if($event){
           this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
           this.$set(this.allConfigs[type], 1,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
@@ -494,7 +491,6 @@
            this.setPrimary(afterarea2)
             this.terminals[1]=[afterarea1,afterarea2]
         }
-        console.log(this.terminals)
         this.allConfigs = [this.configsBefore, this.configsAfter]
       },
       //数组去重
@@ -561,7 +557,6 @@
            config.terminals=[]
            if(config.area==1){
               let terminals=[]
-              console.log(this.terminals[type][0])
               if(this.terminals[type][0]){
                   this.terminals[type][0].forEach(item=>{
                     if(item.terminalId){
@@ -613,7 +608,6 @@
 
         else hasNoChanged = isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
 
-        console.log(hasNoChanged)
         if (hasNoChanged) {
           this.$message({
             showClose: true,
@@ -639,7 +633,6 @@
         const { id, jailId } = this.normalCongigs
 
         this.loading = true
-       console.log(params)
 
         this.updateRemoteNormalConfig({
           enabledAt: this.computedEffectiveDate,
@@ -737,7 +730,6 @@
           this.tableData=res
           this.area=area
           this.types=type
-          console.log(this.terminals)
           if(area==2){
              if(this.terminals[type][0]){
             this.tableData=this.tableData.filter(item=>{
@@ -750,7 +742,6 @@
           if(area==1){
             if(this.terminals[type][1]){
                this.tableData=this.tableData.filter(item=>{
-              console.log(this.terminals[type][1])
               return !this.terminals[type][1].find((val)=>{
                 return item.id == val.terminalId ||item.id == val.id
               })
@@ -758,13 +749,11 @@
             }
           }
            this.$nextTick(() => {
-            console.log(this.terminals[type])
             this.tableData.forEach(outerItem => {
               if(area==2){
             if(this.terminals[type][1]){
                 this.terminals[type][1].forEach((item) => {
                   if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
-                    console.log(this.$refs)
                     this.$refs.multipleTable.toggleRowSelection(outerItem, true)
                   }
                 })
@@ -773,7 +762,6 @@
                  if(this.terminals[type][0]){
                 this.terminals[type][0].forEach((item) => {
                   if (outerItem.id == item.terminalId ||outerItem.id == item.id ){
-                    console.log(this.$refs)
                     this.$refs.multipleTable.toggleRowSelection(outerItem, true);
                   }
                 })
