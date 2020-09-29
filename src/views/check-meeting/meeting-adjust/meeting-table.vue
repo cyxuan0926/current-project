@@ -471,13 +471,13 @@ export default {
       }
     },
 
-    handlePickerChange() {
+    async handlePickerChange() {
       await this.setSeparateArea()
       this.setSelectRange()
       this.handleGetConfigs()
     },
 
-    handleShowacross(m, flag) {
+    async handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
       this.isSpecial = !!flag

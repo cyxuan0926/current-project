@@ -42,11 +42,11 @@
 </template>
 
 <script>
-import MeetingTable from "./meeting-table";
-
-import { mapActions, mapState } from "vuex";
-import helper from "@/filters/modules/date";
+import MeetingTable from "./meeting-table"
+import { mapActions, mapState } from "vuex"
+import helper from "@/filters/modules/date"
 import Moment from 'moment'
+import http from '@/service'
 export default {
   name: "MeetingAjust",
 
@@ -128,18 +128,6 @@ export default {
     next();
   },
 
-  async setSeparateArea() {
-    let { data } = await http.getMeetingSeparateArea({
-      inputDate: this.adjustDate
-    })
-    this.isSeparateByArea = data && data.separateByArea
-  },
-
-  async handlePickerChange() {
-    await this.setSeparateArea()
-    this.getConfigs()
-  },
-
   async created() {
     this.adjustDate = this.defaultDate()
     await this.setSeparateArea()
@@ -216,6 +204,18 @@ export default {
       setTimeout(() => {
         this.loading = false;
       }, 300);
+    },
+
+    async setSeparateArea() {
+      let { data } = await http.getMeetingSeparateArea({
+        inputDate: this.adjustDate
+      })
+      this.isSeparateByArea = data && data.separateByArea
+    },
+
+    async handlePickerChange() {
+      await this.setSeparateArea()
+      this.getConfigs()
     },
 
     // 获取配置
