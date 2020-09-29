@@ -599,18 +599,31 @@
       // 只有before
       onUpdate() {
         const [before, after] = this.allConfigs
-        let isUpdate=false
-        console.log(after)
-        console.log(before)
-        //先判断能否更新
+        let isUpdate=false,isTerminals=false
+        //先判断生产区和建设区同时修改配置更新
         if( this.separateByArea){
             if (this.hasOriginConfigAfter) {
+              isTerminals=this.terminals[1].every(item=> {
+                return item.length>0
+                })
               isUpdate = this.isByArea(after)
             } else {
+               isTerminals=this.terminals[0].every(item=> {
+                return item.length>0
+                })
               isUpdate = this.isByArea(before)
             }
-            console.log(isUpdate)
         }
+         if(!isTerminals){
+           this.$message({
+            showClose: true,
+            message: '更新需要选择设备号',
+            duration: 3000,
+            type: 'error'
+          })
+          return false
+        }
+
         if(isUpdate){
            this.$message({
             showClose: true,
@@ -630,12 +643,13 @@
         else hasNoChanged = isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
 
         if (hasNoChanged) {
-          this.$message({
-            showClose: true,
-            message: '配置没有变化，无需编辑！',
-            duration: 3000,
-            type: 'error'
-          })
+          // this.$message({
+          //   showClose: true,
+          //   message: '配置没有变化，无需编辑！',
+          //   duration: 3000,
+          //   type: 'error'
+          // })
+           this.visible = true
         }
         // 展示提示对话框
         else this.visible = true
@@ -673,8 +687,6 @@
           if(item.area==1&&item.queue.length>0) n=1
           if(item.area==2&&item.queue.length>0) m=1
         })
-        console.log(n)
-        console.log(m)
          return n+m<2?true:false
       },
       // 新增一个时间段 配置默认的会见时间段(update)
