@@ -570,19 +570,18 @@
            configs.forEach((item,ind)=>{
                  if(ind==index){
                    if( item.area==1){
+                     console.log(configs1.length)
                      if(configs1.length>1){
                         this.allConfigs[type].splice(index, 1)
                      }else{
-                       this.basicConfig.area=item.area
-                       this.$set(this.allConfigs[type], index, this.basicConfig)
+                       this.$set(this.allConfigs[type], index, {days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
                      }
                    }
                    if( item.area==2){
                       if(configs2.length>1){
                         this.allConfigs[type].splice(index, 1)
                      }else{
-                       this.basicConfig.area=item.area
-                       this.$set(this.allConfigs[type], index, this.basicConfig)
+                        this.$set(this.allConfigs[type], index, {days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
                      }
                    }
                     if(!item.area){

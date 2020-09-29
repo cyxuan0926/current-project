@@ -598,9 +598,30 @@
       // 更新按钮的方法
       // 只有before
       onUpdate() {
-        let hasNoChanged
-
         const [before, after] = this.allConfigs
+        let isUpdate=false
+        console.log(after)
+        console.log(before)
+        //先判断能否更新
+        if( this.separateByArea){
+            if (this.hasOriginConfigAfter) {
+              isUpdate = this.isByArea(after)
+            } else {
+              isUpdate = this.isByArea(before)
+            }
+            console.log(isUpdate)
+        }
+        if(isUpdate){
+           this.$message({
+            showClose: true,
+            message: '生产区和监舍区需同时配置后才可更新',
+            duration: 3000,
+            type: 'error'
+          })
+          return false
+        }
+
+        let hasNoChanged
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
 
@@ -645,7 +666,17 @@
           this.visible = false
         })
       },
-
+      //判断是否监舍区与生产区一起配置
+      isByArea(arr){
+        let n=0,m=0
+        arr.forEach(item=>{
+          if(item.area==1&&item.queue.length>0) n=1
+          if(item.area==2&&item.queue.length>0) m=1
+        })
+        console.log(n)
+        console.log(m)
+         return n+m<2?true:false
+      },
       // 新增一个时间段 配置默认的会见时间段(update)
       handleConfig(index, type, configs) {
         const duration = this.filterDuration[type]
