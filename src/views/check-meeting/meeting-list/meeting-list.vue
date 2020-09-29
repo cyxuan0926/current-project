@@ -554,6 +554,7 @@
       return {
         showTips: '',
         isShowTips: false,
+        isSeparateByArea: false,
         selectRange: {},
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
@@ -739,7 +740,6 @@
       ]),
 
       ...mapGetters([
-        'isSeparateByArea',
         'isShowPhone'
       ]),
 
@@ -1214,7 +1214,12 @@
         this.isShowTips = false
         this.areaTabs = '1'
         this.areaTypes = '1'
+        let { data } = await http.getMeetingSeparateArea({
+          inputDate: this.toAuthorize && this.toAuthorize.applicationDate
+        })
+        this.isSeparateByArea = data && data.separateByArea
         this.getMeetTimeConfig()
+        this.$message.closeAll()
       },
 
       async handleWithdraw(e) {
