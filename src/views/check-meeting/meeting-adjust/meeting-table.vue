@@ -276,7 +276,6 @@ export default {
   props: {
     adjustDate: String,
     dayinLimit: String,
-    isSeparateByArea: Boolean,
     areaType: String,
     onDragFinish: {
       type: Function,
@@ -292,6 +291,7 @@ export default {
       timeRangeEnd: new Date(),
       crossDuration: 5,
       tableAreaType: this.areaType,
+      isSeparateByArea: false,
       isSpecial: true,
       timeRange: [],
       selectRange: {},
@@ -472,6 +472,7 @@ export default {
     },
 
     handlePickerChange() {
+      await this.setSeparateArea()
       this.setSelectRange()
       this.handleGetConfigs()
     },
@@ -496,10 +497,10 @@ export default {
         this.isShowTips = false
       }
       this.crossMeetingCurrent = m
-      this.handleGetConfigs()
-      .then(() => {
-        this.meetingVisible = true
-      })
+
+      await this.setSeparateArea()
+      await this.handleGetConfigs()
+      this.meetingVisible = true
     },
 
     handleTimepickerChange(val) {
@@ -560,6 +561,13 @@ export default {
       } else if (!this.crossTerminals || !this.crossTerminals.length) {
         return "该日无可用终端"
       }
+    },
+
+    async setSeparateArea() {
+      let { data } = await http.getMeetingSeparateArea({
+        inputDate: this.acrossAdjustDate
+      })
+      this.isSeparateByArea = data && data.separateByArea
     },
 
     async handleGetConfigs() {

@@ -9,7 +9,7 @@
         value-format="yyyy-MM-dd"
         :clearable="false"
         :picker-options="pickerOptions"
-        @change="getConfigs"
+        @change="handlePickerChange"
       />
       <!-- <el-button type="primary" @click="getConfigs">确定</el-button> -->
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
@@ -26,7 +26,6 @@
     <meeting-table
       ref="meetingTable"
       :areaType="areaTabs"
-      :isSeparateByArea="isSeparateByArea"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
@@ -129,10 +128,22 @@ export default {
     next();
   },
 
+  async setSeparateArea() {
+    let { data } = await http.getMeetingSeparateArea({
+      inputDate: this.adjustDate
+    })
+    this.isSeparateByArea = data && data.separateByArea
+  },
+
+  async handlePickerChange() {
+    await this.setSeparateArea()
+    this.getConfigs()
+  },
+
   async created() {
     this.adjustDate = this.defaultDate()
-    this.isSeparateByArea = this.$store.state.global.user.separateByArea
-    await this.getConfigs();
+    await this.setSeparateArea()
+    await this.getConfigs()
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
     limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
     this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
