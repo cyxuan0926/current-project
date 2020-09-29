@@ -99,7 +99,7 @@
         <section>
           <div class="across-filter" v-if="isSeparateByArea">
             <label class="filter__label special">选择区域</label>
-            <el-select style="width: 200px" v-model="areaType" placeholder="请选择区域">
+            <el-select style="width: 200px" v-model="tableAreaType" placeholder="请选择区域">
               <el-option
                 v-for="item in $store.state.areaOptions"
                 :key="item.value"
@@ -137,7 +137,7 @@
         <section>
           <el-tabs
             v-if="isSeparateByArea"
-            v-model="areaType"
+            v-model="tableAreaType"
             type="card">
             <el-tab-pane v-for="t in $store.state.areaOptions"
               :key="t.value"
@@ -203,7 +203,7 @@
             :label="t">
             <template slot-scope="scope">
               <span v-if="scope.row[t]">已申请</span>
-              <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+              <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t, scope.row.terminalId)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -276,7 +276,6 @@ export default {
   props: {
     adjustDate: String,
     dayinLimit: String,
-    isSeparateByArea: Boolean,
     areaType: String,
     onDragFinish: {
       type: Function,
@@ -291,6 +290,8 @@ export default {
       timeRangeStart: new Date(),
       timeRangeEnd: new Date(),
       crossDuration: 5,
+      tableAreaType: this.areaType,
+      isSeparateByArea: false,
       isSpecial: true,
       timeRange: [],
       selectRange: {},
@@ -319,7 +320,9 @@ export default {
       document.querySelector('.meeting-list-block-scroller').style.width = 188 * (this.meetingsData.length + this.specialData.length) + 'px'
     },
 
-    areaType() {
+    tableAreaType() {
+      this.crossDateSelect = ''
+      this.removeSelClass()
       this.meetingVisible && this.handleGetConfigs()
     }
   },
@@ -468,19 +471,21 @@ export default {
       }
     },
 
-    handlePickerChange() {
+    async handlePickerChange() {
+      await this.setSeparateArea()
       this.setSelectRange()
       this.handleGetConfigs()
     },
 
-    handleShowacross(m, flag) {
+    async handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
       this.isSpecial = !!flag
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf();
+          // return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf()
+          return time.getTime() < Date.now() - 24 * 3600 * 1000 || time.getTime() > Moment(_this.dayinLimit).valueOf()
         }
       }
       if (this.isSpecial) {
@@ -492,10 +497,10 @@ export default {
         this.isShowTips = false
       }
       this.crossMeetingCurrent = m
-      this.handleGetConfigs()
-      .then(() => {
-        this.meetingVisible = true
-      })
+
+      await this.setSeparateArea()
+      await this.handleGetConfigs()
+      this.meetingVisible = true
     },
 
     handleTimepickerChange(val) {
@@ -503,13 +508,13 @@ export default {
       this.setTimeRange(val)
     },
 
-    handleSelectAcross(terNum, time) {
+    handleSelectAcross(terminalNumber, time, terminalId) {
       this.crossDateSelect = {
         name: this.crossMeetingCurrent.name,
         id: this.crossMeetingCurrent.id,
         meetingTime: `${this.acrossAdjustDate} ${time}`,
-        terminalId: this.terminals.find(t => t.terminalNumber == terNum).id,
-        terminalNumber: terNum,
+        terminalId,
+        terminalNumber,
         adjustStatus: 0
       }
     },
@@ -535,7 +540,7 @@ export default {
       }
 
       if (this.isSeparateByArea) {
-        this.crossDateSelect.area = this.areaType
+        this.crossDateSelect.area = this.tableAreaType
       }
 
       await http.adjustMeeting([this.crossDateSelect])
@@ -558,10 +563,17 @@ export default {
       }
     },
 
+    async setSeparateArea() {
+      let { data } = await http.getMeetingSeparateArea({
+        inputDate: this.acrossAdjustDate
+      })
+      this.isSeparateByArea = data && data.separateByArea
+    },
+
     async handleGetConfigs() {
       let { data } = await http.getMeetingConfigs({
         inputDate: this.acrossAdjustDate,
-        area: this.isSeparateByArea ? this.areaType : ''
+        area: this.isSeparateByArea ? this.tableAreaType : ''
       })
       this.isShowTips = false
       let applyList = {}
@@ -587,6 +599,7 @@ export default {
           let m = {
             terminalNumber: c.terminalNumber,
             terminalName: c.terminalName,
+            terminalId: c.id
           }
           this.crossMeetingQueue.forEach(q => {
             m[q] = !!applyList[c.terminalNumber + q]

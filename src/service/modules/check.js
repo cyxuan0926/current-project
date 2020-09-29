@@ -92,6 +92,10 @@ export default {
   getMeetingConfigs: params => {
     return service.get('/meetings/adjustment', params)
   },
+  // 家属会见申请-获取会见信息
+  getMeetingSeparateArea: params => {
+    return service.get('/meetings/separateArea', params).then(res => res)
+  },
   // 家属会见申请-调整
   adjustMeeting: params => {
     return service.postObj(`/meetings/adjustMeeting`, params).then(res => res && res.code === 200)
