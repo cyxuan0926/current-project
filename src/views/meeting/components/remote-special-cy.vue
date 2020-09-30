@@ -12,13 +12,12 @@
           v-if="showTooltip[index]"
           effect="light"
           popper-class="color-transprant__tooltip"
-          :content="config.day.join(',')"
           placement="top-start"
         >
           <el-date-picker
             v-model="config.day"
             size="mini"
-            type="dates"
+            type="date"
             :disabled="!!config.id"
             value-format="yyyy-MM-dd"
             placeholder="选择日期"
@@ -31,7 +30,7 @@
           class="none-2"
           v-model="config.day"
           size="mini"
-          type="dates"
+          type="date"
           :disabled="!!config.id"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
@@ -80,11 +79,13 @@
           <el-form >
             <el-form-item label="生产区设备:" style="width:450px">
               <div class="prisonlabel">
-                <el-button  v-for="(item,index) in terminals[0] "
-                           :key='index' size="mini"
+                <label v-for="(val,index) in config.terminals" :key='index'>
+                <el-button v-if="val.area==2"  v-for="(item,ind) in val.terminals "
+                           :key='ind' size="mini"
                            style="margin-left: 5px"
                            >{{item.selectArr}} 
                 </el-button>
+                </label>
               </div>
               <el-button  v-if="config.area=='1'|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
@@ -194,10 +195,13 @@
             <el-form>
             <el-form-item label="监舍区设备:" style="width:450px">
               <div class="prisonlabel">
-               <el-button  v-for="(item,index) in terminals[1] "
-                           :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} 
+              <label v-for="(val,index) in config.terminals" :key='index'>
+                <el-button v-if="val.area==1"  v-for="(item,ind) in val.terminals "
+                           :key='ind' size="mini"
+                           style="margin-left: 5px"
+                           >{{item.selectArr}} 
                 </el-button>
+                </label>
               </div>
              <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
               <el-button
@@ -527,59 +531,26 @@ export default {
       // 删除特殊日期配置
       'deleteSpecialConfig',
       // 获取特殊日期配置
-      'getRemoteSpecialConfigs'
+      'getRemoteSpecialConfigs',
+      //根据日期获取终端号
+      "getTerminalsByArea",
+       // 根据Id删除特殊日期配置
+      "deleteSpecialConfigById",
     ]),
-
     async initData() {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
-     this.separateByArea=separateByArea?true:false
      this.configs = cloneDeep(complexSpecialConfigs)
-     console.log(this.configs)
-      let beforearea1=[],beforearea2=[]
       this.configs.forEach(item=>{
         if(item.area){
           item.show=true
-          if( item.area==1){
-            console.log(item.terminals)
-            item.terminals.forEach(val=>{
-                beforearea1.push(val)
-            })
-          }
-          if( item.area==2){
-             item.terminals.forEach(val=>{
-                beforearea2.push(val)
-            })
-          }
+          this.setPrimary(item.terminals)
         }else{
            item.show=false
         }
       })
-      if(beforearea1.length>0||beforearea2.length>0){
-         beforearea1=this.arrindex(beforearea1)
-         beforearea2=this.arrindex(beforearea2)
-          this.setPrimary(beforearea1)
-           this.setPrimary(beforearea2)
-          this.terminals[0]=beforearea1
-          this.terminals[1]=beforearea2
-      }
       this.showTooltip = new Array(this.configs.length).fill(false)
-    },//修改按钮对应值
-      setPrimary( obj){
-        let multipleSelection=obj
-        multipleSelection.forEach((item,key)=>{
-          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
-        })
-      },
-    //数组去重
-      arrindex(arr){
-        let obj = {};
-          let peon = arr.reduce((cur,next) => {
-              obj[next.terminalId] ? "" : obj[next.terminalId] = true && cur.push(next);
-              return cur;
-          },[])
-        return peon
-      },
+    },
     // 选择日期确定后
     // 先要判断是否选择得日期 有交叉得部分
     onSureDates(e, configs, index,area) {
@@ -588,17 +559,29 @@ export default {
         afterDuration,
         enabledAt
       } = this.specialConfigs
-      if(this.separateByArea){
-        this.$set(configs, 'type', !configs.type)
-        this.$set(configs, 'show', true)
-        if(area==configs.area){
-          this.$set(configs, 'updates',false )
-        }else{
-           this.$set(configs, 'updates',true )
-        }
-        this.$set(configs, 'area',area )
+      if(e){
+        this.getTerminalsByArea({ jailId: this.jailId,day:e }).then(res => {
+          if (!res) return
+        this.separateByArea=res.separateByArea
+         let terminals=res.terminals
+                terminals.forEach(item=>{
+                  this.setPrimary(item.terminals)
+            })
+            this.$set(configs, 'terminals',terminals )
+        })
       }
-      if (this.hasConfigsAfter && e) {
+         if(this.separateByArea){
+            this.$set(configs, 'type', !configs.type)
+            this.$set(configs, 'show', true)
+            if(area==configs.area){
+              this.$set(configs, 'updates',false )
+            }else{
+              this.$set(configs, 'updates',true )
+            }
+           this.$set(configs, 'area',area )
+      }
+       if (this.hasConfigsAfter && e) {
+            e=e.split(",")
         // Moment实例化后的数组
         const rangeDates = this.momentInputs(e)
 
@@ -616,7 +599,6 @@ export default {
 
         // 选择的日期都在生效日期之后
         const isAfter = Moment(minDate).isAfter(enabledAt)
-
         if (isBetween) {
           this.$set(configs, 'timeperiodQueue', [])
 
@@ -641,9 +623,14 @@ export default {
 
       else this.showTooltip[index] = false
       this.$set(configs, 'queue', [])
-
       this.handleDate(configs, this.currentDuration)
-    },
+    },//修改按钮对应值
+      setPrimary( obj){
+        let multipleSelection=obj
+        multipleSelection.forEach((item,key)=>{
+          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
+        })
+      },
 
     // 把输入的日期格式初始化
     momentInputs(inputs = [], formatString = 'YYYY-MM-DD') {
@@ -713,29 +700,26 @@ export default {
         enabledMeeting,
         id,
         queue,
+        terminals,
         updates,
         timeperiodQueue
       } = config
-console.log(config)
-      let terminals=[]
-      if(area==1){
-        this.terminals[1].forEach(item=>{
-            terminals.push(item.terminalId)
-        })
-      }
-      if(area==2){
-         this.terminals[0].forEach(item=>{
-            terminals.push(item.terminalId)
-        })
-      }
-      console.log(terminals)
+      let _terminals=[]
+          if(area){
+            terminals.filter(item=>item.area==area).forEach(item=>{
+            item.terminals.forEach(val=>{
+                _terminals.push(val.terminalId)
+            })
+             })
+          }
+          console.log(_terminals)
       let params = {
         day,
         duration,
         interval,
         area,
-        terminals,
         enabledMeeting,
+        terminals: _terminals,
         jailId: Number(this.jailId),
         config: [],
         timeperiod: []
@@ -782,6 +766,12 @@ console.log(config)
       }
       // 新增配置
       else {
+        if(!Array.isArray(params.day)){
+            console.log(params.day)
+            params.day=[params.day]
+            console.log(params.day)
+          }
+
         this.addSpecialConfig(params).then(async res => {
           if (!res) return
 
@@ -814,10 +804,18 @@ console.log(config)
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
-            if (!res) return
-            this.splice(index)
-          })
+          console.log(config)
+              if(config.show){
+                this.deleteSpecialConfigById({ jailId: config.jailId, id: config.id }).then(res => {
+                  if (!res) return
+                  this.splice(index)
+                })
+              }else{
+                   this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
+                if (!res) return
+                this.splice(index)
+              })
+              }
         }).catch(() => {})
       }
       else {

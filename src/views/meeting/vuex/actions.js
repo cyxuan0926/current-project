@@ -365,5 +365,11 @@ export default {
       commit('getPrisonVisitConfigDetail', config)
       return res
     })
+  },
+  getTerminalsByArea: ({ commit }, params) => {
+    return http.getTerminalsByArea(params).then(res => res)
+  },
+  deleteSpecialConfigById: ({ commit }, params) => {
+    return http.deleteSpecialConfig(params).then(res => res)
   }
 }
