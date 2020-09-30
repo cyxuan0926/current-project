@@ -326,6 +326,8 @@
 
       // 通话时长和间隔时间
       durationIntervalItems() {
+        console.log('durationIntervalItems=======')
+        console.log(this.configs)
         const item = {
           formConfigs: {
             labelWidth: '81px',
@@ -338,7 +340,7 @@
             rules: ['required', 'isPositiveIntegers'],
             props:{label:'label',value:'value'},
             options:this.durations,
-            value: (this.durations[0] && this.durations[0].value) || 25
+            value: (this.durations.length && this.durations[0].value) || 25
           },
           interval: {
             label: '间隔时间',
@@ -348,16 +350,14 @@
           }
         }
         if (!this.superAdmin) this.$delete(item, 'duration')
-
-
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
-
-            if (this.superAdmin ) this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
-
+            if (this.superAdmin ) {
+              this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
+            }
+             this.$set(config, 'duration', configs.length && configs[0].duration)
             this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
-
             return cloneItem
           })
         })

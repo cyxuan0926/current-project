@@ -26,7 +26,7 @@
                 <el-button  v-for="(item,index) in terminals[type][1] "
                            :key='index' size="mini"
                            style="margin-left: 5px"
-                           >{{item.selectArr}} <i v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close" @click="open(item,type)"/>
+                           >{{item.selectArr}} <i v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close" @click="open(item,type,2)"/>
                 </el-button>
               </div>
               <el-button v-if="!(hasOriginConfigAfter && type === 0)"   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
@@ -55,7 +55,7 @@
               <div class="prisonlabel">
                <el-button  v-for="(item,index) in terminals[type][0] "
                            :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type)" v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close"/>
+                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type,1)" v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close"/>
                 </el-button>
               </div>
               <el-button v-if="!(hasOriginConfigAfter && type === 0)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
@@ -100,13 +100,11 @@
       </div>
 
     </template>
-    <!--v-if="hasOriginConfigAfter || hasConfigBeforeChange"-->
-    <div class="effective__date">
+    <div  class="effective__date">
       <label
         class="c-label"
         style="line-height: 35px"
       >生效日期</label>
-
       <el-date-picker
         v-model="computedEffectiveDate"
         :picker-options="pickerOptions"
@@ -348,18 +346,14 @@
      // 生效日期的默认值
     computedEffectiveDate: {
       get() {
-        const limitDays = this.normalCongigs['dayInLimit']
-
-        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(limitDays, 'days').format('YYYY-MM-DD'))
-
-        return this.dateValue
+        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(1, 'days').format('YYYY-MM-DD'))
+       return this.dateValue
       },
 
       set(date) {
         this.dateValue = date
       }
     },
-
     // 通话时长和间隔时间
     durationIntervalItems() {
       const item = {
@@ -416,14 +410,12 @@
       ]),
       switchChange($event,type){
         if($event){
-          this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
-          this.$set(this.allConfigs[type], 1,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
+          this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
+          this.$set(this.allConfigs[type], 1,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
         }
         else{
             this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
         }
-
-
       },
 
       onClose() {
@@ -649,7 +641,7 @@
           //   duration: 3000,
           //   type: 'error'
           // })
-           this.visible = true
+          this.visible = true
         }
         // 展示提示对话框
         else this.visible = true
@@ -819,7 +811,7 @@
         this.prisonDetil=false
       },
       //删除按扭
-      open(item,type) {
+      open(item,type,area) {
         const confirmText = ['是否将'+item.selectArr+'"设备，从选中的设备项中移出？',  '注意：删除终端后，将重新分配通话时间段，如预约日期无法分配时间段，系统将自动取消通话申请，调整后会以短信的形式通知相关家属 ，请确认是否继续操作？']
         const newDatas = []
         const h = this.$createElement
@@ -833,11 +825,11 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          if(this.area==2){
+          if(area==2){
             //this.$set( this.terminals[type],1, this.terminals[type][1].filter(val=> val!=item))
             this.terminals[type][1]= this.terminals[type][1].filter(val=> val!=item)
           }
-          if(this.area==1) {
+          if(area==1) {
              this.terminals[type][0]=this.terminals[type][0].filter(val=> val!=item)
           }
            this.$forceUpdate();
