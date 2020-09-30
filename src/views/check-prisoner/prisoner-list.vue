@@ -934,8 +934,9 @@ export default {
       }
     },
 
-    onSearch() {
-      this.$refs.pagination.handleCurrentChange(1)
+    onSearch(isCurrent) {
+      this.$refs.pagination.handleCurrentChange(!!isCurrent ? this.pagination.page : 1)
+      // this.$refs.pagination.handleCurrentChange(1)
     },
 
     handleAccessTime(e) {
@@ -986,7 +987,7 @@ export default {
         params.append('prisonerId', e.id)
         this.removePrisonerBlacklist(params).then(res => {
           if (!res) return
-          this.onSearch()
+          this.onSearch(true)
         })
       }).catch(() => {})
     },
@@ -1137,7 +1138,7 @@ export default {
           params.append('reason', val.reason)
           this.addPrisonerBlacklist(params).then(res => {
             if (!res) return
-            this.onSearch()
+            this.onSearch(true)
             this.handleCloseDialog()
           })
       }
@@ -1147,7 +1148,7 @@ export default {
         let deleteReason = val.contents || val.deleteReason, prisonerId = (this.selectPrisoners.map(val => val.id)).join(',')
         this.deletePrisonerData({deleteReason, prisonerId}).then(res => {
           if(!res) return
-          this.onSearch()
+          this.onSearch(true)
           this.handleCloseDialog()
         })
       }
@@ -1176,7 +1177,7 @@ export default {
 
         this.addPrionser(val).then(res => {
           if(!res) return
-          this.onSearch()
+          this.onSearch(true)
           this.handleCloseDialog()
         })
       }
@@ -1297,7 +1298,7 @@ export default {
           if (result) {
             setTimeout(() => {
               this.handleCloseDialog()
-              this.onSearch()
+              this.onSearch(true)
             }, 500)
           }
         }).catch(() => {
