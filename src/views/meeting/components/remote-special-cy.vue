@@ -18,6 +18,7 @@
             v-model="config.day"
             size="mini"
             type="date"
+            :clearable="false"
             :disabled="!!config.id"
             value-format="yyyy-MM-dd"
             placeholder="选择日期"
@@ -31,6 +32,7 @@
           v-model="config.day"
           size="mini"
           type="date"
+          :clearable="false"
           :disabled="!!config.id"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
@@ -76,7 +78,8 @@
           </el-form>
         </div>
         <div  v-if="config.show">
-          <el-form >
+          <el-form v-if="config.separateByArea">
+            <label  v-if="config.area==2">
             <el-form-item label="生产区设备:" style="width:450px">
               <div class="prisonlabel">
                 <label v-for="(val,index) in config.terminals" :key='index'>
@@ -87,7 +90,29 @@
                 </el-button>
                 </label>
               </div>
-              <el-button  v-if="config.area=='1'|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,2)">配置时间段</el-button>
+              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+               <!--可保存状态并且是国科服务管理员并且是编辑状态-->
+            <el-button
+              v-if="config.area=='2'&&canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+                  </el-form-item>
+                  </label>
+          </el-form>
+           <el-form v-if="!config.separateByArea">
+            <el-form-item label="生产区设备:" style="width:450px">
+              <div class="prisonlabel">
+                <label v-for="(val,index) in config.terminals" :key='index'>
+                <el-button v-if="val.area==2"  v-for="(item,ind) in val.terminals "
+                           :key='ind' size="mini"
+                           style="margin-left: 5px"
+                           >{{item.selectArr}} 
+                </el-button>
+                </label>
+              </div>
+              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="config.area=='2'&&canSave(config) && permission === 'edit'"
@@ -192,7 +217,8 @@
         </div>
                  </template>
               </div>
-            <el-form>
+            <el-form v-if="config.separateByArea">
+              <label v-if="config.area==1">
             <el-form-item label="监舍区设备:" style="width:450px">
               <div class="prisonlabel">
               <label v-for="(val,index) in config.terminals" :key='index'>
@@ -203,7 +229,28 @@
                 </el-button>
                 </label>
               </div>
-             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,1)">配置时间段</el-button>
+             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+              <el-button
+              v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+            </el-form-item>
+            </label>
+          </el-form>
+           <el-form v-if="!config.separateByArea">
+            <el-form-item label="监舍区设备:" style="width:450px">
+              <div class="prisonlabel">
+              <label v-for="(val,index) in config.terminals" :key='index'>
+                <el-button v-if="val.area==1"  v-for="(item,ind) in val.terminals "
+                           :key='ind' size="mini"
+                           style="margin-left: 5px"
+                           >{{item.selectArr}} 
+                </el-button>
+                </label>
+              </div>
+             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
               type="primary"
@@ -542,13 +589,23 @@ export default {
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.configs = cloneDeep(complexSpecialConfigs)
       this.configs.forEach(item=>{
+         console.log(item)
         if(item.area){
           item.show=true
-          this.setPrimary(item.terminals)
+          if(item.terminals.length==1){
+              item.separateByArea=true
+          }else{
+            item.separateByArea=false
+          }
+
+          item.terminals.forEach(val=>{
+                  this.setPrimary(val.terminals)
+            })
         }else{
            item.show=false
         }
       })
+      console.log(this.configs)
       this.showTooltip = new Array(this.configs.length).fill(false)
     },
     // 选择日期确定后
@@ -566,11 +623,16 @@ export default {
          let terminals=res.terminals
                 terminals.forEach(item=>{
                   this.setPrimary(item.terminals)
-            })
+                })
             this.$set(configs, 'terminals',terminals )
+            if(this.separateByArea){
+            this.$set(configs, 'type', !configs.type)
+            this.$set(configs, 'show', true)
+          }
         })
       }
-         if(this.separateByArea){
+      console.log(configs.area)
+        if(this.separateByArea){
             this.$set(configs, 'type', !configs.type)
             this.$set(configs, 'show', true)
             if(area==configs.area){
@@ -578,8 +640,10 @@ export default {
             }else{
               this.$set(configs, 'updates',true )
             }
+          }
+          if(area){
            this.$set(configs, 'area',area )
-      }
+         }
        if (this.hasConfigsAfter && e) {
             e=e.split(",")
         // Moment实例化后的数组
@@ -806,7 +870,7 @@ export default {
         }).then(() => {
           console.log(config)
               if(config.show){
-                this.deleteSpecialConfigById({ jailId: config.jailId, id: config.id }).then(res => {
+                this.deleteSpecialConfigById({id: config.id }).then(res => {
                   if (!res) return
                   this.splice(index)
                 })
@@ -864,23 +928,7 @@ export default {
     },
 
     onAddDay() {
-        if(this.separateByArea){
-
-
-          // this.basicConfig.area=1
-          // this.basicConfig.show=true
-          // console.log(this.basicConfig)
-          // this.configs.push(cloneDeep(this.basicConfig))
-          //  this.basicConfig.area=2
-          // this.basicConfig.show=true
-          // console.log(this.basicConfig)
           this.configs.push(cloneDeep(this.basicConfig))
-
-
-        }else{
-          this.configs.push(cloneDeep(this.basicConfig))
-        }
-
     }
   }
 }

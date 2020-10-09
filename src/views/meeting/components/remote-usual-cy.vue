@@ -591,22 +591,26 @@
       // 只有before
       onUpdate() {
         const [before, after] = this.allConfigs
-        let isUpdate=false,isTerminals=false
+        let isUpdate=false,isTerminals=false,separateByArea
         //先判断生产区和建设区同时修改配置更新
-        if( this.separateByArea){
             if (this.hasOriginConfigAfter) {
-              isTerminals=this.terminals[1].every(item=> {
+              if(this.separateByArea[1]){
+                isTerminals=this.terminals[1].every(item=> {
                 return item.length>0
                 })
-              isUpdate = this.isByArea(after)
+                isUpdate = this.isByArea(after)
+                separateByArea=this.separateByArea[1]
+              }
             } else {
+              if(this.separateByArea[0]){
                isTerminals=this.terminals[0].every(item=> {
                 return item.length>0
                 })
               isUpdate = this.isByArea(before)
+              separateByArea=this.separateByArea[0]
+              }
             }
-        }
-         if(!isTerminals){
+         if(!isTerminals && separateByArea){
            this.$message({
             showClose: true,
             message: '更新需要选择设备号',
@@ -615,8 +619,7 @@
           })
           return false
         }
-
-        if(isUpdate){
+        if(isUpdate && separateByArea){
            this.$message({
             showClose: true,
             message: '生产区和监舍区需同时配置后才可更新',

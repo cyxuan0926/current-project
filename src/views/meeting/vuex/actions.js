@@ -370,6 +370,6 @@ export default {
     return http.getTerminalsByArea(params).then(res => res)
   },
   deleteSpecialConfigById: ({ commit }, params) => {
-    return http.deleteSpecialConfig(params).then(res => res)
+    return http.deleteSpecialConfigById(params).then(res => res)
   }
 }

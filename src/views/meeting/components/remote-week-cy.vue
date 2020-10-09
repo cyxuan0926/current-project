@@ -326,8 +326,6 @@
 
       // 通话时长和间隔时间
       durationIntervalItems() {
-        console.log('durationIntervalItems=======')
-        console.log(this.configs)
         const item = {
           formConfigs: {
             labelWidth: '81px',
