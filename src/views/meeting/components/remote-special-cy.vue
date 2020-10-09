@@ -229,7 +229,7 @@
                 </el-button>
                 </label>
               </div>
-             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
               type="primary"
@@ -250,7 +250,7 @@
                 </el-button>
                 </label>
               </div>
-             <el-button  v-if="config.area=='2'||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
               type="primary"
