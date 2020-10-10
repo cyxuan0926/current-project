@@ -365,7 +365,6 @@
       configs: {
          immediate: true,
         handler: function (value) {
-          console.log(value)
           let productIndex = 0
           let dormitoryIndex = 0
           value.forEach((config,i) => {

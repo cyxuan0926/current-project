@@ -93,7 +93,7 @@
               <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
-              v-if="config.area=='2'&&canSave(config) && permission === 'edit'"
+              v-if="config.area=='2' &&config.flagConfig &&canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
               style="margin-top:8px;margin-left:15px"
@@ -115,7 +115,7 @@
               <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
-              v-if="config.area=='2'&&canSave(config) && permission === 'edit'"
+              v-if="config.area=='2' &&config.flagConfig &&canSave(config)&& permission === 'edit'"
               type="primary"
               size="mini"
               style="margin-top:8px;margin-left:15px"
@@ -231,7 +231,7 @@
               </div>
              <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
-              v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
+              v-if="config.area=='1'&&config.flagConfig &&canSave(config) && permission === 'edit'"
               type="primary"
               size="mini"
               style="margin-top:8px;margin-left:15px"
@@ -252,7 +252,7 @@
               </div>
              <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
-              v-if="config.area=='1'&&canSave(config) && permission === 'edit'"
+              v-if="config.area=='1'&&config.flagConfig &&canSave(config)&& permission === 'edit'"
               type="primary"
               size="mini"
               style="margin-top:8px;margin-left:15px"
@@ -589,9 +589,9 @@ export default {
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.configs = cloneDeep(complexSpecialConfigs)
       this.configs.forEach(item=>{
-         console.log(item)
         if(item.area){
           item.show=true
+          item.flagConfig=false
           if(item.terminals.length==1){
               item.separateByArea=true
           }else{
@@ -605,7 +605,6 @@ export default {
            item.show=false
         }
       })
-      console.log(this.configs)
       this.showTooltip = new Array(this.configs.length).fill(false)
     },
     // 选择日期确定后
@@ -631,9 +630,9 @@ export default {
           }
         })
       }
-      console.log(configs.area)
-        if(this.separateByArea){
-            this.$set(configs, 'type', !configs.type)
+        if(configs.show){
+            this.$set(configs, 'type', false)
+            this.$set(configs, 'flagConfig', true)
             this.$set(configs, 'show', true)
             if(area==configs.area){
               this.$set(configs, 'updates',false )
@@ -776,7 +775,6 @@ export default {
             })
              })
           }
-          console.log(_terminals)
       let params = {
         day,
         duration,
@@ -802,9 +800,7 @@ export default {
         if(updates){
           params.id =null
           if(!Array.isArray(params.day)){
-            console.log(params.day)
             params.day=[params.day]
-            console.log(params.day)
           }
           this.addSpecialConfig(params).then(async res => {
           if (!res) return
@@ -831,9 +827,7 @@ export default {
       // 新增配置
       else {
         if(!Array.isArray(params.day)){
-            console.log(params.day)
             params.day=[params.day]
-            console.log(params.day)
           }
 
         this.addSpecialConfig(params).then(async res => {
@@ -868,7 +862,6 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          console.log(config)
               if(config.show){
                 this.deleteSpecialConfigById({id: config.id }).then(res => {
                   if (!res) return
@@ -921,12 +914,26 @@ export default {
       }
       // 修改了某个通话时间段
       else {
-        for (let i = 0; i < config.queue.length; i++) {
-          if (config.queue[i].join('-') !== config.config[i]) return true
+        if(config.show){
+              if(!config.separateByArea){
+                // config.terminals.forEach(item=>{
+                //   if(item.area==config.area){
+                //     return true
+                //   }
+                //   })
+                return true
+                 }else{
+                   return false
+                 }
+        }else{
+           config.queue.forEach((item,i)=>{
+            if(item.join('-') !== config.config[i]){
+              return true
+              }
+          })
         }
       }
     },
-
     onAddDay() {
           this.configs.push(cloneDeep(this.basicConfig))
     }
