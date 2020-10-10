@@ -26,7 +26,7 @@
       </div>
       <div class="meeting-list-jailArea">
         <h3 class="meeting-list-cell meeting-list-th">监区</h3>
-        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.prisonConfigName }}</div>
+        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.fullname }}</div>
       </div>
       <div class="meeting-list-block">
         <div class="meeting-list-block-scroller" style="width: 9000px">
@@ -183,14 +183,14 @@
             v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
             fixed
             show-overflow-tooltip
-            prop="prisonConfigName"
+            prop="fullname"
             label="监区"
             width="100">
           </el-table-column>
           <el-table-column
             v-else
             show-overflow-tooltip
-            prop="prisonConfigName"
+            prop="fullname"
             label="监区"
             width="100">
           </el-table-column>
