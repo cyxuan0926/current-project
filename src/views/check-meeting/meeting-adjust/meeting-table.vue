@@ -599,7 +599,8 @@ export default {
           let m = {
             terminalNumber: c.terminalNumber,
             terminalName: c.terminalName,
-            terminalId: c.id
+            terminalId: c.id,
+            fullname: c.fullname
           }
           this.crossMeetingQueue.forEach(q => {
             m[q] = !!applyList[c.terminalNumber + q]
@@ -607,6 +608,8 @@ export default {
           this.crossMeetingData.push(m)
         })
       }
+
+      console.log(this.crossMeetingData)
 
     },
 
