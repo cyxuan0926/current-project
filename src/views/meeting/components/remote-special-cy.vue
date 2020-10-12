@@ -42,8 +42,8 @@
         <el-radio-group
           v-model="config.enabledMeeting"
           @change="handleDate(config, currentDuration)">
-          <el-radio :label="1">支持预约申请</el-radio>
-          <el-radio :label="0">不支持预约申请</el-radio>
+          <el-radio :disabled='config.disabledMeeting' :label="1">支持预约申请</el-radio>
+          <el-radio :disabled='config.disabledMeeting' :label="0">不支持预约申请</el-radio>
         </el-radio-group>
         <!--（不支持通话申请或者支持通话申请并且通话时间段已经初始化）并且是国科服务管理员-->
         <el-button
@@ -53,7 +53,7 @@
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
            <el-button
-          v-if="!config.show &&(canSave(config) && permission === 'edit')"
+          v-if="!config.show&&(canSave(config) && permission === 'edit')"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>       
@@ -589,6 +589,7 @@ export default {
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.configs = cloneDeep(complexSpecialConfigs)
       this.configs.forEach(item=>{
+        item.disabledMeeting=true
         if(item.area){
           item.show=true
           item.flagConfig=false
@@ -714,6 +715,12 @@ export default {
 
     // 选择日期后 初始化时间段
     handleDate(config, currentDuration) {
+
+      if(config.enabledMeeting==0){
+          this.$set(config, 'show', false)
+      }else{
+         this.$set(config, 'show', true)
+      }
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
       this.$set(config, 'duration', currentDuration)
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
