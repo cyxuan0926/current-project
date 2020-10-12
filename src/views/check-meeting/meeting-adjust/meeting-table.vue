@@ -608,9 +608,6 @@ export default {
           this.crossMeetingData.push(m)
         })
       }
-
-      console.log(this.crossMeetingData)
-
     },
 
     setTerStatus(ter, flag) {
