@@ -607,7 +607,6 @@ export default {
           }else{
             item.separateByArea=false
           }
-
           item.terminals.forEach(val=>{
                   this.setPrimary(val.terminals)
             })
@@ -629,12 +628,12 @@ export default {
         this.getTerminalsByArea({ jailId: this.jailId,day:e }).then(res => {
           if (!res) return
         this.separateByArea=res.separateByArea
-         let terminals=res.terminals
+            if(this.separateByArea){
+              let terminals=res.terminals
                 terminals.forEach(item=>{
                   this.setPrimary(item.terminals)
                 })
             this.$set(configs, 'terminals',terminals )
-            if(this.separateByArea){
             this.$set(configs, 'type', !configs.type)
             this.$set(configs, 'show', true)
           }
@@ -725,11 +724,13 @@ export default {
     // 选择日期后 初始化时间段
     handleDate(config, currentDuration) {
 
-      if(config.enabledMeeting==0){
-          this.$set(config, 'show', false)
-      }else{
-         this.$set(config, 'show', true)
-      }
+        if(config.show){
+          if(config.enabledMeeting==0){
+              this.$set(config, 'show', false)
+          }else{
+            this.$set(config, 'show', true)
+          }
+        }
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
       this.$set(config, 'duration', currentDuration)
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
