@@ -588,8 +588,17 @@ export default {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.configs = cloneDeep(complexSpecialConfigs)
-      this.configs.forEach(item=>{
+     console.log(this.configs)
+      this.configs.forEach((item,i)=>{
+        if(i==0){
+          if(item.config.length>0){
+            item.disabledMeeting=true
+          }else{
+            item.disabledMeeting=false
+          }
+        }else{
         item.disabledMeeting=true
+        }
         if(item.area){
           item.show=true
           item.flagConfig=false
