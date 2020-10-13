@@ -140,14 +140,14 @@ export default {
     }
   },
   async mounted() {
-    if (this.routeRole === '0') {
-      const res = await this.getAllTenants()
-      if (res) {
-        this.$set(this.searchItems.jail, 'getting', true)
-        this.$set(this.searchItems.jail, 'options', this.allTenants)
-        this.$set(this.searchItems.jail, 'getting', false)
-      }
-    }
+    // if (this.routeRole === '0') {
+    //   const res = await this.getAllTenants()
+    //   if (res) {
+    //     this.$set(this.searchItems.jail, 'getting', true)
+    //     this.$set(this.searchItems.jail, 'options', this.allTenants)
+    //     this.$set(this.searchItems.jail, 'getting', false)
+    //   }
+    // }
     await this.getDatas()
     if (this.user.role === '-1') {
       this.$set(this.searchItems.roleId, 'getting', true)
