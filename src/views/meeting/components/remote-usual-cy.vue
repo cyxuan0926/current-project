@@ -178,7 +178,7 @@
             width="120">
           </el-table-column>
           <el-table-column
-            prop="prisonArea"
+            prop="prisonConfigName"
             label="监区">
           </el-table-column>
           <el-table-column
