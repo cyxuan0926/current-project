@@ -332,6 +332,7 @@
 
           <m-img-viewer
             :url="notificationForm.meetingNotificationUrl"
+            :isLazy="false"
             title="告知书"
           />
       </div>
@@ -915,7 +916,6 @@ export default {
       'changePrisonAreaBatch',
       'getPrisonAreaMaxLevel'
     ]),
-
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
       // await this.getPrisoners({ ...this.filter, ...this.pagination })

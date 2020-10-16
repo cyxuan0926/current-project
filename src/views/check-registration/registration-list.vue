@@ -492,6 +492,7 @@
 
           <m-img-viewer
             :url="notification.meetingNotificationUrl"
+            :isLazy="false"
             title="告知书"
           />
         </div>
