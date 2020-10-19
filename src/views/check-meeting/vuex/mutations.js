@@ -78,5 +78,9 @@ export default {
 
   setIsSuccessFirstLevelSubmitMeeting(state, isSuccessFirstLevelSubmitMeeting) {
     state.isSuccessFirstLevelSubmitMeeting = isSuccessFirstLevelSubmitMeeting
+  },
+
+  setFreeMeetingsFamilyPhone(state, freeMeetingsFamilyPhone) {
+    state.freeMeetingsFamilyPhone = Object.assign({}, freeMeetingsFamilyPhone)
   }
 }

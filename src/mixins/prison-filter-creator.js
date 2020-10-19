@@ -216,9 +216,12 @@ export default {
       if (selectKey === 'jailId') {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
-          await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
-          Message.closeAll()
-          this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
+
+          if (this.searchItems['prisonArea']) {
+            await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+            Message.closeAll()
+            this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
+          }
         }
       }
 

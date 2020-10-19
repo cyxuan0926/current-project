@@ -7,7 +7,9 @@
     path="/download/exportMeetingReconciliation" />
     <m-search
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    />
     <el-col :span="24">
       <m-table-new
         class="reconciliation-table"

@@ -264,5 +264,20 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  async getPagedFreeMeetingsFamilyPhone({ commit }, params) {
+    try {
+      const { data = {} } = await repeatAPI.getPagedFreeMeetingsFamilyPhone(params)
+
+      const { total = 0, familyPhone = [] } = (Object.prototype.toString.call(data) === '[object Object]' && data) || {}
+
+      commit('setFreeMeetingsFamilyPhone', { total, contents: familyPhone })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

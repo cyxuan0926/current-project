@@ -109,5 +109,10 @@ export default {
   // 监区管理 - 获取监区层级结构
   getDetailMany: params => {
     return service.get('/prison_config/detailMany', params)
+  },
+
+  // 可视电话统计 - 亲情电话统计
+  getPagedFreeMeetingsFamilyPhone: params => {
+    return service.get('/freeMeetings/page-familyPhone', params)
   }
 }

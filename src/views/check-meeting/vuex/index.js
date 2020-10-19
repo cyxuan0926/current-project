@@ -25,7 +25,9 @@ state = {
   // 会见时间段
   meetingTimes: [],
 
-  isSuccessFirstLevelSubmitMeeting: false
+  isSuccessFirstLevelSubmitMeeting: false,
+
+  freeMeetingsFamilyPhone: { total: 0, contents: [] }
 }
 
 export default {

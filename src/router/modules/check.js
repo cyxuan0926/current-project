@@ -111,6 +111,14 @@ let check = [{
     component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     props: { hasDiplomatQueryAuth: true },
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
+  }, {
+    path: '/meeting/family-meeting-statistics',
+    name: 'meeting-family-meeting-statistics',
+    meta: {
+      permission: 'visit.visit-statistic.family-phone-visit.search',
+      breadcrumbName: '亲情电话统计报表'
+    },
+    component: 'check-meeting/meeting-family-statistics'
   }]
 }, {
   path: '/mailbox',
