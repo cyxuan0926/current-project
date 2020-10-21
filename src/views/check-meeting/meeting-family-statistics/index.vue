@@ -44,6 +44,17 @@ export default {
     const endDate = Moment().format('YYYY-MM-DD')
 
     const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
+
+    const options = [
+      {
+        label: '未通话',
+        value: 'PENDING'
+      },
+      {
+        label: '通话完成',
+        value: 'FINISHED'
+      }
+    ]
     return {
       initFilter: { // 默认查询上一个月的，筛选框初始化
         startDate,
@@ -51,6 +62,13 @@ export default {
       },
 
       searchItems: {
+        status: {
+          type: 'select',
+          selectKey: 'familyStatisticsStatus',
+          label: '是否完成通话',
+          options
+        },
+
         meetingDate: {
           type: 'dateRange',
           unlinkPanels: true,
@@ -58,6 +76,7 @@ export default {
           end: 'endDate',
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
+          disabled: false,
           value: [startDate, endDate]
         },
 
@@ -165,6 +184,17 @@ export default {
 
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
+    },
+
+    // 覆盖mixins里面的 prisonFilterCreatorSelfSearchSelectChange 方法
+    prisonFilterCreatorSelfSearchSelectChange(selectKey, value) {
+      if (selectKey === 'familyStatisticsStatus') {
+        if (value === 'PENDING') {
+          this.$set(this.searchItems['meetingDate'], 'disabled', true)
+          this.$set(this.searchItems['meetingDate'], 'value', '')
+        }
+        else this.$set(this.searchItems['meetingDate'], 'disabled', false)
+      }
     }
   },
 

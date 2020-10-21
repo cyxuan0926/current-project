@@ -246,20 +246,27 @@ export default {
       }
 
       if (selectKey === 'status') {
-        if (value === 'CANCELED') {
-          if (this.toShow.changerType === true) {
-            this.searchItems.changerType.miss = true
+        if (this.searchItems.changerType) {
+          if (value === 'CANCELED') {
+            if (this.toShow && this.toShow.changerType === true) {
+              this.searchItems.changerType.miss = true
+            }
+            else {
+              this.searchItems.changerType.miss = false
+              delete this.filter.changerType
+              this.searchItems.changerType.value = ''
+            }
           }
           else {
-            this.searchItems.changerType.miss = false
-            delete this.filter.changerType
-            this.searchItems.changerType.value = ''
+            this.searchItems.changerType.miss = true
           }
         }
-        else {
-          this.searchItems.changerType.miss = true
-        }
-        }
-    }
+      }
+
+      this.prisonFilterCreatorSelfSearchSelectChange(selectKey, value)
+    },
+
+    // mixins search组件本地 其他 select 的change事件的方法
+    prisonFilterCreatorSelfSearchSelectChange(selectKey, value) {}
   }
 }

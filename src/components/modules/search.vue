@@ -81,6 +81,7 @@
           v-model="item.value"
           :clearable="item.clearable?false:true"
           type="daterange"
+          :disabled="item.disabled || false"
           :unlink-panels="item.unlinkPanels"
           :start-placeholder="item.startPlaceholder || '开始时间'"
           :end-placeholder="item.endPlaceholder || '结束时间'"
