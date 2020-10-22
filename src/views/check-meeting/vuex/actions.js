@@ -279,5 +279,20 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async getUnusualMeetingPage({ commit }, args) {
+    try {
+      const { data = {} } = await repeatAPI.getUnusualMeetingPage(args)
+
+      const { total = 0, meetings = [] } = (Object.prototype.toString.call(data) === '[object Object]' && data) || {}
+
+      commit('getMeetings', { total, meetings })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

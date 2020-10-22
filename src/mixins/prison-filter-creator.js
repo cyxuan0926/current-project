@@ -157,9 +157,9 @@ export default {
         label: '监区'
       })
 
-      this.searchItems = Object.assign({}, this.searchItems, {
+      this.searchItems = Object.assign({}, {
         prisonArea: prisonAreaItem
-      })
+      }, this.searchItems)
 
       const _jailId = this.$store.state.global.user.jailId
       if (_jailId && _jailId !== -1) {

@@ -529,7 +529,7 @@
         },
         {
           label: '通话异常统计',
-          name: 'EXPIRED,FINISHED,MEETING_ON'
+          name: 'UNUSUAL'
         },
         {
           label: '未授权',
@@ -736,7 +736,8 @@
         'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting'
+        'isSuccessFirstLevelSubmitMeeting',
+        'unusualMeetingPageData'
       ]),
 
       ...mapGetters([
@@ -913,7 +914,7 @@
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
         this.toShow.changerType=false
-        if (val == 'PENDING') {
+        if (val === 'PENDING') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
           this.searchItems.auditAt.miss = true
@@ -926,7 +927,7 @@
           this.searchItems.status.value = ''
           this.searchItems.isFree.value = ''
         }
-        else if(val == 'PASSED') {
+        else if(val === 'PASSED') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
           this.searchItems.auditAt.miss = false
@@ -955,11 +956,11 @@
           delete this.filter.prisonerName
           this.searchItems.status.value = ''
           this.searchItems.prisonerName.value = ''
-          if(val == 'DENIED,CANCELED'){
+          if(val === 'DENIED,CANCELED'){
             this.searchItems.status.options=this.$store.state.deniedStatus
             this.toShow.changerType=true
             this.filter.changerType = '2'
-          }else if(val == 'EXPIRED,FINISHED,MEETING_ON') {
+          }else if(val === 'UNUSUAL') {
             this.searchItems.status.options=this.$store.state.unusualStatus
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
@@ -996,7 +997,8 @@
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
         'firstLevelAuthorize',
-        'getMeettingsChangelogDetail'
+        'getMeettingsChangelogDetail',
+        'getUnusualMeetingPage'
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
@@ -1029,7 +1031,7 @@
             this.meetingAdjustmentCopy.terminals.filter(item=>{
               this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
-                  item[val]=""
+                  item[val] = ""
                 }
               })
             } )
@@ -1053,25 +1055,40 @@
           item.noTimes='已没有可安排的通话时间段'
         })
       },
-      getDatas(e) {
-        if (this.tabs !== 'first') {
-          if (this.tabs !== 'DENIED,CANCELED' && this.tabs !== 'EXPIRED,FINISHED,MEETING_ON' || !this.filter.status) {
+
+      async getDatas(e) {
+        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
+          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
         }
+
         const params = {
           ...this.filter,
           ...this.pagination
         }
 
-        if (this.hasAllPrisonQueryAuth) this.getMeetingsAll(params)
+        if (this.tabs === 'UNUSUAL') {
+          let url = '/meetings/findUnusualPage'
+
+          if (this.hasAllPrisonQueryAuth) url = '/meetings/findUnusualAdminPage'
+
+          await this.getUnusualMeetingPage({ url, params })
+        }
+
         else {
-          this.getMeetings(params).then(res => {
+          if (this.hasAllPrisonQueryAuth) await this.getMeetingsAll(params)
+
+          else {
+            const res = await this.getMeetings(params)
+
             if (!res) return
+
             if (this.meetingRefresh) this.meetingApplyDealing()
-          })
+          }
         }
       },
+
       onSearch() {
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'

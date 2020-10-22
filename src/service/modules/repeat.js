@@ -114,5 +114,12 @@ export default {
   // 可视电话统计 - 亲情电话统计
   getPagedFreeMeetingsFamilyPhone: params => {
     return service.get('/freeMeetings/page-familyPhone', params)
+  },
+
+  // 可视电话申请 - 通话异常统计(ywt_admin/xxx_sh/xxx_sadmin)
+  getUnusualMeetingPage: args => {
+    const { url, params } = args
+
+    return service.get(url, params)
   }
 }
