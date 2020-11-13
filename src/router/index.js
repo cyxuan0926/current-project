@@ -72,7 +72,7 @@ router.beforeEach((to, from, next) => {
 // 路由权限校验
 router.beforeEach((to, from, next) => {
   const permission = store.state.account.authorities
-  if (permission.includes(to.meta.permission) || !to.meta.permission) {
+  if ((permission.length === 1 && permission[0] === 'all') || permission.includes(to.meta.permission) || !to.meta.permission) {
     next()
   }
   else {
