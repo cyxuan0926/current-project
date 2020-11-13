@@ -20,6 +20,12 @@ let common = [{
   component: 'login/login'
   // component: resolve => require(['@/views/login/login'], resolve)
 }, {
+  path: '/slient-login',
+  name: '登录',
+  meta: { notLogin: true },
+  component: 'login/slient-login'
+  // component: resolve => require(['@/views/login/login'], resolve)
+}, {
   path: '/app_preview',
   name: 'app下载',
   component: 'layout/the-frame',
