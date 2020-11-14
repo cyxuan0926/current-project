@@ -199,6 +199,7 @@ export default {
       this.onGetFilter()
       if (e !== 'tabs') this.$emit('search')
     },
+
     onEnsure(e) {
       let prop = e.prop
       Object.keys(e).forEach(key => {

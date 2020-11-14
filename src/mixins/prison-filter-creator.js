@@ -1,12 +1,21 @@
 import { Message } from 'element-ui'
+
 import http from '@/service'
 
 const baseItem = {
   type: 'select',
   options: [],
+  filterable: true,
   belong: { value: 'id', label: 'name' },
   value: ''
 }
+
+const _filterLists = [
+  'prisonArea',
+  'prisonSubArea',
+  'prisonHouse',
+  'prisonFloor'
+]
 
 export default {
   props: {
@@ -18,11 +27,13 @@ export default {
     hasDiplomatQueryAuth: Boolean,
     hasPrisonAreaAuth: Boolean
   },
+
   data() {
     return {
       filter: {}
     }
   },
+
   created() {
     if (this.hasDiplomatQueryAuth) {
       this.createDiplomatFilter()
@@ -59,12 +70,14 @@ export default {
       this.searchItems = Object.assign({}, { orgName: orgSearchItem }, this.searchItems)
 
       let { data } = await http.getDiplomatist()
+
       data = data.map(d => ({
         label: d,
         value: d
       }))
 
       this.searchItems.orgName.options = data
+
       this.searchItems.orgName.getting = false
 
       Message.closeAll()
@@ -83,9 +96,15 @@ export default {
       }
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
-      await this.$store.dispatch('getPrisonAll', this.provincesId ? { provincesId: this.provincesId } : {})
+
+      const provincesId = this.provincesId
+
+      await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
+
       Message.closeAll()
+
       this.searchItems.jailId.options = this.$store.state.prisonAll
+
       this.searchItems.jailId.getting = false
     },
 
@@ -117,11 +136,15 @@ export default {
         selectKey: 'prisonSubAreaId',
         label: '分监区'
       })
-      let { prisonArea, ...ret } = this.searchItems
-      this.searchItems = Object.assign({}, ret, {
+
+      const { provincesId, jailId, prisonArea, ...ret } = this.searchItems
+
+      this.searchItems = Object.assign({}, {
+        provincesId,
+        jailId,
         prisonArea,
         prisonSubArea: prisonSubAreaItem
-      })
+      }, ret)
     },
 
     createPrisonHouseItem() {
@@ -129,12 +152,16 @@ export default {
         selectKey: 'prisonHouseId',
         label: '楼栋'
       })
-      let { prisonArea, prisonSubArea, ...ret } = this.searchItems
-      this.searchItems = Object.assign({}, ret, {
+
+      const { provincesId, jailId, prisonArea, prisonSubArea, ...ret } = this.searchItems
+
+      this.searchItems = Object.assign({}, {
+        provincesId,
+        jailId,
         prisonArea,
         prisonSubArea,
         prisonHouse: prisonHouseItem
-      })
+      }, ret)
     },
 
     createPrisonFloorItem() {
@@ -142,13 +169,17 @@ export default {
         selectKey: 'prisonFloorId',
         label: '楼层'
       })
-      let { prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
-      this.searchItems = Object.assign({}, ret, {
+
+      const { provincesId, jailId, prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
+
+      this.searchItems = Object.assign({}, {
+        provincesId,
+        jailId,
         prisonArea,
         prisonSubArea,
         prisonHouse,
         prisonFloor: prisonFloorItem
-      })
+      }, ret)
     },
 
     createPrisonAreaFilter() {
@@ -162,25 +193,31 @@ export default {
       }, this.searchItems)
 
       const _jailId = this.$store.state.global.user.jailId
+
       if (_jailId && _jailId !== -1) {
         this.searchSelectChange('jailId', _jailId)
       }
     },
 
+    findFilterLists(_list = _filterLists.slice(0), target, start = _list.findIndex(l => l === target), end = _list.findIndex(l => l === target)) {
+      return _list.slice(start, end)
+    },
+
     clearSubPrisonArea(target) {
-      let _list = ['prisonArea', 'prisonSubArea', 'prisonHouse', 'prisonFloor']
-      _list = _list.slice(_list.findIndex(l => l === target))
+      const max = _filterLists.length
+
+      let _list = this.findFilterLists(undefined, target, undefined, max)
+
       _list.forEach(t => {
         this.$delete(this.searchItems, t)
       })
     },
 
     async searchSelectChange(selectKey, value) {
-      let prisonChildApi = this.$store.state.global.user.username === 'ywt_admin' ? 'getJailPrisonSubs' : 'getJailPrisonSubsAuth'
       if (selectKey === 'prisonAreaId') {
         this.clearSubPrisonArea('prisonSubArea')
         if (value) {
-          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
+          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonSubArea()
@@ -192,7 +229,7 @@ export default {
       if (selectKey === 'prisonSubAreaId') {
         this.clearSubPrisonArea('prisonHouse')
         if (value) {
-          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
+          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonHouseItem()
@@ -204,7 +241,7 @@ export default {
       if (selectKey === 'prisonHouseId') {
         this.clearSubPrisonArea('prisonFloor')
         if (value) {
-          let { prisonConfigs } = await http[prisonChildApi]({ parentId: value })
+          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value }) || {}
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonFloorItem()
@@ -240,6 +277,7 @@ export default {
         await this.$store.dispatch('getPrisonAll', { provincesId: value })
 
         Message.closeAll()
+
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
 
         this.$set(this.searchItems['jailId'], 'getting', false)
@@ -257,9 +295,7 @@ export default {
               this.searchItems.changerType.value = ''
             }
           }
-          else {
-            this.searchItems.changerType.miss = true
-          }
+          else this.searchItems.changerType.miss = true
         }
       }
 

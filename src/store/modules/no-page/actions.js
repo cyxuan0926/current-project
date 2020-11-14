@@ -8,9 +8,11 @@ export default {
       return true
     })
   },
+
   getPrisonAllWithBranchPrison: ({ commit }, params) => {
     return http.getPrisonAllWithBranchPrison(params).then(res => res && commit('getPrisonAllWithBranchPrison', res))
   },
+
   getProvincesAll: ({ commit }) => {
     return http.getProvincesAll().then(res => {
       if (!res) return
@@ -18,6 +20,7 @@ export default {
       return { options: res.provinces, label: 'name', value: 'id' }
     })
   },
+
   getCities: ({ commit }, params) => {
     return http.getCities(params).then(res => {
       if (!res) return
@@ -25,6 +28,7 @@ export default {
       return { options: res.citys, label: 'name', value: 'id' }
     })
   },
+
   getJailPrisonAreas: ({ commit }, params) => {
     return http.getJailPrisonAreas(params).then(res => {
       if (!res) return
@@ -117,6 +121,19 @@ export default {
       commit('setDetailManyConfigs', prisonConfigs)
 
       return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async changePrisonJailOrBatch(_, params) {
+    try {
+      const response = await http.changePrisonJailOrBatch(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
     }
     catch (err) {
       Promise.reject(err)
