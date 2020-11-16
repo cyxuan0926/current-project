@@ -121,5 +121,12 @@ export default {
     const { url, params } = args
 
     return service.get(url, params)
+  },
+
+  // 服刑人员信息管理 - 更换监狱
+  changePrisonJailOrBatch: args => {
+    const { url, params } = args
+
+    return service.post(url, params)
   }
 }
