@@ -86,9 +86,12 @@ export default {
         {
           type: 'daterange',
           name: 'daterange',
-          valueFormat: 'yyyy-MM-dd',
-          startPlaceholder: '开始时间',
-          endPlaceholder: '结束时间'
+          attrs: {
+            type: 'daterange',
+            valueFormat: 'yyyy-MM-dd',
+            startPlaceholder: '开始时间',
+            endPlaceholder: '结束时间'
+          }
         }
       ]
     },
@@ -103,12 +106,14 @@ export default {
       let provinceItem = {
         type: 'select',
         name: 'provincesId',
-        placeholder: '请选择省份',
+        attrs: {
+          placeholder: '请选择省份',
+          filterable: true,
+          clearable: true,
+          loading: true,
+          value: null,
+        },
         options: [],
-        filterable: true,
-        loading: true,
-        value: null,
-        clearable: true,
         labelKey: 'name',
         valueKey: 'id'
       }
@@ -121,7 +126,7 @@ export default {
 
       if (this.isSuperAdmin) {
         if (this.provincesAll.length === 0) (async () => await this.getProvincesAll() )()
-        provinceItem.loading = false
+        this.$set(provinceItem.attrs, 'loading', false)
         provinceItem.options = this.provincesAll
         result.unshift(provinceItem)
         result[result.length - 1].options.push({ value: dimensions.PRISON, label: '监狱维度' })

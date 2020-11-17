@@ -54,6 +54,16 @@ export const multistageExamineDropdownItems = [
 // 可选的会见时间段
 export const meetingChargeConfigDurations = [5, 10, 15, 20, 25]
 
+// 省监狱配置参数名
+export const provinceJailLevelConfigsParamsName = [
+  'provincesId',
+  'jailId',
+  'prisonAreaId',
+  'prisonBranchId',
+  'prisonBuildingId',
+  'prisonLayerId'
+]
+
 // 监狱层级数
 export const prisonAreaLevelObject = {
   // 这里面的属性可以自己更换

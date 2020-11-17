@@ -170,7 +170,7 @@ export default {
   },
   // 监区管理-查询监区最大层级
   queryPrisonAreaMaxlevel: params => {
-    return service.get('/prison_config/getMaxLevel', params).then(res => res)
+    return service.get('/prison_config/getMaxLevel').then(res => res)
   },
   // 监狱数据查询-监狱会见数据统计表-列表
   getMeetingStatics: params => {

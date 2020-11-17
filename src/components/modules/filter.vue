@@ -9,13 +9,13 @@
       <el-input
         v-if="item.type === 'input'"
         v-model="filterParams[item.name]"
-        v-bind="item"
+        v-bind="item.attrs"
       />
 
       <el-select
         v-if="item.type === 'select'"
         v-model="filterParams[item.name]"
-        v-bind="item"
+        v-bind="item.attrs"
       >
         <el-option
           v-for="(option, i) in item.options"
@@ -30,7 +30,7 @@
         v-model="filterParams[item.name]"
         align="right"
         unlink-panels
-        v-bind="item"
+        v-bind="item.attrs"
       />
     </el-form-item>
 

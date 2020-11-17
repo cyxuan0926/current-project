@@ -205,6 +205,7 @@ export default {
       },
 
       gettingPrisonArea: true,
+
       gettingPrison: true,
 
       terminalTypes: switches.terminalTypes,

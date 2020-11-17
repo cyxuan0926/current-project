@@ -61,5 +61,11 @@ export default {
   // 是否显示家属电话
   isShowPhone(state) {
     return !!state.user.familyPhone
+  },
+
+  // 查询监区层级结构的actions 监区-分监区-楼栋-楼层
+  // 除了ywt_admin/xx_sadmin其余都是需要权限的
+  prisonChildApi(_, getters) {
+    return (getters.isSuperAdmin || getters.isTenantAdmin) ? 'getJailPrisonSubs' : 'getJailPrisonSubsAuth'
   }
 }

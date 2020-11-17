@@ -83,11 +83,14 @@
             <el-form-item label="生产区设备:" style="width:450px">
               <div class="prisonlabel">
                 <label v-for="(val,index) in config.terminals" :key='index'>
-                <el-button v-if="val.area==2"  v-for="(item,ind) in val.terminals "
-                           :key='ind' size="mini"
-                           style="margin-left: 5px"
-                           >{{item.selectArr}} 
-                </el-button>
+                <template v-if="val.area === 2">
+                  <el-button 
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
                 </label>
               </div>
               <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
@@ -105,11 +108,14 @@
             <el-form-item label="生产区设备:" style="width:450px">
               <div class="prisonlabel">
                 <label v-for="(val,index) in config.terminals" :key='index'>
-                <el-button v-if="val.area==2"  v-for="(item,ind) in val.terminals "
-                           :key='ind' size="mini"
-                           style="margin-left: 5px"
-                           >{{item.selectArr}} 
-                </el-button>
+                <template v-if="val.area=== 2">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
                 </label>
               </div>
               <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
@@ -122,7 +128,7 @@
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
           </el-form>
-              <div v-if="config.area=='2'">
+              <div v-if="config.area==='2'">
                 <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
                   <div class="none_superAdmin">
                     <label >通话时长</label>
@@ -222,11 +228,14 @@
             <el-form-item label="监舍区设备:" style="width:450px">
               <div class="prisonlabel">
               <label v-for="(val,index) in config.terminals" :key='index'>
-                <el-button v-if="val.area==1"  v-for="(item,ind) in val.terminals "
-                           :key='ind' size="mini"
-                           style="margin-left: 5px"
-                           >{{item.selectArr}} 
-                </el-button>
+                <template v-if="val.area === 1">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
                 </label>
               </div>
              <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
@@ -243,11 +252,14 @@
             <el-form-item label="监舍区设备:" style="width:450px">
               <div class="prisonlabel">
               <label v-for="(val,index) in config.terminals" :key='index'>
-                <el-button v-if="val.area==1"  v-for="(item,ind) in val.terminals "
-                           :key='ind' size="mini"
-                           style="margin-left: 5px"
-                           >{{item.selectArr}} 
-                </el-button>
+                <template v-if="val.area === 1">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
                 </label>
               </div>
              <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
@@ -588,7 +600,7 @@ export default {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
      this.configs = cloneDeep(complexSpecialConfigs)
-     console.log(this.configs)
+
       this.configs.forEach((item,i)=>{
         if(i==0){
           if(item.config.length>0){
