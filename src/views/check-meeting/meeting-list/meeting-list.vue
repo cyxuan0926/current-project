@@ -540,7 +540,9 @@
       // 证件照片class
       // const idCardClassName = 'img-idCard'
       const { belong } = prisons.PRISONAREA
+
       const { options } = this.$store.getters.prisonAreaOptions
+
       const freeMeetingsOptions = [
         {
           label: '是',
@@ -551,6 +553,8 @@
           value: 0
         }
       ]
+
+      const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -573,10 +577,12 @@
             type: 'input',
             label: '家属姓名'
           },
+
           prisonerNumber: {
             type: 'input',
             label: '罪犯编号'
           },
+
           // prisonArea: {
           //   type: 'select',
           //   label: '监区',
@@ -598,14 +604,16 @@
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间'
             // miss: true,
-            // value: ''
+            // value: [yesterdayDate, yesterdayDate]
           },
+
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
+
           status: {
             type: 'select',
             label: '申请状态',
@@ -614,6 +622,7 @@
             correlation:"status",
             value: ''
           },
+
           changerType:{
             type: 'select',
             label: '取消操作人',
@@ -621,12 +630,14 @@
             miss: true,
             value: ''
           },
+
           auditAt: {
             type: 'date',
             label: '审核时间',
             miss: true,
             value: ''
           },
+
           isFree: {
             type: 'select',
             label: '免费',
@@ -728,7 +739,11 @@
           createAt: 'operateTime',
 
           status: 'status'
-        }
+        },
+
+        yesterdayDate,
+
+        filterInit: {}
       }
     },
     computed: {
@@ -903,11 +918,13 @@
         this.submitSuccessParams = null
         this.getMeetTimeConfig()
       },
+
       meetingRefresh(val) {
         if (val) {
           if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
         }
       },
+
       tabs(val) {
         this.$refs.search.onSearch('tabs')
         this.searchItems.changerType.miss = true
@@ -969,6 +986,7 @@
         }
         this.onSearch()
       },
+
       toShow: {
         handler: function(val) {
           if (val.id) this.show.detail = true
@@ -977,14 +995,27 @@
         deep: true
       }
     },
+
+    created() {
+      if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+        this.filterInit = Object.assign({}, this.filterInit, {
+          applicationStartDate: this.yesterdayDate,
+          applicationEndDate: this.yesterdayDate
+        })
+      }
+    },
+
     mounted() {
-      // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      //   this.$set(this.searchItems.applicationDate, 'miss', true)
-      //   this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      // } else {
-      //   this.$set(this.searchItems.applicationDate, 'miss', false)
-      //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
+      if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+        this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
+        // this.$set(this.searchItems.applicationDate, 'miss', true)
+        // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
+      }
+      // else {
+        // this.$set(this.searchItems.applicationDate, 'miss', false)
+        // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
+
       this.getDatas('mounted')
 
     },
