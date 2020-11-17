@@ -106,6 +106,19 @@ export default {
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
     ...mapActions('account', ['login']),
+
+    handlePasswordTips(title) {
+      return this.$confirm(
+        title,
+        '提示',
+        {
+          type: 'warning',
+          showClose: false,
+          closeOnClickModal: false,
+          showCancelButton: false
+        }
+      )
+    },
     handleLogin() {
       if (this.loading) return
 
@@ -114,9 +127,15 @@ export default {
 
         try {
           const { username, password } = this.formData
-
           this.loading = true
           const res = await this.login({ username, password })
+          if( res.code === 'user.PasswordNotMatched' ) {
+            this.loading = false
+            if( parseInt(res.passWordErrorCount) >= 3 ) {
+              this.handlePasswordTips(`很抱歉，连续多次密码输入错误，账户已被锁定，请${res.lockTime}分钟后再登录`)
+            }
+            return
+          }
           if(res) {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
             localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
@@ -130,17 +149,33 @@ export default {
               this.getWebsocketResult(jailId)
             }
 
-            this.isRememberAccount
-            ? this.storeAccount(username, password)
-            : this.removeAccount()
+            if ( this.isRememberAccount ) {
+              this.storeAccount(username, password)
+            } else {
+              this.removeAccount()
+            }
 
-          const redirectPath = this.$route.query.redirect
-          redirectPath && !redirectPath.includes('login')
-            ? this.$router.replace(redirectPath)
-            : this.$router.replace('/dashboard')
+            if ( this.publicUserInfo && this.publicUserInfo.firstLogin ) {
+              this.loading = false
+              this.$router.replace('/password/edit')
+              return
+            }
+
+            const passWordStatus = this.publicUserInfo && this.publicUserInfo.passWordStatus
+            if (passWordStatus === 'UP') {
+              const redirectPath = this.$route.query.redirect
+              redirectPath && !redirectPath.includes('login') ?
+                this.$router.replace(redirectPath) :
+                this.$router.replace('/dashboard')
+            } else {
+              this.$router.replace('/password/edit')
+              const title = passWordStatus === 'DOWN' ?
+                '密码已过期，请修改密码！' :
+                `密码将在${passWordStatus === 'WARN' ? '7' : '1'}天后过期，为了不影响系统正常使用，请及时修改密码！`
+              this.handlePasswordTips(title)
+            }
           }
         } catch (err) {
-          throw err
         }
         this.loading = false
       })

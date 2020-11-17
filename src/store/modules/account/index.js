@@ -60,14 +60,18 @@ const actions = {
   async login({ commit, dispatch }, { username, password }) {
     try {
       let loginRes = await login({ username, password }), userInfoRes = false, MenusRes = false, baseInfoRes = false
-      if (loginRes) {
+
+      if (loginRes.code === 'user.PasswordNotMatched') {
+        return loginRes
+      }
+      else {
         commit('setAccountInfo', loginRes)
         commit('setAuthorities', (jwtDecode(loginRes.access_token).authorities || []))
         userInfoRes = await dispatch('getPublicUserInfo')
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })
+        return loginRes && userInfoRes && MenusRes && baseInfoRes
       }
-      return loginRes && userInfoRes && MenusRes && baseInfoRes
     }
     catch (err) {
       throw err

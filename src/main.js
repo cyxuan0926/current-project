@@ -15,12 +15,16 @@ import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'
 import '@/assets/css/index.scss'
 
+import ActiveMonitor from '@/utils/ActiveMonitor'
+
 Vue.use(ElementUI)
 Vue.use(fullscreen)
 
 Vue.config.productionTip = false
 
 Vue.prototype.$urls = urls
+
+new ActiveMonitor().start()
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))

@@ -50,8 +50,10 @@ const responseHandlers = {
       return false
     }
     else {
-      res.data && tip(res.data.message)
-      return false
+      if (res.data) {
+        tip(res.data.message)
+      }
+      return res.data
     }
   },
   // 未授权
