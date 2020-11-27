@@ -100,7 +100,7 @@ export default {
       rules2: {
         password: [
           { required: true, message: '请输入原密码', trigger: 'blur' },
-          { validator: validators.password }
+          // { validator: validators.password }
         ],
         new_password: [
           { required: true, message: '请输入新密码', trigger: 'blur' },
