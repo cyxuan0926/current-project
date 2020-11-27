@@ -29,6 +29,7 @@
                       show-password
                       type="password"
                       v-model="ruleForm2.password"
+                      :maxlength="16"
                       auto-complete="off"
                       placeholder="原密码"/>
                   </el-form-item>
@@ -39,6 +40,7 @@
                       show-password
                       type="password"
                       v-model="ruleForm2.new_password"
+                      :maxlength="16"
                       auto-complete="off"
                       placeholder="新密码"/>
                   </el-form-item>
@@ -49,6 +51,7 @@
                       show-password
                       type="password"
                       v-model="ruleForm2.passwordReview"
+                      :maxlength="16"
                       auto-complete="off"
                       placeholder="重新输入密码"/>
                   </el-form-item>
@@ -59,6 +62,11 @@
                     <el-button
                       type=""
                       @click="submitForm('ruleForm2')">提交</el-button>
+                    <el-button
+                      style="margin-right: 15px;"
+                      v-if="!($router.query && $router.query.isFirst)"
+                      type=""
+                      @click="toHome()">返回首页</el-button>
                   </el-form-item>
                 </el-form>
               </el-col>
@@ -116,12 +124,12 @@ export default {
   },
   watch: {
     // 修改用户密码成功以后重新登录
-    modifyPasswordResult() {
-      setTimeout(() => {
-          logout()
-          this.$router.replace('/login')
-      }, 1000)
-    }
+    // modifyPasswordResult() {
+    //   setTimeout(() => {
+    //       logout()
+    //       this.$router.replace('/login')
+    //   }, 1000)
+    // }
   },
   computed: {
     ...mapState({
@@ -130,11 +138,24 @@ export default {
   },
   methods: {
     ...mapActions('account', ['modifyMyPassword']),
+
+    toHome() {
+      this.$router.push('/dashboard')
+    },
+
     // 点击提交按钮执行的方法
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          this.modifyMyPassword({ oldPassword:this.ruleForm2.password, newPassword: this.ruleForm2.new_password })
+          await this.modifyMyPassword({ oldPassword:this.ruleForm2.password, newPassword: this.ruleForm2.new_password })
+          await this.$confirm('修改密码成功，请退出重新登录！', '提示', {
+            showClose: false,
+            closeOnClickModal: false,
+            showCancelButton: false,
+            type: 'warning'
+          })
+          logout()
+          this.$router.replace('/login')
         }
         else {
           console.log('error submit!!')

@@ -157,7 +157,7 @@ export default {
 
             if ( this.publicUserInfo && this.publicUserInfo.firstLogin ) {
               this.loading = false
-              this.$router.replace('/password/edit')
+              this.$router.replace('/password/edit?isFirst=1')
               return
             }
 

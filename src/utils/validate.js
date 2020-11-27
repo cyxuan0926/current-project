@@ -105,7 +105,7 @@ export default {
   },
 
   password(rule, value, callback) {
-    if (!/^(?!\d+$)(?![a-zA-Z]+$)(?![\x21\x40\x23\x24\x25\x5E\x26\x2A\x28\x29]+$)[\da-zA-Z\x21\x40\x23\x24\x25\x5E\x26\x2A\x28\x29]{8,16}$/.test(value)) {
+    if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[#_@!~%^&\\$\\+\\(\\)\\*])[a-zA-Z\d#_@!~%^&\\$\\+\\(\\)\\*]{8,16}/.test(value)) {
       callback(new Error('密码长度必须为8到16位，由数字、大小写字母、特殊字符组成'))
     }
     callback()
