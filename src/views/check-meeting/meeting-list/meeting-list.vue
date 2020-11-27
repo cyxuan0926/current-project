@@ -554,7 +554,10 @@
         }
       ]
 
-      const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      const todayDate = Moment().format('YYYY-MM-DD')
+
+      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -741,7 +744,11 @@
           status: 'status'
         },
 
-        yesterdayDate,
+        // yesterdayDate,
+
+        todayDate,
+
+        oneMonthLater,
 
         filterInit: {}
       }
@@ -999,22 +1006,23 @@
     created() {
       if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
         this.filterInit = Object.assign({}, this.filterInit, {
-          applicationStartDate: this.yesterdayDate,
-          applicationEndDate: this.yesterdayDate
+          applicationStartDate: this.todayDate,
+          applicationEndDate: this.oneMonthLater
         })
       }
     },
 
     mounted() {
-      if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-        this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
-        // this.$set(this.searchItems.applicationDate, 'miss', true)
-        // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      }
+      // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
+      //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
+      //   // this.$set(this.searchItems.applicationDate, 'miss', true)
+      //   // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
+      // }
       // else {
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
+      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
       this.getDatas('mounted')
 
