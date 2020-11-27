@@ -146,7 +146,7 @@ export default {
         {
           label: '申请通话时间',
           prop: 'meetingTime',
-          minWidth: 120
+          minWidth: 130
         },
         {
           label: '实际通话开始时间',
@@ -171,8 +171,7 @@ export default {
         {
           label: '挂断原因',
           prop: 'remarksConcat',
-          showOverflowTooltip: true,
-          minWidth: 130
+          showOverflowTooltip: true
         },
         {
           label: '会见室ID',
@@ -202,7 +201,7 @@ export default {
           // 紫荆通话时长 返回的是分钟 需要加上'分钟'的
           label: '紫荆通话时长(秒)',
           prop: 'zijingDurationConcat',
-          minWidth: 95
+          minWidth: 80
         }
       ],
       // // 这个是用样式来控制的'伪单元格合并'效果
