@@ -197,6 +197,7 @@ export default {
   methods: {
     onSearch(e) {
       this.onGetFilter()
+
       if (e !== 'tabs') this.$emit('search')
     },
 
@@ -280,6 +281,7 @@ export default {
             delete params.prisonFloor
           }
         }
+        // 如果当前实例没有父实例，此实例将会是其自己
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
     }

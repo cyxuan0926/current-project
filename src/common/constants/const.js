@@ -1,3 +1,5 @@
+import Moment from 'moment'
+
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
@@ -125,3 +127,5 @@ export const prisonAreaLevelObject = {
     level: 4
   }
 }
+
+export const _thisYear = Moment().format('YYYY')

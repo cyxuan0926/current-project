@@ -42,7 +42,7 @@
       </div>
     </div>
     <div class="copyright">
-      Copyright © 2006-2019
+      {{ 'Copyright © 2006-' + year }}
       <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
       <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
     </div>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import { _thisYear } from '@/common/constants/const'
+
 import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations } from 'vuex'
@@ -75,7 +77,9 @@ export default {
           message: '请输入用户名',
           trigger: 'blur'
         }]
-      }
+      },
+
+      year: _thisYear
     }
   },
   computed: {

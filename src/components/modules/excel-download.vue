@@ -1,5 +1,9 @@
 <template>
-  <el-button class="m-excel-download" type="primary"  @click="onDownloadExcel">
+  <el-button
+    class="m-excel-download"
+    type="primary"
+    @click="onDownloadExcel"
+  >
     {{ text }}
   </el-button>
 </template>
@@ -15,26 +19,18 @@ export default {
     text: {
       type: String,
       default: '导出 Excel'
-    },
-    filterParams: {
-      type: Function,
-      default: null
     }
   },
+
   methods: {
-     onDownloadExcel() {
-       if(this.$parent.onGetFilter){
-         this.$parent.onGetFilter()
-       }
-       if(this.filterParams){
-         const query = qs.stringify(this.filterParams())
-         const { apiHost, apiPath } = urls
-         location.href = apiHost + apiPath + this.path + (query && '?' + query)
-       }else{
-         const query = qs.stringify(this.params)
-         const { apiHost, apiPath } = urls
-         location.href = apiHost + apiPath + this.path + (query && '?' + query)
-       }
+    onDownloadExcel() {
+      const { apiHost, apiPath } = urls
+
+      const params = this.params
+
+      const query = qs.stringify(params)
+
+      location.href = apiHost + apiPath + this.path + (query && '?' + query)
     }
   }
 }

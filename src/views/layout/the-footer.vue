@@ -3,17 +3,19 @@
     <div class="hidden-xs-only">
       <b>版本</b> 2.0.0
     </div>
-    Copyright © 2006-2019
+    {{ 'Copyright © 2006-' + year }}
     <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
     <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
   </div>
 </template>
 
 <script>
+import { _thisYear } from '@/common/constants/const'
+
 export default {
   data() {
     return {
-      year: new Date().getFullYear()
+      year: _thisYear
     }
   }
 }
