@@ -265,21 +265,18 @@ export default {
             params[key] = this.items[key].value
           }
         })
-        let _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
-        if ( _prisonConfigId ) {
+        const _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
+
+        if (_prisonConfigId) {
           params.prisonConfigId = _prisonConfigId
-          if ( params.prisonArea ) {
-            delete params.prisonArea
-          }
-          if ( params.prisonSubArea ) {
-            delete params.prisonSubArea
-          }
-          if ( params.prisonHouse ) {
-            delete params.prisonHouse
-          }
-          if ( params.prisonFloor ) {
-            delete params.prisonFloor
-          }
+
+          if (params.prisonArea) delete params.prisonArea
+
+          if (params.prisonSubArea) delete params.prisonSubArea
+
+          if (params.prisonHouse) delete params.prisonHouse
+
+          if (params.prisonFloor) delete params.prisonFloor
         }
         // 如果当前实例没有父实例，此实例将会是其自己
         this.$parent.$parent.filter = helper.trimObject(params) || params
