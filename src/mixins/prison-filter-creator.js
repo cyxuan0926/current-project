@@ -222,6 +222,7 @@ export default {
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonSubArea()
+            this.$set(this.searchItems['prisonSubArea'], 'value', '')
             this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
           }
         }
@@ -234,6 +235,7 @@ export default {
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonHouseItem()
+            this.$set(this.searchItems['prisonHouse'], 'value', '')
             this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
           }
         }
@@ -246,6 +248,7 @@ export default {
           Message.closeAll()
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonFloorItem()
+            this.$set(this.searchItems['prisonFloor'], 'value', '')
             this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
           }
         }
@@ -258,6 +261,7 @@ export default {
           if (this.searchItems['prisonArea']) {
             await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
             Message.closeAll()
+            this.$set(this.searchItems['prisonArea'], 'value', '')
             this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
           }
         }
