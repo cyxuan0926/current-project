@@ -157,7 +157,7 @@ export default {
 
             if ( this.publicUserInfo && this.publicUserInfo.firstLogin ) {
               this.loading = false
-              this.$router.replace('/password/edit?isFirst=1')
+              this.$router.replace('/password/edit?isNoback=1')
               return
             }
 
@@ -168,7 +168,7 @@ export default {
                 this.$router.replace(redirectPath) :
                 this.$router.replace('/dashboard')
             } else {
-              this.$router.replace('/password/edit')
+              this.$router.replace(`/password/edit${ passWordStatus === 'DOWN' ? '?isNoback=1' : '' }`)
               const title = passWordStatus === 'DOWN' ?
                 '密码已过期，请修改密码！' :
                 `密码将在${passWordStatus === 'WARN' ? '7' : '1'}天后过期，为了不影响系统正常使用，请及时修改密码！`

@@ -64,7 +64,7 @@
                       @click="submitForm('ruleForm2')">提交</el-button>
                     <el-button
                       style="margin-right: 15px;"
-                      v-if="!($router.query && $router.query.isFirst)"
+                      v-if="!($route.query && $route.query.isNoback)"
                       type=""
                       @click="toHome()">返回首页</el-button>
                   </el-form-item>
@@ -136,6 +136,21 @@ export default {
       modifyPasswordResult: state => state.account.modifyMyPasswordResult // 修改用户名密码的结果
     })
   },
+
+  mounted() {
+    window.onbeforeunload = function (e) {
+      e = e || window.event;
+
+      // 兼容IE8和Firefox 4之前的版本
+      if (e) {
+        e.returnValue = '关闭提示';
+      }
+
+      // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+      return '关闭提示';
+    };
+  },
+
   methods: {
     ...mapActions('account', ['modifyMyPassword']),
 
@@ -147,7 +162,10 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          await this.modifyMyPassword({ oldPassword:this.ruleForm2.password, newPassword: this.ruleForm2.new_password })
+          let res = await this.modifyMyPassword({ oldPassword:this.ruleForm2.password, newPassword: this.ruleForm2.new_password })
+          if( res.code == 'user.PasswordNotMatched' )  {
+            return
+          }
           await this.$confirm('修改密码成功，请退出重新登录！', '提示', {
             showClose: false,
             closeOnClickModal: false,
