@@ -118,7 +118,8 @@ export default {
         },
         {
           label: '监区',
-          prop: 'fullname'
+          prop: 'fullname',
+          showOverflowTooltip: true
         },
         {
           label: '申请次数',
