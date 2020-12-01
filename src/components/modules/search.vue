@@ -179,7 +179,7 @@ export default {
     items: {
       handler(val) {
         // 是否显示查询的按钮
-        this.showSearchIcon = val && !Object.values(val).every(item => item.miss)
+        this.showSearchIcon = val && !Object.values(val).every(item => item && item.miss)
       },
 
       deep: true,
@@ -197,6 +197,7 @@ export default {
   methods: {
     onSearch(e) {
       this.onGetFilter()
+
       if (e !== 'tabs') this.$emit('search')
     },
 
@@ -264,22 +265,20 @@ export default {
             params[key] = this.items[key].value
           }
         })
-        let _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
-        if ( _prisonConfigId ) {
+        const _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
+
+        if (_prisonConfigId) {
           params.prisonConfigId = _prisonConfigId
-          if ( params.prisonArea ) {
-            delete params.prisonArea
-          }
-          if ( params.prisonSubArea ) {
-            delete params.prisonSubArea
-          }
-          if ( params.prisonHouse ) {
-            delete params.prisonHouse
-          }
-          if ( params.prisonFloor ) {
-            delete params.prisonFloor
-          }
+
+          if (params.prisonArea) delete params.prisonArea
+
+          if (params.prisonSubArea) delete params.prisonSubArea
+
+          if (params.prisonHouse) delete params.prisonHouse
+
+          if (params.prisonFloor) delete params.prisonFloor
         }
+        // 如果当前实例没有父实例，此实例将会是其自己
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
     }

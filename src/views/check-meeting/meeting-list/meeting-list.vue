@@ -11,9 +11,8 @@
       <m-excel-download
         slot="append"
         :path="excelDownloadUrl"
-        :filterParams="filterParams"
+        :params="excelFilter"
       />
-      <!-- :params="excelFilter" -->
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -763,7 +762,8 @@
       ]),
 
       ...mapGetters([
-        'isShowPhone'
+        'isShowPhone',
+        'isSuperAdmin'
       ]),
 
       excelDownloadUrl() {
@@ -779,16 +779,43 @@
       },
   
       // excel的参数 需要添加当前标签页的label
-      // excelFilter() {
-      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+      excelFilter() {
+        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
 
-      //   const TABName = tabItem[0]['label']
+        const TABName = tabItem[0]['label']
 
-      //   return {
-      //     ...this.filter,
-      //     TABName
-      //   }
-      // },
+        if (this.toShow.changerType === true) this.filter.changerType = '2'
+
+        if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
+        else {
+          this.$refs.elTable && this.$refs.elTable.clearSort()
+          delete this.filter.sortDirection
+          delete this.filter.orderField
+        }
+
+        if (this.tabs !== 'first') {
+          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+            this.filter.status = this.tabs
+          }
+        }
+
+        const { jailId } = this.$store.state.global.user
+
+        let params = {
+          ...this.filter
+        }
+
+        if (!this.isSuperAdmin) params = {
+          jailId,
+          ...params
+        }
+
+        return {
+          ...params,
+          TABName
+        }
+      },
 
       // 本地实例化的授权表单组件元素
       localAuthorizeFormItems() {
@@ -810,8 +837,9 @@
 
         const basicCols = [
             {
-              label: '监区',
-              prop: 'prisonArea'
+              label: '监区1',
+              prop: 'prisonArea',
+              showOverflowTooltip: true
             },
             {
               label: '罪犯编号',
@@ -1004,12 +1032,10 @@
     },
 
     created() {
-      if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-        this.filterInit = Object.assign({}, this.filterInit, {
-          applicationStartDate: this.todayDate,
-          applicationEndDate: this.oneMonthLater
-        })
-      }
+      this.filterInit = Object.assign({}, this.filterInit, {
+        applicationStartDate: this.todayDate,
+        applicationEndDate: this.oneMonthLater
+      })
     },
 
     mounted() {
@@ -1141,36 +1167,37 @@
         this.$refs.pagination.handleCurrentChange(1)
       },
 
-      filterParams () {
-        //下载表格查询条件处理
-        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+      // filterParams () {
+      //   //下载表格查询条件处理
+      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
 
-        const TABName = tabItem[0]['label']
+      //   const TABName = tabItem[0]['label']
 
-        this.$refs.search.onGetFilter()
-        if (this.toShow.changerType === true) {
-          this.filter.changerType = '2'
-        }
-        if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
-        else {
-          this.$refs.elTable && this.$refs.elTable.clearSort()
-          delete this.filter.sortDirection
-          delete this.filter.orderField
-        }
-        if (this.tabs !== 'first') {
-          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
-            this.filter.status = this.tabs
-          }
-        }
-        let {jailId} = this.$store.state.global.user
-        //判断是不是超级管理员
-         jailId == -1 ? jailId = '': jailId = jailId
-        this.filter.jailId = jailId
-        return {
-          ...this.filter,
-          TABName
-        }
-      },
+      //   if (this.toShow.changerType === true) this.filter.changerType = '2'
+
+      //   if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
+      //   else {
+      //     this.$refs.elTable && this.$refs.elTable.clearSort()
+      //     delete this.filter.sortDirection
+      //     delete this.filter.orderField
+      //   }
+
+      //   if (this.tabs !== 'first') {
+      //     if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+      //       this.filter.status = this.tabs
+      //     }
+      //   }
+
+      //   const { jailId } = this.$store.state.global.user
+
+      //   jailId === -1 ? '' : ''
+
+      //   return {
+      //     ...this.filter,
+      //     TABName
+      //   }
+      // },
 
       // 获取数据
       async onGetDetailAndInitData(meetingId) {
