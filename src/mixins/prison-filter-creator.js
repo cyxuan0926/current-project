@@ -1,3 +1,4 @@
+// 监狱是最基本的机构
 import { Message } from 'element-ui'
 
 import http from '@/service'
@@ -137,7 +138,7 @@ export default {
         label: '分监区'
       })
 
-      const { provincesId, jailId, prisonArea, ...ret } = this.searchItems
+      const { provincesId = {}, jailId = {}, prisonArea, ...ret } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,
@@ -153,7 +154,7 @@ export default {
         label: '楼栋'
       })
 
-      const { provincesId, jailId, prisonArea, prisonSubArea, ...ret } = this.searchItems
+      const { provincesId = {}, jailId = {}, prisonArea, prisonSubArea, ...ret } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,
@@ -170,7 +171,7 @@ export default {
         label: '楼层'
       })
 
-      const { provincesId, jailId, prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
+      const { provincesId = {}, jailId = {}, prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,

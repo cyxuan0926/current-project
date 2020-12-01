@@ -179,7 +179,7 @@ export default {
     items: {
       handler(val) {
         // 是否显示查询的按钮
-        this.showSearchIcon = val && !Object.values(val).every(item => item.miss)
+        this.showSearchIcon = val && !Object.values(val).every(item => item && item.miss)
       },
 
       deep: true,

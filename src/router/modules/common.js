@@ -22,7 +22,7 @@ let common = [{
   // component: resolve => require(['@/views/login/login'], resolve)
 }, {
   path: '/slient-login',
-  name: '登录',
+  name: 'SlientLogin',
   meta: { notLogin: true },
   component: 'login/slient-login'
   // component: resolve => require(['@/views/login/login'], resolve)
