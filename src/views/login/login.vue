@@ -166,6 +166,7 @@ export default {
             }
 
             const passWordStatus = this.publicUserInfo && this.publicUserInfo.passWordStatus
+            const passWordDays = this.publicUserInfo && this.publicUserInfo.days
             if (passWordStatus === 'UP') {
               const redirectPath = this.$route.query.redirect
               redirectPath && !redirectPath.includes('login') ?
@@ -175,7 +176,7 @@ export default {
               this.$router.replace(`/password/edit${ passWordStatus === 'DOWN' ? '?isNoback=1' : '' }`)
               const title = passWordStatus === 'DOWN' ?
                 '密码已过期，请修改密码！' :
-                `密码将在${passWordStatus === 'WARN' ? '7' : '1'}天后过期，为了不影响系统正常使用，请及时修改密码！`
+                `密码将在${ passWordDays < 90 ? 90 - passWordDays : 1}天后过期，为了不影响系统正常使用，请及时修改密码！`
               this.handlePasswordTips(title)
             }
           }
