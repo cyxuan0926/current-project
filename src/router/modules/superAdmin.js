@@ -430,7 +430,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-reconciliation',
       name: 'prison-data_meeting-reconciliation',
-      props: { hasOnlyAllPrisonQueryAuth: true },
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         breadcrumbName: '可视电话对账报表',
         permission: 'visit.meeting.reconciliation.search'
@@ -466,6 +466,18 @@ superAdmin = [{
         permission: 'visit.data-search.diplomatic-consul-official.detail.search'
       },
       component: 'prison-data/diplomatist-detail'
+    }, {
+      path: '/prison-data/family-meeting-statistics',
+      name: 'prison-data_family_meeting_statistics',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话统计',
+        permission: 'visit.meeting.family-phone.search'
+      },
+      component: 'check-meeting/meeting-family-statistics'
     }]
   }, {
     path: '/coopertive-partner',

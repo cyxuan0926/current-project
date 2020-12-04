@@ -3,12 +3,22 @@ import mutations from './mutations'
 
 let state = {
   prisonAll: [],
+
   prisonAllWithBranchPrison: [],
+
   provincesAll: [],
+
   cities: [],
+
   jailPrisonAreas: [],
 
-  organizationNames: []
+  organizationNames: [],
+
+  prisonConfigsMaxLevel: 1,
+
+  allChildPrisonConfigs: [],
+
+  detailManyConfigs: {}
 }
 
 export default {

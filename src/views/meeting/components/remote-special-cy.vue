@@ -12,13 +12,13 @@
           v-if="showTooltip[index]"
           effect="light"
           popper-class="color-transprant__tooltip"
-          :content="config.day.join(',')"
           placement="top-start"
         >
           <el-date-picker
             v-model="config.day"
             size="mini"
-            type="dates"
+            type="date"
+            :clearable="false"
             :disabled="!!config.id"
             value-format="yyyy-MM-dd"
             placeholder="选择日期"
@@ -26,25 +26,24 @@
             @change="onSureDates($event, config, index)"
           />
         </el-tooltip>
-
         <el-date-picker
           v-else
           class="none-2"
           v-model="config.day"
           size="mini"
-          type="dates"
+          type="date"
+          :clearable="false"
           :disabled="!!config.id"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :picker-options="pickerOptions"
           @change="onSureDates($event, config, index)"
         />
-        
         <el-radio-group
           v-model="config.enabledMeeting"
           @change="handleDate(config, currentDuration)">
-          <el-radio :label="1">支持预约申请</el-radio>
-          <el-radio :label="0">不支持预约申请</el-radio>
+          <el-radio :disabled='config.disabledMeeting' :label="1">支持预约申请</el-radio>
+          <el-radio :disabled='config.disabledMeeting' :label="0">不支持预约申请</el-radio>
         </el-radio-group>
         <!--（不支持通话申请或者支持通话申请并且通话时间段已经初始化）并且是国科服务管理员-->
         <el-button
@@ -53,12 +52,11 @@
           size="mini"
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
-        <!--可保存状态并且是国科服务管理员并且是编辑状态-->
-        <el-button
-          v-if="canSave(config) && permission === 'edit'"
+           <el-button
+          v-if="!config.show&&(canSave(config) && permission === 'edit')"
           type="primary"
           size="mini"
-          @click="onSubmit(config, index)">保存</el-button>
+          @click="onSubmit(config, index)">保存</el-button>       
         <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
         <el-button
           v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.enabledMeeting === 0 && config.day)"
@@ -67,22 +65,215 @@
           class="button-float"
           @click="onAddDay">新增特殊日期</el-button>
       </div>
-      <!-- 选择的日期 -->
-      <!-- <div class="config-days__selected">
-        <label >配置日期</label>
-        <el-select
-          ref="test"
-          v-model="a"
-          multiple
-          placeholder="配置日期">
-          <el-option
-            v-for="item in array"
-            :key="item"
-            :label="item"
-            :value="item"/>
-        </el-select>
-      </div> -->
-      <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
+
+        <div>
+          <el-form>
+            <el-form-item label="是否分生产区和监舍区">
+              <el-switch
+                v-model="config.show"
+                :disabled="true"
+                active-color="#13ce66">
+              </el-switch>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div  v-if="config.show">
+          <el-form v-if="config.separateByArea">
+            <label  v-if="config.area==2">
+            <el-form-item label="生产区设备:" style="width:450px">
+              <div class="prisonlabel">
+                <label v-for="(val,index) in config.terminals" :key='index'>
+                <template v-if="val.area === 2">
+                  <el-button 
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
+                </label>
+              </div>
+              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+               <!--可保存状态并且是国科服务管理员并且是编辑状态-->
+            <el-button
+              v-if="config.area=='2' &&config.flagConfig &&canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+                  </el-form-item>
+                  </label>
+          </el-form>
+           <el-form v-if="!config.separateByArea">
+            <el-form-item label="生产区设备:" style="width:450px">
+              <div class="prisonlabel">
+                <label v-for="(val,index) in config.terminals" :key='index'>
+                <template v-if="val.area=== 2">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
+                </label>
+              </div>
+              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+               <!--可保存状态并且是国科服务管理员并且是编辑状态-->
+            <el-button
+              v-if="config.area=='2' &&config.flagConfig &&canSave(config)&& permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+                  </el-form-item>
+          </el-form>
+              <div v-if="config.area==='2'">
+                <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
+                  <div class="none_superAdmin">
+                    <label >通话时长</label>
+                    <span>{{ config.duration }} 分钟</span>
+                  </div>
+
+                  <m-form
+                    class="duration-interval-form"
+                    :items="durationIntervalItems[index]"
+                    :values="{ index: index, interval: config.interval }"
+                    @response="onResponse"
+                    :ref="`form${index}`"
+                  />
+
+                  <div
+                    class="timeperiod"
+                    v-for="(queue, o) in config.timeperiodQueue"
+                    :key="o"
+                  >
+                    <label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>
+
+                    <div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">
+                      <m-time-range-selector
+                        :val="queue"
+                        :configs="{
+                          prev: {
+                            attrs: {
+                              prefixIcon: 'ower-cssName'
+                            } 
+                          }
+                        }"
+                        :disabled="!!config.queue.length"
+                        :prev="config.timeperiodQueue[o - 1]"
+                        :next="config.timeperiodQueue[o + 1]"
+                        type="queue"
+                        @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
+                      />
+                      <div
+                        v-if="config['showError'][o]"
+                        class="error__tip">时间段区间小于通话时长</div>
+                      </div>
+                    
+                      <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length ">
+                        <el-button
+                          v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
+                          type="primary"
+                          size="mini"
+                          style="margin-right: 10px;"
+                          @click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index)">新增时间段</el-button>
+                        <el-button
+                          type="primary"
+                          size="mini"
+                          @click="onFigureOut(config, index)">生成通话时间段</el-button>
+                        <el-button
+                          v-if="config.timeperiodQueue.length > 1"
+                          size="mini"
+                          type="danger"
+                          @click="onDelTimePriod(config)">删除时间段</el-button>
+                      </template>
+                     </div>
+
+          <!-- 可配置/时间段存在 -->
+        <div
+          v-if="config.enabledMeeting && config.queue.length && flag"
+          style="overflow: hidden; margin-bottom: 10px;">
+          <label class="c-label">时间段分配</label>
+          <div
+            style="float: left; width: calc(100% - 80px); overflow: hidden;">
+            <m-time-range-selector
+              v-for="(queue, o) in config.queue"
+              :key="o"
+              :val="queue"
+              :disabled="true"
+              :prev="config.queue[o - 1]"
+              :next="config.queue[o + 1]"
+              type="queue"
+            />
+            <!-- 通常规时间配置 -->
+            <el-button
+              size="mini"
+              class="button-float"
+              :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+              @click="onRestQueue(config)">重置会见时间段</el-button>
+            <!--编辑状态并且支持通话并且选择了日期并且国科服务管理员角色并且是最新配置并且初始化了通话时间段-->
+            <el-button
+              v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0)"
+              size="mini"
+              type="success"
+              class="button-float"
+              @click="onAddDay">新增特殊日期</el-button>
+          </div>
+        </div>
+                 </template>
+              </div>
+            <el-form v-if="config.separateByArea">
+              <label v-if="config.area==1">
+            <el-form-item label="监舍区设备:" style="width:450px">
+              <div class="prisonlabel">
+              <label v-for="(val,index) in config.terminals" :key='index'>
+                <template v-if="val.area === 1">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
+                </label>
+              </div>
+             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+              <el-button
+              v-if="config.area=='1'&&config.flagConfig &&canSave(config) && permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+            </el-form-item>
+            </label>
+          </el-form>
+           <el-form v-if="!config.separateByArea">
+            <el-form-item label="监舍区设备:" style="width:450px">
+              <div class="prisonlabel">
+              <label v-for="(val,index) in config.terminals" :key='index'>
+                <template v-if="val.area === 1">
+                  <el-button
+                    v-for="(item,ind) in val.terminals "
+                    :key='ind' size="mini"
+                    style="margin-left: 5px"
+                    >{{item.selectArr}} 
+                  </el-button>
+                </template>
+                </label>
+              </div>
+             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+              <el-button
+              v-if="config.area=='1'&&config.flagConfig &&canSave(config)&& permission === 'edit'"
+              type="primary"
+              size="mini"
+              style="margin-top:8px;margin-left:15px"
+              @click="onSubmit(config, index)">保存</el-button>
+            </el-form-item>
+            
+          </el-form>
+          <div v-if="config.area=='1'">
+                <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
         <div class="none_superAdmin">
           <label >通话时长</label>
           <span>{{ config.duration }} 分钟</span>
@@ -174,7 +365,119 @@
               @click="onAddDay">新增特殊日期</el-button>
           </div>
         </div>
-      </template>
+  </template>
+          </div>
+        </div>
+        <div v-if="!config.show">
+          <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
+                <div class="none_superAdmin">
+                  <label >通话时长</label>
+                  <span>{{ config.duration }} 分钟</span>
+                </div>
+                <m-form
+                  class="duration-interval-form"
+                  :items="durationIntervalItems[index]"
+                  :values="{ index: index, interval: config.interval }"
+                  @response="onResponse"
+                  :ref="`form${index}`"
+                />
+                <div
+                  class="timeperiod"
+                  v-for="(queue, o) in config.timeperiodQueue"
+                  :key="o"
+                >
+                  <label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>
+
+                  <div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">
+                    <m-time-range-selector
+                      :val="queue"
+                      :configs="{
+                        prev: {
+                          attrs: {
+                            prefixIcon: 'ower-cssName'
+                          } 
+                        }
+                      }"
+                      :disabled="!!config.queue.length"
+                      :prev="config.timeperiodQueue[o - 1]"
+                      :next="config.timeperiodQueue[o + 1]"
+                      type="queue"
+                      @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
+                    />
+                    <div
+                      v-if="config['showError'][o]"
+                      class="error__tip">时间段区间小于通话时长</div>
+                    </div>
+                  
+                    <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length ">
+                      <el-button
+                        v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
+                        type="primary"
+                        size="mini"
+                        style="margin-right: 10px;"
+                        @click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index)">新增时间段</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="onFigureOut(config, index)">生成通话时间段</el-button>
+                      <el-button
+                        v-if="config.timeperiodQueue.length > 1"
+                        size="mini"
+                        type="danger"
+                        @click="onDelTimePriod(config)">删除时间段</el-button>
+                    </template>
+                  </div>
+
+                  <!-- 可配置/时间段存在 -->
+                <div
+                  v-if="config.enabledMeeting && config.queue.length && flag"
+                  style="overflow: hidden; margin-bottom: 10px;">
+                  <label class="c-label">时间段分配</label>
+                  <div
+                    style="float: left; width: calc(100% - 80px); overflow: hidden;">
+                    <m-time-range-selector
+                      v-for="(queue, o) in config.queue"
+                      :key="o"
+                      :val="queue"
+                      :disabled="true"
+                      :prev="config.queue[o - 1]"
+                      :next="config.queue[o + 1]"
+                      type="queue"
+                    />
+                    <!-- 通常规时间配置 -->
+                    <el-button
+                      size="mini"
+                      class="button-float"
+                      :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+                      @click="onRestQueue(config)">重置会见时间段</el-button>
+                    <!--编辑状态并且支持通话并且选择了日期并且国科服务管理员角色并且是最新配置并且初始化了通话时间段-->
+                    <el-button
+                      v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0)"
+                      size="mini"
+                      type="success"
+                      class="button-float"
+                      @click="onAddDay">新增特殊日期</el-button>
+                  </div>
+                </div>
+          </template>
+
+        </div>
+      <!-- 选择的日期 -->
+      <!-- <div class="config-days__selected">
+        <label >配置日期</label>
+        <el-select
+          ref="test"
+          v-model="a"
+          multiple
+          placeholder="配置日期">
+          <el-option
+            v-for="item in array"
+            :key="item"
+            :label="item"
+            :value="item"/>
+        </el-select>
+      </div> -->
+     
     </div>
     <div
       class="button-box"
@@ -219,6 +522,7 @@ export default {
       flag: true,
       loading: false,
       // 选择日期的选择选项配置
+      terminals:[[],[]],
       pickerOptions: {
         // 不可选的时间: 今天之前的 或者是已经选择了的日期
         disabledDate: (time) => {
@@ -230,6 +534,7 @@ export default {
       // 页面权限
       permission: 'add',
       basicConfig,
+      separateByArea:false,
       currentDuration: 25,
       showTooltip: []
     }
@@ -285,29 +590,82 @@ export default {
       // 删除特殊日期配置
       'deleteSpecialConfig',
       // 获取特殊日期配置
-      'getRemoteSpecialConfigs'
+      'getRemoteSpecialConfigs',
+      //根据日期获取终端号
+      "getTerminalsByArea",
+       // 根据Id删除特殊日期配置
+      "deleteSpecialConfigById",
     ]),
-
     async initData() {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
+   const { complexSpecialConfigs , separateByArea } = this.specialConfigs
+     this.configs = cloneDeep(complexSpecialConfigs)
 
-      const { complexSpecialConfigs } = this.specialConfigs
-
-      this.configs = cloneDeep(complexSpecialConfigs)
-
+      this.configs.forEach((item,i)=>{
+        if(i==0){
+          if(item.config.length>0){
+            item.disabledMeeting=true
+          }else{
+            item.disabledMeeting=false
+          }
+        }else{
+        item.disabledMeeting=true
+        }
+        if(item.area){
+          item.show=true
+          item.flagConfig=false
+          if(item.terminals.length==1){
+              item.separateByArea=true
+          }else{
+            item.separateByArea=false
+          }
+          item.terminals.forEach(val=>{
+                  this.setPrimary(val.terminals)
+            })
+        }else{
+           item.show=false
+        }
+      })
       this.showTooltip = new Array(this.configs.length).fill(false)
     },
-
     // 选择日期确定后
     // 先要判断是否选择得日期 有交叉得部分
-    onSureDates(e, configs, index) {
+    onSureDates(e, configs, index,area) {
       const {
         beforeDuration,
         afterDuration,
         enabledAt
       } = this.specialConfigs
-
-      if (this.hasConfigsAfter && e) {
+      if(e){
+        this.getTerminalsByArea({ jailId: this.jailId,day:e }).then(res => {
+          if (!res) return
+        this.separateByArea=res.separateByArea
+            if(this.separateByArea){
+              let terminals=res.terminals
+                terminals.forEach(item=>{
+                  this.setPrimary(item.terminals)
+                })
+            this.$set(configs, 'terminals',terminals )
+            this.$set(configs, 'type', !configs.type)
+            this.$set(configs, 'show', true)
+          }
+        })
+      }
+        if(configs.show){
+            this.$set(configs, 'type', false)
+            this.$set(configs, 'flagConfig', true)
+            this.$set(configs, 'show', true)
+            if(area==configs.area){
+              this.$set(configs, 'updates',false )
+            }else{
+              this.$set(configs, 'updates',true )
+            }
+          }
+          if(area){
+           this.$set(configs, 'area',area )
+         }
+       if (this.hasConfigsAfter && e) {
+            e=e.split(",")
         // Moment实例化后的数组
         const rangeDates = this.momentInputs(e)
 
@@ -325,7 +683,6 @@ export default {
 
         // 选择的日期都在生效日期之后
         const isAfter = Moment(minDate).isAfter(enabledAt)
-
         if (isBetween) {
           this.$set(configs, 'timeperiodQueue', [])
 
@@ -349,11 +706,15 @@ export default {
       if (e && Array.isArray(e) && e.length > 1) this.showTooltip[index] = true
 
       else this.showTooltip[index] = false
-
       this.$set(configs, 'queue', [])
-
       this.handleDate(configs, this.currentDuration)
-    },
+    },//修改按钮对应值
+      setPrimary( obj){
+        let multipleSelection=obj
+        multipleSelection.forEach((item,key)=>{
+          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
+        })
+      },
 
     // 把输入的日期格式初始化
     momentInputs(inputs = [], formatString = 'YYYY-MM-DD') {
@@ -374,6 +735,14 @@ export default {
 
     // 选择日期后 初始化时间段
     handleDate(config, currentDuration) {
+
+        if(config.show){
+          if(config.enabledMeeting==0){
+              this.$set(config, 'show', false)
+          }else{
+            this.$set(config, 'show', true)
+          }
+        }
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
       this.$set(config, 'duration', currentDuration)
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
@@ -419,17 +788,29 @@ export default {
         day,
         duration,
         interval,
+        area,
         enabledMeeting,
         id,
         queue,
+        terminals,
+        updates,
         timeperiodQueue
       } = config
-
+      let _terminals=[]
+          if(area){
+            terminals.filter(item=>item.area==area).forEach(item=>{
+            item.terminals.forEach(val=>{
+                _terminals.push(val.terminalId)
+            })
+             })
+          }
       let params = {
         day,
         duration,
         interval,
+        area,
         enabledMeeting,
+        terminals: _terminals,
         jailId: Number(this.jailId),
         config: [],
         timeperiod: []
@@ -445,17 +826,39 @@ export default {
       // 更新配置
       if (id) {
         params.id = id
+        if(updates){
+          params.id =null
+          if(!Array.isArray(params.day)){
+            params.day=[params.day]
+          }
+          this.addSpecialConfig(params).then(async res => {
+          if (!res) return
+          await this.initData()
+          this.show = false
+          this.show = true
+        })
+        }else{
+          this.updateSpecialConfig(params).then(res => {
+          if (!res) return
+          config.oldDay = params.day
+          config.config = params.config || []
+          config.timeperiod = params.timeperiod || []
+       })
+        }
         this.updateSpecialConfig(params).then(res => {
           if (!res) return
           config.oldDay = params.day
           // config.config = params.config
           config.config = params.config || []
-
           config.timeperiod = params.timeperiod || []
         })
       }
       // 新增配置
       else {
+        if(!Array.isArray(params.day)){
+            params.day=[params.day]
+          }
+
         this.addSpecialConfig(params).then(async res => {
           if (!res) return
 
@@ -488,10 +891,17 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
-            if (!res) return
-            this.splice(index)
-          })
+              if(config.show){
+                this.deleteSpecialConfigById({id: config.id }).then(res => {
+                  if (!res) return
+                  this.splice(index)
+                })
+              }else{
+                   this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
+                if (!res) return
+                this.splice(index)
+              })
+              }
         }).catch(() => {})
       }
       else {
@@ -533,14 +943,28 @@ export default {
       }
       // 修改了某个通话时间段
       else {
-        for (let i = 0; i < config.queue.length; i++) {
-          if (config.queue[i].join('-') !== config.config[i]) return true
+        if(config.show){
+              if(!config.separateByArea){
+                // config.terminals.forEach(item=>{
+                //   if(item.area==config.area){
+                //     return true
+                //   }
+                //   })
+                return true
+                 }else{
+                   return false
+                 }
+        }else{
+           config.queue.forEach((item,i)=>{
+            if(item.join('-') !== config.config[i]){
+              return true
+              }
+          })
         }
       }
     },
-
     onAddDay() {
-      this.configs.push(cloneDeep(this.basicConfig))
+          this.configs.push(cloneDeep(this.basicConfig))
     }
   }
 }
@@ -575,6 +999,15 @@ export default {
     align-items: center;
     clear: both;
   }
+    .prisonlabel{
+      width: 240px;
+      display: inline-block;
+      min-height:34px ;
+      margin-top: 4px;
+      border: 1px solid #dcdfe6 ;
+      border-radius: 5px;
+      float: left;
+    }
 }
 .config-days__selected {
   label {
@@ -659,5 +1092,6 @@ export default {
         margin-bottom: 15px;
       }
     }
+    
   }
 </style>

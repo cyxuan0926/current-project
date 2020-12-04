@@ -13,18 +13,20 @@
     >
       <template v-for="(item, key) in items">
         <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
-          <form-item
-            :ref="key"
-            :key="key"
-            :prop="key"
-            :rule="item.rule"
-            :item="item"
-            :fields="fields"
-            :select-change-event="selectChangeEvent"
-            :radio-change-event="radioChangeEvent"
-            :reset-field-value="resetFieldValue"
-            :set-field-value="setFieldValue"
-            @validateField="validateField" />
+          <slot :name="key">
+            <form-item
+              :ref="key"
+              :key="key"
+              :prop="key"
+              :rule="item.rule"
+              :item="item"
+              :fields="fields"
+              :select-change-event="selectChangeEvent"
+              :radio-change-event="radioChangeEvent"
+              :reset-field-value="resetFieldValue"
+              :set-field-value="setFieldValue"
+              @validateField="validateField" />
+          </slot>
         </template>
         <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
           <el-form-item 
@@ -46,44 +48,57 @@
           v-if="button.attrs"
           :key="index"
           v-bind="button.attrs"
+          :class="button.className"
           v-on="button.events">{{ button.text }}</el-button>
         <el-button
           v-if="button === 'prev' || button.prev"
           :key="index"
           size="small"
           type="primary"
+          v-bind="button.attrs"
+          :class="button.className"
           @click="button.func && button.func() || onPrevClick">上一步</el-button>
         <el-button
           v-if="button === 'next' || button.next"
           :key="index"
           size="small"
           type="primary"
+          :class="button.className"
+          v-bind="button.attrs"
           @click="onSubmit">下一步</el-button>
         <el-button
           v-if="button === 'update' || button.update"
           :key="index"
           size="small"
           type="primary"
+          :class="button.className"
           :loading="button.update && button.update.loading"
+          v-bind="button.attrs"
           @click="onSubmit">更新</el-button>
         <el-button
           v-if="button === 'add' || button.add"
           :key="index"
           size="small"
           type="primary"
+          :class="button.className"
           :loading="button.add && button.add.loading"
+          v-bind="button.attrs"
           @click="onSubmit">{{ button.text || '新增'}}</el-button>
         <el-button
           v-if="button === 'cancel' || button.cancel"
           :key="index"
           size="small"
           @click="onCancel"
-          :type="button.type || 'primary'">取消</el-button>  
+          :class="button.className"
+          :type="button.type || 'primary'"
+          v-bind="button.attrs">取消</el-button>  
         <el-button
           v-if="button === 'back'"
           :key="index"
           @click="onGoBack"
-          size="small">返回</el-button>
+          size="small"
+          :class="button.className"
+          v-bind="button.attrs">返回</el-button>
       </template>
     </div>
   </div>
@@ -95,6 +110,7 @@ import validator, { helper } from '@/utils'
 import Monent from 'moment'
 export default {
   components: { formItem },
+
   props: {
     items: {
       type: Object,
@@ -105,6 +121,7 @@ export default {
       default: () => ({})
     }
   },
+
   watch: {
     values: {
       handler: function(val) {
@@ -112,11 +129,13 @@ export default {
       },
       deep: true
     },
+
     items: {
       handler: function(val) {
         val && this.render()
       }
     },
+
     fields: {
       handler: function(val) {
          this.$emit('response', val)
@@ -124,6 +143,7 @@ export default {
       deep: true
     }
   },
+
   data() {
     return {
       dismiss: ['buttons', 'formConfigs'],
@@ -133,12 +153,15 @@ export default {
       destroyed: false
     }
   },
+
   created() {
     this.render()
   },
+
   beforeDestroy() {
     this.destroyed = true
   },
+
   methods: {
     onClearValidate() {
       this.$nextTick(function() {
@@ -163,16 +186,20 @@ export default {
         if (valid) this.$emit('submit', helper.trimObject(this.fields))
       })
     },
+
     onCancel() {
       this.$refs.form.resetFields()
       this.$emit('cancel')
     },
+
     onGoBack() {
       this.$emit('back')
     },
+
     handleResetField() {
       this.$refs.form.resetFields()
     },
+
     render() {
       let fields = {}
       this.dismiss = ['buttons', 'formConfigs']
@@ -188,10 +215,12 @@ export default {
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
       this.flag = true
     },
+
     validateField(e) {
       if (this.destroyed) return
       this.$refs.form.validateField(e)
     },
+
     async initSelect(item, key) {
       if (item.action && !item.defer) {
         item.loading = true
@@ -204,6 +233,7 @@ export default {
         this.$set(item, 'loading', false)
       }
     },
+
     initRules(item) {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
@@ -212,6 +242,7 @@ export default {
       })
       delete item.rules
     },
+
     // 暂时就只初始化禁用日期
     initDate(item, pickerOptions) {
       let disabledDate
@@ -227,6 +258,7 @@ export default {
         item['pickerOptions'] = { disabledDate }
       }
     },
+
     ruleSwitch(rule, label, type, ruleMessages) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
@@ -254,6 +286,7 @@ export default {
           return {}
       }
     },
+
     resetFieldValue(...arg) {
       const [status, prop, { controlTheOther }] = arg
       if (!controlTheOther) return
@@ -262,6 +295,7 @@ export default {
         if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }
     },
+
     selectChangeEvent(e, prop, item) {
       const { controlProps } = item
       if (Array.isArray(controlProps)) {
@@ -273,14 +307,18 @@ export default {
       }
       item.func && item.func(e, prop, item)
     },
+
     radioChangeEvent(e, prop, item) {
-      const { relativeProps } = item
+      const { relativeProps = [] } = item
+
       const props = [ prop, ...relativeProps ]
+
       this.dismiss = ['buttons', 'formConfigs']
+
       if (props && Array.isArray(props) && props.length) {
         props.forEach(propItem => {
           const item = this.items[propItem]
-          const { configs } = item
+          const { configs = [] } = item
           if (item && configs && Array.isArray(configs) && configs.length) {
             this.$nextTick(function() {
               configs.forEach(item => {
@@ -288,7 +326,7 @@ export default {
                   if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
                   for (let [key, value] of Object.entries(item.itemConfigs)) {
                     this.dismiss.push(key)
-                    if (this.items[key].func) this.items[key].func(e, prop, item)
+                    if (this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
                     else this.$set(this.fields, key, value)
                   }
                 }

@@ -19,7 +19,7 @@ export function getPublicUserInfo() {
 }
 
 export function getMenus() {
-  return get('/menus/my')
+  return get('/menus/my?clientId=visit.admin')
 }
 
 export function modifyMyPassword({ oldPassword, newPassword }) {

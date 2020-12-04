@@ -10,10 +10,9 @@
     >
       <m-excel-download
         slot="append"
-        path="/download/exportMettings"
-        :filterParams="filterParams"
+        :path="excelDownloadUrl"
+        :params="excelFilter"
       />
-      <!-- :params="excelFilter" -->
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -101,42 +100,111 @@
       <div
         v-if="show.agree"
         class="button-box">
-        <el-table
-          :data="meetingAdjustmentCopy.terminals"
-          border
-          @cell-click="cellClick"
-          :row-class-name="tableRowClassName"
-          :cell-style="cellStyle"
-          class="tableBorder">
-          <el-table-column
-            fixed
-            prop="terminalNumber"
-            label="终端号"
-            min-width="80">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="prisonConfigName"
-            label="监区"
-            min-width="110">
-          </el-table-column>
-          <el-table-column
-            v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
-            :prop="item"
-            :label="item"
-            min-width="84">
-          </el-table-column>
-          <el-table-column
-            v-if="show.meetingQueue"
-            prop="noTimes"
-            label="当日没有可选时间段"
-            min-width="84">
-          </el-table-column>
+        <section v-show="isSpecial">
+          <div class="across-filter" v-if="isSeparateByArea">
+            <label class="filter__label special">选择区域</label>
+            <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
+              <el-option
+                v-for="item in $store.state.areaOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">通话时长</label>
+            <el-select style="width: 200px" v-model="crossDuration" placeholder="请选择通话时长" @change="handleDurationChange">
+              <el-option
+                v-for="d in durationOptions"
+                :key="d.value"
+                :label="d.label"
+                :value="d.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">可视电话通话时间</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeStart"
+              format="HH:mm"
+              :picker-options="selectRange"
+              :clearable="false"
+              @change="handleTimepickerChange">
+            </el-time-picker>
+            <label style="margin: 0 10px;">至</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeEnd"
+              format="HH:mm"
+              disabled>
+            </el-time-picker>
+          </div>
+          <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
+        </section>
+        <section v-show="!isSpecial">
+          <el-tabs
+            v-if="isSeparateByArea"
+            v-model="areaTabs"
+            type="card">
+            <el-tab-pane v-for="t in $store.state.areaOptions"
+              :key="t.value"
+              :label="t.label"
+              :name="t.value" />
+          </el-tabs>
+          <el-table
+            :data="meetingAdjustmentCopy.terminals"
+            border
+            @cell-click="cellClick"
+            :row-class-name="tableRowClassName"
+            :cell-style="cellStyle"
+            class="tableBorder">
+            <el-table-column
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
+              fixed
+              prop="terminalNumber"
+              label="终端号"
+              min-width="80">
+            </el-table-column>
+            <el-table-column
+              v-else
+              prop="terminalNumber"
+              label="终端号"
+              min-width="80">
+            </el-table-column>
+            <el-table-column
+              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
+              fixed
+              prop="prisonConfigName"
+              label="监区"
+              min-width="110">
+            </el-table-column>
+            <el-table-column
+              v-else
+              prop="prisonConfigName"
+              label="监区"
+              min-width="110">
+            </el-table-column>
+            <el-table-column
+              v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
+              :prop="item"
+              :label="item"
+              min-width="84">
+            </el-table-column>
+            <el-table-column
+              v-if="show.meetingQueue"
+              prop="noTimes"
+              label="当日没有可选时间段"
+              min-width="84">
+            </el-table-column>
 
-        </el-table>
+          </el-table>
+        </section>
       </div>
       <span v-if="show.agree" slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitSuccess" :disabled="submitSuccessParams?false:true">确 定</el-button>
+          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
+          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
     </el-dialog>
@@ -429,8 +497,10 @@
   import {
     mapActions,
     mapState,
-    mapMutations
+    mapMutations,
+    mapGetters
   } from 'vuex'
+  import Moment from 'moment'
   import validator, { helper } from '@/utils'
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
   import prisons from '@/common/constants/prisons'
@@ -457,6 +527,10 @@
           name: 'DENIED,CANCELED'
         },
         {
+          label: '通话异常统计',
+          name: 'UNUSUAL'
+        },
+        {
           label: '未授权',
           name: 'PENDING'
         }
@@ -465,7 +539,9 @@
       // 证件照片class
       // const idCardClassName = 'img-idCard'
       const { belong } = prisons.PRISONAREA
+
       const { options } = this.$store.getters.prisonAreaOptions
+
       const freeMeetingsOptions = [
         {
           label: '是',
@@ -476,7 +552,25 @@
           value: 0
         }
       ]
+
+      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      const todayDate = Moment().format('YYYY-MM-DD')
+
+      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
+        showTips: '',
+        isShowTips: false,
+        isSeparateByArea: false,
+        selectRange: {},
+        timeRangeStart: new Date(),
+        timeRangeEnd: new Date(),
+        userDefinedDuration: false,
+        durationOptions: [],
+        crossDuration: '',
+        isSpecial: false,
+        areaTabs: '1',
+        areaTypes: '1',
+        getMeetingId: '',
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
@@ -485,17 +579,19 @@
             type: 'input',
             label: '家属姓名'
           },
+
           prisonerNumber: {
             type: 'input',
             label: '罪犯编号'
           },
-          prisonArea: {
-            type: 'select',
-            label: '监区',
-            options,
-            belong,
-            value: ''
-          },
+
+          // prisonArea: {
+          //   type: 'select',
+          //   label: '监区',
+          //   options,
+          //   belong,
+          //   value: ''
+          // },
           // applicationDate: {
           //   type: 'date',
           //   label: '申请通话时间',
@@ -510,14 +606,16 @@
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间'
             // miss: true,
-            // value: ''
+            // value: [yesterdayDate, yesterdayDate]
           },
+
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
+
           status: {
             type: 'select',
             label: '申请状态',
@@ -526,6 +624,7 @@
             correlation:"status",
             value: ''
           },
+
           changerType:{
             type: 'select',
             label: '取消操作人',
@@ -533,12 +632,14 @@
             miss: true,
             value: ''
           },
+
           auditAt: {
             type: 'date',
             label: '审核时间',
             miss: true,
             value: ''
           },
+
           isFree: {
             type: 'select',
             label: '免费',
@@ -563,7 +664,7 @@
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams:{},
+        submitSuccessParams: null,
         familyShows: [],
         // 撤回对话框表单组件
         withdrawFormItems: {
@@ -640,7 +741,15 @@
           createAt: 'operateTime',
 
           status: 'status'
-        }
+        },
+
+        // yesterdayDate,
+
+        todayDate,
+
+        oneMonthLater,
+
+        filterInit: {}
       }
     },
     computed: {
@@ -648,8 +757,18 @@
         'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting'
+        'isSuccessFirstLevelSubmitMeeting',
+        'unusualMeetingPageData'
       ]),
+
+      ...mapGetters([
+        'isShowPhone',
+        'isSuperAdmin'
+      ]),
+
+      excelDownloadUrl() {
+        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
+      },
 
       localFirstLevelExamineFormItems() {
         const { remarks } = this.firstLevelExamineFormItems
@@ -660,16 +779,43 @@
       },
   
       // excel的参数 需要添加当前标签页的label
-      // excelFilter() {
-      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+      excelFilter() {
+        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
 
-      //   const TABName = tabItem[0]['label']
+        const TABName = tabItem[0]['label']
 
-      //   return {
-      //     ...this.filter,
-      //     TABName
-      //   }
-      // },
+        if (this.toShow.changerType === true) this.filter.changerType = '2'
+
+        if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
+        else {
+          this.$refs.elTable && this.$refs.elTable.clearSort()
+          delete this.filter.sortDirection
+          delete this.filter.orderField
+        }
+
+        if (this.tabs !== 'first') {
+          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+            this.filter.status = this.tabs
+          }
+        }
+
+        const { jailId } = this.$store.state.global.user
+
+        let params = {
+          ...this.filter
+        }
+
+        if (!this.isSuperAdmin) params = {
+          jailId,
+          ...params
+        }
+
+        return {
+          ...params,
+          TABName
+        }
+      },
 
       // 本地实例化的授权表单组件元素
       localAuthorizeFormItems() {
@@ -691,12 +837,18 @@
 
         const basicCols = [
             {
+              label: '监区1',
+              prop: 'prisonArea',
+              showOverflowTooltip: true
+            },
+            {
               label: '罪犯编号',
               prop: 'prisonerNumber'
             },
             {
-              label: '监区',
-              prop: 'prisonArea'
+              label: '罪犯姓名',
+              prop: 'prisonerName',
+              showOverflowTooltip: true
             },
             {
               label: '申请时间',
@@ -711,19 +863,18 @@
               minWidth: 135
             },
             {
-              label: '罪犯姓名',
-              prop: 'prisonerName',
-              showOverflowTooltip: true
-            },
-            {
               label: '家属',
               slotName: 'families',
               minWidth: 115
             },
-            // {
-            //   label: '家属电话',
-            //   prop: ''
-            // },
+            {
+              label: '家属电话',
+              prop: 'phone'
+            },
+            {
+              label: '关系',
+              prop: 'relationship'
+            },
             {
               label: '申请状态',
               slotName: 'content',
@@ -762,6 +913,11 @@
         //   }
         // }
 
+        if (!this.isShowPhone) {
+          const index = basicCols.findIndex(col => col.label === '家属电话')
+          basicCols.splice(index, 1)
+        }
+
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
           this.operateQueryAuth=false
           let cols = [
@@ -793,18 +949,24 @@
       }
     },
     watch: {
+      areaTabs() {
+        this.submitSuccessParams = null
+        this.getMeetTimeConfig()
+      },
+
       meetingRefresh(val) {
         if (val) {
           if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
         }
       },
+
       tabs(val) {
         this.$refs.search.onSearch('tabs')
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
         this.toShow.changerType=false
-        if (val == 'PENDING') {
+        if (val === 'PENDING') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
           this.searchItems.auditAt.miss = true
@@ -817,7 +979,7 @@
           this.searchItems.status.value = ''
           this.searchItems.isFree.value = ''
         }
-        else if(val == 'PASSED') {
+        else if(val === 'PASSED') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
           this.searchItems.auditAt.miss = false
@@ -846,10 +1008,12 @@
           delete this.filter.prisonerName
           this.searchItems.status.value = ''
           this.searchItems.prisonerName.value = ''
-          if(val == 'DENIED,CANCELED'){
+          if(val === 'DENIED,CANCELED'){
             this.searchItems.status.options=this.$store.state.deniedStatus
             this.toShow.changerType=true
             this.filter.changerType = '2'
+          }else if(val === 'UNUSUAL') {
+            this.searchItems.status.options=this.$store.state.unusualStatus
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
@@ -857,6 +1021,7 @@
         }
         this.onSearch()
       },
+
       toShow: {
         handler: function(val) {
           if (val.id) this.show.detail = true
@@ -865,14 +1030,26 @@
         deep: true
       }
     },
+
+    created() {
+      this.filterInit = Object.assign({}, this.filterInit, {
+        applicationStartDate: this.todayDate,
+        applicationEndDate: this.oneMonthLater
+      })
+    },
+
     mounted() {
       // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      //   this.$set(this.searchItems.applicationDate, 'miss', true)
-      //   this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      // } else {
-      //   this.$set(this.searchItems.applicationDate, 'miss', false)
-      //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
+      //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
+      //   // this.$set(this.searchItems.applicationDate, 'miss', true)
+      //   // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
       // }
+      // else {
+        // this.$set(this.searchItems.applicationDate, 'miss', false)
+        // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
+      // }
+      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+
       this.getDatas('mounted')
 
     },
@@ -885,7 +1062,8 @@
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
         'firstLevelAuthorize',
-        'getMeettingsChangelogDetail'
+        'getMeettingsChangelogDetail',
+        'getUnusualMeetingPage'
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
@@ -918,7 +1096,7 @@
             this.meetingAdjustmentCopy.terminals.filter(item=>{
               this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
-                  item[val]=""
+                  item[val] = ""
                 }
               })
             } )
@@ -942,25 +1120,40 @@
           item.noTimes='已没有可安排的通话时间段'
         })
       },
-      getDatas(e) {
-        if (this.tabs !== 'first') {
+
+      async getDatas(e) {
+        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
         }
+
         const params = {
           ...this.filter,
           ...this.pagination
         }
 
-        if (this.hasAllPrisonQueryAuth) this.getMeetingsAll(params)
+        if (this.tabs === 'UNUSUAL') {
+          let url = '/meetings/findUnusualPage'
+
+          if (this.hasAllPrisonQueryAuth) url = '/meetings/findUnusualAdminPage'
+
+          await this.getUnusualMeetingPage({ url, params })
+        }
+
         else {
-          this.getMeetings(params).then(res => {
+          if (this.hasAllPrisonQueryAuth) await this.getMeetingsAll(params)
+
+          else {
+            const res = await this.getMeetings(params)
+
             if (!res) return
+
             if (this.meetingRefresh) this.meetingApplyDealing()
-          })
+          }
         }
       },
+
       onSearch() {
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'
@@ -974,36 +1167,37 @@
         this.$refs.pagination.handleCurrentChange(1)
       },
 
-      filterParams () {
-        //下载表格查询条件处理
-        const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
+      // filterParams () {
+      //   //下载表格查询条件处理
+      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
 
-        const TABName = tabItem[0]['label']
+      //   const TABName = tabItem[0]['label']
 
-        this.$refs.search.onGetFilter()
-        if (this.toShow.changerType === true) {
-          this.filter.changerType = '2'
-        }
-        if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
-        else {
-          this.$refs.elTable && this.$refs.elTable.clearSort()
-          delete this.filter.sortDirection
-          delete this.filter.orderField
-        }
-        if (this.tabs !== 'first') {
-          if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
-            this.filter.status = this.tabs
-          }
-        }
-        let {jailId} = this.$store.state.global.user
-        //判断是不是超级管理员
-         jailId == -1 ? jailId = '': jailId = jailId
-        this.filter.jailId = jailId
-        return {
-          ...this.filter,
-          TABName
-        }
-      },
+      //   if (this.toShow.changerType === true) this.filter.changerType = '2'
+
+      //   if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
+      //   else {
+      //     this.$refs.elTable && this.$refs.elTable.clearSort()
+      //     delete this.filter.sortDirection
+      //     delete this.filter.orderField
+      //   }
+
+      //   if (this.tabs !== 'first') {
+      //     if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
+      //       this.filter.status = this.tabs
+      //     }
+      //   }
+
+      //   const { jailId } = this.$store.state.global.user
+
+      //   jailId === -1 ? '' : ''
+
+      //   return {
+      //     ...this.filter,
+      //     TABName
+      //   }
+      // },
 
       // 获取数据
       async onGetDetailAndInitData(meetingId) {
@@ -1014,22 +1208,101 @@
         return res
       },
 
-      async handleAuthorization(e) {
-        const { id } = e
+      setSelectRange() {
+        let _now = new Date()
+        this.selectRange = {
+          selectableRange: `${ this.toAuthorize && this.toAuthorize.applicationDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
+          format: 'HH:mm'
+        }
+      },
 
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
-
-        this.show.agree = false
-        this.show.disagree = false
-        this.show.multistageExamine = false
-        this.submitSuccessParams = null
-        http.getMeetTimeConfig({ id }).then(res=>{
+      getMeetTimeConfig() {
+        http.getMeetTimeConfig({
+          id: this.getMeetingId,
+          area: this.isSeparateByArea ? this.areaTabs : ''
+        }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
           this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
           this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
           this.setMeetingAdjustment(this.meetingAdjustmentCopy)
+          this.userDefinedDuration = this.meetingAdjustment.userDefinedDuration
+          this.durationOptions = this.meetingAdjustment.meetingChargeTemplates && this.meetingAdjustment.meetingChargeTemplates.map(c => {
+            return {
+              label: c.duration,
+              value: c.duration
+            }
+          })
+          if (this.durationOptions && this.durationOptions.length) {
+            this.crossDuration = this.durationOptions[0].value
+          }
         })
+      },
+
+      handleShowOther() {
+        this.isSpecial = !this.isSpecial
+        if( this.isSpecial ) {
+          this.setSelectRange()
+          this.setTimeRange(new Date())
+        }
+      },
+
+      handleDurationChange(val) {
+        this.crossDuration = val
+        this.setTimeRange(this.timeRangeStart.toDate())
+      },
+
+      handleTimepickerChange(val) {
+        this.isShowTips = false
+        this.setTimeRange(val)
+      },
+
+      checkInmeetings() {
+        return this.meetingAdjustmentCopy.meetingQueue.some(m => {
+          let {sm, em} = this.getStartandEndTime(m)
+          return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
+        })
+      },
+
+      getStartandEndTime(time) {
+        let _timeRange = time.split('-')
+        let sm = _timeRange[0].split(':')
+        sm = Moment({ hour: sm[0], minute: sm[1] })
+        let em = _timeRange[1].split(':')
+        em = Moment({ hour: em[0], minute: em[1] })
+        return {
+          sm,
+          em
+        }
+      },
+
+      setTimeRange(dateObj) {
+        let _start = Moment(dateObj)
+        let _end = Moment(dateObj).add(this.crossDuration, 'm')
+        let _last = Moment({ hour: '23', minute: '59' })
+        this.timeRangeStart = _start
+        this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
+      },
+
+      async handleAuthorization(e) {
+        const { id } = e
+        this.getMeetingId = id
+        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        this.show.agree = false
+        this.show.disagree = false
+        this.show.multistageExamine = false
+        this.submitSuccessParams = null
+        this.isSpecial = false
+        this.showTips = ''
+        this.isShowTips = false
+        this.areaTabs = '1'
+        this.areaTypes = '1'
+        let { data } = await http.getMeetingSeparateArea({
+          inputDate: this.toAuthorize && this.toAuthorize.applicationDate
+        })
+        this.isSeparateByArea = data && data.separateByArea
+        this.getMeetTimeConfig()
+        this.$message.closeAll()
       },
 
       async handleWithdraw(e) {
@@ -1233,7 +1506,18 @@
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
-          http.meetingSelectAuthorize(params).then(res => {
+          if (this.isSeparateByArea) {
+            params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+          }
+          if (this.isSpecial) {
+            if (this.checkInmeetings()) {
+              this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
+              this.isShowTips = true
+              return
+            }
+            params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+          }
+          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
@@ -1361,7 +1645,27 @@
       border-right: 1px solid #E4E7ED;
     }
   }
+  .across-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
 
+    .filter__label {
+      font-size: 12px;
+      margin-right: 10px;
+      color: #666;
+    
+      &.special {
+        min-width: 110px;
+        text-align: right;
+      }
+    }
+  }
+  .timerange-tips {
+    padding-left: 120px;
+    color: red;
+    font-size: 12px;
+  }
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>

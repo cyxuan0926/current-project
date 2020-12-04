@@ -174,7 +174,16 @@ export default {
       const filterMeetingCallRecords = meetingCallRecords.map((item, num) => {
         let itemData = {}
         for (let [key, value] of Object.entries(item)) {
-          if (!['jailId', 'STATUS', 'jailName', 'meetingId'].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
+          if (![
+            'jailId',
+            'STATUS',
+            'jailName',
+            'meetingId',
+            'provincesName',
+            'meetingTime',
+            'conferenceName',
+            'roomNumber'
+            ].includes(key)) itemData = Object.assign({}, itemData, { [key]: value.replace(/BLANK_DATA/ig, '').split('==') })
           else itemData = Object.assign({}, itemData, { [key]: value })
         }
         return itemData['startTimeConcat'].map((value, index) => (Object.assign({}, { count: itemData['startTimeConcat'].length, orderNumber: index, orderIndex: rows * (page - 1) + num + 1 },
@@ -186,7 +195,8 @@ export default {
             zijingDurationConcat: itemData['zijingDurationConcat'][index],
             endTimeConcat: itemData['endTimeConcat'][index],
             remarksConcat: itemData['remarksConcat'][index],
-            durationConcat: itemData['durationConcat'][index]
+            durationConcat: itemData['durationConcat'][index],
+            conferenceIdConcat: itemData['conferenceIdConcat'][index]
           })))
       })
       commit('setMeetingCallRecords', { filterMeetingCallRecords, meetingCallRecordsSize })
@@ -253,6 +263,36 @@ export default {
     }
     catch (err) {
       throw err
+    }
+  },
+
+  async getPagedFreeMeetingsFamilyPhone({ commit }, params) {
+    try {
+      const { data = {} } = await repeatAPI.getPagedFreeMeetingsFamilyPhone(params)
+
+      const { total = 0, familyPhone = [] } = (Object.prototype.toString.call(data) === '[object Object]' && data) || {}
+
+      commit('setFreeMeetingsFamilyPhone', { total, contents: familyPhone })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getUnusualMeetingPage({ commit }, args) {
+    try {
+      const { data = {} } = await repeatAPI.getUnusualMeetingPage(args)
+
+      const { total = 0, meetings = [] } = (Object.prototype.toString.call(data) === '[object Object]' && data) || {}
+
+      commit('getMeetings', { total, meetings })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
     }
   }
 }

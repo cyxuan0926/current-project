@@ -173,7 +173,7 @@ export default {
           isSuccess && this.getTableData()
         }
       } catch (err) {
-        console.log(err)
+        Promise.reject(err)
       }
 
       document.querySelector(`#onlineButton${literature.id}`).blur()

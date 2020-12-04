@@ -11,10 +11,10 @@
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
+      <!--  show-summary
+        :summary-method="summaryMethod" -->
       <m-table-new
         stripe
-        show-summary
-        :summary-method="summaryMethod"
         :data="prisonAreaReportList.contents"
         :cols="tableCols">
         <template #total="{ row }">{{ row.total }} 次</template>
@@ -118,7 +118,8 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'fullname',
+          showOverflowTooltip: true
         },
         {
           label: '申请次数',
@@ -146,7 +147,13 @@ export default {
           slotName: 'deniedTotal'
         }
       ]
-      if (!this.hasAllPrisonQueryAuth) allCols.splice(0, 2)
+      if (!this.hasAllPrisonQueryAuth) {
+        allCols.splice(0, 2)
+
+        const index = allCols.findIndex(col => col.label === '监区')
+
+        this.$set(allCols[index], 'prop', 'prisonArea')
+      }
       return allCols
     }
   },

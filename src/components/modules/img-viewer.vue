@@ -4,7 +4,7 @@
   <el-image
     :src="publicUrl || url+'?token=' + $urls.token"
     :alt="title"
-    lazy
+    :lazy="isLazy"
     class="img-viewer__overflow-unset"
     @click.native="showImg"
   >
@@ -52,6 +52,11 @@ export default {
     toolbar: {
       type: Object,
       default: () => ({})
+    },
+    // 是否懒加载图片
+    isLazy: {
+      type: Boolean,
+      default: true
     }
     // 图片类型是不是必传的
     // isRequired: {

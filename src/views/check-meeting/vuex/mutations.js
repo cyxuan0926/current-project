@@ -26,8 +26,10 @@ export default {
   getMeetingConfigs(state, params) {
     state.meetingAdjustment.config = params.config
     state.meetingAdjustment.meetingQueue = params.meetingQueue
-    state.meetingAdjustment.terminals = params.terminals
+    state.meetingAdjustment.specialQueue = params.specialQueue
     state.meetingAdjustment.meetings = params.meetings
+    state.meetingAdjustment.terminals = params.terminals
+    state.meetingAdjustment.separateByArea = params.separateByArea
   },
   getFreeMeetings(state, params) {
     state.freeMeetings = params
@@ -76,5 +78,9 @@ export default {
 
   setIsSuccessFirstLevelSubmitMeeting(state, isSuccessFirstLevelSubmitMeeting) {
     state.isSuccessFirstLevelSubmitMeeting = isSuccessFirstLevelSubmitMeeting
+  },
+
+  setFreeMeetingsFamilyPhone(state, freeMeetingsFamilyPhone) {
+    state.freeMeetingsFamilyPhone = Object.assign({}, freeMeetingsFamilyPhone)
   }
 }

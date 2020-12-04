@@ -79,5 +79,11 @@ export default {
   // 实地探监-详情
   getPrisonVisitConfigDetail: params => {
     return service.get('/prisoner_visits/configDetail', params).then(res => res && res.data)
+  },
+   getTerminalsByArea: params => {
+    return service.get('/complex_config/getTerminalsByArea', params).then(res => res && res.data)
+  }, // 监狱特殊日期配置-删除
+  deleteSpecialConfigById: (params) => {
+    return service.post('/complex_config/deleteComplexSpecialConfigById', params).then(res => res && res.code === 200)
   }
 }

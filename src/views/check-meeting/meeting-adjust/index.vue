@@ -9,14 +9,23 @@
         value-format="yyyy-MM-dd"
         :clearable="false"
         :picker-options="pickerOptions"
-        @change="getConfigs"
+        @change="handlePickerChange"
       />
       <!-- <el-button type="primary" @click="getConfigs">确定</el-button> -->
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
-
+    <el-tabs
+      v-if="isSeparateByArea"
+      v-model="areaTabs"
+      type="card">
+      <el-tab-pane v-for="t in $store.state.areaOptions"
+        :key="t.value"
+        :label="t.label"
+        :name="t.value" />
+    </el-tabs>
     <meeting-table
       ref="meetingTable"
+      :areaType="areaTabs"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
       :on-drag-finish="onDragFinish"
@@ -33,11 +42,11 @@
 </template>
 
 <script>
-import MeetingTable from "./meeting-table";
-
-import { mapActions, mapState } from "vuex";
-import helper from "@/filters/modules/date";
+import MeetingTable from "./meeting-table"
+import { mapActions, mapState } from "vuex"
+import helper from "@/filters/modules/date"
 import Moment from 'moment'
+import http from '@/service'
 export default {
   name: "MeetingAjust",
 
@@ -49,7 +58,9 @@ export default {
       // 默认展现两天后的会见申请数据
       adjustDate: '',
       dayinLimit: '',
-      pickerOptions: {}
+      pickerOptions: {},
+      isSeparateByArea: false,
+      areaTabs: '1'
     };
   },
 
@@ -83,6 +94,10 @@ export default {
       if (val === this.adjustDate) {
         this.getConfigs();
       }
+    },
+
+    areaTabs() {
+      this.getConfigs()
     }
   },
 
@@ -115,7 +130,8 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
-    await this.getConfigs();
+    await this.setSeparateArea()
+    await this.getConfigs()
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
     limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
     this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
@@ -190,10 +206,25 @@ export default {
       }, 300);
     },
 
+    async setSeparateArea() {
+      let { data } = await http.getMeetingSeparateArea({
+        inputDate: this.adjustDate
+      })
+      this.isSeparateByArea = data && data.separateByArea
+    },
+
+    async handlePickerChange() {
+      await this.setSeparateArea()
+      this.getConfigs()
+    },
+
     // 获取配置
     async getConfigs() {
       // 获取监狱配置
-      await this.getMeetingConfigs(this.adjustDate);
+      await this.getMeetingConfigs({
+        inputDate: this.adjustDate,
+        area: this.isSeparateByArea ? this.areaTabs : ''
+      });
       this.meetingAdjustDealing(false);
 
       let message = "";

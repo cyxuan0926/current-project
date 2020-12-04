@@ -1,11 +1,11 @@
 <template>
   <el-row :gutter="0">
     <el-col :span="24">
+      <!--         show-summary
+        :summary-method="summaryMethod" -->
       <m-table-new
         stripe
         :data="prisonReportList.contents"
-        show-summary
-        :summary-method="summaryMethod"
         :cols="tableCols">
         <template #total="{ row }">{{ row.total }} 次</template>
         <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
@@ -47,7 +47,7 @@ export default {
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'fullname'
         },
         {
           label: '申请次数',
@@ -76,8 +76,11 @@ export default {
         }
       ]
       if (!this.hasAllPrisonQueryAuth) {
-        cols.splice(1, 1)
-        cols.splice(0, 1)
+        cols.splice(0, 2)
+
+        const index = cols.findIndex(col => col.label === '监区')
+
+        this.$set(cols[index], 'prop', 'prisonArea')
       }
       return cols
     }

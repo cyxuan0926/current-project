@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="meeting-list" v-show="hasTerminal && hasMeetingQueue">
+    <div class="meeting-list" v-show="hasTerminal && hasQueue">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
         <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
@@ -26,7 +26,7 @@
       </div>
       <div class="meeting-list-jailArea">
         <h3 class="meeting-list-cell meeting-list-th">监区</h3>
-        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.prisonConfigName }}</div>
+        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.fullname }}</div>
       </div>
       <div class="meeting-list-block">
         <div class="meeting-list-block-scroller" style="width: 9000px">
@@ -51,7 +51,28 @@
               </div>
             </m-draggable>
           </section>
-        </div>
+          <section class="meeting-list-block__wrap" v-for="(specials, i) in specialData" 
+            :key="specials.id || uuId()">
+            <div class="meeting-list-block__head">
+              <div class="meeting-list-cell meeting-list-th">{{ specialQueue[i] }}</div>
+            </div>
+            <div class="meeting-list-block__body">
+              <div class="meeting-list-cell meeting-list-cell__drag" 
+                v-for="m in specials"
+                :key="m.id || uuId()"
+                :class="[ m.id ? 'special' : '' ]"
+                :data-meeting-time="m.meetingTime"
+                :data-terminal-id="m.terminalId"
+                :data-terminal-number="m.terminalNumber"
+                :__MEETING__.prop="m">
+                  <template v-if="!!m.id">
+                    <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
+                    <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m, true)"></el-button>
+                  </template>
+              </div>
+            </div>
+          </section>
+        </div>  
       </div>
     </div>
 
@@ -60,94 +81,143 @@
       title="可视电话申请调整"
       :visible.sync="meetingVisible"
       width="802px">
-      <section>
-        <div class="across-filter">
-          <label class="filter__label">调整日期</label>
-          <el-date-picker
-            style="width: 150px; margin-right: 10px;"
-            v-model="acrossAdjustDate"
-            type="date"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :clearable="false"
-            :picker-options="pickerOptions"
-            @change="handleGetConfigs"
-          />
-          <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
-        </div>
-      </section>
-      <el-table
-        v-if="crossMeetingQueue && crossMeetingQueue.length"
-        class="across-table"
-        :data="crossMeetingData"
-        @cell-click="handleCellClick"
-        border>
-        <el-table-column
-          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-          fixed
-          prop="terminalNumber"
-          label="终端号"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          v-else
-          prop="terminalNumber"
-          label="终端号"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-          fixed
-          show-overflow-tooltip
-          prop="terminalName"
-          label="终端别名"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          v-else
-          show-overflow-tooltip
-          prop="terminalName"
-          label="终端别名"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-          fixed
-          show-overflow-tooltip
-          prop="prisonConfigName"
-          label="监区"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          v-else
-          show-overflow-tooltip
-          prop="prisonConfigName"
-          label="监区"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          v-for="t in crossMeetingQueue"
-          align="center"
-          width="120"
-          :key="t"
-          :prop="t"
-          :label="t">
-          <template slot-scope="scope">
-            <span v-if="scope.row[t]">已申请</span>
-            <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="across-filter">
+        <label class="filter__label" :class="{'special': isSpecial}">调整日期</label>
+        <el-date-picker
+          style="width: 200px; margin-right: 10px;"
+          v-model="acrossAdjustDate"
+          type="date"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          :clearable="false"
+          :picker-options="pickerOptions"
+          @change="handlePickerChange"
+        />
+        <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
+      </div>
+      <template v-if="isSpecial">
+        <section>
+          <div class="across-filter" v-if="isSeparateByArea">
+            <label class="filter__label special">选择区域</label>
+            <el-select style="width: 200px" v-model="tableAreaType" placeholder="请选择区域">
+              <el-option
+                v-for="item in $store.state.areaOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">通话时长</label>
+            <el-input style="width: 200px" v-model="crossDuration" disabled></el-input>
+          </div>
+          <div class="across-filter">
+            <label class="filter__label special">可视电话通话时间</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeStart"
+              format="HH:mm"
+              :picker-options="selectRange"
+              :clearable="false"
+              @change="handleTimepickerChange">
+            </el-time-picker>
+            <label style="margin: 0 10px;">至</label>
+            <el-time-picker
+              style="width: 150px;"
+              v-model="timeRangeEnd"
+              format="HH:mm"
+              disabled>
+            </el-time-picker>
+          </div>
+        </section>
+        <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
+      </template>
+      <template v-else>
+        <section>
+          <el-tabs
+            v-if="isSeparateByArea"
+            v-model="tableAreaType"
+            type="card">
+            <el-tab-pane v-for="t in $store.state.areaOptions"
+              :key="t.value"
+              :label="t.label"
+              :name="t.value" />
+          </el-tabs>
+        </section>
+        <el-table
+          v-if="crossMeetingQueue && crossMeetingQueue.length"
+          class="across-table"
+          :data="crossMeetingData"
+          @cell-click="handleCellClick"
+          border>
+          <el-table-column
+            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
+            fixed
+            prop="terminalNumber"
+            label="终端号"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            v-else
+            prop="terminalNumber"
+            label="终端号"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
+            fixed
+            show-overflow-tooltip
+            prop="terminalName"
+            label="终端别名"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            v-else
+            show-overflow-tooltip
+            prop="terminalName"
+            label="终端别名"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
+            fixed
+            show-overflow-tooltip
+            prop="fullname"
+            label="监区"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            v-else
+            show-overflow-tooltip
+            prop="fullname"
+            label="监区"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            v-for="t in crossMeetingQueue"
+            align="center"
+            width="120"
+            :key="t"
+            :prop="t"
+            :label="t">
+            <template slot-scope="scope">
+              <span v-if="scope.row[t]">已申请</span>
+              <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t, scope.row.terminalId)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleCancelAcross">取 消</el-button>
-        <el-button type="primary" @click="handleSaveAcross" :disabled="!crossDateSelect">确 定</el-button>
+        <el-button type="primary" @click="handleSaveAcross" :disabled="!isSpecial && !crossDateSelect">确 定</el-button>
       </span>
     </el-dialog>
 
     <!-- <div>
     <div
       class="meeting-table meeting-table__header"
-      v-show="hasTerminal && hasMeetingQueue"
+      v-show="hasTerminal && hasQueue"
     >
       <div class="table-col table-cell">终端号</div>
       <div
@@ -161,7 +231,7 @@
 
     <div
       class="meeting-table meeting-table__body"
-      v-show="hasTerminal && hasMeetingQueue"
+      v-show="hasTerminal && hasQueue"
     >
       <div class="table-col">
         <div
@@ -206,6 +276,7 @@ export default {
   props: {
     adjustDate: String,
     dayinLimit: String,
+    areaType: String,
     onDragFinish: {
       type: Function,
       default: function() {}
@@ -214,7 +285,18 @@ export default {
 
   data() {
     return {
+      showTips: '',
+      isShowTips: false,
+      timeRangeStart: new Date(),
+      timeRangeEnd: new Date(),
+      crossDuration: 5,
+      tableAreaType: this.areaType,
+      isSeparateByArea: false,
+      isSpecial: true,
+      timeRange: [],
+      selectRange: {},
       meetingsData: [],
+      specialData: [],
       terminals: [],
       crossMeetingData: [],
       crossMeetings: [],
@@ -234,23 +316,30 @@ export default {
         isEdit: false
       }))
       this.meetingsData = this.getMeetingsData()
-      document.querySelector('.meeting-list-block-scroller').style.width = 188 * this.meetingsData.length + 'px'
+      this.specialData = this.getMeetingsData('specialQueue')
+      document.querySelector('.meeting-list-block-scroller').style.width = 188 * (this.meetingsData.length + this.specialData.length) + 'px'
+    },
+
+    tableAreaType() {
+      this.crossDateSelect = ''
+      this.removeSelClass()
+      this.meetingVisible && this.handleGetConfigs()
     }
   },
 
   computed: {
     ...mapState(["meetingAdjustment"]),
 
-    hasMeetingQueue() {
-      return this.meetingQueue.length > 0;
+    hasQueue() {
+      return this.meetingQueue.length || this.specialQueue.length
     },
 
     hasTerminal() {
-      return this.terminals.length > 0;
+      return this.terminals.length
     },
 
     hasMeetings() {
-      return this.meetings.length > 0;
+      return this.meetings.length
     },
 
     dragOptions() {
@@ -264,6 +353,11 @@ export default {
     // 通话时间段
     meetingQueue() {
       return this.meetingAdjustment.meetingQueue || [];
+    },
+
+    // 特殊通话时间
+    specialQueue() {
+      return this.meetingAdjustment.specialQueue || [];
     },
 
     // 终端
@@ -306,12 +400,11 @@ export default {
 
   methods: {
     // 通话数据
-    getMeetingsData() {
-      if (!this.hasMeetingQueue || !this.hasTerminal) {
+    getMeetingsData(key = 'meetingQueue') {
+      if (!this.hasQueue || !this.hasTerminal) {
         return [];
       }
-
-      return this.meetingQueue.map(timeCell => {
+      return this[key].map(timeCell => {
         return this.terminals.map(terminal => {
           let meeting = this.meetings.find(meeting => {
             return (
@@ -343,32 +436,113 @@ export default {
       }
     },
 
-    handleShowacross(m) {
+    checkInmeetings() {
+      return this.meetingQueue.some(m => {
+        let {sm, em} = this.getStartandEndTime(m)
+        return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
+      })
+    },
+
+    getStartandEndTime(time) {
+      let _timeRange = time.split('-')
+      let sm = _timeRange[0].split(':')
+      sm = Moment({ hour: sm[0], minute: sm[1] })
+      let em = _timeRange[1].split(':')
+      em = Moment({ hour: em[0], minute: em[1] })
+      return {
+        sm,
+        em
+      }
+    },
+
+    setTimeRange(dateObj) {
+      let _start = Moment(dateObj)
+      let _end = Moment(dateObj).add(this.crossDuration, 'm')
+      let _last = Moment({ hour: '23', minute: '59' })
+      this.timeRangeStart = _start
+      this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
+    },
+
+    setSelectRange() {
+      let _now = new Date()
+      this.selectRange = {
+        selectableRange: `${ this.acrossAdjustDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
+        format: 'HH:mm'
+      }
+    },
+
+    async handlePickerChange() {
+      await this.setSeparateArea()
+      this.setSelectRange()
+      this.handleGetConfigs()
+    },
+
+    async handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
+      this.isSpecial = !!flag
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
         disabledDate(time) {
-          return time.getTime() < Date.now() - 24 * 3600 * 1000 || Moment(time).format('YYYY-MM-DD') === _this.adjustDate || time.getTime() > Moment(_this.dayinLimit).valueOf();
+          // return time.getTime() < Date.now() - 24 * 3600 * 1000 || (_this.isSeparateByArea && Moment(time).format('YYYY-MM-DD') === _this.adjustDate) || time.getTime() > Moment(_this.dayinLimit).valueOf()
+          return time.getTime() < Date.now() - 24 * 3600 * 1000 || time.getTime() > Moment(_this.dayinLimit).valueOf()
         }
       }
+      if (this.isSpecial) {
+        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
+        this.crossDuration = em.diff(sm, 'm')
+        this.setSelectRange()
+        this.setTimeRange(new Date())
+        this.showTips = ''
+        this.isShowTips = false
+      }
       this.crossMeetingCurrent = m
-      this.handleGetConfigs()
-      .then(() => {
-        this.meetingVisible = true
-      })
+
+      await this.setSeparateArea()
+      await this.handleGetConfigs()
+      this.meetingVisible = true
     },
-    handleSelectAcross(terNum, time) {
+
+    handleTimepickerChange(val) {
+      this.isShowTips = false
+      this.setTimeRange(val)
+    },
+
+    handleSelectAcross(terminalNumber, time, terminalId) {
       this.crossDateSelect = {
         name: this.crossMeetingCurrent.name,
         id: this.crossMeetingCurrent.id,
         meetingTime: `${this.acrossAdjustDate} ${time}`,
-        terminalId: this.terminals.find(t => t.terminalNumber == terNum).id,
-        terminalNumber: terNum,
+        terminalId,
+        terminalNumber,
         adjustStatus: 0
       }
     },
     async handleSaveAcross() {
+      if (this.isSpecial) {
+        if (this.checkInmeetings()) {
+          this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
+          this.isShowTips = true
+          return
+        }
+        if ((this.showTips = this.checkCanMeetings())) {
+          this.isShowTips = true
+          return
+        }
+        this.crossDateSelect = {
+          name: this.crossMeetingCurrent.name,
+          id: this.crossMeetingCurrent.id,
+          meetingTime: `${this.acrossAdjustDate} ${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`,
+          terminalId: this.terminalId,
+          terminalNumber: this.terminalNumber,
+          adjustStatus: 0
+        }
+      }
+
+      if (this.isSeparateByArea) {
+        this.crossDateSelect.area = this.tableAreaType
+      }
+
       await http.adjustMeeting([this.crossDateSelect])
       this.removeSelClass()
       this.crossDateSelect = ''
@@ -381,21 +555,34 @@ export default {
       this.meetingVisible = false
     },
 
+    checkCanMeetings() {
+      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
+        return "该日不可申请可视电话"
+      } else if (!this.crossTerminals || !this.crossTerminals.length) {
+        return "该日无可用终端"
+      }
+    },
+
+    async setSeparateArea() {
+      let { data } = await http.getMeetingSeparateArea({
+        inputDate: this.acrossAdjustDate
+      })
+      this.isSeparateByArea = data && data.separateByArea
+    },
+
     async handleGetConfigs() {
-      let { data } = await http.getMeetingConfigs(this.acrossAdjustDate)
+      let { data } = await http.getMeetingConfigs({
+        inputDate: this.acrossAdjustDate,
+        area: this.isSeparateByArea ? this.tableAreaType : ''
+      })
+      this.isShowTips = false
       let applyList = {}
       this.crossMeetings = data.meetings
       this.crossTerminals = data.terminals
       this.crossMeetingQueue = data.meetingQueue
 
-      let message = ""
       this.$message.closeAll()
-      if (!this.crossMeetingQueue || !this.crossMeetingQueue.length) {
-        message = "该日不可申请可视电话"
-      } else if (!this.crossTerminals || !this.crossTerminals.length) {
-        message = "该日无可用终端"
-      }
-
+      let message = this.checkCanMeetings()
       if (message) {
         this.$message.warning(message)
       }
@@ -412,6 +599,8 @@ export default {
           let m = {
             terminalNumber: c.terminalNumber,
             terminalName: c.terminalName,
+            terminalId: c.id,
+            fullname: c.fullname
           }
           this.crossMeetingQueue.forEach(q => {
             m[q] = !!applyList[c.terminalNumber + q]
@@ -419,7 +608,6 @@ export default {
           this.crossMeetingData.push(m)
         })
       }
-
     },
 
     setTerStatus(ter, flag) {
@@ -593,7 +781,8 @@ export default {
     .meeting-list-cell {
       margin-top: 0;
 
-      &.draggable {
+      &.draggable,
+      &.special {
         color: #fff;
         background-color: #3c8dbc;
       }
@@ -650,11 +839,26 @@ export default {
       flex: 1;
       cursor: move;
     }
+
+    &.meeting-list-cell__drag {
+      .meeting-list-cell__names {
+        cursor: default;
+      }
+    }
+
     .meeting-list-cell__acrossdate {
       color: #fff;
       cursor: pointer;
       margin-right: 10px;
     }
+  }
+}
+
+.cross-meeting-dialog {
+  /deep/ .el-dialog__body::after {
+    display: table;
+    content: ' ';
+    clear: both;
   }
 }
 
@@ -667,15 +871,18 @@ export default {
     font-size: 12px;
     margin-right: 10px;
     color: #666;
+  
+    &.special {
+      min-width: 110px;
+      text-align: right;
+    }
   }
 }
 
-.cross-meeting-dialog {
-  /deep/ .el-dialog__body::after {
-    display: table;
-    content: ' ';
-    clear: both;
-  }
+.timerange-tips {
+  padding-left: 120px;
+  color: red;
+  font-size: 12px;
 }
 
 .across-table {
@@ -731,6 +938,11 @@ export default {
       color: #fff;
       background-color: #3c8dbc;
       cursor: move;
+    }
+
+    &.special {
+      color: #fff;
+      background-color: #3c8dbc;
     }
 
     &.swap-target {

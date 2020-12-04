@@ -7,11 +7,11 @@ export default {
   // 获取囚犯账户详情信息
   getAccountDetail: id =>
     service.get('/accounts/details', id).then(res => res),
-  // 广东可视可视电话申请详情
+  // 广东可视电话申请详情
   getFamilyMeetingDetail: params => {
     return service.get('/meetings/page/by-province', params)
   },
-  // 广东可视可视电话统计报表
+  // 广东可视电话统计报表
   getFamilyStatistics: params => {
     return service.get('/report/province/meetings', params)
   },

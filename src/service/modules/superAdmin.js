@@ -120,6 +120,10 @@ export default {
   updateTerminalName: params => {
     return service.postObj('/terminals/edit/terminalName', params).then(res => res)
   },
+  // 查询分配的终端
+  getTerminal: params => {
+    return service.get('/terminals/getUsableTerminals', params).then(res => res && res.data)
+  },
   // 版本管理-列表
   getVersions: params => {
     return service.get('/versions/page', params).then(res => res && res.data)
@@ -159,6 +163,14 @@ export default {
   // 监区管理-新增
   addPrisonArea: params => {
     return service.post('/prison_config/add', params).then(res => res && res.code === 200)
+  },
+  // 监区管理-查询 分监区-楼栋-楼层
+  queryPrisonArea: params => {
+    return service.get('/prison_config/detailMany', params).then(res => res)
+  },
+  // 监区管理-查询监区最大层级
+  queryPrisonAreaMaxlevel: params => {
+    return service.get('/prison_config/getMaxLevel').then(res => res)
   },
   // 监狱数据查询-监狱会见数据统计表-列表
   getMeetingStatics: params => {

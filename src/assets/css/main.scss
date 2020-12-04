@@ -151,6 +151,13 @@ body .row-container .cell img{
     margin-right: 10px;
   }
 }
+
+.page-edit {
+  /deep/ .el-cascader {
+    width: 100%;
+  }
+}
+
 .separate + .separate::before{
   content: '/ ';
   color: #ddd;
@@ -554,5 +561,27 @@ body .el-table colgroup.gutter{
 .multistage_examine__message_box {
   .el-message-box__headerbtn {
     top: 6px !important;
+  }
+}
+
+.el-tooltip__popper.is-dark {
+  background: #e4e4e4;
+  border: 1px solid #c9c9c9;
+  color: #363636;
+  /deep/ .popper__arrow {
+    border-width: 6px 6px 0px 6px;
+    border-color: #c9c9c9 transparent;
+    border-style: solid;
+    &::after {
+      position: absolute;
+      content: '';
+      left: 0;
+      top: -6px;
+      width: 0;
+      height: 0;
+      border-width: 5px 5px 0px 5px;
+      border-style: solid;
+      border-color: #fff transparent;
+    }
   }
 }

@@ -7,17 +7,24 @@ let common = [{
     name: '工作台',
     // component: resolve => require(['@/views/dashboard/dashboard'], resolve)
     component: 'dashboard/dashboard'
-  }, {
-    path: '/password/edit',
-    name: '修改密码',
-    // component: resolve => require(['@/views/password/password-edit'], resolve)
-    component: 'password/password-edit'
   }]
+}, {
+  path: '/password/edit',
+  name: '修改密码',
+  meta: { notLogin: true },
+  // component: resolve => require(['@/views/password/password-edit'], resolve)
+  component: 'password/password-edit'
 }, {
   path: '/login',
   name: '登录',
   meta: { notLogin: true },
   component: 'login/login'
+  // component: resolve => require(['@/views/login/login'], resolve)
+}, {
+  path: '/slient-login',
+  name: 'SlientLogin',
+  meta: { notLogin: true },
+  component: 'login/slient-login'
   // component: resolve => require(['@/views/login/login'], resolve)
 }, {
   path: '/app_preview',

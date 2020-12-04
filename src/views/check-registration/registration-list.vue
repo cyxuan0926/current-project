@@ -492,6 +492,7 @@
 
           <m-img-viewer
             :url="notification.meetingNotificationUrl"
+            :isLazy="false"
             title="告知书"
           />
         </div>
@@ -551,13 +552,13 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong,
-          value: ''
-        },
+        // prisonArea: {
+        //   type: 'select',
+        //   label: '监区',
+        //   options,
+        //   belong,
+        //   value: ''
+        // },
         auditName: {
           type: 'input',
           label: '审核人',
@@ -641,6 +642,11 @@ export default {
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
         }
+        if ( val === '' ) {
+          delete this.filter.status
+          this.searchItems.status.miss = false
+          this.searchItems.status.options = this.$store.state.unusualStatus
+        }
         else {
           this.searchItems.status.miss = true
         }
@@ -677,23 +683,20 @@ export default {
       'isInWhitelist',
       'isAuditor',
       'isAdvancedAuditor',
-      'haveMultistageExamine'
+      'haveMultistageExamine',
+      'isShowPhone'
     ]),
 
-      relationalWidth() {
-        const widthConstent = {
-          0: '0%',
-          1: '32%',
-          2: '48%',
-          3: '32%',
-          4: '24%'
-        }
-        return widthConstent[this.toAuthorize.relationalProofUrls.length]
-      },
-
-      isShowPhone() {
-        return !!this.$store.state.global.user.familyPhone
+    relationalWidth() {
+      const widthConstent = {
+        0: '0%',
+        1: '32%',
+        2: '48%',
+        3: '32%',
+        4: '24%'
       }
+      return widthConstent[this.toAuthorize.relationalProofUrls.length]
+    }
   },
   methods: {
     ...mapActions([

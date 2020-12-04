@@ -7,7 +7,9 @@
     path="/download/exportMeetingReconciliation" />
     <m-search
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    />
     <el-col :span="24">
       <m-table-new
         class="reconciliation-table"
@@ -16,9 +18,9 @@
         :cols="tableCols"
         :data="meetingCallRecords.contents"
         :span-method="onTableSpanMethod" >
-        <template #durationConcat="{ row }">{{ row.durationConcat | time  }}</template>
+        <!-- <template #durationConcat="{ row }">{{ row.durationConcat | time  }}</template> -->
         <template #mcstatusConcat="{ row }"><span v-if="row.mcstatusConcat">{{ row.mcstatusConcat | applyStatus }}</span></template>
-        <template #zijingDurationConcat="{ row }">{{ row.zijingDurationConcat ? row.zijingDurationConcat + '分钟' : '' }}</template>
+        <!-- <template #zijingDurationConcat="{ row }">{{ row.zijingDurationConcat ? row.zijingDurationConcat + '分钟' : '' }}</template> -->
       </m-table-new>
       <!-- <m-table-new
         border
@@ -94,10 +96,24 @@ export default {
   data() {
     return {
       searchItems: {
+        meetingId: {
+          type: 'input',
+          label: '通话ID'
+        },
         Date: {
           type: 'datetimerange',
           start: 'startTime',
-          end: 'endTime'
+          end: 'endTime',
+          startPlaceholder: '实际通话开始时间',
+          endPlaceholder: '实际通话结束时间'
+        },
+
+        meetingDate: {
+          type: 'datetimerange',
+          start: 'applicationStartTime',
+          end: 'applicationEndTime',
+          startPlaceholder: '申请开始时间',
+          endPlaceholder: '申请结束时间'
         }
         // status: {
         //   type: 'select',
@@ -113,6 +129,11 @@ export default {
           minWidth: 45
         },
         {
+          label: '省份',
+          prop: 'provincesName',
+          showOverflowTooltip: true
+        },
+        {
           label: '监狱名称',
           prop: 'jailName',
           showOverflowTooltip: true
@@ -123,19 +144,24 @@ export default {
           minWidth: 60
         },
         {
-          label: '通话开始时间',
+          label: '申请通话时间',
+          prop: 'meetingTime',
+          minWidth: 130
+        },
+        {
+          label: '实际通话开始时间',
           prop: 'startTimeConcat',
           minWidth: 120
         },
         {
-          label: '通话结束时间',
+          label: '实际通话结束时间',
           prop: 'endTimeConcat',
           minWidth: 120
         },
         {
           // 需要自己处理 返回的是秒
-          label: '通话时长',
-          slotName: 'durationConcat'
+          label: '通话时长(秒)',
+          prop: 'durationConcat'
         },
         // {
         //   // 需要自己处理 只有 FINISHED 和 MEETING_ON 两个状态
@@ -145,8 +171,21 @@ export default {
         {
           label: '挂断原因',
           prop: 'remarksConcat',
-          showOverflowTooltip: true,
-          minWidth: 130
+          showOverflowTooltip: true
+        },
+        {
+          label: '会见室ID',
+          prop: 'conferenceIdConcat',
+          showOverflowTooltip: true
+        },
+        {
+          label: '会见室名称',
+          prop: 'conferenceName',
+          showOverflowTooltip: true
+        },
+        {
+          label: '会议短号',
+          prop: 'roomNumber'
         },
         {
           label: '紫荆通话开始时间',
@@ -160,9 +199,9 @@ export default {
         },
         {
           // 紫荆通话时长 返回的是分钟 需要加上'分钟'的
-          label: '紫荆通话时长',
-          slotName: 'zijingDurationConcat',
-          minWidth: 95
+          label: '紫荆通话时长(秒)',
+          prop: 'zijingDurationConcat',
+          minWidth: 80
         }
       ],
       // // 这个是用样式来控制的'伪单元格合并'效果
@@ -253,7 +292,14 @@ export default {
 
     // 合并单元格
     onTableSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (['orderIndex', 'jailName', 'meetingId'].includes(column.property)) {
+      if ([
+          'orderIndex',
+          'jailName',
+          'meetingId',
+          'provincesName',
+          'meetingTime',
+          'conferenceName',
+          'roomNumber'].includes(column.property)) {
         if (row.orderNumber % row.count === 0) {
           return {
             rowspan: row.count,

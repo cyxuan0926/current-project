@@ -79,7 +79,7 @@ export default {
     return service.get('/freeMeetings/page-police', params)
   },
 
-  // 可视可视电话统计报表-导出excel
+  // 可视电话统计报表-导出excel
   exportMeetingStatistics: params => {
     return service.get('/download/province/export', params, { responseType: 'blob' })
   },
@@ -87,6 +87,45 @@ export default {
   // 初级授权
   firstLevelAuthorize: inputs => {
     const { url, params } = inputs
+
+    return service.post(url, params)
+  },
+
+  // 监狱配置 - 获取收费配置
+  getMeetingChargeTemplate: params => {
+    return service.get('/jails/getMeetingChargeTemplate', params)
+  },
+
+  // 监狱配置 - 设置收费配置
+  setMeetingChargeTemplate: params => {
+    return service.postObj('/jails/setMeetingChargeTemplate', params)
+  },
+
+  // 监区管理 - 获取监狱最大层级数
+  getPrisonAreaMaxLevel: () => {
+    return service.get('/prison_config/getMaxLevel')
+  },
+
+  // 监区管理 - 获取监区层级结构
+  getDetailMany: params => {
+    return service.get('/prison_config/detailMany', params)
+  },
+
+  // 可视电话统计 - 亲情电话统计
+  getPagedFreeMeetingsFamilyPhone: params => {
+    return service.get('/freeMeetings/page-familyPhone', params)
+  },
+
+  // 可视电话申请 - 通话异常统计(ywt_admin/xxx_sh/xxx_sadmin)
+  getUnusualMeetingPage: args => {
+    const { url, params } = args
+
+    return service.get(url, params)
+  },
+
+  // 服刑人员信息管理 - 更换监狱
+  changePrisonJailOrBatch: args => {
+    const { url, params } = args
 
     return service.post(url, params)
   }

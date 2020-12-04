@@ -263,7 +263,6 @@ export default {
       }
       // 修改了某个通话时间段
       else {
-        console.log(4)
         for (let i = 0; i < config.queue.length; i++) {
           if (config.queue[i].join('-') !== config.config[i]) return true
         }

@@ -4,7 +4,7 @@
       class="operation-card"
       shadow="hover">
       <div slot="header">
-        <span>狱务通用户操作手册</span>
+        <span>国科服务用户操作手册</span>
       </div>
       <el-table
         :data="list.contents"

@@ -14,7 +14,10 @@ let state = {
     afrAndroidSetValue: '0.4',
 
     afrInterval: '60'
-  }
+  },
+
+  // 监狱收费配置
+  prisonChargeConfigs: {}
 }
 
 export default {

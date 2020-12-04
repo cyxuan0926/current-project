@@ -81,6 +81,7 @@
           v-model="item.value"
           :clearable="item.clearable?false:true"
           type="daterange"
+          :disabled="item.disabled || false"
           :unlink-panels="item.unlinkPanels"
           :start-placeholder="item.startPlaceholder || '开始时间'"
           :end-placeholder="item.endPlaceholder || '结束时间'"
@@ -178,7 +179,7 @@ export default {
     items: {
       handler(val) {
         // 是否显示查询的按钮
-        this.showSearchIcon = val && !Object.values(val).every(item => item.miss)
+        this.showSearchIcon = val && !Object.values(val).every(item => item && item.miss)
       },
 
       deep: true,
@@ -196,8 +197,10 @@ export default {
   methods: {
     onSearch(e) {
       this.onGetFilter()
+
       if (e !== 'tabs') this.$emit('search')
     },
+
     onEnsure(e) {
       let prop = e.prop
       Object.keys(e).forEach(key => {
@@ -262,6 +265,20 @@ export default {
             params[key] = this.items[key].value
           }
         })
+        const _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
+
+        if (_prisonConfigId) {
+          params.prisonConfigId = _prisonConfigId
+
+          if (params.prisonArea) delete params.prisonArea
+
+          if (params.prisonSubArea) delete params.prisonSubArea
+
+          if (params.prisonHouse) delete params.prisonHouse
+
+          if (params.prisonFloor) delete params.prisonFloor
+        }
+        // 如果当前实例没有父实例，此实例将会是其自己
         this.$parent.$parent.filter = helper.trimObject(params) || params
       }
     }

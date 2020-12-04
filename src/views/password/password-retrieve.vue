@@ -5,7 +5,7 @@
     <div slot="header">
       <el-button
         type="text"
-        @click="handleSetStepAndRouter({ path: '/login' })">狱务通</el-button>
+        @click="handleSetStepAndRouter({ path: '/login' })">国科服务</el-button>
       <span>{{ $route.meta.step === 3 ? '设置新密码' : '找回密码' }}</span>
     </div>
     <router-view />

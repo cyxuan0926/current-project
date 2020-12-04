@@ -14,9 +14,28 @@ export default {
     http.getPrisonReportDetailAll(params).then(res => res && commit('setPrisonReportDetail', res))
   },
   getPrisonAreaReportList: ({ commit }, params) => {
+    const { page, rows } = params
     return http.getPrisonAreaReportList(params).then(res => {
       if (!res) return
-      commit('getPrisonAreaReportList', res)
+      const { total } = res
+
+      let { report } = res
+
+      if (Math.ceil(total / rows) === page) {
+        let lastItem = report[report.length - 1]
+
+        report.splice(-1, 1)
+
+        lastItem = {
+          ...lastItem,
+          prisonArea: '',
+          prisonerName: '总计'
+        }
+        report = [...report, lastItem]
+      }
+
+      commit('getPrisonAreaReportList', { report, total })
+
       return true
     })
   },

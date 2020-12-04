@@ -9,6 +9,7 @@ let check = [{
   children: [{
     path: '/registration/list',
     name: 'registration-list',
+    props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.family-registration.search', breadcrumbName: '家属注册列表' },
     // component: resolve => require(['@/views/check-registration/registration-list'], resolve)
     // component: helper.loadView('check-registration/registration-list')
@@ -38,6 +39,7 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-list'),
     // component: 'check-meeting/meeting-list',
     component: 'check-meeting/meeting-list/meeting-list',
+    props: { hasPrisonAreaAuth: true },
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '可视电话申请列表' }
   }, {
@@ -62,6 +64,7 @@ let check = [{
     // component: helper.loadView('check-meeting/visit-list'),
     component: 'check-meeting/visit-list',
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
+    props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
   }]
 }, {
@@ -96,6 +99,7 @@ let check = [{
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
+    props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费通话记录' }
   }, {
     path: '/meeting-report/meeting-achievements',
@@ -107,6 +111,14 @@ let check = [{
     component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     props: { hasDiplomatQueryAuth: true },
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
+  }, {
+    path: '/meeting/family-meeting-statistics',
+    name: 'meeting-family-meeting-statistics',
+    meta: {
+      permission: 'visit.visit-statistic.family-phone-visit.search',
+      breadcrumbName: '亲情电话统计报表'
+    },
+    component: 'check-meeting/meeting-family-statistics'
   }]
 }, {
   path: '/mailbox',
@@ -130,6 +142,7 @@ let check = [{
     // component: helper.loadView('check-prisoner/prisoner-list'),
     component: 'check-prisoner/prisoner-list',
     // component: resolve => require(['@/views/check-prisoner/prisoner-list'], resolve),
+    props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.prisoner.search', breadcrumbName: '服刑人员列表' }
   }]
 }, {

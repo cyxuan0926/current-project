@@ -91,6 +91,8 @@ const codes = {
   502: {
     next: params => {
       tips('Bad Gateway,网关错误！')
+      logout()
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
   },
   504: {
@@ -146,10 +148,8 @@ const handleErrorMessage = (message) => {
 }
 export default params => {
   if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, ''))) {
- if (params.status === 200 && !params.data.code) {
-    return params
+    if (params.status === 200 && !params.data.code) return params
   }
-}
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {

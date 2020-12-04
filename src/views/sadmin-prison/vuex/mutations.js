@@ -19,5 +19,10 @@ export default {
   // 设置人脸识别配置
   setFaceRecognitionConfigs(state, configs) {
     state.faceRecognitionConfigs = Object.assign({}, configs)
+  },
+
+  // 获取监狱收费配置
+  setPrisonChargeConfigs(state, prisonChargeConfigs) {
+    state.prisonChargeConfigs = Object.assign({}, prisonChargeConfigs)
   }
 }
