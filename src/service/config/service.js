@@ -8,11 +8,12 @@ import urls from '../urls'
 export const instance = axios.create(base)
 
 let state = ''
-// urls.apiPath
+
 export const agency = urls.apiPath
 
 // 获取异步请求的url
 const getUrl = (url) => `${ agency }${ url }`
+
 // http request 拦截器
 instance.interceptors.request.use(
   config => {
