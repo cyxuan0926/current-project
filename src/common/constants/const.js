@@ -129,3 +129,29 @@ export const prisonAreaLevelObject = {
 }
 
 export const _thisYear = Moment().format('YYYY')
+
+// 星号隐藏配置
+export const asteriskDisplayConst = {
+  // 身份证
+  asterisk_idCard: {
+    start: 6,
+    asteriskCount: 8
+  },
+
+  // 电话号码
+  asterisk_phone: {
+    start: 3,
+    asteriskCount: 4
+  },
+
+  // 服刑人员编号
+  asterisk_prisonerNumber: {
+    start: 4,
+    asteriskCount: 4
+  },
+
+  // 姓名
+  asterisk_name: {
+    start: 1
+  }
+}

@@ -1,7 +1,9 @@
 import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken, getPublicUsers } from '@/service-public/api/account'
+  modifyMyPasswordByToken, getPublicUsers, getCaptcha } from '@/service-public/api/account'
+
 import { helper } from '@/utils'
+
 import jwtDecode from 'jwt-decode'
 
 const state = {
@@ -18,7 +20,10 @@ const state = {
   isStep: (localStorage.getItem('isStep') && JSON.parse(localStorage.getItem('isStep'))) || 0, // 找回密码当前的步数 0表示别的页面 1 第一页 2 第二页 3 第三页
 
   // 某个监狱是否配置了高级审核人员
-  isHaveAdvancedAuditor: false
+  isHaveAdvancedAuditor: false,
+
+  // 验证码
+  captchaConfigs: {}
 }
 
 const mutations = {
@@ -37,6 +42,10 @@ const mutations = {
   // 设置是否配置了高级审批人员
   setIsHaveAdvancedAuditor: (state, isHaveAdvancedAuditor) => {
     state.isHaveAdvancedAuditor = isHaveAdvancedAuditor
+  },
+
+  setCaptchaConfigs: (state, captchaConfigs) => {
+    state.captchaConfigs = Object.assign({}, captchaConfigs)
   }
 }
 
@@ -57,9 +66,25 @@ const actions = {
       throw err
     }
   },
-  async login({ commit, dispatch }, { username, password }) {
+  async login({ commit, dispatch }, {
+    username,
+    password,
+    code,
+    codeKey
+  }) {
     try {
-      let loginRes = await login({ username, password }), userInfoRes = false, MenusRes = false, baseInfoRes = false
+      let loginRes = await login({
+        username,
+        password,
+        code,
+        codeKey
+      }),
+
+      userInfoRes = false,
+
+      MenusRes = false,
+
+      baseInfoRes = false
 
       if (loginRes.code === 'user.PasswordNotMatched') {
         return loginRes
@@ -233,6 +258,21 @@ const actions = {
       commit(mutationName, isHaveAssignUsers)
 
       return isHaveAssignUsers
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getCaptcha({ commit }) {
+    try {
+      let res = await getCaptcha()
+
+      res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
+
+      commit('setCaptchaConfigs', res)
+
+      return res
     }
     catch (err) {
       Promise.reject(err)

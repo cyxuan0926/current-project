@@ -2,8 +2,10 @@
   <div class="center">
     <div class="login-container">
       <h1>国科服务</h1>
+
       <div class="login-form">
         <p class="white">请输入您的用户名和密码</p>
+
         <el-form       
           ref="form"
           :model="formData"
@@ -13,27 +15,41 @@
             <el-input
               clearable
               v-model.trim="formData.username"
-              placeholder="用户名">
-            </el-input>
+              placeholder="用户名"
+            />
           </el-form-item>
+
           <el-form-item prop="password">
             <el-input
               clearable
               type="password"
               v-model.trim="formData.password"
-              placeholder="密码">
-            </el-input>
+              placeholder="密码"
+            />
           </el-form-item>
+
+          <el-form-item class="el-form__code" prop="code">
+            <el-input
+              clearable
+              v-model.trim="formData.code"
+              placeholder="请输入验证码">
+            </el-input>
+
+            <img :src="captchaConfigs.imageCode" @click.self.prevent="getCaptcha" />
+          </el-form-item>
+
           <el-form-item class="keep-password">
             <el-checkbox v-model="isRememberAccount">
               <span class="white">记住密码</span>
             </el-checkbox>
+
             <el-button
               type="text"
               class="white forget-password"
               @click="handleGoPasswordRetrieve">忘记密码</el-button>  
           </el-form-item>
         </el-form>
+
         <el-button
           class="width100"
           type="primary"
@@ -64,8 +80,10 @@ export default {
       isRememberAccount: false,
       formData: {
         username: '',
-        password: ''
+        password: '',
+        code: ''
       },
+
       rules: {
         password: [{
           required: true,
@@ -76,40 +94,53 @@ export default {
           required: true,
           message: '请输入用户名',
           trigger: 'blur'
-        }]
+        }],
+
+        code: [
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur'
+          }
+        ]
       },
 
       year: _thisYear
     }
   },
+
   computed: {
     ...mapState('account', {
       accountInfo: state => state.accountInfo,
       menus: state => state. menus,
       publicUserInfo: state => state.publicUserInfo,
-      authorities: state => state.authorities
+      authorities: state => state.authorities,
+      captchaConfigs: state => state.captchaConfigs
     }),
     ...mapState({
       user: state => state.global.user
     })
   },
+
   created() {
+    this.getCaptcha()
+
     if (localStorage.getItem('accountInfo')) {
-      if (this.$route.query.redirect) {
-        this.$router.replace(this.$route.query.redirect)
-      }
-      else {
-        this.$router.replace('/login')
-      }
+      if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
+
+      else this.$router.replace('/login')
+
       return
     }
+
     this.resolveAccount()
   },
+
   methods: {
     ...mapMutations(['setUser']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
-    ...mapActions('account', ['login']),
+    ...mapActions('account', ['login', 'getCaptcha']),
 
     handlePasswordTips(title) {
       return this.$confirm(
@@ -123,6 +154,7 @@ export default {
         }
       )
     },
+
     handleLogin() {
       if (this.loading) return
 
@@ -130,9 +162,23 @@ export default {
         if (!valid) return
 
         try {
-          const { username, password } = this.formData
+          const { key } = this.captchaConfigs
+
+          const {
+            username,
+            password,
+            code
+          } = this.formData
+
           this.loading = true
-          const res = await this.login({ username, password })
+
+          const res = await this.login({
+            username,
+            password,
+            code,
+            codeKey: key
+          })
+
           if( res.code === 'user.PasswordNotMatched' ) {
             this.loading = false
             if( parseInt(res.passWordErrorCount) >= 3 ) {
@@ -140,6 +186,7 @@ export default {
             }
             return
           }
+
           if(res) {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
             localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
@@ -166,6 +213,7 @@ export default {
             }
 
             const passWordStatus = this.publicUserInfo && this.publicUserInfo.passWordStatus
+
             if (passWordStatus === 'UP') {
               const redirectPath = this.$route.query.redirect
               redirectPath && !redirectPath.includes('login') ?
@@ -184,23 +232,29 @@ export default {
         this.loading = false
       })
     },
+
     storeAccount(username, password) {
       Cookies.set('username', username, { expires: 7 })
       Cookies.set('password', Base64.encode(password), { expires: 7 })
     },
+
     removeAccount() {
       Cookies.remove('username')
       Cookies.remove('password')
     },
+
     resolveAccount() {
       const username = Cookies.get('username')
+
       const password = Cookies.get('password')
 
       if (!username || !password) return
 
       this.formData = { username, password: Base64.decode(password) }
+
       this.isRememberAccount = true
     },
+
     handleGoPasswordRetrieve() {
       const { username } = this.formData
       this.setFindPasswordUsername(username)
@@ -262,12 +316,28 @@ export default {
   /deep/ .el-input {
     width: 100% !important;
   }
+
   .forget-password {
     margin-left: 61%;
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
   }
+
   .el-checkbox {
     margin-left: 1px;
+  }
+
+  .el-form__code {
+    /deep/ .el-form-item__content {
+      .el-input {
+        width: 64% !important;
+      }
+
+      img {
+        width: 30%;
+        margin-left: 5%;
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>

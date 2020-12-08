@@ -33,25 +33,32 @@
         :data="families.contents"
         :cols="tableCols"
         class="mini-td-padding">
-        <template
-          slot-scope="scope"
-          slot="idCard">
+        <template #name="{ row }">
+           <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-end"
+              trigger="click"
+              :content="row.name">
+              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name')}}</span>
+          </el-popover>
+        </template>
+
+        <template #idCard="{ row }">
             <m-img-viewer
-              :url="scope.row.idCardFront"
+              :url="row.idCardFront"
               title="身份证正面照"
               isRequired
             />
             <m-img-viewer
-              :url="scope.row.idCardBack"
+              :url="row.idCardBack"
               title="身份证背面照"
               isRequired
             />
         </template>
-        <template
-          slot-scope="scope"
-          slot="prisoners">
+
+        <template #prisoners="{ row }">
             <el-button
-              v-for="prisoner in scope.row.prisonerList"
+              v-for="prisoner in row.prisonerList"
               :key="prisoner.prisonerId"
               type="text"
               size="small"
@@ -59,27 +66,28 @@
               {{ prisoner.name }}
             </el-button>
         </template>
-        <template
-          slot-scope="scope"
-          slot="operate">
+
+        <template #operate="{ row }">
             <el-button
               type="text"
               size="small"
-              @click="getFamilyDetail(scope.row.id)">
+              @click="getFamilyDetail(row.id)">
               账号信息
             </el-button>
+
             <el-button
               type="text"
               size="small"
-              v-if="!scope.row.isBlacklist"
-              @click="showBlackList(scope.row)">
+              v-if="!row.isBlacklist"
+              @click="showBlackList(row)">
               加入黑名单
             </el-button>
+
             <el-button
               type="text"
               size="small"
               v-else
-              @click="removeBlackList(scope.row)">
+              @click="removeBlackList(row)">
               移出黑名单
             </el-button>
           </template>
@@ -307,7 +315,8 @@ export default {
       const familyTableCols = [
         {
           label: '家属姓名',
-          prop: 'name'
+          prop: 'name',
+          slotName: 'name'
         },
         {
           label: '身份证信息',

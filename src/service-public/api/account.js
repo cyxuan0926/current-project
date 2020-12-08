@@ -1,7 +1,14 @@
 import { get, postForm, put, post } from '../request'
 
-export function login({ username, password }) {
+export function login({
+  username,
+  password,
+  code,
+  codeKey
+}) {
   return postForm('/oauth/token', {
+    codeKey,
+    code,
     username,
     password,
     grant_type: 'password',
@@ -65,4 +72,9 @@ export function modifyMyPasswordByToken({ token, newPassword }) {
 // 获取用户信息
 export function getPublicUsers(params) {
   return get('/users', params)
+}
+
+// 获取验证码
+export const getCaptcha = () => {
+  return get('/captcha')
 }

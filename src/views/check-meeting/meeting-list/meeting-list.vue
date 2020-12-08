@@ -837,7 +837,7 @@
 
         const basicCols = [
             {
-              label: '监区1',
+              label: '监区',
               prop: 'prisonArea',
               showOverflowTooltip: true
             },
