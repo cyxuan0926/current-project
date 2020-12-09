@@ -29,7 +29,8 @@ export default {
         lastItem = {
           ...lastItem,
           prisonArea: '',
-          prisonerName: '总计'
+          prisonerName: '总计',
+          $isSpecialTotalCol: true
         }
         report = [...report, lastItem]
       }

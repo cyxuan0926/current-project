@@ -24,7 +24,9 @@ export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => 
   // 如果小于初始位置 则不做处理
   if (stringLength <= start) return value
 
-  let actualAsteriskCount = asteriskCount || stringLength - start, asterisks = '*', end = stringLength - actualAsteriskCount - start < 0 ? 0 : stringLength - actualAsteriskCount - start
+  let actualAsteriskCount = asteriskCount ? (stringLength - start - asteriskCount < 0 ? stringLength - start : asteriskCount) : stringLength - start,
+    asterisks = '*',
+    end = stringLength - actualAsteriskCount - start < 0 ? 0 : stringLength - actualAsteriskCount - start
 
   const regString = `(.{${ start }}).{${ actualAsteriskCount }}(.{${ end }})`
 

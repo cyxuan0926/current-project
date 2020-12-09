@@ -1,5 +1,9 @@
 import dataImportDetails from '@/common/constants/data-import-details'
+
 import { mapActions, mapState } from 'vuex'
+
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   data() {
     const basicSearchItems = {
@@ -55,12 +59,14 @@ export default {
         {
           label: '罪犯姓名',
           prop: 'name',
-          minWidth: '80'
+          minWidth: '80',
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          minWidth: '70'
+          minWidth: '70',
+          ...$likePrisonerNumber
         },
         {
           label: '监区',

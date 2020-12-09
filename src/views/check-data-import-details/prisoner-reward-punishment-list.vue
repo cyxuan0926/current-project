@@ -12,8 +12,8 @@
         stripe
         :data="prisonerRewardPunishments.contents"
         :cols="tableCols">
-        <template slot="createdAt" slot-scope="scope">
-          {{ scope.row.createdAt | Date }}
+        <template #createdAt="{ row }">
+          {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>

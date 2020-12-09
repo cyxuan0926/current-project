@@ -31,6 +31,8 @@ import { mapState, mapActions } from 'vuex'
 
 import Moment from 'moment'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   name: 'MeetingFamilyStatistics',
 
@@ -122,17 +124,17 @@ export default {
         {
           label: '家属姓名',
           prop: 'familyName',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true
+          ...$likePrisonerNumber
         },
         {
           label: '关系',

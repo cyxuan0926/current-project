@@ -27,7 +27,7 @@
         />
       </el-tabs>
 
-      <m-table
+      <m-table-new
         ref="m-table"
         :cols=tableCols
         :data="pageData.content"
@@ -71,7 +71,7 @@
             size="mini"
             @click="onShow(row, 'callback')">撤回</el-button>
         </template>
-      </m-table>
+      </m-table-new>
     </el-col>
 
     <m-pagination
@@ -209,6 +209,8 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import { mapState, mapActions } from 'vuex'
 
 import switches from '@/filters/modules/switches'
+
+import { $likeName } from '@/common/constants/const'
 
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
@@ -390,7 +392,7 @@ export default {
         {
           label: '姓名',
           prop: 'name',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '身份证件信息',

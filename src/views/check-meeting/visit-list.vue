@@ -21,51 +21,51 @@
         :data="visits.contents"
         class="mini-td-padding td"
         :cols="tableCols">
-        <template
-          slot="idcards"
-          slot-scope="scope">
+        <template #idcards="{ row }">
           <div class="idcard-box">
             <m-img-viewer
-              v-if="scope.row.idCardFront"
-              :url="scope.row.idCardFront"
-              title="身份证正面" />
+              v-if="row.idCardFront"
+              :url="row.idCardFront"
+              title="身份证正面"
+            />
+
             <m-img-viewer
-              v-if="scope.row.idCardBack"
-              :url="scope.row.idCardBack"
-              title="身份证背面" />
+              v-if="row.idCardBack"
+              :url="row.idCardBack"
+              title="身份证背面"
+            />
           </div>
         </template>
-        <template
-          slot="window"
-          slot-scope="scope">
-          <span v-if="scope.row.window">
-            {{ scope.row.batch }} ({{ scope.row.window }}窗口)
+
+        <template #window="{ row }">
+          <span v-if="row.window">
+            {{ row.batch }} ({{ row.window }}窗口)
           </span>
         </template>
-        <template
-          slot="status"
-          slot-scope="scope">
-          <span v-if="!scope.row.remarks">{{ scope.row.status | applyStatus }}</span>
+        <template #status="{ row }">
+          <span v-if="!row.remarks">{{ row.status | applyStatus }}</span>
+
           <el-tooltip
             v-else
-            :content="scope.row.remarks"
+            :content="row.remarks"
             placement="top">
-            <span>{{ scope.row.status | applyStatus }}</span>
+            <span>{{ row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
-        <template
-          slot="lastCoiumn"
-          slot-scope="scope">
-          <span v-if="tabs === 'CANCELED'">{{ scope.row.cause }}</span>
+
+        <template #lastCoiumn="{ row }">
+          <span v-if="tabs === 'CANCELED'">{{ row.cause }}</span>
+
           <template v-else>
             <el-button
-              v-if="scope.row.status == 'PENDING'"
+              v-if="row.status == 'PENDING'"
               size="mini"
-              @click="handleAuthorization(scope.row)">授权</el-button>
+              @click="handleAuthorization(row)">授权</el-button>
+
             <el-button
-              v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
+              v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1"
               size="mini"
-              @click="handleWithdraw(scope.row)">撤回</el-button>
+              @click="handleWithdraw(row)">撤回</el-button>
           </template>
         </template>
       </m-table-new>
@@ -188,6 +188,8 @@ import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -251,7 +253,8 @@ export default {
       tableCols: [
         {
           label: '家属姓名',
-          prop: 'name'
+          prop: 'name',
+          ...$likeName
         },
         {
           label: '身份证信息',
@@ -260,7 +263,8 @@ export default {
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '监区',

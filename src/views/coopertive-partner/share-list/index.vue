@@ -35,8 +35,7 @@
           name="terminalSharedDetails" />
       </el-tabs>
 
-      <m-table
-        stripe
+      <m-table-new
         :data="pageData.content"
         :cols="tableCols"
       />
@@ -58,6 +57,8 @@ import switches from '@/filters/modules/switches'
 
 import Moment from 'moment'
 
+import { $likePhone } from '@/common/constants/const'
+
 export default {
   name: 'coopertivePartnerSharedList',
 
@@ -76,7 +77,8 @@ export default {
     const phoneItem = {
       label: '手机号码(合作商)',
       prop: 'partnerPhone',
-      minWidth: 105
+      minWidth: 105,
+      ...$likePhone
     }
 
     const terminaUniquelIdItem = {

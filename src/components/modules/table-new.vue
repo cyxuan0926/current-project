@@ -24,21 +24,26 @@
                 trigger="hover"
                 :content="item[col['desensitizationColsConfigs']['prop']]">
                 <span slot="reference">
-                  <slot :name="col['desensitizationColsConfigs']['desensitizationColSlotName'] || 'defalut'" v-bind="item">{{ item[col['desensitizationColsConfigs']['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
+                  <slot :name="col['desensitizationColsConfigs']['desensitizationColSlotName'] || 'defalut'" v-bind="{ item, scope }">{{ item[col['desensitizationColsConfigs']['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
                 </span>
               </el-popover>
             </template>
 
             <template v-else>
-              <el-popover
-                popper-class="is-asterisk_display"
-                placement="top-start"
-                trigger="hover"
-                :content="scope.row[col['prop']]">
-                <span slot="reference">
-                  <slot :name="col.desensitizationColSlotName || 'defalut'" v-bind="scope">{{ scope.row[col['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
-                </span>
-              </el-popover>
+              <!-- 这个是很特殊的情况 -->
+              <template v-if="scope.row['$isSpecialTotalCol']">{{ scope.row[col['prop']] }}</template>
+
+              <template v-else>
+                <el-popover
+                  popper-class="is-asterisk_display"
+                  placement="top-start"
+                  trigger="hover"
+                  :content="scope.row[col['prop']]">
+                  <span slot="reference">
+                    <slot :name="col.desensitizationColSlotName || 'defalut'" v-bind="scope">{{ scope.row[col['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
+                  </span>
+                </el-popover>
+              </template>
             </template>
           </template>
         </el-table-column>

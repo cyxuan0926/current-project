@@ -94,14 +94,12 @@
           <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
         </template>
 
-        <template #families="{ row }">
+        <template #families="{ item }">
           <el-button
             type="text"
             size="small"
-            v-for="family in row.families"
-            :key="family.id"
             style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
+            @click="showFamilyDetail(item)">{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
         <template #notifyId="{ row }">
@@ -423,7 +421,11 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
 
-import { provinceJailLevelConfigsParamsName } from '@/common/constants/const'
+import {
+  provinceJailLevelConfigsParamsName,
+  $likeName,
+  $likePrisonerNumber
+} from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -979,12 +981,12 @@ export default {
           label: '罪犯姓名',
           prop: 'name',
           minWidth: 75,
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true
+          ...$likePrisonerNumber
         },
         {
           label: '监区',
@@ -1010,7 +1012,13 @@ export default {
         },
         {
           label: '对应家属',
-          slotName: 'families'
+          prop: 'families',
+          ...$likeName,
+          desensitizationColsConfigs: {
+            keyWord: 'id',
+            prop: 'familyName',
+            desensitizationColSlotName: 'families'
+          }
         },
         {
           label: '家属可视电话告知书',

@@ -12,11 +12,11 @@
         stripe
         :data="prisonTerms.contents"
         :cols="tableCols" >
-        <template slot-scope="scope" slot="changeyear">
-          {{ scope.row.changeyear | termChangeYearMonthDay(scope.row.changemonth, scope.row.changeday) }}
+        <template #changeyear="{ row }">
+          {{ row.changeyear | termChangeYearMonthDay(row.changemonth, row.changeday) }}
         </template>
-        <template slot="createdAt" slot-scope="scope">
-          {{ scope.row.createdAt | Date }}
+        <template #createdAt="{ row }">
+          {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>

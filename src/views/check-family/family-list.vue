@@ -47,12 +47,12 @@
           />
         </template>
 
-        <template #prisoners="item">
+        <template #prisoners="{ item }">
           <el-button
             type="text"
             size="small"
             @click="showPrisonerDetail(item)">
-            {{ item.name | asteriskDisplay('asterisk_name')}}
+            {{ item.name | asteriskDisplay('asterisk_name') }}
           </el-button>
         </template>
 
@@ -149,7 +149,11 @@ import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
 
-import { $likeName } from '@/common/constants/const'
+import {
+  $likeName,
+  $likePhone,
+  $likePrisonerNumber
+} from '@/common/constants/const'
 
 const prisonerDetailRows = [
   [
@@ -342,19 +346,23 @@ export default {
       const jailerFamiliesTableCols = [
         {
           label: '警员姓名',
-          prop: 'policeName'
+          prop: 'policeName',
+          ...$likeName
         },
         {
           label: '警员编号',
-          prop: 'policeNumber'
+          prop: 'policeNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '家属姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          ...$likeName
         },
         {
           label: '家属手机号码',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         }
       ]
 

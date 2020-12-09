@@ -60,6 +60,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   name: 'AccountList',
 
@@ -123,11 +125,13 @@ export default {
         {
           label: '狱警号',
           prop: 'policeNumber',
-          minWidth: 90
+          minWidth: 90,
+          ...$likePrisonerNumber
         },
         {
           label: '真实姓名',
-          prop: 'realName'
+          prop: 'realName',
+          ...$likeName
         },
         {
           label: '操作',

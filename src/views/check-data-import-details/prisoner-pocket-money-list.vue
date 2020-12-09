@@ -10,17 +10,17 @@
         stripe
         :data="prisonersPocketMoney.contents"
         :cols="tableCols">
-        <template slot-scope="scope" slot="balance">
-          {{ scope.row.balance | fixedNumber }}
+        <template #balance="{ row }">
+          {{ row.balance | fixedNumber }}
         </template>
-        <template slot-scope="scope" slot="income">
-          {{ scope.row.income | fixedNumber }}
+        <template #income="{ row }">
+          {{ row.income | fixedNumber }}
         </template>
-        <template slot-scope="scope" slot="expenditure">
-          {{ scope.row.expenditure | fixedNumber }}
+        <template #expenditure="{ row }">
+          {{ row.expenditure | fixedNumber }}
         </template>
-        <template slot="createdAt" slot-scope="scope">
-          {{ scope.row.createdAt | Date }}
+        <template #createdAt="{ row }">
+          {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>
