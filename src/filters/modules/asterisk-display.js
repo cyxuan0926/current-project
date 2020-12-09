@@ -8,6 +8,7 @@ import { asteriskDisplayConst } from '@/common/constants/const'
 // 如果*数目小于剩下的规定的 那么就剩下的全部*
 // 如果*数目正常 则剩下来的正常显示
 export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => {
+  if (!value) return
   // 强制字符串
   const stringValue = value.toString()
 

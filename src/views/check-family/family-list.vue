@@ -33,70 +33,62 @@
         :data="families.contents"
         :cols="tableCols"
         class="mini-td-padding">
-        <template #name="{ row }">
-           <el-popover
-              popper-class="is-asterisk_display"
-              placement="top-end"
-              trigger="click"
-              :content="row.name">
-              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name')}}</span>
-          </el-popover>
-        </template>
-
         <template #idCard="{ row }">
-            <m-img-viewer
-              :url="row.idCardFront"
-              title="身份证正面照"
-              isRequired
-            />
-            <m-img-viewer
-              :url="row.idCardBack"
-              title="身份证背面照"
-              isRequired
-            />
+          <m-img-viewer
+            :url="row.idCardFront"
+            title="身份证正面照"
+            isRequired
+          />
+
+          <m-img-viewer
+            :url="row.idCardBack"
+            title="身份证背面照"
+            isRequired
+          />
         </template>
 
-        <template #prisoners="{ row }">
-            <el-button
-              v-for="prisoner in row.prisonerList"
-              :key="prisoner.prisonerId"
-              type="text"
-              size="small"
-              @click="showPrisonerDetail(prisoner)">
-              {{ prisoner.name }}
-            </el-button>
+        <template #prisoners="item">
+          <el-button
+            type="text"
+            size="small"
+            @click="showPrisonerDetail(item)">
+            {{ item.name | asteriskDisplay('asterisk_name')}}
+          </el-button>
         </template>
 
         <template #operate="{ row }">
-            <el-button
-              type="text"
-              size="small"
-              @click="getFamilyDetail(row.id)">
-              账号信息
-            </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="getFamilyDetail(row.id)">
+            账号信息
+          </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              v-if="!row.isBlacklist"
-              @click="showBlackList(row)">
-              加入黑名单
-            </el-button>
+          <el-button
+            type="text"
+            size="small"
+            v-if="!row.isBlacklist"
+            @click="showBlackList(row)">
+            加入黑名单
+          </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              v-else
-              @click="removeBlackList(row)">
-              移出黑名单
-            </el-button>
-          </template>
+          <el-button
+            type="text"
+            size="small"
+            v-else
+            @click="removeBlackList(row)">
+            移出黑名单
+          </el-button>
+        </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="families.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :title="dialogContent['title']"
       class="authorize-dialog"
@@ -140,12 +132,14 @@
           </el-col>
         </el-row>
       </template>
+
       <m-form
         v-else
         ref="blackListForm"
         :items="dialogContent['items']"
         @submit="handleBlackListReason"
-        @cancel="visible = false" />
+        @cancel="visible = false"
+      />
     </el-dialog>
   </el-row>
 </template>
@@ -154,6 +148,8 @@
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
+
+import { $likeName } from '@/common/constants/const'
 
 const prisonerDetailRows = [
   [
@@ -316,7 +312,7 @@ export default {
         {
           label: '家属姓名',
           prop: 'name',
-          slotName: 'name'
+          ...$likeName
         },
         {
           label: '身份证信息',
@@ -329,7 +325,13 @@ export default {
         },
         {
           label: '对应罪犯',
-          slotName: 'prisoners'
+          prop: 'prisonerList',
+          ...$likeName,
+          desensitizationColsConfigs: {
+            keyWord: 'prisonerId',
+            prop: 'name',
+            desensitizationColSlotName: 'prisoners'
+          }
         },
         {
           label: '操作',

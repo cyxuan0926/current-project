@@ -1,5 +1,7 @@
 import Moment from 'moment'
 
+const isDesensitizationCol = true
+
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
@@ -154,4 +156,25 @@ export const asteriskDisplayConst = {
   asterisk_name: {
     start: 1
   }
+}
+
+// table 脱敏列基本配置
+export const $likeName = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_name'
+}
+
+export const $likePrisonerNumber = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_prisonerNumber'
+}
+
+export const $likePhone = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_phone'
+}
+
+export const $likeIdCard = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_idCard'
 }
