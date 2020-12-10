@@ -68,6 +68,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
+import { $likePhone } from '@/common/constants/const'
 // import helper from '@/utils'
 
 export default {
@@ -87,7 +89,8 @@ export default {
       tableCols: [
         {
           label: '手机号',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         },
         {
           label: '操作',
