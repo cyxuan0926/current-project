@@ -33,7 +33,7 @@
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="tatalPage"
+      :total="totalPage"
       @onPageChange="getDatas"
     />
   </el-row>
@@ -46,8 +46,8 @@ import profile from './prison-report-profile'
 import detail from './prison-report-detail'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-const startDate = Moment().format('YYYY-MM')
-const endDate = Moment().format('YYYY-MM')
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
+const endDate = Moment().format('YYYY-MM-DD')
 
 export default {
   mixins: [prisonFilterCreator],
@@ -56,17 +56,24 @@ export default {
     return {
       activeComponentName: 'profile',
       searchItems: {
+        // reportRange: {
+        //   type: 'monthRangeSelector',
+        //   canNotClear: true,
+        //   startValue: startDate,
+        //   endValue: endDate,
+        //   startKey: 'startDate',
+        //   endKey: 'endDate',
+        //   range: {
+        //     max: Moment().format('YYYY-MM'),
+        //     maxMonthRange: 24
+        //   }
+        // },
         reportRange: {
-          type: 'monthRangeSelector',
-          canNotClear: true,
-          startValue: startDate,
-          endValue: endDate,
-          startKey: 'startDate',
-          endKey: 'endDate',
-          range: {
-            max: Moment().format('YYYY-MM'),
-            maxMonthRange: 24
-          }
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          value: [startDate, endDate]
         },
         name: {
           type: 'input',
@@ -92,14 +99,14 @@ export default {
         }
       ],
       filterInit: { // 默认查询上一个月的，筛选框初始化
-        startDate: startDate,
-        endDate: endDate
+        startDate,
+        endDate
       }
     }
   },
   computed: {
     ...mapState(['prisonReportList', 'prisonReportDetail']),
-    tatalPage() {
+    totalPage() {
       if (this.activeComponentName === 'profile') {
         return this.prisonReportList.total
       } else {

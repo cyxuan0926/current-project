@@ -10,8 +10,8 @@
               :gutter="0"
               class="loginBackground">
               <el-col
-                :span="7"
-                :offset="8">
+                :span="10"
+                :offset="7">
                 <el-col :span="24">
                   <p class="projectName">修改密码</p>
                 </el-col>
@@ -20,7 +20,7 @@
                   status-icon
                   :rules="rules2"
                   ref="ruleForm2"
-                  label-width="100px"
+                  label-width="120px"
                   class="demo-ruleForm">
                   <el-form-item
                     label-width="0"
@@ -185,7 +185,7 @@ export default {
     .projectName
       font-size: 35px
       color: white
-      margin: 20px 0 20px 24%;
+      margin: 20px 0 20px 28%;
     .btn-box
       & /deep/ .el-button
         background: #186C9C
@@ -200,4 +200,8 @@ export default {
         float: left
       & /deep/ .el-checkbox__label
         color: white
+    .demo-ruleForm
+      /deep/ .el-form-item
+          el-form-item__error
+            font-size: 13px
 </style>
