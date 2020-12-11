@@ -68,7 +68,7 @@
           <el-button
             v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             size="mini"
-            @click="handleWithdraw(scope)">撤回</el-button>
+            @click="handleWithdraw(row)">撤回</el-button>
 
           <el-button
             v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
