@@ -100,7 +100,8 @@
       </div>
 
     </template>
-    <div  class="effective__date">
+    <!-- 已经生效的日期 隐藏掉这个 -->
+    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
       <label
         class="c-label"
         style="line-height: 35px"
@@ -196,8 +197,8 @@
         </el-table>
 
       </div>
-      <span   slot="footer" class="dialog-footer">
-          <el-button type="primary"  @click="setPrimary(false,area)" :disabled="false">确 定</el-button>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="setPrimary(false,area)" :disabled="false">确 定</el-button>
           <el-button @click="prisonDetil=false">取 消</el-button>
       </span>
     </el-dialog>
@@ -217,7 +218,9 @@
   import cloneDeep from 'lodash/cloneDeep'
 
   import { Message } from 'element-ui'
+
   import remoteWeekCy from './remote-week-cy'
+
   import http from '@/service'
 
   import { meetingChargeConfigDurations } from '@/common/constants/const'
