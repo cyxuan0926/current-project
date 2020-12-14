@@ -219,6 +219,9 @@
   import { Message } from 'element-ui'
   import remoteWeekCy from './remote-week-cy'
   import http from '@/service'
+
+  import { meetingChargeConfigDurations } from '@/common/constants/const'
+
   export default {
     components: {
       remoteWeekCy
@@ -434,11 +437,12 @@
         this.configsAfter = cloneDeep(configAfter)
 
         this.effectiveDate = enabledAt
-        this.durations=[]
-        durations.forEach(item=>{
-          let obj={label:item,value:item}
-           this.durations.push(obj)
-        })
+
+        // 为了兼容后端没有返回数据的特殊处理
+        let preHandleDurations = durations.length ? durations : meetingChargeConfigDurations
+
+        this.durations = preHandleDurations.map(item => ({ label:item,value:item }))
+
           let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
           this.separateByArea = [false, false]
         this.configsBefore.forEach(item=>{
