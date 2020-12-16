@@ -57,31 +57,6 @@ let admin = [{
     // component: helper.loadView('sadmin-prison-area/prison-area-list')
     component: 'sadmin-prison-area/prison-area-list'
   }]
-}, {
-  path: '/operation-guide',
-  name: 'operation-guide',
-  meta: { hidden: true, breadcrumbName: '后台更新操作指引' },
-  children: [{
-    path: '/operation-guide/list',
-    name: 'operation-guide-list',
-    meta: { permission: 'visit.operation-guide.index', breadcrumbName: '后台更新操作指引' },
-    component: 'operation-guide/index'
-  }, {
-    path: '/operation-guide/add',
-    name: 'operation-guide-add',
-    meta: { permission: 'visit.operation-guide.add', breadcrumbName: '后台更新操作指引' },
-    component: 'operation-guide/edit'
-  }, {
-    path: '/operation-guide/edit',
-    name: 'operation-guide-edit',
-    meta: { permission: 'visit.operation-guide.edit', breadcrumbName: '后台更新操作指引' },
-    component: 'operation-guide/edit'
-  }, {
-    path: '/operation-guide/detail/:id',
-    name: 'operation-guide-detail',
-    meta: { permission: 'visit.operation-guide.detail', breadcrumbName: '后台更新操作指引' },
-    component: 'operation-guide/detail'
-  }]
 }]
 
 admin.forEach(item => {
