@@ -13,6 +13,16 @@
           active-color="#13ce66">
           </el-switch>
         </el-form-item>
+         <el-form-item label="异常可视电话时长配置" class="labelTit">
+          <el-switch
+          v-model="abnormalCalldurationSwitch"
+          active-color="#13ce66">
+          </el-switch>
+          <label v-if="abnormalCalldurationSwitch" class="sub-title">
+            <el-input v-model="abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @input="changeTimes()" placeholder="输入秒数"></el-input>
+            <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
+          </label>
+        </el-form-item>
           <el-form-item ></el-form-item>
           <el-form-item ></el-form-item>
           <el-form-item ></el-form-item>
@@ -57,7 +67,9 @@
         tabs:"first",
         dialogVisible:false,
         params:false,
+        abnormalCallduration:300,
         autoAuthorizeMeeting: true,
+        abnormalCalldurationSwitch: true,
         multistageExamine:false
       }
     },
@@ -72,7 +84,13 @@
           this.dialogVisible = false
           this.autoAuthorizeMeeting=res.data.autoAuthorizeMeeting?true:false
           this.multistageExamine=res.data.multistageExamine?true:false
+          this.abnormalCalldurationSwitch=res.data.abnormalCalldurationSwitch?true:false
         })
+      },
+      changeTimes(){
+        if(this.abnormalCallduration>600){
+         this.abnormalCallduration=600
+        }
       },
       submitTit(){
         //判断
@@ -88,6 +106,8 @@
       submitDeploy(){
         let params = {
           autoAuthorizeMeeting: this.autoAuthorizeMeeting?1:0,
+          abnormalCallduration: this.abnormalCallduration,
+          abnormalCalldurationSwitch: this.abnormalCalldurationSwitch?1:0
         }
         http.getMeetDeployUpdate(params).then(res => {
           this.getDeploy()

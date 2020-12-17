@@ -1,5 +1,5 @@
 <template>
-  <el-row
+<el-row
     class="row-container"
     :gutter="0">
     <m-search
@@ -26,7 +26,7 @@
           />
         </template>
       </el-tabs>
-      <m-table-new
+    <m-table-new
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
@@ -64,11 +64,10 @@
             <span v-else>{{ scope.row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
-        <template
-          slot-scope="scope"
+        <template slot-scope="scope"
           slot="operate">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-          <el-button
+         <el-button
             v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
             size="mini"
             @click="handleAuthorization(scope.row)">授权</el-button>
@@ -76,15 +75,32 @@
             v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
-          <el-button
+
+
+         <el-button
             v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             type="text"
             size="mini"
             class="button-detail"
             @click="onDetail(scope.row)">详情</el-button>
+
+            <el-button
+            v-if="scope.row.status == 'EXPIRED'"
+            type="text"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(scope.row)">备注</el-button>
+            <el-button
+            v-if="scope.row.status == 'EXPIRED'"
+            type="text"
+            size="mini"
+            class="button-detail"
+            @click="detailRemarks(scope.row)">已备注</el-button>
+
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="meetings.total"
@@ -352,15 +368,19 @@
             </template>
 
             <p class="detail-message-family" style="border: none" >
-              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
+              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'&&item.status!='CALL'">审核时间</span>
 
               <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
 
               <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
-
-              <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
-            </p>
-
+              <span class="family-name" v-if="item.status=='CALL'">呼叫时间</span>
+              <template  v-if="item.status=='CALL'">
+                 <span class="family-nameDetail">{{ item.createdAt | Date }}</span>
+              </template>
+              <template  v-else>
+                <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
+              </template> 
+               </p>
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
@@ -421,7 +441,8 @@
               </template>
 
             <p class="detail-message-family">
-              <span class="family-name">申请状态</span>
+              <template v-if="item.status!=='CALL'">
+                 <span class="family-name">申请状态</span>
 
               <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
 
@@ -435,6 +456,12 @@
 
               <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
               <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
+
+              </template>
+              <template v-if="item.status=='CALL'">
+                <span class="family-name">呼叫状态</span>
+                <span class="family-nameDetail">{{ item.statusName }}</span>
+              </template>
             </p>
           </div>
         </div>
@@ -489,6 +516,21 @@
           </div>
         </template>
       </family-detail-information>
+    </el-dialog>
+       <el-dialog
+      :visible.sync="show.setRemarks"
+      class="authorize-dialog"
+      width="600px"
+      @close="closeAuthorize"
+      title="备注信息">
+      <el-form label-width="80px" class="demo-ruleForm">
+        <el-form-item label="备注" prop="desc">
+          <el-input type="textarea" v-model="getRemarks" :autosize="{ minRows: 6, maxRows: 8}" maxlength="300"  placeholder="请输入内容" show-word-limit></el-input>
+        </el-form-item>
+      </el-form>
+       <span  slot="footer" class="dialog-footer">
+          <el-button type="primary">提 交</el-button>
+        </span>
     </el-dialog>
   </el-row>
 </template>
@@ -657,8 +699,11 @@
           dialog:false,
           meetingQueue:false,
           familiesDetialInform: false,
-          multistageExamine: false
+          multistageExamine: false,
+          setRemarks:false
+
         },
+        getRemarks:'',
         operateQueryAuth:false,
         toAuthorize: {},
         toShow: {},
@@ -835,7 +880,7 @@
       tableCols() {
         // const { applicationStartDate, applicationEndDate } = this.filter
 
-        const basicCols = [
+          const basicCols =[
             {
               label: '监区1',
               prop: 'prisonArea',
@@ -904,6 +949,7 @@
           prop: 'terminalNo',
           minWidth: 100
         }
+
         // if (!applicationStartDate || !applicationEndDate) {
         //   for(let i = 0; i < basicCols.length; i++) {
         //     if (basicCols[i].prop === 'meetingTime') {
@@ -1067,7 +1113,13 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+      setRemarks(){
+        this.show.setRemarks=true
 
+      },
+      detailRemarks(){
+
+      },
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -1356,6 +1408,12 @@
           params = { meetingId: e.id }
         this.getMeettingsChangelogDetail(params).then(res => {
           if (!res) return
+          if(res.callLogs.length){
+              res.callLogs.forEach((item,index)=>{
+              item.status="CALL"
+              res.changeLogs.splice(1+index, 0, item)
+            })
+          }
           this.toShow = Object.assign({}, res)
           this.show.dialog = true
           this.familyShows = this.toShow.status !== 'DENIED'

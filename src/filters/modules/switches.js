@@ -38,6 +38,11 @@ let switches = {
     { value: 'CANCELED', label: '已取消' },
     { value: 'MEETING_ON', label: '通话中' }
   ],
+  statusOptions: [
+    { label: '全部', value: 9999 },
+    { label: '上架', value: 1 },
+    { label: '未上架', value: 0 }
+  ],
   registStatus: [
     { value: 'PENDING', label: '未授权' },
     { value: 'DENIED', label: '已拒绝' },

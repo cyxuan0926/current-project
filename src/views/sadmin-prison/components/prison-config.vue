@@ -5,8 +5,33 @@
       @submit="onSubmit"
       @back="onBack"
       :values="values"
+      @response="getResponse"
       ref="prison-config_form"
-    />
+    >
+     <template #abnormalCalldurationSwitch>
+       <!-- {{$refs['prison-config_form'].fields}} -->
+
+         <el-switch
+          :width="60"
+          v-model="values.abnormalCalldurationSwitch"
+          :disabled="$route.meta.role === '3'"
+          active-color="#13ce66">
+          </el-switch>
+          <label v-if="values.abnormalCalldurationSwitch==true">
+            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @input="changeTimes()" placeholder="输入秒数"></el-input>
+            <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
+          </label>
+          <!-- <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
+            <el-input
+              v-model.trim="formData.diplomatistFixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item> -->
+      </template>
+    </m-form>
       <!-- <template #basicConfigs>
         <el-col :span="11">
           <el-form-item prop="startMinutes" :rules="rules.startMinutes">
@@ -94,6 +119,7 @@
           </el-form-item>
         </el-col>
       </template> -->
+     
   </div>
 </template>
 
@@ -381,7 +407,17 @@ export default {
           type: 'switch',
           disabled,
           value: 0
-        }
+        },
+        abnormalCalldurationSwitch: {
+          slotName: "abnormalCalldurationSwitch",
+          attrs: {
+             label: '异常可视电话时长配置',
+             disabled,
+             required: true
+          },
+          func: this.onDurationSwitch
+          // controlTheOther: true
+        },
       }, formButton),
       values: {},
       permission,
@@ -420,6 +456,7 @@ export default {
   },
   computed: {
     ...mapState([
+
       'prison',
       'branchStatus']),
 
@@ -516,8 +553,11 @@ export default {
       'updatePrison']),
 
     ...mapActions('account', ['judgeAssignUsers']),
-
+    getResponse(fields){
+     // this.values = Object.assign({}, fields)
+    },
     onSubmit(e) {
+      console.log(e)
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
         // if(e.prisonAreaList && e.prisonAreaList.length) {
@@ -572,7 +612,8 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-        this.updatePrison(params).then(res => {
+          params.abnormalCalldurationSwitch=params.abnormalCalldurationSwitch==true ? 1 : 0
+       this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
@@ -612,7 +653,11 @@ export default {
     // onDiplomatistChargeChange(e, prop, item) {
     //   this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     // },
-
+    changeTimes(){
+        if(this.values.abnormalCallduration>600){
+         this.values.abnormalCallduration=600
+        }
+    },
     // 是否分监区
     onBranchPrisonSwitch(value, prop, item) {
       const branchPrisonItemObject = {
