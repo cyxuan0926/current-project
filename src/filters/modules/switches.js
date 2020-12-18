@@ -39,7 +39,6 @@ let switches = {
     { value: 'MEETING_ON', label: '通话中' }
   ],
   statusOptions: [
-    { label: '全部', value: 9999 },
     { label: '上架', value: 1 },
     { label: '未上架', value: 0 }
   ],

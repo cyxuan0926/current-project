@@ -198,11 +198,13 @@ export default {
   },
   methods: {
     async getDatas() {
+      console.log(...this.filter)
        let res = await  getPagedMessagInside({ ...this.filter, ...this.pagination })
         this.tabledata= res
     },
     onSearch() {
-      this.$refs.pagination.handleCurrentChange(0)
+      console.log(...this.filter)
+     // this.$refs.pagination.handleCurrentChange(0)
     },
     onAdd() {
       this.$router.push('/advertisement/add')
