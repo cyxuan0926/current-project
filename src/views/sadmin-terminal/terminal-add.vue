@@ -205,7 +205,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addTerminal', 'getJailPrisonAreas', 'getPrisonAllWithBranchPrison']),
+    ...mapActions([
+      'addTerminal',
+      'getJailPrisonAreas',
+      'getPrisonAllWithBranchPrison'
+    ]),
+
     onSubmit() {
       this.$refs.terminal.validate(valid => {
         if (valid) {
@@ -256,7 +261,7 @@ export default {
       if (prison.branchPrison === 1) {
 
         this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
-        this.getJailPrisonAreas({ jailId: e }).then(res => {
+        this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } }).then(res => {
           this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
           if (!res) return

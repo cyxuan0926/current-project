@@ -366,13 +366,7 @@ export default {
           type: 'switch',
           disabled,
           value: 0,
-          setValueConfigs: [
-            {
-              props: 'multistageExamine',
-              setValue: 0
-            }
-          ],
-
+          setValueConfigs: [{ setValue: 0 }],
           func: this.onMultistageExamineSwitch
         },
 
@@ -381,6 +375,15 @@ export default {
           type: 'switch',
           disabled,
           value: 0
+        },
+
+        useMeetingFloor: {
+          label: '会见楼开关',
+          type: 'switch',
+          disabled,
+          value: 0,
+          setValueConfigs: [{ setValue: 1 }],
+          func: this.onMeetingRoomSwitch
         }
       }, formButton),
       values: {},
@@ -421,7 +424,9 @@ export default {
   computed: {
     ...mapState([
       'prison',
-      'branchStatus']),
+      'branchStatus',
+      'haveMeetingFloorTerminals'
+    ]),
 
     ...mapState('account', ['isHaveAdvancedAuditor']),
 
@@ -513,7 +518,9 @@ export default {
   methods: {
     ...mapActions([
       'getPrisonDetail',
-      'updatePrison']),
+      'updatePrison',
+      'getMeetingFloorTerminals'
+    ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
 
@@ -645,8 +652,8 @@ export default {
         closeOnPressEscape: false,
 
         callback: (action) => {
-            if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
-          }
+          if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
+        }
       })
     },
 
@@ -711,6 +718,29 @@ export default {
         }
         else {
           if (autoAuthorizeMeeting) this.$confirm(have_automatic_audit['message'], have_automatic_audit['options'])
+        }
+      }ßßß
+    },
+
+    async onMeetingRoomSwitch(value, prop, item) {
+      // 开启会见楼配置并且会见楼配置了终端的情况
+      if (!value) {
+        const jailId = this.$route.params.id
+
+        await this.getMeetingFloorTerminals(jailId)
+
+        if (this.haveMeetingFloorTerminals) {
+          this.$confirm('该监狱配置了会见楼配置，请先移除会见楼的终端，再关闭会见楼开关！', {
+            showCancelButton: false,
+
+            closeOnClickModal: false,
+
+            closeOnPressEscape: false,
+
+            callback: (action) => {
+              this.$refs['prison-config_form'].setFieldValue(value, prop, item)
+            }
+          })
         }
       }
     }

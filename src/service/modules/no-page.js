@@ -18,8 +18,12 @@ export default {
     return service.get(`/cities/list?provicesId=${ params }`).then(res => res && res.data)
   },
   // 监区-根据监狱id查询
-  getJailPrisonAreas: params => {
-    return service.get(`/prison_config/getPrisonConfigs`, params).then(res => res && res.data)
+  // 会见楼需求：监区里面需要加上 会见楼和非会见楼虚拟概念 /getTerminalsPrisonConfigs
+  // 普通查询监区： /prison_config/getPrisonConfigs
+  getJailPrisonAreas: args => {
+    const { url, params } = args
+
+    return service.get(url, params).then(res => res && res.data)
   },
   // 监区-根据上一级id 查询 分监区 楼栋 楼层
   getJailPrisonSubs: params => {
@@ -36,5 +40,10 @@ export default {
 
   getAllChildPrisonConfigs: () => {
     return service.get('/prison_config/getAllChildPrisonConfigs')
+  },
+
+  // 获取监狱是否有会见楼终端设备
+  getMeetingFloorTerminals: jailId => {
+    return service.get('/terminals/getMeetingFloorTerminals', { jailId })
   }
 }

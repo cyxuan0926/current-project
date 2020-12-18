@@ -29,5 +29,9 @@ export default {
 
   setDetailManyConfigs(state, detailManyConfigs) {
     state.detailManyConfigs = Object.assign({}, detailManyConfigs)
+  },
+
+  setIsHaveMeetingFloorTerminals(state, haveMeetingFloorTerminals) {
+    state.haveMeetingFloorTerminals = haveMeetingFloorTerminals
   }
 }

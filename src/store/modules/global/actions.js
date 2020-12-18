@@ -120,6 +120,17 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async getJailsMeetingFloorStatus({ commit }, jailId) {
+    try {
+      const { data } = await repeatAPI.getJailsMeetingFloorStatus(jailId)
+
+      return data
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

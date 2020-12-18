@@ -295,14 +295,14 @@ export default {
       if (prison.branchPrison === 1) {
         this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-        const res = await this.getJailPrisonAreas({ jailId: e })
+        const res = await this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } })
 
         this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
         if (!res) return
 
         if (this.jailPrisonAreas.length === 0) {
-            this.$message.warning('请先导入罪犯数据')
+          this.$message.warning('请先导入罪犯数据')
         }
 
         this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)

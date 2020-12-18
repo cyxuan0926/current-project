@@ -162,7 +162,7 @@ export default {
       this.searchItems.prisonAreaId.getting = false
       this.getDatas()
     } else {
-      this.getJailPrisonAreas({ jailId: JSON.parse(localStorage['user']).jailId }).then(res => {
+      this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } }).then(res => {
         this.searchItems.prisonAreaId.options = this.jailPrisonAreas
         this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
         this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id

@@ -343,7 +343,8 @@ export default {
 
       if (setValueConfigs && Array.isArray(setValueConfigs) && setValueConfigs.length) {
         setValueConfigs.forEach(config => {
-          const { props, setValue } = config
+          // 默认为本身 即没有初始值的时候 就是重置本身的值
+          const { props = prop, setValue } = config
 
           this.$nextTick(function() {
             this.$set(this.fields, props, setValue)
