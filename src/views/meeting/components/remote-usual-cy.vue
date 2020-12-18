@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container">      
     <template v-for="(configs, type) in allConfigs">
       <div
         v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
@@ -23,13 +23,23 @@
           <el-form >
             <el-form-item label="请选择生产区设备:" style="width:450px">
               <div class="prisonlabel">
-                <el-button  v-for="(item,index) in terminals[type][1] "
-                           :key='index' size="mini"
-                           style="margin-left: 5px"
-                           >{{item.selectArr}} <i v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close" @click="open(item,type,2)"/>
+                <el-button
+                  v-for="(item,index) in terminals[type][1] "
+                  :key='index' size="mini"
+                  style="margin-left: 5px"
+                  >{{item.selectArr}} <i
+                  v-if="!(hasOriginConfigAfter && type === 0)"
+                  class="el-icon-circle-close"
+                  @click="open(item,type,2)"
+                />
                 </el-button>
               </div>
-              <el-button v-if="!(hasOriginConfigAfter && type === 0)"   type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(2,type)">选择设备</el-button>
+              <el-button
+                v-if="!(hasOriginConfigAfter && type === 0)"
+                type="primary"
+                size="mini"
+                style="margin-left: 10px;float: left;margin-top: 8px"
+                @click="tableShow(2,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -53,12 +63,23 @@
           <el-form>
             <el-form-item label="请选择监舍区设备:" style="width:450px">
               <div class="prisonlabel">
-               <el-button  v-for="(item,index) in terminals[type][0] "
-                           :key='index' size="mini"
-                           style="margin-left: 5px">{{item.selectArr}} <i  @click="open(item,type,1)" v-if="!(hasOriginConfigAfter && type === 0)" class="el-icon-circle-close"/>
+               <el-button
+                  v-for="(item,index) in terminals[type][0] "
+                  :key='index'
+                  size="mini"
+                  style="margin-left: 5px">{{item.selectArr}} <i
+                  @click="open(item,type,1)"
+                  v-if="!(hasOriginConfigAfter && type === 0)"
+                  class="el-icon-circle-close"
+                />
                 </el-button>
               </div>
-              <el-button v-if="!(hasOriginConfigAfter && type === 0)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="tableShow(1,type)">选择设备</el-button>
+              <el-button
+                v-if="!(hasOriginConfigAfter && type === 0)"
+                type="primary"
+                size="mini"
+                style="margin-left: 10px;float: left;margin-top: 8px"
+                @click="tableShow(1,type)">选择设备</el-button>
             </el-form-item>
           </el-form>
 
@@ -100,11 +121,10 @@
       </div>
 
     </template>
-    <div  class="effective__date">
-      <label
-        class="c-label"
-        style="line-height: 35px"
-      >生效日期</label>
+    <!-- 已经生效的日期 隐藏掉这个 -->
+    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
+      <label class="c-label" style="line-height: 35px">生效日期</label>
+
       <el-date-picker
         v-model="computedEffectiveDate"
         :picker-options="pickerOptions"
@@ -196,8 +216,8 @@
         </el-table>
 
       </div>
-      <span   slot="footer" class="dialog-footer">
-          <el-button type="primary"  @click="setPrimary(false,area)" :disabled="false">确 定</el-button>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="setPrimary(false,area)" :disabled="false">确 定</el-button>
           <el-button @click="prisonDetil=false">取 消</el-button>
       </span>
     </el-dialog>
@@ -217,8 +237,13 @@
   import cloneDeep from 'lodash/cloneDeep'
 
   import { Message } from 'element-ui'
+
   import remoteWeekCy from './remote-week-cy'
+
   import http from '@/service'
+
+  import { meetingChargeConfigDurations } from '@/common/constants/const'
+
   export default {
     components: {
       remoteWeekCy
@@ -307,22 +332,34 @@
       ...mapState(['normalCongigs']),
       // 是否存在正在生效的配置 现在默认情况下 是肯定有的
       hasConfigBefore() {
-        return this.allConfigs[0] && this.allConfigs[0].length && this.allConfigs[0][0].days.length && this.allConfigs[0][0].timeperiodQueue.length && this.allConfigs[0][0].queue.length&&this.allConfigs[0].area
+        return !!(this.allConfigs[0]
+          && this.allConfigs[0].length
+          && this.allConfigs[0][0].days.length
+          && this.allConfigs[0][0].timeperiodQueue.length
+          && this.allConfigs[0][0].queue.length)
       },
 
       // 是否存在即将生效的配置
       hasConfigAfter() {
-        return this.allConfigs[1] && this.allConfigs[1].length && this.allConfigs[1][0].days.length && this.allConfigs[1][0].timeperiodQueue.length && this.allConfigs[1][0].queue.length&&this.allConfigs[1].area
+        return !!(this.allConfigs[1]
+          && this.allConfigs[1].length
+          && this.allConfigs[1][0].days.length
+          && this.allConfigs[1][0].timeperiodQueue.length
+          && this.allConfigs[1][0].queue.length)
       },
 
       // 原来是否用after
       hasOriginConfigAfter() {
-        return this.normalCongigs['configAfter'] && this.normalCongigs['configAfter'].length && this.normalCongigs['configAfter'][0].days.length && this.normalCongigs['configAfter'][0].timeperiodQueue.length && this.normalCongigs['configAfter'][0].queue.length
+        return !!(this.normalCongigs['configAfter']
+          && this.normalCongigs['configAfter'].length
+          && this.normalCongigs['configAfter'][0].days.length
+          && this.normalCongigs['configAfter'][0].timeperiodQueue.length
+          && this.normalCongigs['configAfter'][0].queue.length)
       },
 
       // 当前仅有before config的时候 并且发生改变的时候
       hasConfigBeforeChange() {
-        return this.hasConfigBefore && !isEqual(this.allConfigs[0], this.normalCongigs['configBefore'])
+        return !!(this.hasConfigBefore && !isEqual(this.allConfigs[0], this.normalCongigs['configBefore']))
       },
 
       // 可选日期
@@ -347,7 +384,8 @@
     computedEffectiveDate: {
       get() {
         this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(1, 'days').format('YYYY-MM-DD'))
-       return this.dateValue
+
+        return this.dateValue
       },
 
       set(date) {
@@ -410,11 +448,11 @@
       ]),
       switchChange($event,type){
         if($event){
-          this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
-          this.$set(this.allConfigs[type], 1,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
+          this.$set(this.allConfigs[type], 0,{ days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
+          this.$set(this.allConfigs[type], 1,{ days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
         }
         else{
-            this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+          this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
         }
       },
 
@@ -427,71 +465,76 @@
         await this.getRemoteNormalConfigs({ jailId: this.jailId })
 
         Message.closeAll()
-        const { configBefore, configAfter, enabledAt ,separateByArea,durations} = this.normalCongigs
+
+        const { configBefore, configAfter, enabledAt, durations } = this.normalCongigs
+
+        let beforearea1=[], beforearea2=[], afterarea1=[], afterarea2=[]
+
+        this.separateByArea = [false, false]
+
+        this.normalCongigs['configBefore'].forEach(item=>{
+          if(item.area === 1){
+            item.terminals.forEach(val=>{
+              beforearea1.push(val)
+            })
+            this.separateByArea[0] = true
+          }
+          if(item.area === 2){
+            item.terminals.forEach(val=>{
+              beforearea2.push(val)
+            })
+            this.separateByArea[0] = true
+          }
+        })
+        this.normalCongigs['configAfter'].forEach(item=>{
+           if(item.area === 1){
+              item.terminals.forEach(val=>{
+                afterarea1.push(val)
+              })
+            this.separateByArea[1] = true
+          }
+          if(item.area === 2){
+            item.terminals.forEach(val=>{
+              afterarea2.push(val)
+            })
+            this.separateByArea[1] = true
+          }
+        })
+        if(this.separateByArea[0]){
+          beforearea1=this.arrindex(beforearea1)
+          beforearea2=this.arrindex(beforearea2)
+          this.setPrimary(beforearea1)
+          this.setPrimary(beforearea2)
+          this.terminals[0]=[beforearea1,beforearea2]
+        }
+        if(this.separateByArea[1]){
+          afterarea1=this.arrindex(afterarea1)
+          afterarea2=this.arrindex(afterarea2)
+          this.setPrimary(afterarea1)
+          this.setPrimary(afterarea2)
+          this.terminals[1]=[afterarea1,afterarea2]
+        }
 
         this.configsBefore = cloneDeep(configBefore)
 
         this.configsAfter = cloneDeep(configAfter)
 
         this.effectiveDate = enabledAt
-        this.durations=[]
-        durations.forEach(item=>{
-          let obj={label:item,value:item}
-           this.durations.push(obj)
-        })
-          let  beforearea1=[],beforearea2=[],afterarea1=[],afterarea2=[]
-          this.separateByArea = [false, false]
-        this.configsBefore.forEach(item=>{
-          if(item.area==1){
-            item.terminals.forEach(val=>{
-                beforearea1.push(val)
-            })
-            this.separateByArea[0] = true
-          }
-          if(item.area==2){
-            item.terminals.forEach(val=>{
-                beforearea2.push(val)
-            })
-            this.separateByArea[0] = true
-          }
-        })
-        this.configsAfter.forEach(item=>{
-           if(item.area==1){
-               item.terminals.forEach(val=>{
-                 afterarea1.push(val)
-              })
-              this.separateByArea[1] = true
-          }
-          if(item.area==2){
-            item.terminals.forEach(val=>{
-                 afterarea2.push(val)
-              })
-              this.separateByArea[1] = true
-          }
-        })
-        if(this.separateByArea[0]){
-            beforearea1=this.arrindex(beforearea1)
-            beforearea2=this.arrindex(beforearea2)
-           this.setPrimary(beforearea1)
-           this.setPrimary(beforearea2)
-            this.terminals[0]=[beforearea1,beforearea2]
-        }
-        if(this.separateByArea[1]){
-            afterarea1=this.arrindex(afterarea1)
-            afterarea2=this.arrindex(afterarea2)
-           this.setPrimary(afterarea1)
-           this.setPrimary(afterarea2)
-            this.terminals[1]=[afterarea1,afterarea2]
-        }
+
+        // 为了兼容后端没有返回数据的特殊处理
+        let preHandleDurations = durations.length ? durations : meetingChargeConfigDurations
+
+        this.durations = preHandleDurations.map(item => ({ label: item, value: item }))
+
         this.allConfigs = [this.configsBefore, this.configsAfter]
       },
       //数组去重
       arrindex(arr){
         let obj = {};
-          let peon = arr.reduce((cur,next) => {
-              obj[next.terminalId] ? "" : obj[next.terminalId] = true && cur.push(next);
-              return cur;
-          },[])
+        let peon = arr.reduce((cur,next) => {
+          obj[next.terminalId] ? "" : obj[next.terminalId] = true && cur.push(next);
+          return cur;
+        },[])
         return peon
       },
       // 能否新增工作日
@@ -547,7 +590,7 @@
           const { duration, interval, days, queue, area, timeperiodQueue } = config
           if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
            config.terminals=[]
-           if(config.area==1){
+           if(config.area === 1){
               let terminals=[]
               if(this.terminals[type][0]){
                   this.terminals[type][0].forEach(item=>{
@@ -560,7 +603,7 @@
               }
               config.terminals=terminals
             }
-          if(config.area==2){
+          if(config.area === 2){
             let terminals=[]
             if(this.terminals[type][1]){
               this.terminals[type][1].forEach(item=>{
@@ -679,8 +722,8 @@
       isByArea(arr){
         let n=0,m=0
         arr.forEach(item=>{
-          if(item.area==1&&item.queue.length>0) n=1
-          if(item.area==2&&item.queue.length>0) m=1
+          if(item.area === 1 && item.queue.length > 0) n=1
+          if(item.area === 2 && item.queue.length > 0) m=1
         })
          return n+m<2?true:false
       },
@@ -763,7 +806,7 @@
       //选择设备显示表
       tableShow(area,type){
         this.prisonDetil=true
-         let params={jailId:this.jailId,area:area}
+        let params={jailId:this.jailId,area:area}
         http.getTerminal(params).then( res=>{
           this.tableData=res
           this.area=area
@@ -848,18 +891,18 @@
         });
       },
       //修改按钮对应值
-      setPrimary( obj,area){
-        let multipleSelection=obj?obj:this.multipleSelection
+      setPrimary(obj,area){
+        let multipleSelection=obj ? obj: this.multipleSelection
         multipleSelection.forEach((item,key)=>{
-          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName?'-'+item.terminalName:""}`)
+          this.$set(item, 'selectArr', `${item.terminalNumber}${item.terminalName ? '-' + item.terminalName : ""}`)
         })
-        if(area==1){
-          this.terminals[this.types][0]=multipleSelection
+        if(area === 1){
+          this.terminals[this.types][0] = multipleSelection
         }
-        if(area==2){
-          this.terminals[this.types][1]=multipleSelection
+        if(area === 2){
+          this.terminals[this.types][1] = multipleSelection
         }
-        this.prisonDetil=false
+        this.prisonDetil = false
       }
     }
   }

@@ -6,14 +6,10 @@
       class="min-height-400"
       @tab-click="handleClick">
       <!-- 常规配置才有可视电话申请提前天数这个配置 -->
-      <div
-        v-if="activeName === 'usual'"
-        class="remote-visit-form">
-        <remote-visit-day
-          v-model="advanceDayLimit_"
-          :on-submit="handleUpdateAdvanceDayLimit"
-        />
+      <div v-if="haveRemoteVisitDay" class="remote-visit-form">
+        <remote-visit-day v-model="advanceDayLimit_" :on-submit="handleUpdateAdvanceDayLimit" />
       </div>
+
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
@@ -21,9 +17,7 @@
           :name="item.key">
 
           <keep-alive>
-            <component
-              v-if='activeName === item.key'
-              :is="activeName"/>
+            <component v-if='activeName === item.key' :is="activeName" />
           </keep-alive>
         </el-tab-pane>
       </template>
@@ -37,6 +31,9 @@ import remoteVisitDay from './components/remote-visit-day-cy'
 import usual from './components/remote-usual-cy'
 import special from './components/remote-special-cy'
 import times from './components/remote-times'
+
+import meetingFloor from './components/remote-meeting-floor'
+
 import { mapActions, mapState, mapMutations } from 'vuex';
 export default {
   components: {
@@ -47,17 +44,51 @@ export default {
     // 特殊配置
     special,
     // 每人日申请次数限制配置
-    times
+    times,
+
+    // 会见楼配置
+    meetingFloor
   },
   data() {
+    const remoteVisitDayNames = ['usual', 'meetingFloor']
+
     return {
       // 标签页 也对应组件名称
       activeName: 'usual',
       // 标签页选项
-      tabMapOptions: [
+
+      advanceDayLimit_: [2, 15], // 实际操作的远程探视申请需提前天数(cy)
+
+      remoteVisitDayNames
+    }
+  },
+  computed: {
+    // 最开始的远程探视申请需提前天数
+    // ['advanceDayLimit']
+    ...mapState({
+      advanceDayLimit: state => state.advanceDayLimit,
+
+      jailsMeetingFloorStatus: state => state.global.jailsMeetingFloorStatus
+    }),
+    // 监狱id
+    jailId() {
+      return this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
+    },
+
+    // 是否拥有配置日期组件
+    haveRemoteVisitDay() {
+      return this.remoteVisitDayNames.includes(this.activeName)
+    },
+
+    tabMapOptions() {
+      let _tabMapOptions = [
         {
           label: '常规配置',
           key: 'usual'
+        },
+        {
+          label: '会见楼配置',
+          key: 'meetingFloor'
         },
         {
           label: '特殊日期配置',
@@ -67,16 +98,12 @@ export default {
           label: '每人日申请次数限制配置',
           key: 'times'
         }
-      ],
-      advanceDayLimit_: [2, 15] // 实际操作的远程探视申请需提前天数(cy)
-    }
-  },
-  computed: {
-    // 最开始的远程探视申请需提前天数
-    ...mapState(['advanceDayLimit']),
-    // 监狱id
-    jailId() {
-      return this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
+      ]
+
+      // 暂时先注释
+      // if (!this.jailsMeetingFloorStatus) _tabMapOptions.splice(1, 1)
+
+      return _tabMapOptions
     }
   },
   watch: {
@@ -86,7 +113,7 @@ export default {
     '$route.query': {
       handler(query) {
         // 为常规配置的时候
-        if (query.tag === 'usual') {
+        if (this.remoteVisitDayNames.includes(query.tag)) {
           // 获取可视电话申请需提前天数
           this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
         }
@@ -101,8 +128,10 @@ export default {
     }
   },
   // 获取申请提前天数
-  created() {
-    this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
+  async created() {
+    await this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
+    // 暂时先注释
+    // await Promise.all([this.getRemoteAdvanceDayLimits({ jailId: this.jailId }), this.getJailsMeetingFloorStatus(this.jailId)])
   },
   // 渲染组件
   mounted() {
@@ -111,7 +140,8 @@ export default {
   methods: {
     ...mapActions([
       'getRemoteAdvanceDayLimits',
-      'updateRemoteAdvanceDayLimit'
+      'updateRemoteAdvanceDayLimit',
+      'getJailsMeetingFloorStatus'
     ]),
 
     ...mapMutations((['setAdvanceDayLimits'])),
