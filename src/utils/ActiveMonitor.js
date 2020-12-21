@@ -26,6 +26,7 @@ export default class ActiveMonitor {
     else {
       this._reset()
       logout()
+      Message.closeAll()
       if (router.currentRoute.path !== '/login') {
         router.push('/login')
         Message({

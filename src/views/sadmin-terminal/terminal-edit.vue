@@ -82,23 +82,6 @@
           </el-form-item>
         </template>
 
-        <!-- <el-form-item
-          v-if="isPrisonArea"
-          label="监区"
-          prop="prisonConfigId">
-          <el-select
-            v-model="terminal.prisonConfigId"
-            filterable
-            :disabled="!hasPrisonArea"
-            :loading="gettingPrisonArea"
-            placeholder="请选择监区">
-            <el-option
-              v-for="prisonArea in jailPrisonAreas"
-              :key="prisonArea.id"
-              :label="prisonArea.name"
-              :value="prisonArea.id"/>
-          </el-select>
-        </el-form-item> -->
         <el-form-item
           label="主持人密码"
           prop="hostPassword">
@@ -287,84 +270,79 @@ export default {
     async onPrisonChange(e, init) {
       if (!init) {
         this.clearSubPrisonArea('prisonArea', this.formData)
+
         this.prisonConfigIdKey = 'jailId'
       } else this.prisonConfigIdKey = ''
 
-      let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-      if (prison.branchPrison === 1) {
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
+      const res = await this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } })
 
-        const res = await this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } })
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+      if (!res) return
 
-        if (!res) return
+      if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
 
-        if (this.jailPrisonAreas.length === 0) {
-          this.$message.warning('请先导入罪犯数据')
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+
+      if (init) {
+        const { prisonConfigId } = this.terminal
+
+        await this.getDetailMany({ id: prisonConfigId })
+
+        const { level, areaId } = this.detailManyConfigs
+
+        const constLevelObject = {
+          [2]: {
+            keys: ['prisonArea'],
+
+            formDataKeys: ['branchId']
+          },
+
+          [3]: {
+            keys: ['prisonArea', 'prisonBranch'],
+
+            formDataKeys: ['branchId', 'buildingId']
+          },
+
+          [4]: {
+            keys: ['prisonArea', 'prisonBranch', 'prisonBuilding'],
+
+            formDataKeys: ['branchId', 'buildingId', 'layerId']
+          }
         }
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+        let values = {}
 
-        if (init) {
-          const { prisonConfigId } = this.terminal
-
-          await this.getDetailMany({ id: prisonConfigId })
-
-          const { level, areaId } = this.detailManyConfigs
-
-          const constLevelObject = {
-            [2]: {
-              keys: ['prisonArea'],
-
-              formDataKeys: ['branchId']
-            },
-
-            [3]: {
-              keys: ['prisonArea', 'prisonBranch'],
-
-              formDataKeys: ['branchId', 'buildingId']
-            },
-
-            [4]: {
-              keys: ['prisonArea', 'prisonBranch', 'prisonBuilding'],
-
-              formDataKeys: ['branchId', 'buildingId', 'layerId']
+        if (level > 1) {
+          constLevelObject[level].formDataKeys.forEach(key => {
+            values = {
+              ...values,
+              [key]: this.detailManyConfigs[key]
             }
-          }
+          })
 
-          let values = {}
+          const temp = constLevelObject[level].keys.map(key => {
+            if(this.localPrisonAreaLevelObject[key].childNode) {
+              const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
 
-          if (level > 1) {
-            constLevelObject[level].formDataKeys.forEach(key => {
-              values = {
-                ...values,
-                [key]: this.detailManyConfigs[key]
-              }
-            })
+              return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
+            }
+          })
 
-            const temp = constLevelObject[level].keys.map(key => {
-               if(this.localPrisonAreaLevelObject[key].childNode) {
-                 const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
+          const result = await Promise.all(temp)
 
-                 return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
-               }
-            })
+          constLevelObject[level].keys.forEach((key, index) => {
+            if(this.localPrisonAreaLevelObject[key].childNode) {
+              const childNode = this.localPrisonAreaLevelObject[key].childNode
 
-            const result = await Promise.all(temp)
-
-            constLevelObject[level].keys.forEach((key, index) => {
-              if(this.localPrisonAreaLevelObject[key].childNode) {
-                const childNode = this.localPrisonAreaLevelObject[key].childNode
-
-                this.$set(this.localPrisonAreaLevelObject[childNode], 'options', result[index])
-              }
-            })
-          }
-
-          this.formData = Object.assign({}, this.terminal, { areaId, ...values })
+              this.$set(this.localPrisonAreaLevelObject[childNode], 'options', result[index])
+            }
+          })
         }
+
+        this.formData = Object.assign({}, this.terminal, { areaId, ...values })
       }
     },
 

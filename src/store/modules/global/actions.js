@@ -126,6 +126,8 @@ export default {
     try {
       const { data } = await repeatAPI.getJailsMeetingFloorStatus(jailId)
 
+      commit('setJailsMeetingFloorStatus', !!data)
+
       return data
     }
     catch (err) {

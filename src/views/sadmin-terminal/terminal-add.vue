@@ -252,27 +252,23 @@ export default {
         }
       })
     },
+
     onPrisonChange(e) {
       this.prisonConfigIdKey = ''
 
       this.clearSubPrisonArea('prisonArea', this.terminal)
 
-      let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)
-      if (prison.branchPrison === 1) {
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
-        this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } }).then(res => {
-          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+      this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } }).then(res => {
+        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
-          if (!res) return
+        if (!res) return
 
-          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
 
-          if (this.jailPrisonAreas.length === 0) {
-            this.$message.warning('请先导入罪犯数据')
-          }
-        })
-      }
+        if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
+      })
     },
 
     onGoBack() {
