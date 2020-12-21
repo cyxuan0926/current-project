@@ -100,8 +100,7 @@ export default {
         }
       ]
 
-      // 暂时先注释
-      // if (!this.jailsMeetingFloorStatus) _tabMapOptions.splice(1, 1)
+      if (!this.jailsMeetingFloorStatus) _tabMapOptions.splice(1, 1)
 
       return _tabMapOptions
     }
@@ -129,9 +128,7 @@ export default {
   },
   // 获取申请提前天数
   async created() {
-    await this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
-    // 暂时先注释
-    // await Promise.all([this.getRemoteAdvanceDayLimits({ jailId: this.jailId }), this.getJailsMeetingFloorStatus(this.jailId)])
+    await Promise.all([this.getRemoteAdvanceDayLimits({ jailId: this.jailId }), this.getJailsMeetingFloorStatus(this.jailId)])
   },
   // 渲染组件
   mounted() {

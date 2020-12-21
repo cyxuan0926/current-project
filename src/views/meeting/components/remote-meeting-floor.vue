@@ -27,7 +27,7 @@
                 </template>
               </el-checkbox-group>
 
-              <el-button type="primary" size="mini">配置监区</el-button>
+              <el-button type="primary" size="mini" @click="onDeployPrisonArea(index, type, configs)">配置监区</el-button>
 
               <el-button
                 v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
@@ -222,7 +222,7 @@ export default {
   data() {
     const basicConfig = {
       // 工作日
-      days: [],
+      days: [1, 2, 3, 4, 5, 6, 0],
       // 配置时间段
       config: [],
       // 时间段队列
@@ -618,6 +618,12 @@ export default {
         // 过滤已经配置了的日子
         return !days.some(v => v === w.value)
       }
+    },
+
+    // 配置监区按钮
+    // index：序号 type：正在生效/将要生效 configs：当前配置信息
+    onDeployPrisonArea(index, type, configs) {
+      console.log('配置监区：', index, type, configs)
     }
   }
 }

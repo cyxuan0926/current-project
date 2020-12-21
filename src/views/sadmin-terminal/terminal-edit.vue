@@ -276,7 +276,7 @@ export default {
 
       this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-      const res = await this.getJailPrisonAreas({ url: '/getTerminalsPrisonConfigs', params: { jailId: e } })
+      const res = await this.getJailPrisonAreas({ url: '/prison_config/getTerminalsPrisonConfigs', params: { jailId: e } })
 
       this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
@@ -289,60 +289,62 @@ export default {
       if (init) {
         const { prisonConfigId } = this.terminal
 
-        await this.getDetailMany({ id: prisonConfigId })
+        if (prisonConfigId) {
+          let values = {}
 
-        const { level, areaId } = this.detailManyConfigs
+          await this.getDetailMany({ id: prisonConfigId })
 
-        const constLevelObject = {
-          [2]: {
-            keys: ['prisonArea'],
+          const { level, areaId } = this.detailManyConfigs
 
-            formDataKeys: ['branchId']
-          },
+          const constLevelObject = {
+            [2]: {
+              keys: ['prisonArea'],
 
-          [3]: {
-            keys: ['prisonArea', 'prisonBranch'],
+              formDataKeys: ['branchId']
+            },
 
-            formDataKeys: ['branchId', 'buildingId']
-          },
+            [3]: {
+              keys: ['prisonArea', 'prisonBranch'],
 
-          [4]: {
-            keys: ['prisonArea', 'prisonBranch', 'prisonBuilding'],
+              formDataKeys: ['branchId', 'buildingId']
+            },
 
-            formDataKeys: ['branchId', 'buildingId', 'layerId']
+            [4]: {
+              keys: ['prisonArea', 'prisonBranch', 'prisonBuilding'],
+
+              formDataKeys: ['branchId', 'buildingId', 'layerId']
+            }
           }
-        }
 
-        let values = {}
+          if (level > 1) {
+            constLevelObject[level].formDataKeys.forEach(key => {
+              values = {
+                ...values,
+                [key]: this.detailManyConfigs[key]
+              }
+            })
 
-        if (level > 1) {
-          constLevelObject[level].formDataKeys.forEach(key => {
-            values = {
-              ...values,
-              [key]: this.detailManyConfigs[key]
-            }
-          })
+            const temp = constLevelObject[level].keys.map(key => {
+              if(this.localPrisonAreaLevelObject[key].childNode) {
+                const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
 
-          const temp = constLevelObject[level].keys.map(key => {
-            if(this.localPrisonAreaLevelObject[key].childNode) {
-              const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
+                return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
+              }
+            })
 
-              return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
-            }
-          })
+            const result = await Promise.all(temp)
 
-          const result = await Promise.all(temp)
+            constLevelObject[level].keys.forEach((key, index) => {
+              if(this.localPrisonAreaLevelObject[key].childNode) {
+                const childNode = this.localPrisonAreaLevelObject[key].childNode
 
-          constLevelObject[level].keys.forEach((key, index) => {
-            if(this.localPrisonAreaLevelObject[key].childNode) {
-              const childNode = this.localPrisonAreaLevelObject[key].childNode
+                this.$set(this.localPrisonAreaLevelObject[childNode], 'options', result[index])
+              }
+            })
 
-              this.$set(this.localPrisonAreaLevelObject[childNode], 'options', result[index])
-            }
-          })
-        }
-
-        this.formData = Object.assign({}, this.terminal, { areaId, ...values })
+            this.formData = Object.assign({}, this.terminal, { areaId, ...values })
+          }
+        } else this.formData = Object.assign({}, this.terminal, { areaId: null }) //  null 是非会见楼 强制刷成null
       }
     },
 

@@ -18,7 +18,7 @@ export default {
     return service.get(`/cities/list?provicesId=${ params }`).then(res => res && res.data)
   },
   // 监区-根据监狱id查询
-  // 会见楼需求：监区里面需要加上 会见楼和非会见楼虚拟概念 /getTerminalsPrisonConfigs
+  // 会见楼需求：监区里面需要加上 会见楼和非会见楼虚拟概念 /prison_config/getTerminalsPrisonConfigs
   // 普通查询监区： /prison_config/getPrisonConfigs
   getJailPrisonAreas: args => {
     const { url, params } = args

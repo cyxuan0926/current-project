@@ -2,6 +2,8 @@ import { prisonAreaLevelObject } from '@/common/constants/const'
 
 import cloneDeep from 'lodash/cloneDeep'
 
+import { Message } from 'element-ui'
+
 export default {
   data() {
     return {
@@ -23,7 +25,10 @@ export default {
     },
 
     async onInitPrisonAreaLevelData({ parentId, childNode }) {
+      console.log(parentId)
       await this.$store.dispatch('getChildPrisonConfigs', { parentId })
+
+      Message.closeAll()
 
       this.$set(this.localPrisonAreaLevelObject[childNode], 'options', this.$store.state.multiPrisonConfigs)
     },
@@ -43,7 +48,7 @@ export default {
 
       if (isLast) return
 
-      await this.onInitPrisonAreaLevelData({ parentId, childNode })
+      if (!(parentId < 0 || !parentId)) await this.onInitPrisonAreaLevelData({ parentId, childNode })
     }
   }
 }
