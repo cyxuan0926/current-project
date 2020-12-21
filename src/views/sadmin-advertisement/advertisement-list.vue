@@ -95,7 +95,7 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
-import { getPagedMessagInside, getadserviceslist } from '@/service-public/api/inside'
+import { getPagedMessagInside, getadserviceslist, deleteInside, onlineInside, offlineInside } from '@/service-public/api/inside'
 export default {
   data() {
     return {
@@ -203,8 +203,7 @@ export default {
         this.tabledata= res
     },
     onSearch() {
-      console.log(...this.filter)
-     // this.$refs.pagination.handleCurrentChange(0)
+      this.$refs.pagination.handleCurrentChange(0)
     },
     onAdd() {
       this.$router.push('/advertisement/add')
@@ -239,7 +238,7 @@ export default {
                 type: 'warning'
               })
                 await onlineInside(parmas)
-                this.$refs.appManagementTable.queryTable()
+               this.$refs.pagination.handleCurrentChange(0)
                 this.$message({
                   type: 'success',
                   message: '上架成功!'
@@ -261,7 +260,7 @@ export default {
                 type: 'warning'
               })
              await offlineInside(parmas)
-             this.$refs.appManagementTable.queryTable()
+            this.$refs.pagination.handleCurrentChange(0)
                 this.$message({
                   type: 'success',
                   message: '下架成功!'
@@ -282,7 +281,7 @@ export default {
                 type: 'warning'
               })
            await deleteInside(parmas)
-                this.$refs.appManagementTable.queryTable()
+                this.$refs.pagination.handleCurrentChange(0)
                 this.$message({
                   type: 'success',
                   message: '删除成功!'

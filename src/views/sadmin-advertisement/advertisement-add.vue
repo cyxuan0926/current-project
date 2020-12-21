@@ -332,7 +332,7 @@
                  await updateInside(parmas).then(res=>{
                    if(res.code==200) {
                     this.$message.success(res.msg)
-                    this.$router.back(-1)
+                    this.goback()
                     }else{
                         this.$message.error(res.msg)
                     }
@@ -341,7 +341,7 @@
               await addInside(parmas).then(res=>{
                  if(res.code==200) {
                     this.$message.success(res.msg)
-                    this.$router.back(-1)
+                    this.goback()
                 }else{
                     this.$message.error(res.msg)
                 }

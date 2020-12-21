@@ -29,7 +29,7 @@ export function getusedSort(params) {
 }
 // 根据服务id查询广告位置
 export function addInside(data) {
-  return post('/ad/add', data).then(res => res && res.data)
+  return post('/ad/add', data).then(res => res && res)
 }
 // 根据广告id上架广告
 export function onlineInside(data) {
@@ -45,5 +45,5 @@ export function deleteInside(data) {
 }
 // 更新当前配置
 export function updateInside(data) {
-  return put('/ad/update', data).then(res => res && res.data)
+  return put('/ad/update', data).then(res => res && res)
 }
