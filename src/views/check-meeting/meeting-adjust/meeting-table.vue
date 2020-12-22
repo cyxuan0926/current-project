@@ -101,7 +101,7 @@
             <label class="filter__label special">选择区域</label>
             <el-select style="width: 200px" v-model="tableAreaType" placeholder="请选择区域">
               <el-option
-                v-for="item in $store.state.areaOptions"
+                v-for="item in areaOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -139,7 +139,7 @@
             v-if="isSeparateByArea"
             v-model="tableAreaType"
             type="card">
-            <el-tab-pane v-for="t in $store.state.areaOptions"
+            <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
               :name="t.value" />
@@ -274,6 +274,7 @@ import Moment from 'moment'
 import { mapActions, mapState } from "vuex";
 export default {
   props: {
+    areaOptions: Array,
     adjustDate: String,
     dayinLimit: String,
     areaType: String,

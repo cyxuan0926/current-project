@@ -25,6 +25,7 @@
     </el-tabs>
     <meeting-table
       ref="meetingTable"
+      :areaOptions="areaOptions"
       :areaType="areaTabs"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
@@ -60,7 +61,8 @@ export default {
       dayinLimit: '',
       pickerOptions: {},
       isSeparateByArea: false,
-      areaTabs: '1'
+      areaTabs: '1',
+      areaOptions: []
     };
   },
 
@@ -130,6 +132,7 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
+    this.areaOptions = Array.from(this.$store.state.areaOptions)
     await this.setSeparateArea()
     await this.getConfigs()
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
@@ -211,6 +214,10 @@ export default {
         inputDate: this.adjustDate
       })
       this.isSeparateByArea = data && data.separateByArea
+      // { data } = await http.getJailsMeetingFloorStatus(this.$store.state.global.user.jailId)
+      // if( !data ) {
+      //   this.areaOptions = this.areaOptions.filter(item => item != '3')
+      // }
     },
 
     async handlePickerChange() {
