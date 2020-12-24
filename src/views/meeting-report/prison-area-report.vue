@@ -287,7 +287,7 @@ export default {
 
       if (selectKey === 'jailId') {
         if (value) {
-          await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+          await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
           this.$set(this.searchItems['prisonAreaId'], 'options', this.$store.state.jailPrisonAreas)
         }
         else {

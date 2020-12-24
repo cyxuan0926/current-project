@@ -138,7 +138,7 @@ export default {
 
     fields: {
       handler: function(val) {
-         this.$emit('response', val)
+        this.$emit('response', val)
       },
       deep: true
     }
@@ -238,7 +238,7 @@ export default {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
-        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages))
+        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages, item.placeholder))
       })
       delete item.rules
     },
@@ -259,7 +259,7 @@ export default {
       }
     },
 
-    ruleSwitch(rule, label, type, ruleMessages) {
+    ruleSwitch(rule, label, type, ruleMessages, placeholder) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
@@ -269,7 +269,7 @@ export default {
       let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
         case 'required':
-          return { message: `${ plea }${ label }`, required: true, validator: validator.required }
+          return { message: `${ plea }${ placeholder || label }`, required: true, validator: validator.required }
         case 'isNumber':
           return { validator: validator.isNumber }
         case 'isFee':

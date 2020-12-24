@@ -930,7 +930,7 @@
     .button-float{
       float: left;
       margin-bottom: 10px;
-      margin-left: 0;
+      // margin-left: 0;
     }
     .button-box{
       display: flex;

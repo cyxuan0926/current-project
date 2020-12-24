@@ -42,5 +42,9 @@ export default {
     else {
       state.remoteSpecialConfig = [{ effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false }]
     }
+  },
+
+  setMeetingRoomConfigs(state, meetingRoomConfigs) {
+    state.meetingRoomConfigs = Object.assign({}, meetingRoomConfigs)
   }
 }
