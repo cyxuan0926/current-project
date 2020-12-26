@@ -11,7 +11,7 @@ export const isEmptyObject = (options, query = []) => {
   if (!options) return false
   let result = {}
   Object.keys(options).forEach(k => {
-    if (options[k] && !query.find((n) => n === k)) {
+    if (options[k] && !query.find(n => n === k)) {
       result[k] = options[k]
     }
   })
@@ -397,6 +397,7 @@ export function convertToChinaNum(num) {
     return result
 }
 
+// 暂时没用
 // 都要是数字 记得手动初始化数字
 export const sortWeeks = (weeks) => {
   let filterWeeks = weeks.includes(0) ? weeks.filter(week => week !== 0) : weeks

@@ -375,7 +375,7 @@ export default {
     return http.deleteSpecialConfigById(params).then(res => res)
   },
 
-  async getComplexConfigFloorDetail({ commit }, jailId) {
+  async getComplexConfigFloorDetail({ commit }, prisonId) {
     try {
       // 需要先调取是否分监区
       // eslint-disable-next-line
@@ -384,7 +384,7 @@ export default {
         configurationsFloorDetailFuture,
         complexNormalConfig,
         prisonBranch
-      } = await http.getComplexConfigFloorDetail(jailId)
+      } = await http.getComplexConfigFloorDetail(prisonId)
 
       // console.log(configurationsFloorDetailNow, configurationsFloorDetailFuture, complexNormalConfig, prisonBranch)
 
@@ -394,13 +394,25 @@ export default {
       // complexNormalConfig：会见楼时间配置 configAfter：即将生效的时间  configBefore： 正在生效的时间
       // 还要考虑是否分监区 不分监区的话 就需要初始为 全监狱
       // 先初始化时间配置
-      const { configBefore, configAfter, durations } = complexNormalConfig
+      const {
+        configBefore,
+        configAfter,
+        durations,
+        dayInLimit,
+        enabledAt,
+        updatedAt,
+        jailId,
+        id
+      } = complexNormalConfig
 
       const allTimeConfigs = [configBefore, configAfter]
 
       const allPrisonWeekConfigs = [configurationsFloorDetailNow, configurationsFloorDetailFuture]
 
       const filterAllTimeConfigs = allTimeConfigs.map((configs, index) => {
+        // 新增 就是都是空 这种不管怎么样都是改变的
+        // 只有正在生效的 没有即将生效的为空 只能操作正在生效的 更新到即将生效的
+        // 既有正在生效的 又有即将生效的 只能操作即将生效的 更新到正在生效的
         if (!configs || (Array.isArray(configs) && !configs.length)) {
           return [
             { days: [1, 2, 3, 4, 5, 6, 0],
@@ -454,6 +466,7 @@ export default {
 
             allPrisonWeekConfigs[index].forEach(prisonWeekConfig => {
               weeks.forEach(day => {
+                // 拥有的日期
                 if (+day.value === +prisonWeekConfig.days) {
                   const { key } = day
 
@@ -461,7 +474,8 @@ export default {
 
                   prisonConfigId = prisonConfigId || []
 
-                  if (!+prisonBranch) prisonConfigId = ['全监狱']
+                  // 特殊处理 全监狱 id默认为 -1
+                  if (!+prisonBranch) prisonConfigId = [-1]
 
                   weekConfigs = {
                     ...weekConfigs,
@@ -479,6 +493,11 @@ export default {
       commit('setMeetingRoomConfigs', {
         prisonBranch,
         durations,
+        enabledAt,
+        dayInLimit,
+        updatedAt,
+        jailId,
+        id,
         configBefore: filterAllTimeConfigs[0],
         configAfter: filterAllTimeConfigs[1]
       })

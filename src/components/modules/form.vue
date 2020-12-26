@@ -116,7 +116,13 @@ export default {
       type: Object,
       default: () => ({})
     },
+
     values: {
+      type: Object,
+      default: () => ({})
+    },
+
+    initFields: {
       type: Object,
       default: () => ({})
     }
@@ -212,7 +218,8 @@ export default {
         if (this.items[key].type === 'select') this.initSelect(this.items[key], key)
         if (this.items[key].type === 'date' && this.items[key].pickerOptions) this.initDate(this.items[key], this.items[key].pickerOptions)
       })
-      this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
+
+      this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : { ...fields, ...this.initFields }
       this.flag = true
     },
 
