@@ -377,16 +377,12 @@ export default {
 
   async getComplexConfigFloorDetail({ commit }, prisonId) {
     try {
-      // 需要先调取是否分监区
-      // eslint-disable-next-line
       const {
         configurationsFloorDetailNow,
         configurationsFloorDetailFuture,
         complexNormalConfig,
         prisonBranch
       } = await http.getComplexConfigFloorDetail(prisonId)
-
-      // console.log(configurationsFloorDetailNow, configurationsFloorDetailFuture, complexNormalConfig, prisonBranch)
 
       // 是否分监区
       // configurationsFloorDetailNow: 正在生效的会见楼配置 监区配置
@@ -413,6 +409,7 @@ export default {
         // 新增 就是都是空 这种不管怎么样都是改变的
         // 只有正在生效的 没有即将生效的为空 只能操作正在生效的 更新到即将生效的
         // 既有正在生效的 又有即将生效的 只能操作即将生效的 更新到正在生效的
+        // 只有即将生效的
         if (!configs || (Array.isArray(configs) && !configs.length)) {
           return [
             { days: [1, 2, 3, 4, 5, 6, 0],
@@ -509,7 +506,9 @@ export default {
 
   async saveComplexConfigFloorDetail({ commit }, params) {
     try {
-      await http.saveComplexConfigFloorDetail(params)
+      const { code } = await http.saveComplexConfigFloorDetail(params)
+
+      return code === 200
     }
     catch (err) {
       Promise.reject(err)

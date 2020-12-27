@@ -46,8 +46,12 @@ import profile from './prison-report-profile'
 import detail from './prison-report-detail'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-const startDate = Moment().format('YYYY-MM')
-const endDate = Moment().format('YYYY-MM')
+// const startDate = Moment().format('YYYY-MM')
+// const endDate = Moment().format('YYYY-MM')
+
+const endDate = Moment().format('YYYY-MM-DD')
+
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 
 export default {
   mixins: [prisonFilterCreator],
@@ -56,17 +60,26 @@ export default {
     return {
       activeComponentName: 'profile',
       searchItems: {
+        // reportRange: {
+        //   type: 'monthRangeSelector',
+        //   canNotClear: true,
+        //   startValue: startDate,
+        //   endValue: endDate,
+        //   startKey: 'startDate',
+        //   endKey: 'endDate',
+        //   range: {
+        //     max: Moment().format('YYYY-MM'),
+        //     maxMonthRange: 24
+        //   }
+        // },
         reportRange: {
-          type: 'monthRangeSelector',
-          canNotClear: true,
-          startValue: startDate,
-          endValue: endDate,
-          startKey: 'startDate',
-          endKey: 'endDate',
-          range: {
-            max: Moment().format('YYYY-MM'),
-            maxMonthRange: 24
-          }
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间',
+          value: [startDate, endDate]
         },
         name: {
           type: 'input',

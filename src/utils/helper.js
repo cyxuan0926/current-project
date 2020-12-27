@@ -396,15 +396,3 @@ export function convertToChinaNum(num) {
 
     return result
 }
-
-// 暂时没用
-// 都要是数字 记得手动初始化数字
-export const sortWeeks = (weeks) => {
-  let filterWeeks = weeks.includes(0) ? weeks.filter(week => week !== 0) : weeks
-
-  filterWeeks.sort(function(a, b) { return a - b })
-
-  filterWeeks.push(0)
-
-  return filterWeeks
-}

@@ -1,14 +1,15 @@
 <template>
   <div class="container">
-    <p>{{ '是否修改了正在生效的配置：' + hasConfigBeforeChange }}</p>
+    <!-- 正在生效的就放在正在生效的数组/即将生效的就放在即将生效的数组里面/但更新的时候都是传给即将生效的数组 -->
     <template v-for="(configs, type) in allConfigs">
-      <!-- 因为初始化的时候都是初始成最小基本元素 所以需要这样的判断 -->
+      <!-- 渲染出正在生效部分: 必须有正在生效的 -->
+      <!-- 渲染出即将生效的部分: 没有正在生效的或者有即将生效的 -->
       <div
-        v-if="type === 0 || hasOriginConfigAfter"
-        class="m-container"
+        v-if="(type === 0 && hasOriginConfigBefore) || (type === 1 && (!hasOriginConfigBefore || hasOriginConfigAfter))"
+        :class="['m-container', { 'new': type === 1 }]"
         :key="type"
       >
-        <!-- 这个地方 暂时放下 有疑问 -->
+        <!-- 只在有即将生效的情况下并且只显示在即将生效的部分 -->
         <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">
           {{ meetingRoomConfigs['updatedAt'] + ' 调整后的时间段配置，' + meetingRoomConfigs['enabledAt'] + ' 日生效' }}
         </div>
@@ -18,10 +19,7 @@
             <div class="day-box">
               <label class="c-label">选择工作日</label>
 
-              <!-- 最少配置一个日期 -->
               <el-checkbox-group v-model="config.days" :min="1">
-                <!-- 这里 修改工作日后不禁用-->
-                <!-- 配置监区后 禁用 或者 保存后禁用 && (!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)) -->
                 <template v-for="(w, i) in week">
                   <el-checkbox
                     :key="i"
@@ -30,16 +28,14 @@
                 </template>
               </el-checkbox-group>
 
-              <template v-if="!(hasOriginConfigAfter && type === 0)">
+              <template v-if="!hasOriginConfigAfter || type === 1">
                 <el-button
-                  v-if="!(!hasOriginConfigBefore && !hasPrisonWeekItemsBefore)"
+                  v-if="hasOriginConfigBefore || hasPrisonWeekItemsAfter"
                   type="primary"
                   size="mini"
                   @click="onChangeConfigDays(index, type, configs)"
                 >修改工作日</el-button>
 
-                <!-- 如果是新增的话 默认进来显示 -->
-                <!-- 如果修改了工作日 显示-->
                 <el-button
                   v-if="hasChangeDaysPrisonAreConfigShow[type][index]"
                   type="primary"
@@ -54,7 +50,6 @@
                   @click="onEditPrisonArea(index, type, configs)"
                 >修改监区</el-button>
 
-                <!-- 工作日/监区配置变化后显示 -->
                 <el-button
                   v-if="hasChangePrisonAreConfigSaveShow[type][index]"
                   type="primary"
@@ -63,26 +58,23 @@
                 >保存</el-button>
               </template>
 
-              <!-- 要等配置工作日和监区配置完成后 -->
-              <!-- 没有配置会见时间 并且 选择了工作日 现在还要加上配置了是否配置了日期周期 如果是有将要生效的 那么正在生效的是绝对没有的 -->
-              <!-- 默认新增的时候 需要等配置监区和时间后 才显示 -->
-              <!-- 只要存在就不显示 -->
               <el-button
-                v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                v-if="!config.timeperiodQueue.length"
                 type="primary"
                 size="mini"
                 @click="handleConfig(index, type, configs)">配置时间段参数</el-button>
             </div>
 
             <!-- 配置监区区域 -->
-            <m-form
-              v-if="hasPrisonWeekItemsBefore"
-              class="el-form__prison-area"
-              :items="prisonAreaDaysFormItems[type][index]"
-              :ref="`${type}el-form__prison-area${index}`"
-              :initFields="{ index: index, type: type }"
-              @response="onPrisonAreaResponse"
-            />
+            <template v-if="hasPrisonWeekItemsAfter">
+              <m-form
+                class="el-form__prison-area"
+                :items="prisonAreaDaysFormItems[type][index]"
+                :ref="`${type}el-form__prison-area${index}`"
+                :initFields="{ index: index, type: type }"
+                @response="onPrisonAreaResponse"
+              />
+            </template>
             
             <template v-if="config.timeperiodQueue.length">
               <!-- 通话时长/时间间隔 -->
@@ -122,7 +114,7 @@
                     <div v-if="config['showError'][o]" class="error__tip">时间段区间小于通话时长</div>
                   </div>
 
-                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
+                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1)">
                     <el-button
                       v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
                       type="primary"
@@ -163,7 +155,7 @@
 
                   <!-- 国科服务管理员角色 -->
                   <el-button
-                    v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"
+                    v-if="!hasOriginConfigAfter || type === 1"
                     size="mini"
                     class="button-float"
                     :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -176,8 +168,7 @@
       </div>
     </template>
 
-    <!-- 这个地方 暂时放下 有疑问 -->
-    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
+    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange || newStatusHasConfigAfterChange" class="effective__date">
       <label class="c-label" style="line-height: 35px">生效日期</label>
 
       <el-date-picker
@@ -196,9 +187,8 @@
         size="small"
         @click="onGoBack">返回</el-button>
 
-      <!-- 需要时间配置完整并且监区日期配置保存 才显示 -->
       <el-button
-        :disabled="!(!updateShow && permission === 'edit' && allTypedPreSaveSucceeded)"
+        :disabled="updateShow || permission !== 'edit' || !allTypedPreSaveSucceeded"
         size="small"
         type="primary"
         @click="onUpdate">更新</el-button>
@@ -214,7 +204,7 @@
 
       <!-- 这里需要修改文案 -->
       <div>
-        修改常规配置后，如有家属已预约，将重新分配相关可视电话时间段，调整后会以短信形式通知相关家属。
+        修改配置后，如有家属已预约，将重新分配相关可视电话时间段，调整后会以短信形式通知相关家属。
         若预约日期无法在当日分配时间段，系统将自动取消该家属申请，并以短信形式通知相关家属！请确认是否继续操作！
       </div>
 
@@ -251,10 +241,9 @@ import { Message } from 'element-ui'
 
 import { weeks, meetingChargeConfigDurations } from '@/common/constants/const'
 
-// 还有很多小细节需要修改
-// 现在还需要几个辅助函数
-// 把day => prop
-// 现在交互流程先这样 修改工作日后 必须先配置监区 才会有保存按钮
+import { daysTransformWeeksParams, dayTransformProp } from '../utils'
+
+// 现在交互流程这样 修改工作日后 必须先配置监区 才会有保存按钮
 // 修改工作日:工作日 不禁用 保存按钮显示/新增的时候隐藏并且没有配置监区的时候隐藏
 // 修改监区:监区配置 不禁用 保存按钮显示/ 新增的时候并且没有保存的情况下隐藏/
 // 配置监区:禁用工作日、清除验证、监区配置不禁用、新增监区配置 保存按钮显示/预先保存成功后 就隐藏/ 新增的时候默认显示或者日期变化后显示
@@ -279,12 +268,8 @@ export default {
       visible: false,
       // 原始的配置信息
       orignConfigs: [],
-      // 正在生效的配置
-      configsBefore: [],
 
       filterDuration: [25, 25],
-      // 即将生效的配置
-      configsAfter: [],
 
       allConfigs: [],
 
@@ -319,12 +304,9 @@ export default {
     // 这里好像也有问题
     allConfigs: {
       handler: function (value) {
-        if (this.hasOriginConfigAfter) {
-          this.updateShow = value[1].some(item => !item.queue.length)
-        }
-        else {
-          this.updateShow = value[0].some(item => !item.queue.length)
-        }
+        if (this.hasConfigAfter) this.updateShow = value[1].some(item => !item.queue.length)
+
+        else this.updateShow = value[0].some(item => !item.queue.length)
       },
       deep: true
     }
@@ -335,16 +317,14 @@ export default {
     // 会见楼配置
     ...mapState(['meetingRoomConfigs', 'jailPrisonAreas']),
 
-    // 是否存在正在生效的配置 现在默认情况下 是肯定有的
-    hasConfigBefore() {
-      return !!(this.allConfigs[0]
-        && this.allConfigs[0].length
-        && this.allConfigs[0][0].timeperiodQueue.length
-        && this.allConfigs[0][0].queue.length)
+    hasConfigAfter() {
+      return !!(this.allConfigs[1]
+        && this.allConfigs[1].length
+        && this.allConfigs[1][0].timeperiodQueue.length
+        && this.allConfigs[1][0].queue.length)
     },
 
-    // 原来是否用after
-    // 现在日期默认是满的
+    // 初始化的时候是否有即将生效的配置
     hasOriginConfigAfter() {
       return !!(this.meetingRoomConfigs['configAfter']
         && this.meetingRoomConfigs['configAfter'].length
@@ -352,7 +332,7 @@ export default {
         && this.meetingRoomConfigs['configAfter'][0].queue.length)
     },
 
-    // 新增的情况
+    // 初始化的时候是否有正在生效的配置
     hasOriginConfigBefore() {
       return !!(this.meetingRoomConfigs['configBefore']
         && this.meetingRoomConfigs['configBefore'].length
@@ -360,20 +340,23 @@ export default {
         && this.meetingRoomConfigs['configBefore'][0].queue.length)
     },
 
-    // 是否拥有配置
-    hasPrisonWeekItemsBefore() {
-      return !!(this.prisonAreaDaysFormItems[0] && this.prisonAreaDaysFormItems[0].length)
+    // 新增/只有即将生效情况下
+    hasPrisonWeekItemsAfter() {
+      return !!(this.prisonAreaDaysFormItems[1] && this.prisonAreaDaysFormItems[1].length)
     },
 
     // 当前仅有before config的时候 并且发生改变的时候
     hasConfigBeforeChange() {
-      return !!(this.hasConfigBefore && !isEqual(this.allConfigs[0], this.meetingRoomConfigs['configBefore']))
+      return !isEqual(this.allConfigs[0], this.meetingRoomConfigs['configBefore'])
+    },
+
+    newStatusHasConfigAfterChange() {
+      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !isEqual(this.allConfigs[1], this.meetingRoomConfigs['configAfter'])
     },
 
     // 可选日期
     // 如果没有after 取值范围就是当前日期的第二天起 默认是当前 + 15 +1
     // 如果有after 默认值是enableAt 范围是当前日期的第二天起 到 enableAt
-    // 这里也会需要修改的
     pickerOptions() {
       return {
         disabledDate: (time) => {
@@ -381,6 +364,7 @@ export default {
             return time.getTime() < Date.now()
           }
           else {
+            // 生效日期
             const { enabledAt } = this.meetingRoomConfigs
 
             return time.getTime() < Date.now() || time.getTime() > new Date(enabledAt)
@@ -390,8 +374,6 @@ export default {
     },
 
     // 生效日期的默认值
-    // 还有很多小细节需要修改
-    // 这里会需要修改的
     computedEffectiveDate: {
       get() {
         const { dayInLimit } = this.meetingRoomConfigs
@@ -462,7 +444,7 @@ export default {
 
     // 当前监区日期配置是否全部完成
     allTypedPreSaveSucceeded() {
-      if (this.hasOriginConfigAfter) return this.preSaveSuccess[1].every(item => item)
+      if (this.hasPrisonWeekItemsAfter) return this.preSaveSuccess[1].every(item => item)
 
       else return this.preSaveSuccess[0].every(item => item)
     }
@@ -472,6 +454,7 @@ export default {
   async activated() {
     // 国科服务管理员权限/信息管理人员权限
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
+
     if (this.permission === 'edit') {
       // 获取远程通话常规配置
       await this.initConfigs()
@@ -513,23 +496,33 @@ export default {
         Message.closeAll()
       }
 
-      this.configsBefore = cloneDeep(configBefore)
+      const configsBefore = cloneDeep(configBefore)
 
-      this.configsAfter = cloneDeep(configAfter)
+      const configsAfter = cloneDeep(configAfter)
 
       this.effectiveDate = enabledAt
 
-      this.allConfigs = [this.configsBefore, this.configsAfter]
+      this.allConfigs = [configsBefore, configsAfter]
 
       this.allConfigs.forEach((configs, type) => {
+        if (!this.hasOriginConfigAfter && !this.hasOriginConfigBefore) this.$set(this.prisonAreaDaysFormItems, type, [])
+
         configs.forEach((_, index) => {
           // 新增
-          if (!this.hasOriginConfigBefore) this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
+          if (!this.hasOriginConfigBefore && !this.hasOriginConfigAfter) {
+            this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
+
+            this.$set(this.editPrisonAreConfigShow[type], index, false)
+
+            this.$set(this.hasChangeDaysDisabled[type], index, false)
+          }
 
           else {
             this.$set(this.hasChangeDaysDisabled[type], index, true)
 
             this.$set(this.editPrisonAreConfigShow[type], index, true)
+
+            this.$set(this.preSaveSuccess[type], index, true)
           }
 
           this.onDeployPrisonArea(index, type, configs, true)
@@ -591,7 +584,9 @@ export default {
 
         timeperiodQueue.forEach(t => period.push(t.join('-')))
 
-        result.push({ days, config: c, duration, interval, timeperiod: period })
+        const weeksPrisonAreas = daysTransformWeeksParams(days, config)
+
+        result.push({ days, config: c, duration, interval, timeperiod: period, floorDetai: weeksPrisonAreas })
       })
 
       return result
@@ -600,53 +595,80 @@ export default {
     // 更新按钮的方法
     // 只有before
     onUpdate() {
-      console.log('更新', this.allConfigs, this.meetingRoomConfigs)
-      // let hasNoChanged
+      let hasNoChanged = false
 
-      // const [before, after] = this.allConfigs
+      const [before, after] = this.allConfigs
 
-      // const { configBefore, configAfter, enabledAt } = this.meetingRoomConfigs
+      const { configBefore, configAfter, enabledAt } = this.meetingRoomConfigs
 
-      // if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+      // 只有正在生效的
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) hasNoChanged = !this.hasConfigBeforeChange
 
-      // else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+      else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
 
-      // if (hasNoChanged) {
-      //   this.$message({
-      //     showClose: true,
-      //     message: '配置没有变化，无需编辑！',
-      //     duration: 3000,
-      //     type: 'error'
-      //   })
-      // }
+      if (hasNoChanged) {
+        this.$message({
+          showClose: true,
+          message: '配置没有变化，无需编辑！',
+          duration: 3000,
+          type: 'error'
+        })
+      }
       // 展示提示对话框
-      // else this.visible = true
+      else this.visible = true
     },
 
     // 更新常规配置
     // 不分监区的情况 监区id 传空
-    onSubmit() {
-      let params
+    async onSubmit() {
+      let filterParams
+
       const [before, after] = this.allConfigs
-      if (this.hasOriginConfigAfter) {
-        params = this.filterParams(after)
-      } else {
-        params = this.filterParams(before)
-      }
-      const { id, jailId } = this.meetingRoomConfigs
+
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.filterParams(before)
+
+      else filterParams = this.filterParams(after)
+
+      const {
+        id,
+        jailId,
+        prisonBranch
+      } = this.meetingRoomConfigs
+
+      const params = filterParams.reduce((accumulator, currentItem) => {
+        const { floorDetai, ...configAfter } = currentItem
+
+        const { days } = configAfter
+
+        // 这里需要变得是
+
+        let configurationsFloorDetailItem = days.map(day => {
+          const { key } = dayTransformProp(day)
+
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : ''
+
+          return {
+            days: day,
+            jailId,
+            prisonConfigId,
+            effectiveDate: this.computedEffectiveDate
+          }
+        })
+
+        accumulator.configurationsFloorDetail = [...accumulator.configurationsFloorDetail, ...configurationsFloorDetailItem]
+
+        accumulator.complexNormalConfig.configAfter.push(configAfter)
+
+        return accumulator
+      }, { configurationsFloorDetail: [], complexNormalConfig: { enabledAt: this.computedEffectiveDate, jailId, configAfter: [] }})
 
       this.loading = true
 
-      // this.updateRemoteNormalConfig({
-      //   enabledAt: this.computedEffectiveDate,
-      //   id,
-      //   jailId,
-      //   configAfter: params
-      // }).then(res => {
-      //   this.loading = false
-      //   if (!res) return
-      //   this.visible = false
-      // })
+      const isSucess = await this.saveComplexConfigFloorDetail(params)
+
+      this.loading = false
+
+      isSucess && this.onClose()
     },
 
     // 新增一个时间段 配置默认的会见时间段(update)
@@ -732,8 +754,8 @@ export default {
       // 选择的日子
       const { days } = current
 
-      // 第一次新增会见楼的情况
-      if (init && !this.hasConfigBefore) return
+      // 新增的情况
+      if (init && !this.hasOriginConfigBefore && !this.hasOriginConfigAfter) return
 
       // 配置监区后 就禁用工作日
       this.$set(this.hasChangeDaysDisabled[type], index, true)
@@ -797,13 +819,13 @@ export default {
 
         this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
 
-        if (!this.hasOriginConfigBefore) this.$set(this.editPrisonAreConfigShow[type], index, true)
+        if (!this.hasOriginConfigBefore && !this.hasOriginConfigAfter) this.$set(this.editPrisonAreConfigShow[type], index, true)
 
         this.$set(this.preSaveSuccess[type], index, true)
 
         Message({
           showClose: true,
-          message: '预保存收费配置成功',
+          message: '预保存日期监区配置成功',
           duration: 2000,
           type: 'success'
         })
