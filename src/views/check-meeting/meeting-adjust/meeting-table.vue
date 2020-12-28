@@ -569,8 +569,8 @@ export default {
         inputDate: this.acrossAdjustDate
       })
       this.isSeparateByArea = data && data.separateByArea
-      if( data && data.useMeetingFloor ) {
-        this.areaOptions = this.areaOptions.filter(item => item != '3')
+      if( data && !data.useMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item.value != '3')
       }
     },
 

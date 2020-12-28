@@ -18,14 +18,13 @@
       v-if="isSeparateByArea"
       v-model="areaTabs"
       type="card">
-      <el-tab-pane v-for="t in $store.state.areaOptions"
+      <el-tab-pane v-for="t in areaOptions"
         :key="t.value"
         :label="t.label"
         :name="t.value" />
     </el-tabs>
     <meeting-table
       ref="meetingTable"
-      :areaOptions="areaOptions"
       :areaType="areaTabs"
       :adjustDate="adjustDate"
       :dayinLimit="dayinLimit"
@@ -214,8 +213,11 @@ export default {
         inputDate: this.adjustDate
       })
       this.isSeparateByArea = data && data.separateByArea
-      if( data && data.useMeetingFloor ) {
-        this.areaOptions = this.areaOptions.filter(item => item != '3')
+      if( data && !data.useMeetingFloor ) {
+        console.log( data && !data.useMeetingFloor )
+        console.log( this.areaOptions )
+        this.areaOptions = this.areaOptions.filter(item => item.value != '3')
+        console.log( 'filter===', this.areaOptions )
       }
     },
 
