@@ -94,6 +94,6 @@ export default {
 
   // 保存会见楼配置
   saveComplexConfigFloorDetail: params => {
-    return service.postObj('/complex_config/saveFloorConfig', params).then(res => res.data)
+    return service.postObj('/complex_config/saveFloorConfig', params)
   }
 }
