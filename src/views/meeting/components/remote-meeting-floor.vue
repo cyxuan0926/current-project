@@ -1,13 +1,17 @@
 <template>
   <div class="container">
+    <!-- 正在生效的就放在正在生效的数组/即将生效的就放在即将生效的数组里面/但更新的时候都是传给即将生效的数组 -->
     <template v-for="(configs, type) in allConfigs">
+      <!-- 渲染出正在生效部分: 必须有正在生效的 -->
+      <!-- 渲染出即将生效的部分: 没有正在生效的或者有即将生效的 -->
       <div
-        v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
-        class="m-container"
+        v-if="(type === 0 && hasOriginConfigBefore) || (type === 1 && (!hasOriginConfigBefore || hasOriginConfigAfter))"
+        :class="['m-container', { 'new': type === 1 }]"
         :key="type"
       >
+        <!-- 只在有即将生效的情况下并且只显示在即将生效的部分 -->
         <div v-if="type === 1 && hasOriginConfigAfter" class="after-tip">
-          {{ normalCongigs['updatedAt'] + ' 调整后的时间段配置，' + normalCongigs['enabledAt'] + ' 日生效' }}
+          {{ meetingRoomConfigs['updatedAt'] + ' 调整后的时间段配置，' + meetingRoomConfigs['enabledAt'] + ' 日生效' }}
         </div>
 
         <template v-for="(config, index) in configs">
@@ -15,42 +19,69 @@
             <div class="day-box">
               <label class="c-label">选择工作日</label>
 
-              <el-checkbox-group
-                v-model="config.days"
-                :disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)"
-              >
+              <el-checkbox-group v-model="config.days" :min="1">
                 <template v-for="(w, i) in week">
                   <el-checkbox
-                    v-if="showWeek(w, config, index, configs)"
                     :key="i"
-                    :label="w.value">{{ w.label }}</el-checkbox>
+                    :label="w.value"
+                    :disabled="hasChangeDaysDisabled[type][index]">{{ w.label }}</el-checkbox>
                 </template>
               </el-checkbox-group>
 
-              <el-button type="primary" size="mini" @click="onDeployPrisonArea(index, type, configs)">配置监区</el-button>
+              <template v-if="!hasOriginConfigAfter || type === 1">
+                <el-button
+                  v-if="hasOriginConfigBefore || hasPrisonWeekItemsAfter"
+                  type="primary"
+                  size="mini"
+                  @click="onChangeConfigDays(index, type, configs)"
+                >修改工作日</el-button>
+
+                <el-button
+                  v-if="hasChangeDaysPrisonAreConfigShow[type][index]"
+                  type="primary"
+                  size="mini"
+                  @click="onDeployPrisonArea(index, type, configs, false)"
+                >配置监区</el-button>
+
+                <el-button
+                  v-if="editPrisonAreConfigShow[type][index]"
+                  type="primary"
+                  size="mini"
+                  @click="onEditPrisonArea(index, type, configs)"
+                >修改监区</el-button>
+
+                <el-button
+                  v-if="hasChangePrisonAreConfigSaveShow[type][index]"
+                  type="primary"
+                  size="mini"
+                  @click="onSavePrisonArea(index, type, configs)"
+                >保存</el-button>
+              </template>
 
               <el-button
-                v-if="!config.timeperiodQueue.length && config.days.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
+                v-if="!config.timeperiodQueue.length"
                 type="primary"
                 size="mini"
                 @click="handleConfig(index, type, configs)">配置时间段参数</el-button>
-
-              <el-button
-                v-if="config.timeperiodQueue.length && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
-                plain
-                type="danger"
-                size="mini"
-                @click="handleDeleteConfig({ configs, index, type })">删除当前配置</el-button>
             </div>
 
+            <!-- 配置监区区域 -->
+            <template v-if="hasPrisonWeekItemsAfter">
+              <m-form
+                class="el-form__prison-area"
+                :items="prisonAreaDaysFormItems[type][index]"
+                :ref="`${type}el-form__prison-area${index}`"
+                :initFields="{ index: index, type: type }"
+                @response="onPrisonAreaResponse"
+              />
+            </template>
+            
             <template v-if="config.timeperiodQueue.length">
               <!-- 通话时长/时间间隔 -->
-
-              <div v-if="!superAdmin" class="none_superAdmin">
+              <!-- <div v-if="!superAdmin" class="none_superAdmin">
                 <label >通话时长</label>
                 <span>{{ config.duration }} 分钟</span>
-              </div>
-
+              </div> -->
               <m-form
                 class="duration-interval-form"
                 :items="durationIntervalItems[type][index]"
@@ -83,7 +114,7 @@
                     <div v-if="config['showError'][o]" class="error__tip">时间段区间小于通话时长</div>
                   </div>
 
-                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))">
+                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1)">
                     <el-button
                       v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
                       type="primary"
@@ -121,23 +152,14 @@
                       type="queue"
                     />
                   </template>
-                  
 
                   <!-- 国科服务管理员角色 -->
                   <el-button
-                    v-if="!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0)"
+                    v-if="!hasOriginConfigAfter || type === 1"
                     size="mini"
                     class="button-float"
                     :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
                     @click="onRestQueue(config)">重置时间段</el-button>
-
-                  <!-- 国科服务管理角色并且有新增的日子选项并且常规配置的长度和当前的索引一致 -->
-                  <el-button
-                    v-if="index === configs.length - 1 && canAddDay(configs) && (!hasOriginConfigAfter || !(hasOriginConfigAfter && type === 0))"
-                    size="mini"
-                    type="success"
-                    class="button-float"
-                    @click="onAddDay(type)">新增工作日</el-button>
                 </div>
               </div>
             </template>
@@ -146,7 +168,7 @@
       </div>
     </template>
 
-    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange" class="effective__date">
+    <div v-if="hasOriginConfigAfter || hasConfigBeforeChange || newStatusHasConfigAfterChange" class="effective__date">
       <label class="c-label" style="line-height: 35px">生效日期</label>
 
       <el-date-picker
@@ -166,7 +188,7 @@
         @click="onGoBack">返回</el-button>
 
       <el-button
-        v-if="!updateShow && permission === 'edit'"
+        :disabled="updateShow || permission !== 'edit' || !allTypedPreSaveSucceeded"
         size="small"
         type="primary"
         @click="onUpdate">更新</el-button>
@@ -180,8 +202,9 @@
     >
       <span slot="title" style="display: block; text-align: center; font-weight: bold;font-size: 14px">提示</span>
 
+      <!-- 这里需要修改文案 -->
       <div>
-        修改常规配置后，如有家属已预约，将重新分配相关可视电话时间段，调整后会以短信形式通知相关家属。
+        修改配置后，如有家属已预约，将重新分配相关可视电话时间段，调整后会以短信形式通知相关家属。
         若预约日期无法在当日分配时间段，系统将自动取消该家属申请，并以短信形式通知相关家属！请确认是否继续操作！
       </div>
 
@@ -216,70 +239,74 @@ import cloneDeep from 'lodash/cloneDeep'
 
 import { Message } from 'element-ui'
 
+import { weeks, meetingChargeConfigDurations } from '@/common/constants/const'
+
+import { daysTransformWeeksParams, dayTransformProp } from '../utils'
+
+// 现在交互流程这样 修改工作日后 必须先配置监区 才会有保存按钮
+// 修改工作日:工作日 不禁用 保存按钮显示/新增的时候隐藏并且没有配置监区的时候隐藏
+// 修改监区:监区配置 不禁用 保存按钮显示/ 新增的时候并且没有保存的情况下隐藏/
+// 配置监区:禁用工作日、清除验证、监区配置不禁用、新增监区配置 保存按钮显示/预先保存成功后 就隐藏/ 新增的时候默认显示或者日期变化后显示
+// 保存：验证监区配置 预先保存 日期-监区配置/ 配置监区后才显示/ 预先保存成功后 就隐藏
+// 更新按钮： 在原有的基础上 增加 不预先保存监区-日期配置 就不能操作
 export default {
   mixins: [normalMixins],
 
   data() {
-    const basicConfig = {
-      // 工作日
-      days: [1, 2, 3, 4, 5, 6, 0],
-      // 配置时间段
-      config: [],
-      // 时间段队列
-      queue: [],
-      timeperiod: [],
-      timeperiodQueue: [],
-      interval: 5,
-      duration: 25,
-      showError: []
-    }
     return {
       // '周'的选项
-      week: [
-        { label: '星期一', value: 1 },
-        { label: '星期二', value: 2 },
-        { label: '星期三', value: 3 },
-        { label: '星期四', value: 4 },
-        { label: '星期五', value: 5 },
-        { label: '星期六', value: 6 },
-        { label: '星期日', value: 0 }
-      ],
+      week: weeks,
       // 默认初始的时间队列
       queue: ['09:00', '10:00'],
+
       flag: true,
       // 确定更新按钮加载
       loading: false,
+
       permission: 'add',
       // 提示对话框显示属性
       visible: false,
       // 原始的配置信息
       orignConfigs: [],
-      // 正在生效的配置
-      configsBefore: [basicConfig],
+
       filterDuration: [25, 25],
-      // 即将生效的配置
-      configsAfter: [basicConfig],
+
       allConfigs: [],
-      basicConfig,
+
       effectiveDate: '',
+
       dateValue: '',
-      updateShow: false
+      // 是否显示更新按钮
+      // 时间配置最小元是时间段 必须保证每个配置都配置了时间段
+      updateShow: false,
+
+      // 日期监区表单
+      prisonAreaDaysFormItems: [[], []],
+
+      // 工作日是否禁用
+      hasChangeDaysDisabled: [[false], [false]],
+
+      // 是否显示配置监区
+      hasChangeDaysPrisonAreConfigShow: [[false], [false]],
+
+      // 监区日期配置是否变化
+      hasChangePrisonAreConfigSaveShow: [[false], [false]],
+
+      // 是否显示修改监区按钮
+      editPrisonAreConfigShow: [[false], [false]],
+
+      // 预先保存成功
+      preSaveSuccess: [[false], [false]]
     }
   },
 
   watch: {
+    // 这里好像也有问题
     allConfigs: {
       handler: function (value) {
-        if (this.hasOriginConfigAfter) {
-          this.updateShow = value[1].some(item => {
-            return !item.queue.length
-          }) || !this.hasConfigAfter
-        }
-        else {
-          this.updateShow = value[0].some(item => {
-            return !item.queue.length
-          }) || !this.hasConfigBefore
-        }
+        if (this.hasConfigAfter) this.updateShow = value[1].some(item => !item.queue.length)
+
+        else this.updateShow = value[0].some(item => !item.queue.length)
       },
       deep: true
     }
@@ -287,37 +314,44 @@ export default {
 
   computed: {
     // 常规配置
-    ...mapState(['normalCongigs']),
-    // 是否存在正在生效的配置 现在默认情况下 是肯定有的
-    hasConfigBefore() {
-      return !!(this.allConfigs[0]
-        && this.allConfigs[0].length
-        && this.allConfigs[0][0].days.length
-        && this.allConfigs[0][0].timeperiodQueue.length
-        && this.allConfigs[0][0].queue.length)
-    },
+    // 会见楼配置
+    ...mapState(['meetingRoomConfigs', 'jailPrisonAreas']),
 
-    // 是否存在即将生效的配置
     hasConfigAfter() {
       return !!(this.allConfigs[1]
         && this.allConfigs[1].length
-        && this.allConfigs[1][0].days.length
         && this.allConfigs[1][0].timeperiodQueue.length
         && this.allConfigs[1][0].queue.length)
     },
 
-    // 原来是否用after
+    // 初始化的时候是否有即将生效的配置
     hasOriginConfigAfter() {
-      return !!(this.normalCongigs['configAfter']
-        && this.normalCongigs['configAfter'].length
-        && this.normalCongigs['configAfter'][0].days.length
-        && this.normalCongigs['configAfter'][0].timeperiodQueue.length
-        && this.normalCongigs['configAfter'][0].queue.length)
+      return !!(this.meetingRoomConfigs['configAfter']
+        && this.meetingRoomConfigs['configAfter'].length
+        && this.meetingRoomConfigs['configAfter'][0].timeperiodQueue.length
+        && this.meetingRoomConfigs['configAfter'][0].queue.length)
+    },
+
+    // 初始化的时候是否有正在生效的配置
+    hasOriginConfigBefore() {
+      return !!(this.meetingRoomConfigs['configBefore']
+        && this.meetingRoomConfigs['configBefore'].length
+        && this.meetingRoomConfigs['configBefore'][0].timeperiodQueue.length
+        && this.meetingRoomConfigs['configBefore'][0].queue.length)
+    },
+
+    // 新增/只有即将生效情况下
+    hasPrisonWeekItemsAfter() {
+      return !!(this.prisonAreaDaysFormItems[1] && this.prisonAreaDaysFormItems[1].length)
     },
 
     // 当前仅有before config的时候 并且发生改变的时候
     hasConfigBeforeChange() {
-      return !!(this.hasConfigBefore && !isEqual(this.allConfigs[0], this.normalCongigs['configBefore']))
+      return !isEqual(this.allConfigs[0], this.meetingRoomConfigs['configBefore'])
+    },
+
+    newStatusHasConfigAfterChange() {
+      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !isEqual(this.allConfigs[1], this.meetingRoomConfigs['configAfter'])
     },
 
     // 可选日期
@@ -330,7 +364,8 @@ export default {
             return time.getTime() < Date.now()
           }
           else {
-            const enabledAt = this.normalCongigs['enabledAt']
+            // 生效日期
+            const { enabledAt } = this.meetingRoomConfigs
 
             return time.getTime() < Date.now() || time.getTime() > new Date(enabledAt)
           }
@@ -341,9 +376,9 @@ export default {
     // 生效日期的默认值
     computedEffectiveDate: {
       get() {
-        const limitDays = this.normalCongigs['dayInLimit']
+        const { dayInLimit } = this.meetingRoomConfigs
 
-        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(limitDays, 'days').format('YYYY-MM-DD'))
+        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(dayInLimit, 'days').format('YYYY-MM-DD'))
 
         return this.dateValue
       },
@@ -362,9 +397,9 @@ export default {
         },
         duration: {
           label: '通话时长',
-          type: 'input',
-          append: '分钟',
-          rules: ['required', 'isPositiveIntegers']
+          type: 'select',
+          options: this.localDurations,
+          rules: ['required']
         },
         interval: {
           label: '间隔时间',
@@ -374,19 +409,44 @@ export default {
         }
       }
 
-      if (!this.superAdmin) this.$delete(item, 'duration')
-
       return this.allConfigs.map(configs => {
         return configs.map((config, index, target) => {
           const cloneItem = cloneDeep(item)
 
-          if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
+          this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
 
           this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
           return cloneItem
         })
       })
+    },
+
+    filterPrisonAreaOptions() {
+      const { prisonBranch } = this.meetingRoomConfigs
+
+      if (!+prisonBranch) return [
+        {
+          id: -1,
+          name: '全监狱'
+        }
+      ]
+      else return this.jailPrisonAreas
+    },
+
+    localDurations() {
+      const { durations } = this.meetingRoomConfigs
+
+      let preHandleDurations = durations && durations.length ? durations : meetingChargeConfigDurations
+
+      return preHandleDurations.map(item => ({ label: item, value: item }))
+    },
+
+    // 当前监区日期配置是否全部完成
+    allTypedPreSaveSucceeded() {
+      if (this.hasPrisonWeekItemsAfter) return this.preSaveSuccess[1].every(item => item)
+
+      else return this.preSaveSuccess[0].every(item => item)
     }
   },
 
@@ -394,6 +454,7 @@ export default {
   async activated() {
     // 国科服务管理员权限/信息管理人员权限
     if (this.$route.meta.permission === 'visit.prison.visit-config.search' || this.$route.meta.permission === 'visit.remote-visit-configure.search') this.permission = 'edit'
+
     if (this.permission === 'edit') {
       // 获取远程通话常规配置
       await this.initConfigs()
@@ -402,10 +463,14 @@ export default {
 
   methods: {
     ...mapActions([
-      // 获取通话常规配置
-      'getRemoteNormalConfigs',
-      // 更新通话常规配置
-      'updateRemoteNormalConfig'
+      // 获取会见楼配置
+      'getComplexConfigFloorDetail',
+
+      // 保存会见楼配置
+      'saveComplexConfigFloorDetail',
+
+      // 获取监区
+      'getJailPrisonAreas'
     ]),
 
     onClose() {
@@ -414,27 +479,55 @@ export default {
     },
 
     async initConfigs() {
-      await this.getRemoteNormalConfigs({ jailId: this.jailId })
+      await this.getComplexConfigFloorDetail(this.jailId)
 
       Message.closeAll()
 
-      const { configBefore, configAfter, enabledAt } = this.normalCongigs
+      const {
+        configBefore,
+        configAfter,
+        enabledAt,
+        prisonBranch
+      } = this.meetingRoomConfigs
 
-      this.configsBefore = cloneDeep(configBefore)
+      if (+prisonBranch) {
+        await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: this.jailId } })
 
-      this.configsAfter = cloneDeep(configAfter)
+        Message.closeAll()
+      }
+
+      const configsBefore = cloneDeep(configBefore)
+
+      const configsAfter = cloneDeep(configAfter)
 
       this.effectiveDate = enabledAt
 
-      this.allConfigs = [this.configsBefore, this.configsAfter]
-    },
-    // 能否新增工作日
-    canAddDay(configs) {
-      let days = []
-      configs.forEach(config => {
-        days = days.concat(config.days)
+      this.allConfigs = [configsBefore, configsAfter]
+
+      this.allConfigs.forEach((configs, type) => {
+        if (!this.hasOriginConfigAfter && !this.hasOriginConfigBefore) this.$set(this.prisonAreaDaysFormItems, type, [])
+
+        configs.forEach((_, index) => {
+          // 新增
+          if (!this.hasOriginConfigBefore && !this.hasOriginConfigAfter) {
+            this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
+
+            this.$set(this.editPrisonAreConfigShow[type], index, false)
+
+            this.$set(this.hasChangeDaysDisabled[type], index, false)
+          }
+
+          else {
+            this.$set(this.hasChangeDaysDisabled[type], index, true)
+
+            this.$set(this.editPrisonAreConfigShow[type], index, true)
+
+            this.$set(this.preSaveSuccess[type], index, true)
+          }
+
+          this.onDeployPrisonArea(index, type, configs, true)
+        })
       })
-      return days.length < 7
     },
 
     // 新增时间段(update)
@@ -491,7 +584,9 @@ export default {
 
         timeperiodQueue.forEach(t => period.push(t.join('-')))
 
-        result.push({ days, config: c, duration, interval, timeperiod: period })
+        const weeksPrisonAreas = daysTransformWeeksParams(days, config)
+
+        result.push({ days, config: c, duration, interval, timeperiod: period, floorDetai: weeksPrisonAreas })
       })
 
       return result
@@ -500,13 +595,14 @@ export default {
     // 更新按钮的方法
     // 只有before
     onUpdate() {
-      let hasNoChanged
+      let hasNoChanged = false
 
       const [before, after] = this.allConfigs
 
-      const { configBefore, configAfter, enabledAt } = this.normalCongigs
+      const { configBefore, configAfter, enabledAt } = this.meetingRoomConfigs
 
-      if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before), this.filterParams(configBefore)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+      // 只有正在生效的
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) hasNoChanged = !this.hasConfigBeforeChange
 
       else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
 
@@ -523,28 +619,56 @@ export default {
     },
 
     // 更新常规配置
-    onSubmit() {
-      let params
+    // 不分监区的情况 监区id 传空
+    async onSubmit() {
+      let filterParams
+
       const [before, after] = this.allConfigs
-      if (this.hasOriginConfigAfter) {
-        params = this.filterParams(after)
-      } else {
-        params = this.filterParams(before)
-      }
-      const { id, jailId } = this.normalCongigs
+
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.filterParams(before)
+
+      else filterParams = this.filterParams(after)
+
+      const {
+        id,
+        jailId,
+        prisonBranch
+      } = this.meetingRoomConfigs
+
+      const params = filterParams.reduce((accumulator, currentItem) => {
+        const { floorDetai, ...configAfter } = currentItem
+
+        const { days } = configAfter
+
+        // 这里需要变得是
+
+        let configurationsFloorDetailItem = days.map(day => {
+          const { key } = dayTransformProp(day)
+
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : ''
+
+          return {
+            days: day,
+            jailId,
+            prisonConfigId,
+            effectiveDate: this.computedEffectiveDate
+          }
+        })
+
+        accumulator.configurationsFloorDetail = [...accumulator.configurationsFloorDetail, ...configurationsFloorDetailItem]
+
+        accumulator.complexNormalConfig.configAfter.push(configAfter)
+
+        return accumulator
+      }, { configurationsFloorDetail: [], complexNormalConfig: { enabledAt: this.computedEffectiveDate, jailId, configAfter: [] }})
 
       this.loading = true
 
-      this.updateRemoteNormalConfig({
-        enabledAt: this.computedEffectiveDate,
-        id,
-        jailId,
-        configAfter: params
-      }).then(res => {
-        this.loading = false
-        if (!res) return
-        this.visible = false
-      })
+      const isSucess = await this.saveComplexConfigFloorDetail(params)
+
+      this.loading = false
+
+      isSucess && this.onClose()
     },
 
     // 新增一个时间段 配置默认的会见时间段(update)
@@ -564,7 +688,12 @@ export default {
         showError
       }
 
-      const keys = ['duration', 'timeperiodQueue', 'interval', 'showError']
+      const keys = [
+        'duration',
+        'timeperiodQueue',
+        'interval',
+        'showError'
+      ]
 
       keys.forEach(key => {
         this.$nextTick(function() {
@@ -573,57 +702,178 @@ export default {
       })
     },
 
-    // 删除当前常规配置(update)
-    handleDeleteConfig(params) {
-      let { configs, index, type } = params
-
-      const { configBefore } = this.normalCongigs
-
-      const beforDuration = cloneDeep(configBefore)[0].duration
-
-      const initDuration = beforDuration
-
-      this.$nextTick(function() {
-        if (configs.length > 1) this.allConfigs[type].splice(index, 1)
-
-        else {
-          this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
-
-          this.$set(this.filterDuration, type, initDuration)
-        }
-      })
-    },
-
-    // 新增工作日
-    onAddDay(type) {
-      // 在常规配置里面新增一个初始化的配置
-      this.allConfigs[type].push({ days: [], interval: 5, duration: this.filterDuration[type], timeperiod: [], config: [], queue: [], timeperiodQueue: [], showError: [] })
-    },
-
-    // 显示的日 w: 日子对象 config：当前配置信息 index： 当前索引
-    showWeek(w, config, index, configs) {
-      // 配置信息的时间段队列存在的话
-      if (config.timeperiodQueue.length) {
-        // 存在就显示
-        return config.days.some(v => v === w.value)
-      }
-      // 没有配置时间(新增工作日)
-      else {
-        let days = []
-        // 新增后的常规配置信息:key
-        configs.forEach((config, i) => {
-          // 已经配置了的日期
-          if (i !== index) days = days.concat(config.days)
-        })
-        // 过滤已经配置了的日子
-        return !days.some(v => v === w.value)
-      }
-    },
-
     // 配置监区按钮
     // index：序号 type：正在生效/将要生效 configs：当前配置信息
-    onDeployPrisonArea(index, type, configs) {
-      console.log('配置监区：', index, type, configs)
+    onDeployPrisonArea(index, type, configs, init) {
+      const selectItem = {
+        type: 'select',
+        placeholder: '请选择监区',
+        multiple: true,
+        options: this.filterPrisonAreaOptions,
+        props: { label: 'name', value: 'id' },
+        rules: ['required']
+      },
+      formConfigs = {
+        labelWidth: '80px',
+        hideRequiredAsterisk: true,
+        inline: true
+      },
+      items = {
+        Monday: {
+          label: '星期一',
+          ...selectItem
+        },
+        Tuesday: {
+          label: '星期二',
+          ...selectItem
+        },
+        Wednesday: {
+          label: '星期三',
+          ...selectItem
+        },
+        Thursday: {
+          label: '星期四',
+          ...selectItem
+        },
+        Friday: {
+          label: '星期五',
+          ...selectItem
+        },
+        Saturday: {
+          label: '星期六',
+          ...selectItem
+        },
+        Sunday: {
+          label: '星期日',
+          ...selectItem
+        }
+      }
+
+      const current = configs[index]
+
+      // 选择的日子
+      const { days } = current
+
+      // 新增的情况
+      if (init && !this.hasOriginConfigBefore && !this.hasOriginConfigAfter) return
+
+      // 配置监区后 就禁用工作日
+      this.$set(this.hasChangeDaysDisabled[type], index, true)
+
+      if (!init) {
+        this.preSaveSuccess[type][index] && this.$set(this.preSaveSuccess[type], index, false)
+
+        this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, true)
+      }
+
+      // 返回的是对应日子的数组
+      const haveDaysConfigs = cloneDeep(this.week).filter(weekDay => days.includes(weekDay.value))
+
+      let haveItems = {}
+
+      const { prisonBranch } = this.meetingRoomConfigs
+
+      haveDaysConfigs.forEach(item => {
+        for (let [key, value] of Object.entries(cloneDeep(items))) {
+          if (item.key === key) {
+            const cloneItem = cloneDeep(value)
+
+            cloneItem['value'] = this.allConfigs[type][index][key]
+            // 点击配置监区
+            if (!init && !+prisonBranch) cloneItem['value'] = [-1]
+
+            // 初始化数据
+            else if (init) cloneItem['disabled'] = true
+
+            haveItems = {
+              ...haveItems,
+              [key]: cloneItem
+            }
+          }
+        }
+      })
+
+      this.$set(this.prisonAreaDaysFormItems[type], index, { formConfigs, ...haveItems })
+
+      this.$refs[`${type}el-form__prison-area${index}`] && this.$refs[`${type}el-form__prison-area${index}`][0].onClearValidate()
+    },
+
+    // 修改工作日
+    async onChangeConfigDays(index, type, configs) {
+      this.preSaveSuccess[type][index] && this.$set(this.preSaveSuccess[type], index, false)
+      // 取消禁用工作日
+      this.$set(this.hasChangeDaysDisabled[type], index, false)
+
+      this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
+    },
+
+    // 保存
+    async onSavePrisonArea(index, type, configs) {
+      const isChecked = this.$refs[`${type}el-form__prison-area${index}`]
+        && await this.$refs[`${type}el-form__prison-area${index}`][0].onCheck()
+
+      if (isChecked) {
+        this.onHandlePrisonAreaDaysDisabled(type, index, true)
+
+        this.hasChangeDaysPrisonAreConfigShow[type][index] && this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, false)
+
+        this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
+
+        if (!this.hasOriginConfigBefore && !this.hasOriginConfigAfter) this.$set(this.editPrisonAreConfigShow[type], index, true)
+
+        this.$set(this.preSaveSuccess[type], index, true)
+
+        Message({
+          showClose: true,
+          message: '预保存日期监区配置成功',
+          duration: 2000,
+          type: 'success'
+        })
+      }
+    },
+
+    // 日期监区配置表单响应数据
+    onPrisonAreaResponse(params) {
+      const { index, type, ...configs } = params
+
+      const {
+        Monday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Tuesday,
+        Saturday,
+        Sunday,
+        ...others
+      } = this.allConfigs[type][index]
+
+      this.$set(this.allConfigs[type], index, { ...others, ...configs })
+    },
+
+    // 修改监区
+    onEditPrisonArea(index, type, configs) {
+      this.preSaveSuccess[type][index] && this.$set(this.preSaveSuccess[type], index, false)
+
+      this.onHandlePrisonAreaDaysDisabled(type, index, false)
+
+      this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, true)
+    },
+
+    // 控制日期监区配置禁用状态
+    onHandlePrisonAreaDaysDisabled(type, index, disabled) {
+      if (Object.keys(this.prisonAreaDaysFormItems[type][index]).length === 1) return
+
+      for (let [key, value] of Object.entries(this.prisonAreaDaysFormItems[type][index])) {
+        const disCheck = ['formConfigs']
+
+        if (disCheck.includes(key)) continue
+
+        const status = value['disabled']
+
+        if (status === disabled) break
+
+        this.$set(value, 'disabled', disabled)
+      }
     }
   }
 }
@@ -758,6 +1008,25 @@ export default {
     margin-right: 10px;
     font-weight: normal;
     color: #606266;
+  }
+}
+
+.el-form__prison-area {
+  /deep/ .el-form {
+    max-height: 17.3rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: stretch;
+    .el-form-item {
+      display: flex;
+      width: 48%;
+      height: 3.1rem;
+      margin-bottom: 1.2rem;
+      .el-form-item__content {
+        width: 65%;
+      }
+    }
   }
 }
 </style>

@@ -35,11 +35,12 @@
       </el-input>
       <el-select
         v-if="item.type === 'select'"
-        :placeholder="'请选择' + item.label"
+        :placeholder="item.placeholder || '请选择' + item.label"
         v-model="fields[prop]"
         :loading="item.loading"
         :filterable="!!(item.filterable)"
         :disabled="item.disabled"
+        :multiple="item.multiple || false"
         @change="selectChangeEvent($event, prop, item)">
         <el-option
           v-for="option in item.options"

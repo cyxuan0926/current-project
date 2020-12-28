@@ -4,6 +4,7 @@ import { Message } from 'element-ui'
 const logout = () => {
   localStorage.clear()
   store.dispatch('resetState', 'logout')
+  Message.closeAll()
   // store.commit('account/setAccountInfo', {})
   // store.commit('account/setRolesList', [])
   // store.commit('account/setAuthorities', [])

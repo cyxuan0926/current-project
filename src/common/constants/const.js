@@ -129,3 +129,13 @@ export const prisonAreaLevelObject = {
 }
 
 export const _thisYear = Moment().format('YYYY')
+
+export const weeks = [
+  { label: '星期一', value: 1, key: 'Monday' },
+  { label: '星期二', value: 2, key: 'Tuesday' },
+  { label: '星期三', value: 3, key: 'Wednesday' },
+  { label: '星期四', value: 4, key: 'Thursday' },
+  { label: '星期五', value: 5, key: 'Friday' },
+  { label: '星期六', value: 6, key: 'Saturday' },
+  { label: '星期日', value: 0, key: 'Sunday' }
+]
