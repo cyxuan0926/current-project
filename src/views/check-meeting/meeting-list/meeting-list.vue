@@ -570,7 +570,7 @@
         isSpecial: false,
         areaTabs: '1',
         areaTypes: '1',
-        areaOptions: [],
+        areaOptions: Array.from(this.$store.state.areaOptions),
         getMeetingId: '',
         withdrawOrAnthorinputReason,
         tabsItems,
@@ -1298,15 +1298,14 @@
         this.isShowTips = false
         this.areaTabs = '1'
         this.areaTypes = '1'
-        this.areaOptions = Array.from(this.$store.state.areaOptions)
+        // this.areaOptions = Array.from(this.$store.state.areaOptions)
         let { data } = await http.getMeetingSeparateArea({
           inputDate: this.toAuthorize && this.toAuthorize.applicationDate
         })
         this.isSeparateByArea = data && data.separateByArea
-        // { data } = await http.getJailsMeetingFloorStatus(this.$store.state.global.user.jailId)
-        // if( !data ) {
-        //   this.areaOptions = this.areaOptions.filter(item => item != '3')
-        // }
+        if( data && data.useMeetingFloor ) {
+          this.areaOptions = this.areaOptions.filter(item => item != '3')
+        }
         this.getMeetTimeConfig()
         this.$message.closeAll()
       },
