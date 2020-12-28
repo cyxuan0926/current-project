@@ -805,6 +805,8 @@ export default {
       this.$set(this.hasChangeDaysDisabled[type], index, false)
 
       this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
+
+      this.$set(this.editPrisonAreConfigShow[type], index, false)
     },
 
     // 保存
@@ -819,9 +821,9 @@ export default {
 
         this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
 
-        if (!this.hasOriginConfigBefore && !this.hasOriginConfigAfter) this.$set(this.editPrisonAreConfigShow[type], index, true)
-
         this.$set(this.preSaveSuccess[type], index, true)
+
+        this.$set(this.editPrisonAreConfigShow[type], index, true)
 
         Message({
           showClose: true,
