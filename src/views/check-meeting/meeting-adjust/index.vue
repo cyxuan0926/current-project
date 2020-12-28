@@ -62,7 +62,7 @@ export default {
       pickerOptions: {},
       isSeparateByArea: false,
       areaTabs: '1',
-      areaOptions: []
+      areaOptions: Array.from(this.$store.state.areaOptions)
     };
   },
 
@@ -132,7 +132,7 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
-    this.areaOptions = Array.from(this.$store.state.areaOptions)
+    // this.areaOptions = Array.from(this.$store.state.areaOptions)
     await this.setSeparateArea()
     await this.getConfigs()
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
@@ -214,10 +214,9 @@ export default {
         inputDate: this.adjustDate
       })
       this.isSeparateByArea = data && data.separateByArea
-      // { data } = await http.getJailsMeetingFloorStatus(this.$store.state.global.user.jailId)
-      // if( !data ) {
-      //   this.areaOptions = this.areaOptions.filter(item => item != '3')
-      // }
+      if( data && data.useMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item != '3')
+      }
     },
 
     async handlePickerChange() {

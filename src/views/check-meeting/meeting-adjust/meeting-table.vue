@@ -274,7 +274,6 @@ import Moment from 'moment'
 import { mapActions, mapState } from "vuex";
 export default {
   props: {
-    areaOptions: Array,
     adjustDate: String,
     dayinLimit: String,
     areaType: String,
@@ -307,7 +306,8 @@ export default {
       crossDateSelect: '',
       meetingVisible: false,
       acrossAdjustDate: '',
-      pickerOptions: {}
+      pickerOptions: {},
+      areaOptions: Array.from(this.$store.state.areaOptions)
     };
   },
 
@@ -569,6 +569,9 @@ export default {
         inputDate: this.acrossAdjustDate
       })
       this.isSeparateByArea = data && data.separateByArea
+      if( data && data.useMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item != '3')
+      }
     },
 
     async handleGetConfigs() {
