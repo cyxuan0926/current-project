@@ -647,7 +647,8 @@ export default {
 
       this.$set(this.formItems['branchPrison'], 'setValueConfigs', setValueConfigs)
 
-      this.$confirm('调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？', {
+      this.$confirm(`调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？ 
+        调整监区结构后，为了避免预约问题，请及时调整该监狱的终端管理和会见楼配置。`, {
         closeOnClickModal: false,
 
         closeOnPressEscape: false,

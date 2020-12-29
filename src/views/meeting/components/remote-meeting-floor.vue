@@ -379,9 +379,7 @@ export default {
     // 生效日期的默认值
     computedEffectiveDate: {
       get() {
-        const { dayInLimit } = this.meetingRoomConfigs
-
-        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(dayInLimit, 'days').format('YYYY-MM-DD'))
+        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(1, 'days').format('YYYY-MM-DD'))
 
         return this.dateValue
       },
