@@ -102,6 +102,7 @@ import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import roles from '@/common/constants/roles'
 import cloneDeep from 'lodash/cloneDeep'
+import { Message } from 'element-ui'
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -719,7 +720,7 @@ export default {
         else {
           if (autoAuthorizeMeeting) this.$confirm(have_automatic_audit['message'], have_automatic_audit['options'])
         }
-      }ßßß
+      }
     },
 
     async onMeetingRoomSwitch(value, prop, item) {
@@ -728,6 +729,8 @@ export default {
         const jailId = this.$route.params.id
 
         await this.getMeetingFloorTerminals(jailId)
+
+        Message.closeAll()
 
         if (this.haveMeetingFloorTerminals) {
           this.$confirm('该监狱配置了会见楼配置，请先移除会见楼的终端，再关闭会见楼开关！', {

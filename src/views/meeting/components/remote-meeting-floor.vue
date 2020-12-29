@@ -648,7 +648,7 @@ export default {
         let configurationsFloorDetailItem = days.map(day => {
           const { key } = dayTransformProp(day)
 
-          let prisonConfigId = +prisonBranch ? floorDetai[key] : ''
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : []
 
           return {
             days: day,
