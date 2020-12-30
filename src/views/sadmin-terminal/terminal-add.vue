@@ -156,7 +156,7 @@ export default {
           required: true,
           message: '请选择监狱'
         }],
-        areaId: [{validator: checkAreaId}],
+        areaId: [{ validator: checkAreaId }],
         branchId: [{
           required: true,
           message: '请选择分监区'

@@ -135,6 +135,12 @@ export default {
   mixins: [prisonAreaLevel],
 
   data() {
+    const checkAreaId = (rule, value, callback) => {
+      if (!value && value !== null) {
+        callback(new Error('请选择监区'))
+      } else callback()
+    }
+
     return {
       rule: {
         terminalNumber: [{
@@ -146,11 +152,7 @@ export default {
           required: true,
           message: '请选择监狱'
         }],
-        areaId: [{
-          required: true,
-          message: '请选择监区',
-          trigger: 'blur'
-        }],
+        areaId: [{ validator: checkAreaId }],
         branchId: [{
           required: true,
           message: '请选择分监区'
