@@ -509,6 +509,8 @@
 
   import { withdrawOrAnthorinputReason } from '@/common/constants/const'
 
+  import cloneDeep from 'lodash/cloneDeep'
+
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -622,7 +624,7 @@
             label: '申请状态',
             options: this.$store.state.applyStatus,
             miss: true,
-            correlation:"status",
+            correlation: "status",
             value: ''
           },
 
@@ -732,6 +734,7 @@
           // }
         ],
         meetingAdjustment: {},
+
         meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
@@ -795,7 +798,7 @@
           delete this.filter.orderField
         }
 
-        if (this.tabs !== 'first') {
+        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
@@ -835,7 +838,6 @@
 
       tableCols() {
         // const { applicationStartDate, applicationEndDate } = this.filter
-
         const basicCols = [
             {
               label: '监区1',
@@ -930,7 +932,7 @@
             ...basicCols
           ]
 
-          if (this.tabs === 'first' ||this.tabs === 'PASSED' ) {
+          if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
             cols = [ ...cols, terminaUniquelId,...noAllPrisonQueryAuthLeadingCols]
           }
           else if(this.tabs === 'PENDING' ) {
@@ -962,7 +964,9 @@
       },
 
       tabs(val) {
+        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
+        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1018,7 +1022,6 @@
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
-
         }
         this.onSearch()
       },
@@ -1123,6 +1126,7 @@
       },
 
       async getDatas(e) {
+        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
