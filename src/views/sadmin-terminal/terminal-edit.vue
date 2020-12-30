@@ -289,9 +289,11 @@ export default {
       if (init) {
         const { prisonConfigId } = this.terminal
 
-        if (prisonConfigId) {
-          let values = {}
+        // 会见楼
+        if (prisonConfigId === -1) this.formData = Object.assign({}, this.terminal, { areaId: -1 })
 
+        // 其余正常情况
+        else if (prisonConfigId) {
           await this.getDetailMany({ id: prisonConfigId })
 
           const { level, areaId } = this.detailManyConfigs
@@ -317,12 +319,12 @@ export default {
           }
 
           if (level > 1) {
-            constLevelObject[level].formDataKeys.forEach(key => {
-              values = {
-                ...values,
+            const values = constLevelObject[level].formDataKeys.reduce((accumulator, key) => {
+              return {
+                ...accumulator,
                 [key]: this.detailManyConfigs[key]
               }
-            })
+            }, {})
 
             const temp = constLevelObject[level].keys.map(key => {
               if(this.localPrisonAreaLevelObject[key].childNode) {
