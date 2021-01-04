@@ -101,7 +101,7 @@
         v-if="show.agree"
         class="button-box">
         <section v-show="isSpecial">
-          <div class="across-filter" v-if="isSeparateByArea">
+          <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
             <label class="filter__label special">选择区域</label>
             <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
               <el-option
@@ -145,7 +145,7 @@
         </section>
         <section v-show="!isSpecial">
           <el-tabs
-            v-if="isSeparateByArea"
+            v-if="isSeparateByArea || isUseMeetingFloor"
             v-model="areaTabs"
             type="card">
             <el-tab-pane v-for="t in areaOptions"
@@ -563,6 +563,7 @@
         showTips: '',
         isShowTips: false,
         isSeparateByArea: false,
+        isUseMeetingFloor: false,
         selectRange: {},
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
@@ -1224,7 +1225,7 @@
       getMeetTimeConfig() {
         http.getMeetTimeConfig({
           id: this.getMeetingId,
-          area: this.isSeparateByArea ? this.areaTabs : ''
+          area: this.isSeparateByArea || this.isUseMeetingFloor ? this.areaTabs : ''
         }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
@@ -1306,9 +1307,17 @@
         let { data } = await http.getMeetingSeparateArea({
           inputDate: this.toAuthorize && this.toAuthorize.applicationDate
         })
+        // 是否分监舍区和生产区
         this.isSeparateByArea = data && data.separateByArea
-        if( data && !data.useMeetingFloor ) {
+        // 是否打开会见楼开关
+        this.isUseMeetingFloor = data && !!data.useMeetingFloor
+        // 分监舍区和生产区 关闭会见楼开关
+        if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
           this.areaOptions = this.areaOptions.filter(item => item.value != '3')
+        }
+        // 不分监舍区和生产区 打开会见楼开关
+        if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+          this.areaOptions = this.areaOptions.filter(item => item.value != '2')
         }
         this.getMeetTimeConfig()
         this.$message.closeAll()
