@@ -59,7 +59,7 @@
               </template>
 
               <el-button
-                v-if="!config.timeperiodQueue.length"
+                v-if="!config.timeperiodQueue.length && newConfigTimeShow[type][index]"
                 type="primary"
                 size="mini"
                 @click="handleConfig(index, type, configs)">配置时间段参数</el-button>
@@ -194,11 +194,12 @@
         @click="onUpdate">更新</el-button>
     </div>
 
+    <!-- @close="onClose" -->
     <el-dialog
       class="authorize-dialog"
       :visible.sync="visible"
       width="45%"
-      @close="onClose"
+      :close-on-click-modal="false"
     >
       <span slot="title" style="display: block; text-align: center; font-weight: bold;font-size: 14px">提示</span>
 
@@ -215,7 +216,7 @@
         <el-button
           type="default"
           size="mini"
-          @click="onClose">取消</el-button>
+          @click="visible = false">取消</el-button>
 
         <el-button
           type="primary"
@@ -296,7 +297,9 @@ export default {
       editPrisonAreConfigShow: [[false], [false]],
 
       // 预先保存成功
-      preSaveSuccess: [[false], [false]]
+      preSaveSuccess: [[false], [false]],
+
+      newConfigTimeShow: [[false], [false]]
     }
   },
 
@@ -376,9 +379,7 @@ export default {
     // 生效日期的默认值
     computedEffectiveDate: {
       get() {
-        const { dayInLimit } = this.meetingRoomConfigs
-
-        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(dayInLimit, 'days').format('YYYY-MM-DD'))
+        this.dateValue = this.dateValue  || (this.hasOriginConfigAfter ? this.effectiveDate : Moment(Date.now()).add(1, 'days').format('YYYY-MM-DD'))
 
         return this.dateValue
       },
@@ -645,7 +646,7 @@ export default {
         let configurationsFloorDetailItem = days.map(day => {
           const { key } = dayTransformProp(day)
 
-          let prisonConfigId = +prisonBranch ? floorDetai[key] : ''
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : []
 
           return {
             days: day,
@@ -818,6 +819,8 @@ export default {
         this.onHandlePrisonAreaDaysDisabled(type, index, true)
 
         this.hasChangeDaysPrisonAreConfigShow[type][index] && this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, false)
+
+        if (!this.hasOriginConfigAfter && !this.hasOriginConfigBefore) this.$set(this.newConfigTimeShow[type], index, true)
 
         this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
 

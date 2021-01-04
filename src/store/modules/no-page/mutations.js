@@ -12,7 +12,7 @@ export default {
     state.cities = params.citys
   },
   getJailPrisonAreas(state, params) {
-    state.jailPrisonAreas = params.prisonConfigs
+    state.jailPrisonAreas = params.prisonConfigs || []
   },
 
   getOrgName(state, organization = []) {

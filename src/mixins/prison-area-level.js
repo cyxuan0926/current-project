@@ -25,7 +25,6 @@ export default {
     },
 
     async onInitPrisonAreaLevelData({ parentId, childNode }) {
-      console.log(parentId)
       await this.$store.dispatch('getChildPrisonConfigs', { parentId })
 
       Message.closeAll()
