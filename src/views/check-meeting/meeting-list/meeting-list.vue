@@ -176,13 +176,13 @@
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
-              prop="prisonConfigName"
+              prop="fullname"
               label="监区"
               min-width="110">
             </el-table-column>
             <el-table-column
               v-else
-              prop="prisonConfigName"
+              prop="fullname"
               label="监区"
               min-width="110">
             </el-table-column>

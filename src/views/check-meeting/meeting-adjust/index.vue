@@ -214,10 +214,7 @@ export default {
       })
       this.isSeparateByArea = data && data.separateByArea
       if( data && !data.useMeetingFloor ) {
-        console.log( data && !data.useMeetingFloor )
-        console.log( this.areaOptions )
         this.areaOptions = this.areaOptions.filter(item => item.value != '3')
-        console.log( 'filter===', this.areaOptions )
       }
     },
 
