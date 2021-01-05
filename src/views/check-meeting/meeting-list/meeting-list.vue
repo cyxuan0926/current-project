@@ -1524,7 +1524,7 @@
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
-          if (this.isSeparateByArea) {
+          if (this.isSeparateByArea || this.isUseMeetingFloor) {
             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
