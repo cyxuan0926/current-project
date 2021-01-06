@@ -445,9 +445,9 @@ export default {
 
     // 当前监区日期配置是否全部完成
     allTypedPreSaveSucceeded() {
-      if (this.hasPrisonWeekItemsAfter) return this.preSaveSuccess[1].every(item => item)
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) return this.preSaveSuccess[0].every(item => item)
 
-      else return this.preSaveSuccess[0].every(item => item)
+      else return this.preSaveSuccess[1].every(item => item)
     }
   },
 
