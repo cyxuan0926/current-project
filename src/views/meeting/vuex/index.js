@@ -16,7 +16,10 @@ let state = {
   remoteUsualConfig: { queue: [null] },
   remoteWeekendConfig: { queue: [null] },
   originSpecial: { effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false },
-  remoteSpecialConfig: [{ effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false }]
+  remoteSpecialConfig: [{ effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false }],
+
+  // 会见楼配置
+  meetingRoomConfigs: {}
 }
 
 export default {

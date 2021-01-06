@@ -82,23 +82,6 @@
           </el-form-item>
         </template>
 
-        <!-- <el-form-item
-          v-if="isPrisonArea"
-          label="监区"
-          prop="prisonConfigId">
-          <el-select
-            v-model="terminal.prisonConfigId"
-            filterable
-            :disabled="!hasPrisonArea"
-            :loading="gettingPrisonArea"
-            placeholder="请选择监区">
-            <el-option
-              v-for="prisonArea in jailPrisonAreas"
-              :key="prisonArea.id"
-              :label="prisonArea.name"
-              :value="prisonArea.id"/>
-          </el-select>
-        </el-form-item> -->
         <el-form-item
           label="主持人密码"
           prop="hostPassword">
@@ -152,6 +135,12 @@ export default {
   mixins: [prisonAreaLevel],
 
   data() {
+    const checkAreaId = (rule, value, callback) => {
+      if (!value && value !== null) {
+        callback(new Error('请选择监区'))
+      } else callback()
+    }
+
     return {
       rule: {
         terminalNumber: [{
@@ -163,11 +152,7 @@ export default {
           required: true,
           message: '请选择监狱'
         }],
-        areaId: [{
-          required: true,
-          message: '请选择监区',
-          trigger: 'blur'
-        }],
+        areaId: [{ validator: checkAreaId }],
         branchId: [{
           required: true,
           message: '请选择分监区'
@@ -287,29 +272,30 @@ export default {
     async onPrisonChange(e, init) {
       if (!init) {
         this.clearSubPrisonArea('prisonArea', this.formData)
+
         this.prisonConfigIdKey = 'jailId'
       } else this.prisonConfigIdKey = ''
 
-      let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-      if (prison.branchPrison === 1) {
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
+      const res = await this.getJailPrisonAreas({ url: '/prison_config/getTerminalsPrisonConfigs', params: { jailId: e } })
 
-        const res = await this.getJailPrisonAreas({ jailId: e })
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+      if (!res) return
 
-        if (!res) return
+      if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
 
-        if (this.jailPrisonAreas.length === 0) {
-            this.$message.warning('请先导入罪犯数据')
-        }
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+      if (init) {
+        const { prisonConfigId } = this.terminal
 
-        if (init) {
-          const { prisonConfigId } = this.terminal
+        // 会见楼
+        if (prisonConfigId === -1) this.formData = Object.assign({}, this.terminal, { areaId: -1 })
 
+        // 其余正常情况
+        else if (prisonConfigId) {
           await this.getDetailMany({ id: prisonConfigId })
 
           const { level, areaId } = this.detailManyConfigs
@@ -334,22 +320,20 @@ export default {
             }
           }
 
-          let values = {}
-
           if (level > 1) {
-            constLevelObject[level].formDataKeys.forEach(key => {
-              values = {
-                ...values,
+            const values = constLevelObject[level].formDataKeys.reduce((accumulator, key) => {
+              return {
+                ...accumulator,
                 [key]: this.detailManyConfigs[key]
               }
-            })
+            }, {})
 
             const temp = constLevelObject[level].keys.map(key => {
-               if(this.localPrisonAreaLevelObject[key].childNode) {
-                 const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
+              if(this.localPrisonAreaLevelObject[key].childNode) {
+                const formDataKey = this.localPrisonAreaLevelObject[key]['prop']
 
-                 return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
-               }
+                return this.$store.dispatch('getChildPrisonConfigs', { parentId: this.detailManyConfigs[formDataKey] })
+              }
             })
 
             const result = await Promise.all(temp)
@@ -361,10 +345,10 @@ export default {
                 this.$set(this.localPrisonAreaLevelObject[childNode], 'options', result[index])
               }
             })
-          }
 
-          this.formData = Object.assign({}, this.terminal, { areaId, ...values })
-        }
+            this.formData = Object.assign({}, this.terminal, { areaId, ...values })
+          }
+        } else this.formData = Object.assign({}, this.terminal, { areaId: null }) //  null 是非会见楼 强制刷成null
       }
     },
 

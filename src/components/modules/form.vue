@@ -116,7 +116,13 @@ export default {
       type: Object,
       default: () => ({})
     },
+
     values: {
+      type: Object,
+      default: () => ({})
+    },
+
+    initFields: {
       type: Object,
       default: () => ({})
     }
@@ -138,7 +144,7 @@ export default {
 
     fields: {
       handler: function(val) {
-         this.$emit('response', val)
+        this.$emit('response', val)
       },
       deep: true
     }
@@ -212,7 +218,8 @@ export default {
         if (this.items[key].type === 'select') this.initSelect(this.items[key], key)
         if (this.items[key].type === 'date' && this.items[key].pickerOptions) this.initDate(this.items[key], this.items[key].pickerOptions)
       })
-      this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : fields
+
+      this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : { ...fields, ...this.initFields }
       this.flag = true
     },
 
@@ -238,7 +245,7 @@ export default {
       if (!item.rules || !item.rules.length) return
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
-        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages))
+        item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages, item.placeholder))
       })
       delete item.rules
     },
@@ -259,7 +266,7 @@ export default {
       }
     },
 
-    ruleSwitch(rule, label, type, ruleMessages) {
+    ruleSwitch(rule, label, type, ruleMessages, placeholder) {
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
@@ -269,7 +276,7 @@ export default {
       let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
         case 'required':
-          return { message: `${ plea }${ label }`, required: true, validator: validator.required }
+          return { message: `${ plea }${ placeholder || label }`, required: true, validator: validator.required }
         case 'isNumber':
           return { validator: validator.isNumber }
         case 'isFee':
@@ -343,7 +350,8 @@ export default {
 
       if (setValueConfigs && Array.isArray(setValueConfigs) && setValueConfigs.length) {
         setValueConfigs.forEach(config => {
-          const { props, setValue } = config
+          // 默认为本身 即没有初始值的时候 就是重置本身的值
+          const { props = prop, setValue } = config
 
           this.$nextTick(function() {
             this.$set(this.fields, props, setValue)

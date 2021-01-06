@@ -97,11 +97,11 @@
       </div>
       <template v-if="isSpecial">
         <section>
-          <div class="across-filter" v-if="isSeparateByArea">
+          <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
             <label class="filter__label special">选择区域</label>
             <el-select style="width: 200px" v-model="tableAreaType" placeholder="请选择区域">
               <el-option
-                v-for="item in $store.state.areaOptions"
+                v-for="item in areaOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -136,10 +136,10 @@
       <template v-else>
         <section>
           <el-tabs
-            v-if="isSeparateByArea"
+            v-if="isSeparateByArea || isUseMeetingFloor"
             v-model="tableAreaType"
             type="card">
-            <el-tab-pane v-for="t in $store.state.areaOptions"
+            <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
               :name="t.value" />
@@ -292,6 +292,7 @@ export default {
       crossDuration: 5,
       tableAreaType: this.areaType,
       isSeparateByArea: false,
+      isUseMeetingFloor: false,
       isSpecial: true,
       timeRange: [],
       selectRange: {},
@@ -306,7 +307,8 @@ export default {
       crossDateSelect: '',
       meetingVisible: false,
       acrossAdjustDate: '',
-      pickerOptions: {}
+      pickerOptions: {},
+      areaOptions: Array.from(this.$store.state.areaOptions)
     };
   },
 
@@ -539,7 +541,7 @@ export default {
         }
       }
 
-      if (this.isSeparateByArea) {
+      if (this.isSeparateByArea || this.isUseMeetingFloor) {
         this.crossDateSelect.area = this.tableAreaType
       }
 
@@ -567,13 +569,24 @@ export default {
       let { data } = await http.getMeetingSeparateArea({
         inputDate: this.acrossAdjustDate
       })
+      // 是否分监舍区和生产区
       this.isSeparateByArea = data && data.separateByArea
+      // 是否打开会见楼开关
+      this.isUseMeetingFloor = data && !!data.useMeetingFloor
+      // 分监舍区和生产区 关闭会见楼开关
+      if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item.value != '3')
+      }
+      // 不分监舍区和生产区 打开会见楼开关
+      if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item.value != '2')
+      }
     },
 
     async handleGetConfigs() {
       let { data } = await http.getMeetingConfigs({
         inputDate: this.acrossAdjustDate,
-        area: this.isSeparateByArea ? this.tableAreaType : ''
+        area: this.isSeparateByArea || this.isUseMeetingFloor ? this.tableAreaType : ''
       })
       this.isShowTips = false
       let applyList = {}

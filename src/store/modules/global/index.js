@@ -17,7 +17,9 @@ let state = {
   componentsKeepAlive: [],
 
   // 是否刷新多级审批消息铃铛
-  isRefreshMultistageExamineMessageBell: false
+  isRefreshMultistageExamineMessageBell: false,
+
+  jailsMeetingFloorStatus: false
 }
 
 export default {

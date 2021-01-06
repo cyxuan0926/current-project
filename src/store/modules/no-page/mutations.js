@@ -12,7 +12,7 @@ export default {
     state.cities = params.citys
   },
   getJailPrisonAreas(state, params) {
-    state.jailPrisonAreas = params.prisonConfigs
+    state.jailPrisonAreas = params.prisonConfigs || []
   },
 
   getOrgName(state, organization = []) {
@@ -29,5 +29,9 @@ export default {
 
   setDetailManyConfigs(state, detailManyConfigs) {
     state.detailManyConfigs = Object.assign({}, detailManyConfigs)
+  },
+
+  setIsHaveMeetingFloorTerminals(state, haveMeetingFloorTerminals) {
+    state.haveMeetingFloorTerminals = haveMeetingFloorTerminals
   }
 }

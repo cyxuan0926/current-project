@@ -66,7 +66,9 @@
             v-if="localPrisonAreaLevel.options.length"
             :key="localPrisonAreaLevel.prop"
             :label="localPrisonAreaLevel.label"
-            :prop="localPrisonAreaLevel.prop">
+            :prop="localPrisonAreaLevel.prop"
+            :class="[ { 'el-form-iten__areaId': key === 'prisonArea' } ]"
+          >
             <el-select
               v-model="terminal[localPrisonAreaLevel.prop]"
               filterable
@@ -107,7 +109,8 @@
             inactive-color="#dddddd"
             :active-value="1"
             :inactive-value="0"
-            :width="60" />
+            :width="60"
+          />
         </el-form-item>
       </el-form>
       <el-button
@@ -136,6 +139,11 @@ export default {
   mixins: [prisonAreaLevel],
 
   data() {
+    const checkAreaId = (rule, value, callback) => {
+      if (!value && value !== null) {
+        callback(new Error('请选择监区'))
+      } else callback()
+    }
     return {
       terminal: {},
       rule: {
@@ -148,10 +156,7 @@ export default {
           required: true,
           message: '请选择监狱'
         }],
-        areaId: [{
-          required: true,
-          message: '请选择监区'
-        }],
+        areaId: [{ validator: checkAreaId }],
         branchId: [{
           required: true,
           message: '请选择分监区'
@@ -205,7 +210,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addTerminal', 'getJailPrisonAreas', 'getPrisonAllWithBranchPrison']),
+    ...mapActions([
+      'addTerminal',
+      'getJailPrisonAreas',
+      'getPrisonAllWithBranchPrison'
+    ]),
+
     onSubmit() {
       this.$refs.terminal.validate(valid => {
         if (valid) {
@@ -247,27 +257,23 @@ export default {
         }
       })
     },
+
     onPrisonChange(e) {
       this.prisonConfigIdKey = ''
 
       this.clearSubPrisonArea('prisonArea', this.terminal)
 
-      let prison = this.prisonAllWithBranchPrison.find(item => item.id === e)
-      if (prison.branchPrison === 1) {
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
-        this.getJailPrisonAreas({ jailId: e }).then(res => {
-          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+      this.getJailPrisonAreas({ url: '/prison_config/getTerminalsPrisonConfigs', params: { jailId: e } }).then(res => {
+        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
-          if (!res) return
+        if (!res) return
 
-          this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
+        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
 
-          if (this.jailPrisonAreas.length === 0) {
-            this.$message.warning('请先导入罪犯数据')
-          }
-        })
-      }
+        if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
+      })
     },
 
     onGoBack() {
@@ -277,5 +283,16 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style lang="scss" scoped>
+.el-form {
+  /deep/ .el-form-iten__areaId {
+    .el-form-item__label {
+      &::before {
+        content: '*';
+        color: #F56C6C;
+         margin-right: 4px;
+      }
+    }
+  }
+}
 </style>

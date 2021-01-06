@@ -18,7 +18,7 @@
           :loading="item.getting || false"
           :clearable="!item.canNotClear"
           :filterable="item.filterable"
-          @change="onSelectChange(item.selectKey?item.selectKey:item.correlation, item.value)" >
+          @change="onSelectChange(item.selectKey ? item.selectKey : item.correlation, item.value)" >
           <!-- :key="item.belong ? option[item.belong.value] : option.value" -->
           <template v-for="(option, i) in item.options">
             <el-option

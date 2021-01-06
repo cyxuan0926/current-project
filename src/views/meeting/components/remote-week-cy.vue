@@ -30,10 +30,10 @@
         <template v-if="config.timeperiodQueue.length">
           <!-- 通话时长/时间间隔 -->
 
-          <div v-if="!superAdmin" class="none_superAdmin">
+          <!-- <div v-if="!superAdmin" class="none_superAdmin">
             <label >通话时长</label>
             <span>{{ config.duration }} 分钟</span>
-          </div>
+          </div> -->
 
           <m-form
             class="duration-interval-form"
@@ -347,14 +347,15 @@
             rules: ['required', 'isNumber']
           }
         }
-        if (!this.superAdmin) this.$delete(item, 'duration')
+        // if (!this.superAdmin) this.$delete(item, 'duration')
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
-            if (this.superAdmin ) {
-              this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
-            }
-             this.$set(config, 'duration', configs.length && configs[0].duration)
+            // if (this.superAdmin ) {
+            //   this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
+            // }
+            this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
+            this.$set(config, 'duration', configs.length && configs[0].duration)
             this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
             return cloneItem
           })

@@ -128,5 +128,10 @@ export default {
     const { url, params } = args
 
     return service.post(url, params)
+  },
+
+  // 判断监狱是否开启了会见楼接口
+  getJailsMeetingFloorStatus: jailId => {
+    return service.get('/jails/checkOpenMeetingFloor', { jailId })
   }
 }
