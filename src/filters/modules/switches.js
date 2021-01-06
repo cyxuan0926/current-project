@@ -158,6 +158,10 @@ let switches = {
     {
       label: '生产区',
       value: '2'
+    },
+    {
+      label: '会见楼',
+      value: '3'
     }
   ]
 }

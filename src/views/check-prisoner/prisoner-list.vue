@@ -1376,9 +1376,11 @@ export default {
         let prisonArea, temp = { jailId }
 
         if(JSON.parse(localStorage.getItem('user')).branch_prison) {
-          if (this.user.role === '1') prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonAreaId))[0].prisonConfigName
-
+          // 暂时默认租户管理员
           if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonAreaId))[0].name
+
+          // 其他角色就是本身
+          else prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonAreaId))[0].prisonConfigName
 
           temp = { jailId, prisonArea }
         }
@@ -1388,8 +1390,6 @@ export default {
         })
 
         let prisonConfigs = provinceJailLevelConfigsParamsName.slice(2)
-
-        prisonConfigs = prisonConfigs.slice(0, prisonConfigs.findIndex(l => l === this.prisonConfigIdKey) + 1)
 
         prisonConfigs.forEach(item => {
           delete val[item]

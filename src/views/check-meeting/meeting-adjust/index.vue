@@ -15,10 +15,10 @@
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
     <el-tabs
-      v-if="isSeparateByArea"
+      v-if="isSeparateByArea || isUseMeetingFloor"
       v-model="areaTabs"
       type="card">
-      <el-tab-pane v-for="t in $store.state.areaOptions"
+      <el-tab-pane v-for="t in areaOptions"
         :key="t.value"
         :label="t.label"
         :name="t.value" />
@@ -60,7 +60,9 @@ export default {
       dayinLimit: '',
       pickerOptions: {},
       isSeparateByArea: false,
-      areaTabs: '1'
+      isUseMeetingFloor: false,
+      areaTabs: '1',
+      areaOptions: Array.from(this.$store.state.areaOptions)
     };
   },
 
@@ -130,6 +132,7 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
+    // this.areaOptions = Array.from(this.$store.state.areaOptions)
     await this.setSeparateArea()
     await this.getConfigs()
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
@@ -210,7 +213,18 @@ export default {
       let { data } = await http.getMeetingSeparateArea({
         inputDate: this.adjustDate
       })
+      // 是否分监舍区和生产区
       this.isSeparateByArea = data && data.separateByArea
+      // 是否打开会见楼开关
+      this.isUseMeetingFloor = data && !!data.useMeetingFloor
+      // 分监舍区和生产区 关闭会见楼开关
+      if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item.value != '3')
+      }
+      // 不分监舍区和生产区 打开会见楼开关
+      if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+        this.areaOptions = this.areaOptions.filter(item => item.value != '2')
+      }
     },
 
     async handlePickerChange() {
@@ -223,7 +237,7 @@ export default {
       // 获取监狱配置
       await this.getMeetingConfigs({
         inputDate: this.adjustDate,
-        area: this.isSeparateByArea ? this.areaTabs : ''
+        area: this.isSeparateByArea || this.isUseMeetingFloor ? this.areaTabs : ''
       });
       this.meetingAdjustDealing(false);
 

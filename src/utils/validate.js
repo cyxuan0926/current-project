@@ -11,6 +11,7 @@ export default {
     const pattern = /^\s*(.*?)\s*$/
     if (isEmpty(value)) callback(new Error(rule.message))
     else if (typeof value === 'string' && isEmpty(value.replace(pattern, '$1'))) callback(new Error(rule.message))
+    else if (Array.isArray(value) && !value.length) callback(new Error(rule.message))
     else callback()
   },
   // 和公共服务的正则统一

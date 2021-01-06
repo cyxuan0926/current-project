@@ -18,7 +18,9 @@ let state = {
 
   allChildPrisonConfigs: [],
 
-  detailManyConfigs: {}
+  detailManyConfigs: {},
+
+  haveMeetingFloorTerminals: false
 }
 
 export default {

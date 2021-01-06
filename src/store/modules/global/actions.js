@@ -2,6 +2,8 @@ import api from '@/service/modules/global'
 
 import repeatAPI from '@/service/modules/repeat'
 
+import { Message } from 'element-ui'
+
 const getUrls = (params) => {
   let { urls, contents } = params
   for (var i = 0; i < urls.length; i++) {
@@ -116,6 +118,21 @@ export default {
       commit(mutationName, isSuccess)
 
       return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getJailsMeetingFloorStatus({ commit }, jailId) {
+    try {
+      const { data } = await repeatAPI.getJailsMeetingFloorStatus(jailId)
+
+      Message.closeAll()
+
+      commit('setJailsMeetingFloorStatus', !!data)
+
+      return data
     }
     catch (err) {
       Promise.reject(err)

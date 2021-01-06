@@ -85,5 +85,15 @@ export default {
   }, // 监狱特殊日期配置-删除
   deleteSpecialConfigById: (params) => {
     return service.post('/complex_config/deleteComplexSpecialConfigById', params).then(res => res && res.code === 200)
+  },
+
+  // 查询会见楼配置
+  getComplexConfigFloorDetail: jailId => {
+    return service.get('/complex_config/getFloorConfig', { jailId }).then(res => res.data)
+  },
+
+  // 保存会见楼配置
+  saveComplexConfigFloorDetail: params => {
+    return service.postObj('/complex_config/saveFloorConfig', params)
   }
 }

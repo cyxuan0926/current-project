@@ -29,8 +29,8 @@ export default {
     })
   },
 
-  getJailPrisonAreas: ({ commit }, params) => {
-    return http.getJailPrisonAreas(params).then(res => {
+  getJailPrisonAreas: ({ commit }, args) => {
+    return http.getJailPrisonAreas(args).then(res => {
       if (!res) return
       commit('getJailPrisonAreas', res)
       return true
@@ -134,6 +134,21 @@ export default {
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getMeetingFloorTerminals({ commit }, jailId) {
+    try {
+      const { data } = await http.getMeetingFloorTerminals(jailId)
+
+      const haveMeetingFloorTerminals = data && Array.isArray(data) && data.length
+
+      commit('setIsHaveMeetingFloorTerminals', haveMeetingFloorTerminals)
+
+      return haveMeetingFloorTerminals
     }
     catch (err) {
       Promise.reject(err)

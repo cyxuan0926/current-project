@@ -46,6 +46,7 @@
       :visible.sync="dialogVisible"
       class="authorize-dialog"
       :title="showContent['title']"
+      :close-on-click-modal="false"
       width="530px">
       <el-input
         class="prisonAreas-inp"
@@ -53,7 +54,8 @@
         v-model.trim="prisonArea.name"
         :disabled="checkIsDisabled(1)"
         maxlength="30"
-        placeholder="请输入监区名称" />
+        placeholder="请输入监区名称(监区名称请勿为'会见楼'或者'非会见楼')"
+      />
 
       <el-input
         class="prisonAreas-inp"
@@ -61,7 +63,8 @@
         v-model.trim="prisonArea.branchname"
         :disabled="checkIsDisabled(2)"
         maxlength="30"
-        placeholder="请输入分监区名称" />
+        placeholder="请输入分监区名称"
+      />
       
       <el-input
         class="prisonAreas-inp"
@@ -69,7 +72,8 @@
         v-model.trim="prisonArea.building"
         :disabled="checkIsDisabled(3)"
         maxlength="30"
-        placeholder="请输入楼栋名称" />
+        placeholder="请输入楼栋名称"
+      />
 
       <el-input
         class="prisonAreas-inp"
@@ -77,7 +81,8 @@
         v-model.trim="prisonArea.layer"
         :disabled="checkIsDisabled(4)"
         maxlength="30"
-        placeholder="请输入楼层名称" />
+        placeholder="请输入楼层名称"
+      />
       
       <div class="el-input-div__error" v-if="!!errTips">（{{ errTips }}）</div>
       <template slot="footer">

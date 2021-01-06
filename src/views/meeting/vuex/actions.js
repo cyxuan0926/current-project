@@ -1,5 +1,7 @@
 import http from './service'
 
+import { weeks } from '@/common/constants/const'
+
 export default {
   getRemoteAdvanceDayLimits: async({ commit }, params) => {
     try {
@@ -371,5 +373,145 @@ export default {
   },
   deleteSpecialConfigById: ({ commit }, params) => {
     return http.deleteSpecialConfigById(params).then(res => res)
+  },
+
+  async getComplexConfigFloorDetail({ commit }, prisonId) {
+    try {
+      const {
+        configurationsFloorDetailNow,
+        configurationsFloorDetailFuture,
+        complexNormalConfig,
+        prisonBranch
+      } = await http.getComplexConfigFloorDetail(prisonId)
+
+      // 是否分监区
+      // configurationsFloorDetailNow: 正在生效的会见楼配置 监区配置
+      // configurationsFloorDetailFuture：即将生效的会见楼配置 监区配置 都需要初始化成对应的最基本的数据结构
+      // complexNormalConfig：会见楼时间配置 configAfter：即将生效的时间  configBefore： 正在生效的时间
+      // 还要考虑是否分监区 不分监区的话 就需要初始为 全监狱
+      // 先初始化时间配置
+      const {
+        configBefore,
+        configAfter,
+        durations,
+        dayInLimit,
+        enabledAt,
+        updatedAt,
+        jailId,
+        id
+      } = complexNormalConfig
+
+      const allTimeConfigs = [configBefore, configAfter]
+
+      const allPrisonWeekConfigs = [configurationsFloorDetailNow, configurationsFloorDetailFuture]
+
+      const filterAllTimeConfigs = allTimeConfigs.map((configs, index) => {
+        // 新增 就是都是空 这种不管怎么样都是改变的
+        // 只有正在生效的 没有即将生效的为空 只能操作正在生效的 更新到即将生效的
+        // 既有正在生效的 又有即将生效的 只能操作即将生效的 更新到正在生效的
+        // 只有即将生效的
+        if (!configs || (Array.isArray(configs) && !configs.length)) {
+          return [
+            { days: [1, 2, 3, 4, 5, 6, 0],
+              interval: 5,
+              duration: 25,
+              timeperiod: [],
+              config: [],
+              queue: [],
+              timeperiodQueue: [],
+              showError: [],
+              type: index,
+              Monday: [],
+              Wednesday: [],
+              Thursday: [],
+              Friday: [],
+              Tuesday: [],
+              Saturday: [],
+              Sunday: []
+            }
+          ]
+        }
+        else {
+          return configs.map(config => {
+            const { timeperiod } = config
+
+            const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+            config['showError'] = new Array(length).fill(false)
+
+            const filterParams = [
+              {
+                key: 'config',
+                value: 'queue'
+              },
+              {
+                key: 'timeperiod',
+                value: 'timeperiodQueue'
+              }
+            ]
+            filterParams.forEach(params => {
+              config[params['value']] = []
+              if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
+                config[params['key']].forEach(c => {
+                  config[params['value']].push(c.split('-'))
+                })
+              }
+              else config[params['key']] = []
+            })
+
+            let weekConfigs = {}
+
+            allPrisonWeekConfigs[index].forEach(prisonWeekConfig => {
+              weeks.forEach(day => {
+                // 拥有的日期
+                if (+day.value === +prisonWeekConfig.days) {
+                  const { key } = day
+
+                  let { prisonConfigId } = prisonWeekConfig
+
+                  prisonConfigId = prisonConfigId || []
+
+                  // 特殊处理 全监狱 id默认为 -1
+                  if (!+prisonBranch) prisonConfigId = [-1]
+
+                  weekConfigs = {
+                    ...weekConfigs,
+                    [key]: prisonConfigId
+                  }
+                }
+              })
+            })
+
+            return { ...config, ...weekConfigs }
+          })
+        }
+      })
+
+      commit('setMeetingRoomConfigs', {
+        prisonBranch,
+        durations,
+        enabledAt,
+        dayInLimit,
+        updatedAt,
+        jailId,
+        id,
+        configBefore: filterAllTimeConfigs[0],
+        configAfter: filterAllTimeConfigs[1]
+      })
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async saveComplexConfigFloorDetail({ commit }, params) {
+    try {
+      const { code } = await http.saveComplexConfigFloorDetail(params)
+
+      return code === 200
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }
