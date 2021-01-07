@@ -527,6 +527,21 @@
           <el-button type="primary" @click="submitRemarks()">提 交</el-button>
         </span>
     </el-dialog>
+     <el-dialog
+      :visible.sync="show.userRemarks"
+      class="authorize-dialog"
+      width="600px"
+      @close="closeAuthorize"
+      title="备注信息">
+      <el-form label-width="130px" style="max-height:400px" class="demo-ruleForm">
+        <el-form-item label="增加备注用户:" prop="desc">
+          <span >{{optionsRemarks.unusualRemarkUser}}</span>
+        </el-form-item>
+        <el-form-item label="增加备注内容:" prop="desc">
+          <span >{{optionsRemarks.unusualRemark}}</span>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -695,10 +710,11 @@
           meetingQueue:false,
           familiesDetialInform: false,
           multistageExamine: false,
-          setRemarks:false
-
+          setRemarks:false,
+          userRemarks:false
         },
         getRemarks:'',
+        optionsRemarks:{},
         operateQueryAuth:false,
         toAuthorize: {},
         toShow: {},
@@ -1136,8 +1152,9 @@
            this.$message.error('请输入备注内容');
         }
       },
-      detailRemarks(){
-
+      detailRemarks(row){
+        this.optionsRemarks=row
+        this.show.userRemarks=true
       },
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row

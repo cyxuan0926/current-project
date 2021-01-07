@@ -199,12 +199,19 @@ export default {
     return service.putObj('/dict', params)
   },
 
+  // 监狱操作指引新增
   addBusGuide: params => {
     return service.postObj('/business/guide', params)
   },
 
+  // 监狱操作指引编辑
   updateBusGuide: params => {
     return service.putObj('/business/guide', params)
+  },
+
+  // 监狱操作指引查询列表
+  businessList: params => {
+    return service.get('/business/guide/findPage', params).then(res => res.data)
   }
 }
 
