@@ -895,12 +895,7 @@
 
       tableCols() {
         // const { applicationStartDate, applicationEndDate } = this.filter
-<<<<<<< HEAD
-
-          const basicCols =[
-=======
         const basicCols = [
->>>>>>> feature-huijianlou-20201216
             {
               label: '监区1',
               prop: 'prisonArea',

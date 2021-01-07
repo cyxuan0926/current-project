@@ -403,7 +403,7 @@ export default {
           disabled,
           value: 0
         },
-<<<<<<< HEAD
+        
         abnormalCalldurationSwitch: {
           slotName: "abnormalCalldurationSwitch",
           attrs: {
@@ -414,7 +414,6 @@ export default {
           func: this.onDurationSwitch
           // controlTheOther: true
         },
-=======
 
         useMeetingFloor: {
           label: '会见楼开关',
@@ -424,7 +423,6 @@ export default {
           setValueConfigs: [{ setValue: 1 }],
           func: this.onMeetingRoomSwitch
         }
->>>>>>> feature-huijianlou-20201216
       }, formButton),
       values: {},
       permission,
