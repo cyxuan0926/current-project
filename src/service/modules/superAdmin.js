@@ -197,6 +197,14 @@ export default {
   // 监狱管理-人脸识别配置-更新
   updateFaceRecognitionConfigs: params => {
     return service.putObj('/dict', params)
+  },
+
+  addBusGuide: params => {
+    return service.postObj('/business/guide', params)
+  },
+
+  updateBusGuide: params => {
+    return service.putObj('/business/guide', params)
   }
 }
 
