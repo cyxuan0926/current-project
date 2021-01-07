@@ -197,6 +197,10 @@ export default {
   // 监狱管理-人脸识别配置-更新
   updateFaceRecognitionConfigs: params => {
     return service.putObj('/dict', params)
+  },
+  // 监狱操作指引查询列表
+  businessList: params => {
+    return service.get('/business/guide/findPage', params).then(res => res.data)
   }
 }
 
