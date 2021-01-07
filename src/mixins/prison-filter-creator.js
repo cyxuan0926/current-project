@@ -259,7 +259,7 @@ export default {
           this.clearSubPrisonArea('prisonSubArea')
 
           if (this.searchItems['prisonArea']) {
-            await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+            await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
             Message.closeAll()
             this.$set(this.searchItems['prisonArea'], 'value', '')
             this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)

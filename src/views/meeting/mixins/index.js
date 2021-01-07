@@ -8,6 +8,8 @@ import Moment from 'moment'
 
 import roles from '@/common/constants/roles'
 
+import { weeks } from '@/common/constants/const'
+
 export default {
   data() {
     return {
@@ -92,6 +94,26 @@ export default {
 
     onGoBack() {
       this.$router.back()
+    },
+
+    // 比较实际选择的工作日 和 实际渲染的日期监区 item一致不
+    onCompareDaysAndPrisonAreaItems(type, index, configs, items, noEqual = [[], []]) {
+      const { days } = configs
+
+      // 这个处理只适合少数情况下 只要 formconfigs 这个无用的配置/全部item 都显示
+      const allProps = Object.keys(items)
+
+      let result = false
+      // 这种是个数都不相同
+      if (days.length !== allProps.length - 1) result = true
+      // 个数相同的情况 就看元素是否全部一样
+      else {
+        const haveWeeks = weeks.filter(day => days.includes(+day))
+
+        result = haveWeeks.every(day => allProps.includes(day.key))
+      }
+
+      this.$set(noEqual[type], index, result)
     }
   }
 }

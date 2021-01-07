@@ -44,5 +44,9 @@ export default {
   // 设置是否刷新消息铃铛
   setIsRefreshMultistageExamineMessageBell(state, isRefreshMultistageExamineMessageBell) {
     state.isRefreshMultistageExamineMessageBell = isRefreshMultistageExamineMessageBell
+  },
+
+  setJailsMeetingFloorStatus(state, jailsMeetingFloorStatus) {
+    state.jailsMeetingFloorStatus = jailsMeetingFloorStatus
   }
 }

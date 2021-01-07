@@ -2,6 +2,8 @@ import throttle from 'lodash/throttle'
 import { Message } from 'element-ui'
 import router from '@/router'
 
+import logout from '@/utils/logout'
+
 export default class ActiveMonitor {
   constructor(maxTime = 10 * 60, types = ['click', 'keydown']) {
     this.isActive = true
@@ -23,6 +25,8 @@ export default class ActiveMonitor {
     }
     else {
       this._reset()
+      logout()
+      Message.closeAll()
       if (router.currentRoute.path !== '/login') {
         router.push('/login')
         Message({

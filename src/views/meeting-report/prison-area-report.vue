@@ -37,8 +37,8 @@ import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
 
-const startDate = Moment().subtract(1, 'months').format('YYYY-MM')
-const endDate = Moment().subtract(1, 'months').format('YYYY-MM')
+const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
+const endDate = Moment().format('YYYY-MM-DD')
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -62,17 +62,26 @@ export default {
           filterable: true,
           options: []
         },
+        // reportRange: {
+        //   type: 'monthRangeSelector',
+        //   canNotClear: true,
+        //   startValue: startDate,
+        //   endValue: endDate,
+        //   startKey: 'startDate',
+        //   endKey: 'endDate',
+        //   range: {
+        //     max: Moment().subtract(1, 'months').format('YYYY-MM'),
+        //     maxMonthRange: 24
+        //   }
+        // },
         reportRange: {
-          type: 'monthRangeSelector',
-          canNotClear: true,
-          startValue: startDate,
-          endValue: endDate,
-          startKey: 'startDate',
-          endKey: 'endDate',
-          range: {
-            max: Moment().subtract(1, 'months').format('YYYY-MM'),
-            maxMonthRange: 24
-          }
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间',
+          value: [startDate, endDate]
         },
         prisonerName: {
           type: 'input',
@@ -162,7 +171,7 @@ export default {
       this.searchItems.prisonAreaId.getting = false
       this.getDatas()
     } else {
-      this.getJailPrisonAreas({ jailId: JSON.parse(localStorage['user']).jailId }).then(res => {
+      this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } }).then(res => {
         this.searchItems.prisonAreaId.options = this.jailPrisonAreas
         this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
         this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
@@ -287,7 +296,7 @@ export default {
 
       if (selectKey === 'jailId') {
         if (value) {
-          await this.$store.dispatch('getJailPrisonAreas', { jailId: value })
+          await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
           this.$set(this.searchItems['prisonAreaId'], 'options', this.$store.state.jailPrisonAreas)
         }
         else {

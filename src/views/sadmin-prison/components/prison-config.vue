@@ -128,6 +128,7 @@ import { mapActions, mapState } from 'vuex'
 import validator, { helper } from '@/utils'
 import roles from '@/common/constants/roles'
 import cloneDeep from 'lodash/cloneDeep'
+import { Message } from 'element-ui'
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -392,13 +393,7 @@ export default {
           type: 'switch',
           disabled,
           value: 0,
-          setValueConfigs: [
-            {
-              props: 'multistageExamine',
-              setValue: 0
-            }
-          ],
-
+          setValueConfigs: [{ setValue: 0 }],
           func: this.onMultistageExamineSwitch
         },
 
@@ -408,6 +403,7 @@ export default {
           disabled,
           value: 0
         },
+<<<<<<< HEAD
         abnormalCalldurationSwitch: {
           slotName: "abnormalCalldurationSwitch",
           attrs: {
@@ -418,6 +414,17 @@ export default {
           func: this.onDurationSwitch
           // controlTheOther: true
         },
+=======
+
+        useMeetingFloor: {
+          label: '会见楼开关',
+          type: 'switch',
+          disabled,
+          value: 0,
+          setValueConfigs: [{ setValue: 1 }],
+          func: this.onMeetingRoomSwitch
+        }
+>>>>>>> feature-huijianlou-20201216
       }, formButton),
       values: {},
       permission,
@@ -458,7 +465,9 @@ export default {
     ...mapState([
 
       'prison',
-      'branchStatus']),
+      'branchStatus',
+      'haveMeetingFloorTerminals'
+    ]),
 
     ...mapState('account', ['isHaveAdvancedAuditor']),
 
@@ -550,7 +559,9 @@ export default {
   methods: {
     ...mapActions([
       'getPrisonDetail',
-      'updatePrison']),
+      'updatePrison',
+      'getMeetingFloorTerminals'
+    ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
     getResponse(fields){
@@ -687,14 +698,14 @@ export default {
 
       this.$set(this.formItems['branchPrison'], 'setValueConfigs', setValueConfigs)
 
-      this.$confirm('调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？', {
+      this.$confirm(`调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？调整监区结构后，为了避免预约问题，请及时调整该监狱的终端管理和会见楼配置。`, {
         closeOnClickModal: false,
 
         closeOnPressEscape: false,
 
         callback: (action) => {
-            if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
-          }
+          if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
+        }
       })
     },
 
@@ -759,6 +770,31 @@ export default {
         }
         else {
           if (autoAuthorizeMeeting) this.$confirm(have_automatic_audit['message'], have_automatic_audit['options'])
+        }
+      }
+    },
+
+    async onMeetingRoomSwitch(value, prop, item) {
+      // 开启会见楼配置并且会见楼配置了终端的情况
+      if (!value) {
+        const jailId = this.$route.params.id
+
+        await this.getMeetingFloorTerminals(jailId)
+
+        Message.closeAll()
+
+        if (this.haveMeetingFloorTerminals) {
+          this.$confirm('该监狱配置了会见楼配置，请先移除会见楼的终端，再关闭会见楼开关！', {
+            showCancelButton: false,
+
+            closeOnClickModal: false,
+
+            closeOnPressEscape: false,
+
+            callback: (action) => {
+              this.$refs['prison-config_form'].setFieldValue(value, prop, item)
+            }
+          })
         }
       }
     }

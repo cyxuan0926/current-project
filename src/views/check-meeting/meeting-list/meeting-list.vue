@@ -112,11 +112,11 @@
         v-if="show.agree"
         class="button-box">
         <section v-show="isSpecial">
-          <div class="across-filter" v-if="isSeparateByArea">
+          <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
             <label class="filter__label special">选择区域</label>
             <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
               <el-option
-                v-for="item in $store.state.areaOptions"
+                v-for="item in areaOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -156,10 +156,10 @@
         </section>
         <section v-show="!isSpecial">
           <el-tabs
-            v-if="isSeparateByArea"
+            v-if="isSeparateByArea || isUseMeetingFloor"
             v-model="areaTabs"
             type="card">
-            <el-tab-pane v-for="t in $store.state.areaOptions"
+            <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
               :name="t.value" />
@@ -187,13 +187,13 @@
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
-              prop="prisonConfigName"
+              prop="fullname"
               label="监区"
               min-width="110">
             </el-table-column>
             <el-table-column
               v-else
-              prop="prisonConfigName"
+              prop="fullname"
               label="监区"
               min-width="110">
             </el-table-column>
@@ -561,6 +561,8 @@
 
   import { withdrawOrAnthorinputReason } from '@/common/constants/const'
 
+  import cloneDeep from 'lodash/cloneDeep'
+
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -613,6 +615,7 @@
         showTips: '',
         isShowTips: false,
         isSeparateByArea: false,
+        isUseMeetingFloor: false,
         selectRange: {},
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
@@ -622,6 +625,7 @@
         isSpecial: false,
         areaTabs: '1',
         areaTypes: '1',
+        areaOptions: Array.from(this.$store.state.areaOptions),
         getMeetingId: '',
         withdrawOrAnthorinputReason,
         tabsItems,
@@ -673,7 +677,7 @@
             label: '申请状态',
             options: this.$store.state.applyStatus,
             miss: true,
-            correlation:"status",
+            correlation: "status",
             value: ''
           },
 
@@ -787,6 +791,7 @@
           // }
         ],
         meetingAdjustment: {},
+
         meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
@@ -850,7 +855,7 @@
           delete this.filter.orderField
         }
 
-        if (this.tabs !== 'first') {
+        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
@@ -890,8 +895,12 @@
 
       tableCols() {
         // const { applicationStartDate, applicationEndDate } = this.filter
+<<<<<<< HEAD
 
           const basicCols =[
+=======
+        const basicCols = [
+>>>>>>> feature-huijianlou-20201216
             {
               label: '监区1',
               prop: 'prisonArea',
@@ -986,7 +995,7 @@
             ...basicCols
           ]
 
-          if (this.tabs === 'first' ||this.tabs === 'PASSED' ) {
+          if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
             cols = [ ...cols, terminaUniquelId,...noAllPrisonQueryAuthLeadingCols]
           }
           else if(this.tabs === 'PENDING' ) {
@@ -1018,7 +1027,9 @@
       },
 
       tabs(val) {
+        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
+        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1074,7 +1085,6 @@
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
-
         }
         this.onSearch()
       },
@@ -1210,6 +1220,7 @@
       },
 
       async getDatas(e) {
+        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
@@ -1307,7 +1318,7 @@
       getMeetTimeConfig() {
         http.getMeetTimeConfig({
           id: this.getMeetingId,
-          area: this.isSeparateByArea ? this.areaTabs : ''
+          area: this.isSeparateByArea || this.isUseMeetingFloor ? this.areaTabs : ''
         }).then(res=>{
           this.show.authorize = true
           this.meetingAdjustment=res
@@ -1385,10 +1396,22 @@
         this.isShowTips = false
         this.areaTabs = '1'
         this.areaTypes = '1'
+        // this.areaOptions = Array.from(this.$store.state.areaOptions)
         let { data } = await http.getMeetingSeparateArea({
           inputDate: this.toAuthorize && this.toAuthorize.applicationDate
         })
+        // 是否分监舍区和生产区
         this.isSeparateByArea = data && data.separateByArea
+        // 是否打开会见楼开关
+        this.isUseMeetingFloor = data && !!data.useMeetingFloor
+        // 分监舍区和生产区 关闭会见楼开关
+        if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
+          this.areaOptions = this.areaOptions.filter(item => item.value != '3')
+        }
+        // 不分监舍区和生产区 打开会见楼开关
+        if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+          this.areaOptions = this.areaOptions.filter(item => item.value != '2')
+        }
         this.getMeetTimeConfig()
         this.$message.closeAll()
       },
@@ -1600,7 +1623,7 @@
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
-          if (this.isSeparateByArea) {
+          if (this.isSeparateByArea || this.isUseMeetingFloor) {
             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
