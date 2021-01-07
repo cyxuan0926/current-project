@@ -657,6 +657,9 @@ export default {
         if(this.values.abnormalCallduration>600){
          this.values.abnormalCallduration=600
         }
+        if(this.values.abnormalCallduration<10){
+         this.values.abnormalCallduration=10
+        }
     },
     // 是否分监区
     onBranchPrisonSwitch(value, prop, item) {

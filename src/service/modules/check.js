@@ -104,6 +104,10 @@ export default {
   withdrawMeeting: params => {
     return service.post('/meetings/withdraw', params).then(res => res && res.code === 200)
   },
+   // 添加异常通话的备注信息
+   addUnusualRemark: params => {
+    return service.post('/meetings/unusualRemark', params).then(res => res && res.code === 200)
+  },
   // 实地探监管理-列表
   getVisits: params => {
     return service.get('/prisoner_visits/page', params).then(res => res && res.data)

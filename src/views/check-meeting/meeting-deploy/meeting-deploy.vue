@@ -91,6 +91,9 @@
         if(this.abnormalCallduration>600){
          this.abnormalCallduration=600
         }
+        if(this.abnormalCallduration<10){
+         this.abnormalCallduration=10
+        }
       },
       submitTit(){
         //判断

@@ -75,28 +75,23 @@
             v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
-
-
-         <el-button
+      
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="detailRemarks(scope.row)">已备注</el-button>
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& !scope.row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(scope.row)">备注</el-button>
+               <el-button
             v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             type="text"
             size="mini"
             class="button-detail"
             @click="onDetail(scope.row)">详情</el-button>
-
-            <el-button
-            v-if="scope.row.status == 'EXPIRED'"
-            type="text"
-            size="mini"
-            class="button-detail"
-            @click="setRemarks(scope.row)">备注</el-button>
-            <el-button
-            v-if="scope.row.status == 'EXPIRED'"
-            type="text"
-            size="mini"
-            class="button-detail"
-            @click="detailRemarks(scope.row)">已备注</el-button>
-
         </template>
       </m-table-new>
     </el-col>
@@ -529,7 +524,7 @@
         </el-form-item>
       </el-form>
        <span  slot="footer" class="dialog-footer">
-          <el-button type="primary">提 交</el-button>
+          <el-button type="primary" @click="submitRemarks()">提 交</el-button>
         </span>
     </el-dialog>
   </el-row>
@@ -939,7 +934,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 105,
+              minWidth: 180,
               align: 'center'
             }
           ]
@@ -1113,9 +1108,33 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-      setRemarks(){
+      setRemarks(row){
         this.show.setRemarks=true
+         this.getMeetingId=row.id
 
+      },
+      submitRemarks(){
+        if(this.getRemarks){
+           http.addUnusualRemark({
+            id: this.getMeetingId,
+            unusualRemark: this.getRemarks
+          }).then(res=>{
+            this.show.setRemarks=false
+            this.getRemarks=''
+            if (this.tabs === 'UNUSUAL') {
+              delete this.filter.status
+               const params = {
+                    ...this.filter,
+                    ...this.pagination
+                  }
+            let url = '/meetings/findUnusualPage'
+            if (this.hasAllPrisonQueryAuth) url = '/meetings/findUnusualAdminPage'
+             this.getUnusualMeetingPage({ url, params })
+            }
+          })
+        }else{
+           this.$message.error('请输入备注内容');
+        }
       },
       detailRemarks(){
 
