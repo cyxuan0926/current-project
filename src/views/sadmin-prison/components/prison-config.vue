@@ -396,14 +396,12 @@ export default {
           setValueConfigs: [{ setValue: 0 }],
           func: this.onMultistageExamineSwitch
         },
-
         userDefinedDuration: {
           label: '审核时可指定通话时长',
           type: 'switch',
           disabled,
           value: 0
         },
-        
         abnormalCalldurationSwitch: {
           slotName: "abnormalCalldurationSwitch",
           attrs: {
@@ -414,7 +412,6 @@ export default {
           func: this.onDurationSwitch
           // controlTheOther: true
         },
-
         useMeetingFloor: {
           label: '会见楼开关',
           type: 'switch',
