@@ -131,7 +131,7 @@
                 }
                 if(even=='detail'){
                     this.$router.push({
-                        path: `/operation-guide/detail/${row.id}`
+                        path: '/operation-guide/detail'
                     })
                     this.setGuideStorage({
                         updatedTime: row.updatedTime,

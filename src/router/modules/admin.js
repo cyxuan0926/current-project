@@ -77,7 +77,7 @@ let admin = [{
     meta: { permission: 'visit.operation-guide.edit', breadcrumbName: '后台更新操作指引' },
     component: 'operation-guide/guide-edit'
   }, {
-    path: '/operation-guide/detail/:id',
+    path: '/operation-guide/detail',
     name: 'operation-guide-detail',
     meta: { permission: 'visit.operation-guide.detail', breadcrumbName: '后台更新操作指引' },
     component: 'operation-guide/guide-detail'
