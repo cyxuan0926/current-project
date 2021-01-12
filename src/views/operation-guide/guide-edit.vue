@@ -13,6 +13,7 @@
 <script>
     import http from '@/service'
     import Moment from 'moment'
+    import isEqual from 'lodash/isEqual'
     export default {
         data() {
             const isAdd = this.$route.path.includes('add')
@@ -32,7 +33,10 @@
                     },
                     guide: { type: 'jaileditor', label: '更新操作指引', rules: ['required']}
                 },
-                guideData: {},
+                guideData: {
+                    content: '',
+                    guide: ''
+                },
                 isAdd,
                 gid: !isAdd ? this.$route.params.id : ''
             }
@@ -69,11 +73,12 @@
                 }
                 let { data } = await http[ this.isAdd ? 'addBusGuide' : 'updateBusGuide' ](fields)
                 if( !!data ) {
-                    if( !this.isAdd ) {
-                        this.setGuideStorage(fields)
-                    }else {
-                        this.$router.push({ path: '/operation-guide/list' })
-                    }
+                    // if( !this.isAdd ) {
+                    //     this.setGuideStorage(fields)
+                    // }else {
+                    //     this.$router.push({ path: '/operation-guide/list' })
+                    // }
+                    this.$router.push({ path: '/operation-guide/list' })
                 }
             },
             handlePreview(fields) {
@@ -81,8 +86,19 @@
                 this.setGuideStorage(fields)
                 this.$router.push({ path: '/operation-guide/detail' })
             },
-            handleBack() {
-                this.$router.push({ path: '/operation-guide/list' })
+            async handleBack(fields) {
+                try {
+                    if(!isEqual(this.guideData, { guide: fields.guide, content: fields.content })) {
+                        await this.$confirm('页面内容已更新，您确定要离开吗？', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        })
+                        this.$router.push({ path: '/operation-guide/list' })
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
     }

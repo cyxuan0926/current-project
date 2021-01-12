@@ -215,7 +215,7 @@ export default {
     },
 
     onGoBack() {
-      this.$emit('back')
+      this.$emit('back', helper.trimObject(this.fields))
     },
 
     handleResetField() {
