@@ -3,11 +3,12 @@
     class="row-container"
     :gutter="0">
      <el-button
-      size="small"
-      type="primary"
-      plain
-      class="button-add button-shift-down"
-      @click="openPush('add')">新增</el-button>
+       v-if="isAdmin"
+        size="small"
+        type="primary"
+        plain
+        class="button-add button-shift-down"
+        @click="openPush('add')">新增</el-button>
     <m-search
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
