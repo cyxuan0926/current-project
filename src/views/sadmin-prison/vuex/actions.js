@@ -18,9 +18,7 @@ export default {
   getPrisonDetail: ({ commit }, params) => {
     return http.getPrisonDetail(params).then(res => {
       if (!res) return
-      res.jails.abnormalCalldurationSwitch = res.jails.abnormalCalldurationSwitch ? 'true' : 'false'
       const regs = res.jails || {}
-      console.log(res)
       commit('getPrisonDetail', regs)
       commit('getBranchStatus', res.branchStatus)
       return true

@@ -64,6 +64,7 @@ let switches = {
   unusualStatus: [
     { value: 'EXPIRED', label: '已过期' },
     { value: 'FINISHED', label: '已完成' },
+    { value: 'ENDED', label: '已结束' },
     { value: 'MEETING_ON', label: '通话中' }
   ],
   payStatus: [

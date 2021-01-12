@@ -18,7 +18,7 @@
           active-color="#13ce66">
           </el-switch>
           <label v-if="values.abnormalCalldurationSwitch==true">
-            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @input="changeTimes()" placeholder="输入秒数"></el-input>
+            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
             <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>
           <!-- <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
@@ -618,7 +618,7 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-          params.abnormalCalldurationSwitch=params.abnormalCalldurationSwitch==true ? 1 : 0
+         // params.abnormalCalldurationSwitch=params.abnormalCalldurationSwitch==true ? 1 : 0
        this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
@@ -666,6 +666,32 @@ export default {
         if(this.values.abnormalCallduration<10){
          this.values.abnormalCallduration=10
         }
+    },
+    onDurationSwitch(value, prop, item){
+            const branchPrisonItemObject = {
+        [0]: {
+          setValueConfigs: [
+            {
+              props: 'abnormalCalldurationSwitch',
+              setValue: 1
+            }
+          ],
+        },
+
+        [1]: {
+          setValueConfigs: [
+            {
+              props: 'abnormalCalldurationSwitch',
+              setValue: 0
+            }
+          ]
+        }
+      }
+
+      const setValueConfigs = branchPrisonItemObject[value]['setValueConfigs']
+
+      this.$set(this.formItems['abnormalCalldurationSwitch'], 'setValueConfigs', setValueConfigs)
+
     },
     // 是否分监区
     onBranchPrisonSwitch(value, prop, item) {
