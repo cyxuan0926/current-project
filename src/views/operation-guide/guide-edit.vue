@@ -94,8 +94,8 @@
                             cancelButtonText: '取消',
                             type: 'warning'
                         })
-                        this.$router.push({ path: '/operation-guide/list' })
                     }
+                    this.$router.push({ path: '/operation-guide/list' })
                 } catch (error) {
                     console.log(error)
                 }
