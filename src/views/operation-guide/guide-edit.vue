@@ -4,6 +4,7 @@
             ref="form"
             :items="formItems"
             @submit="handleSubmit"
+            @preview="handlePreview"
             @back="handleBack"
             :values="guideData"/>
     </div>
@@ -18,8 +19,8 @@
             return {
                 formItems: {
                     buttons: isAdd ?
-                        [ { add: { loading: false } }, 'back' ] :
-                        [ { update: { loading: false } }, 'back'],
+                        [ { add: { loading: false } }, { preview: { loading: false } }, 'back' ] :
+                        [ { update: { loading: false } }, { preview: { loading: false } }, 'back'],
                     formConfigs: { labelWidth: '150px' },
                     content: {
                         type: 'textarea',
@@ -74,6 +75,11 @@
                         this.$router.push({ path: '/operation-guide/list' })
                     }
                 }
+            },
+            handlePreview(fields) {
+                fields = Object.assign({ updatedTime: Moment().format('YYYY-MM-DD') }, fields)
+                this.setGuideStorage(fields)
+                this.$router.push({ path: '/operation-guide/detail' })
             },
             handleBack() {
                 this.$router.push({ path: '/operation-guide/list' })

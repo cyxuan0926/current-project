@@ -18,17 +18,25 @@
         :data="tableDatas"
         :cols="tableCols"
         class="mini-td-padding">
-            <template #operation="{ row }">
+            <template #guide="{ row }">
+                <el-button
+                    type="text"
+                    size="mini"
+                    @click="openPush('detail',row)">
+                    更新指引
+                </el-button>
+            </template>
+            <template #operation="{ row }" v-if="isAdmin">
                 <el-button
                     type="text"
                     size="mini"
                     @click="openPush('edit',row)">编辑
                 </el-button>
-                <el-button
+                <!-- <el-button
                     type="text"
                     size="mini"
                     @click="openPush('detail',row)">预览
-                </el-button>
+                </el-button> -->
             </template>
       </m-table-new>
     </el-col>
@@ -45,6 +53,7 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
   import Moment from 'moment'
+  import { mapState } from 'vuex'
     export default {
         mixins: [prisonFilterCreator,registrationDialogCreator],
         data() {
@@ -63,14 +72,10 @@
                     },
                     {
                         label: '更新指引',
-                        prop: 'guide',
-                        showOverflowTooltip: true
-                    },
-                    {
-                        label: '操作',
-                        slotName: 'operation',
-                        width: '200px',
-                        align: 'center'
+                        // prop: 'guide',
+                        // showOverflowTooltip: true
+                        slotName: 'guide',
+                        width: '120px',
                     }
                 ],
                 searchItems: {
@@ -91,6 +96,21 @@
                 },
                 tableDatas:[],
                 filter: {}
+            }
+        },
+        computed: {
+            ...mapState({
+                isAdmin: state => state.global.user.role == '0'
+            })
+        },
+        created() {
+            if( this.isAdmin ) {
+                this.tableCols.push({
+                    label: '操作',
+                    slotName: 'operation',
+                    width: '120px',
+                    align: 'center'
+                })
             }
         },
         methods:{
@@ -131,7 +151,7 @@
                 }
                 if(even=='detail'){
                     this.$router.push({
-                        path: `/operation-guide/detail/${row.id}`
+                        path: '/operation-guide/detail'
                     })
                     this.setGuideStorage({
                         updatedTime: row.updatedTime,
@@ -140,7 +160,6 @@
                     })
                 }
             }
-
         },
         async mounted() {
             await this.getData()
