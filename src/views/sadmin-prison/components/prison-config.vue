@@ -5,22 +5,38 @@
       @submit="onSubmit"
       @back="onBack"
       :values="values"
-      @response="getResponse"
       ref="prison-config_form"
     >
      <template #abnormalCalldurationSwitch>
-       <!-- {{$refs['prison-config_form'].fields}} -->
+        <el-col :span="3">
+          <el-form-item prop="abnormalCalldurationSwitch">
+            <el-switch
+              :width="60"
+              v-model="slotFormData.abnormalCalldurationSwitch"
+              :disabled="isDisabled"
+              active-color="#13ce66"
+              :active-value="1"
+              :inactive-value="0"
+            />
+          </el-form-item>
+        </el-col>
 
-         <el-switch
-          :width="60"
-          v-model="values.abnormalCalldurationSwitch"
-          :disabled="$route.meta.role === '3'"
-          active-color="#13ce66">
-          </el-switch>
-          <label v-if="values.abnormalCalldurationSwitch==true">
-            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
-            <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
-          </label>
+        <template v-if="!!slotFormData.abnormalCalldurationSwitch">
+          <el-col :span="21">
+            <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
+              <el-input
+                :disabled="isDisabled"
+                v-model.trim.number="slotFormData.abnormalCallduration"
+                clearable
+                placeholder="输入秒数"
+              >
+                <template slot="append">秒</template>
+              </el-input>
+
+              <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>
+            </el-form-item>
+          </el-col>
+        </template>
           <!-- <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
             <el-input
               v-model.trim="formData.diplomatistFixedMoney"
@@ -175,6 +191,13 @@ export default {
     //   else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
     //   else callback()
     // }
+    const validateAbnormalCallduration = (rule, value, callback) => {
+      const { field } = rule
+      const integerNumbers = Number.isInteger(this.slotFormData[field])
+      if (this.slotFormData[field] === '') callback(new Error('请输入异常可视电话时长'))
+      else if (!integerNumbers || this.slotFormData[field] < 10 || this.slotFormData[field] > 600) callback(new Error('请输入10-600之间正整数'))
+      else callback()
+    }
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '180px' },
@@ -408,9 +431,7 @@ export default {
              label: '异常可视电话时长配置',
              disabled,
              required: true
-          },
-          func: this.onDurationSwitch
-          // controlTheOther: true
+          }
         },
         useMeetingFloor: {
           label: '会见楼开关',
@@ -422,7 +443,22 @@ export default {
         }
       }, formButton),
       values: {},
+
       permission,
+
+      slotFormData: {
+        abnormalCalldurationSwitch: 0,
+
+        abnormalCallduration: 10
+      },
+
+      slotFormRules: {
+        abnormalCallduration: [
+          { validator: validateAbnormalCallduration, trigger: 'blur' }
+        ]
+      },
+
+      isDisabled: disabled
       // formData: {
       //   startMinutes: 5,
       //   startMoney: 15,
@@ -484,7 +520,14 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
+        const { abnormalCallduration, abnormalCalldurationSwitch } = cloneDeep(this.prison)
+
         this.values = cloneDeep(this.prison)
+
+        this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
+
+        this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
+
         // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
         //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
         //   this.$set(this.values, 'prisonAreaList', prisonAreaList)
@@ -559,11 +602,8 @@ export default {
     ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
-    getResponse(fields){
-     // this.values = Object.assign({}, fields)
-    },
+
     onSubmit(e) {
-      console.log(e)
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
         // if(e.prisonAreaList && e.prisonAreaList.length) {
@@ -581,6 +621,20 @@ export default {
         // else e.prisonAreaList = []
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
+
+        const { abnormalCalldurationSwitch, abnormalCallduration } = this.slotFormData
+
+        params = {
+          ...params,
+          abnormalCalldurationSwitch
+        }
+
+        if (abnormalCalldurationSwitch) {
+          params = {
+            ...params,
+            abnormalCallduration
+          }
+        }
 
         // if (chargeType === 2) {
         //   const {
@@ -618,7 +672,7 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-         // params.abnormalCalldurationSwitch=params.abnormalCalldurationSwitch==true ? 1 : 0
+
        this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
@@ -659,40 +713,7 @@ export default {
     // onDiplomatistChargeChange(e, prop, item) {
     //   this.$refs['prison-config_form'].radioChangeEvent(e, prop, item)
     // },
-    changeTimes(){
-        if(this.values.abnormalCallduration>600){
-         this.values.abnormalCallduration=600
-        }
-        if(this.values.abnormalCallduration<10){
-         this.values.abnormalCallduration=10
-        }
-    },
-    onDurationSwitch(value, prop, item){
-            const branchPrisonItemObject = {
-        [0]: {
-          setValueConfigs: [
-            {
-              props: 'abnormalCalldurationSwitch',
-              setValue: 1
-            }
-          ],
-        },
 
-        [1]: {
-          setValueConfigs: [
-            {
-              props: 'abnormalCalldurationSwitch',
-              setValue: 0
-            }
-          ]
-        }
-      }
-
-      const setValueConfigs = branchPrisonItemObject[value]['setValueConfigs']
-
-      this.$set(this.formItems['abnormalCalldurationSwitch'], 'setValueConfigs', setValueConfigs)
-
-    },
     // 是否分监区
     onBranchPrisonSwitch(value, prop, item) {
       const branchPrisonItemObject = {
