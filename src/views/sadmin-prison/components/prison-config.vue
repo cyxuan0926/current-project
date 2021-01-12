@@ -18,7 +18,7 @@
           active-color="#13ce66">
           </el-switch>
           <label v-if="values.abnormalCalldurationSwitch==true">
-            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @input="changeTimes()" placeholder="输入秒数"></el-input>
+            <el-input :disabled="$route.meta.role === '3'" v-model="values.abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
             <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>
           <!-- <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
