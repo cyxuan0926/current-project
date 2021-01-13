@@ -29,8 +29,6 @@
                 style="width:100px"
                 :step="1"
                 step-strictly
-                :min="10"
-                :max="600"
                 :disabled="isDisabled"
                 v-model.trim.number="slotFormData.abnormalCallduration"
                  controls-position="right"
