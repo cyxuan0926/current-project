@@ -1,19 +1,49 @@
 import http from '@/service'
 
 export default {
-  getWhitemembers: ({ commit }, params) => {
-    http.getWhitemembers(params).then(res => res && commit('getWhitemembers', res))
+  getWhitemembers: async({ commit }, params) => {
+    try {
+      const { total, familyWhiteLists } = await http.getWhitemembers(params)
+
+      commit('getWhitemembers', { contents: familyWhiteLists, total })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
-  checkPhoneWhitemember: ({ commit }, params) => {
-    return http.checkPhoneWhitemember(params).then(res => res)
+
+  deleteWhitemember: async(_, params) => {
+    try {
+      const isSuccess = await http.deleteWhitemember(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
-  deleteWhitemember: ({ commit }, params) => {
-    return http.deleteWhitemember(params).then(res => res)
+
+  addWhitemember: async(_, params) => {
+    try {
+      const isSuccess = await http.addWhitemember(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
-  addWhitemember: ({ commit }, params) => {
-    return http.addWhitemember(params).then(res => res)
-  },
-  updateWhitemember: ({ commit }, params) => {
-    return http.updateWhitemember(params).then(res => res)
+
+  updateWhitemember: async(_, params) => {
+    try {
+      const isSuccess = await http.updateWhitemember(params)
+
+      return isSuccess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }
