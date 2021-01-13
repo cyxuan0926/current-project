@@ -38,7 +38,10 @@
         :data="registrations.contents"
         stripe
         class="mini-td-padding registration-table"
-        style="width: 100%">
+        style="width: 100%"
+        @sort-change="sortChange"
+        ref="elTable"
+      >
         <el-table-column
           v-if="hasProvinceQueryAuth"
           label="省份"
@@ -114,6 +117,7 @@
           show-overflow-tooltip
           label="罪犯姓名"
           min-width="55"
+          sortable="custom"
         />
         <el-table-column
           prop="prisonerNumber"
@@ -219,7 +223,8 @@
     <m-pagination
       ref="pagination"
       :total="registrations.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
     <el-dialog
       :visible.sync="showDetail"
       class="authorize-dialog"
@@ -527,6 +532,8 @@ import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/cons
 
 import moment from 'moment'
 
+import { helper } from '@/utils'
+
 export default {
   components: {
     registrationDetail
@@ -630,7 +637,9 @@ export default {
             message: '请输入初审意见'
           }
         ]
-      }
+      },
+
+      sortObj: {}
     }
   },
   watch: {
@@ -642,7 +651,7 @@ export default {
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
         }
-        if ( val === '' ) {
+        if (val === '') {
           delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.unusualStatus
@@ -730,7 +739,7 @@ export default {
       this.show.authorize = false
     },
 
-    getDatas() {
+    async getDatas() {
       if (this.tabs !== 'first') {
         if (this.tabs !== 'DENIED,WITHDRAW' || !this.filter.status) {
           this.filter.status = this.tabs
@@ -740,14 +749,23 @@ export default {
       const params = { ...this.filter, ...this.pagination }
 
       if (this.hasAllPrisonQueryAuth) {
-        this.getRegistrationsAll(params)
+        await this.getRegistrationsAll(params)
       }
       else {
-        this.getRegistrations(params)
+        await this.getRegistrations(params)
       }
     },
-    onSearch() {
-      this.$refs.pagination.handleCurrentChange(1)
+
+    async onSearch() {
+      if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
+      else {
+        this.$refs.elTable && this.$refs.elTable.clearSort()
+        delete this.filter.direction
+        delete this.filter.orderby
+      }
+
+      await this.$refs.pagination.handleCurrentChange(1)
     },
 
     // 获取家属注册详情信息
@@ -993,6 +1011,26 @@ export default {
 
         return filterParams
       })
+    },
+
+    async sortChange({ column, prop, order }) {
+      if (!prop || !order) {
+        this.sortObj = {}
+
+        delete this.filter.direction
+
+        delete this.filter.orderby
+      }
+      else {
+        this.sortObj.orderby = prop
+
+        if (order === 'descending') this.sortObj.direction = 'desc'
+
+        else if (order === 'ascending') this.sortObj.direction = 'asc'
+
+        this.filter = Object.assign({}, this.filter, this.sortObj)
+      }
+      await this.getDatas()
     }
   }
 }

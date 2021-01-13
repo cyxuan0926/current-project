@@ -30,7 +30,9 @@
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
-        :cols="tableCols" >
+        :cols="tableCols"
+        ref="parentElTable"
+      >
         <template
           slot-scope="scope"
           slot="meetingTime">
@@ -965,9 +967,7 @@
       },
 
       tabs(val) {
-        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
-        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1127,7 +1127,6 @@
       },
 
       async getDatas(e) {
-        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
@@ -1160,17 +1159,20 @@
         }
       },
 
-      onSearch() {
+      async onSearch() {
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'
         }
+
         if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
+
         else {
-          this.$refs.elTable && this.$refs.elTable.clearSort()
+          this.$refs.parentElTable && this.$refs.parentElTable.elTableClearSort()
           delete this.filter.sortDirection
           delete this.filter.orderField
         }
-        this.$refs.pagination.handleCurrentChange(1)
+
+        await this.$refs.pagination.handleCurrentChange(1)
       },
 
       // filterParams () {
