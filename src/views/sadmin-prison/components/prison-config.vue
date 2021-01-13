@@ -24,16 +24,23 @@
         <template v-if="!!slotFormData.abnormalCalldurationSwitch">
           <el-col :span="21">
             <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
-              <el-input
+              <el-input-number
+                type="number"
+                style="width:100px"
+                :step="1"
+                step-strictly
+                :min="10"
+                :max="600"
                 :disabled="isDisabled"
                 v-model.trim.number="slotFormData.abnormalCallduration"
+                 controls-position="right"
                 clearable
                 placeholder="输入秒数"
               >
                 <template slot="append">秒</template>
-              </el-input>
+              </el-input-number>
 
-              <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>
+              <font color='#C0C4CC' style="margin-left:20px">说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>
             </el-form-item>
           </el-col>
         </template>
@@ -525,7 +532,6 @@ export default {
         this.values = cloneDeep(this.prison)
 
         this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
-
         this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
 
         // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
@@ -582,7 +588,6 @@ export default {
         //       this.$set(this.formItems['branchPrison'], 'disabled', true)
         //       this.$set(this.formItems['prisonAreaList'], 'disabled', true)
         //     }
-        //   })()
         // }
       })
     }
@@ -602,7 +607,6 @@ export default {
     ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
-
     onSubmit(e) {
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
