@@ -288,7 +288,7 @@ export default {
 
       if (!res) return
 
-      if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
+      // if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
 
       this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
 
