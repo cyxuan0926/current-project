@@ -64,7 +64,9 @@
             v-if="localPrisonAreaLevel.options.length"
             :key="localPrisonAreaLevel.prop"
             :label="localPrisonAreaLevel.label"
-            :prop="localPrisonAreaLevel.prop">
+            :prop="localPrisonAreaLevel.prop"
+            :class="[ { 'el-form-iten__areaId': key === 'prisonArea' } ]"
+          >
             <el-select
               v-model="formData[localPrisonAreaLevel.prop]"
               filterable
@@ -130,8 +132,10 @@ import validate from '@/utils'
 import switches from '@/filters/modules/switches'
 
 import prisonAreaLevel from '@/mixins/prison-area-level'
+import index from '../../components/multistage_examine-records/index.vue'
 
 export default {
+  components: { index },
   mixins: [prisonAreaLevel],
 
   data() {
@@ -347,7 +351,8 @@ export default {
             })
 
             this.formData = Object.assign({}, this.terminal, { areaId, ...values })
-          }
+          } else this.formData = Object.assign({}, this.terminal, { areaId })
+
         } else this.formData = Object.assign({}, this.terminal, { areaId: null }) //  null 是非会见楼 强制刷成null
       }
     },
@@ -359,5 +364,16 @@ export default {
 }
 </script>
 
-<style type="text/stylus" lang="stylus" scoped>
+<style lang="scss" scoped>
+.el-form {
+  /deep/ .el-form-iten__areaId {
+    .el-form-item__label {
+      &::before {
+        content: '*';
+        color: #F56C6C;
+         margin-right: 4px;
+      }
+    }
+  }
+}
 </style>

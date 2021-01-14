@@ -28,6 +28,10 @@ export default {
       type: Number,
       default: 0
     },
+    size: {
+      type: Boolean,
+      default: false
+    },
     pageSizes: {
       type: Array,
       default: () => [10, 20, 30, 40, 50]
@@ -40,18 +44,34 @@ export default {
     }
   },
   mounted() {
-    this.$parent.$parent.pagination = {
+    if(this.size){
+      this.currentPage=0
+        this.$parent.$parent.pagination = {
+          size: this.pageSize,
+          page: this.currentPage
+          }
+
+    }else{
+      this.$parent.$parent.pagination = {
       rows: this.pageSize,
       page: this.currentPage
+      }
     }
   },
   methods: {
     handleSizeChange(e) {
       this.pageSize = e
       this.currentPage = 1
-      this.$parent.$parent.pagination = {
-        rows: e,
-        page: 1
+      if(this.size){
+        this.$parent.$parent.pagination = {
+          size: e,
+          page: 0
+        }
+      }else{
+        this.$parent.$parent.pagination = {
+          rows: e,
+          page: 1
+        }
       }
       this.$emit('onPageChange', 1, e)
     },
