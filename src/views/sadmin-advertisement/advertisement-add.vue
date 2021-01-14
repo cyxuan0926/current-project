@@ -410,9 +410,10 @@
             })
         },
          //获取广告地区集合
-       getadprovinces(){
-           getprovinceslist().then(res=>{
+      async getadprovinces(){
+            await getprovinceslist().then(res=>{
               this.provinceslist=res
+
            })
         },
         //根据地区id获取监狱
@@ -428,22 +429,24 @@
             }
         }
          },
-    mounted() {
+    async mounted() {
         this.formDate=this.$route.query.formDate?this.$route.query.formDate:{}
+
+        console.log(this.provinceslist)
         if(this.$route.query.formDate){
             this.timedate=[this.$route.query.formDate.startDate,this.$route.query.formDate.endDate]
             this.status=this.$route.query.status
-            this.getadservices()
+            this.$route.query.formDate.provincesId=this.$route.query.formDate.provincesId.toString()
             this.getadservicesTypes(true)
             this.getjailTypes(true)
             this.getusedSortTypes(true)
             this.getChangeDate()
         }else{
-            this.getadprovinces()
-            this.getadservices()
             this.timedate=[ Moment().format('YYYY-MM-DD HH:mm:ss'),Moment().add(1, "years").format("YYYY-MM-DD HH:mm:ss")]
-             this.getChangeDate()
+            this.getChangeDate()
        }
+        this.provinceslist = await getprovinceslist()
+        this.getadservices()
     }
     
     }

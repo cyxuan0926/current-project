@@ -446,6 +446,7 @@
               <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
 
               <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              <span class="family-nameDetail" v-if="item.status=='ENDED'">已结束</span>
               
               <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
 
