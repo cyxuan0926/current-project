@@ -15,11 +15,11 @@
         </el-form-item>
          <el-form-item label="异常可视电话时长配置" class="labelTit">
           <el-switch
-          v-model="abnormalCalldurationSwitch"
+          v-model="abnormalCallDurationSwitch"
           active-color="#13ce66">
           </el-switch>
-          <label v-if="abnormalCalldurationSwitch" class="sub-title">
-            <el-input v-model="abnormalCallduration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
+          <label v-if="abnormalCallDurationSwitch" class="sub-title">
+            <el-input v-model="abnormalCallDuration" style="width:100px;margin-left:20px;margin-right:20px" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
             <font color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>
         </el-form-item>
@@ -67,9 +67,9 @@
         tabs:"first",
         dialogVisible:false,
         params:false,
-        abnormalCallduration:300,
+        abnormalCallDuration:300,
         autoAuthorizeMeeting: true,
-        abnormalCalldurationSwitch: true,
+        abnormalCallDurationSwitch: true,
         multistageExamine:false
       }
     },
@@ -84,15 +84,16 @@
           this.dialogVisible = false
           this.autoAuthorizeMeeting=res.data.autoAuthorizeMeeting?true:false
           this.multistageExamine=res.data.multistageExamine?true:false
-          this.abnormalCalldurationSwitch=res.data.abnormalCalldurationSwitch?true:false
+          this.abnormalCallDurationSwitch=res.data.abnormalCallDurationSwitch?true:false
+          this.abnormalCallDuration=res.data.abnormalCallDuration
         })
       },
       changeTimes(){
-        if(this.abnormalCallduration>600){
-         this.abnormalCallduration=600
+        if(this.abnormalCallDuration>600){
+         this.abnormalCallDuration=600
         }
-        if(this.abnormalCallduration<10){
-         this.abnormalCallduration=10
+        if(this.abnormalCallDuration<10){
+         this.abnormalCallDuration=10
         }
       },
       submitTit(){
@@ -109,8 +110,8 @@
       submitDeploy(){
         let params = {
           autoAuthorizeMeeting: this.autoAuthorizeMeeting?1:0,
-          abnormalCallduration: this.abnormalCallduration,
-          abnormalCalldurationSwitch: this.abnormalCalldurationSwitch?1:0
+          abnormalCallDuration: this.abnormalCallDuration,
+          abnormalCallDurationSwitch: this.abnormalCallDurationSwitch?1:0
         }
         http.getMeetDeployUpdate(params).then(res => {
           this.getDeploy()

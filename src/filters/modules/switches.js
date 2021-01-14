@@ -36,6 +36,7 @@ let switches = {
     // { value: 'TOBECANCELED', label: '待取消' },
     { value: 'EXPIRED', label: '已过期' },
     { value: 'CANCELED', label: '已取消' },
+    { value: 'ENDED', label: '已结束' },
     { value: 'MEETING_ON', label: '通话中' }
   ],
   statusOptions: [
