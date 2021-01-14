@@ -29,6 +29,7 @@
             </template>
             <template #operation="{ row }" v-if="isAdmin">
                 <el-button
+                    v-if="row.id == maxId"
                     type="text"
                     size="mini"
                     @click="openPush('edit',row)">编辑
@@ -96,7 +97,8 @@
                     }
                 },
                 tableDatas:[],
-                filter: {}
+                filter: {},
+                maxId: 0
             }
         },
         computed: {
@@ -121,11 +123,14 @@
                     window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(data))
                 }
             },
-            getData(){
+            getData(flag){
                 let params={...this.filter,...this.pagination}
                 http.businessList(params).then(res=>{
                     this.tableDatas=res.list
                     this.total=res.total
+                    if( flag == 'mounted' && res.list && res.list.length ) {
+                        this.maxId = res.list[0].id
+                    }
                 })
             },
              async onSearch() {
@@ -163,7 +168,7 @@
             }
         },
         async mounted() {
-            await this.getData()
+            await this.getData('mounted')
         },
     }
 </script>
