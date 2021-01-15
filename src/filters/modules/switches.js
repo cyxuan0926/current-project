@@ -36,7 +36,12 @@ let switches = {
     // { value: 'TOBECANCELED', label: '待取消' },
     { value: 'EXPIRED', label: '已过期' },
     { value: 'CANCELED', label: '已取消' },
+    { value: 'ENDED', label: '已结束' },
     { value: 'MEETING_ON', label: '通话中' }
+  ],
+  statusOptions: [
+    { label: '上架', value: 1 },
+    { label: '未上架', value: 0 }
   ],
   registStatus: [
     { value: 'PENDING', label: '未授权' },
@@ -60,6 +65,7 @@ let switches = {
   unusualStatus: [
     { value: 'EXPIRED', label: '已过期' },
     { value: 'FINISHED', label: '已完成' },
+    { value: 'ENDED', label: '已结束' },
     { value: 'MEETING_ON', label: '通话中' }
   ],
   payStatus: [

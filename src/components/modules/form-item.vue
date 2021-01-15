@@ -8,6 +8,7 @@
       <el-input
         v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
         :type="item.type"
+        :rows="item.rows"
         :maxlength="item.maxlength"
         :clearable="item.clearable"
         :autosize="item.autosize"

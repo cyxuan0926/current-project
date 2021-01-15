@@ -43,7 +43,7 @@
           :popper-append-to-body="false"
           :key="item.path"
           :index="item.path">
-          <i :class="['iconfont', `${item.icon}`]" />
+          <i :class="[`${ item.icon && item.icon.startsWith('new') ? 'new' : '' }iconfont`, `${item.icon}`]" />
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
         <el-submenu
@@ -55,7 +55,7 @@
           :key="item.path"
           :index="item.path">
           <template slot="title">
-            <i :class="['iconfont', `${item.icon}`]" />
+            <i :class="[`${ item.icon && item.icon.startsWith('new') ? 'new' : '' }iconfont`, `${item.icon}`]" />
             <span>{{ item.name }}</span>
           </template>
           <!-- !second.hidden && -->

@@ -85,6 +85,16 @@
           v-bind="button.attrs"
           @click="onSubmit">{{ button.text || '新增'}}</el-button>
         <el-button
+          v-if="button === 'preview' || button.preview"
+          :key="index"
+          size="small"
+          type="primary"
+          :class="button.className"
+          :loading="button.preview && button.preview.loading"
+          v-bind="button.attrs"
+          @click="onPreview">{{ button.text || '预览'}}</el-button>
+          
+        <el-button
           v-if="button === 'cancel' || button.cancel"
           :key="index"
           size="small"
@@ -193,13 +203,19 @@ export default {
       })
     },
 
+    onPreview(e) {
+      this.$refs.form.validate(valid => {
+        if (valid) this.$emit('preview', helper.trimObject(this.fields))
+      })
+    },
+
     onCancel() {
       this.$refs.form.resetFields()
       this.$emit('cancel')
     },
 
     onGoBack() {
-      this.$emit('back')
+      this.$emit('back', helper.trimObject(this.fields))
     },
 
     handleResetField() {

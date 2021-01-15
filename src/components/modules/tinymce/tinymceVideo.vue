@@ -1,6 +1,6 @@
 <template>
   <el-upload
-    ref="uploadVideo"
+    ref="uploadVd"
     :action="$urls.videoUrl"
     :headers="headers"
     :name="name"

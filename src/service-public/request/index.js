@@ -15,12 +15,38 @@ export function get(url = '', params = {}, config = {}) {
   return instance.request({ url, method: 'GET', params, ...config })
 }
 
+export function strike(url = '', params = {}, config = {}) {
+  Object.assign(config, basicConfig)
+  return instance.request({ url, method: 'DELETE', params, ...config })
+}
+
 export function postForm(url = '', data = {}, config = {}) {
   Object.assign(config, basicConfig)
   return instance.request({
     url,
     method: 'POST',
     data: qs.stringify(data),
+    ...config
+  })
+}
+export function postFormData(url = '', data = {}, config = {}) {
+  const formData = new FormData()
+    Object.keys(data).forEach(key => {
+      if (data[key]) {
+          if (key === 'file' && Array.isArray(data.file)) {
+              data.file.forEach(f => formData.append('file', f))
+          }
+          else {
+              formData.append(key, data[key])
+          }
+      }
+    })
+  Object.assign(config, basicConfig)
+  return instance.request({
+    url,
+    data: formData,
+    method: 'POST',
+    headers: { 'content-type': 'multipart/form-data' },
     ...config
   })
 }
