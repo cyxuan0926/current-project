@@ -93,7 +93,7 @@
                     },
                     content: {
                         type: 'input',
-                        label: '请输入更新内容',
+                        label: '更新内容',
                     }
                 },
                 tableDatas:[],
