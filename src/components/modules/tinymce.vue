@@ -52,6 +52,7 @@ export default {
   mounted() {
     window.tinymce.init({
       selector: `#${ this.tinymceId }`,
+      statusbar: false,
       language: 'zh_CN',
       menubar: '',
       height: 300,

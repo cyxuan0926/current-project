@@ -55,7 +55,7 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
   import Moment from 'moment'
-  import { mapState } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
     export default {
         mixins: [prisonFilterCreator,registrationDialogCreator],
         data() {
@@ -117,12 +117,8 @@
             }
         },
         methods:{
-            setGuideStorage(data) {
-                if( window.sessionStorage ) {
-                    window.sessionStorage.removeItem('APP_GUIDE_DATA')
-                    window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(data))
-                }
-            },
+            ...mapActions(['setGuideStorage']),
+
             getData(flag){
                 let params={...this.filter,...this.pagination}
                 http.businessList(params).then(res=>{
@@ -145,6 +141,7 @@
                     this.$router.push({
                         path: '/operation-guide/add'
                     })
+                    this.setGuideStorage()
                 }
                 if(even=='edit'){
                     this.$router.push({
