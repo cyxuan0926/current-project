@@ -26,7 +26,7 @@
             <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
               <el-input-number
                 type="number"
-                style="width:100px"
+                style="width:150px"
                 :step="1"
                 step-strictly
                 :disabled="isDisabled"
@@ -37,7 +37,7 @@
               >
                 <template slot="append">秒</template>
               </el-input-number>
-
+              <span style="margin-left:10px"> 秒</span>
               <font color='#C0C4CC' style="margin-left:20px">说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>
             </el-form-item>
           </el-col>
