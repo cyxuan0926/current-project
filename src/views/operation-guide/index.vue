@@ -119,6 +119,10 @@
         methods:{
             ...mapActions(['setGuideStorage']),
 
+            handleTextareaValue(val) {
+                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
+            },
+
             getData(flag){
                 let params={...this.filter,...this.pagination}
                 http.businessList(params).then(res=>{
@@ -159,7 +163,8 @@
                     this.setGuideStorage({
                         updatedTime: row.updatedTime,
                         guide: row.guide,
-                        content: row.content
+                        content: row.content,
+                        preContent: this.handleTextareaValue(row.content)
                     })
                 }
             }

@@ -1,5 +1,5 @@
 <template>
-    <div class="guide-detail">、
+    <div class="guide-detail">
         <div class="guide-detail-title">更新内容介绍</div>
         <p class="guide-detail-date">{{guideData.updatedTime}}</p>
         <div class="guide-detail-context" v-html="guideData.preContent"></div>
