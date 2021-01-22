@@ -39,18 +39,173 @@
       :total="total"
       @onPageChange="getDatas"/>
     <el-dialog
-      :visible.sync="toShow.id ? true : false"
-      :title="'家属：' + toShow.name"
-      width="530px"
+      :visible.sync="show.dialog"
+      title="详情"
+      width="780px"
       class="authorize-dialog"
+      lock-scroll
       @close="onCloseShow">
-      <family-to-show
-        :elItems="familyShows"
-        :showData="toShow">
-        <template #auditAt="{ toShow }">{{ toShow.auditAt | Date }}</template>
-        <template #status="{ toShow }">{{ toShow.status | applyStatus }}</template>
-        <template #duration="{ toShow }">{{ toShow.duration | time }}</template>
-      </family-to-show>
+     <div style="max-height:380px;overflow: auto">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
+          <div class="family-detail">基本信息</div>
+
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">家属</span>
+
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
+            </p>
+
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">预约时间</span>
+
+              <span class="family-nameDetail">{{toShow.createTime}}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">与罪犯关系</span>
+
+              <span class="family-nameDetail">{{toShow.relation}}</span>
+            </p>
+
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">终端号</span>
+
+              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-for="(item,index) in toShow.changeLogs"
+          :key=index
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+
+          <div class="detail-message">
+            <p class="detail-message-family" v-if="item.operateAccount">
+
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人员账号</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人账号</span>
+
+              <span class="family-nameDetail">{{item.operateAccount}}</span>
+            </p>
+
+            <template v-if="item.meetingCalls" >
+              <label v-for="(val,keys) in item.meetingCalls" :key=keys >
+                <p class="detail-message-family" >
+                  <span class="family-name">通话时间</span>
+
+                  <span class="family-nameDetail">{{ val.callTime }}</span>
+                </p>
+
+                <p class="detail-message-family" v-if="isDevelop(val,keys )"  >
+                  <span class="family-name">结束原因</span>
+
+                  <span
+                    class="family-nameDetail"
+                    :ref="`itemHeigh+${keys}`"
+                    style="padding: 10px;text-align: justify;line-height: 15px;">
+                    {{ val.remark }}
+                  </span>
+                </p>
+              </label>
+            </template>
+
+            <p class="detail-message-family" style="border: none" >
+              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
+
+              <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
+
+              <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='DENIED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px">
+              <span class="family-name" style="line-height: 40px">拒绝原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+
+            <p
+              v-if="item.remark && item.status=='CANCELED'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
+            >
+              <span class="family-name"  style="line-height: 40px">取消原因</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+            <p
+              v-if="item.remark && item.status=='SUBMIT'"
+              class="detail-message-family"
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
+            >
+              <span class="family-name"  style="line-height: 40px">初审意见</span>
+
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family"  v-if="item.operateName">
+              <span class="family-name" v-if="item.status!='CANCELED'">审核人姓名</span>
+
+              <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
+
+              <span class="family-nameDetail">{{item.operateName}}</span></p>
+
+              <template v-if="item.meetingCalls">
+                <label v-for="(val,keys) in item.meetingCalls" :key=keys  >
+                  <p class="detail-message-family" >
+                    <span class="family-name">通话时长</span>
+
+                    <span class="family-nameDetail">{{ val.callDuration | time }}</span>
+                  </p>
+
+                  <label v-if="val.remark">
+                    <p
+                      v-if="keys!=item.meetingCalls.length-1"
+                      class="detail-message-family"
+                      :style="{height:parseInt( val.itemHeigh+1)+'px'}"
+                    >
+                      <span class="family-name">&nbsp;</span>
+
+                      <span class="family-nameDetail">&nbsp;</span>
+                    </p>
+                  </label>
+                </label>
+              </template>
+
+            <p class="detail-message-family">
+              <span class="family-name">申请状态</span>
+
+              <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
+
+              <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
+
+              <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
+
+              <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              
+              <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
+
+              <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+              <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
   </el-row>
 </template>
@@ -170,12 +325,13 @@ export default {
       sortObj:{},
       show: {
         familiesDetialInform: false,
-        detail:false
+        detail:false,
+        dialog:false
       },
     }
   },
   methods: {
-    ...mapActions(['getMeettingsDetail','gdGetFamilyMeetingDetail']),
+    ...mapActions(['getMeettingsDetail','gdGetFamilyMeetingDetail','getMeettingsChangelogDetail']),
     sortChange({ column, prop, order }) {
       if (!prop && !order) {
         this.sortObj = {}
@@ -237,9 +393,10 @@ export default {
             style: { width: '100%' }
           }
         ], params = { meetingId: e.id}
-      this.getMeettingsDetail(params).then(res => {
+      this.getMeettingsChangelogDetail(params).then(res => {
         if (!res) return
         this.toShow = Object.assign({}, res)
+        this.show.dialog = true
         this.familyShows = this.toShow.status !== 'DENIED'
           ? constFamilyShows.slice(0, constFamilyShows.length - 1)
           : constFamilyShows
@@ -306,5 +463,46 @@ export default {
   display: flex;
   flex-wrap: wrap;
 }
+ .family-detail{
+    width: 100px;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    border-right: 1px solid #E4E7ED
+  }
+  .detail-message{
+    width: 380px;
+  }
+  .detail-message-family{
+    display: flex;
+    line-height: 40px ;
+    font-size: 12px;
+    border-bottom: 1px solid #E4E7ED;
+    .family-name{
+      width: 120px;
+      background: #F5F7FA;
+      text-align: right;
+      padding-right: 10px;
+      border-right: 1px solid #E4E7ED;
+    }
+    .family-nameDetail{
+      flex: 1;
+      padding-left: 10px;
+      border-right: 1px solid #E4E7ED
+    }
+
+  }
+  .detail-content{
+    flex: 1;
+    line-height: 30px ;
+    font-size: 12px;
+    .family-name{
+      width: 120px;
+      background: #F5F7FA;
+      padding-right: 10px;
+      text-align: right;
+      border-right: 1px solid #E4E7ED;
+    }
+  }
 </style>
 
