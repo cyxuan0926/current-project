@@ -137,5 +137,22 @@ export default {
   // 判断监狱是否开启了会见楼接口
   getJailsMeetingFloorStatus: jailId => {
     return service.get('/jails/checkOpenMeetingFloor', { jailId })
+  },
+
+  // 调换监狱 - 接收
+  acceptPrisoners: params => {
+    return service.post('/prisoners/prisonersAccept', params)
+  },
+
+  // 调换监狱 - 取消
+  abortChangePrisoners: params => {
+    return service.post('/prisoners/prisonersChangeCancle', params)
+  },
+
+  // 服刑人员 - 转监标签页列表
+  getTransferOutPrisonersPagedData: args => {
+    const { url, params } = args
+
+    return service.get(url, params)
   }
 }

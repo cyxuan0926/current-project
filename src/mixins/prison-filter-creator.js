@@ -8,7 +8,8 @@ const baseItem = {
   options: [],
   filterable: true,
   belong: { value: 'id', label: 'name' },
-  value: ''
+  value: '',
+  miss: false
 }
 
 const _filterLists = [
@@ -258,10 +259,13 @@ export default {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
 
-          if (this.searchItems['prisonArea']) {
+          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
+
             Message.closeAll()
+
             this.$set(this.searchItems['prisonArea'], 'value', '')
+
             this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
           }
         }
@@ -270,22 +274,25 @@ export default {
       if (selectKey === 'provincesId') {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
+
           this.$set(this.searchItems['jailId'], 'value', '')
-          if (this.searchItems['prisonArea']) {
+          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
             this.$set(this.searchItems['prisonArea'], 'options', [])
           }
         }
 
-        this.$set(this.searchItems['jailId'], 'getting', true)
+        if (this.searchItems['jailId'] && !this.searchItems['jailId'].miss) {
+          this.$set(this.searchItems['jailId'], 'getting', true)
 
-        await this.$store.dispatch('getPrisonAll', { provincesId: value })
+          await this.$store.dispatch('getPrisonAll', { provincesId: value })
 
-        Message.closeAll()
+          Message.closeAll()
 
-        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
+          this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
 
-        this.$set(this.searchItems['jailId'], 'getting', false)
+          this.$set(this.searchItems['jailId'], 'getting', false)
+        }
       }
 
       if (selectKey === 'status') {

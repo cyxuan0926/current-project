@@ -153,5 +153,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async getJailByProvincesNoAuth({ commit }, params) {
+    try {
+      const { data } = await http.getJailByProvincesNoAuth(params)
+
+      commit('getPrisonAll', data)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

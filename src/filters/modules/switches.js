@@ -163,6 +163,19 @@ let switches = {
       label: '会见楼',
       value: '3'
     }
+  ],
+
+  // 服刑人员转监状态枚举值
+  transferOutPrisonersTypeOptions: [
+    {
+      label: '转入',
+      value: 1
+    },
+
+    {
+      label: '转出',
+      value: 2
+    }
   ]
 }
 

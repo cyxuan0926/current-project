@@ -45,5 +45,10 @@ export default {
   // 获取监狱是否有会见楼终端设备
   getMeetingFloorTerminals: jailId => {
     return service.get('/terminals/getMeetingFloorTerminals', { jailId })
+  },
+
+  // 根据省份查询监狱(不分权限)
+  getJailByProvincesNoAuth: params => {
+    return service.get('/jails/getJailByProvinces', params)
   }
 }
