@@ -54,7 +54,7 @@ import { _thisYear } from '@/common/constants/const'
 
 import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
 
 export default {
@@ -91,7 +91,9 @@ export default {
     }),
     ...mapState({
       user: state => state.global.user
-    })
+    }),
+
+    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor'])
   },
   created() {
     if (localStorage.getItem('accountInfo')) {
@@ -106,7 +108,7 @@ export default {
     this.resolveAccount()
   },
   methods: {
-    ...mapMutations(['setUser']),
+    ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
     ...mapActions('account', ['login']),
@@ -133,7 +135,7 @@ export default {
           const { username, password } = this.formData
           this.loading = true
           const res = await this.login({ username, password })
-          if( res.code === 'user.PasswordNotMatched' ) {
+          if(res.code === 'user.PasswordNotMatched' ) {
             this.loading = false
             if( parseInt(res.passWordErrorCount) >= 3 ) {
               this.handlePasswordTips(`很抱歉，连续多次密码输入错误，账户已被锁定，请${res.lockTime}分钟后再登录`)
@@ -159,7 +161,7 @@ export default {
               this.removeAccount()
             }
 
-            if ( this.publicUserInfo && this.publicUserInfo.firstLogin ) {
+            if (this.publicUserInfo && this.publicUserInfo.firstLogin) {
               this.loading = false
               this.$router.replace('/password/edit?isNoback=1')
               return
@@ -168,10 +170,26 @@ export default {
             const passWordStatus = this.publicUserInfo && this.publicUserInfo.passWordStatus
             const passWordDays = this.publicUserInfo && this.publicUserInfo.days
             if (passWordStatus === 'UP') {
+              const { hasPrisonerIn } = this.user
+
+              const isPrisonerIn = hasPrisonerIn && (this.isAuditor || this.isTenantAdmin || this.isAdvancedAuditor)
+
               const redirectPath = this.$route.query.redirect
-              redirectPath && !redirectPath.includes('login') ?
+
+              redirectPath && !redirectPath.includes('login') && !isPrisonerIn ?
                 this.$router.replace(redirectPath) :
                 this.$router.replace('/dashboard')
+
+              hasPrisonerIn && setTimeout(() => {
+                this.$confirm('有新的转监记录，请及时处理！', {
+                  confirmButtonText: '处理',
+                  closeOnClickModal: false
+                }).then(() => {
+                  this.setLoginHavePrisonerIn(true)
+
+                  this.$router.replace('/prisoner/list')
+                })
+              }, 100)
             } else {
               this.$router.replace(`/password/edit${ passWordStatus === 'DOWN' ? '?isNoback=1' : '' }`)
               const title = passWordStatus === 'DOWN' ?

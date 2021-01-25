@@ -305,6 +305,7 @@ export default {
 
     selectChangeEvent(e, prop, item) {
       const { controlProps } = item
+
       if (Array.isArray(controlProps)) {
         this.$nextTick(function() {
           controlProps.map(prop => {
@@ -312,7 +313,8 @@ export default {
           })
         })
       }
-      item.func && item.func(e, prop, item)
+
+      item && item.func && item.func(e, prop, item)
     },
 
     radioChangeEvent(e, prop, item) {
@@ -333,7 +335,7 @@ export default {
                   if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
                   for (let [key, value] of Object.entries(item.itemConfigs)) {
                     this.dismiss.push(key)
-                    if (this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
+                    if (this.items[key] && this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
                     else this.$set(this.fields, key, value)
                   }
                 }
@@ -359,7 +361,11 @@ export default {
         })
       }
 
-      invokeFunc && item.func && item.func(e, prop, item)
+      invokeFunc && item && item.func && item.func(e, prop, item)
+    },
+
+    handleFormMethods(prop, method) {
+      this.$refs[prop] && this.$refs[prop][0].handleFormItemMethods(prop, method)
     }
   }
 }

@@ -1014,6 +1014,10 @@ export default {
     },
 
     async sortChange({ column, prop, order }) {
+      const propOrderByOptions = {
+        prisonerName: 'prisoner_name'
+      }
+
       if (!prop || !order) {
         this.sortObj = {}
 
@@ -1022,11 +1026,11 @@ export default {
         delete this.filter.orderby
       }
       else {
-        this.sortObj.orderby = prop
-
         if (order === 'descending') this.sortObj.direction = 'desc'
 
         else if (order === 'ascending') this.sortObj.direction = 'asc'
+
+        this.sortObj.orderby = propOrderByOptions[prop] || prop
 
         this.filter = Object.assign({}, this.filter, this.sortObj)
       }

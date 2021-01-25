@@ -161,9 +161,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-          this.closeWebsocket()
-          this.$router.replace('/login')
-          logout()
+        this.closeWebsocket()
+        this.$router.replace('/login')
+        logout()
       }).catch(() =>{})
     },
     onSecurityQuestionsChange(e, field) {
