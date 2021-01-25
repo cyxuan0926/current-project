@@ -146,8 +146,7 @@ export default {
       handler: function(val) {
         this.$emit('response', val)
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
   },
 

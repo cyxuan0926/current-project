@@ -108,7 +108,7 @@ export default {
     this.resolveAccount()
   },
   methods: {
-    ...mapMutations(['setUser']),
+    ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
     ...mapActions('account', ['login']),
@@ -180,12 +180,16 @@ export default {
                 this.$router.replace(redirectPath) :
                 this.$router.replace('/dashboard')
 
-              hasPrisonerIn && this.$confirm('有新的转监记录，请及时处理！', {
-                confirmButtonText: '处理',
-                closeOnClickModal: false
-              }).then(() => {
-                this.$router.replace('/prisoner/list')
-              })
+              hasPrisonerIn && setTimeout(() => {
+                this.$confirm('有新的转监记录，请及时处理！', {
+                  confirmButtonText: '处理',
+                  closeOnClickModal: false
+                }).then(() => {
+                  this.setLoginHavePrisonerIn(true)
+
+                  this.$router.replace('/prisoner/list')
+                })
+              }, 100)
             } else {
               this.$router.replace(`/password/edit${ passWordStatus === 'DOWN' ? '?isNoback=1' : '' }`)
               const title = passWordStatus === 'DOWN' ?

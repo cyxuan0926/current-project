@@ -192,7 +192,7 @@
               v-if="row.type === 2"
               type="text"
               size="small"
-              @click="onAbortChangePrisoners(row.id)"
+              @click="onAbortChangePrisoners(row.prisonerId)"
             >取消
             </el-button>
 
@@ -454,6 +454,12 @@ import { Message } from 'element-ui'
 
 export default {
   mixins: [prisonFilterCreator],
+
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('setLoginHavePrisonerIn', false)
+
+    next()
+  },
 
   data() {
     const tabsItems = [
@@ -1030,6 +1036,7 @@ export default {
             prisonAreaId: {
               type: 'select',
               label: '监区',
+              options: this.prisonConfigs,
               invokeFuncAuto: true,
               props: changePrisonConfigsProps,
               func: this.onGetNextLevelPrisonConfigsData,
@@ -1257,7 +1264,7 @@ export default {
     },
 
     isJailOperationType() {
-      const jailIdTypes = [6, 7, 10]
+      const jailIdTypes = [6, 7, 10, 8, 9]
 
       return jailIdTypes.includes(this.operationType)
     },
@@ -1272,12 +1279,6 @@ export default {
       const prisonerTabVal = ['prisoner']
 
       return prisonerTabVal.includes(this.tabs)
-    },
-
-    isAcceptPrisonersType() {
-      const acceptPrisoners = [8, 9]
-
-      return acceptPrisoners.includes(this.operationType)
     }
   },
 
@@ -1356,11 +1357,9 @@ export default {
 
   async mounted() {
     // await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
-    const { hasPrisonerIn } = this.user
+    if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
 
-    if (hasPrisonerIn) this.tabs = 'change'
-
-    if (this.isPrisonerTabVal) {
+    else {
       this.filter = Object.assign({}, this.filter, { status: 1 })
 
       await this.getDatas()
@@ -2071,7 +2070,7 @@ export default {
             }
           },
 
-          // 转出(非ywt_admin)
+          // 转出(非ywt_admin)不需要筛选出已删除/黑名单的人员
           10: {
             url: '/prisoners/prisonersTransferOut',
             params: {
@@ -2133,7 +2132,8 @@ export default {
 
     // 批量接收
     onMultipleAccept(type) {
-      const haveNoneAcceptData = !this.selectPrisoners.length || this.selectPrisoners.every(prisoner => prisoner.type === 2)
+      const haveNoneAcceptData = !this.selectPrisoners.length ||
+        this.selectPrisoners.every(prisoner => prisoner.type === 2)
 
       if(haveNoneAcceptData) {
         this.$message({
@@ -2164,6 +2164,8 @@ export default {
 
       if (this.hasPrisonArea) {
         // 分监区
+        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+
         this.visible = true
       } else {
         // 不分监区
@@ -2176,21 +2178,26 @@ export default {
       }
     },
 
-    onAcceptPrisoners() {
+    async onAcceptPrisoners() {
       const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
 
       const { jailId } = this.user
 
-      let prisonerIds, params = {
-        jailId,
-        prisonerIds
+      let params = {
+        jailId
       }
 
-      // 批量接收
-      if (this.operationType === 8) prisonerIds = (this.selectPrisoners.map(prisoner => prisoner.id)).join(',')
+      // 批量接收 只处理接收的数据
+      if (this.operationType === 8) {
+        params['prisonerIds'] = (this.selectPrisoners.reduce((accumulator, prisoner) => {
+          prisoner.type === 1 && accumulator.push(prisoner.prisonerId)
+
+          return accumulator
+        }, [])).join(',')
+      }
 
       // 单个接收
-      if (this.operationType === 9) prisonerIds = this.prisoner['id']
+      if (this.operationType === 9) params['prisonerIds'] = this.prisoner['prisonerId']
 
       if (this.hasPrisonArea) {
         params = {
@@ -2199,16 +2206,14 @@ export default {
         }
       }
 
-      console.log(params)
-      let result
-      // await this.acceptPrisoners(params)
+      const result = await this.acceptPrisoners(params)
 
       if (result) {
         Message.closeAll()
 
         this.$message({
           showClose: true,
-          message: '转监操作已完成，等待对方监狱接收！',
+          message: '转监已完成！',
           type: 'warning'
         })
 

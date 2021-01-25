@@ -19,7 +19,10 @@ let state = {
   // 是否刷新多级审批消息铃铛
   isRefreshMultistageExamineMessageBell: false,
 
-  jailsMeetingFloorStatus: false
+  jailsMeetingFloorStatus: false,
+
+  // 有转入信息
+  loginHavePrisonerIn: false
 }
 
 export default {
