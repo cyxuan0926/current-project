@@ -4,6 +4,7 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <m-table-new
@@ -34,6 +35,10 @@ export default {
      const endDate = Moment().format('YYYY-MM-DD')
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
+      initFilter: { // 默认查询上一个月的，筛选框初始化
+        startDate,
+        endDate
+      },
       searchItems: {
        time: {
           type: 'dateRange',
@@ -136,6 +141,7 @@ export default {
     }
   },
   mounted() {
+    this.filter = Object.assign({}, this.filter, this.initFilter)
     this.getDatas()
   },
   methods: {

@@ -4,18 +4,17 @@
     :gutter="0">
     <m-search
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <m-table-new
         stripe
         :data="tabledata.report"
         :cols="tableCols">
-        <template #imageUrl="{ row }">
+        <!-- <template #imageUrl="{ row }">
           <img :src="row.imageUrl + '?token=' + $urls.token">
-        </template>
-        <template #isDate="{ row }">{{ row.startDate | Date }} - {{ row.endDate | Date }}</template>
-       
-      </m-table-new>
+        </template> -->
+        </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
@@ -33,8 +32,32 @@ export default {
   data() {
      const endDate = Moment().format('YYYY-MM-DD')
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
+     const options = [
+      {
+        label: '大陆居民',
+        value: '0'
+      },
+      {
+        label: '港澳居民',
+        value: '1'
+      },
+      {
+        label: '台湾居民',
+        value: '2'
+      }
+    ]
     return {
+       initFilter: { // 默认查询上一个月的，筛选框初始化
+        startDate,
+        endDate
+      },
       searchItems: {
+        domicile: {
+            type: 'select',
+            label: '地区',
+            options,
+            value: ''
+        },
        time: {
           type: 'dateRange',
           start: 'startDate',
@@ -46,64 +69,33 @@ export default {
       },
      tableCols: [
         {
-          label: '监区',
-          prop: 'prisonArea',
-          minWidth: '11%',
-          showOverflowTooltip: true
-        },
-        {
           label: '申请次数(次)',
-          prop: 'total',
+          prop: 'applyTimes',
           minWidth: '8.2%'
         },
         {
           label: '未授权次数(次)',
-          prop: 'unPendTotal',
-          minWidth: '8.2%'
-        },
-        {
-          label: '待通话次数(次)',
-          prop: 'passedTotal',
+          prop: 'PENDING',
           minWidth: '8.2%'
         },
         {
           label: '审核被拒绝次数(次)',
-          prop: 'deniedTotal',
-          minWidth: '8.2%'
-        },
-        {
-          label: '审核被拒绝比例',
-          prop: 'deniedScale',
+          prop: 'DENIED',
           minWidth: '8.2%'
         },
         {
           label: '未审核过期次数(次)',
-          prop: 'pendingExpiredTotal',
-          minWidth: '8.2%'
-        },
-        {
-          label: '未审核过期比例',
-          prop: 'pendingExpiredScale',
+          prop: 'noAuthToExpired',
           minWidth: '8.2%'
         },
         {
           label: '审核通过未通话过期次数(次)',
-          prop: 'expiredTotal',
+          prop: 'authedToExpired',
           minWidth: '9%'
         },
         {
-          label: '审核通过未通话过期比例',
-          prop: 'expiredScale',
-          minWidth: '8.8%'
-        },
-        {
           label: '通话完成次数(次)',
-          prop: 'finishedTotal',
-          minWidth: '8.2%'
-        },
-        {
-          label: '通话完成比例',
-          prop: 'finishedScale',
+          prop: 'finished',
           minWidth: '8.2%'
         },
         {
@@ -112,23 +104,13 @@ export default {
           minWidth: '8.2%'
         },
         {
-          label: '通话结束比例',
-          prop: 'endedPercentShowValue',
-          minWidth: '8.2%'
-        },
-        // {
-        //   label: '审核通过后取消次数(次)',
-        //   prop: 'canceled',
-        //   minWidth: '8.8%'
-        // },
-        {
           label: '警官取消次数(次)',
-          prop: 'canceledTotal',
+          prop: 'policeCanceled',
           minWidth: '8.8%'
         },
         {
           label: '家属取消次数(次)',
-          prop: 'familyCanceledTotal',
+          prop: 'familiesCanceled',
           minWidth: '8.8%'
         }
       ],
@@ -136,11 +118,12 @@ export default {
     }
   },
   mounted() {
+    this.filter = Object.assign({}, this.filter, this.initFilter)
     this.getDatas()
   },
   methods: {
      async getDatas() {
-      let res = await http.getPrisonReportListJails({ ...this.filter, ...this.pagination })
+      let res = await http.getIslandList({ ...this.filter, ...this.pagination })
       this.tabledata=res
     },
     onSearch() {
