@@ -19,7 +19,14 @@ let state = {
   // 是否刷新多级审批消息铃铛
   isRefreshMultistageExamineMessageBell: false,
 
-  jailsMeetingFloorStatus: false
+  jailsMeetingFloorStatus: false,
+
+  guideStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_GUIDE_DATA') && JSON.parse(window.sessionStorage.getItem('APP_GUIDE_DATA'))) || {
+    content: '',
+    guide: '',
+    updatedTime: '',
+    preContent: ''
+  }
 }
 
 export default {
