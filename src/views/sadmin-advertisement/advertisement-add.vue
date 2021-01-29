@@ -69,6 +69,7 @@
                         <el-select v-model="formDate.picSize" :disabled="formDate.adForm!=1" placeholder="广告尺寸">
                         <el-option label="720*1440" :value="`720*1440`"></el-option>
                         <el-option label="720*86" :value="`720*86`"></el-option>
+                        <el-option label="720*440" :value="`720*440`"></el-option>
                         <el-option label="660*214" :value="`660*214`"></el-option>
                         </el-select>
                         </el-form-item>
@@ -81,7 +82,7 @@
                         </el-form-item>
                     </div>
                     <div>
-                        <el-form-item   style="width:380px" label="广告封面">                             
+                        <el-form-item   style="width:380px" label="广告封面">
                             <div v-if="formDate.adForm==1">
                                  <div  v-if="!formDate.title">
                                  <el-upload
@@ -93,7 +94,7 @@
                                     :on-preview="handlePictureView"
                                     :http-request="handleFileUpload">
                                     <i class="el-icon-plus"></i>
-                                     <p style="color:#000000;line-height: 20px;">广告支持jpeg, jpg, gif,png格式的图片，且不超过2M</p>                                  
+                                     <p style="color:#000000;line-height: 20px;">广告支持jpeg, jpg, gif,png格式的图片，且不超过2M</p>
                                 </el-upload>
                                  </div>
                                 <ul v-if="formDate.title" class="el-upload-list el-upload-list--picture-card">
@@ -117,12 +118,12 @@
                                 <el-input type='text' style="width:224px" v-model="formDate.title" placeholder="文件名称"></el-input>
                             </div>
 
-                        
+
                         </el-form-item>
 
                          <el-form-item   style="width:380px" label="广告内容">
                             <div v-if="formDate.adContentForm==1">
-                                <el-input  style="width:224px" :readonly='true' v-model="formDate.content" placeholder="广告内容"></el-input> 
+                                <el-input  style="width:224px" :readonly='true' v-model="formDate.content" placeholder="广告内容"></el-input>
                             </div>
                             <div v-if="formDate.adContentForm==2">
                                   <el-upload
@@ -133,7 +134,7 @@
                                     :http-request="handleFileUpload"
                                     :before-upload="beforeUploadVideo"
                                     :on-preview="handlePictureView"
-                                    >                                   
+                                    >
                                     <i class="el-icon-plus"></i>
                                     </el-upload>
                                     <video v-if="formDate.content" :src="formDate.content"
@@ -143,14 +144,14 @@
                                         <el-button type="danger" @click="deleteVideo()">删除视频</el-button>
                                     </p>
                                     <p v-if='load'> 上传中</p>
-                                    <p style="color:#000000;width:120px;text-align: center;line-height: 20px;">广告支持视频格式'mp4','webm','avi','rmvb',且不超过10M</p>              
+                                    <p style="color:#000000;width:120px;text-align: center;line-height: 20px;">广告支持视频格式'mp4','webm','avi','rmvb',且不超过10M</p>
                             </div>
                             <div v-if="formDate.adContentForm==3">
-                                <el-input  style="width:224px"  v-model="formDate.content" placeholder="广告内容"></el-input> 
+                                <el-input  style="width:224px"  v-model="formDate.content" placeholder="广告内容"></el-input>
                             </div>
                         </el-form-item>
                     </div>
-                        
+
 
             <div>
             <el-form-item style='float:right'>
@@ -161,14 +162,14 @@
             </el-form-item>
 
             </div>
-         
+
             </el-form>
             <el-dialog :visible.sync='dialogVisible'>
                 <img width="100%" :src="formDate.title">
             </el-dialog>
 
         </div>
-        
+
 </template>
 
 <script>
@@ -448,7 +449,7 @@
         this.provinceslist = await getprovinceslist()
         this.getadservices()
     }
-    
+
     }
 </script>
 
