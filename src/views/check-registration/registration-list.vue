@@ -380,13 +380,19 @@
           v-if="show.disagree"
           class="button-box">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
-          <el-select v-model="remarks">
+          <div>
+            <el-select v-model="remarks" style="width:70%;margin-right:10px">
             <el-option
               v-for="(remark,index) in registRemarks"
               :value="remark"
               :label="remark"
               :key="index"/>
           </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
           <el-form
             v-if="remarks === '其他'"
             :model="refuseForm"
@@ -510,6 +516,52 @@
           @click="notificationShow = false">关闭</el-button>
       </el-row>
     </el-dialog>
+    <el-dialog
+      :visible.sync="show.rejectEdit"
+      title="编辑"
+      width="530px"
+      class="authorize-dialog">
+      <div class="flex-dialog" v-if="show.editRebut">
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px">
+           <li v-for="(item,index) in content" 
+               :key='index' 
+               class="infinite-list-item">
+               {{index+1}}.{{ item }}
+            </li>
+        </ul>
+      </div>
+       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
+         <span v-for="(item,index) in content" :key="index">
+         
+        <el-input style="margin-bottom:10px" maxlength='200' v-model="content[index]" placeholder="请输入内容" clearable>
+           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
+        </el-input>
+         </span>
+         
+        
+      </div>
+      <el-row :gutter="0">
+       
+        <el-button
+           v-if='show.editRebut'
+           type="primary"
+          class="button-add"
+          size="mini"
+          @click="onRejectEditshow()">编辑</el-button>
+          <span v-else>
+          <el-button
+          type="primary"
+          class="button-add"
+          size="mini"
+          @click="onSubmitReject()">保存</el-button>
+           <el-button
+          type="primary"
+          class="button-add"
+          size="mini"
+          @click="addReject()">新增</el-button>
+          </span>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -597,7 +649,9 @@ export default {
         agree: false,
         disagree: false,
         callback: false,
-        multistageExamine: false
+        multistageExamine: false,
+        rejectEdit:false,
+        editRebut:true
       },
       withdrawForm: {
         withdrawReason: registrationWithdrawOrAnthorinputReason
@@ -639,7 +693,8 @@ export default {
         ]
       },
 
-      sortObj: {}
+      sortObj: {},
+      content:[]
     }
   },
   watch: {
@@ -714,11 +769,43 @@ export default {
       'authorizeRegistrations',
       'getNotification',
       'getRegistrationNotificationDetail',
+      'getRejectEdit',
       'firstLevelAuthorize'
     ]),
 
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-
+//获取驳回列表
+  async onRejectshow(){
+      let params=JSON.parse(localStorage.getItem('user'));
+      let res = await http.getRejectEdit( params )
+      if(res.content){
+        this.content = res.content
+      }else{
+        this.content = []
+      }
+      this.show.rejectEdit=true
+    },
+    addReject(){
+      this.content.push('')
+    },
+    removeReject(index){
+      this.content.splice(index,1)
+    },
+    onRejectEditshow(){
+      this.show.editRebut=false
+    },
+   async onSubmitReject(){
+      this.content=this.content.filter((res)=>res&&res.trim())
+      console.log(JSON.parse(localStorage.getItem('user')))
+      let params={
+        content:this.content,
+        updateer:JSON.parse(localStorage.getItem('user')).realName,
+        jailId:JSON.parse(localStorage.getItem('user')).jailId
+        }
+      console.log(params)
+      let res = await http.setRejectEdit(params)
+       this.show.editRebut=true
+    },
     onAuthorizeFirstLevelGoBack() {
       this.$refs['multistageExamineForm'].clearValidate()
 
