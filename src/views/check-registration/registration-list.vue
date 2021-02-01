@@ -381,9 +381,9 @@
           class="button-box">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
           <div>
-            <el-select v-model="remarks" style="width:70%;margin-right:10px">
+            <el-select v-model="remarks" :multiple="true" @change="hello" style="width:70%;margin-right:10px">
             <el-option
-              v-for="(remark,index) in registRemarks"
+              v-for="(remark,index) in content"
               :value="remark"
               :label="remark"
               :key="index"/>
@@ -433,7 +433,7 @@
               :value="remark"
               :label="remark"
               :key="index"/>
-          </el-select>
+          </el-select> 
           <!-- <el-form
             v-if="remarks === '其他'"
             :model="refuseForm"
@@ -520,25 +520,24 @@
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
+      @close="show.editRebut=true"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left:20px;min-height:400px">
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
            <li v-for="(item,index) in content" 
                :key='index' 
                class="infinite-list-item">
                {{index+1}}.{{ item }}
             </li>
         </ul>
+         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
       </div>
        <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
          <span v-for="(item,index) in content" :key="index">
-         
-        <el-input style="margin-bottom:10px" maxlength='200' v-model="content[index]" placeholder="请输入内容" clearable>
+        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
            <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
         </el-input>
          </span>
-         
-        
       </div>
       <el-row :gutter="0">
        
@@ -558,6 +557,7 @@
           type="primary"
           class="button-add"
           size="mini"
+          v-if='content.length<10'
           @click="addReject()">新增</el-button>
           </span>
       </el-row>
@@ -692,9 +692,10 @@ export default {
           }
         ]
       },
-
       sortObj: {},
-      content:[]
+      content:[],
+      updateer:'',
+      contentId
     }
   },
   watch: {
@@ -774,16 +775,27 @@ export default {
     ]),
 
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+    hello(e){
+      console.log(e)
+      console.log(this.remarks)
+      console.log(this.content[0])
+    },
 //获取驳回列表
-  async onRejectshow(){
+  async onRejectshow(str){
       let params=JSON.parse(localStorage.getItem('user'));
       let res = await http.getRejectEdit( params )
       if(res.content){
         this.content = res.content
+        this.contentId=res.id
+        this.updateer=res.updateEr
       }else{
         this.content = []
       }
-      this.show.rejectEdit=true
+      if(str=='PASSED'){
+        this.show.rejectEdit=true
+      }else{
+        this.remarks=this.content
+      }
     },
     addReject(){
       this.content.push('')
@@ -796,13 +808,12 @@ export default {
     },
    async onSubmitReject(){
       this.content=this.content.filter((res)=>res&&res.trim())
-      console.log(JSON.parse(localStorage.getItem('user')))
       let params={
+        id: this.contentId,
         content:this.content,
         updateer:JSON.parse(localStorage.getItem('user')).realName,
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
-      console.log(params)
       let res = await http.setRejectEdit(params)
        this.show.editRebut=true
     },
@@ -880,7 +891,9 @@ export default {
 
       this.show.multistageExamine = false
 
-      this.remarks = '身份信息错误'
+      this.onRejectshow(false)
+
+      this.remarks = this.content[0]
 
       this.show.authorize = true
 
