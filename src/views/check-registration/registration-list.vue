@@ -381,7 +381,7 @@
           class="button-box">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
           <div>
-            <el-select v-model="remarks" :multiple="true" @change="hello" style="width:70%;margin-right:10px">
+            <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
               v-for="(remark,index) in content"
               :value="remark"
@@ -394,17 +394,19 @@
             @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
           </div>
           <el-form
-            v-if="remarks === '其他'"
             :model="refuseForm"
             :rules="withdrawRule"
             ref="refuseForm"
             class="withdraw-box">
-            <el-form-item prop="anotherRemarks">
+            <el-form-item prop="anotherRemarks"  class="borderNone">
+              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
               <el-input
-                :autosize="{ minRows: 2 }"
+               class="bordertop"
+                :autosize="{ minRows: 1 }"
+                 style="border-top: none;"
                 type="textarea"
                 show-word-limit
-                maxlength="200"
+                :maxlength="refuseForm.lengthRemark"
                 placeholder="请输入驳回原因..."
                 v-model="refuseForm.anotherRemarks"
               />
@@ -427,40 +429,32 @@
           v-if="show.callback"
           class="button-box">
           <div style="margin-bottom: 10px;">请选择撤回原因</div>
-          <el-select v-model="remarks">
+          <div>
+            <el-select v-model="remarks" :multiple="true" @change="withdrawFormChange" style="width:70%;margin-right:10px">
             <el-option
-              v-for="(remark,index) in registRemarks"
+              v-for="(remark,index) in content"
               :value="remark"
               :label="remark"
               :key="index"/>
-          </el-select> 
-          <!-- <el-form
-            v-if="remarks === '其他'"
-            :model="refuseForm"
-            :rules="withdrawRule"
-            ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks">
-              <el-input
-                type="textarea"
-                show-word-limit
-                maxlength="200"
-                placeholder="请选择撤回原因..."
-                v-model.trim="refuseForm.anotherRemarks" />
-            </el-form-item>
-          </el-form> -->
+          </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
           <el-form
-            v-if="remarks === '其他'"
             :model="withdrawForm"
             :rules="withdrawRule"
             ref="withdrawForm"
             class="withdraw-box">
-            <el-form-item prop="withdrawReason">
+            <el-form-item prop="withdrawReason" class="borderNone">
+              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="withdrawForm.selectRemark"  :readonly="true"/>
               <el-input
+               class="bordertop"
                 type="textarea"
                 show-word-limit
-                maxlength="200"
-                :autosize="{ minRows: 4 }"
+                :maxlength="withdrawForm.lengthRemark"
+                :autosize="{ minRows: 1 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -580,7 +574,7 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
+//import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -595,7 +589,6 @@ export default {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     return {
-      registrationWithdrawOrAnthorinputReason,
       showDetail: false,
       authorizeDetData: {},
       searchItems: {
@@ -654,26 +647,40 @@ export default {
         editRebut:true
       },
       withdrawForm: {
-        withdrawReason: registrationWithdrawOrAnthorinputReason
+        selectRemark:"",
+        lengthRemark:1000,
+        withdrawReason: ""
       },
       refuseForm: {
-        anotherRemarks: registrationWithdrawOrAnthorinputReason
+        selectRemark:"",
+        lengthRemark:1000,
+        anotherRemarks: ""
       },
       withdrawRule: {
         anotherRemarks: [
           {
-            required: true,
-            message: '请填写驳回原因'
+            validator:(rule,value,callback)=>{
+              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
+                  callback()
+              }else{
+                  callback(new Error('请填写驳回原因'))
+              }
+            }
           }
         ],
         withdrawReason: [
           {
-            required: true,
-            message: '请填写撤回理由'
+            validator:(rule,value,callback)=>{
+              if(this.withdrawForm.selectRemark||this.withdrawForm.withdrawReason){
+                  callback()
+              }else{
+                  callback(new Error('请填撤回原因'))
+              }
+            }
           }
         ]
       },
-      remarks: '身份信息错误',
+      remarks: [],
       btnDisable: false, // 按钮禁用与启用
       tabs: 'PENDING',
       notificationShow: false,
@@ -695,7 +702,7 @@ export default {
       sortObj: {},
       content:[],
       updateer:'',
-      contentId
+      contentId:""
     }
   },
   watch: {
@@ -773,15 +780,32 @@ export default {
       'getRejectEdit',
       'firstLevelAuthorize'
     ]),
-
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-    hello(e){
-      console.log(e)
-      console.log(this.remarks)
-      console.log(this.content[0])
+    refuseFormChange(e){
+      let str=""
+        e.forEach((item,index)=>{
+          if(index==(e.length-1)){
+             str +=`${index+1}、${item}。`
+          }else{
+             str +=`${index+1}、${item}。\n`
+          }
+        })
+        this.refuseForm.selectRemark=str
+        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
     },
-//获取驳回列表
-  async onRejectshow(str){
+    withdrawFormChange(e){
+      let str=""
+        e.forEach((item,index)=>{
+          if(index==(e.length-1)){
+             str +=`${index+1}、${item}。`
+          }else{
+             str +=`${index+1}、${item}。\n`
+          }
+        })
+        this.withdrawForm.selectRemark=str
+        this.withdrawForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+    },
+  async onRejectshow(str,isform){
       let params=JSON.parse(localStorage.getItem('user'));
       let res = await http.getRejectEdit( params )
       if(res.content){
@@ -794,7 +818,13 @@ export default {
       if(str=='PASSED'){
         this.show.rejectEdit=true
       }else{
-        this.remarks=this.content
+        this.remarks.push(this.content[0])
+        //判断打开的是驳回还是撤回
+        if(isform){
+          this.withdrawForm.selectRemark=`1、${this.content[0]}。`
+        }else{
+           this.refuseForm.selectRemark=`1、${this.content[0]}。`
+        }
       }
     },
     addReject(){
@@ -891,29 +921,27 @@ export default {
 
       this.show.multistageExamine = false
 
-      this.onRejectshow(false)
+      this.onRejectshow(false,false)
 
-      this.remarks = this.content[0]
+     // this.remarks = this.content[0]
 
       this.show.authorize = true
 
       this.dialogTitle = '授权'
     },
-
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
-        if (this.remarks === '其他' && e !== 'WITHDRAW') {
+        if(e === 'DENIED'){
           this.$refs.refuseForm.validate(valid => {
-            if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+            if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
-        else params.remarks = this.remarks
-        if (e === 'WITHDRAW' && this.remarks === '其他') {
+        if(e === 'WITHDRAW'){
           this.$refs.withdrawForm.validate(valid => {
-            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
+            if (valid) params.withdrawReason  =this.withdrawForm.selectRemark + this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
@@ -1001,6 +1029,7 @@ export default {
       this.show.disagree = false
 
       this.show.callback = true
+      this.onRejectshow(false,true)
 
       this.dialogTitle = '撤回'
 
@@ -1009,7 +1038,9 @@ export default {
 
     closeWithdraw() {
       this.show.authorize = false
-      this.remarks = '身份信息错误'
+      this.remarks = []
+      this.withdrawForm.selectRemark=""
+      this.refuseForm.selectRemark=""
       this.$set(this.multistageExamineForm, 'remarks', '')
       this.withdrawForm.withdrawReason = this.registrationWithdrawOrAnthorinputReason
       this.refuseForm.anotherRemarks = this.registrationWithdrawOrAnthorinputReason
@@ -1140,6 +1171,23 @@ export default {
 }
 </script>
 
+<style lang="stylus">
+.borderNone .el-form-item__content{
+    display: flex;
+    flex-direction: column;
+}
+.borderNone .el-textarea__inner{
+    border:1px solid #DCDFE6 ;
+    border-bottom:none;
+    border-radius:4px 4px 0 0;
+
+}
+.bordertop .el-textarea__inner{
+    border:1px solid #DCDFE6 ;
+    border-top:none;
+    border-radius:0px 0px 4px 4px;
+}
+</style>
 <style type="text/stylus" lang="stylus" scoped>
 .cell img
   width 126.8px
@@ -1184,4 +1232,6 @@ export default {
   display: flex;
   >>> .el-image
     height: auto;
+
+  
 </style>
