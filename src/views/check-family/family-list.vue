@@ -82,7 +82,24 @@
               @click="removeBlackList(scope.row)">
               移出黑名单
             </el-button>
-          </template>
+        </template>
+
+        <template #isSendMessage>
+          <!-- 修改 -->
+          <!-- <template>
+            <span>是/否</span>
+
+            <el-button type="text">修改</el-button>
+          </template> -->
+          <!-- 保存 -->
+          <div class="send-message_save">
+            <el-select size="small">
+              <el-option />
+            </el-select>
+
+            <el-button type="text">保存</el-button>
+          </div>
+        </template>
       </m-table-new>
     </el-col>
     <m-pagination
@@ -251,6 +268,36 @@ export default {
           type: 'input',
           label: '警员姓名',
           miss: true
+        },
+        // 罪犯姓名
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名',
+          miss: false
+        },
+        // 是否超3位家属
+        isMoreThanThree: {
+          type: 'select',
+          noPlaceholder: true,
+          label: '是否超过3位家属',
+          options: isBlacklistOptions,
+          belong: {
+            value: 'value',
+            label: 'label'
+          },
+          miss: false
+        },
+        // 是否发送短信
+        isSendMessage: {
+          type: 'select',
+          noPlaceholder: true,
+          label: '是否发送短信',
+          options: isBlacklistOptions,
+          belong: {
+            value: 'value',
+            label: 'label'
+          },
+          miss: false
         }
       },
       filter: {},
@@ -311,20 +358,28 @@ export default {
         },
         {
           label: '身份证信息',
+          width: '148px',
           slotName: 'idCard'
         },
         {
           label: '黑名单原因',
           prop: 'reason',
+          minWidth: '160px',
           showOverflowtooltip: true
         },
         {
           label: '对应罪犯',
+          minWidth: '180px',
           slotName: 'prisoners'
         },
         {
           label: '操作',
           slotName: 'operate'
+        },
+        {
+          label: '是否发送短信',
+          slotName: 'isSendMessage',
+          minWidth: '100px'
         }
       ]
 
@@ -358,14 +413,20 @@ export default {
         this.$set(this.searchItems.name, 'miss', false)
         this.$set(this.searchItems.prisonArea, 'miss', false)
         this.$set(this.searchItems.isBlacklist, 'miss', false)
+        this.$set(this.searchItems.prisonerName, 'miss', false)
+        this.$set(this.searchItems.isMoreThanThree, 'miss', false)
+        this.$set(this.searchItems.isSendMessage, 'miss', false)
         this.$set(this.searchItems.familyName, 'miss', true)
         this.$set(this.searchItems.policeName, 'miss', true)
       }
       else {
-        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist'])
+        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist', 'prisonerName', 'isMoreThanThree', 'isSendMessage'])
         this.$set(this.searchItems.name, 'miss', true)
         this.$set(this.searchItems.prisonArea, 'miss', true)
         this.$set(this.searchItems.isBlacklist, 'miss', true)
+        this.$set(this.searchItems.prisonerName, 'miss', true)
+        this.$set(this.searchItems.isMoreThanThree, 'miss', true)
+        this.$set(this.searchItems.isSendMessage, 'miss', true)
         this.$set(this.searchItems.familyName, 'miss', false)
         this.$set(this.searchItems.policeName, 'miss', false)
       }
@@ -509,5 +570,18 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+
+.send-message_save {
+  display: flex;
+
+  .el-select {
+    flex-basis: 60%;
+    flex-grow: 0;
+  }
+
+  .el-button {
+    flex-grow: 1;
+  }
 }
 </style>
