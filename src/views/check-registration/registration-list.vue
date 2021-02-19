@@ -514,7 +514,7 @@
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="show.editRebut=true"
+      @close="changeClose()"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
@@ -543,6 +543,7 @@
           @click="onRejectEditshow()">编辑</el-button>
           <span v-else>
           <el-button
+          v-if='content.length>=1'
           type="primary"
           class="button-add"
           size="mini"
@@ -702,7 +703,8 @@ export default {
       sortObj: {},
       content:[],
       updateer:'',
-      contentId:""
+      contentId:"",
+      isform:false
     }
   },
   watch: {
@@ -803,10 +805,13 @@ export default {
           }
         })
         this.withdrawForm.selectRemark=str
-        this.withdrawForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+        this.withdrawForm.lengthRemark=1000-this.withdrawForm.selectRemark.length
+        console.log(this.withdrawForm.lengthRemark)
     },
+    // 获取当前驳回原因列表
   async onRejectshow(str,isform){
       let params=JSON.parse(localStorage.getItem('user'));
+          params.type=1
       let res = await http.getRejectEdit( params )
       if(res.content){
         this.content = res.content
@@ -818,12 +823,16 @@ export default {
       if(str=='PASSED'){
         this.show.rejectEdit=true
       }else{
-        this.remarks.push(this.content[0])
-        //判断打开的是驳回还是撤回
-        if(isform){
-          this.withdrawForm.selectRemark=`1、${this.content[0]}。`
-        }else{
-           this.refuseForm.selectRemark=`1、${this.content[0]}。`
+        if(this.content[0]){
+          this.remarks.push(this.content[0])
+          //判断打开的是驳回还是撤回
+          if(isform){
+            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
+            this.withdrawForm.lengthRemark=997-this.content[0].length
+          }else{
+            this.refuseForm.selectRemark=`1、${this.content[0]}。`
+            this.refuseForm.lengthRemark=997-this.content[0].length
+          }
         }
       }
     },
@@ -836,16 +845,30 @@ export default {
     onRejectEditshow(){
       this.show.editRebut=false
     },
+    changeClose(){
+      this.remarks=[]
+      this.onRejectshow(false,this.isform)
+       this.show.editRebut=true
+    },
    async onSubmitReject(){
       this.content=this.content.filter((res)=>res&&res.trim())
-      let params={
+      if(this.content.length<1){
+         this.$message({
+            message: '新增编辑内容不能为空',
+            type: 'error'
+          });
+          return false
+      }else{
+        let params={
         id: this.contentId,
+        type:1,
         content:this.content,
         updateer:JSON.parse(localStorage.getItem('user')).realName,
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
-      let res = await http.setRejectEdit(params)
+        let res = await http.setRejectEdit(params)
        this.show.editRebut=true
+      }
     },
     onAuthorizeFirstLevelGoBack() {
       this.$refs['multistageExamineForm'].clearValidate()
@@ -922,7 +945,7 @@ export default {
       this.show.multistageExamine = false
 
       this.onRejectshow(false,false)
-
+      this.isform=false
      // this.remarks = this.content[0]
 
       this.show.authorize = true
@@ -1030,6 +1053,7 @@ export default {
 
       this.show.callback = true
       this.onRejectshow(false,true)
+      this.isform=true
 
       this.dialogTitle = '撤回'
 
