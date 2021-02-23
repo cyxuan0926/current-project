@@ -5,7 +5,8 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
-      :params="filter" />
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       ref="search"
@@ -533,8 +534,6 @@ export default {
   },
   mixins: [prisonFilterCreator],
   data() {
-    const { belong } = prisons.PRISONAREA
-    const { options } = this.$store.getters.prisonAreaOptions
     return {
       registrationWithdrawOrAnthorinputReason,
       showDetail: false,
@@ -552,13 +551,6 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        // prisonArea: {
-        //   type: 'select',
-        //   label: '监区',
-        //   options,
-        //   belong,
-        //   value: ''
-        // },
         auditName: {
           type: 'input',
           label: '审核人',
@@ -642,7 +634,7 @@ export default {
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
         }
-        if ( val === '' ) {
+        if (val === '') {
           delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.unusualStatus

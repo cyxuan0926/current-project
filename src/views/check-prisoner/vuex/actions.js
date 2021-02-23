@@ -7,8 +7,8 @@ export default {
   getPrisonersAll({ commit }, params) {
     http.getPrisonersAll(params).then(res => res && commit('getPrisoners', res))
   },
-  updateAccessTime({ commit }, params) {
-    return http.updateAccessTime(params).then(res => res)
+  updatePrisonerTime({ commit }, params) {
+    return http.updatePrisonerTime(params).then(res => res)
   },
   addPrisonerBlacklist({ commit }, params) {
     return http.addPrisonerBlacklist(params).then(res => res)

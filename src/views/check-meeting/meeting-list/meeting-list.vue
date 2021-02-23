@@ -1,5 +1,5 @@
 <template>
-<el-row
+  <el-row
     class="row-container"
     :gutter="0">
     <m-search
@@ -14,6 +14,7 @@
         :params="excelFilter"
       />
     </m-search>
+
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -26,72 +27,73 @@
           />
         </template>
       </el-tabs>
-    <m-table-new
+
+      <m-table-new
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
         :cols="tableCols" >
-        <template
-          slot-scope="scope"
-          slot="meetingTime">
-          <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
+        <template #meetingTime="{ row }">
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
-        <template
-          slot-scope="scope"
-          slot="families">
-          <div v-if="scope.row.filterFamilies && scope.row.filterFamilies.length">
+
+        <template #families="{ row }">
+          <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
               type="text"
               size="small"
-              v-for="family in scope.row.filterFamilies"
+              v-for="family in row.filterFamilies"
               :key="family.familyId"
               style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(family.familyId, scope.row.id)">{{ family.familyName }}</el-button>
+              @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
           </div>
         </template>
-        <template
-          slot-scope="scope"
-          slot="content">
-          <span v-if="!scope.row.content">
-            <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
-            <template v-else>{{ scope.row.status | applyStatus }}</template>
+
+        <template #content="{ row }">
+          <span v-if="!row.content">
+            <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
+            <template v-else>{{ row.status | applyStatus }}</template>
           </span>
+
           <el-tooltip
             v-else
-            :content="scope.row.content"
+            :content="row.content"
             placement="top" >
-            <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
-            <span v-else>{{ scope.row.status | applyStatus }}</span>
+            <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
+            <span v-else>{{ row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
-        <template slot-scope="scope"
-          slot="operate">
+
+        <template #operate="{ row }">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
          <el-button
-            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
+            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
             size="mini"
-            @click="handleAuthorization(scope.row)">授权</el-button>
+            @click="handleAuthorization(row)">授权</el-button>
+
           <el-button
-            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
+            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             size="mini"
-            @click="handleWithdraw(scope.row)">撤回</el-button>
-      
-            <el-button
-            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
-            size="mini"
-            class="button-detail"
-            @click="detailRemarks(scope.row)">已备注</el-button>
-            <el-button
-            v-if="tabs == 'UNUSUAL'&& !scope.row.unusualRemark"
+            @click="handleWithdraw(row)">撤回</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
             size="mini"
             class="button-detail"
-            @click="setRemarks(scope.row)">备注</el-button>
-               <el-button
-            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
+            @click="detailRemarks(row)">已备注</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(row)">备注</el-button>
+
+          <el-button
+            v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             type="text"
             size="mini"
             class="button-detail"
-            @click="onDetail(scope.row)">详情</el-button>
+            @click="onDetail(row)">详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -235,7 +237,7 @@
         class="button-box">
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
-      
+
       <div v-if="show.multistageExamine" class="button-box more-button__box">
         <div style="margin-bottom: 10px;">初审意见：</div>
 
@@ -282,8 +284,10 @@
         class="withdraw-form"
         :items="withdrawFormItems"
         @submit="onWithdraw"
-        @cancel=" show.withdraw = false " />
+        @cancel="show.withdraw = false"
+      />
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
@@ -374,7 +378,7 @@
               </template>
               <template  v-else>
                 <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
-              </template> 
+              </template>
                </p>
             <p
               v-if="item.remark && item.status=='DENIED'"
@@ -447,7 +451,7 @@
 
               <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
               <span class="family-nameDetail" v-if="item.status=='ENDED'">已结束</span>
-              
+
               <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
 
               <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
@@ -513,7 +517,8 @@
         </template>
       </family-detail-information>
     </el-dialog>
-       <el-dialog
+
+    <el-dialog
       :visible.sync="show.setRemarks"
       class="authorize-dialog"
       width="600px"
@@ -524,11 +529,12 @@
           <el-input type="textarea" v-model="getRemarks" :autosize="{ minRows: 6, maxRows: 8}" maxlength="300"  placeholder="请输入内容" show-word-limit></el-input>
         </el-form-item>
       </el-form>
-       <span  slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitRemarks()">提 交</el-button>
-        </span>
+      <span  slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitRemarks()">提 交</el-button>
+      </span>
     </el-dialog>
-     <el-dialog
+
+    <el-dialog
       :visible.sync="show.userRemarks"
       class="authorize-dialog"
       width="600px"
@@ -839,7 +845,7 @@
           remark: remarks
         }
       },
-  
+
       // excel的参数 需要添加当前标签页的label
       excelFilter() {
         const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
@@ -1128,11 +1134,12 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
       setRemarks(row){
         this.show.setRemarks=true
-         this.getMeetingId=row.id
-
+        this.getMeetingId=row.id
       },
+
       submitRemarks(){
         if(this.getRemarks){
            http.addUnusualRemark({
@@ -1175,10 +1182,12 @@
           }
         }
       },
+
       cellClick(row, column,cell,event){
         let cellStr=cell.querySelector(".cell").textContent
-        if(cellStr){
-        }else{
+
+        if(cellStr) {
+        } else {
           if(column.label=='监区'){
             return false
           }else if(column.label=='当日没有可选时间段'){
@@ -1764,7 +1773,7 @@
       font-size: 12px;
       margin-right: 10px;
       color: #666;
-    
+
       &.special {
         min-width: 110px;
         text-align: right;

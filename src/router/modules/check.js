@@ -153,6 +153,7 @@ let check = [{
     path: '/family/list',
     name: 'family-list',
     // component: helper.loadView('check-family/family-list'),
+    props: { hasPrisonAreaAuth: true },
     component: 'check-family/family-list',
     // component: resolve => require(['@/views/check-family/family-list'], resolve),
     meta: { permission: 'visit.family.search', breadcrumbName: '家属列表' }
@@ -204,6 +205,11 @@ let check = [{
     component: 'check-prisoner-data/inside-jails-costs',
     // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
     meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '狱内消费情况数据导入' }
+  }, {
+    path: '/prisoner-data/sensitive-characters',
+    name: 'HeiYuang-jail-prisoner-sensitive-characters',
+    component: 'literature/literature-sensitive-characters/literature-sensitive-characters',
+    meta: { permission: 'visit.sensitive-word.manage', breadcrumbName: '敏感词管理' }
   }]
 }, {
   path: '/import-data-details',

@@ -19,36 +19,28 @@
     <m-search
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <template #append>
         <el-button
           v-if="hasAllPrisonQueryAuth"
           type="primary"
-          @click="onPreChangePrisonConfigs(7)">转监</el-button>
+          @click="onPreChangePrisonConfigs(7)"
+        >转监</el-button>
       </template>
     </m-search>
 
-    <el-row
-      type="flex"
-      style="margin-bottom: 10px">
+    <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth">
-        <el-button
-          type="primary"
-          @click="showAddPrisoner">新增</el-button>
+        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
 
-        <el-button
-          type="primary"
-          @click="showDelPrionser">删除</el-button>
+        <el-button type="primary" @click="showDelPrionser">删除</el-button>
 
-        <el-button
-          type="primary"
-          @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
       </template>
     </el-row>
 
-    <el-col
-      :span="24"
-      class="el-col__no-tabs__margin">
+    <el-col :span="24" class="el-col__no-tabs__margin">
         <!-- 自己手写的 不要删了-->
         <!-- <el-table-column>
           <template
@@ -70,7 +62,8 @@
         stripe
         :data="prisoners.contents"
         @selection-change="handleSelectionChange"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #accessTime="{ row }">
           <div>
             {{ row.accessTime }}
@@ -80,17 +73,50 @@
               size="small"
               type="text"
               style="margin-left: 5px;"
-              @click="handleAccessTime(row)">修改</el-button>
+              @click="onTimeEdit(row, 'accessTime')"
+            >修改</el-button>
+          </div>
+        </template>
+
+        <template #smsNum="{ row }">
+          <div>
+            <span>{{ row.smsNum }}</span>
+
+            <el-button
+              v-if="!hasAllPrisonQueryAuth"
+              :disabled="!row.sysFlag"
+              size="small"
+              type="text"
+              style="margin-left: 5px;"
+              @click="onTimeEdit(row, 'smsNum')"
+            >修改</el-button>
+          </div>
+        </template>
+
+        <template #phoneNum="{ row }">
+          <div>
+            <span>{{ row.phoneNum }}</span>
+
+            <el-button
+              v-if="!hasAllPrisonQueryAuth"
+              :disabled="!row.sysFlag"
+              size="small"
+              type="text"
+              style="margin-left: 5px;"
+              @click="onTimeEdit(row, 'phoneNum')"
+            >修改</el-button>
           </div>
         </template>
 
         <template #prisonTerm="{ row }">
           <span class="separate">{{ row.prisonTermStartedAt | dateFormate }}</span>
+
           <span class="separate">{{ row.prisonTermEndedAt | dateFormate }}</span>
         </template>
 
         <template #prisonerStatus="{ row }">
           <span v-if="!row.sysFlag">删除原因：{{ row.deleteReason }}</span>
+
           <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
         </template>
 
@@ -101,20 +127,23 @@
             v-for="family in row.families"
             :key="family.id"
             style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family)">{{ family.familyName }}</el-button>
+            @click="showFamilyDetail(family)"
+          >{{ family.familyName }}</el-button>
         </template>
 
         <template #notifyId="{ row }">
           <span :class="[
             'bold',
             { 'red' : !row.notifyId },
-            { 'green' : row.notifyId }]">{{ row.notifyId ? '已签订' : '未签订' }}</span>
+            { 'green' : row.notifyId }]"
+          >{{ row.notifyId ? '已签订' : '未签订' }}</span>
 
           <el-button
             type="text"
             size="small"
             :disabled="!row.sysFlag"
-            @click="handleSign(row.notifyId, row)">{{ row.notifyId ? '点击查看' : '点击签约' }}</el-button>
+            @click="handleSign(row.notifyId, row)"
+          >{{ row.notifyId ? '点击查看' : '点击签约' }}</el-button>
         </template>
 
         <template #operations="{ row }">
@@ -124,26 +153,23 @@
               size="small"
               :disabled="!row.sysFlag"
               v-if="!row.isBlacklist"
-              @click="showBlackList(row)">
-              加入黑名单
-            </el-button>
+              @click="showBlackList(row)"
+            >加入黑名单</el-button>
 
             <el-button
               type="text"
               size="small"
               :disabled="!row.sysFlag"
               v-else
-              @click="removeBlackList(row)">
-              移出黑名单
-            </el-button>
+              @click="removeBlackList(row)"
+            >移出黑名单</el-button>
 
             <el-button
               type="text"
               size="small"
               :disabled="!row.sysFlag"
-              @click="onShowPrisonConfig(row, 2)">
-              更换监区
-            </el-button>
+              @click="onShowPrisonConfig(row, 2)"
+            >更换监区</el-button>
           </template>
 
           <template v-else>
@@ -152,9 +178,7 @@
               size="small"
               :disabled="!row.sysFlag"
               @click="onShowPrisonConfig(row, 6)"
-            >
-              更换监狱
-            </el-button>
+            >更换监狱</el-button>
           </template>
         </template>
       </m-table-new>
@@ -167,43 +191,83 @@
     />
 
     <el-dialog
-      title="修改通话次数"
-      :visible.sync="isEditAccessTime"
-      width="600px"
+      :title="timesDialogTitle"
+      :visible.sync="isEditTime"
       :close-on-click-modal="false"
+      class="authorize-dialog"
+      @open="onTimeOpen"
     >
       <el-form
-        class="inline-form"
         ref="form"
-        :model="prisoner">
+        :model="prisoner"
+        label-width="100px"
+      >
         <el-form-item label="罪犯">{{ prisoner.name }}</el-form-item>
+
         <el-form-item
+          v-if="timesDialogType === 'accessTime'"
           label="通话次数"
           :rules="[{ required: true, message: '请输入通话次数' }]"
-          prop="accessTime">
+          prop="accessTime"
+        >
           <el-input-number
             :min="0"
             v-model="prisoner.accessTime"
             controls-position="right"
-            @change="onAccessTimeChange"/>
+            @change="onTimesChange"
+          />
+        </el-form-item>
+
+        <el-form-item
+          v-if="timesDialogType === 'smsNum'"
+          label="短信次数"
+          :rules="[{ required: true, message: '请输入短信次数' }]"
+          prop="smsNum"
+        >
+          <el-input-number
+            :min="0"
+            v-model="prisoner.smsNum"
+            controls-position="right"
+            @change="onTimesChange"
+          />
+        </el-form-item>
+
+        <el-form-item
+          v-if="timesDialogType === 'phoneNum'"
+          label="亲情电话次数"
+          :rules="[{ required: true, message: '请输入亲情电话次数' }]"
+          prop="phoneNum"
+        >
+          <el-input-number
+            :min="0"
+            v-model="prisoner.phoneNum"
+            controls-position="right"
+            @change="onTimesChange"
+          />
         </el-form-item>
       </el-form>
+
       <template slot="footer">
         <el-button
           class="button-add"
           size="mini"
           type="danger"
-          @click="isEditAccessTime = false">取消</el-button>
+          @click="onTimeClose"
+        >取消</el-button>
+
         <el-button
           class="button-add"
           size="mini"
-          @click="onAccessTime">确定</el-button>
+          @click="onTime"
+        >确定</el-button>
       </template>
     </el-dialog>
+
     <el-dialog
       title="家属信息"
       class="authorize-dialog"
-      :visible.sync="dialogTableVisible">
+      :visible.sync="dialogTableVisible"
+    >
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">
@@ -216,7 +280,9 @@
           </el-col>
         </el-col>
       </el-row>
+
       <div style="margin-bottom: 10px;">家属信息:</div>
+
       <div class="img-box">
         <m-img-viewer
           isRequired
@@ -224,12 +290,14 @@
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"
         />
+
         <m-img-viewer
           isRequired
           :url="family.familyIdCardBack"
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"
         />
+
         <m-img-viewer
           isRequired
           :url="family.familyAvatarUrl"
@@ -237,43 +305,45 @@
           title="头像"
         />
       </div>
+
       <template v-if="family.familyRelationalProofUrl || family.familyRelationalProofUrl2 || family.familyRelationalProofUrl3 || family.familyRelationalProofUrl4">
         <div style="margin-bottom: 10px;">关系证明:</div>
+
         <div class="img-box">
           <m-img-viewer
-            class="relation_img"
             v-if="family.familyRelationalProofUrl"
+            class="relation_img"
             :url="family.familyRelationalProofUrl"
             title="关系证明图"
           />
+
           <m-img-viewer
-            class="relation_img"
             v-if="family.familyRelationalProofUrl2"
+            class="relation_img"
             :url="family.familyRelationalProofUrl2"
             title="关系证明图"
           />
-            <m-img-viewer
-              class="relation_img"
-              v-if="family.familyRelationalProofUrl3"
-              :url="family.familyRelationalProofUrl3"
-              title="关系证明图"
-            />
-            <m-img-viewer
-              class="relation_img"
-              v-if="family.familyRelationalProofUrl4"
-              :url="family.familyRelationalProofUrl4"
-              title="关系证明图"
-            />
-        </div>
-      </template>
-      <template v-if="family.meetNoticeUrl">
-        <div style="margin-bottom: 10px;">可视电话通知单:</div>
-        <div class="img-box">
+
           <m-img-viewer
-            :url="family.meetNoticeUrl"
-            title="可视电话通知单"
+            v-if="family.familyRelationalProofUrl3"
+            class="relation_img"
+            :url="family.familyRelationalProofUrl3"
+            title="关系证明图"
+          />
+
+          <m-img-viewer
+            v-if="family.familyRelationalProofUrl4"
+            class="relation_img"
+            :url="family.familyRelationalProofUrl4"
+            title="关系证明图"
           />
         </div>
+      </template>
+
+      <template v-if="family.meetNoticeUrl">
+        <div style="margin-bottom: 10px;">可视电话通知单:</div>
+
+        <div class="img-box"><m-img-viewer :url="family.meetNoticeUrl" title="可视电话通知单" /></div>
       </template>
       <!-- <el-row
         class="row-flex"
@@ -310,6 +380,7 @@
         </el-col>
       </el-row> -->
     </el-dialog>
+
     <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
@@ -351,17 +422,14 @@
       />
 
       <!-- 有告知书图片的才显示 -->
-      <div
-        v-show="notificationForm.meetingNotificationUrl"
-        class="notification__content"
-      >
-          <label>告知书：</label>
+      <div v-show="notificationForm.meetingNotificationUrl" class="notification__content">
+        <label>告知书：</label>
 
-          <m-img-viewer
-            :url="notificationForm.meetingNotificationUrl"
-            :isLazy="false"
-            title="告知书"
-          />
+        <m-img-viewer
+          :url="notificationForm.meetingNotificationUrl"
+          :isLazy="false"
+          title="告知书"
+        />
       </div>
 
       <template v-if="!notificationForm.protoNum">
@@ -370,12 +438,15 @@
             class="button-add"
             size="mini"
             type="danger"
-            @click="onCloseNotificationDialog">取消</el-button>
+            @click="onCloseNotificationDialog"
+          >取消</el-button>
+
           <el-button
             class="button-add"
             :loading="submitting"
             size="mini"
-            @click="handleSureSign">确定</el-button>
+            @click="handleSureSign"
+          >确定</el-button>
         </el-row>
       </template>
 
@@ -384,7 +455,8 @@
           <el-button
             class="button-add"
             size="mini"
-            @click="onCloseNotificationDialog">返回</el-button>
+            @click="onCloseNotificationDialog"
+          >返回</el-button>
         </el-row>
       </template>
     </el-dialog>
@@ -396,18 +468,19 @@
       :title="dialogContent['title']"
       :class="['authorize-dialog', 'all-dialog__style', isJailOperationType ? 'change-jail__dialog' : '']"
       @open="onOpenDialog"
-      width="530px">
+      width="530px"
+    >
       <m-form
-        v-if=" !(isPrisonAreaIdType && prisonConfigs.length < 1)"
+        v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
         @submit="handleSubmit"
         :values="dialogFormValues"
         ref="dialogForm"
         @response="onDialogFormResponse"
-        @cancel="visible = false" />
-      <div
-        v-else
-        style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
+        @cancel="visible = false"
+      />
+
+      <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
   </el-row>
 </template>
@@ -526,7 +599,7 @@ export default {
       },
       dialogTableVisible: false,
       family: {},
-      isEditAccessTime: false,
+      isEditTime: false,
       prisoner: {},
       thePrisoner: {},
       notificationShow: false,
@@ -556,6 +629,7 @@ export default {
 
       changeJailButtonLoading: false,
 
+      timesDialogType: '' // accessTime: 通话次数 smsNum; 短信次数 phoneNum: 亲情电话次数
     }
   },
   computed: {
@@ -566,6 +640,7 @@ export default {
       'prisonConfigs',
       'prisonConfigsMaxLevel'
     ]),
+
     ...mapState({
       user: state => state.global.user
     }),
@@ -997,6 +1072,16 @@ export default {
           minWidth: 85,
           slotName: 'accessTime'
         },
+        {
+          label: '短信次数/月',
+          minWidth: 85,
+          slotName: 'smsNum'
+        },
+        {
+          label: '亲情电话次数/月',
+          minWidth: 85,
+          slotName: 'phoneNum'
+        },
         // {
         //   label: '刑期起止',
         //   minWidth: 140,
@@ -1047,6 +1132,16 @@ export default {
       const prisonAreaIdType = [2, 5]
 
       return prisonAreaIdType.includes(this.operationType)
+    },
+
+    timesDialogTitle() {
+      const titles = {
+        accessTime: '修改通话次数',
+        smsNum: '修改短信次数',
+        phoneNum: '修改亲情电话次数'
+      }
+
+      return titles[this.timesDialogType]
     }
   },
 
@@ -1087,7 +1182,7 @@ export default {
     ...mapActions([
       'getPrisoners',
       'getPrisonersAll',
-      'updateAccessTime',
+      'updatePrisonerTime',
       'addPrisonerBlacklist',
       'getNotification',
       'updateNotification',
@@ -1123,29 +1218,56 @@ export default {
       // this.$refs.pagination.handleCurrentChange(1)
     },
 
-    handleAccessTime(e) {
+    onTimeEdit(e, type) {
       this.prisoner = Object.assign({}, e)
+
       this.thePrisoner = e
-      this.isEditAccessTime = true
+
+      this.timesDialogType = type
+
+      this.isEditTime = true
     },
 
-    onAccessTimeChange(e) {
-      if (!e) this.prisoner.accessTime = 0
+    onTimesChange(e) {
+      if (!e) this.prisoner[this.timesDialogType] = 0
     },
 
-    onAccessTime() {
-      if (this.prisoner.accessTime === this.thePrisoner.accessTime) {
-        this.isEditAccessTime = false
+    onTimeClose() {
+      this.isEditTime = false
+    },
+
+    onTimeOpen() {
+      this.$nextTick(() => {
+        this.$refs.form && this.$refs.form.clearValidate()
+      })
+    },
+
+    onTime() {
+      if (this.prisoner[this.timesDialogType] === this.thePrisoner[this.timesDialogType]) {
+        this.isEditTime = false
         return
       }
-      this.$refs.form.validate(valid => {
+
+      this.$refs.form.validate(async valid => {
         if (!valid) return
-        let params = { id: this.prisoner.id, accessTime: this.prisoner.accessTime }
-        this.updateAccessTime(params).then(res => {
-          if (!res) return
-          this.thePrisoner.accessTime = params.accessTime
-          this.isEditAccessTime = false
-        })
+
+        const { id } = this.prisoner
+
+        const params = { id, [this.timesDialogType]: this.prisoner[this.timesDialogType] }
+
+        const urls = {
+          accessTime: '/prisoners/updateAccessTime',
+          smsNum: '/prisoners/updateSmsNum',
+          phoneNum: '/prisoners/updatePhoneNum'
+        }
+
+        const res = await this.updatePrisonerTime({ params, url: urls[this.timesDialogType] })
+
+        if (!res) return
+
+        await this.onSearch(true)
+
+        this.isEditTime = false
       })
     },
 

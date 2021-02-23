@@ -146,17 +146,17 @@ export default {
         {
           label: '申请通话时间',
           prop: 'meetingTime',
-          minWidth: 130
+          minWidth: 140
         },
         {
           label: '实际通话开始时间',
           prop: 'startTimeConcat',
-          minWidth: 120
+          minWidth: 125
         },
         {
           label: '实际通话结束时间',
           prop: 'endTimeConcat',
-          minWidth: 120
+          minWidth: 125
         },
         {
           // 需要自己处理 返回的是秒
@@ -190,12 +190,12 @@ export default {
         {
           label: '紫荆通话开始时间',
           prop: 'zijingStartTimeConcat',
-          minWidth: 120
+          minWidth: 125
         },
         {
           label: '紫荆通话结束时间',
           prop: 'zijingEndTimeConcat',
-          minWidth: 120
+          minWidth: 125
         },
         {
           // 紫荆通话时长 返回的是分钟 需要加上'分钟'的
