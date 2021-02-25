@@ -122,6 +122,8 @@
         },
 
         created() {
+            this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+
             this.tabs = 'PENDING'
         },
 

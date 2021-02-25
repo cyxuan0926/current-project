@@ -26,13 +26,20 @@ export default {
   props: {
     type: String
   },
-  mounted() {
+
+  async mounted() {
     this.searchItems = {
       ...this.searchItems,
       ...this.selfOwnSearchItems
     }
-    this.getDatas()
+
+    if (![dataImportDetails.DATA_POCKET_MONEY].includes(this.type)) this.$set(this.searchItems['time'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+
+    this.onLocalGetFilter()
+
+    await this.getDatas()
   },
+
   methods: {
     ...mapActions([
       'getPrisonersInsideJailsCosts',
@@ -42,14 +49,18 @@ export default {
 
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
-    }
+    },
+
+    onLocalGetFilter() {}
   },
   computed: {
     ...mapState([
       'prisonersInsideJailsCosts',
       'prisonersPocketMoney',
       'prisonTerms',
-      'prisonerRewardPunishments']),
+      'prisonerRewardPunishments'
+    ]),
+
     tableCols() {
       const leadingCols = [
         {

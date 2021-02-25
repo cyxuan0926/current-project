@@ -62,7 +62,7 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
-    const endDate = Moment().format('YYYY-MM-DD')
+    const endDate = this.$_dateNow
 
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {

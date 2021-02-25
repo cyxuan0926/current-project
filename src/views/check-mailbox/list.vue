@@ -1,7 +1,5 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <!-- <m-excel-export
       v-if="hasOnlyAllPrisonQueryAuth"
       :jsonData="mailboxes.contents"
@@ -11,30 +9,36 @@
     <m-excel-download
       v-if="hasOnlyAllPrisonQueryAuth"
       path="/download/exportMailboxes"
-      :params="filter" />
+      :params="filter"
+    />
+
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch" />
-    <el-col
-      :span="24"
-      class="el-col__no-tabs__margin">
+      @search="onSearch"
+    />
+
+    <el-col :span="24" class="el-col__no-tabs__margin">
       <m-table
         class="has-img"
         :data="mailboxes.contents"
-        :cols="tableCols" >
+        :cols="tableCols"
+      >
         <template
+          v-if="scope.row.imageUrls.length"
           slot="imageUrls"
           slot-scope="scope"
-          v-if="scope.row.imageUrls.length">
+        >
           <m-img-viewer
             v-if="!hasOnlyAllPrisonQueryAuth"
             :publicUrl="scope.row.imageUrls[0]"
             isRequired
           />
+
           <m-img-viewer
             v-else
-            v-for=" (url,index) of scope.row.imageUrls"
+            v-for="(url,index) of scope.row.imageUrls"
             :class="!index ? '' : 'img-viewer__hidden'"
             :key="url"
             :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
@@ -42,67 +46,78 @@
             isRequired
           />
         </template>
-        <template
-          slot="isReply"
-          slot-scope="scope">
+
+        <template slot="isReply" slot-scope="scope">
           {{ scope.row.isReply | isTrue }}
         </template>
-        <template
-          slot="operate"
-          slot-scope="scope">
+
+        <template slot="operate" slot-scope="scope">
           <el-button
             v-if="!scope.row.isReply"
             size="mini"
             class="button-column"
             @click="handleReply(scope.row)"
-            type="primary">
-            答复
-          </el-button>
+            type="primary"
+          >答复</el-button>
+
           <el-button
             v-else
             size="mini"
             class="button-column"
             disabled
-            type="primary">
-            已答复
-          </el-button>
+            type="primary"
+          >已答复</el-button>
+
           <el-button
             size="mini"
             class="button-column"
             @click="onDelete(scope.row.id)"
-            type="danger">
-            删除
-          </el-button>
+            type="danger"
+          >删除</el-button>
+
           <el-button
             size="mini"
             type="text"
             style="width: 20%;"
-            @click="getDetail(scope.row)">
-            详细内容
-          </el-button>
+            @click="getDetail(scope.row)"
+          >详细内容</el-button>
         </template>
       </m-table>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="mailboxes.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="visible"
       width="600px"
-      class="authorize-dialog">
-      <span
-        slot="title"
-        class="tips-title">详细内容</span>
+      class="authorize-dialog"
+    >
+      <span slot="title" class="tips-title">详细内容</span>
+
       <div class="dialog-container">
-        <div class="detail-item"><label>用户</label><span>{{ mailbox.familyName || mailbox.name }}</span></div>
-        <div class="detail-item"><label>发件时间</label><span>{{ mailbox.createdAt }}</span></div>
-        <div class="detail-item"><label>信件类别</label><span>{{ mailbox.typeName }}</span></div>
-        <div class="detail-item"><label>信件内容</label><span>{{ mailbox.contents }}</span></div>
-        <div
-          class="detail-item"
-          v-if="mailbox.imageUrls && mailbox.imageUrls.length">
+        <div class="detail-item">
+          <label>用户</label><span>{{ mailbox.familyName || mailbox.name }}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>发件时间</label><span>{{ mailbox.createdAt }}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>信件类别</label><span>{{ mailbox.typeName }}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>信件内容</label><span>{{ mailbox.contents }}</span>
+        </div>
+
+        <div v-if="mailbox.imageUrls && mailbox.imageUrls.length" class="detail-item">
           <label>图片</label>
+
           <div class="img-box">
             <template v-for="(img, index) in mailbox.imageUrls">
               <m-img-viewer
@@ -113,26 +128,31 @@
             </template>
           </div>
         </div>
-        <div
-          class="detail-item"
-          v-if="mailbox.isReply">
+
+        <div v-if="mailbox.isReply" class="detail-item">
           <label>回复内容</label>
+
           <span>{{ mailbox.reply }}</span>
         </div>
+
         <div
           v-else
           id="answer"
-          class="detail-item"><label>回复内容</label>
+          class="detail-item"
+        >
+          <label>回复内容</label>
+
           <span>
             <el-input
               v-model="answer"
               type="textarea"
               placeholder="请输入内容"
-              resize="none" />
-            <p
-              v-if="tips"
-              class="tips">最多输入300个字符</p></span>
+              resize="none"
+            />
+            <p v-if="tips" class="tips">最多输入300个字符</p>
+          </span>
         </div>
+
         <div class="detail-item">
           <el-button
             v-if="!mailbox.isReply"
@@ -140,7 +160,8 @@
             size="mini"
             :loading="replying"
             :disabled="disabled"
-            @click="onReply(mailbox.id)">答复</el-button>
+            @click="onReply(mailbox.id)"
+          >答复</el-button>
         </div>
       </div>
     </el-dialog>
@@ -286,7 +307,12 @@ export default {
     }
   },
   mounted() {
+    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+    this.$refs.search.onGetFilter()
+
     this.getDatas()
+
     this.getMailboxTypes().then(res => {
       if (!res) return
       this.searchItems.type.options = this.mailboxTypes

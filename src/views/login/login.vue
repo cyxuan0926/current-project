@@ -20,6 +20,7 @@
             <el-input
               clearable
               type="password"
+              show-password
               v-model.trim="formData.password"
               placeholder="密码">
             </el-input>
