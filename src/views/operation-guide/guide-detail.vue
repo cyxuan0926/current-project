@@ -1,7 +1,8 @@
 <template>
     <div class="guide-detail">
-        <div class="guide-detail-title">{{guideData.content}}</div>
-        <div class="guide-detail-date">更新时间：{{guideData.updatedTime}}</div>
+        <div class="guide-detail-title">更新内容介绍</div>
+        <p class="guide-detail-date">{{guideData.updatedTime}}</p>
+        <div class="guide-detail-context" v-html="guideData.preContent"></div>
         <div class="guide-detail-context" v-html="guideData.guide"></div>
         <div class="guide-detail-back">
             <el-button @click="handleBack">返回</el-button>
@@ -10,19 +11,10 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex'
     export default {
-        data() {
-            return {
-                guideData: {}
-            }
-        },
-        created() {
-            if(!this.isAdd && window.sessionStorage) {
-                let guideData = window.sessionStorage.getItem('APP_GUIDE_DATA')
-                if(guideData) {
-                    this.guideData = JSON.parse(guideData)
-                }
-            }
+        computed: {
+            ...mapGetters(['guideData'])
         },
         methods: {
             handleBack() {
@@ -39,24 +31,23 @@
             font-size: 20px;
             font-weight: 400;
             color: #333;
-            text-align: center;
-            width: 70%;
-            margin: 0 auto;
+            margin: 0 20%;
         }
         &-date {
-            font-size: 12px;
+            font-size: 14px;
             color: #999;
-            text-align: center;
-            padding: 30px 0;
+            margin-top: 8px;
+            margin-left: 20%;
         }
         &-context {
-            padding: 16px 50px;
+            padding: 16px 0;
+            margin: 0 20%;
             color: #666;
             font-size: 14px;
             line-height: 22px;
         }
         &-back {
-            margin-top: 30px;
+            margin: 30px 20% 0;
             text-align: right;
         }
     }

@@ -1,5 +1,8 @@
 export default {
   data() {
+    const startTime = this.$_timeOneWeekAgo
+
+    const endTime = this.$_timeNow
     return {
       isGettingTableData: false,
       searchItems: {
@@ -29,7 +32,8 @@ export default {
         time: {
           type: 'datetimerange',
           start: 'publishStartDate',
-          end: 'publishEndDate'
+          end: 'publishEndDate',
+          value: [startTime, endTime]
         },
         title: {
           type: 'input',
@@ -93,31 +97,50 @@ export default {
           this.$set(this.searchItems.title, 'miss', true)
           this.$set(this.searchItems.penName, 'miss', true)
         }
-        this.$refs.search.onGetFilter()
+
+        if (['tipOff'].includes(activeTab)) !this.searchItems.reportTime['value'] && this.$set(this.searchItems['reportTime'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+        else !this.searchItems.time['value'] && this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
       }
+
+      this.$refs.search.onGetFilter()
+
       this.pagination.page = 1
+
       this.$refs.pagination.updateCurrentPage(1)
+
       this.getTableData()
     }
   },
-  created() {
-    this.getTableData()
+
+  async mounted() {
+    this.onLocalGetFilter()
+
+    await this.getTableData()
   },
-  activated() {
-    !this.isGettingTableData && this.getTableData()
+
+  async activated() {
+    this.$refs.search.onGetFilter()
+
+    !this.isGettingTableData && await this.getTableData()
   },
+
   methods: {
     onSearch() {
       this.getTableData()
     },
+
     onPageChange() {
       this.getTableData()
     },
+
     async getTableData() {
       const currentOperateRows = this.$store.state.literature.currentOperateRows
+
       const currentTableRows = this.$store.getters['literature/currentTableRows']
 
       const { page, rows } = this.pagination
+
       const hasNextPage = this.total - page * rows > 0
 
       if (currentOperateRows === currentTableRows && !hasNextPage) {
@@ -160,6 +183,8 @@ export default {
 
       this.total = res.data && res.data.total
       this.isGettingTableData = false
-    }
+    },
+
+    onLocalGetFilter() {}
   }
 }

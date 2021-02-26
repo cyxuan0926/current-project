@@ -203,6 +203,7 @@ export default {
 
     onEnsure(e) {
       let prop = e.prop
+
       Object.keys(e).forEach(key => {
         if (key === 'prop') return
         this.items[prop][key] = e[key]

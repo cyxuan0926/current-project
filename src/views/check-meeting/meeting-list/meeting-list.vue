@@ -609,7 +609,7 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      const todayDate = Moment().format('YYYY-MM-DD')
+      const todayDate = this.$_dateNow
 
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
@@ -1023,9 +1023,7 @@
       },
 
       tabs(val) {
-        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
-        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1055,8 +1053,7 @@
           this.searchItems.auditAt.value = ''
           this.searchItems.status.value = ''
           this.searchItems.isFree.value = ''
-        }
-        else{
+        } else{
           //options
           if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
             this.searchItems.isFree.miss = false
@@ -1101,7 +1098,7 @@
       })
     },
 
-    mounted() {
+    async mounted() {
       // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
       //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
       //   // this.$set(this.searchItems.applicationDate, 'miss', true)
@@ -1113,7 +1110,7 @@
       // }
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
-      this.getDatas('mounted')
+      await this.getDatas('mounted')
 
     },
     methods: {
@@ -1216,7 +1213,6 @@
       },
 
       async getDatas(e) {
-        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs

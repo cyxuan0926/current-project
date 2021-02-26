@@ -712,7 +712,8 @@ export default {
         multiple: true,
         options: this.filterPrisonAreaOptions,
         props: { label: 'name', value: 'id' },
-        rules: ['required']
+        rules: ['required'],
+        collapseTags: true
       },
       formConfigs = {
         labelWidth: '80px',

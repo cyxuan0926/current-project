@@ -1,26 +1,27 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       append-btn="下载"
       @appendHandler="handleDownload"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <el-button
         slot="append"
         type="primary"
         :loading="downloading"
-        @click="handleDownload">下载</el-button>
+        @click="handleDownload"
+      >下载</el-button>
     </m-search>
-    <el-col
-      :span="24"
-      class="el-col__no-tabs__margin">
+
+    <el-col :span="24" class="el-col__no-tabs__margin">
       <m-table-new
         stripe
         :data="feedbacks.contents"
         style="width: 100%"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <!-- isCo:0 狱警(图片需要去拼接) 1：家属(http格式的) -->
         <template #imageUrls="{ row }">
           <template v-if="row.imageUrls && row.imageUrls.length">
@@ -36,63 +37,71 @@
             /> 
           </template>
         </template>
+
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+
         <template #isReply="{ row }">{{ row.isReply | isTrue }}</template>
+
         <template #operation="{ row }">
           <el-button
             v-if="!row.isReply"
             size="mini"
             class="button-column"
             @click="handleReply(row)"
-            type="primary">
-            答复
-          </el-button>
+            type="primary"
+          >答复</el-button>
+
           <el-button
             v-else
             size="mini"
             class="button-column"
             disabled
-            type="primary">
-            已答复
-          </el-button>
+            type="primary"
+          >已答复</el-button>
+
           <el-button
             size="mini"
             class="button-column"
             @click="onDelete(row.id)"
-            type="danger">
-            删除
-          </el-button>
+            type="danger"
+          >删除</el-button>
+
           <el-button
             size="mini"
             type="text"
             style="width: 56px;"
-            @click="getDetail(row)">
-            详细内容
-          </el-button>
+            @click="getDetail(row)"
+          >详细内容</el-button>
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="feedbacks.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="visible"
       v-if="visible"
       width="600px"
-      class="authorize-dialog">
-      <span
-        slot="title"
-        class="tips-title">详细内容</span>
+      class="authorize-dialog"
+    >
+      <span slot="title" class="tips-title">详细内容</span>
+
       <div class="dialog-container">
         <div class="detail-item"><label>用户</label><span>{{ feedback.name }}</span></div>
+
         <div class="detail-item"><label>反馈时间</label><span>{{ feedback.createdAt | Date }}</span></div>
+
         <div class="detail-item"><label>反馈类别</label><span>{{ feedback.typeName }}</span></div>
+
         <div class="detail-item"><label>反馈内容</label><span>{{ feedback.content }}</span></div>
-        <div
-          class="detail-item"
-          v-if="feedback.imageUrls.length">
+
+        <div v-if="feedback.imageUrls.length" class="detail-item">
           <label>反馈图片</label>
+
           <div class="img-box">
             <template v-if="feedback.isCo">
               <m-img-viewer
@@ -102,6 +111,7 @@
                 isRequired
               />
             </template>
+
             <template v-else>
               <m-img-viewer
                 v-for="(img, index) in feedback.imageUrls"
@@ -112,23 +122,30 @@
             </template>
           </div>
         </div>
-        <div
-          class="detail-item"
-          v-if="feedback.isReply">
+
+        <div v-if="feedback.isReply" class="detail-item">
           <label>回复内容</label>
+
           <span>{{ feedback.reply }}</span>
         </div>
+
         <div
           v-else
           id="answer"
-          class="detail-item"><label>回复内容</label>
+          class="detail-item"
+        >
+          <label>回复内容</label>
+
           <span>
             <el-input
               v-model="answer"
               type="textarea"
               placeholder="请输入内容"
-              resize="none" /></span>
+              resize="none"
+            />
+          </span>
         </div>
+
         <div class="detail-item">
           <el-button
             v-if="!feedback.isReply"
@@ -136,7 +153,8 @@
             size="mini"
             :loading="replying"
             :disabled="disabled"
-            @click="onReply(feedback.id)">答复</el-button>
+            @click="onReply(feedback.id)"
+          >答复</el-button>
         </div>
       </div>
     </el-dialog>
@@ -145,12 +163,16 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
 import { helper } from '@/utils'
+
+import Moment from 'moment'
+
 export default {
   data() {
     return {
       searchItems: {
-        time: { type: 'datetimerange', start: 'startTime', end: 'endTime' },
+        time: { type: 'datetimerange', start: 'startTime', end: 'endTime'},
         type: { type: 'select', label: '反馈类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
         isReply: { type: 'select', label: '是否回复', options: [{ value: 1, label: '是' }, { value: 0, label: '否' }] },
         name: { type: 'input', label: '家属姓名' }
@@ -201,8 +223,14 @@ export default {
       return !this.answer.replace(pattern, '$1')
     }
   },
+
   mounted() {
+    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+    this.$refs.search.onGetFilter()
+
     this.getDatas()
+
     this.getFeedbackTypes().then(res => {
       if (!res) return
       this.searchItems.type.options = this.feedbackTypes
