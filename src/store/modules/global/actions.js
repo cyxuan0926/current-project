@@ -137,6 +137,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  setGuideStorage({ commit }, storage = {
+    content: '',
+    guide: '',
+    updatedTime: '',
+    preContent: ''
+  }) {
+    if (window.sessionStorage) {
+      window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(storage))
+    }
+    commit('SET_GUIDE_STORAGE', storage)
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

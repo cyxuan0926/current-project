@@ -189,13 +189,13 @@
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
-              prop="fullname"
+              prop="prisonConfigName"
               label="监区"
               min-width="110">
             </el-table-column>
             <el-table-column
               v-else
-              prop="fullname"
+              prop="prisonConfigName"
               label="监区"
               min-width="110">
             </el-table-column>
@@ -615,7 +615,7 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      const todayDate = Moment().format('YYYY-MM-DD')
+      const todayDate = this.$_dateNow
 
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
@@ -1059,8 +1059,7 @@
           this.searchItems.auditAt.value = ''
           this.searchItems.status.value = ''
           this.searchItems.isFree.value = ''
-        }
-        else{
+        } else{
           //options
           if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
             this.searchItems.isFree.miss = false
@@ -1105,7 +1104,7 @@
       })
     },
 
-    mounted() {
+    async mounted() {
       // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
       //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
       //   // this.$set(this.searchItems.applicationDate, 'miss', true)
@@ -1117,7 +1116,7 @@
       // }
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
-      this.getDatas('mounted')
+      await this.getDatas('mounted')
 
     },
     methods: {

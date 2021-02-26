@@ -46,9 +46,6 @@ import profile from './prison-report-profile'
 import detail from './prison-report-detail'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-// const startDate = Moment().format('YYYY-MM')
-// const endDate = Moment().format('YYYY-MM')
-
 const endDate = Moment().format('YYYY-MM-DD')
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
@@ -143,9 +140,11 @@ export default {
       this.onSearch()
     }
   },
-  mounted() {
-    this.getDatas()
+
+  async mounted() {
+    await this.getDatas()
   },
+
   methods: {
     ...mapActions([
       'getPrisonReportList',

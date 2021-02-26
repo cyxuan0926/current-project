@@ -19,7 +19,8 @@
       ref="search"
       :items="searchItems"
       @search="onSearch"
-      clearable />
+      clearable
+    />
 
     <el-tabs
       v-model="activeTabName"
@@ -205,13 +206,16 @@ export default {
       'getFamilyLiteratures',
       'getPoliceLiteratures',
       'passLiterature',
-      'rejectLiterature']),
+      'rejectLiterature'
+    ]),
+
     onPreview(literature) {
       this.$router.push({
         path: `/literature-check/literature-preview/${literature.id}`,
         query: { status: this.literatureStatus }
       })
     },
+
     // 通过审核
     async onPass(literaturesId) {
       if (!literaturesId) {
@@ -232,11 +236,13 @@ export default {
         Promise.reject(err);
       }
     },
+
     // 不通过审核
     onReject(literature) {
       this.showRejectDialog()
       this.selectedLiteratures = [literature]
     },
+
     // 批量不通过审核
     onRejectBatch() {
       if (!this.selectedLiteraturesId) {
@@ -246,6 +252,7 @@ export default {
 
       this.showRejectDialog()
     },
+
     onConfirmReject() {
       this.$refs.rejectForm.validate(async valid => {
         if (valid) {
@@ -262,18 +269,26 @@ export default {
         }
       })
     },
+
     onCloseRejectDialog() {
       this.selectedLiteratures = []
       this.$refs.rejectForm.resetFields()
     },
+
     onLiteratureSelectionChange(selectedLiteratures) {
       this.selectedLiteratures = selectedLiteratures
     },
+
     showRejectDialog() {
       this.rejectDialogVisible = true
     },
+
     hideRejectDialog() {
       this.rejectDialogVisible = false
+    },
+
+    onLocalGetFilter() {
+      this.$refs.search.onGetFilter()
     }
   }
 }

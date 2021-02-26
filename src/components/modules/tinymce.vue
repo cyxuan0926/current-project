@@ -52,17 +52,19 @@ export default {
   mounted() {
     window.tinymce.init({
       selector: `#${ this.tinymceId }`,
+      statusbar: false,
       language: 'zh_CN',
       menubar: '',
       height: 300,
       resize: false,
       // powerpaste_word_import: 'clean',
       // powerpaste_html_import: 'clean',
-      paste_as_text: true,
+      paste_data_images: true,
+      // paste_as_text: true,
       branding: false,
       content_style: 'blockquote{padding: 10px 20px; margin: 0 0 20px; font-size: initial; border-left: 5px solid #eee;} p{ margin: 0; line-height: 1.42857143; }.mce-panel{ box-sizing: border-box; }',
       plugins: 'anchor charmap codesample textcolor colorpicker contextmenu directionality emoticons media hr image insertdatetime link lists advlist table preview searchreplace table paste',
-      toolbar: 'bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | outdent indent table | alignleft aligncenter alignright alignjustify alignnone | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo',
+      toolbar: 'bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | outdent indent table | alignleft aligncenter alignright alignjustify alignnone | link imageUpload videoUpload audioUpload',
       // toolbar: 'formatselect fontsizeselect | bold italic blockquote underline strikethrough forecolor backcolor | hr subscript superscript | numlist bullist | alignleft aligncenter alignright alignjustify alignnone | outdent indent table | charmap codesample emoticons insertdatetime | link imageUpload videoUpload audioUpload | removeformat searchreplace undo redo | preview',
       init_instance_callback: editor => { //  media
         this.hasInit = true

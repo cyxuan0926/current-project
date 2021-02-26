@@ -76,7 +76,11 @@ export default {
       this.$emit('onPageChange', 1, e)
     },
     handleCurrentChange(e) {
-      this.$parent.$parent.pagination.page = e
+      let m=e
+      if(this.size){
+        m=e-1
+      }
+      this.$parent.$parent.pagination.page = m
       this.$emit('onPageChange', e)
       this.currentPage = e
     },

@@ -3,8 +3,10 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <el-select
         v-model="chartType"
         slot="pre">
@@ -54,8 +56,6 @@ import { tokenExcel } from '@/utils/token-excel'
 
 import { helper } from '@/utils'
 
-// import Moment from 'moment'
-
 const chartTypes = {
   PIE: 'pie',
   BAR: 'bar',
@@ -64,25 +64,18 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
-    // const endDate = Moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')
-
-    // const startDate = Moment().subtract(1, 'months').startOf('day').format('YYYY-MM-DD HH:mm:ss')
     return {
       total: 0,
       chartTypes,
       chartType: chartTypes.BAR,
       loading: true,
       filter: {},
-      // filterInit: {
-      //   startDate,
-      //   endDate
-      // },
+
       searchItems: {
         time: {
           type: 'datetimerange',
           start: 'startDate',
           end: 'endDate'
-          // value: [startDate, endDate]
         }
       },
       tableCols: [
@@ -172,16 +165,14 @@ export default {
   },
   methods: {
     ...mapActions(['getMeetingStatics']),
+
     async onDownloadExcel() {
       this.downloading = true
 
        const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
 
-      // const { startDate, endDate } = this.filter
-
       const formater = menuName => {
         return `${menuName + times}`
-        // return `${menuName + startDate + '-' + endDate}`
       }
 
       await tokenExcel({
@@ -202,6 +193,8 @@ export default {
       this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
       this.loading = false
     },
+
+
     async onSearch() {
       const { rows } = this.pagination
       this.loading = true
@@ -210,21 +203,33 @@ export default {
       await this.getDatas()
       this.filterBarData()
     },
+
     async getDatas() {
       const { page, rows } = this.pagination
+
       const total = await this.getMeetingStatics({
         ...this.filter,
         ...this.pagination
       })
+
       this.total = total ? total + 1 : 0
+
       this.tableDatas = this.meetingStatistics.slice(0)
+
       if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
     }
   },
+
   async mounted() {
+    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
+
     this.filterBarData()
   },
+
   computed: {
     ...mapState([
       'meetingStatistics',
@@ -355,7 +360,3 @@ export default {
     }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
