@@ -12,7 +12,6 @@
 
 <script>
     import http from '@/service'
-    import Moment from 'moment'
     import isEqual from 'lodash/isEqual'
     import { mapGetters, mapActions } from 'vuex'
     export default {
@@ -57,7 +56,7 @@
                     this.$message.warning('请填写更新操作指引')
                     return false
                 }
-                fields = Object.assign({ updatedTime: Moment().format('YYYY-MM-DD') }, fields)
+                fields = Object.assign({ updatedTime: this.$_dateNow }, fields)
                 fields.preContent = this.handleTextareaValue(fields.content)
                 if( !this.isAdd && this.gid ) {
                     fields = Object.assign({ id: this.gid }, fields)
@@ -75,7 +74,7 @@
                 }
             },
             handlePreview(fields) {
-                fields = Object.assign({ updatedTime: Moment().format('YYYY-MM-DD') }, fields)
+                fields = Object.assign({ updatedTime: this.$_dateNow }, fields)
                 fields.preContent = this.handleTextareaValue(fields.content)
                 this.setGuideStorage(fields)
                 this.$router.push({ path: '/operation-guide/detail' })

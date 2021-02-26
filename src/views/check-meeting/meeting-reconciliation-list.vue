@@ -6,6 +6,7 @@
     :params="filter"
     path="/download/exportMeetingReconciliation" />
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch"
       @searchSelectChange="searchSelectChange"
@@ -323,6 +324,10 @@ export default {
   },
 
   async mounted() {
+    this.$set(this.searchItems['meetingDate'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
   },
 
@@ -355,6 +360,12 @@ export default {
     //     padding: 0px !important;
     //   }
     // }
+  }
+
+  /deep/ .filter-container {
+    .el-date-editor--datetimerange {
+      width: 320px !important;
+    }
   }
 }
 </style>

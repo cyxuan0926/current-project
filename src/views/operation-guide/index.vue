@@ -10,6 +10,7 @@
         class="button-add button-shift-down"
         @click="openPush('add')">新增</el-button>
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch">
@@ -45,7 +46,8 @@
     <m-pagination
       ref="pagination"
       :total="total"
-      @onPageChange="getData"/>
+      @onPageChange="getData"
+    />
   </el-row>
 </template>
 
@@ -170,6 +172,10 @@
             }
         },
         async mounted() {
+            this.$set(this.searchItems['applicationDate'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+            this.$refs.search.onGetFilter()
+
             await this.getData('mounted')
         },
     }

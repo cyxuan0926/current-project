@@ -59,14 +59,13 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-import Moment from 'moment'
 
 export default {
   mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
-    const createEndDate = Moment().format('YYYY-MM-DD')
-    const createStartDate = Moment().subtract(7, 'days').format('YYYY-MM-DD')
+    const createEndDate = this.$_dateNow
+    const createStartDate = this.$_dateOneWeekAgo
     const freeMeetingsOptions = [
       {
         label: '是',

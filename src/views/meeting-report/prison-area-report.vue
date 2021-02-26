@@ -38,7 +38,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
-const endDate = Moment().format('YYYY-MM-DD')
+const endDate = this.$_dateNow
 export default {
   mixins: [prisonFilterCreator],
   data() {
