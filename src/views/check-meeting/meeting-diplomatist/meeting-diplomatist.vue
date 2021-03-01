@@ -233,8 +233,6 @@
            />
          </div>
        </div>
-
-
       </el-form>
     </el-dialog>
     <el-dialog
@@ -720,7 +718,7 @@ export default {
     }
   },
   mounted() {
-    this.getDatas('mounted')
+    this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
   },
   created(){
    this.tabs="PENDING"

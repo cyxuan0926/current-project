@@ -19,12 +19,28 @@ import '@/assets/css/index.scss'
 
 import ActiveMonitor from '@/utils/ActiveMonitor'
 
+import {
+  _dateNow,
+  _dateOneWeekAgo,
+  _timeNow,
+  _timeOneWeekAgo
+} from '@/common/constants/const'
+
 Vue.use(ElementUI)
+
 Vue.use(fullscreen)
 
 Vue.config.productionTip = false
 
 Vue.prototype.$urls = urls
+
+Vue.prototype.$_dateNow = _dateNow
+
+Vue.prototype.$_dateOneWeekAgo = _dateOneWeekAgo
+
+Vue.prototype.$_timeNow = _timeNow
+
+Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 
 new ActiveMonitor().start()
 

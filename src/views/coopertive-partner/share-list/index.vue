@@ -1,15 +1,12 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-excel-download
-      :params="filter"
-      :path="excelPath"
-    />
+  <el-row class="row-container" :gutter="0">
+    <m-excel-download :params="filter" :path="excelPath" />
 
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch" >
+      @search="onSearch"
+    >
       <template #dealTime>
         <el-date-picker
           v-if="activeTabName !== tabOptions['TERMINAL_SHARED_DETAILS']"
@@ -18,21 +15,16 @@
           value-format="yyyy-MM"
           start-placeholder="开始月份"
           end-placeholder="结束月份"
-          unlink-panels />
+          unlink-panels
+        />
       </template>
     </m-search>
 
     <el-col :span="24">
-      <el-tabs
-        v-model="activeTabName"
-        type="card" >
-        <el-tab-pane
-          label="终端收入账单"
-          name="terminalIncomeMenus" />
+      <el-tabs v-model="activeTabName" type="card">
+        <el-tab-pane label="终端收入账单" name="terminalIncomeMenus" />
 
-        <el-tab-pane
-          label="终端分成明细"
-          name="terminalSharedDetails" />
+        <el-tab-pane label="终端分成明细" name="terminalSharedDetails" />
       </el-tabs>
 
       <m-table
@@ -45,7 +37,8 @@
     <m-pagination
       ref="pagination"
       :total="pageData.totalCount"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -154,7 +147,9 @@ export default {
 
     return {
       tabOptions,
+
       activeTabName: tabOptions.TERMINAL_SHARED_DETAILS,
+
       searchItems: {
         partnerPhone: {
           type: 'input',
@@ -219,9 +214,10 @@ export default {
         this.resetSearchFilters(['status', 'dateRange'])
 
         this.dealTime = [this.date, this.date]
-
       } else {
         this.$set(this.searchItems['dateRange'], 'miss', false)
+
+        this.$set(this.searchItems['dateRange'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
 
         this.$set(this.searchItems['status'], 'miss', false)
 
@@ -229,6 +225,8 @@ export default {
       }
 
       this.resetSearchFilters(['partnerPhone', 'jailId'])
+
+      this.$refs.search.onGetFilter()
 
       this.onSearch()
     }
@@ -279,8 +277,12 @@ export default {
     }
   },
 
-  mounted() {
-    this.getDatas()
+  async mounted() {
+    this.$set(this.searchItems['dateRange'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+
+    this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   }
 }
 </script>

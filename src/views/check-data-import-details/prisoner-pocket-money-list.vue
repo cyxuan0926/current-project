@@ -3,8 +3,10 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch"/>
+      @search="onSearch"
+    />
     <el-col :span="24">
       <m-table-new
         stripe

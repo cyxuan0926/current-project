@@ -1,5 +1,8 @@
 import store from '@/store'
 export default {
+  SET_GUIDE_STORAGE(state, params) {
+    state.guideStorage = params
+  },
   setUser(state, params) {
     state.user = params || {}
   },

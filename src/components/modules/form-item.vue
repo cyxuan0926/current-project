@@ -44,6 +44,7 @@
         :loading="item.loading"
         :filterable="!!(item.filterable)"
         :disabled="item.disabled"
+        :collapse-tags="item.collapseTags || false"
         :multiple="item.multiple || false"
         @change="selectChangeEvent($event, prop, item)">
         <el-option

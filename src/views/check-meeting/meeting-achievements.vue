@@ -91,7 +91,8 @@ export default {
             valueFormat: 'yyyy-MM-dd',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'
-          }
+          },
+          defaultValue: [this.$_dateOneWeekAgo, this.$_dateNow]
         }
       ]
     },

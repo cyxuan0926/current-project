@@ -3,31 +3,31 @@
             <el-form :inline="true" label-width="120px" label-position="right"  :model="formDate" class="demo-form-inline">
                  <div>
                         <el-form-item   style="width:380px" label="广告所属地区">
-                        <el-select v-model="formDate.provincesId" @change='getjailTypes()' placeholder="广告所属地区">
+                        <el-select v-model="formDate.provincesId" filterable clearable @change='getjailTypes()' placeholder="广告所属地区">
                         <el-option v-for="(item,index) in provinceslist" :key='index' :label="item.name" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>
                          <el-form-item   style="width:380px" label="广告所属监狱">
-                        <el-select v-model="formDate.jailId"  placeholder="广告所属监狱">
+                        <el-select v-model="formDate.jailId" filterable clearable placeholder="广告所属监狱">
                         <el-option v-for="(item,index) in jailIdlist" :key='index' :label="item.title" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>
                 </div>
                 <div>
                         <el-form-item   style="width:380px" label="广告所属服务">
-                        <el-select v-model="formDate.adservicesId" @change='getadservicesTypes()' placeholder="广告所属服务">
+                        <el-select v-model="formDate.adservicesId" filterable clearable @change='getadservicesTypes()' placeholder="广告所属服务">
                         <el-option v-for="(item,index) in adservicesIdlist" :key='index' :label="item.name" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>
                          <el-form-item   style="width:380px" label="广告位置">
-                        <el-select v-model="formDate.typeId"  @change='getusedSortTypes()' placeholder="广告位置">
+                        <el-select v-model="formDate.typeId" filterable clearable @change='getusedSortTypes()' placeholder="广告位置">
                         <el-option v-for="(item,index) in adservicesTypes" :key='index' :label="item.name" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>
                 </div>
                 <div>
                     <el-form-item style="width:380px" label="广告序号">
-                          <el-select v-model="formDate.sort" placeholder="广告序号">
+                          <el-select v-model="formDate.sort" filterable clearable placeholder="广告序号">
                             <el-option v-for="(item,index) in adservicesSortTypes" :key='index' :label="item.toString()" :value="item"></el-option>
                           </el-select>
                      </el-form-item>
@@ -47,14 +47,14 @@
                 </div>
                     <div>
                         <el-form-item   style="width:380px" label="广告封面形式">
-                            <el-select v-model="formDate.adForm" @change="clearPicSize" placeholder="广告封面形式">
+                            <el-select v-model="formDate.adForm" filterable clearable @change="clearPicSize" placeholder="广告封面形式">
                             <el-option label="图片" :value="1" ></el-option>
                             <!-- <el-option label="视频" value="2"></el-option> -->
                             <el-option label="文件" :value="3"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item style="width:380px" label="广告播放时长">
-                            <el-select v-model="formDate.duration" :disabled ="formDate.adForm!=1" placeholder="广告播放时长">
+                            <el-select v-model="formDate.duration"  filterable clearable :disabled ="formDate.adForm!=1" placeholder="广告播放时长">
                             <el-option label="3秒" :value="3"></el-option>
                             <el-option label="4秒" :value="4"></el-option>
                             <el-option label="5秒" :value="5"></el-option>
@@ -66,14 +66,15 @@
                     </div>
                     <div>
                          <el-form-item   style="width:380px" label="广告尺寸">
-                        <el-select v-model="formDate.picSize" :disabled="formDate.adForm!=1" placeholder="广告尺寸">
+                        <el-select v-model="formDate.picSize" filterable clearable :disabled="formDate.adForm!=1" placeholder="广告尺寸">
                         <el-option label="720*1440" :value="`720*1440`"></el-option>
                         <el-option label="720*86" :value="`720*86`"></el-option>
+                        <el-option label="720*440" :value="`720*440`"></el-option>
                         <el-option label="660*214" :value="`660*214`"></el-option>
                         </el-select>
                         </el-form-item>
                          <el-form-item   style="width:380px" label="广告内容形式">
-                                <el-select v-model="formDate.adContentForm"  :disabled="!formDate.adForm" @change="showTab()" placeholder="广告内容形式">
+                                <el-select v-model="formDate.adContentForm" filterable clearable :disabled="!formDate.adForm" @change="showTab()" placeholder="广告内容形式">
                                 <el-option label="图片" :value="1" :disabled="formDate.adForm==3"></el-option>
                                 <el-option label="视频" :value="2" :disabled="formDate.adForm==3"></el-option>
                                 <el-option label="H5地址链接" :value="3"></el-option>
@@ -81,7 +82,7 @@
                         </el-form-item>
                     </div>
                     <div>
-                        <el-form-item   style="width:380px" label="广告封面">                             
+                        <el-form-item   style="width:380px" label="广告封面">
                             <div v-if="formDate.adForm==1">
                                  <div  v-if="!formDate.title">
                                  <el-upload
@@ -93,7 +94,7 @@
                                     :on-preview="handlePictureView"
                                     :http-request="handleFileUpload">
                                     <i class="el-icon-plus"></i>
-                                     <p style="color:#000000;line-height: 20px;">广告支持jpeg, jpg, gif,png格式的图片，且不超过2M</p>                                  
+                                     <p style="color:#000000;line-height: 20px;">广告支持jpeg, jpg, gif,png格式的图片，且不超过2M</p>
                                 </el-upload>
                                  </div>
                                 <ul v-if="formDate.title" class="el-upload-list el-upload-list--picture-card">
@@ -117,12 +118,12 @@
                                 <el-input type='text' style="width:224px" v-model="formDate.title" placeholder="文件名称"></el-input>
                             </div>
 
-                        
+
                         </el-form-item>
 
                          <el-form-item   style="width:380px" label="广告内容">
                             <div v-if="formDate.adContentForm==1">
-                                <el-input  style="width:224px" :readonly='true' v-model="formDate.content" placeholder="广告内容"></el-input> 
+                                <el-input  style="width:224px" :readonly='true' v-model="formDate.content" placeholder="广告内容"></el-input>
                             </div>
                             <div v-if="formDate.adContentForm==2">
                                   <el-upload
@@ -133,7 +134,7 @@
                                     :http-request="handleFileUpload"
                                     :before-upload="beforeUploadVideo"
                                     :on-preview="handlePictureView"
-                                    >                                   
+                                    >
                                     <i class="el-icon-plus"></i>
                                     </el-upload>
                                     <video v-if="formDate.content" :src="formDate.content"
@@ -143,14 +144,14 @@
                                         <el-button type="danger" @click="deleteVideo()">删除视频</el-button>
                                     </p>
                                     <p v-if='load'> 上传中</p>
-                                    <p style="color:#000000;width:120px;text-align: center;line-height: 20px;">广告支持视频格式'mp4','webm','avi','rmvb',且不超过10M</p>              
+                                    <p style="color:#000000;width:120px;text-align: center;line-height: 20px;">广告支持视频格式'mp4','webm','avi','rmvb',且不超过10M</p>
                             </div>
                             <div v-if="formDate.adContentForm==3">
-                                <el-input  style="width:224px"  v-model="formDate.content" placeholder="广告内容"></el-input> 
+                                <el-input  style="width:224px"  v-model="formDate.content" placeholder="广告内容"></el-input>
                             </div>
                         </el-form-item>
                     </div>
-                        
+
 
             <div>
             <el-form-item style='float:right'>
@@ -161,14 +162,14 @@
             </el-form-item>
 
             </div>
-         
+
             </el-form>
             <el-dialog :visible.sync='dialogVisible'>
                 <img width="100%" :src="formDate.title">
             </el-dialog>
 
         </div>
-        
+
 </template>
 
 <script>
@@ -211,7 +212,6 @@
                 type: 'PUBLIC',
                 file: data.file
             })
-              console.log(res)
               if(res.mime=='image/jpeg'|| res.mime=='image/jpg'||res.mime=='image/gif'||res.mime=='image/png'){
                 this.$set(this.formDate,"title",res.url)
                 console.log(this.formDate)
@@ -448,7 +448,7 @@
         this.provinceslist = await getprovinceslist()
         this.getadservices()
     }
-    
+
     }
 </script>
 

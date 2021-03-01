@@ -3,8 +3,10 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch"/>
+      @search="onSearch"
+    />
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
@@ -45,6 +47,10 @@ export default {
         ...this.filter,
         ...this.pagination
       })
+    },
+
+    onLocalGetFilter() {
+      this.$refs.search.onGetFilter()
     }
   }
 }

@@ -41,7 +41,7 @@ export default {
       type: 'input'
     }
 
-    const endDate = Moment().format('YYYY-MM-DD')
+    const endDate = this.$_dateNow
 
     const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 
