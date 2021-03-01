@@ -4,7 +4,8 @@
       ref="search"
       :items="searchItems"
       @search="onSearch"
-      clearable />
+      clearable
+    />
 
     <el-tabs
       v-model="activeTabName"
@@ -137,6 +138,9 @@ export default {
   name: 'LiteratureManagement',
   mixins: [literatureSearchMixin],
   data() {
+    const startTime = this.$_timeOneWeekAgo
+
+    const endTime = this.$_timeNow
     return {
       offlineDialogVisible: false,
       activeTabName: 'pass',
@@ -229,7 +233,8 @@ export default {
           endPlaceholder: '被举报结束时间',
           start: 'reportStartDate',
           end: 'reportEndDate',
-          miss: true
+          miss: true,
+          value: [startTime, endTime]
         },
         time: {
           type: 'datetimerange',
@@ -237,7 +242,8 @@ export default {
           endPlaceholder: '发布结束时间',
           start: 'publishStartDate',
           end: 'publishEndDate',
-          miss: false
+          miss: false,
+          value: [startTime, endTime]
         },
         title: {
           type: 'input',
@@ -416,17 +422,21 @@ export default {
       'offlineLiterature',
       'onlineLiterature',
       'getReportLiteratures',
-      'ignoreReportArticles']),
+      'ignoreReportArticles'
+    ]),
+
     onPreview(literature) {
       const articleId = this.activeTabName === 'tipOff' ? literature.articleId : literature.id
       this.$router.push(
         `/literature-management/literature-preview/${ articleId }`
       )
     },
+
     onOffline(literature) {
       this.showOfflineDialog()
       this.selectedLiterature = literature
     },
+
     async onOnline(literature) {
       const content = `下架原因：${literature.shelfReason}`
 
@@ -444,6 +454,7 @@ export default {
 
       document.querySelector(`#onlineButton${literature.id}`).blur()
     },
+
     onConfirmOffline() {
       this.$refs.offlineForm.validate(async valid => {
         if (valid) {
@@ -461,15 +472,19 @@ export default {
         }
       })
     },
+
     onCloseDialog() {
       this.$refs.offlineForm.resetFields()
     },
+
     showOfflineDialog() {
       this.offlineDialogVisible = true
     },
+
     hideOfflineDialog() {
       this.offlineDialogVisible = false
     },
+
     // 忽略举报
     onNeglect(literature) {
       this.$confirm('你确认忽略该举报吗？', '提示', {
@@ -488,6 +503,7 @@ export default {
           throw err
         })
     },
+
     // 举报内容详情
     async onReportDetail(literature) {
       let url
@@ -506,17 +522,23 @@ export default {
         throw err
       }
     },
+
     // 重置搜索框miss状态
     resetSearchMissStatus() {
       Object.keys(this.searchItems).map(item => {
         this.$set(this.searchItems[item], 'miss', false)
       })
     },
+
     // 重置搜索组件的filter
     resetSearchFilters(filters = []) {
       filters.map(filter => {
         delete this.filter[filter]
       })
+    },
+
+    onLocalGetFilter() {
+      this.$refs.search.onGetFilter()
     }
   }
 }

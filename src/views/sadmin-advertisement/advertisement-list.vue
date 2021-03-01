@@ -9,6 +9,7 @@
       class="button-add button-shift-down"
       @click="onAdd">添加广告</el-button>
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
@@ -190,17 +191,25 @@ export default {
       'advertisementTypes'
     ])
   },
+
   async mounted() {
-      this.getDatas()
-      let res= await  getadserviceslist()
-     this.searchItems.adservicesId.options= res
-     this.searchItems.adservicesId.getting = false
+    this.$set(this.searchItems['startDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+
+    this.$refs.search.onGetFilter()
+
+    this.getDatas()
+
+    let res= await getadserviceslist()
+
+    this.searchItems.adservicesId.options= res
+
+    this.searchItems.adservicesId.getting = false
   },
+
   methods: {
     async getDatas() {
-      console.log(...this.filter)
-       let res = await  getPagedMessagInside({ ...this.filter, ...this.pagination })
-        this.tabledata= res
+      let res = await getPagedMessagInside({ ...this.filter, ...this.pagination })
+      this.tabledata= res
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(0)

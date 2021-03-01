@@ -177,8 +177,8 @@
         type="date"
         :clearable="false"
         :value-format="'yyyy-MM-dd'"
-        placeholder="选择日期">
-      </el-date-picker>
+        placeholder="选择日期"
+      />
     </div>
 
     <div class="button-box">
@@ -712,7 +712,8 @@ export default {
         multiple: true,
         options: this.filterPrisonAreaOptions,
         props: { label: 'name', value: 'id' },
-        rules: ['required']
+        rules: ['required'],
+        collapseTags: true
       },
       formConfigs = {
         labelWidth: '80px',

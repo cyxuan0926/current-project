@@ -203,6 +203,7 @@ export default {
 
     onEnsure(e) {
       let prop = e.prop
+
       Object.keys(e).forEach(key => {
         if (key === 'prop') return
         this.items[prop][key] = e[key]
@@ -248,23 +249,27 @@ export default {
         let params = {}
         Object.keys(this.items).forEach(key => {
           if (this.items[key].miss || this.items[key].slotName) return
+
           if (this.items[key].type === 'monthRangeSelector') {
             params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
             params[this.items[key].endKey] = this.items[key][this.items[key].endKey] || this.items[key].endValue
           }
+
           if (this.items[key].type === 'monthrange') {
             params[this.items[key].start] = this.startValue
+
             params[this.items[key].end] = this.endValue
           }
+
           if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+
           if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
             params[this.items[key].start] = this.items[key].value[0]
+
             params[this.items[key].end] = this.items[key].value[1]
-          }
-          else {
-            params[key] = this.items[key].value
-          }
+          } else params[key] = this.items[key].value
         })
+
         const _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
 
         if (_prisonConfigId) {

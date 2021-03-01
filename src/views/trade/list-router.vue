@@ -1,32 +1,38 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download 
       v-if="excelDownloadPath" 
       :path="excelDownloadPath" 
       :params="filter"
     />
+
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    />
+
     <el-tabs
       v-model="activeName"
       type="card"
-      @tab-click="handleClick">
+      @tab-click="handleClick"
+    >
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
           :key='item.key'
-          :name="item.key">
-        </el-tab-pane>
+          :name="item.key"
+        />
       </template>
     </el-tabs>
+
     <router-view />
+
     <m-pagination
       ref="pagination"
       :total="list.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -35,6 +41,13 @@ import { mapActions } from 'vuex'
 import switches from '@/filters/modules/switches'
 export default {
   data() {
+    const endTime = this.$_dateNow
+
+    const startTime = this.$_dateOneWeekAgo
+
+    const range = {
+      range: [startTime, endTime]
+    }
     return {
       activeName: this.$route.path.slice(this.$route.path.lastIndexOf('/') + 1),
       tabMapOptions: [
@@ -122,61 +135,90 @@ export default {
         consumption: ['phone', 'range', 'chargeType'],
         refund: ['refundType', 'tradeNo', 'phone', 'range']
       },
-      filter: {}
+      filter: {},
+
+      initSearch: {
+        account: {
+          accountStatus: 1
+        },
+
+        recharge: { ...range },
+
+        consumption: { ...range },
+
+        refund: { ...range }
+      }
     }
   },
+
   computed: {
     excelDownloadPath() {
-      const activeTab = this.tabMapOptions.find(tab => {
-        return tab.key === this.activeName
-      })
+      const activeTab = this.tabMapOptions.find(tab => tab.key === this.activeName)
 
       return activeTab && activeTab.excelDownloadPath
     }
   },
+
   watch: {
     '$route': {
       handler: function(val) {
         this.activeName = val.path.slice(val.path.lastIndexOf('/') + 1)
+
         this.getSearchItems('clearFilter')
       },
       deep: true
     }
   },
-  mounted() {
-    this.getSearchItems()
+
+  async mounted() {
+    await this.getSearchItems()
   },
+
   methods: {
-    ...mapActions(['getAccountList', 'getRechargeList', 'getConsumptionList', 'getRefundList']),
+    ...mapActions([
+      'getAccountList',
+      'getRechargeList',
+      'getConsumptionList',
+      'getRefundList'
+    ]),
+
     handleClick() {
       this.$router.push(`/trade/${ this.activeName }`)
     },
+
     getSearchItems(e) {
-      let show = this.showSearch[this.activeName]
+      const show = this.showSearch[this.activeName],
+        init = this.initSearch[this.activeName]
+
       Object.keys(this.searchItems).forEach(key => {
-        delete this.searchItems[key].value
-        if (show.indexOf(key) < 0) {
-          this.searchItems[key].miss = true
+        for(let [initKey, value] of Object.entries(init)) {
+          if (initKey === key) !this.searchItems[key].value && this.$set(this.searchItems[key], 'value', value)
+
+          else delete this.searchItems[key].value
         }
-        else {
-          this.searchItems[key].miss = false
-        }
+
+        if (show.indexOf(key) < 0) this.searchItems[key].miss = true
+
+        else this.searchItems[key].miss = false
       })
-      if (e === 'clearFilter') {
-        this.filter = {}
-        this.$refs.pagination.handleCurrentChange(1)
-      }
-      else {
-        this.getDatas()
-      }
+
+      this.$refs.search.onGetFilter()
+
+      if (e === 'clearFilter') this.$refs.pagination.handleCurrentChange(1)
+
+      else this.getDatas()
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     getDatas(e) {
       let api = this.activeName.toLowerCase().replace(/^\S/, function(s) { return s.toUpperCase() })
+
       this[`get${ api }List`]({ ...this.filter, ...this.pagination }).then(res => {
         if (!res) return
+
         this.list = this.$store.state.trade[this.activeName]
       })
     }

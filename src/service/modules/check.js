@@ -144,10 +144,7 @@ export default {
   getPrisonersAll: params => {
     return service.get('/prisoners/findPage', params).then(res => res && res.data)
   },
-  // 服刑人员信息管理-修改会见次数
-  updateAccessTime: params => {
-    return service.post('/prisoners/updateAccessTime', params).then(res => res && res.code === 200)
-  },
+
   // 服刑人员信息管理-加入黑名单
   addPrisonerBlacklist: params => {
     return service.postFile('/blacklists/addPrisonerBlacklist', params).then(res => res && res.code === 200)
@@ -298,5 +295,4 @@ export default {
   getMeetDeployUpdate: params => {
     return service.post('/jails/updateAutoAuthorizeMeeting', params).then(res => res && res.data)
   }
-
 }

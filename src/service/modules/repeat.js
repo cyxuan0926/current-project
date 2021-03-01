@@ -133,5 +133,12 @@ export default {
   // 判断监狱是否开启了会见楼接口
   getJailsMeetingFloorStatus: jailId => {
     return service.get('/jails/checkOpenMeetingFloor', { jailId })
+  },
+
+  // 服刑人员信息管理-修改会见/短信/亲情电话次数
+  updatePrisonerTime: input => {
+    const { url, params } = input
+
+    return service.post(url, params).then(res => res && res.code === 200)
   }
 }

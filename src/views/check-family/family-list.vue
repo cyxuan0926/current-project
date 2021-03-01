@@ -1,87 +1,85 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch" >
-      <template
-        slot="append"
-        v-if="tabs === tabOptions.JAILER_FAMILY">
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    >
+      <template v-if="tabs === tabOptions.JAILER_FAMILY" slot="append">
         <m-excel-download
           path="/download/downloadfile"
           :params="{ filepath: 'police_template.xlsx' }"
-          text="模板" />
-        <m-excel-upload
-          :get-results="handleGetUploadResults"
-          url="/police/upload" />
+          text="模板"
+        />
+
+        <m-excel-upload :get-results="handleGetUploadResults" url="/police/upload" />
       </template>
     </m-search>
+
     <el-col :span="24">
       <el-tabs
+        v-if="!isSuperAdmin"
         v-model="tabs"
-        type="card" >
-        <el-tab-pane
-          label="家属信息管理"
-          name="families" />
-        <el-tab-pane
-          label="警员家属信息管理"
-          name="jailerFamilies" />
+        type="card"
+      >
+        <el-tab-pane label="家属信息管理" name="families" />
+
+        <el-tab-pane label="警员家属信息管理" name="jailerFamilies" />
       </el-tabs>
+
       <m-table-new
         stripe
         :data="families.contents"
         :cols="tableCols"
-        class="mini-td-padding">
-        <template
-          slot-scope="scope"
-          slot="idCard">
-            <m-img-viewer
-              :url="scope.row.idCardFront"
-              title="身份证正面照"
-              isRequired
-            />
-            <m-img-viewer
-              :url="scope.row.idCardBack"
-              title="身份证背面照"
-              isRequired
-            />
+        class="mini-td-padding"
+      >
+        <template #idCard="{ row }">
+          <m-img-viewer
+            :url="row.idCardFront"
+            title="身份证正面照"
+            isRequired
+          />
+
+          <m-img-viewer
+            :url="row.idCardBack"
+            title="身份证背面照"
+            isRequired
+          />
         </template>
-        <template
-          slot-scope="scope"
-          slot="prisoners">
-            <el-button
-              v-for="prisoner in scope.row.prisonerList"
+
+        <template #prisoners="{ row }">
+          <template v-for="prisoner in row.prisonerList">
+            <el-button   
               :key="prisoner.prisonerId"
               type="text"
               size="small"
-              @click="showPrisonerDetail(prisoner)">
-              {{ prisoner.name }}
-            </el-button>
+              @click="showPrisonerDetail(prisoner)"
+            >{{ prisoner.name }}</el-button>
+          </template>
         </template>
-        <template
-          slot-scope="scope"
-          slot="operate">
-            <el-button
-              type="text"
-              size="small"
-              @click="getFamilyDetail(scope.row.id)">
-              账号信息
-            </el-button>
-            <el-button
-              type="text"
-              size="small"
-              v-if="!scope.row.isBlacklist"
-              @click="showBlackList(scope.row)">
-              加入黑名单
-            </el-button>
-            <el-button
-              type="text"
-              size="small"
-              v-else
-              @click="removeBlackList(scope.row)">
-              移出黑名单
-            </el-button>
+
+        <template #operate="{ row }">
+          <el-button
+            type="text"
+            size="small"
+            @click="getFamilyDetail(row.id)"
+          >账号信息</el-button>
+
+          <el-button
+            v-if="!row.isBlacklist"
+            type="text"
+            size="small"
+            @click="showBlackList(row)"
+          >加入黑名单</el-button>
+
+          <el-button
+            v-else
+            type="text"
+            size="small"          
+            @click="removeBlackList(row)"
+          >移出黑名单
+          </el-button>
         </template>
 
         <template #isSendMessage>
@@ -102,67 +100,80 @@
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="families.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :title="dialogContent['title']"
       class="authorize-dialog"
       :width=" operationType === dialogTypes.BLACKLIST ? '530px' : '' "
       :visible.sync="visible"
-      @close="handleCloseDialog" >
-      <el-row v-if=" operationType === dialogTypes.UPLOADING ">
+      @close="handleCloseDialog"
+    >
+      <el-row v-if="operationType === dialogTypes.UPLOADING">
         <el-col style="line-height: 30px">
-          <i
-            class="el-icon-success green"
-            style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+
           <template v-if="!!uploadResults.error_total">
-            <i
-            class="el-icon-error red"
-            style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
-            <p style="padding-left: 30px">
-              原因：{{ excelReason }}
-            </p>
+            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
+
+            <p style="padding-left: 30px">原因：{{ excelReason }}</p>
           </template>
         </el-col>
+
         <el-col class="button-box">
           <el-button
             size="small"
             @click="onExcelSure"
-            type="primary">
-            确定
+            type="primary"
+          >确定
           </el-button>
         </el-col>
       </el-row>
-      <template v-if=" operationType === dialogTypes.DETAIL ">
-        <el-row
-          v-for="(item, index) in prisonerDetailRows"
-          :key="`id-dialog-${ index }`">
-          <el-col
-            :span="12"
-            v-for="(children, i) in item"
-            :key="`id-dialog-child-${ i }`">
-            <label for="">{{ children.label }}：</label>
-            <span v-if=" children['prop'] === 'gender' ">{{ prisoner.gender | gender }}</span>
-            <span v-else>{{ prisoner[children['prop']] }}</span>
-          </el-col>
-        </el-row>
+
+      <template v-if="operationType === dialogTypes.DETAIL">
+        <template v-for="(item, index) in prisonerDetailRows">
+          <el-row :key="`id-dialog-${ index }`">
+            <template v-for="(children, i) in item">
+              <el-col :span="12" :key="`id-dialog-child-${ i }`">
+                <label>{{ children.label }}：</label>
+
+                <span v-if="children['prop'] === 'gender'">{{ prisoner.gender | gender }}</span>
+
+                <span v-else>{{ prisoner[children['prop']] }}</span>
+              </el-col>
+            </template>
+          </el-row>
+        </template>
       </template>
+
       <m-form
         v-else
         ref="blackListForm"
         :items="dialogContent['items']"
         @submit="handleBlackListReason"
-        @cancel="visible = false" />
+        @cancel="visible = false"
+      />
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters
+} from 'vuex'
+
 import validator from '@/utils'
+
 import prisons from '@/common/constants/prisons'
+
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 const prisonerDetailRows = [
   [
@@ -212,9 +223,9 @@ const tabOptions = {
 }
 
 export default {
+  mixins: [prisonFilterCreator],
+
   data() {
-    const { belong } = prisons.PRISONAREA
-    const { options } = this.$store.getters.prisonAreaOptions
     const isBlacklistOptions = [
       {
         label: '是',
@@ -240,13 +251,6 @@ export default {
         name: {
           type: 'input',
           label: '家属姓名',
-          miss: false
-        },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options,
-          belong,
           miss: false
         },
         isBlacklist: {
@@ -304,8 +308,12 @@ export default {
       excelReason: ''
     }
   },
+
   computed: {
     ...mapState(['families']),
+
+    ...mapGetters(['isSuperAdmin']),
+
     dialogContent() {
       let title,
         items = {},
@@ -351,6 +359,17 @@ export default {
     },
 
     tableCols() {
+      const isSuperAdminTableCols = [
+        {
+          label: '省份',
+          prop: ''
+        },
+        {
+          label: '监狱名称',
+          prop: ''
+        }
+      ]
+
       const familyTableCols = [
         {
           label: '家属姓名',
@@ -402,10 +421,14 @@ export default {
         }
       ]
 
+      if (this.isSuperAdmin) return [...isSuperAdminTableCols, ...familyTableCols]
+
       if (this.tabs === this.tabOptions.FAMILY) return familyTableCols
+
       else return jailerFamiliesTableCols
     }
   },
+
   watch: {
     tabs(val) {
       if (val === this.tabOptions.FAMILY) {
@@ -433,9 +456,13 @@ export default {
       this.onSearch()
     }
   },
-  mounted() {
-    this.getDatas()
+
+  async mounted() {
+    if (this.isSuperAdmin) this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   },
+
   methods: {
     ...mapActions([
       'getFamilies',
@@ -443,6 +470,7 @@ export default {
       'removeFamilyBlacklist',
       'getPoliceFamilies'
     ]),
+
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY) {
         this.getFamilies({
@@ -450,6 +478,7 @@ export default {
           ...this.pagination
         })
       }
+
       else {
         this.getPoliceFamilies({
           ...this.filter,
@@ -457,24 +486,29 @@ export default {
         })
       }
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     getFamilyDetail(e) {
       this.$router.push({
         path: `/family/detail/${ e }`
       })
     },
+
     showPrisonerDetail(prisoner) {
       this.prisoner = prisoner
       this.visible = true
       this.operationType = this.dialogTypes.DETAIL
     },
+
     showBlackList(e) {
       this.family = Object.assign({}, e)
       this.visible = true
       this.operationType = this.dialogTypes.BLACKLIST
     },
+
     handleBlackListReason(val) {
       let params = new FormData()
       params.append('familyId', this.family.id)
@@ -485,6 +519,7 @@ export default {
         this.handleCloseDialog()
       })
     },
+
     removeBlackList(e) {
       this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
         confirmButtonText: '确定',
@@ -499,6 +534,7 @@ export default {
         })
       }).catch(() => {})
     },
+
     handleCloseDialog() {
       this.$refs.blackListForm && this.$refs.blackListForm.onCancel()
     },

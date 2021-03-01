@@ -1,31 +1,36 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    />
+
     <el-col :span="24">
       <m-table-new
         stripe
         :data="appLogs.contents"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>  
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="appLogs.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
+import Moment from 'moment'
 export default {
   data() {
     return {
-      tabNum: 'first',
       searchItems: {
         // endTime: { type: 'datetime', label: '结束时间' },
         time: {
@@ -69,23 +74,29 @@ export default {
       ]
     }
   },
+
   computed: {
     ...mapState(['appLogs'])
   },
-  mounted() {
-    this.getDatas()
+
+  async mounted() {
+    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+
+    this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   },
+
   methods: {
     ...mapActions(['getAppLogs']),
+
     getDatas() {
       this.getAppLogs({ ...this.filter, ...this.pagination })
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>
