@@ -55,6 +55,12 @@ export default {
       constElSlots: ['append']
 
     }
+  },
+
+  methods: {
+    elTableClearSort() {
+      this.$refs.elTable.clearSort()
+    }
   }
 };
 </script>
