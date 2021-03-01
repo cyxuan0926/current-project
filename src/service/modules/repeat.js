@@ -37,6 +37,14 @@ export default {
   getPrisonReportList: params => {
     return service.get('/report/prisonReportPage', params).then(res => res && res.data)
   },
+  // 查询监区会见统计-监狱会见
+  getPrisonReportListJails: params => {
+    return service.get('/report/prisonReport/findPage', params).then(res => res && res.data)
+  },
+  // 查询会见非大陆统计表-监狱会见
+  getIslandList: params => {
+    return service.get('/report/meetings/non-mainland', params).then(res => res && res.data)
+  },
   // 会见统计-监狱会见-所有监狱
   getPrisonReportListAll: params => {
     return service.get('/report/findPage', params).then(res => res && res.data)
@@ -140,5 +148,22 @@ export default {
     const { url, params } = input
 
     return service.post(url, params).then(res => res && res.code === 200)
+  },
+
+  // 调换监狱 - 接收
+  acceptPrisoners: params => {
+    return service.post('/prisoners/prisonersAccept', params)
+  },
+
+  // 调换监狱 - 取消
+  abortChangePrisoners: params => {
+    return service.post('/prisoners/prisonersChangeCancle', params)
+  },
+
+  // 服刑人员 - 转监标签页列表
+  getTransferOutPrisonersPagedData: args => {
+    const { url, params } = args
+
+    return service.get(url, params)
   }
 }

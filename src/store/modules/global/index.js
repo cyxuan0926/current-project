@@ -26,7 +26,9 @@ let state = {
     guide: '',
     updatedTime: '',
     preContent: ''
-  }
+  },
+  // 有转入信息
+  loginHavePrisonerIn: false
 }
 
 export default {

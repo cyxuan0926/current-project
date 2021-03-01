@@ -7,6 +7,7 @@
     <slot :name="prop">
       <el-input
         v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
+        :ref="prop + item.type"
         :type="item.type"
         :rows="item.rows"
         :maxlength="item.maxlength"
@@ -22,6 +23,7 @@
       </el-input>
       <el-input
         v-if="(item.type === 'input' || item.type === 'textarea') && item.isTrim"
+        :ref="prop + item.type"
         :type="item.type"
         :maxlength="item.maxlength"
         :clearable="item.clearable"
@@ -36,6 +38,7 @@
       </el-input>
       <el-select
         v-if="item.type === 'select'"
+        :ref="prop + item.type"
         :placeholder="item.placeholder || '请选择' + item.label"
         v-model="fields[prop]"
         :loading="item.loading"
@@ -52,6 +55,7 @@
         />
       </el-select>
       <el-radio-group
+        :ref="prop + item.type"
         v-if="item.type === 'radio'"
         v-model="fields[prop]"
         :disabled="item.disabled"
@@ -66,6 +70,7 @@
       </el-radio-group>
       <el-date-picker
         v-if="item.type === 'date'"
+        :ref="prop + item.type"
         v-model="fields[prop]"
         type="date"
         :disabled="item.disabled"
@@ -74,6 +79,7 @@
         :placeholder="'请选择' + item.label"/>
       <el-switch
         v-if="item.type === 'switch'"
+        :ref="prop"
         v-model="fields[prop]"
         active-color="#13ce66"
         inactive-color="#dddddd"
@@ -84,7 +90,9 @@
         :width="60" />
       <el-checkbox-group
         v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
-        v-model="fields[prop]">
+        :ref="prop + item.type"
+        v-model="fields[prop]"
+      >
         <el-checkbox
           v-for="box in item.group"
           :key="box.value"
@@ -186,6 +194,21 @@ export default {
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)
+    },
+
+    handleFormItemMethods(prop, method) {
+      const ref = prop + this.item.type
+
+      switch(method) {
+        case 'focus':
+          this.$refs[ref].focus()
+          break;
+        case 'blur':
+          this.$refs[ref].blur()
+          break;
+        default:
+          break;
+      }
     }
   }
 }

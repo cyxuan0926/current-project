@@ -14,7 +14,6 @@
         :params="excelFilter"
       />
     </m-search>
-
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -27,14 +26,20 @@
           />
         </template>
       </el-tabs>
-
-      <m-table-new
+    <m-table-new
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
         :cols="tableCols" >
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
+        :cols="tableCols"
+        ref="parentElTable"
+      >
+        <template
+          slot-scope="scope"
+          slot="meetingTime">
+          <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
         </template>
 
         <template #families="{ row }">
@@ -78,6 +83,10 @@
 
           <el-button
             v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+            @click="handleWithdraw(scope.row)">撤回</el-button>
+
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
             size="mini"
             class="button-detail"
             @click="detailRemarks(row)">已备注</el-button>
@@ -255,22 +264,52 @@
         v-if="show.disagree"
         class="button-box">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
-        <el-select v-model="remarks">
-          <el-option
-            v-for="(remark,index) in frontRemarks"
-            :value="remark"
-            :label="remark"
-            :key="index"/>
-        </el-select>
-        <m-form
-          v-if="remarks === '其他'"
-          class="withdraw-box"
-          ref="refuseForm"
-          :items="localAuthorizeFormItems"
-          @submit="onAuthorization('DENIED', $event)"
-        />
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
+      <div>
+            <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
+            <el-option
+              v-for="(remark,index) in content"
+              :value="remark"
+              :label="remark"
+              :key="index"/>
+          </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks"  class="borderNone">
+              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
+              <el-input
+               class="bordertop"
+                :autosize="{ minRows: 1 }"
+                 style="border-top: none;"
+                type="textarea"
+                show-word-limit
+                :maxlength="refuseForm.lengthRemark"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('DENIED')">提交</el-button>
+          <el-button
+            plain
+            @click="show.disagree = false">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('refuseForm')">关闭</el-button>
+        </div>
+
+
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
@@ -279,15 +318,46 @@
       title="撤回"
       :close-on-click-modal="false"
       width="530px">
-      <m-form
-        ref="dialogForm"
-        class="withdraw-form"
-        :items="withdrawFormItems"
-        @submit="onWithdraw"
-        @cancel="show.withdraw = false"
-      />
+ <div style="margin-bottom: 10px;">请选择撤回原因</div>
+          <div style="margin-bottom: 10px;">
+            <el-select v-model="remarks" :multiple="true" @change="withdrawFormChange" style="width:70%;margin-right:10px">
+            <el-option
+              v-for="(remark,index) in content"
+              :value="remark"
+              :label="remark"
+              :key="index"/>
+          </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+            :model="withdrawForm"
+            :rules="withdrawRule"
+            ref="withdrawForm"
+            class="withdraw-box">
+            <el-form-item prop="withdrawReason" class="borderNone">
+              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="withdrawForm.selectRemark"  :readonly="true"/>
+              <el-input
+               class="bordertop"
+                type="textarea"
+                show-word-limit
+                :maxlength="withdrawForm.lengthRemark"
+                :autosize="{ minRows: 1 }"
+                placeholder="请输入撤回理由..."
+                v-model="withdrawForm.withdrawReason" />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onWithdraw('WITHDRAW')">提交</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('withdrawForm')">关闭</el-button>
     </el-dialog>
-
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
@@ -517,8 +587,7 @@
         </template>
       </family-detail-information>
     </el-dialog>
-
-    <el-dialog
+       <el-dialog
       :visible.sync="show.setRemarks"
       class="authorize-dialog"
       width="600px"
@@ -533,8 +602,7 @@
         <el-button type="primary" @click="submitRemarks()">提 交</el-button>
       </span>
     </el-dialog>
-
-    <el-dialog
+     <el-dialog
       :visible.sync="show.userRemarks"
       class="authorize-dialog"
       width="600px"
@@ -548,6 +616,53 @@
           <span >{{optionsRemarks.unusualRemark}}</span>
         </el-form-item>
       </el-form>
+    </el-dialog>
+     <el-dialog
+      :visible.sync="show.rejectEdit"
+      title="编辑"
+      width="530px"
+      @close="changeClose()"
+      class="authorize-dialog">
+      <div class="flex-dialog" v-if="show.editRebut">
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+           <li v-for="(item,index) in content"
+               :key='index'
+               class="infinite-list-item" style="line-height:32px">
+               {{index+1}}.{{ item }}
+            </li>
+        </ul>
+         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
+      </div>
+       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
+         <span v-for="(item,index) in content" :key="index">
+        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
+           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
+        </el-input>
+         </span>
+      </div>
+      <el-row :gutter="0">
+
+        <el-button
+           v-if='show.editRebut'
+           type="primary"
+          class="button-add"
+          size="mini"
+          @click="onRejectEditshow()">编辑</el-button>
+          <span v-else>
+          <el-button
+          v-if='content.length>0'
+          type="primary"
+          class="button-add"
+          size="mini"
+          @click="onSubmitReject()">保存</el-button>
+           <el-button
+          type="primary"
+          class="button-add"
+          size="mini"
+          v-if='content.length<10'
+          @click="addReject()">新增</el-button>
+          </span>
+      </el-row>
     </el-dialog>
   </el-row>
 </template>
@@ -718,6 +833,8 @@
           withdraw: false,
           detail: false,
           dialog:false,
+          rejectEdit:false,
+          editRebut:true,
           meetingQueue:false,
           familiesDetialInform: false,
           multistageExamine: false,
@@ -817,7 +934,46 @@
 
         oneMonthLater,
 
-        filterInit: {}
+        filterInit: {},
+        btnDisable: false, // 按钮禁用与启用
+        content:[],
+        updateer:'',
+        contentId:"",
+         withdrawForm: {
+        selectRemark:"",
+        lengthRemark:1000,
+        withdrawReason: ""
+      },
+      refuseForm: {
+        selectRemark:"",
+        lengthRemark:1000,
+        anotherRemarks: ""
+      },
+      withdrawRule: {
+        anotherRemarks: [
+          {
+            validator:(rule,value,callback)=>{
+              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
+                  callback()
+              }else{
+                  callback(new Error('请填写驳回原因'))
+              }
+            }
+          }
+        ],
+        withdrawReason: [
+          {
+            validator:(rule,value,callback)=>{
+              if(this.withdrawForm.selectRemark||this.withdrawForm.withdrawReason){
+                  callback()
+              }else{
+                  callback(new Error('请填撤回原因'))
+              }
+            }
+          }
+        ]
+      },
+      remarks: [],
       }
     },
     computed: {
@@ -1029,7 +1185,9 @@
       },
 
       tabs(val) {
+        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
+        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1133,12 +1291,10 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-
       setRemarks(row){
         this.show.setRemarks=true
         this.getMeetingId=row.id
       },
-
       submitRemarks(){
         if(this.getRemarks){
            http.addUnusualRemark({
@@ -1166,6 +1322,92 @@
         this.optionsRemarks=row
         this.show.userRemarks=true
       },
+      refuseFormChange(e){
+      let str=""
+        e.forEach((item,index)=>{
+          if(index==(e.length-1)){
+             str +=`${index+1}、${item}。`
+          }else{
+             str +=`${index+1}、${item}。\n`
+          }
+        })
+        this.refuseForm.selectRemark=str
+        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+    },
+    withdrawFormChange(e){
+      let str=""
+        e.forEach((item,index)=>{
+          if(index==(e.length-1)){
+             str +=`${index+1}、${item}。`
+          }else{
+             str +=`${index+1}、${item}。\n`
+          }
+        })
+        this.withdrawForm.selectRemark=str
+        this.withdrawForm.lengthRemark=1000-this.withdrawForm.selectRemark.length
+    },
+    // 获取当前驳回原因列表
+  async onRejectshow(str,isform){
+      let params=JSON.parse(localStorage.getItem('user'));
+          params.type=2
+      let res = await http.getRejectEdit( params )
+      if(res.content){
+        this.content = res.content
+        this.contentId=res.id
+        this.updateer=res.updateEr
+      }else{
+        this.content = []
+      }
+      if(str=='PASSED'){
+        this.show.rejectEdit=true
+      }else{
+        if(this.content[0]){
+          this.remarks.push(this.content[0])
+          //判断打开的是驳回还是撤回
+          if(isform){
+            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
+            this.withdrawForm.lengthRemark=997-this.content[0].length
+          }else{
+            this.refuseForm.selectRemark=`1、${this.content[0]}。`
+            this.refuseForm.lengthRemark=997-this.content[0].length
+          }
+        }
+      }
+    },
+    addReject(){
+      this.content.push('')
+    },
+    removeReject(index){
+      this.content.splice(index,1)
+    },
+    onRejectEditshow(){
+      this.show.editRebut=false
+    },
+     changeClose(){
+      this.remarks=[]
+      this.onRejectshow(false,this.isform)
+       this.show.editRebut=true
+    },
+     async onSubmitReject(){
+      this.content=this.content.filter((res)=>res&&res.trim())
+       if(this.content.length<1){
+         this.$message({
+            message: '新增编辑内容不能为空',
+            type: 'error'
+          });
+          return false
+      }else{
+        let params={
+        id: this.contentId,
+        type:2,
+        content:this.content,
+        updateer:JSON.parse(localStorage.getItem('user')).realName,
+        jailId:JSON.parse(localStorage.getItem('user')).jailId
+        }
+        let res = await http.setRejectEdit(params)
+       this.show.editRebut=true
+      }
+    },
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -1181,7 +1423,6 @@
           }
         }
       },
-
       cellClick(row, column,cell,event){
         let cellStr=cell.querySelector(".cell").textContent
 
@@ -1222,6 +1463,7 @@
       },
 
       async getDatas(e) {
+        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
@@ -1254,17 +1496,18 @@
         }
       },
 
-      onSearch() {
+      async onSearch() {
         if (this.toShow.changerType === true) {
           this.filter.changerType = '2'
         }
         if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
         else {
-          this.$refs.elTable && this.$refs.elTable.clearSort()
+          this.$refs.parentElTable && this.$refs.parentElTable.elTableClearSort()
           delete this.filter.sortDirection
           delete this.filter.orderField
         }
-        this.$refs.pagination.handleCurrentChange(1)
+
+        await this.$refs.pagination.handleCurrentChange(1)
       },
 
       // filterParams () {
@@ -1397,6 +1640,8 @@
         this.isShowTips = false
         this.areaTabs = '1'
         this.areaTypes = '1'
+        this.onRejectshow(false,false)
+        this.isform=false
         // this.areaOptions = Array.from(this.$store.state.areaOptions)
         let { data } = await http.getMeetingSeparateArea({
           inputDate: this.toAuthorize && this.toAuthorize.applicationDate
@@ -1419,6 +1664,8 @@
 
       async handleWithdraw(e) {
         const { id } = e
+        this.onRejectshow(false,true)
+        this.isform=true
 
         this.toAuthorize = await this.onGetDetailAndInitData(id)
 
@@ -1587,15 +1834,18 @@
         }
       },
       onAuthorization(e, args) {
+        this.btnDisable =true
         let params = { id: this.toAuthorize.id, status: e }
-        if (e === 'DENIED') {
-          if (this.remarks === '其他') {
-            const { refuseRemark } = args
-            params.remarks = refuseRemark.replace(/\s*/g, '')
-          }
-          else params.remarks = this.remarks.replace(/\s*/g, '')
-          if (params.remarks) this.handleSubmit(params)
+        if ((e === 'DENIED' || e === 'WITHDRAW')) {
+        if(e === 'DENIED'){
+          this.$refs.refuseForm.validate(valid => {
+            if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+            else this.btnDisable = false
+          })
         }
+        if (this.btnDisable) this.handleSubmit(params)
+      }
+      else this.handleSubmit(params)
       },
       handleSubmit(params) {
         this.buttonLoading = true
@@ -1647,18 +1897,23 @@
         }
       },
       onWithdraw(arg) {
-        const { remarks } = arg
-        const params = {
+      // console.log(arg)
+       // const { remarks } = arg
+       this.btnDisable = true
+       let params = {
           id: this.toAuthorize.id,
-          status: 'CANCELED',
-          remarks
+          status: 'CANCELED'
         }
-        this.withdrawMeeting(params).then(res => {
-          if (!res) return
+        this.$refs.withdrawForm.validate(valid => {
+            if (valid) params.remarks  =this.withdrawForm.selectRemark + this.withdrawForm.withdrawReason.replace(/\s*/g, '')
+            else this.btnDisable = false
+          })
+         this.withdrawMeeting(params).then(res => {
+           if (!res) return
           this.closeWithdraw(true)
           this.toAuthorize = {}
           this.getDatas('onWithdraw')
-        })
+         })
       },
       closeAuthorize(e) {
         if (e === 'back') this.show.disagree = false
@@ -1666,9 +1921,11 @@
           this.show.authorize = false
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
-        this.remarks = '您的身份信息错误'
+        this.remarks =[]
       },
       closeWithdraw(e) {
+        this.show.withdraw=false
+        this.remarks=[]
         this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
         if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       },
@@ -1784,6 +2041,23 @@
     color: red;
     font-size: 12px;
   }
+</style>
+<style lang="stylus">
+.borderNone .el-form-item__content{
+    display: flex;
+    flex-direction: column;
+}
+.borderNone .el-textarea__inner{
+    border:1px solid #DCDFE6 ;
+    border-bottom:none;
+    border-radius:4px 4px 0 0;
+
+}
+.bordertop .el-textarea__inner{
+    border:1px solid #DCDFE6 ;
+    border-top:none;
+    border-radius:0px 0px 4px 4px;
+}
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>

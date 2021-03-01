@@ -154,6 +154,10 @@ export default {
           label: '拒绝/撤回次数',
           prop: 'deniedTotal',
           slotName: 'deniedTotal'
+        },
+        {
+          label: '通话结束次数',
+          prop: 'endedTotal'
         }
       ]
       if (!this.hasAllPrisonQueryAuth) {

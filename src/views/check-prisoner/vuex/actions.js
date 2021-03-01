@@ -63,5 +63,51 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  // 调换监狱 - 接收
+  async acceptPrisoners(_, params) {
+    try {
+      const response = await http.acceptPrisoners(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 调换监狱 - 取消
+  async abortChangePrisoners(_, params) {
+    try {
+      const response = await http.abortChangePrisoners(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 服刑人员 - 转监标签页列表
+  async getTransferOutPrisonersPagedData({ commit }, args) {
+    try {
+      const { data } = await http.getTransferOutPrisonersPagedData(args)
+
+      data['prisoners'].forEach(element => {
+        if (!element.families || !Array.isArray(element.families)) element.families = []
+      })
+
+      commit('getPrisoners', data)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

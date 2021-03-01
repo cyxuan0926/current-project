@@ -161,6 +161,16 @@ export default {
           prop: 'finishedPercentShowValue',
           minWidth: '8.2%'
         },
+        {
+          label: '通话结束次数(次)',
+          prop: 'ended',
+          minWidth: '8.2%'
+        },
+        {
+          label: '通话结束比例',
+          prop: 'endedPercentShowValue',
+          minWidth: '8.2%'
+        },
         // {
         //   label: '审核通过后取消次数(次)',
         //   prop: 'canceled',

@@ -155,7 +155,7 @@ export default {
         this.$router.replace({ query: { tag: this.activeName } })
       }
       else if (this.$route.query.tag !== this.activeName) {
-        if (this.tabMapOptions.find(item => item.key === this.$route.query.tag)) {
+        if (this.tabMapOptions.find(item => item.key === this.$route.query.tag) || this.$route.query.tag === 'meetingFloor') {
           // 把标签页对应到对应组件
           this.activeName = this.$route.query.tag
         }
