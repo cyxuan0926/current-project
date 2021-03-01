@@ -11,7 +11,7 @@ const financeBasicConfig = {
 }
 
 export function get(url = '', params = {}, config = {}) {
-  Object.assign(config, basicConfig)
+ config = Object.assign({}, basicConfig, config)
   return instance.request({ url, method: 'GET', params, ...config })
 }
 
@@ -63,7 +63,7 @@ export function put(url = '', data = {}, config = {}) {
 }
 
 export function post(url = '', data = {}, config = {}) {
-  Object.assign(config, basicConfig)
+  config = Object.assign({}, basicConfig, config)
   return instance.request({
     url,
     data,
