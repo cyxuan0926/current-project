@@ -579,7 +579,8 @@
         </template>
       </family-detail-information>
     </el-dialog>
-       <el-dialog
+
+    <el-dialog
       :visible.sync="show.setRemarks"
       class="authorize-dialog"
       width="600px"
