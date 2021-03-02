@@ -28,6 +28,7 @@ const config = {
   },
   test: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
+    messageHost: `http://192.168.1.228:8098/ywgk`,
     // apiHost: 'http://47.107.245.151:8021',
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',

@@ -480,6 +480,22 @@ superAdmin = [{
       component: 'check-meeting/meeting-family-statistics'
     }]
   }, {
+    path: '/prison-message',
+    name: 'prison-message',
+    meta: {
+      hidden: true,
+      breadcrumbName: '短信相关数据查询'
+    },
+    children: [{
+      path: '/prison-message/meeting-list',
+      component: 'check-message/message-list',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.prison-message.visit-message.search',
+        breadcrumbName: '短信申请管理列表'
+      }
+    }]
+    }, {
     path: '/coopertive-partner',
     name: 'coopertivePartner',
     redirect: {

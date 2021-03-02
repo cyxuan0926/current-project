@@ -66,6 +66,12 @@ let check = [{
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
     props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
+  }, {
+    path: '/meeting/message',
+    name: 'visit-list',
+    component: 'check-meeting/meeting-message',
+    props: { hasPrisonAreaAuth: true },
+    meta: { permission: 'visit.remote-visit-application.message', breadcrumbName: '短信申请管理' }
   }]
 }, {
   path: '/meeting/deploy',
