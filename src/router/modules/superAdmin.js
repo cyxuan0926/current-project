@@ -370,20 +370,6 @@ superAdmin = [{
       component: 'check-registration/registration-list'
       // component: helper.loadView('check-registration/registration-list')
     }, {
-      path: '/prison-data/family',
-      name: 'prison-data_family',
-      props: {
-        hasAllPrisonQueryAuth: true,
-        hasProvinceQueryAuth: true,
-        provincesId: '20',
-        jailId: 54
-      },
-      meta: {
-        premission: 'visit.visit-family-manage.all-prison.search',
-        breadcrumbName: '家属信息管理列表'
-      },
-      component: 'check-family/family-list'
-    }, {
       path: '/prison-data/meeting-applications',
       name: 'prison-data_meeting-applications',
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
