@@ -6,7 +6,53 @@
       @back="onBack"
       :values="values"
       ref="prison-config_form"
-    />
+    >
+     <template #abnormalCalldurationSwitch>
+        <el-col :span="3">
+          <el-form-item prop="abnormalCalldurationSwitch">
+            <el-switch
+              :width="60"
+              v-model="slotFormData.abnormalCalldurationSwitch"
+              :disabled="isDisabled"
+              active-color="#13ce66"
+              :active-value="1"
+              :inactive-value="0"
+            />
+          </el-form-item>
+        </el-col>
+
+        <template v-if="!!slotFormData.abnormalCalldurationSwitch">
+          <el-col :span="21">
+            <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
+              <el-input-number
+                type="number"
+                style="width:150px"
+                :step="1"
+                step-strictly
+                :disabled="isDisabled"
+                v-model.trim.number="slotFormData.abnormalCallduration"
+                 controls-position="right"
+                clearable
+                placeholder="输入秒数"
+              >
+                <template slot="append">秒</template>
+              </el-input-number>
+              <span style="margin-left:10px"> 秒</span>
+              <font color='#C0C4CC' style="margin-left:20px">说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>
+            </el-form-item>
+          </el-col>
+        </template>
+          <!-- <el-form-item prop="diplomatistFixedMoney" :rules="rules.diplomatistFixedMoney">
+            <el-input
+              v-model.trim="formData.diplomatistFixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item> -->
+      </template>
+    </m-form>
       <!-- <template #basicConfigs>
         <el-col :span="11">
           <el-form-item prop="startMinutes" :rules="rules.startMinutes">
@@ -94,6 +140,7 @@
           </el-form-item>
         </el-col>
       </template> -->
+     
   </div>
 </template>
 
@@ -149,6 +196,13 @@ export default {
     //   else if (!feeReg.test(this.formData[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
     //   else callback()
     // }
+    const validateAbnormalCallduration = (rule, value, callback) => {
+      const { field } = rule
+      const integerNumbers = Number.isInteger(this.slotFormData[field])
+      if (this.slotFormData[field] === '') callback(new Error('请输入异常可视电话时长'))
+      else if (!integerNumbers || this.slotFormData[field] < 10 || this.slotFormData[field] > 600) callback(new Error('请输入10-600之间正整数'))
+      else callback()
+    }
     return {
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '180px' },
@@ -370,14 +424,20 @@ export default {
           setValueConfigs: [{ setValue: 0 }],
           func: this.onMultistageExamineSwitch
         },
-
         userDefinedDuration: {
           label: '审核时可指定通话时长',
           type: 'switch',
           disabled,
           value: 0
         },
-
+        abnormalCalldurationSwitch: {
+          slotName: "abnormalCalldurationSwitch",
+          attrs: {
+             label: '异常可视电话时长配置',
+             disabled,
+             required: true
+          }
+        },
         useMeetingFloor: {
           label: '会见楼开关',
           type: 'switch',
@@ -388,7 +448,22 @@ export default {
         }
       }, formButton),
       values: {},
+
       permission,
+
+      slotFormData: {
+        abnormalCalldurationSwitch: 0,
+
+        abnormalCallduration: 10
+      },
+
+      slotFormRules: {
+        abnormalCallduration: [
+          { validator: validateAbnormalCallduration, trigger: 'blur' }
+        ]
+      },
+
+      isDisabled: disabled
       // formData: {
       //   startMinutes: 5,
       //   startMoney: 15,
@@ -424,6 +499,7 @@ export default {
   },
   computed: {
     ...mapState([
+
       'prison',
       'branchStatus',
       'haveMeetingFloorTerminals'
@@ -449,7 +525,13 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
+        const { abnormalCallduration, abnormalCalldurationSwitch } = cloneDeep(this.prison)
+
         this.values = cloneDeep(this.prison)
+
+        this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
+        this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
+
         // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
         //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
         //   this.$set(this.values, 'prisonAreaList', prisonAreaList)
@@ -504,7 +586,6 @@ export default {
         //       this.$set(this.formItems['branchPrison'], 'disabled', true)
         //       this.$set(this.formItems['prisonAreaList'], 'disabled', true)
         //     }
-        //   })()
         // }
       })
     }
@@ -524,7 +605,6 @@ export default {
     ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
-
     onSubmit(e) {
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
@@ -543,6 +623,20 @@ export default {
         // else e.prisonAreaList = []
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
+
+        const { abnormalCalldurationSwitch, abnormalCallduration } = this.slotFormData
+
+        params = {
+          ...params,
+          abnormalCalldurationSwitch
+        }
+
+        if (abnormalCalldurationSwitch) {
+          params = {
+            ...params,
+            abnormalCallduration
+          }
+        }
 
         // if (chargeType === 2) {
         //   const {
@@ -580,7 +674,8 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-        this.updatePrison(params).then(res => {
+
+       this.updatePrison(params).then(res => {
           if (!res) return
           this.getPrisonDetail({ id: this.$route.params.id })
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')

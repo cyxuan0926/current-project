@@ -3,8 +3,10 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    />
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
@@ -40,6 +42,7 @@ export default {
   mixins: [commonTableColsMixins],
   data () {
     const { belong } = prisons.PRISONAREA
+
     const { options } = this.$store.getters.prisonAreaOptions
     return {
       selfOwnSearchItems: {
@@ -68,11 +71,19 @@ export default {
   methods: {
     getDatas() {
       this.getPrisonersInsideJailsCosts({
-        ...this.filter,
+        ...{
+          ...this.filter,
+          startDate: this.$_dateOneWeekAgo,
+          endDate: this.$_dateNow
+        },
         ...this.pagination
       })
+    },
+
+    onLocalGetFilter() {
+      this.$refs.search.onGetFilter()
     }
-  }
+  },
 }
 </script>
 

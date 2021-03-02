@@ -1,5 +1,5 @@
 <template>
-  <el-row
+<el-row
     class="row-container"
     :gutter="0">
     <m-search
@@ -26,7 +26,7 @@
           />
         </template>
       </el-tabs>
-      <m-table-new
+    <m-table-new
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
@@ -66,11 +66,10 @@
             <span v-else>{{ scope.row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
-        <template
-          slot-scope="scope"
+        <template slot-scope="scope"
           slot="operate">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-          <el-button
+         <el-button
             v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
             size="mini"
             @click="handleAuthorization(scope.row)">授权</el-button>
@@ -78,7 +77,18 @@
             v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(scope.row)">撤回</el-button>
-          <el-button
+      
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="detailRemarks(scope.row)">已备注</el-button>
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& !scope.row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(scope.row)">备注</el-button>
+               <el-button
             v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             type="text"
             size="mini"
@@ -87,6 +97,7 @@
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="meetings.total"
@@ -418,15 +429,19 @@
             </template>
 
             <p class="detail-message-family" style="border: none" >
-              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'">审核时间</span>
+              <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'&&item.status!='CALL'">审核时间</span>
 
               <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
 
               <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
-
-              <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
-            </p>
-
+              <span class="family-name" v-if="item.status=='CALL'">呼叫时间</span>
+              <template  v-if="item.status=='CALL'">
+                 <span class="family-nameDetail">{{ item.createdAt | Date }}</span>
+              </template>
+              <template  v-else>
+                <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
+              </template> 
+               </p>
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
@@ -487,7 +502,8 @@
               </template>
 
             <p class="detail-message-family">
-              <span class="family-name">申请状态</span>
+              <template v-if="item.status!=='CALL'">
+                 <span class="family-name">申请状态</span>
 
               <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
 
@@ -496,11 +512,18 @@
               <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
 
               <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              <span class="family-nameDetail" v-if="item.status=='ENDED'">已结束</span>
               
               <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
 
               <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
               <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
+
+              </template>
+              <template v-if="item.status=='CALL'">
+                <span class="family-name">呼叫状态</span>
+                <span class="family-nameDetail">{{ item.statusName }}</span>
+              </template>
             </p>
           </div>
         </div>
@@ -669,7 +692,7 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      const todayDate = Moment().format('YYYY-MM-DD')
+      const todayDate = this.$_dateNow
 
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
@@ -776,8 +799,12 @@
           editRebut:true,
           meetingQueue:false,
           familiesDetialInform: false,
-          multistageExamine: false
+          multistageExamine: false,
+          setRemarks:false,
+          userRemarks:false
         },
+        getRemarks:'',
+        optionsRemarks:{},
         operateQueryAuth:false,
         toAuthorize: {},
         toShow: {},
@@ -1052,7 +1079,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 105,
+              minWidth: 180,
               align: 'center'
             }
           ]
@@ -1062,6 +1089,7 @@
           prop: 'terminalNo',
           minWidth: 100
         }
+
         // if (!applicationStartDate || !applicationEndDate) {
         //   for(let i = 0; i < basicCols.length; i++) {
         //     if (basicCols[i].prop === 'meetingTime') {
@@ -1149,8 +1177,7 @@
           this.searchItems.auditAt.value = ''
           this.searchItems.status.value = ''
           this.searchItems.isFree.value = ''
-        }
-        else{
+        } else{
           //options
           if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
             this.searchItems.isFree.miss = false
@@ -1195,7 +1222,7 @@
       })
     },
 
-    mounted() {
+    async mounted() {
       // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
       //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
       //   // this.$set(this.searchItems.applicationDate, 'miss', true)
@@ -1207,7 +1234,7 @@
       // }
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
-      this.getDatas('mounted')
+      await this.getDatas('mounted')
 
     },
     methods: {
@@ -1617,6 +1644,12 @@
           params = { meetingId: e.id }
         this.getMeettingsChangelogDetail(params).then(res => {
           if (!res) return
+          if(res.callLogs.length){
+              res.callLogs.forEach((item,index)=>{
+              item.status="CALL"
+              res.changeLogs.splice(1+index, 0, item)
+            })
+          }
           this.toShow = Object.assign({}, res)
           this.show.dialog = true
           this.familyShows = this.toShow.status !== 'DENIED'

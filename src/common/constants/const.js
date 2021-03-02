@@ -139,3 +139,13 @@ export const weeks = [
   { label: '星期六', value: 6, key: 'Saturday' },
   { label: '星期日', value: 0, key: 'Sunday' }
 ]
+
+// 今天
+export const _dateNow = Moment().format('YYYY-MM-DD')
+
+// 一星期之前
+export const _dateOneWeekAgo = Moment().subtract(7, 'days').format('YYYY-MM-DD')
+
+export const _timeNow = `${ _dateNow } 23:59:59`
+
+export const _timeOneWeekAgo = `${ _dateOneWeekAgo } 00:00:00`

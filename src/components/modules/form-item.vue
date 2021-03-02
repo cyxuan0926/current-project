@@ -9,6 +9,7 @@
         v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
         :ref="prop + item.type"
         :type="item.type"
+        :rows="item.rows"
         :maxlength="item.maxlength"
         :clearable="item.clearable"
         :autosize="item.autosize"
@@ -43,6 +44,7 @@
         :loading="item.loading"
         :filterable="!!(item.filterable)"
         :disabled="item.disabled"
+        :collapse-tags="item.collapseTags || false"
         :multiple="item.multiple || false"
         @change="selectChangeEvent($event, prop, item)">
         <el-option

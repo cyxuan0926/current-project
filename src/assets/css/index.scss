@@ -43,11 +43,16 @@ a{
   .el-menu-item.is-active{
     background: #1D262A !important;
   }
-  .iconfont{
+  .iconfont,
+  .newiconfont {
     font-size: 22px;
     font-weight: 500;
     color: #b8c7ce;
     margin-left: -6px;
+  }
+  .newicon-zhiyin {
+    font-size: 18px;
+    margin-right: 4px;
   }
   .second-level{
     &.is-active>.el-submenu__title{
