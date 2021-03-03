@@ -2,28 +2,66 @@
   <el-row
     class="row-container"
     :gutter="0">
-    <el-tabs
-      v-model="tabs"
-      type="border-card" >
-      <el-tab-pane label="用户管理" name="first">
-        <el-form>
-        <el-form-item label="可视电话申请自动审核" class="labelTit">
-          <el-switch
-          v-model="autoAuthorizeMeeting"
-          active-color="#13ce66">
-          </el-switch>
+    <el-tabs type="border-card">
+        <el-form ref="form" label-width="150px" :rules="rules" :model="formData">
+        <el-form-item label="可视电话申请自动审核" :rules="{ required: true }">
+          <el-switch v-model="autoAuthorizeMeeting" active-color="#13ce66" />
         </el-form-item>
-         <el-form-item label="异常可视电话时长配置" class="labelTit">
-          <el-switch
-          v-model="abnormalCallDurationSwitch"
-          active-color="#13ce66">
-          </el-switch>
+
+         <el-form-item label="异常可视电话时长配置" :rules="{ required: true }">
+          <el-switch v-model="abnormalCallDurationSwitch" active-color="#13ce66" />
+
           <label v-if="abnormalCallDurationSwitch" class="sub-title">
             <el-input v-model="abnormalCallDuration" style="width:100px;margin-left:20px;" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
             <span style="margin-left:10px">秒</span>
             <font style="margin-left:20px" color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>
         </el-form-item>
+
+        <el-form-item label="人脸识别阈值设置">
+          <el-col :span="24">
+            <el-form-item
+              label="IOS配置"
+              prop="afrIOSSetValue"
+              label-width="65px"
+              class="el-form-item_afrInterval"
+            >
+              <el-select v-model="formData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
+                <el-option 
+                  v-for="configs in faceRecognitionValues"
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-form-item
+              label="安卓配置"
+              prop="afrAndroidSetValue"
+              label-width="65px"
+              class="el-form-item_afrInterval"
+            >
+              <el-select v-model="formData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
+                <el-option 
+                  v-for="configs in faceRecognitionValues"
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+
+        <el-form-item label="人脸检索间隔时间" prop="afrInterval" class="el-form-item_afrInterval">
+          <el-input placeholder="请输入人脸检索间隔时间" v-model="formData.afrInterval">
+            <template #append>秒</template>
+          </el-input>
+        </el-form-item>
+
           <el-form-item ></el-form-item>
           <el-form-item ></el-form-item>
           <el-form-item ></el-form-item>
@@ -39,7 +77,6 @@
             <el-button type="primary" style="float: right; margin-right: 60px;" @click="submitTit()">提交</el-button>
           </el-form-item>
           </el-form>
-      </el-tab-pane>
     </el-tabs>
     <el-dialog
       title="提示"
@@ -56,22 +93,37 @@
 
 <script>
   import http from '@/service'
+
+import { faceRecognitionValues } from '@/common/constants/const'
+
+import validator from '@/utils'
+
   export default {
     data() {
-      // 标签元素
-      const tabsItems = [
-        {
-          label: '配置信息',
-          name: 'first' }
-      ]
       return {
-        tabs:"first",
         dialogVisible:false,
         params:false,
         abnormalCallDuration:300,
         autoAuthorizeMeeting: true,
         abnormalCallDurationSwitch: true,
-        multistageExamine:false
+        multistageExamine:false,
+        formData: {
+          afrInterval: '1500',
+
+          afrIOSSetValue: '0.2',
+
+          afrAndroidSetValue: '0.4'
+        },
+
+        faceRecognitionValues,
+
+        rules: {
+          afrInterval: [
+            { required: true, message: '请输入人脸检索间隔时间', trigger: 'blur' },
+            { validator: validator.isPositiveIntegers, trigger: 'blur' },
+            { validator: validator.numberRange, trigger: 'blur', min: 10, max: 3600 }
+          ]
+        }
       }
     },
     computed: {
@@ -109,24 +161,36 @@
         this.dialogVisible = false
       },
       submitDeploy(){
-        let params = {
-          autoAuthorizeMeeting: this.autoAuthorizeMeeting?1:0,
+        const params = {
+          autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
           abnormalCallDuration: this.abnormalCallDuration,
-          abnormalCallDurationSwitch: this.abnormalCallDurationSwitch?1:0
+          abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1: 0,
+          ...this.formData
         }
-        http.getMeetDeployUpdate(params).then(res => {
-          this.getDeploy()
+
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            http.getMeetDeployUpdate(params).then(res => {
+              this.getDeploy()
+            })
+          }
         })
       }
     }
   }
 </script>
-<style scoped>
- .labelTit.el-form-item::before{
-    content: '*';
-    color: #F56C6C;
-    float: left;
-    margin-top: 10px;
-    margin-right: 4px;
+
+<style lang="scss" scoped>
+.el-form {
+  /deep/ .el-form-item_afrInterval {
+    .el-form-item__content {
+      .el-input {
+        width: 20%;
+      }
+      .el-select {
+        width: 76%;
+      }
+    }
   }
+}
 </style>
