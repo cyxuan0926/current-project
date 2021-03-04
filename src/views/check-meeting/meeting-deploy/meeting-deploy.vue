@@ -139,6 +139,7 @@ import validator from '@/utils'
           this.multistageExamine=res.data.multistageExamine?true:false
           this.abnormalCallDurationSwitch=res.data.abnormalCallDurationSwitch?true:false
           this.abnormalCallDuration=res.data.abnormalCallDuration
+          this.formData = Object.assign({}, res.data)
         })
       },
       changeTimes(){

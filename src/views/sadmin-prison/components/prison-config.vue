@@ -242,8 +242,6 @@ export default {
       else callback()
     }
     return {
-      num: '',
-
       faceRecognitionValues,
 
       formItems: Object.assign({}, {
@@ -567,7 +565,6 @@ export default {
   },
   computed: {
     ...mapState([
-
       'prison',
       'branchStatus',
       'haveMeetingFloorTerminals'
@@ -593,12 +590,22 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
-        const { abnormalCallduration, abnormalCalldurationSwitch } = cloneDeep(this.prison)
+        const {
+          abnormalCallduration,
+          abnormalCalldurationSwitch,
+          afrIOSSetValue,
+          afrAndroidSetValue
+        } = cloneDeep(this.prison)
 
         this.values = cloneDeep(this.prison)
 
         this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
+
         this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
+
+        this.$set(this.slotFormData, 'afrIOSSetValue', +afrIOSSetValue)
+
+        this.$set(this.slotFormData, 'afrAndroidSetValue', +afrAndroidSetValue)
 
         // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
         //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
