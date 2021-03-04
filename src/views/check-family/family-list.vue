@@ -18,11 +18,7 @@
     </m-search>
 
     <el-col :span="24">
-      <el-tabs
-        v-if="!isSuperAdmin"
-        v-model="tabs"
-        type="card"
-      >
+      <el-tabs v-model="tabs" type="card">
         <el-tab-pane label="家属信息管理" name="families" />
 
         <el-tab-pane label="警员家属信息管理" name="jailerFamilies" />
@@ -80,23 +76,6 @@
             @click="removeBlackList(row)"
           >移出黑名单
           </el-button>
-        </template>
-
-        <template #isSendMessage>
-          <!-- 修改 -->
-          <!-- <template>
-            <span>是/否</span>
-
-            <el-button type="text">修改</el-button>
-          </template> -->
-          <!-- 保存 -->
-          <div class="send-message_save">
-            <el-select size="small">
-              <el-option />
-            </el-select>
-
-            <el-button type="text">保存</el-button>
-          </div>
         </template>
       </m-table-new>
     </el-col>
@@ -163,11 +142,7 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapState,
-  mapGetters
-} from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import validator from '@/utils'
 
@@ -272,37 +247,37 @@ export default {
           type: 'input',
           label: '警员姓名',
           miss: true
-        },
-        // 罪犯姓名
-        prisonerName: {
-          type: 'input',
-          label: '罪犯姓名',
-          miss: false
-        },
-        // 是否超3位家属
-        isMoreThanThree: {
-          type: 'select',
-          noPlaceholder: true,
-          label: '是否超过3位家属',
-          options: isBlacklistOptions,
-          belong: {
-            value: 'value',
-            label: 'label'
-          },
-          miss: false
-        },
-        // 是否发送短信
-        isSendMessage: {
-          type: 'select',
-          noPlaceholder: true,
-          label: '是否发送短信',
-          options: isBlacklistOptions,
-          belong: {
-            value: 'value',
-            label: 'label'
-          },
-          miss: false
         }
+        // 罪犯姓名
+        // prisonerName: {
+        //   type: 'input',
+        //   label: '罪犯姓名',
+        //   miss: false
+        // },
+        // 是否超3位家属
+        // isMoreThanThree: {
+        //   type: 'select',
+        //   noPlaceholder: true,
+        //   label: '是否超过3位家属',
+        //   options: isBlacklistOptions,
+        //   belong: {
+        //     value: 'value',
+        //     label: 'label'
+        //   },
+        //   miss: false
+        // },
+        // 是否发送短信
+        // isSendMessage: {
+        //   type: 'select',
+        //   noPlaceholder: true,
+        //   label: '是否发送短信',
+        //   options: isBlacklistOptions,
+        //   belong: {
+        //     value: 'value',
+        //     label: 'label'
+        //   },
+        //   miss: false
+        // }
       },
       filter: {},
       excelReason: ''
@@ -311,8 +286,6 @@ export default {
 
   computed: {
     ...mapState(['families']),
-
-    ...mapGetters(['isSuperAdmin']),
 
     dialogContent() {
       let title,
@@ -359,17 +332,6 @@ export default {
     },
 
     tableCols() {
-      const isSuperAdminTableCols = [
-        {
-          label: '省份',
-          prop: ''
-        },
-        {
-          label: '监狱名称',
-          prop: ''
-        }
-      ]
-
       const familyTableCols = [
         {
           label: '家属姓名',
@@ -394,11 +356,6 @@ export default {
         {
           label: '操作',
           slotName: 'operate'
-        },
-        {
-          label: '是否发送短信',
-          slotName: 'isSendMessage',
-          minWidth: '100px'
         }
       ]
 
@@ -421,8 +378,6 @@ export default {
         }
       ]
 
-      if (this.isSuperAdmin) return [...isSuperAdminTableCols, ...familyTableCols]
-
       if (this.tabs === this.tabOptions.FAMILY) return familyTableCols
 
       else return jailerFamiliesTableCols
@@ -436,20 +391,20 @@ export default {
         this.$set(this.searchItems.name, 'miss', false)
         this.$set(this.searchItems.prisonArea, 'miss', false)
         this.$set(this.searchItems.isBlacklist, 'miss', false)
-        this.$set(this.searchItems.prisonerName, 'miss', false)
-        this.$set(this.searchItems.isMoreThanThree, 'miss', false)
-        this.$set(this.searchItems.isSendMessage, 'miss', false)
+        // this.$set(this.searchItems.prisonerName, 'miss', false)
+        // this.$set(this.searchItems.isMoreThanThree, 'miss', false)
+        // this.$set(this.searchItems.isSendMessage, 'miss', false)
         this.$set(this.searchItems.familyName, 'miss', true)
         this.$set(this.searchItems.policeName, 'miss', true)
       }
       else {
-        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist', 'prisonerName', 'isMoreThanThree', 'isSendMessage'])
+        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist'])
         this.$set(this.searchItems.name, 'miss', true)
         this.$set(this.searchItems.prisonArea, 'miss', true)
         this.$set(this.searchItems.isBlacklist, 'miss', true)
-        this.$set(this.searchItems.prisonerName, 'miss', true)
-        this.$set(this.searchItems.isMoreThanThree, 'miss', true)
-        this.$set(this.searchItems.isSendMessage, 'miss', true)
+        // this.$set(this.searchItems.prisonerName, 'miss', true)
+        // this.$set(this.searchItems.isMoreThanThree, 'miss', true)
+        // this.$set(this.searchItems.isSendMessage, 'miss', true)
         this.$set(this.searchItems.familyName, 'miss', false)
         this.$set(this.searchItems.policeName, 'miss', false)
       }
@@ -458,8 +413,6 @@ export default {
   },
 
   async mounted() {
-    if (this.isSuperAdmin) this.$refs.search.onGetFilter()
-
     await this.getDatas()
   },
 
