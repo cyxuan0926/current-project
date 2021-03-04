@@ -5,6 +5,7 @@
     <m-search
       :items="searchItems"
       ref="search"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch" >
         <el-button  
         slot="append"
@@ -277,7 +278,7 @@
             >
               <span class="family-name"  style="line-height: 40px">拒绝原因</span>
 
-              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{toShow.rejectReason}}</span>
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{toShow.remarks}}</span>
             </p>
             </template>
           </div>
@@ -666,18 +667,9 @@ export default {
      this.filter.tab = this.tabs
      let res = await getMessagelist({
         ...this.filter,
-        ...this.pagination,
-        ...this.$store.state.global.user
+        ...this.pagination
       })
       this.tabledate=res
-      // if (this.tabs === 'CANCELED') await getMessagelist({
-      //   ...this.filter,
-      //   ...this.pagination
-      // })
-      // else if (this.tabs !== 'CANCELED') this.getVisits({
-      //   ...this.filter,
-      //   ...this.pagination
-      // })
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)

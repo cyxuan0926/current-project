@@ -28,18 +28,12 @@
       </el-tabs>
     <m-table-new
         stripe
+         :cols="tableCols"
+        ref="parentElTable"
         :data="meetings.contents"
-        @sort-change="sortChange"
-        :cols="tableCols" >
+        @sort-change="sortChange">
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
-        :cols="tableCols"
-        ref="parentElTable"
-      >
-        <template
-          slot-scope="scope"
-          slot="meetingTime">
-          <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
         </template>
 
         <template #families="{ row }">
@@ -1185,9 +1179,7 @@
       },
 
       tabs(val) {
-        console.log('tabs：', val)
         this.$refs.search.onSearch('tabs')
-        console.log(this.filter)
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1463,7 +1455,6 @@
       },
 
       async getDatas(e) {
-        console.log('getDatas：', e, this.tabs, this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
