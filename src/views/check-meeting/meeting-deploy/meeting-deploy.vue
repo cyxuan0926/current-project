@@ -24,7 +24,7 @@
               label="IOS配置"
               prop="afrIOSSetValue"
               label-width="65px"
-              class="el-form-item_afrInterval"
+              class="el-form-item_afrSetValue"
             >
               <el-select v-model="formData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
                 <el-option 
@@ -42,7 +42,7 @@
               label="安卓配置"
               prop="afrAndroidSetValue"
               label-width="65px"
-              class="el-form-item_afrInterval"
+              class="el-form-item_afrSetValue"
             >
               <el-select v-model="formData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
                 <el-option 
@@ -188,8 +188,13 @@ import validator from '@/utils'
       .el-input {
         width: 20%;
       }
+    }
+  }
+
+  /deep/ .el-form-item_afrSetValue {
+    .el-form-item__content {
       .el-select {
-        width: 76%;
+        width: 15.5%;
       }
     }
   }

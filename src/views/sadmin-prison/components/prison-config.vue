@@ -700,11 +700,18 @@ export default {
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
-        const { abnormalCalldurationSwitch, abnormalCallduration } = this.slotFormData
+        const {
+          abnormalCalldurationSwitch,
+          abnormalCallduration,
+          afrIOSSetValue,
+          afrAndroidSetValue
+        } = this.slotFormData
 
         params = {
           ...params,
-          abnormalCalldurationSwitch
+          abnormalCalldurationSwitch,
+          afrAndroidSetValue,
+          afrIOSSetValue
         }
 
         if (abnormalCalldurationSwitch) {
