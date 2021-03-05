@@ -64,7 +64,6 @@ export default {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
-          clearable:"true",
           value: [startDate, endDate],
           unlinkPanels: true
         }

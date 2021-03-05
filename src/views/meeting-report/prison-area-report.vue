@@ -38,7 +38,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
-const endDate = this.$_dateNow
+const endDate = Moment().format('YYYY-MM-DD')
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -53,7 +53,6 @@ export default {
           type: 'select',
           label: '监区',
           value: '',
-          canNotClear: true,
           getting: true,
           belong: {
             value: 'id',
@@ -62,18 +61,6 @@ export default {
           filterable: true,
           options: []
         },
-        // reportRange: {
-        //   type: 'monthRangeSelector',
-        //   canNotClear: true,
-        //   startValue: startDate,
-        //   endValue: endDate,
-        //   startKey: 'startDate',
-        //   endKey: 'endDate',
-        //   range: {
-        //     max: Moment().subtract(1, 'months').format('YYYY-MM'),
-        //     maxMonthRange: 24
-        //   }
-        // },
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,

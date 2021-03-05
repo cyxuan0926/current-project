@@ -44,7 +44,6 @@ export default {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
-          clearable:"true",
           value: [startDate, endDate],
           unlinkPanels: true
         }
@@ -121,19 +120,9 @@ export default {
           prop: 'endedPercentShowValue',
           minWidth: '8.2%'
         },
-        // {
-        //   label: '审核通过后取消次数(次)',
-        //   prop: 'canceled',
-        //   minWidth: '8.8%'
-        // },
         {
-          label: '警官取消次数(次)',
-          prop: 'canceledTotal',
-          minWidth: '8.8%'
-        },
-        {
-          label: '家属取消次数(次)',
-          prop: 'familyCanceledTotal',
+          label: '审核通过后取消次数(次111)',
+          prop: 'canceled',
           minWidth: '8.8%'
         }
       ],

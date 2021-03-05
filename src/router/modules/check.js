@@ -114,7 +114,7 @@ let check = [{
   }, {
     path: '/meeting-report/meeting-statistic-table',
     component: 'gd-admin/gd-meeting/meeting-list',
-    props: { hasDiplomatQueryAuth: true },
+    props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.visit-statistic.meeting-statistic-table', breadcrumbName: '监区可视电话统计表' }
   }, {
     path: '/meeting-report/meeting-island-list',
