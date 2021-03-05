@@ -203,7 +203,7 @@ export default {
     return service.putObj('/dict', params)
   },
 
-  // 监狱操作指引新增
+  // 监狱操作指引存草稿
   addBusGuide: params => {
     return service.postObj('/business/guide', params)
   },
@@ -216,6 +216,16 @@ export default {
   // 监狱操作指引查询列表
   businessList: params => {
     return service.get('/business/guide/findPage', params).then(res => res.data)
+  },
+
+  // 监狱操作指引上线
+  businessOnLine: id => {
+    return service.post(`/business/guide/online/${ id }`).then(res => res.data)
+  },
+
+  // 监狱操作指引下线
+  businessOffLine: id => {
+    return service.post(`/business/guide/offline/${ id }`).then(res => res.data)
   }
 }
 

@@ -20,7 +20,7 @@
             return {
                 formItems: {
                     buttons: isAdd ?
-                        [ { add: { loading: false } }, { preview: { loading: false } }, 'back' ] :
+                        [ { add: { loading: false }, text: '存草稿' }, { preview: { loading: false } }, 'back' ] :
                         [ { update: { loading: false } }, { preview: { loading: false } }, 'back'],
                     formConfigs: { labelWidth: '150px' },
                     content: {
@@ -34,6 +34,7 @@
                     guide: { type: 'jaileditor', label: '更新操作指引', rules: ['required']}
                 },
                 isAdd,
+                isCanPublish: true,
                 gid: !isAdd ? this.$route.params.id : ''
             }
         },

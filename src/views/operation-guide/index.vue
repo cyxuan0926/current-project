@@ -8,7 +8,7 @@
         type="primary"
         plain
         class="button-add button-shift-down"
-        @click="openPush('add')">新增</el-button>
+        @click="handleClick('add')">新增</el-button>
     <m-search
       ref="search"
       :items="searchItems"
@@ -20,25 +20,35 @@
         :data="tableDatas"
         :cols="tableCols"
         class="mini-td-padding">
+            <template #status="{ row }">
+                <span>{{ row.status == '0' ? '草稿' : (row.status == '1' ? '已上线' : '已下线') }}</span>
+            </template>
             <template #guide="{ row }">
                 <el-button
                     type="text"
                     size="mini"
-                    @click="openPush('detail',row)">
-                    更新指引
+                    @click="handleClick('detail',row)">
+                    查看更新指引
                 </el-button>
             </template>
             <template #operation="{ row }" v-if="isAdmin">
                 <el-button
-                    v-if="row.id == maxId"
+                    v-if="row.status == '0'"
                     type="text"
                     size="mini"
-                    @click="openPush('edit',row)">编辑
+                    @click="handleClick('edit',row)">编辑
+                </el-button>
+                <el-button
+                    v-if="row.status == '0'"
+                    type="text"
+                    size="mini"
+                    @click="handleClick('online',row)">上线
                 </el-button>
                 <!-- <el-button
+                    v-if="row.status == '1'"
                     type="text"
                     size="mini"
-                    @click="openPush('detail',row)">预览
+                    @click="handleClick('offline',row)">下线
                 </el-button> -->
             </template>
       </m-table-new>
@@ -89,9 +99,10 @@
                         start: 'startTime',
                         end: 'endTime',
                         startPlaceholder: '开始时间',
-                        endPlaceholder: '结束时间'
+                        endPlaceholder: '结束时间',
                         // miss: true,
-                        // value: ''
+                        // value: [this.$_dateOneWeekAgo, this.$_dateNow]
+                        value: ['2021-01-01', '2021-01-30']
                     },
                     content: {
                         type: 'input',
@@ -110,12 +121,21 @@
         },
         created() {
             if( this.isAdmin ) {
-                this.tableCols.push({
-                    label: '操作',
-                    slotName: 'operation',
-                    width: '120px',
-                    align: 'center'
-                })
+                this.tableCols.push(
+                    {
+                        label: '状态',
+                        // prop: 'guide',
+                        // showOverflowTooltip: true
+                        slotName: 'status',
+                        width: '120px',
+                    },
+                    {
+                        label: '操作',
+                        slotName: 'operation',
+                        width: '120px',
+                        align: 'center'
+                    }
+                )
             }
         },
         methods:{
@@ -128,11 +148,12 @@
             getData(flag){
                 let params={...this.filter,...this.pagination}
                 http.businessList(params).then(res=>{
-                    this.tableDatas=res.list
-                    this.total=res.total
-                    if( flag == 'mounted' && res.list && res.list.length ) {
-                        this.maxId = res.list[0].id
-                    }
+                    this.tableDatas = res.list
+                    this.total = res.total
+                    // if( flag == 'mounted' && res.list && res.list.length ) {
+                    //     this.maxId = res.list[0].id
+                    //     console.log('mounted', this.maxId)
+                    // }
                 })
             },
              async onSearch() {
@@ -142,14 +163,13 @@
                 this.pagination = Object.assign({}, { page: 1, rows })
                 await this.getData()
             },
-            openPush(even,row){
-                if(even=='add'){
+            async handleClick(type, row){
+                if(type == 'add'){
                     this.$router.push({
                         path: '/operation-guide/add'
                     })
                     this.setGuideStorage()
-                }
-                if(even=='edit'){
+                }else if(type == 'edit'){
                     this.$router.push({
                         path: `/operation-guide/edit/${row.id}`
                     })
@@ -157,8 +177,7 @@
                         guide: row.guide,
                         content: row.content
                     })
-                }
-                if(even=='detail'){
+                }else if(type == 'detail'){
                     this.$router.push({
                         path: '/operation-guide/detail'
                     })
@@ -168,11 +187,23 @@
                         content: row.content,
                         preContent: this.handleTextareaValue(row.content)
                     })
+                }else if (type == 'online') {
+                    await this.$confirm('上线此操作指引', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
+                    await http.businessOnLine(row.id)
+                    this.getData()
+
+                }else if(type == 'offline') {
+                    await http.businessOffLine(row.id)
+                    this.getData()
                 }
             }
         },
         async mounted() {
-            this.$set(this.searchItems['applicationDate'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
+            // this.$set(this.searchItems['applicationDate'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
 
             this.$refs.search.onGetFilter()
 
