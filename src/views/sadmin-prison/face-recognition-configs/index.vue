@@ -124,11 +124,11 @@ export default {
 
           type: 'input',
 
-          rules: ['required', 'isPositiveIntegers'],
+          rules: ['required', 'isPositiveIntegers', 'numberRange10-3600'],
 
           append: '秒',
 
-          value: '60'
+          value: '1500'
         },
 
         buttons: [{

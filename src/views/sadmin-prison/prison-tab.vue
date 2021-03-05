@@ -18,8 +18,8 @@
         <el-tab-pane
           :label="item.label"
           :key='item.key'
-          :name="item.key">
-        </el-tab-pane>
+          :name="item.key"
+        />
       </template>
     </el-tabs>
     <router-view />
