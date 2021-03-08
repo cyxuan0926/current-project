@@ -112,17 +112,17 @@ export default {
         },
         {
           label: '通话结束次数(次)',
-          prop: 'ended',
+          prop: 'endedTotal',
           minWidth: '8.2%'
         },
         {
           label: '通话结束比例',
-          prop: 'endedPercentShowValue',
+          prop: 'endedScale',
           minWidth: '8.2%'
         },
         {
-          label: '审核通过后取消次数(次111)',
-          prop: 'canceled',
+          label: '审核通过后取消次数(次)',
+          prop: 'canceledTotal',
           minWidth: '8.8%'
         }
       ],

@@ -11,6 +11,11 @@
         stripe
         :data="tabledata.report"
         :cols="tableCols">
+        <template #domicile="{ row }">
+           <span v-if="row.domicile==0">大陆居民</span>
+           <span v-if="row.domicile==1">港澳居民</span>
+           <span v-if="row.domicile==2">台湾居民</span>
+        </template>
         <template #imageUrl="{ row }">
           <img :src="row.imageUrl + '?token=' + $urls.token">
         </template>
@@ -80,6 +85,12 @@ export default {
           prop: 'title',
           minWidth: '11%',
           showOverflowTooltip: true
+        },
+        {
+          label: '地区',
+          prop: 'domicile',
+          minWidth: '8.2%',
+          slotName: 'domicile'
         },
         {
           label: '申请次数(次)',
