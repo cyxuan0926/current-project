@@ -28,7 +28,7 @@ export default {
   },
    // 获取驳回编辑列表 家属注册管理
    getRejectEdit: params => {
-    return service.get('/get', params).then(res => res && res.data)
+    return service.get('/meetingsReviewWord/get', params).then(res => res && res.data)
   },
   // 保存修改驳回编辑列表 家属注册管理
   setRejectEdit: params => {
