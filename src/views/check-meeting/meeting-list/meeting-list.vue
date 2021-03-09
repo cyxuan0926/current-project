@@ -1340,7 +1340,8 @@
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
-      let params=JSON.parse(localStorage.getItem('user'));
+       let params={}
+          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
           params.type=2
       let res = await http.getRejectEdit( params )
       if(res.content){
