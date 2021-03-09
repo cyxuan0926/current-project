@@ -806,7 +806,6 @@ export default {
         })
         this.withdrawForm.selectRemark=str
         this.withdrawForm.lengthRemark=1000-this.withdrawForm.selectRemark.length
-        console.log(this.withdrawForm.lengthRemark)
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){

@@ -12,9 +12,9 @@
         :data="tabledata.report"
         :cols="tableCols">
          <template #domicile="{ row }">
-           <span v-if="row.domicile==0">大陆居民</span>
-           <span v-if="row.domicile==1">港澳居民</span>
-           <span v-if="row.domicile==2">台湾居民</span>
+           <span v-if="row.domicile==0">大陆</span>
+           <span v-if="row.domicile==1">港澳</span>
+           <span v-if="row.domicile==2">台湾</span>
         </template>
         </m-table-new>
     </el-col>
@@ -56,7 +56,7 @@ export default {
       searchItems: {
         domicile: {
             type: 'select',
-            label: '地区',
+            label: '国家或地区名称',
             options,
             value: ''
         },

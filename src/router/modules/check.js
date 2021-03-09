@@ -121,11 +121,6 @@ let check = [{
     component: 'gd-admin/gd-meeting/island-meeting-list',
     meta: { permission: 'visit.visit-statistic.island-list', breadcrumbName: '非大陆居民通话统计表' }
   }, {
-    path: '/meeting-report/meeting-sadmin-island-list',
-    component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
-    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
-  }, {
     path: '/meeting/family-meeting-statistics',
     name: 'meeting-family-meeting-statistics',
     meta: {
