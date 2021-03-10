@@ -85,6 +85,19 @@ superAdmin = [{
     //   component: loadView('sadmin-prison/prison-add')
     // },
     {
+      path: '/prison/process',
+      name: 'prison-process',
+      props: { role: 0 },
+      meta: {
+        role: '0',
+        permission: 'visit.prison-process.search',
+        breadcrumbName: '审批流程配置',
+        activeMenu: '/prison/list',
+        componentsUnRemoveKeepAlive: ['PrisonTab']
+      },
+      component: 'check-meeting/meeting-deploy/meeting-process'
+    },
+    {
       path: '/prison/visit/:id',
       name: 'prison-visit',
       props: { role: 0 },

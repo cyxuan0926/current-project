@@ -75,11 +75,20 @@ let check = [{
   }]
 }, {
   path: '/meeting/deploy',
-  redirect: { path: '/meeting/deploy/deploy' },
+  redirect: '/meeting/deploy/deploy',
+  meta: { breadcrumbName: '监狱配置管理' },
   children: [{
     path: '/meeting/deploy/deploy',
-    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '监狱配置管理 ' },
+    meta: { permission: 'visit.prison-settings.deploy', breadcrumbName: '相关配置管理' },
     component: 'check-meeting/meeting-deploy/meeting-deploy'
+  }, {
+    path: '/meeting/deploy/process-edit/:id',
+    meta: { permission: 'visit.prison-settings.process-edit', breadcrumbName: '审批流程管理' },
+    component: 'check-meeting/meeting-deploy/meeting-process-edit'
+  }, {
+    path: '/meeting/deploy/process-add',
+    meta: { permission: 'visit.prison-settings.process-edit', breadcrumbName: '审批流程管理' },
+    component: 'check-meeting/meeting-deploy/meeting-process-edit'
   }]
 }, {
   path: '/meeting-report',
@@ -116,7 +125,7 @@ let check = [{
     path: '/meeting-report/meeting-diplomatist-detail',
     component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     props: { hasDiplomatQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
+    meta: { permission: 'visit.remote-visit-application.diplomatic-consul-official.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }, {
     path: '/meeting-report/meeting-statistic-table',
     component: 'gd-admin/gd-meeting/meeting-list',
