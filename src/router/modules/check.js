@@ -243,6 +243,13 @@ let check = [{
     // component: resolve => require(['@/views/check-data-import-details/prisoner-pocket-money-list'], resolve),
     meta: { permission: 'visit.data-search.pocket-money.search', breadcrumbName: '服刑人员零花钱详情表' }
   }, {
+    path: '/import-data-details/prisoner-score/list',
+    name: 'prisoner-score-list',
+    props: { type: dataImportDetails.DATA_REWARD_PUNISHMENT },
+    component: 'check-data-import-details/prisoner-score-list',
+    // component: resolve => require(['@/views/check-data-import-details/prisoner-reward-punishment-list'], resolve),
+    meta: { permission: 'visit.data-search.diplomatic-score.search', breadcrumbName: '服刑人员计分考核表' }
+  }, {
     path: '/import-data-details/inside-jails-costs/list',
     name: 'inside-jails-costs-list',
     props: { type: dataImportDetails.DATA_PRISON_CONSUMPTION },
