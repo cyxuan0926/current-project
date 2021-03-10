@@ -101,8 +101,7 @@
                         startPlaceholder: '开始时间',
                         endPlaceholder: '结束时间',
                         // miss: true,
-                        // value: [this.$_dateOneWeekAgo, this.$_dateNow]
-                        value: ['2021-01-01', '2021-01-30']
+                        value: [this.$_dateOneWeekAgo, this.$_dateNow]
                     },
                     content: {
                         type: 'input',
