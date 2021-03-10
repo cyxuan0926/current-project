@@ -32,7 +32,7 @@ export default {
   },
   // 保存修改驳回编辑列表 家属注册管理
   setRejectEdit: params => {
-    return service.postObj('/edit', params).then(res => res && res.code === 200)
+    return service.postObj('/meetingsReviewWord/edit', params).then(res => res && res.code === 200)
   },
 
   // 家属注册管理-一级授权

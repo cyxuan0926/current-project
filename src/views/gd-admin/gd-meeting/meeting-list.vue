@@ -121,9 +121,13 @@ export default {
           minWidth: '8.2%'
         },
         {
-          label: '审核通过后取消次数(次)',
+          label: '警官取消次数(次)',
           prop: 'canceledTotal',
-          minWidth: '8.8%'
+          minWidth: '8.2%'
+        },{
+          label: '家属取消次数(次)',
+          prop: 'familyCanceledTotal',
+          minWidth: '8.2%'
         }
       ],
       tabledata:{}
