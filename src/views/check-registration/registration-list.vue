@@ -867,6 +867,19 @@ export default {
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
         let res = await http.setRejectEdit(params)
+        if(res){
+          let params={}
+              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
+              params.type=2
+          let res = await http.getRejectEdit( params )
+          if(res.content){
+            this.content = res.content
+            this.contentId=res.id
+            this.updateer=res.updateEr
+          }else{
+            this.content = []
+          }
+      }
        this.show.editRebut=true
       }
     },
