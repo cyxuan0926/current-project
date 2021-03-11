@@ -21,7 +21,7 @@
         :cols="tableCols"
         class="mini-td-padding">
             <template #status="{ row }">
-                <span>{{ row.status == '0' ? '草稿' : (row.status == '1' ? '已上线' : '已下线') }}</span>
+                <span>{{ row.status == '0' ? '草稿' : '已上线' }}</span>
             </template>
             <template #guide="{ row }">
                 <el-button
@@ -44,12 +44,12 @@
                     size="mini"
                     @click="handleClick('online',row)">上线
                 </el-button>
-                <!-- <el-button
+                <el-button
                     v-if="row.status == '1'"
                     type="text"
                     size="mini"
-                    @click="handleClick('offline',row)">下线
-                </el-button> -->
+                    @click="handleClick('offline',row)">删除
+                </el-button>
             </template>
       </m-table-new>
     </el-col>
@@ -144,8 +144,8 @@
                 return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
             },
 
-            getData(flag){
-                let params={...this.filter,...this.pagination}
+            getData(){
+                let params={...this.filter,...this.pagination, statusList: this.isAdmin ? '0,1' : '1'}
                 http.businessList(params).then(res=>{
                     this.tableDatas = res.list
                     this.total = res.total
@@ -164,6 +164,12 @@
             },
             async handleClick(type, row){
                 if(type == 'add'){
+                    let { list } = await http.businessList({ statusList: '0', page: 1, rows: 999 })
+                    if( list && list.length ) {
+                        this.$message.closeAll()
+                        this.$message.warning("还有未上线的草稿")
+                        return
+                    }
                     this.$router.push({
                         path: '/operation-guide/add'
                     })
@@ -196,6 +202,11 @@
                     this.getData()
 
                 }else if(type == 'offline') {
+                    await this.$confirm('删除此操作指引', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
                     await http.businessOffLine(row.id)
                     this.getData()
                 }

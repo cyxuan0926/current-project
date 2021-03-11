@@ -64,7 +64,7 @@
           <template slot-scope="scope">
             <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
           </template>
-        </el-table-column>  
+        </el-table-column>
         <el-table-column
           v-if="isShowPhone"
           prop="phone"
@@ -142,7 +142,7 @@
           prop="relationship"
           label="关系"
           min-width="50"
-          show-overflow-tooltip 
+          show-overflow-tooltip
         />
         <el-table-column
           label="家属可视电话告知书"
@@ -182,7 +182,7 @@
             {{ scope.row.auditAt | Date }}</template>
         </el-table-column>
         <el-table-column
-          label="操作" 
+          label="操作"
           min-width="60"
         >
 
@@ -518,8 +518,8 @@
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content" 
-               :key='index' 
+           <li v-for="(item,index) in content"
+               :key='index'
                class="infinite-list-item">
                {{index+1}}.{{ item }}
             </li>
@@ -534,7 +534,7 @@
          </span>
       </div>
       <el-row :gutter="0">
-       
+
         <el-button
            v-if='show.editRebut'
            type="primary"
@@ -870,7 +870,7 @@ export default {
         if(res){
           let params={}
               params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=2
+              params.type=1
           let res = await http.getRejectEdit( params )
           if(res.content){
             this.content = res.content
@@ -1249,7 +1249,7 @@ export default {
            width: 100%;
            height: 100%;
            cursor: pointer;
-.button-box 
+.button-box
   .el-button
     &:first-of-type
       margin-left: 0px !important;
@@ -1270,5 +1270,5 @@ export default {
   >>> .el-image
     height: auto;
 
-  
+
 </style>
