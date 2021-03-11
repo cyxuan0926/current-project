@@ -1,16 +1,16 @@
 <template>
   <el-upload
+    ref="upload"
     :headers="headers"
     class="el-upload__excel"
     :multiple="false"
     accept=".xls,.xlsx"
     :on-success="getResults"
     :on-error="handleError"
-    :action="actionsUrl">
-  <el-button
-    type="primary">
-    {{ text }}
-  </el-button>
+    :action="actionsUrl"
+    v-bind="configs['attrs']"
+  >
+    <el-button slot="trigger" type="primary">{{ text }}</el-button>
 </el-upload>
 </template>
 <script>
@@ -40,11 +40,25 @@ export default {
           Authorization: `${ token_type } ${ access_token }`
         }
       }
+    },
+
+    configs: {
+      type: Object,
+      default: () => ({
+        attrs: {}
+      })
     }
   },
+
   computed: {
     actionsUrl() {
       return `${this.$urls.apiHost}${this.$urls.apiPath}${this.url}`
+    }
+  },
+
+  methods: {
+    onManualUpload() {
+      this.$refs.upload.submit()
     }
   }
 }

@@ -129,9 +129,8 @@ import { mapState, mapActions } from 'vuex'
 
 import validate from '@/utils'
 
-import switches from '@/filters/modules/switches'
-
 import prisonAreaLevel from '@/mixins/prison-area-level'
+
 import index from '../../components/multistage_examine-records/index.vue'
 
 export default {
@@ -197,7 +196,7 @@ export default {
 
       gettingPrison: true,
 
-      terminalTypes: switches.terminalTypes,
+      terminalTypes: this.$store.state.terminalTypes,
 
       formData: {},
 

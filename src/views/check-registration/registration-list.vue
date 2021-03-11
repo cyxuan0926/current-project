@@ -570,7 +570,7 @@ import {
 } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
-import switches from '@/filters/modules/switches'
+
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
@@ -625,7 +625,7 @@ export default {
         nationality: {
           type: 'select',
           label: '家属类型',
-          options: switches['nationality'],
+          options: this.$store.state['nationality'],
           value: ''
         }
       },

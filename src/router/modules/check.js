@@ -139,6 +139,16 @@ let check = [{
       breadcrumbName: '亲情电话统计报表'
     },
     component: 'check-meeting/meeting-family-statistics'
+  }, {
+    // 暂时写页面用
+    path: '/meeting/justice-list',
+    name: 'meeting-justice-list',
+    meta: {
+      permission: 'visit.remote-visit-application.justice-list',
+      breadcrumbName: '亲情电话家属管理'
+    },
+    props: { hasPrisonAreaAuth: true, userHasPrisonArea: true },
+    component: 'family-phone/families'
   }]
 }, {
   path: '/mailbox',

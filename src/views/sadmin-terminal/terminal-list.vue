@@ -41,7 +41,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import switches from '@/filters/modules/switches'
+
 export default {
   name: 'TerminalList',
 
@@ -58,12 +58,12 @@ export default {
         meetingEnabled: {
           type: 'select',
           label: '狱警通话开关',
-          options: switches.isOpened
+          options: this.$store.state.isOpened
         },
         terminalType: {
           type: 'select',
           label: '终端类型',
-          options: switches.terminalTypes
+          options: this.$store.state.terminalTypes
         }
       },
       tableCols: [

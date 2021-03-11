@@ -28,7 +28,8 @@ export default {
     provincesId: String,
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
-    hasPrisonAreaAuth: Boolean
+    hasPrisonAreaAuth: Boolean,
+    userHasPrisonArea: Boolean
   },
 
   data() {
@@ -259,7 +260,9 @@ export default {
           this.clearSubPrisonArea('prisonSubArea')
 
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
-            await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
+            if (this.userHasPrisonArea) await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
+
+            else await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
 
             Message.closeAll()
 

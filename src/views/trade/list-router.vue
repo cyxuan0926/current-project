@@ -38,7 +38,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import switches from '@/filters/modules/switches'
+
 export default {
   data() {
     const endTime = this.$_dateNow
@@ -126,7 +126,7 @@ export default {
           miss: true,
           type: 'select',
           label: '收费方式',
-          options: switches.chargeWays
+          options: this.$store.state.chargeWays
         }
       },
       showSearch: {

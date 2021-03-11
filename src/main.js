@@ -19,6 +19,8 @@ import '@/assets/css/index.scss'
 
 import ActiveMonitor from '@/utils/ActiveMonitor'
 
+import directives from '@/plugin/directives'
+
 import {
   _dateNow,
   _dateOneWeekAgo,
@@ -29,6 +31,8 @@ import {
 Vue.use(ElementUI)
 
 Vue.use(fullscreen)
+
+Vue.use(directives)
 
 Vue.config.productionTip = false
 

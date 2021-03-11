@@ -1,7 +1,10 @@
 import Moment from 'moment'
-import switches from '@/filters/modules/switches'
+
 import urls from '@/service/urls'
+
 import { parseInt } from 'lodash'
+
+import store from '@/store'
 
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
@@ -67,7 +70,7 @@ export const deepCopy = (obj) => {
 // 角色名称转化角色信息对象(理想的情况下)
 export const transitionRolesList = (val) => {
   let { name, id } = val, result = { value: id }, data = {},
-    isOwn = switches['role'].some(role => {
+    isOwn = store.state['role'].some(role => {
       if (role.label === name) {
         data = role
         return true
@@ -101,7 +104,7 @@ export const transitionRoleId = (val) => {
       { roleList: [7], role: '7' }
     ], controlArg = true
   for (let value of val) {
-    let { roleName } = value, roleId, isOwn = switches['role'].filter(roles => {
+    let { roleName } = value, roleId, isOwn = store.state['role'].filter(roles => {
       if (roles.label === roleName) {
         roleId = roles.role
         return true

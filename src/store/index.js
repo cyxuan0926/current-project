@@ -40,7 +40,10 @@ import checkDataImportDetails from '@/views/check-data-import-details/vuex'
 
 import filter from './modules/filter'
 
+import familyPhone from './modules/family-phone'
+
 import 'babel-polyfill'
+
 Vue.use(Vuex)
 
 let actions = {}, mutations = {}, getters = {}, state = {}, merge = (...args) => {
@@ -97,6 +100,7 @@ export default new Vuex.Store({
     global,
     trade,
     coopertivePartner,
-    diplomaticConsulOfficial
+    diplomaticConsulOfficial,
+    familyPhone
   }
 })

@@ -47,8 +47,6 @@ import { mapActions, mapState } from 'vuex'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-import switches from '@/filters/modules/switches'
-
 import Moment from 'moment'
 
 export default {
@@ -62,7 +60,7 @@ export default {
       TERMINAL_SHARED_DETAILS: 'terminalSharedDetails'
     }
 
-    const coopertivePartnerTransferStatus = switches['coopertivePartnerTransferStatus']
+    const coopertivePartnerTransferStatus = this.$store.state['coopertivePartnerTransferStatus']
 
     const date = Moment().format('YYYY-MM')
 
