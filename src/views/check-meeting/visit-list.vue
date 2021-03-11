@@ -214,8 +214,8 @@
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content" 
-               :key='index' 
+           <li v-for="(item,index) in content"
+               :key='index'
                class="infinite-list-item" style="line-height:32px">
                {{index+1}}.{{ item }}
             </li>
@@ -230,7 +230,7 @@
          </span>
       </div>
       <el-row :gutter="0">
-       
+
         <el-button
            v-if='show.editRebut'
            type="primary"
@@ -509,7 +509,7 @@ export default {
           if(res){
           let params={}
               params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=2
+              params.type=3
           let res = await http.getRejectEdit( params )
           if(res.content){
             this.content = res.content

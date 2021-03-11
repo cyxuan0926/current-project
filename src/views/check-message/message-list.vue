@@ -7,7 +7,7 @@
       ref="search"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" >
-        <el-button  
+        <el-button
         slot="append"
           class="m-excel-download"
           type="primary"
@@ -171,8 +171,8 @@
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content" 
-               :key='index' 
+           <li v-for="(item,index) in content"
+               :key='index'
                class="infinite-list-item" style="line-height:32px">
                {{index+1}}.{{ item }}
             </li>
@@ -288,7 +288,7 @@
               <span class="family-name" >审核人姓名</span>
               <span class="family-nameDetail">{{toShow.auditName}}</span>
             </p>
-            
+
             <p class="detail-message-family">
                  <span class="family-name">申请状态</span>
                   <span class="family-nameDetail">
@@ -657,7 +657,7 @@ export default {
           if(res){
           let params={}
               params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=2
+              params.type=4
           let res = await http.getRejectEdit( params )
           if(res.content){
             this.content = res.content
