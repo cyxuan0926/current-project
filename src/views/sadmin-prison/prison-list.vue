@@ -22,7 +22,7 @@
         class="separate"
         v-if="row.street">{{ row.street }}</span>
     </template>
-    <template #operation="{ row }">
+    <template #operation="{ row }" align="center">
       <el-button
         type="primary"
         size="mini"
@@ -35,6 +35,10 @@
         type="text"
         size="mini"
         @click="onVisit(row.id, 'visit')">现场探视预约配置</el-button>
+        <el-button
+        type="text"
+        size="mini"
+        @click="onVisit(row.id, 'process')">审批流程配置</el-button>
     </template>
   </m-table-new>
 </template>
@@ -66,6 +70,7 @@ export default {
         {
           label: '操作',
           slotName: 'operation',
+          align: 'center',
           minWidth: 170
         }
       ]
@@ -79,8 +84,15 @@ export default {
       this.$router.push(`/prison/edit/${ e }`)
     },
     onVisit(e, type) {
-      if (type === 'visit') this.$router.push(`/prison/visit/${ e }`)
-      else this.$router.push(`/remote/edit/${ e }?tag=usual`)
+      let _path
+      if (type === 'visit') {
+        _path = `/prison/visit/${ e }`
+      } else if (type === 'process') {
+        _path = '/prison/process'
+      }else {
+        _path = `/remote/edit/${ e }?tag=usual`
+      }
+      this.$router.push({path: _path})
     }
   }
 }

@@ -46,7 +46,10 @@ Vue.prototype.$_timeNow = _timeNow
 
 Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 
-new ActiveMonitor().start()
+// 只在生产环境启用等保
+if (process.env.NODE_ENV === 'production') {
+  new ActiveMonitor().start()
+}
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))
