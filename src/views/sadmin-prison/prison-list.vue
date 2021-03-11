@@ -22,7 +22,7 @@
         class="separate"
         v-if="row.street">{{ row.street }}</span>
     </template>
-    <template #operation="{ row }">
+    <template #operation="{ row }" align="center">
       <el-button
         type="primary"
         size="mini"
@@ -70,6 +70,7 @@ export default {
         {
           label: '操作',
           slotName: 'operation',
+          align: 'center',
           minWidth: 170
         }
       ]
