@@ -26,6 +26,14 @@ export default {
   downloadRelationshipFile: params => {
     return service.postObj('/registrations/getRelationshipFile', params, { responseType: 'blob' })
   },
+   // 获取驳回编辑列表 家属注册管理
+   getRejectEdit: params => {
+    return service.get('/meetingsReviewWord/get', params).then(res => res && res.data)
+  },
+  // 保存修改驳回编辑列表 家属注册管理
+  setRejectEdit: params => {
+    return service.postObj('/meetingsReviewWord/edit', params).then(res => res && res.code === 200)
+  },
 
   // 家属注册管理-一级授权
   authorizeFirstLevel: params => {

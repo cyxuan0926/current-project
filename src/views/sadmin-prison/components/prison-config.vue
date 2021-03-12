@@ -7,7 +7,7 @@
       :values="values"
       ref="prison-config_form"
     >
-     <template #abnormalCalldurationSwitch>
+      <template #abnormalCalldurationSwitch>
         <el-col :span="3">
           <el-form-item prop="abnormalCalldurationSwitch">
             <el-switch
@@ -26,7 +26,7 @@
             <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
               <el-input-number
                 type="number"
-                style="width:150px"
+                style="width: 150px"
                 :step="1"
                 step-strictly
                 :disabled="isDisabled"
@@ -51,6 +51,42 @@
               <template slot="append">/元</template>
             </el-input>
           </el-form-item> -->
+      </template>
+
+      <template #thresholdConfigs>
+        <el-col :span="24">
+          <el-form-item
+            label="IOS配置"
+            prop="afrIOSSetValue"
+            label-width="65px"
+          >
+            <el-select v-model="slotFormData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
+              <el-option 
+                v-for="configs in faceRecognitionValues"
+                :key="configs"
+                :label="configs"
+                :value="configs"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
+          <el-form-item
+            label="安卓配置"
+            prop="afrAndroidSetValue"
+            label-width="65px"
+          >
+            <el-select v-model="slotFormData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
+              <el-option 
+                v-for="configs in faceRecognitionValues"
+                :key="configs"
+                :label="configs"
+                :value="configs"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
       </template>
     </m-form>
       <!-- <template #basicConfigs>
@@ -150,6 +186,8 @@ import validator, { helper } from '@/utils'
 import roles from '@/common/constants/roles'
 import cloneDeep from 'lodash/cloneDeep'
 import { Message } from 'element-ui'
+
+import { faceRecognitionValues } from '@/common/constants/const'
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -204,6 +242,8 @@ export default {
       else callback()
     }
     return {
+      faceRecognitionValues,
+
       formItems: Object.assign({}, {
         formConfigs: { labelWidth: '180px' },
         // chargeType: {
@@ -445,6 +485,28 @@ export default {
           value: 0,
           setValueConfigs: [{ setValue: 1 }],
           func: this.onMeetingRoomSwitch
+        },
+
+        thresholdConfigs: {
+          slotName: 'thresholdConfigs',
+
+          customClass: 'threshold__configs',
+
+          attrs: {
+            label: '人脸识别阈值设置'
+          }
+        },
+
+        afrInterval: {
+          label: '人脸检索间隔时间',
+
+          type: 'input',
+
+          rules: ['required', 'isPositiveIntegers', 'numberRange10-3600'],
+
+          append: '秒',
+
+          value: '60'
         }
       }, formButton),
       values: {},
@@ -454,7 +516,11 @@ export default {
       slotFormData: {
         abnormalCalldurationSwitch: 0,
 
-        abnormalCallduration: 10
+        abnormalCallduration: 10,
+
+        afrIOSSetValue: '0.2',
+
+        afrAndroidSetValue: '0.4'
       },
 
       slotFormRules: {
@@ -499,7 +565,6 @@ export default {
   },
   computed: {
     ...mapState([
-
       'prison',
       'branchStatus',
       'haveMeetingFloorTerminals'
@@ -525,12 +590,22 @@ export default {
     if (this.permission === 'edit') {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
         if (!res) return
-        const { abnormalCallduration, abnormalCalldurationSwitch } = cloneDeep(this.prison)
+        const {
+          abnormalCallduration,
+          abnormalCalldurationSwitch,
+          afrIOSSetValue,
+          afrAndroidSetValue
+        } = cloneDeep(this.prison)
 
         this.values = cloneDeep(this.prison)
 
         this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
+
         this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
+
+        this.$set(this.slotFormData, 'afrIOSSetValue', +afrIOSSetValue)
+
+        this.$set(this.slotFormData, 'afrAndroidSetValue', +afrAndroidSetValue)
 
         // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
         //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
@@ -605,6 +680,7 @@ export default {
     ]),
 
     ...mapActions('account', ['judgeAssignUsers']),
+
     onSubmit(e) {
       // const { chargeType, diplomatistCharge } = e
       if (this.permission === 'edit') {
@@ -624,11 +700,18 @@ export default {
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
-        const { abnormalCalldurationSwitch, abnormalCallduration } = this.slotFormData
+        const {
+          abnormalCalldurationSwitch,
+          abnormalCallduration,
+          afrIOSSetValue,
+          afrAndroidSetValue
+        } = this.slotFormData
 
         params = {
           ...params,
-          abnormalCalldurationSwitch
+          abnormalCalldurationSwitch,
+          afrAndroidSetValue,
+          afrIOSSetValue
         }
 
         if (abnormalCalldurationSwitch) {
@@ -685,6 +768,7 @@ export default {
     },
     onBack() {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
+
       else this.$router.push({ path: '/jails/detail' })
     },
     // onReset(e, prop) {

@@ -112,6 +112,15 @@ let check = [{
     props: { hasDiplomatQueryAuth: true },
     meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }, {
+    path: '/meeting-report/meeting-statistic-table',
+    component: 'gd-admin/gd-meeting/meeting-list',
+    props: { hasPrisonAreaAuth: true },
+    meta: { permission: 'visit.visit-statistic.meeting-statistic-table', breadcrumbName: '监区可视电话统计表' }
+  }, {
+    path: '/meeting-report/meeting-island-list',
+    component: 'gd-admin/gd-meeting/island-meeting-list',
+    meta: { permission: 'visit.visit-statistic.island-list', breadcrumbName: '非大陆居民通话统计表' }
+  }, {
     path: '/meeting/family-meeting-statistics',
     name: 'meeting-family-meeting-statistics',
     meta: {

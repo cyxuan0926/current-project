@@ -17,21 +17,30 @@
     />
 
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <template #append>
-        <el-button
-          v-if="hasAllPrisonQueryAuth"
-          type="primary"
-          @click="onPreChangePrisonConfigs(7)">转监</el-button>
+        <el-row style="margin-bottom: 0px">
+          <el-button
+            v-if="hasAllPrisonQueryAuth && isPrisonerTabVal"
+            type="primary"
+            @click="onPreChangePrisonConfigs(7)"
+          >转监</el-button>
+
+          <el-button
+            v-if="!hasAllPrisonQueryAuth && !isPrisonerTabVal"
+            type="primary"
+            @click="onMultipleAccept(8)"
+          >接收</el-button>
+          </el-row>
       </template>
     </m-search>
 
-    <el-row
-      type="flex"
-      style="margin-bottom: 10px">
-      <template v-if="!hasAllPrisonQueryAuth">
+    <el-row type="flex" style="margin-bottom: 10px">
+      <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
         <el-button
           type="primary"
           @click="showAddPrisoner">新增</el-button>
@@ -43,12 +52,28 @@
         <el-button
           type="primary"
           @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+
+        <el-button
+          type="primary"
+          @click="onPreChangePrisonConfigs(10)">转监</el-button>
       </template>
     </el-row>
 
     <el-col
       :span="24"
       class="el-col__no-tabs__margin">
+      <el-tabs
+        v-model="tabs"
+        type="card">
+        <template v-for="(tab, index) in tabsItems">
+          <el-tab-pane
+            :key="index"
+            :label="tab.label"
+            :name="tab.name"
+          />
+        </template>
+      </el-tabs>
+
         <!-- 自己手写的 不要删了-->
         <!-- <el-table-column>
           <template
@@ -117,43 +142,66 @@
             @click="handleSign(row.notifyId, row)">{{ row.notifyId ? '点击查看' : '点击签约' }}</el-button>
         </template>
 
+        <template #type="{ row }">
+          {{ row.type | transferOutPrisonersTypeOptions}}
+        </template>
+
         <template #operations="{ row }">
-          <template v-if="!hasAllPrisonQueryAuth">
-            <el-button
-              type="text"
-              size="small"
-              :disabled="!row.sysFlag"
-              v-if="!row.isBlacklist"
-              @click="showBlackList(row)">
-              加入黑名单
-            </el-button>
+          <template v-if="isPrisonerTabVal">
+            <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!row.sysFlag"
+                v-if="!row.isBlacklist"
+                @click="showBlackList(row)"
+              >加入黑名单
+              </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              :disabled="!row.sysFlag"
-              v-else
-              @click="removeBlackList(row)">
-              移出黑名单
-            </el-button>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!row.sysFlag"
+                v-else
+                @click="removeBlackList(row)"
+              >移出黑名单
+              </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              :disabled="!row.sysFlag"
-              @click="onShowPrisonConfig(row, 2)">
-              更换监区
-            </el-button>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!row.sysFlag"
+                @click="onShowPrisonConfig(row, 2)"
+              >更换监区
+              </el-button>
+            </template>
+
+            <template v-else>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!row.sysFlag"
+                @click="onShowPrisonConfig(row, 6)"
+              >更换监狱
+              </el-button>
+            </template>
           </template>
 
           <template v-else>
             <el-button
+              v-if="row.type === 2"
               type="text"
               size="small"
-              :disabled="!row.sysFlag"
-              @click="onShowPrisonConfig(row, 6)"
-            >
-              更换监狱
+              @click="onAbortChangePrisoners(row.prisonerId)"
+            >取消
+            </el-button>
+
+            <el-button
+              v-else
+              type="text"
+              size="small"
+              @click="onSingleAccept(9, row)"
+            >接收
             </el-button>
           </template>
         </template>
@@ -275,41 +323,8 @@
           />
         </div>
       </template>
-      <!-- <el-row
-        class="row-flex"
-        :gutter="20"
-        justify="space-between"
-        type="flex">
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证正面：</label>
-          <m-img-viewer
-            v-if="family.familyIdCardFront"
-            :url="family.familyIdCardFront"
-            title="身份证正面"/>
-        </el-col>
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证背面：</label>
-          <m-img-viewer
-            v-if="family.familyIdCardBack"
-            :url="family.familyIdCardBack"
-            title="身份证背面" />
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <label for="">照片：</label>
-          <m-img-viewer
-            v-if="family.familyAvatarUrl"
-            :url="family.familyAvatarUrl"
-            title="照片"
-            class="avatar" />
-        </el-col>
-      </el-row> -->
     </el-dialog>
+
     <el-dialog
       :visible.sync="notificationShow"
       class="authorize-dialog notification-dialog"
@@ -396,9 +411,10 @@
       :title="dialogContent['title']"
       :class="['authorize-dialog', 'all-dialog__style', isJailOperationType ? 'change-jail__dialog' : '']"
       @open="onOpenDialog"
-      width="530px">
+      width="530px"
+    >
       <m-form
-        v-if=" !(isPrisonAreaIdType && prisonConfigs.length < 1)"
+        v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
         @submit="handleSubmit"
         :values="dialogFormValues"
@@ -413,7 +429,11 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters
+} from 'vuex'
 
 import validator from '@/utils'
 
@@ -428,12 +448,30 @@ import { provinceJailLevelConfigsParamsName } from '@/common/constants/const'
 import moment from 'moment'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import { Message } from 'element-ui'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 export default {
   mixins: [prisonFilterCreator],
 
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('setLoginHavePrisonerIn', false)
+
+    next()
+  },
+
   data() {
+    const tabsItems = [
+      {
+        label: '服刑人员列表',
+        name: 'prisoner'
+      },
+      {
+        label: '转监',
+        name: 'change'
+      }
+    ]
     const prisonerStatus = [
       {
         label: '正常状态',
@@ -474,17 +512,20 @@ export default {
           type: 'select',
           label: '服刑人员状态',
           options: prisonerStatus,
-          value: 1
+          value: 1,
+          miss: false
         },
         isNotify: {
           type: 'select',
           label: '可视电话告知书',
           noPlaceholder: true,
-          options: notifyOptions
+          options: notifyOptions,
+          miss: false
         },
         familyName: {
           type: 'input',
-          label: '家属姓名'
+          label: '家属姓名',
+          miss: false
         }
       },
 
@@ -542,7 +583,7 @@ export default {
       selectPrisoners: [], // 删除的罪犯数据
       // isIndeterminate: false, // 单选框的样式控制 不要删掉
       // multipleSelection: [], // 多选数据 不要删掉
-      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员 5批量更换监区 6为转监 7为批量转监
+      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员 5批量更换监区 6为转监 7为批量转监 8为批量接收 9为单个接收 10为非ywt_Admin批量转监
 
       prisonerExcelConfig,
 
@@ -554,8 +595,9 @@ export default {
 
       dialogFormValues: {},
 
-      changeJailButtonLoading: false,
+      tabsItems,
 
+      tabs: 'prisoner'
     }
   },
   computed: {
@@ -566,6 +608,9 @@ export default {
       'prisonConfigs',
       'prisonConfigsMaxLevel'
     ]),
+
+    ...mapGetters(['isSuperAdmin', 'hasPrisonArea']),
+
     ...mapState({
       user: state => state.global.user
     }),
@@ -789,7 +834,7 @@ export default {
               rules: ['required'],
               options: genderOptions,
               props: genderProps,
-              value:'m'
+              value: 'm'
             },
 
             crimes: {
@@ -877,8 +922,7 @@ export default {
               attrs: {
                 size: 'small',
                 type: 'primary',
-                disabled: false,
-                loading: this.changeJailButtonLoading
+                disabled: false
               },
 
               events: {
@@ -954,6 +998,133 @@ export default {
             }
           }, { dissMissConfigs: changePrisonDissMissConfigs }, formButton)
           break
+        case 8:
+        case 9:
+          title = '接收'
+
+          formButton.buttons = [
+            {
+              cancel: true,
+
+              className: ['prisoner-list__change-jail_button']
+            },
+
+            {
+              attrs: {
+                size: 'small',
+                type: 'primary',
+                disabled: false
+              },
+
+              events: {
+                click: this.onAcceptPrisoners
+              },
+
+              text: '确定',
+
+              className: ['prisoner-list__change-jail_button']
+            }
+          ]
+
+          items = Object.assign({}, {
+            formConfigs: {
+              inline: true,
+              labelPosition: 'right',
+              labelWidth: 'auto'
+            },
+
+            prisonAreaId: {
+              type: 'select',
+              label: '监区',
+              options: this.prisonConfigs,
+              invokeFuncAuto: true,
+              props: changePrisonConfigsProps,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            },
+
+            prisonBranchId: {
+              type: 'select',
+              label: '分监区',
+              invokeFuncAuto: true,
+              props: changePrisonConfigsProps,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            },
+
+            prisonBuildingId: {
+              type: 'select',
+              label: '楼栋',
+              invokeFuncAuto: true,
+              props: changePrisonConfigsProps,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            },
+
+            prisonLayerId: {
+              type: 'select',
+              label: '楼层',
+              invokeFuncAuto: true,
+              props: changePrisonConfigsProps,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            }
+          }, { dissMissConfigs }, formButton)
+          break
+        case 10:
+          title = '转监'
+
+          formButton.buttons = [
+            {
+              cancel: true,
+
+              className: ['prisoner-list__change-jail_button']
+            },
+
+            {
+              attrs: {
+                size: 'small',
+                type: 'primary',
+                disabled: false
+              },
+
+              events: {
+                click: this.onChangePrisonJailOrBatch
+              },
+
+              text: '转监',
+
+              className: ['prisoner-list__change-jail_button']
+            }
+          ]
+
+          items = Object.assign({}, {
+            formConfigs: {
+              inline: true,
+              labelPosition: 'right',
+              labelWidth: 'auto'
+            },
+
+            provincesId: {
+              type: 'select',
+              label: '省份',
+              options: this.$store.state.provincesAll,
+              props: { label: 'name', value: 'id' },
+              invokeFuncAuto: true,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            },
+
+            jailId: {
+              type: 'select',
+              label: '监狱',
+              props: { label: 'title', value: 'id' },
+              invokeFuncAuto: true,
+              func: this.onGetNextLevelPrisonConfigsData,
+              filterable
+            }
+          }, { dissMissConfigs: changePrisonDissMissConfigs }, formButton)
+          break
         default:
           break
       }
@@ -961,7 +1132,12 @@ export default {
     },
 
     tableCols() {
-      let allCols = [
+      const familiesCol = {
+        label: '对应家属',
+        slotName: 'families'
+      }
+
+      const hasAllPrisonQueryAuthCols = [
         {
           type: 'selection',
           selectable: this.handleControlSelect
@@ -974,7 +1150,37 @@ export default {
           label: '监狱名称',
           prop: 'jailName',
           showOverflowTooltip: true
+        }
+      ]
+
+      const transferOutPrisonersCols = [
+        {
+          label: '原监区名称',
+          prop: 'sourcePrisonArea',
+          showOverflowTooltip: true
         },
+        {
+          label: '原监狱名称',
+          prop: 'sourceJailName',
+          showOverflowTooltip: true
+        },
+        {
+          label: '目标监狱名称',
+          prop: 'targetJailName',
+          showOverflowTooltip: true
+        },
+        {
+          label: '转监状态',
+          slotName: 'type'
+        }
+      ]
+
+      const operationCol = {
+        label: '操作',
+        slotName: 'operations'
+      }
+
+      const commonCols = [
         {
           label: '罪犯姓名',
           prop: 'name',
@@ -985,60 +1191,80 @@ export default {
           label: '罪犯编号',
           prop: 'prisonerNumber',
           showOverflowTooltip: true
-        },
+        }
+      ]
+
+      let prisonerCols = [
+        ...hasAllPrisonQueryAuthCols,
+
+        ...commonCols,
+
         {
           label: '监区',
           prop: 'prisonArea',
           showOverflowTooltip: true
         },
-
         {
           label: '通话次数/月',
           minWidth: 85,
           slotName: 'accessTime'
         },
-        // {
-        //   label: '刑期起止',
-        //   minWidth: 140,
-        //   slotName: 'prisonTerm'
-        // },
         {
           label: '服刑人员状态',
           minWidth: 90,
           showOverflowTooltip: true,
           slotName: 'prisonerStatus'
         },
-        {
-          label: '对应家属',
-          slotName: 'families'
-        },
+        familiesCol,
         {
           label: '家属可视电话告知书',
           minWidth: 125,
           slotName: 'notifyId'
         },
-        {
-          label: '操作',
-          slotName: 'operations'
-        }
+        operationCol
       ]
-      if (this.hasAllPrisonQueryAuth) allCols.splice(11, 2)
-      else allCols.splice(1, 2)
-      return allCols
+
+      let transferOutPrisonersAllCols = [
+        ...hasAllPrisonQueryAuthCols,
+        ...commonCols,
+        ...transferOutPrisonersCols,
+        familiesCol,
+        operationCol
+      ]
+
+      if (this.isPrisonerTabVal) {
+        if (!this.hasAllPrisonQueryAuth) prisonerCols.splice(1, 2)
+
+        return prisonerCols
+      } else {
+        if (this.hasAllPrisonQueryAuth) {
+          transferOutPrisonersAllCols.splice(2, 1)
+
+          transferOutPrisonersAllCols.splice(9, 1)
+        }
+
+        else transferOutPrisonersAllCols.splice(1, 2)
+
+        return transferOutPrisonersAllCols
+      }
     },
 
     // 需要排除的监狱的值
     // 单个更换监狱/带有监狱搜索条件
     currentJailId() {
-      return this.prisoner.jailId || this.filter.jailId || ''
+      const { jailId } = this.user
+
+      const noneIsSuperAdminJailId = this.isSuperAdmin ? '' : jailId
+
+      return this.prisoner.jailId || this.filter.jailId || noneIsSuperAdminJailId
     },
 
     currentProvincesId() {
-      return (this.prisoner.provincesId) || this.filter.provincesId || this.$store.state.provincesAll[0].id
+      return this.prisoner.provincesId || this.filter.provincesId || this.$store.state.provincesAll[0].id
     },
 
     isJailOperationType() {
-      const jailIdTypes = [6, 7]
+      const jailIdTypes = [6, 7, 10, 8, 9]
 
       return jailIdTypes.includes(this.operationType)
     },
@@ -1047,6 +1273,12 @@ export default {
       const prisonAreaIdType = [2, 5]
 
       return prisonAreaIdType.includes(this.operationType)
+    },
+
+    isPrisonerTabVal() {
+      const prisonerTabVal = ['prisoner']
+
+      return prisonerTabVal.includes(this.tabs)
     }
   },
 
@@ -1071,16 +1303,67 @@ export default {
       deep: true,
 
       immediate: true
+    },
+
+    tabs(val) {
+      const searchItemKeys = [
+        'prisonArea',
+        'status',
+        'isNotify',
+        'familyName'
+      ]
+
+      let minReactInChainKey = 'jailId'
+
+      const mountedKeys = ['provincesId', 'jailId', 'prisonArea']
+
+      this.$refs.search.onSearch('tabs')
+
+      const filterKeys = Object.keys(this.filter)
+
+      if (this.isPrisonerTabVal) {
+        searchItemKeys.forEach(key => {
+          this.searchItems[key].miss = false
+        })
+
+        this.searchItems.status.value = 1
+
+        this.filter = Object.assign({}, this.filter, {
+          status: 1
+        })
+
+        if (filterKeys.includes(minReactInChainKey)) (async() => await this.searchSelectChange(minReactInChainKey, this.filter[minReactInChainKey]))()
+      } else {
+        searchItemKeys.forEach(key => {
+          this.searchItems[key].miss = true
+
+          this.searchItems[key].value = ''
+
+          if (key === 'prisonArea') delete this.filter['prisonConfigId']
+
+          else delete this.filter[key]
+        })
+
+        this.clearSubPrisonArea('prisonSubArea')
+
+        const result = mountedKeys.filter(key => Object.keys(this.searchItems).includes(key) && !this.searchItems[key].miss)
+
+        minReactInChainKey = result[result.length - 1] || 'jailId'
+      }
+
+      this.onSearch()
     }
   },
 
   async mounted() {
     // await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
-    this.filter = Object.assign({}, this.filter, {
-      status: 1
-    })
+    if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
 
-    await this.getDatas()
+    else {
+      this.filter = Object.assign({}, this.filter, { status: 1 })
+
+      await this.getDatas()
+    }
   },
 
   methods: {
@@ -1100,7 +1383,10 @@ export default {
       'addPrionser',
       'changePrisonAreaBatch',
       'getPrisonAreaMaxLevel',
-      'changePrisonJailOrBatch'
+      'changePrisonJailOrBatch',
+      'acceptPrisoners',
+      'abortChangePrisoners',
+      'getTransferOutPrisonersPagedData'
     ]),
 
     async getDatas() {
@@ -1113,9 +1399,17 @@ export default {
         ...this.pagination
       }
 
-      if (this.hasAllPrisonQueryAuth) this.getPrisonersAll(params)
+      if (this.hasAllPrisonQueryAuth) {
+        if (this.isPrisonerTabVal) await this.getPrisonersAll(params)
 
-      else this.getPrisoners(params)
+        else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPages', params })
+      }
+
+      else {
+        if (this.isPrisonerTabVal) await this.getPrisoners(params)
+
+        else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPage', params })
+      }
     },
 
     onSearch(isCurrent) {
@@ -1165,7 +1459,8 @@ export default {
       this.$confirm(`是否将${ e.name }移出黑名单？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        closeOnClickModal: false
       }).then(() => {
         let params = new FormData()
         params.append('prisonerId', e.id)
@@ -1173,7 +1468,7 @@ export default {
           if (!res) return
           this.onSearch(true)
         })
-      }).catch(() => {})
+      })
     },
 
     onSelectChange(e) {
@@ -1271,6 +1566,8 @@ export default {
       } else {
         // 转监
         // 省份的默认初始值
+        if (!this.hasAllPrisonQueryAuth) await this.$store.dispatch('getProvincesAll')
+
         this.dialogFormValues = {
           provincesId: this.currentProvincesId
         }
@@ -1349,18 +1646,22 @@ export default {
     // 加入黑名单 新增罪犯 删除罪犯的确认操作
     handleSubmit(val) {
       // 加入黑名单
-      if(this.operationType === 1) {
-          let params = new FormData()
-          params.append('prisonerId', this.prisoner.id)
-          params.append('reason', val.reason)
-          this.addPrisonerBlacklist(params).then(res => {
-            if (!res) return
-            this.onCloseDialogAndRefreshen()
-          })
+      if (this.operationType === 1) {
+        let params = new FormData()
+
+        params.append('prisonerId', this.prisoner.id)
+
+        params.append('reason', val.reason)
+
+        this.addPrisonerBlacklist(params).then(res => {
+          if (!res) return
+
+          this.onCloseDialogAndRefreshen()
+        })
       }
 
       // 删除罪犯
-      if(this.operationType === 4) {
+      if (this.operationType === 4) {
         let deleteReason = val.contents || val.deleteReason, prisonerId = (this.selectPrisoners.map(val => val.id)).join(',')
 
         this.deletePrisonerData({deleteReason, prisonerId}).then(res => {
@@ -1370,7 +1671,7 @@ export default {
       }
 
       // 新增罪犯
-      if(this.operationType === 3) {
+      if (this.operationType === 3) {
         const { jailId } = JSON.parse(localStorage.getItem('user'))
 
         let prisonArea, temp = { jailId }
@@ -1414,7 +1715,7 @@ export default {
 
       const storesParams = {
         provincesId: {
-          actionName: 'getPrisonAll',
+          actionName: 'getJailByProvincesNoAuth',
 
           paramsName: {
             provincesId: parentId
@@ -1438,12 +1739,14 @@ export default {
 
       this.prisonConfigIdKey = prop
 
-      if (prop !== 'prisonLayerId') {
-        let itemConfigs = {}
+      const lastProp = this.operationType === 10 ? 'jailId' : 'prisonLayerId'
 
-        const _list = provinceJailLevelConfigsParamsName.slice(provinceJailLevelConfigsParamsName.findIndex(l => l === prop) + 1)
+      if (prop !== lastProp) {
+        let itemConfigs = {},
+          setValueConfigs = [],
+          localProvinceJailLevelConfigsParamsName = this.operationType === 10 ? provinceJailLevelConfigsParamsName.slice(0, 2) : provinceJailLevelConfigsParamsName
 
-        let setValueConfigs = []
+        const _list = localProvinceJailLevelConfigsParamsName.slice(localProvinceJailLevelConfigsParamsName.findIndex(l => l === prop) + 1)
 
         // 清空数据
         _list.forEach(t => {
@@ -1498,7 +1801,7 @@ export default {
                 disabled: true
               })
             } else {
-              this.dialogFormResponseValues = Object.assign({}, this.dialogFormResponseValues, {
+              this.dialogFormResponseValues = Object.assign({}, cloneDeep(this.dialogFormResponseValues), {
                 ...itemConfigs,
                 [_list[0]]: ''
               })
@@ -1561,13 +1864,14 @@ export default {
 
           this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
         }
+
         if (this.isPrisonAreaIdType) this.handleChangePrisonConfig(parentId)
       }
     },
 
     onDialogFormResponse(values) {
       this.$nextTick(function() {
-        this.dialogFormResponseValues = Object.assign({}, values)
+        this.dialogFormResponseValues = cloneDeep(values)
       })
     },
 
@@ -1575,20 +1879,23 @@ export default {
     handleChangePrisonConfig(prisonAreaId) {
       if (prisonAreaId) {
         this.$confirm('若预约日期无法在新监区当日分配时间段，系统将自动取消通话申请，并以短信形式通知相关家属，请确认是否继续操作？', '提示：修改服刑人员监区后，将重新分配通话时间段，调整后会以短信形式通知相关家属', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
           type: 'warning',
-          customClass: 'prisonConfigMessage'
+          customClass: 'prisonConfigMessage',
+          closeOnClickModal: false
         }).then(async () => {
+          this.$refs.dialogForm && this.$refs.dialogForm.handleFormMethods(this.prisonConfigIdKey, 'blur')
+
           let params = {
             prisonAreaId
           }, result
           // 更换监区
           if (this.operationType === 2) {
+            const { id, jailId } = this.prisoner
+
             params = {
               ...params,
-              prisonerId: this.prisoner.id,
-              jailId: this.prisoner.jailId,
+              prisonerId: id,
+              jailId
             }
 
             const { code } = await this.changePrisonArea(params)
@@ -1618,6 +1925,8 @@ export default {
           this.onResetMulitpPrisonConfigsForm()
 
           this.$refs.dialogForm && this.$refs.dialogForm.handleResetField()
+
+          this.$refs.dialogForm && this.$refs.dialogForm.handleFormMethods(this.prisonConfigIdKey, 'blur')
         })
       }
     },
@@ -1649,7 +1958,7 @@ export default {
 
     // 筛选已经删除的罪犯不可选择
     handleControlSelect(row, index) {
-      return this.hasAllPrisonQueryAuth ? true : row.sysFlag
+      return this.hasAllPrisonQueryAuth ? true : (this.isPrisonerTabVal ? row.sysFlag : true)
     },
 
     // 选择删除的罪犯
@@ -1706,7 +2015,7 @@ export default {
 
     // 批量更换 监狱/监区
     onPreChangePrisonConfigs(operationType) {
-      const word = this.hasAllPrisonQueryAuth ? '监狱' : '监区'
+      const word = [7, 10].includes(operationType) ? '监狱' : '监区'
 
       if(!this.selectPrisoners.length) {
         this.$message({
@@ -1728,11 +2037,12 @@ export default {
     },
 
     onChangePrisonJailOrBatch() {
-      this.changeJailButtonLoading = true
-
       const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
 
-      this.$confirm('更换监狱后，可视电话申请都将取消，您确认更换吗？').then(async () => {
+      this.$confirm('更换监狱后，该服刑人员的可视电话申请和现场探视申请都将取消，您确认更换吗？', {
+        closeOnClickModal: false,
+        type: 'warning'
+      }).then(async () => {
         const { jailId } = currentDialogFormResponseValues
 
         const { id } = this.prisoner
@@ -1758,6 +2068,15 @@ export default {
               jailId,
               prisonerIds
             }
+          },
+
+          // 转出(非ywt_admin)不需要筛选出已删除/黑名单的人员
+          10: {
+            url: '/prisoners/prisonersTransferOut',
+            params: {
+              jailId,
+              prisonerIds
+            }
           }
         }
 
@@ -1774,17 +2093,21 @@ export default {
 
         const result = await this.changePrisonJailOrBatch(args)
 
-        this.changeJailButtonLoading = false
-
         if (result) {
+          Message.closeAll()
+
+          this.$message({
+            showClose: true,
+            message: '转监操作已完成，等待对方监狱接收！',
+            type: 'warning'
+          })
+
           setTimeout(() => {
             this.onCloseDialogAndRefreshen()
-          }, 500)
+          }, 1500)
         }
 
       }).catch(() => {
-        this.changeJailButtonLoading = false
-
         this.handleCloseDialog()
       })
     },
@@ -1793,6 +2116,111 @@ export default {
       this.handleCloseDialog()
 
       this.onSearch(true)
+    },
+
+    // 原监狱 - 取消转监
+    onAbortChangePrisoners(prisonerIds) {
+      this.$confirm('确定取消更换监狱吗？', {
+        type: 'warning',
+        closeOnClickModal: false
+      }).then(async () => {
+        const isSuccess = await this.abortChangePrisoners({ prisonerIds })
+
+        if (isSuccess) this.onSearch(true)
+      })
+    },
+
+    // 批量接收
+    onMultipleAccept(type) {
+      const haveNoneAcceptData = !this.selectPrisoners.length ||
+        this.selectPrisoners.every(prisoner => prisoner.type === 2)
+
+      if(haveNoneAcceptData) {
+        this.$message({
+          showClose: true,
+          message: '请选择要接收的记录！',
+          type: 'warning'
+        })
+      } else {
+        (async () => {
+          this.prisoner = {}
+
+          await this.onhandlerAccept(type)
+        })()
+      }
+    },
+
+    // 单个接收
+    async onSingleAccept(type, row) {
+
+      this.prisoner = Object.assign({}, row)
+
+      await this.onhandlerAccept(type)
+    },
+
+    // 接收
+    async onhandlerAccept(type) {
+      this.operationType = type
+
+      if (this.hasPrisonArea) {
+        // 分监区
+        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+
+        this.visible = true
+      } else {
+        // 不分监区
+        this.$confirm('确认接收该服刑人员吗？', {
+          closeOnClickModal: false,
+          type: 'warning'
+        }).then(async () => {
+          await this.onAcceptPrisoners()
+        })
+      }
+    },
+
+    async onAcceptPrisoners() {
+      const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
+
+      const { jailId } = this.user
+
+      let params = {
+        jailId
+      }
+
+      // 批量接收 只处理接收的数据
+      if (this.operationType === 8) {
+        params['prisonerIds'] = (this.selectPrisoners.reduce((accumulator, prisoner) => {
+          prisoner.type === 1 && accumulator.push(prisoner.prisonerId)
+
+          return accumulator
+        }, [])).join(',')
+      }
+
+      // 单个接收
+      if (this.operationType === 9) params['prisonerIds'] = this.prisoner['prisonerId']
+
+      if (this.hasPrisonArea) {
+        params = {
+          ...params,
+          prisonConfigId: currentDialogFormResponseValues[this.prisonConfigIdKey]
+        }
+      }
+
+      const result = await this.acceptPrisoners(params)
+
+      if (result) {
+        Message.closeAll()
+
+        this.$message({
+          showClose: true,
+          message: '转监已完成！',
+          type: 'warning'
+        })
+
+        setTimeout(() => {
+          this.onCloseDialogAndRefreshen()
+        }, 1500)
+      }
     }
 
     // 自定义的全选操作 不要删除

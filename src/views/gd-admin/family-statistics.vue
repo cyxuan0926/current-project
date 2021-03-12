@@ -161,21 +161,21 @@ export default {
           prop: 'finishedPercentShowValue',
           minWidth: '8.2%'
         },
-        // {
-        //   label: '审核通过后取消次数(次)',
-        //   prop: 'canceled',
-        //   minWidth: '8.8%'
-        // },
         {
-          label: '警官取消次数(次)',
-          prop: 'policeCanceled',
-          minWidth: '8.8%'
+          label: '通话结束次数(次)',
+          prop: 'ended',
+          minWidth: '8.2%'
         },
         {
-          label: '家属取消次数(次)',
-          prop: 'familiesCanceled',
+          label: '通话结束比例',
+          prop: 'endedPercentShowValue',
+          minWidth: '8.2%'
+        },
+        {
+          label: '审核通过后取消次数(次)',
+          prop: 'canceled',
           minWidth: '8.8%'
-        }
+        },
       ],
       barData: [],
       barXAxisData: [],

@@ -478,6 +478,11 @@ superAdmin = [{
         permission: 'visit.meeting.family-phone.search'
       },
       component: 'check-meeting/meeting-family-statistics'
+    }, {
+      path: '/meeting-report/meeting-sadmin-island-list',
+      component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
     }]
   }, {
     path: '/coopertive-partner',

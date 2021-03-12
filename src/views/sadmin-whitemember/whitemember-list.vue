@@ -7,10 +7,12 @@
       type="primary"
       plain
       class="button-add button-shift-down"
-      @click="onAdd">添加白名单</el-button>
+      @click="onAdd">新增白名单</el-button>
+
     <m-search
       :items="searchItems"
       @search="onSearch" />
+
     <el-col :span="24">
       <m-table-new
         stripe
@@ -18,7 +20,12 @@
         style="width: 100%"
         :cols="tableCols">
         <template #operation="{ row }">
-          <!-- <el-button type="primary" size="mini" @click="onEdit(row)">编辑</el-button> -->
+          <!-- <el-button
+            type="primary"
+            size="mini"
+            @click="onEdit(row)"
+          >编辑</el-button> -->
+
           <el-button
             type="danger"
             size="mini"
@@ -26,40 +33,60 @@
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="whitemembers.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       width="530px"
       title="新增白名单"
       class="authorize-dialog"
-      :visible.sync="isAdd">
+      :visible.sync="isAdd"
+      @close="cancel"
+    >
       <el-form
         :model="whitemember"
         :rules="rules"
-        ref="form">
-        <el-form-item
-          label="手机号"
-          prop="phone">
+        label-width="70px"
+        ref="form"
+      >
+        <el-form-item label="用户姓名" prop="familyName">
           <el-input
-            v-model="whitemember.phone"
-            placeholder="请填写手机号">
-            <el-button
-              slot="append"
-              :disabled="isChecked"
-              @click="onCheck">检验</el-button>
-          </el-input>
+            v-model.trim="whitemember.familyName"
+            placeholder="请输入用户姓名"
+            clearable
+            maxlength="10"
+            show-word-limit
+          />
+        </el-form-item>
+
+        <el-form-item label="手机号" prop="phone">
+          <el-input
+            v-model.trim.number="whitemember.phone"
+            placeholder="请输入手机号"
+            clearable
+          />
+        </el-form-item>
+
+        <el-form-item label="备注" prop="remark">
+          <el-input
+            v-model="whitemember.remark"
+            placeholder="请输入备注"
+            clearable
+            type="textarea"
+          />
         </el-form-item>
       </el-form>
       <span slot="footer">
+        <el-button size="mini" @click="cancel">取 消</el-button>
+
         <el-button
-          size="mini"
-          @click="isAdd = false">取 消</el-button>
-        <el-button
+          :loading="submiting"
           size="mini"
           type="primary"
-          :disabled="whitemember.phone !== phone"
           @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -68,110 +95,133 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-// import helper from '@/utils'
 
 export default {
   data() {
+    const validatePhone = (rule, value, callback) => {
+      const reg = /^[0-9]*$/
+
+      if (!value) callback(new Error('请输入手机号码'))
+
+      else if (!reg.test(value)) callback(new Error('只能输入数字'))
+
+      else callback()
+    }
+
     return {
       searchItems: {
-        phone: { type: 'input', label: '手机号' }
+        phone: { type: 'input', label: '手机号' },
+
+        familyName: { type: 'input', label: '用户姓名' }
       },
+
       rules: {
-        // phone: [{ required: true, message: '请填写手机号' }, { validator: helper.phone }]
-        phone: [{ required: true, message: '请填写手机号' }]
+        familyName: [{ required: true, message: '请输入用户姓名' }],
+
+        phone: [
+          { validator: validatePhone, trigger: 'blur' },
+          { required: true, message: '请输入手机号' }
+        ],
+
+        remark: [{ required: true, message: '请输入备注' }]
       },
+
       whitemember: {},
-      phone: '',
-      isChecked: true,
+
       isAdd: false,
+
       tableCols: [
+        {
+          label: '用户姓名',
+          prop: 'familyName'
+        },
         {
           label: '手机号',
           prop: 'phone'
         },
         {
+          label: '备注',
+          prop: 'remark',
+          showOverflowTooltip: true,
+          minWidth: '340px'
+        },
+        {
           label: '操作',
-          slotName: 'operation'
+          slotName: 'operation',
+          width: '80px'
         }
-      ]
+      ],
+
+      submiting: false
     }
   },
+
   computed: {
     ...mapState(['whitemembers'])
   },
-  watch: {
-    'whitemember.phone'(val) {
-      if (this.phone === val) {
-        this.isChecked = true
-      }
-      else {
-        var reg = /^1\d{10}$/
-        if (val && (reg.test(val))) {
-          this.isChecked = false
-        }
-        else {
-          this.isChecked = true
-        }
-      }
-    }
+
+  async mounted() {
+    await this.getDatas()
   },
-  mounted() {
-    this.getDatas()
-  },
+
   methods: {
-    ...mapActions(['getWhitemembers', 'deleteWhitemember', 'checkPhoneWhitemember', 'addWhitemember', 'updateWhitemember']),
-    getDatas() {
-      this.getWhitemembers({ ...this.filter, ...this.pagination })
+    ...mapActions([
+      'getWhitemembers',
+      'deleteWhitemember',
+      'addWhitemember'
+    ]),
+
+    async getDatas() {
+      await this.getWhitemembers({ ...this.filter, ...this.pagination })
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     onSubmit() {
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate(async valid => {
         if (valid) {
-          this.addWhitemember(this.whitemember).then(res => {
-            if (!res) return
+          this.submiting = true
+
+          const isSuccess = await this.addWhitemember(this.whitemember)
+
+          this.submiting = false
+
+          if (isSuccess) {
+            this.cancel()
+
             this.getDatas()
-            this.isAdd = false
-          })
+          }
         }
       })
     },
-    onCheck() {
-      this.$refs.form.validateField('phone', valid => {
-        if (valid) return
-        this.checkPhoneWhitemember(this.whitemember.phone).then(res => {
-          if (!res) return
-          this.phone = this.whitemember.phone
-          this.isChecked = true
-        })
-      })
-    },
-    // onEdit(e) {
-    //   this.whitemember = e
-    //   this.phone = e.phone
-    //   this.isAdd = true
-    // },
-    onDelete(e) {
+
+    onDelete(id) {
       this.$confirm('是否确认删除？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.deleteWhitemember({ id: e }).then(res => {
-          if (!res) return
-          this.getDatas()
-        })
-      }).catch(() => {})
+      }).then(async () => {
+        const isSuccess = await this.deleteWhitemember({ id })
+
+        if (isSuccess) this.getDatas()
+      }).catch(err => {
+        Promise.reject(err)
+      })
     },
+
     onAdd() {
-      this.whitemember = {}
-      if (this.$refs.form) this.$refs.form.resetFields()
       this.isAdd = true
+    },
+
+    cancel() {
+      this.isAdd = false
+
+      this.whitemember = {}
+
+      this.$refs['form'] && this.$refs['form'].resetFields()
     }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

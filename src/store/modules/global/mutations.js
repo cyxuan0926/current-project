@@ -51,5 +51,9 @@ export default {
 
   setJailsMeetingFloorStatus(state, jailsMeetingFloorStatus) {
     state.jailsMeetingFloorStatus = jailsMeetingFloorStatus
+  },
+
+  setLoginHavePrisonerIn(state, loginHavePrisonerIn) {
+    state.loginHavePrisonerIn = loginHavePrisonerIn
   }
 }

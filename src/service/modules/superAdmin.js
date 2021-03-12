@@ -132,21 +132,25 @@ export default {
   updateVersion: params => {
     return service.post('/versions/update', params).then(res => res && res.code === 200)
   },
-  // 白名单管理-列表
+  // 家属白名单管理-列表
   getWhitemembers: params => {
-    return service.get('/whitenumbers/page', params).then(res => res && res.data)
+    return service.get('/familyWhiteList/page', params).then(res => res && res.data)
   },
   // 白名单管理-检验手机号
   checkPhoneWhitemember: params => {
     return service.get(`/whitenumbers/checkPhone?phone=${ params }`).then(res => res && res.code === 200)
   },
-  // 白名单管理-新增
+  // 家属白名单管理-新增
   addWhitemember: params => {
-    return service.post('/whitenumbers/insert', params).then(res => res && res.code === 200)
+    return service.post('/familyWhiteList/add', params).then(res => res && res.code === 200)
   },
-  // 白名单管理-删除
+  // 家属白名单管理-删除
   deleteWhitemember: params => {
-    return service.post('/whitenumbers/delete', params).then(res => res && res.code === 200)
+    return service.post('/familyWhiteList/delete', params).then(res => res && res.code === 200)
+  },
+  // 家属白名单管理-编辑
+  updateWhitemember: params => {
+    return service.post('/familyWhiteList/update', params).then(res => res && res.code === 200)
   },
   // 监区管理-列表
   getPrisonAreas: params => {
@@ -199,7 +203,7 @@ export default {
     return service.putObj('/dict', params)
   },
 
-  // 监狱操作指引新增
+  // 监狱操作指引存草稿
   addBusGuide: params => {
     return service.postObj('/business/guide', params)
   },
@@ -212,6 +216,16 @@ export default {
   // 监狱操作指引查询列表
   businessList: params => {
     return service.get('/business/guide/findPage', params).then(res => res.data)
+  },
+
+  // 监狱操作指引上线
+  businessOnLine: id => {
+    return service.post(`/business/guide/online/${ id }`).then(res => res.data)
+  },
+
+  // 监狱操作指引下线
+  businessOffLine: id => {
+    return service.post(`/business/guide/offline/${ id }`).then(res => res.data)
   }
 }
 

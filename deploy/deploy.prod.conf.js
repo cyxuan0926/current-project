@@ -22,4 +22,4 @@ module.exports = {
     username: 'root',
     password: 'GKYT!ssj##',
   }
-};
+}

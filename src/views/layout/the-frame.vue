@@ -24,8 +24,7 @@
             </keep-alive>
           </transition>
         </el-main>
-        <el-footer
-          height="36px"><the-footer /></el-footer>
+        <el-footer height="36px"><the-footer /></el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -40,17 +39,20 @@ import TheFooter from './the-footer'
 
 export default {
   components: { TheHeader, TheSidebar, TheBreadcrumb, TheFooter },
+
   data() {
     return {
       hidden: false
     }
   },
+
   computed: {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed,
       loading: state => state.layout.loading
     })
   },
+
   mounted() {
     this.handleResize()
     window.onresize = () => {
@@ -59,6 +61,7 @@ export default {
   },
   methods: {
     ...mapActions(['handleCollapse']),
+
     handleResize() {
       if (window.innerWidth <= 768) {
         if (!this.hidden) {
