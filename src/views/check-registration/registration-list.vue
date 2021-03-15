@@ -399,14 +399,14 @@
             ref="refuseForm"
             class="withdraw-box">
             <el-form-item prop="anotherRemarks"  class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
+              <!-- <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/> -->
               <el-input
                class="bordertop"
-                :autosize="{ minRows: 1 }"
+                :autosize="{ minRows: 3 ,maxRows:10 }"
                  style="border-top: none;"
                 type="textarea"
                 show-word-limit
-                :maxlength="refuseForm.lengthRemark"
+                maxlength="1000"
                 placeholder="请输入驳回原因..."
                 v-model="refuseForm.anotherRemarks"
               />
@@ -453,8 +453,8 @@
                class="bordertop"
                 type="textarea"
                 show-word-limit
-                :maxlength="withdrawForm.lengthRemark"
-                :autosize="{ minRows: 1 }"
+                maxlength="1000"
+                :autosize="{ minRows: 3 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -649,19 +649,17 @@ export default {
       },
       withdrawForm: {
         selectRemark:"",
-        lengthRemark:1000,
         withdrawReason: ""
       },
       refuseForm: {
         selectRemark:"",
-        lengthRemark:1000,
         anotherRemarks: ""
       },
       withdrawRule: {
         anotherRemarks: [
           {
             validator:(rule,value,callback)=>{
-              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
+              if(this.refuseForm.anotherRemarks){
                   callback()
               }else{
                   callback(new Error('请填写驳回原因'))
@@ -784,28 +782,22 @@ export default {
     ]),
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
     refuseFormChange(e){
-      let str=""
+        let str=""
         e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
+          if(this.refuseForm.anotherRemarks.includes(item)){
+            str +=`${index+1}、${item}。\n`
           }
         })
-        this.refuseForm.selectRemark=str
-        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+        this.refuseForm.anotherRemarks+=str
     },
     withdrawFormChange(e){
       let str=""
         e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
+          if(this.withdrawForm.selectRemark.includes(item)){
+            str +=`${index+1}、${item}。\n`
           }
         })
-        this.withdrawForm.selectRemark=str
-        this.withdrawForm.lengthRemark=1000-this.withdrawForm.selectRemark.length
+        this.withdrawForm.selectRemark+=str
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
@@ -823,17 +815,16 @@ export default {
       if(str=='PASSED'){
         this.show.rejectEdit=true
       }else{
-        if(this.content[0]){
-          this.remarks.push(this.content[0])
-          //判断打开的是驳回还是撤回
-          if(isform){
-            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
-            this.withdrawForm.lengthRemark=997-this.content[0].length
-          }else{
-            this.refuseForm.selectRemark=`1、${this.content[0]}。`
-            this.refuseForm.lengthRemark=997-this.content[0].length
-          }
-        }
+        this.show.rejectEdit=false
+        // if(this.content[0]){
+        //   this.remarks.push(this.content[0])
+        //   //判断打开的是驳回还是撤回
+        //   if(isform){
+        //     this.withdrawForm.selectRemark=`1、${this.content[0]}。`
+        //   }else{
+        //     this.refuseForm.selectRemark=`1、${this.content[0]}。`
+        //   }
+        // }
       }
     },
     addReject(){
@@ -971,6 +962,7 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED'){
           this.$refs.refuseForm.validate(valid => {
+            console.log(this.refuseForm.selectRemark + this.refuseForm.anotherRemarks)
             if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
@@ -1212,17 +1204,6 @@ export default {
 .borderNone .el-form-item__content{
     display: flex;
     flex-direction: column;
-}
-.borderNone .el-textarea__inner{
-    border:1px solid #DCDFE6 ;
-    border-bottom:none;
-    border-radius:4px 4px 0 0;
-
-}
-.bordertop .el-textarea__inner{
-    border:1px solid #DCDFE6 ;
-    border-top:none;
-    border-radius:0px 0px 4px 4px;
 }
 </style>
 <style type="text/stylus" lang="stylus" scoped>

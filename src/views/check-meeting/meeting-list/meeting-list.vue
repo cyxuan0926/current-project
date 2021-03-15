@@ -1855,6 +1855,7 @@
         this.buttonLoading = true
         this.authorizeMeeting(params).then(res => {
           this.buttonLoading = false
+          this.btnDisable = false
           if (!res) return
           this.closeAuthorize()
           this.setIsRefreshMultistageExamineMessageBell(true)
