@@ -385,7 +385,7 @@
             <el-option
               v-for="(remark,index) in content"
               :value="remark"
-              :label="remark"
+              :label="(index+1)+'、'+remark"
               :key="index"/>
           </el-select>
            <el-button
@@ -402,7 +402,7 @@
               <!-- <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/> -->
               <el-input
                class="bordertop"
-                :autosize="{ minRows: 3 ,maxRows:10 }"
+                :autosize="{ minRows: 3 ,maxRows:8 }"
                  style="border-top: none;"
                 type="textarea"
                 show-word-limit
@@ -784,8 +784,8 @@ export default {
     refuseFormChange(e){
         let str=""
         e.forEach((item,index)=>{
-          if(this.refuseForm.anotherRemarks.includes(item)){
-            str +=`${index+1}、${item}。\n`
+          if(!this.refuseForm.anotherRemarks.includes(item)){
+            str +=`${ this.refuseForm.anotherRemarks.split(`\n`).length}、${item}。\n`
           }
         })
         this.refuseForm.anotherRemarks+=str
@@ -793,8 +793,8 @@ export default {
     withdrawFormChange(e){
       let str=""
         e.forEach((item,index)=>{
-          if(this.withdrawForm.selectRemark.includes(item)){
-            str +=`${index+1}、${item}。\n`
+          if(!this.withdrawForm.selectRemark.includes(item)){
+            str +=`${item}。\n`
           }
         })
         this.withdrawForm.selectRemark+=str
