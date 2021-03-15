@@ -354,7 +354,7 @@ export default {
     ]
     const tabPanes = [
       {
-        label: '短信申请——sh',
+        label: '短信申请',
         name: '0'
       },
       {

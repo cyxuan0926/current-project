@@ -1,33 +1,42 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportPrisonStatical"
-      :params="filter" />
+      :params="filter"
+    />
+
     <m-search
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch" />
+      @search="onSearch"
+    />
+
     <el-col :span="24">
       <!--  show-summary
         :summary-method="summaryMethod" -->
       <m-table-new
         stripe
         :data="prisonAreaReportList.contents"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #total="{ row }">{{ row.total }} 次</template>
+
         <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
+
         <template #canceledTotal="{ row }">{{ row.canceledTotal }} 次</template>
+
         <template #expiredTotal="{ row }">{{ row.expiredTotal }} 次</template>
+
         <template #deniedTotal="{ row }">{{ row.deniedTotal }} 次</template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="prisonAreaReportList.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 

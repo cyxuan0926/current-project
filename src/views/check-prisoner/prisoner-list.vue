@@ -1433,8 +1433,7 @@ export default {
           message: '请选择需要删除的数据！',
           type: 'warning'
         })
-      }
-      else {
+      } else {
         this.operationType = 4
         this.visible = true
       }
@@ -1683,6 +1682,7 @@ export default {
 
           this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
         }
+
         if (this.isPrisonAreaIdType) this.handleChangePrisonConfig(parentId)
       }
     },

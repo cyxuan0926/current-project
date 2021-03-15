@@ -236,6 +236,7 @@ export default {
       })
 
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : { ...fields, ...this.initFields }
+
       this.flag = true
     },
 
@@ -312,8 +313,11 @@ export default {
 
     resetFieldValue(...arg) {
       const [status, prop, { controlTheOther }] = arg
+
       if (!controlTheOther) return
+
       const fields = this.$refs.form.fields
+
       for(let [key, value] of Object.entries(this.items)) {
         if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }

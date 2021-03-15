@@ -65,11 +65,14 @@
       title="亲情电话家属信息"
       width="40%"
       @close="onCloseFamilyInformationDialog"
+      @open="onOpenFamilyInformationDialog"
     >
       <m-form
         ref="familyInformationDialogForm"
         :items="familyInformationDialogFormItems"
+        :values="familyInformationDialogFormValues"
         @cancel="familyInformationVisible = false"
+        @submit="onFamilyInformationDialogFormSubmit"
       />
     </el-dialog>
 
@@ -163,7 +166,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      @open="onUploadDialogOpen"
+      @open="onOpenUploadDialog"
     >
       <el-row>
         <el-col :span="20" :offset="2">
@@ -235,6 +238,8 @@ import { mapActions, mapState } from 'vuex'
 import isEqual from 'lodash/isEqual'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import validator from '@/utils'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -407,12 +412,21 @@ export default {
           rules: ['required'],
           options: this.$store.state.isTrue,
           value: 1,
+          controlTheOther: true,
+          controlProps: ['bname'],
           func: this.onReplaceFamilyChange
         },
 
         bname: {
           type: 'input',
           label: '被替换家属姓名',
+          dependingRelation: false,
+          disableDependingProp: 'aname',
+          changeRules: [{
+            message: '请输入被替换家属姓名',
+            validator: validator.required,
+            required: true
+          }],
           clearable
         }
       },
@@ -453,13 +467,18 @@ export default {
         attrs: {
           type: 'text'
         }
-      }
+      },
+
+      familyInformationDialogFormValues: {},
+
+      familyInformationDialogOperationType: 0 // 0: 新增 1: 编辑
     }
   },
 
   computed: {
     ...mapState({
-      uploadResult: state => state.global.uploadResult
+      uploadResult: state => state.global.uploadResult,
+      originalFamilyInformationDialogFormValues: state => state.familyInformationDialogFormValues
     })
   },
 
@@ -474,6 +493,10 @@ export default {
       if (temp.includes(tab)) {
         hiddenItems.forEach(key => {
           this.$set(this.searchItems[key], 'miss', true)
+
+          delete this.searchItems[key].value
+
+          delete this.filter[key]
         })
       } else if (tab === '2') {
         hiddenItems.forEach(key => {
@@ -481,11 +504,17 @@ export default {
         })
 
         this.$set(this.searchItems['jiashustatus'], 'miss', true)
+
+        delete this.filter['jiashustatus']
+
+        delete this.searchItems['jiashustatus'].value
       } else if (tab === '0') {
         hiddenItems.forEach(key => {
           this.$set(this.searchItems[key], 'miss', false)
         })
       }
+
+      this.onSearch()
     }
   },
 
@@ -497,14 +526,18 @@ export default {
     },
 
     onEdit() {
+      this.familyInformationDialogOperationType = 1
+
       this.familyInformationVisible = true
     },
 
     onNewFamily() {
+      this.familyInformationDialogOperationType = 0
+
       this.familyInformationVisible = true
     },
 
-    onUploadDialogOpen() {
+    onOpenUploadDialog() {
       this.$nextTick(() => {
         this.$refs.mExcelUpload.onManualUpload()
       })
@@ -602,7 +635,9 @@ export default {
 
     // 是否替换已有家属 change事件触发
     onReplaceFamilyChange(e, prop, item) {
-      this.$set(this.familyInformationDialogFormItems['bname'], 'disabled' , !e)
+      this.$set(this.familyInformationDialogFormItems['bname'],  'disabled', !e)
+
+      this.$refs.familyInformationDialogForm.resetFieldValue(e, prop, item)
     },
 
     // 关闭对话框
@@ -624,8 +659,67 @@ export default {
     // 内层提示对话框关闭的回调方法
     onUploadInnerDialogClose() {
       setTimeout(() => {
-        this.familyInformationVisible = false
+        this.onCloseFamilyInformationDialog()
       }, 1000)
+    },
+
+    onFamilyInformationDialogFormSubmit(model) {
+      console.log(model)
+      if (this.familyInformationDialogOperationType) {
+        const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, this.familyInformationDialogFormValues)
+
+        if (hasNoChange) {
+          this.$message({
+            showClose: true,
+            message: '未编辑信息，无须提交审批！',
+            duration: 2000,
+            type: 'error'
+          })
+
+          setTimeout(() =>{
+            this.onCloseFamilyInformationDialog()
+          }, 1000)
+        }
+      }
+    },
+
+    onOpenFamilyInformationDialog() {
+      this.$nextTick(() => {
+        const disabledItemKeys = [
+          'name',
+          'fname',
+          'number',
+          'bname'
+        ]
+
+        disabledItemKeys.forEach(key => {
+          if (['bname'].includes(key)) this.$set(this.familyInformationDialogFormItems[key], 'disabled', !!this.familyInformationDialogOperationType && !this.familyInformationDialogFormValues['aname'])
+
+          else this.$set(this.familyInformationDialogFormItems[key], 'disabled', !!this.familyInformationDialogOperationType)
+        })
+
+        if (this.familyInformationDialogOperationType) {
+          this.familyInformationDialogFormValues = cloneDeep({
+            name: 'cy',
+            fname: '奥迪',
+            phone: '139782712312',
+            number: '493209123',
+            rname: '撒打算',
+            aname: 0
+          })
+
+          this.$set(this.familyInformationDialogFormItems, 'buttons', [{
+            add: true,
+            text: '提交审批'
+          }, 'cancel'])
+        } else {
+          this.familyInformationDialogFormValues = {
+            aname: 1
+          }
+
+          this.$set(this.familyInformationDialogFormItems, 'buttons', ['add', 'cancel'])
+        }
+      })
     }
   },
 

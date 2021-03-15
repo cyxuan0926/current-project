@@ -4,31 +4,30 @@
       <m-table-new
         stripe
         :data="prisonReportDetail.meetingDetails"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #familyId="{ row }">
           <el-button
             type="text"
-            @click="showFamilyDetail(row.familyId, row.id)">
-            {{ row.name }}
-          </el-button>
+            @click="showFamilyDetail(row.familyId, row.id)"
+          >{{ row.name }}</el-button>
         </template>
+
         <template #duration="{ row }">{{ row.duration | time }}</template>
+
         <template #operation="{ row }">
           <el-button
             v-if="row.is_interrupt !== 0"
             type="text"
-            @click="showCallRecords(row.meeting_details)">
-            详细内容
-          </el-button>
+            @click="showCallRecords(row.meeting_details)"
+          >详细内容</el-button>
         </template>
+
         <template #append-count>
-          <p
-            v-if="showSummary"
-            class="table-footer">
+          <p v-if="showSummary" class="table-footer">
             <span>{{ prisonReportDetail.jailName }}</span>
-            <span>
-              总通话时长：{{ prisonReportDetail.totalDuration | time }}
-            </span>
+
+            <span>总通话时长：{{ prisonReportDetail.totalDuration | time }}</span>
           </p>
         </template>
       </m-table-new>
@@ -42,34 +41,36 @@
       <el-row :gutter="0">
         <el-col :span="12">
           <el-col :span="24">
-            <label for="">姓名：</label>
+            <label>姓名：</label>
             <span>{{ family.familyName }}</span>
           </el-col>
+
           <el-col :span="24">
-            <label for="">关系：</label>
+            <label>关系：</label>
             <span>{{ family.relationship }}</span>
           </el-col>
         </el-col>
       </el-row>
+
       <el-row
         class="row-flex"
         :gutter="20"
         justify="space-between"
-        type="flex">
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证正面：</label>
+        type="flex"
+      >
+        <el-col :span="12" class="img-idCard">
+          <label>身份证正面：</label>
+
           <m-img-viewer
             isRequired
             :url="family.familyIdCardFront"
             title="身份证正面"
           />
         </el-col>
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">身份证背面：</label>
+
+        <el-col :span="12" class="img-idCard">
+          <label>身份证背面：</label>
+
           <m-img-viewer
             isRequired
             :url="family.familyIdCardBack"
@@ -77,11 +78,11 @@
           />
         </el-col>
       </el-row>
+
       <el-row :gutter="20">
-        <el-col
-          :span="12"
-          class="img-idCard">
-          <label for="">关系证明图：</label>
+        <el-col :span="12" class="img-idCard">
+          <label>关系证明图：</label>
+
           <m-img-viewer
             :url="family.familyRelationalProofUrl"
             title="关系证明图"
@@ -101,19 +102,20 @@
             {{ scope.row.start_time }}
           </template>
         </el-table-column>
+
         <el-table-column label="结束时间">
           <template slot-scope="scope">
             {{ scope.row.end_time }}
           </template>
         </el-table-column>
+
         <el-table-column label="通话时长">
           <template slot-scope="scope">
             {{ scope.row.duration | time }}
           </template>
-        </el-table-column> 
-        <el-table-column
-          prop="remarks"
-          label="备注" />
+        </el-table-column>
+ 
+        <el-table-column prop="remarks" label="备注" />
       </el-table>
     </el-dialog>
   </el-row>

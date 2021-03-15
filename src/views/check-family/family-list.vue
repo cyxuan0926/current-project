@@ -396,8 +396,7 @@ export default {
         // this.$set(this.searchItems.isSendMessage, 'miss', false)
         this.$set(this.searchItems.familyName, 'miss', true)
         this.$set(this.searchItems.policeName, 'miss', true)
-      }
-      else {
+      } else {
         this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist'])
         this.$set(this.searchItems.name, 'miss', true)
         this.$set(this.searchItems.prisonArea, 'miss', true)
@@ -408,6 +407,7 @@ export default {
         this.$set(this.searchItems.familyName, 'miss', false)
         this.$set(this.searchItems.policeName, 'miss', false)
       }
+
       this.onSearch()
     }
   },
