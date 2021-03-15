@@ -1843,6 +1843,9 @@
         if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED'){
           this.$refs.refuseForm.validate(valid => {
+            if(!this.refuseForm.anotherRemarks){
+              this.refuseForm.anotherRemarks=""
+            }
             if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
@@ -1855,6 +1858,7 @@
         this.buttonLoading = true
         this.authorizeMeeting(params).then(res => {
           this.buttonLoading = false
+          this.btnDisable = false
           if (!res) return
           this.closeAuthorize()
           this.setIsRefreshMultistageExamineMessageBell(true)
@@ -1909,6 +1913,9 @@
           status: 'CANCELED'
         }
         this.$refs.withdrawForm.validate(valid => {
+          if(!this.withdrawForm.withdrawReason){
+            this.withdrawForm.withdrawReason=''
+          }
             if (valid) params.remarks  =this.withdrawForm.selectRemark + this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
           })
@@ -1929,6 +1936,7 @@
       },
       closeWithdraw(e) {
         this.show.withdraw=false
+        this.show.authorize=false
         this.remarks=[]
         this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
         if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
