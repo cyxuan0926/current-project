@@ -95,11 +95,11 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
+import { uploadFileYangGuangHost, importPrisonerRewardPunishmentlist } from '@/service-yangguang/api/prisonerList'
 export default {
   data() {
     return {
-      prisonerRewardHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_reward_punishment_template.xls`,
+      prisonerRewardHref: `${ this.$urls.yangguangHost }download/downloadfile?filepath=prisoner_score_template.xls`,
       fileList: []
     }
   },
@@ -110,15 +110,17 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['importPrisonerRewardPunishment', 'uploadFile', 'resetState']),
+    ...mapActions([ 'resetState']),
     // 上传罪犯奖惩模板文件到服务端
     beforeUpload(file) {
       this.resetState({ prisonerRewardPunishmentResult: {} })
-      this.uploadFile(file).then(res => {
+      console.log(file)
+      uploadFileYangGuangHost(file).then(res => {
         if (!res) return
-        this.importPrisonerRewardPunishment({ filepath: this.uploadResult.path }).then(res => {
+        console.log(res)
+          importPrisonerRewardPunishmentlist({ filepath: res.path }).then(res => {
           if (!res) return
-          this.alertInformation(this.prisonerRewardPunishmentResult)
+          this.alertInformation(res)
         })
       })
       return false

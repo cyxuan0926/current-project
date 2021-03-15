@@ -1,4 +1,5 @@
 import http from '@/service'
+import { importPrisonerRewardPunishmentlist } from '@/service-yangguang/api/prisonerList'
 import api from './service'
 
 export default {
@@ -43,7 +44,7 @@ export default {
   },
   // 罪犯奖惩模板上传成功后将罪犯奖惩模板导入到服务端
   importPrisonerRewardPunishment: ({ commit }, params) => {
-    return http.importPrisonerRewardPunishment(params).then(res => {
+    return importPrisonerRewardPunishmentlist(params).then(res => {
       if (!res) return
       commit('importPrisonerRewardPunishment', res)
       return true
