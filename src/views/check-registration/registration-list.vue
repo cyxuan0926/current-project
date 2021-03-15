@@ -962,13 +962,18 @@ export default {
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED'){
           this.$refs.refuseForm.validate(valid => {
-            console.log(this.refuseForm.selectRemark + this.refuseForm.anotherRemarks)
+            if(!this.refuseForm.anotherRemarks){
+              this.refuseForm.anotherRemarks=""
+            }
             if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
         if(e === 'WITHDRAW'){
           this.$refs.withdrawForm.validate(valid => {
+            if(!this.withdrawForm.withdrawReason){
+              this.withdrawForm.withdrawReason=""
+            }
             if (valid) params.withdrawReason  =this.withdrawForm.selectRemark + this.withdrawForm.withdrawReason.replace(/\s*/g, '')
             else this.btnDisable = false
           })
