@@ -590,6 +590,7 @@ export default {
       this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
     },
     closeWithdraw() {
+      this.remarks = []
       this.show.withdraw = false
       this.$refs['withdrawForm'].resetFields()
     }
