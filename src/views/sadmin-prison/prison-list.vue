@@ -52,7 +52,8 @@ export default {
       tableCols: [
         {
           label: '监狱名称',
-          prop: 'title'
+          prop: 'title',
+          showOverflowTooltip: true
         },
         {
           label: '监狱图片',
@@ -60,18 +61,20 @@ export default {
         },
         {
           label: '监狱编号',
-          prop: 'zipcode'
+          prop: 'zipcode',
+          showOverflowTooltip: true
         },
         {
           label: '所在地区',
           slotName: 'location',
+          showOverflowTooltip: true,
           minWidth: 200
         },
         {
           label: '操作',
           slotName: 'operation',
           align: 'center',
-          minWidth: 170
+          minWidth: 260
         }
       ]
     }

@@ -6,8 +6,6 @@
       @search="onSearch"
     >
       <template slot="append">
-        <el-button type="primary" @click="onEdit">提交审批</el-button>
-
         <el-button type="primary" @click="onNewFamily">新增</el-button>
 
         <m-excel-download
@@ -43,7 +41,7 @@
         </template>
 
         <template #operation>
-          <el-button type="text">编辑</el-button>
+          <el-button type="text" @click="onEdit">编辑</el-button>
 
           <el-button type="text">详情</el-button>
 
@@ -699,14 +697,7 @@ export default {
         })
 
         if (this.familyInformationDialogOperationType) {
-          this.familyInformationDialogFormValues = cloneDeep({
-            name: 'cy',
-            fname: '奥迪',
-            phone: '139782712312',
-            number: '493209123',
-            rname: '撒打算',
-            aname: 0
-          })
+          this.familyInformationDialogFormValues = cloneDeep({})
 
           this.$set(this.familyInformationDialogFormItems, 'buttons', [{
             add: true,
