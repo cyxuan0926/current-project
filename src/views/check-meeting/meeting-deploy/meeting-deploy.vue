@@ -162,13 +162,11 @@ import validator from '@/utils'
         this.dialogVisible = false
       },
       submitDeploy(){
-        const params = {
+        const params = Object.assign({}, this.formData, {
           autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
           abnormalCallDuration: this.abnormalCallDuration,
-          abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1: 0,
-          ...this.formData
-        }
-
+          abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1: 0
+        })
         this.$refs.form.validate(valid => {
           if (valid) {
             http.getMeetDeployUpdate(params).then(res => {
