@@ -3,6 +3,9 @@ export default {
   SET_GUIDE_STORAGE(state, params) {
     state.guideStorage = params
   },
+  SET_AFFAIRS_STORAGE(state, params) {
+    state.affairsStorage = params
+  },
   setUser(state, params) {
     state.user = params || {}
   },

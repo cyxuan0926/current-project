@@ -19,7 +19,7 @@
                 :cols="tableCols"
                 class="mini-td-padding">
                 <template #module="{ row }">
-                    <span>{{ row.module | getModule }}</span>
+                    <span>{{ moduleItems[row.module] }}</span>
                 </template>
                 <template #status="{ row }">
                     <span>{{ row.status == '0' ? '否' : '是' }}</span>
@@ -71,13 +71,68 @@
     import { mapState, mapGetters, mapActions } from 'vuex'
     export default {
         data() {
-            const _type = this.$route.meta.typeId
             return {
-                type: _type,
-                module: `sun_jail_${ _type }`,
+                type: '',
                 total: 0,
                 moduleItems: {},
-                tableCols: [
+                tableCols: [],
+                searchItems: {},
+                tableDatas:[],
+                filter: {},
+            }
+        },
+        // computed: {
+        //     ...mapState({
+        //         isAdmin: state => state.global.user.role == '0'
+        //     })
+        // },
+        watch: {
+            $route: {
+                handler(r) {
+                    console.log('route==', r)
+                    this.initData(r.meta.typeId)
+                },
+                immediate: true
+            }
+        },
+        methods:{
+            ...mapActions(['setGuideStorage']),
+
+            setTextareaValue(val) {
+                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
+            },
+
+            async initData(_type) {
+                let _hasTypeSelect = _type.includes('flfg') || _type.includes('xwgs')
+                let _moduleItems = {}
+                let _searchItems = {
+                    type: {
+                        type: 'select',
+                        label: '业务模块',
+                        options: [],
+                        miss: !_hasTypeSelect,
+                        value: _type
+                    },
+                    headline: {
+                        type: 'input',
+                        label: '标题',
+                    },
+                    status: {
+                        type: 'select',
+                        label: '上架状态',
+                        options: [
+                            {
+                                label: '是',
+                                value: '1'
+                            },
+                            {
+                                label: '否',
+                                value: '0'
+                            }
+                        ]
+                    }
+                }
+                let _tableCols = [
                     {
                         label: '序号',
                         prop: 'seq',
@@ -114,108 +169,33 @@
                         width: '200px',
                         align: 'center'
                     }
-                ],
-                searchItems: {
-                    // applicationDate: {
-                    //     type: 'dateRange',
-                    //     unlinkPanels: true,
-                    //     start: 'startTime',
-                    //     end: 'endTime',
-                    //     startPlaceholder: '开始时间',
-                    //     endPlaceholder: '结束时间',
-                    //     // miss: true,
-                    //     value: [this.$_dateOneWeekAgo, this.$_dateNow]
-                    // },
-                    type: {
-                        type: 'select',
-                        label: '业务模块',
-                        options: [],
-                        miss: true,
-                        value: _type
-                    },
-                    headline: {
-                        type: 'input',
-                        label: '标题',
-                    },
-                    status: {
-                        type: 'select',
-                        label: '上架状态',
-                        options: [
-                            {
-                                label: '全部',
-                                value: 'all'
-                            },
-                            {
-                                label: '是',
-                                value: '1'
-                            },
-                            {
-                                label: '否',
-                                value: '0'
-                            }
-                        ]
+                ]
+                if( _type.includes('flfg') || _type.includes('xwgs') ) {
+                    _tableCols.splice(
+                        1,
+                        0,
+                        {
+                            label: '业务模块',
+                            slotName: 'module',
+                            width: '200px',
+                            align: 'center'
+                        }
+                    )
+                    let { data } = await http.queryDictItemByDictCode(`sun_jail_${ _type }`)
+                    if( data && data.length ) {
+                        _searchItems.type.options = [{ label: '全部', value: _type }, ...data]
+                        data.forEach(d => {
+                            _moduleItems[d.value] = d.label
+                        })
                     }
-                },
-                tableDatas:[],
-                filter: {},
-                // maxId: 0
-            }
-        },
-        // computed: {
-        //     ...mapState({
-        //         isAdmin: state => state.global.user.role == '0'
-        //     })
-        // },
-        filters: {
-            getModule(mod) {
-                return this.moduleItems[mod] || ''
-            }
-        },
-        watch: {
-            $route(val) {
-                console.log('watch==', val)
-            }
-        },
-        async created() {
-            // http.queryDictItemByDictCode('flfg')
-            if( this.type.includes('flfg') || this.type.includes('xwgs') ) {
-                this.tableCols.splice(
-                    1,
-                    0,
-                    {
-                        label: '业务模块',
-                        slotName: 'module',
-                        width: '200px',
-                        align: 'center'
-                    }
-                )
-                let { data } = await http.queryDictItemByDictCode(this.module)
-                if( data && data.length ) {
-                    this.searchItems.type.options = [{ label: '全部', value: this.type }, ...data]
-                    data.forEach(d => {
-                        this.moduleItems[d.value] = d.label
-                    })
                 }
-                this.searchItems.type.miss = false
-                // this.searchItems.type.value = this.type
-            }
-        },
-        mounted() {
-            this.$refs.search.onGetFilter()
-            this.getData()
-        },
-        methods:{
-            ...mapActions(['setGuideStorage']),
-
-            handleTextareaValue(val) {
-                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
-            },
-
-            setSelectAllParams(params) {
-                Object.keys(params).forEach(key => {
-                    if( params[key] == 'all' ) {
-                        params[key] = ''
-                    }
+                this.type = _type
+                this.moduleItems = _moduleItems
+                this.searchItems = _searchItems
+                this.tableCols = _tableCols
+                this.$nextTick(() => {
+                    this.$refs.search.onGetFilter()
+                    this.handleSearch()
                 })
             },
 
@@ -257,11 +237,11 @@
                     //     updatedTime: row.updatedTime,
                     //     guide: row.guide,
                     //     content: row.content,
-                    //     preContent: this.handleTextareaValue(row.content)
+                    //     preContent: this.setTextareaValue(row.content)
                     // })
                 // 上下架
                 } else if (type == 'online' || type == 'offline') {
-                    await this.$confirm(`${ type == 'online' ? '上' : '下' }线此操作指引`, '提示', {
+                    await this.$confirm(`${ type == 'online' ? '上' : '下' }架此操作指引`, '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'

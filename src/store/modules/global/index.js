@@ -28,6 +28,13 @@ let state = {
     guide: '',
     updatedTime: '',
     preContent: ''
+  },
+
+  affairsStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_AFFAIRS_DATA') && JSON.parse(window.sessionStorage.getItem('APP_AFFAIRS_DATA'))) || {
+    headline: '',
+    subhead: '',
+    content: '',
+    seq: 0
   }
 }
 

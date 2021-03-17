@@ -149,6 +149,19 @@ export default {
       window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(storage))
     }
     commit('SET_GUIDE_STORAGE', storage)
+  },
+
+  setAffairsStorage({ commit }, storage = {
+    headline: '',
+    subhead: '',
+    content: '',
+    seq: 0,
+    preContent: ''
+  }) {
+    if (window.sessionStorage) {
+      window.sessionStorage.setItem('APP_AFFAIRS_DATA', JSON.stringify(storage))
+    }
+    commit('SET_AFFAIRS_STORAGE', storage)
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

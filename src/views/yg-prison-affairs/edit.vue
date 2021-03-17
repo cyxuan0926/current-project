@@ -6,7 +6,11 @@
             @submit="handleSubmit"
             @preview="handlePreview"
             @back="handleBack"
-            :values="guideData"/>
+            :values="affairsData">
+            <template #seq="fields">
+                <el-input-number v-model="fields.seq" :min="0" :step="1" step-strictly placeholder="请输入序号"></el-input-number>
+            </template>
+        </m-form>
     </div>
 </template>
 
@@ -16,17 +20,44 @@
     import { mapGetters, mapActions } from 'vuex'
     export default {
         data() {
-            const _id = this.$route.query && this.$route.query.gid || ''
-            const _type = this.$route.meta.typeId
             return {
-                gid: _id,
-                type: _type,
-                module: `sun_jail_${ _type }`,
-                formItems: {
+                gid: this.$route.query && this.$route.query.gid || '',
+                formItems: {},
+            }
+        },
+        watch: {
+            $route: {
+                handler(r) {
+                    this.initData(r.meta.typeId)
+                },
+                immediate: true
+            }
+        },
+        computed: {
+            ...mapGetters(['affairsData'])
+        },
+        methods: {
+            ...mapActions(['setAffairsStorage']),
+
+            handleTextareaValue(val) {
+                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
+            },
+
+            async initData(_type) {
+                let _hasTypeSelect = _type.includes('flfg') || _type.includes('xwgs')
+                let _module = `sun_jail_${ _type }`
+                let _formItems = {
                     buttons: !_id ?
                         [ { add: { loading: false } }, { preview: { loading: false } }, 'back' ] :
                         [ { update: { loading: false } }, { preview: { loading: false } }, 'back'],
                     formConfigs: { labelWidth: '150px' },
+                    dissMissConfigs: _hasTypeSelect ? ['type'] : [],
+                    type: {
+                        type: 'select',
+                        label: '业务模块',
+                        rules: ['required'],
+                        options: []
+                    },
                     headline: {
                         type: 'input',
                         label: '标题',
@@ -44,79 +75,55 @@
                         label: '内容',
                         rules: ['required']
                     },
-                    // seq: {
-                    //     type: 'jaileditor', label: '更新操作指引', rules: ['required']
-                    // }
-                },
-                guideData: {
-                    "content": "",
-                    "createTime": "",
-                    "headline": "",
-                    "id": "",
-                    "module": "",
-                    "seq": 0,
-                    "status": 0,
-                    "subhead": "",
-                    "type": ""
+                    seq: {
+                        slotName: 'seq',
+                        attrs: {
+                            label: '序号',
+                            prop: 'seq',
+                            rules: [{ required: true, message: '请输入序号' }]
+                        }
+                    }
                 }
-            }
-        },
-        // computed: {
-        //     ...mapGetters(['guideData'])
-        // },
-        methods: {
-            ...mapActions(['setGuideStorage']),
+                if( _type.includes('meetingnotice') || _type.includes('servivceinfo') ) {
+                    let { data } = await http.queryPrisonAffairs({ page: 1, rows: 10 })
+                    if( data && data.list && data.list.length ) {
+                        let { headline, subhead, content, seq } = data[0]
+                        this.affairsData = { headline, subhead, content, seq }
+                    }
+                }
 
-            handleTextareaValue(val) {
-                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
+                this.type = _type
+                this.module = _module
+                this.formItems = _formItems
             },
 
             async handleSubmit(fields) {
-                // if (!fields.content) {
-                //     this.$message.warning('请填写更新内容介绍')
-                //     return false
-                // }
-                // if (!fields.guide) {
-                //     this.$message.warning('请填写更新操作指引')
-                //     return false
-                // }
                 fields = Object.assign(
                     {
-                        id: '',
+                        id: this.gid,
                         module: this.module,
                         status: '0',
                         type: this.type
                     },
                     fields
                 )
-                // fields.preContent = this.handleTextareaValue(fields.content)
-                // if( !this.isAdd && this.gid ) {
-                //     fields = Object.assign({ id: this.gid }, fields)
-                // }
-                //let { data } = await http[ this.isAdd ? 'addBusGuide' : 'updateBusGuide' ](fields)
-                // console.log( fields.content.split('') )
-                // return
-                await http.savePrisonAffairs(fields)
+                //fields.preContent = this.handleTextareaValue(fields.content)
+                let { data } = await http[ this.isAdd ? 'savePrisonAffairs' : 'updatePrisonAffairs' ](fields)
                 if( !!data ) {
-                    // if( !this.isAdd ) {
-                    //     this.setGuideStorage(fields)
-                    // }else {
-                    //     this.$router.push({ path: '/operation-guide/list' })
-                    // }
                     this.$router.push({ path: `/prison-affairs-list/${ this.$route.meta.typeId }` })
                 }
             },
 
             handlePreview(fields) {
-                fields = Object.assign({ updatedTime: this.$_dateNow }, fields)
-                fields.preContent = this.handleTextareaValue(fields.content)
-                this.setGuideStorage(fields)
-                this.$router.push({ path: '/operation-guide/detail' })
+                // fields = Object.assign({ updatedTime: this.$_dateNow }, fields)
+                // fields.preContent = this.handleTextareaValue(fields.content)
+                // this.setGuideStorage(fields)
+                // this.$router.push({ path: '/operation-guide/detail' })
             },
 
             async handleBack(fields) {
                 try {
-                    if( (!!fields.guide || !!fields.content) && !isEqual(this.guideData, { guide: fields.guide, content: fields.content })) {
+                    if( !isEqual(this.affairsData, fields)) {
                         await this.$confirm('页面内容已更新，您确定要离开吗？', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
@@ -124,7 +131,7 @@
                         })
                     }
                     this.setGuideStorage()
-                    this.$router.push({ path: '/operation-guide/list' })
+                    this.$router.push({ path: `/prison-affairs-list/${ this.$route.meta.typeId }` })
                 } catch (error) {
                     console.log(error)
                 }

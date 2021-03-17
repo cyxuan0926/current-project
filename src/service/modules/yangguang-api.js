@@ -26,7 +26,7 @@ export default {
     // 编辑各类型文章
     updatePrisonAffairs: data => ygApis.putObj('/contents', data),
     // 删除各类型文章
-    deletePrisonAffairs: id => ygApis.remove(`/contents?id=${ id }`),
+    deletePrisonAffairs: id => ygApis.remove(`/contents/deleteById?id=${ id }`),
     // 上下架 0-下架 1-上架
-    updatePrisonAffairsStatus: data => ygApis.putObj('/contents/manage', data)
+    updatePrisonAffairsStatus: ({ id, status }) => ygApis.putObj(`/contents/manage?id=${ id }&status=${ status }`)
 }
