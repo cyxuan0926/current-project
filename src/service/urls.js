@@ -27,10 +27,10 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   test: {
+    yangguangApiHost: 'http://192.168.1.28:8080', // 王冲本地ip（阳光）
+    yangguangApiPath: '/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     // apiHost: 'http://47.107.245.151:8021',
-    // 王冲本地ip（阳光）
-    yangguangHost: `http://192.168.1.28:8080/`,
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk',

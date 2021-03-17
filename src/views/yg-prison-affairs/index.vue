@@ -1,0 +1,289 @@
+<template>
+    <el-row class="row-container" :gutter="0">
+        <el-button
+            class="button-add button-shift-down"
+            size="small"
+            type="primary"
+            plain
+            @click="handleClick('add')">
+            新增
+        </el-button>
+        <m-search
+            ref="search"
+            :items="searchItems"
+            @search="handleSearch">
+        </m-search>
+        <el-col :span="24">
+            <m-table-new
+                :data="tableDatas"
+                :cols="tableCols"
+                class="mini-td-padding">
+                <template #module="{ row }">
+                    <span>{{ row.module | getModule }}</span>
+                </template>
+                <template #status="{ row }">
+                    <span>{{ row.status == '0' ? '否' : '是' }}</span>
+                </template>
+                <template #operation="{ row }">
+                    <el-button
+                        type="text"
+                        size="mini"
+                        @click="handleClick('detail', row)">
+                        预览
+                    </el-button>
+                    <el-button
+                        v-if="row.status == '0'"
+                        type="text"
+                        size="mini"
+                        @click="handleClick('edit', row)">编辑
+                    </el-button>
+                    <el-button
+                        v-if="row.status == '0'"
+                        type="text"
+                        size="mini"
+                        @click="handleClick('online', row)">上架
+                    </el-button>
+                    <el-button
+                        v-if="row.status == '0'"
+                        type="text"
+                        size="mini"
+                        @click="handleClick('delete', row)">删除
+                    </el-button>
+                    <el-button
+                        v-if="row.status == '1'"
+                        type="text"
+                        size="mini"
+                        @click="handleClick('offline', row)">下架
+                    </el-button>
+                </template>
+            </m-table-new>
+        </el-col>
+        <m-pagination
+            ref="pagination"
+            :total="total"
+            @onPageChange="getData"/>
+    </el-row>
+</template>
+
+<script>
+    import http from '@/service'
+    import Moment from 'moment'
+    import { mapState, mapGetters, mapActions } from 'vuex'
+    export default {
+        data() {
+            const _type = this.$route.meta.typeId
+            return {
+                type: _type,
+                module: `sun_jail_${ _type }`,
+                total: 0,
+                moduleItems: {},
+                tableCols: [
+                    {
+                        label: '序号',
+                        prop: 'seq',
+                        width: '150px'
+                    },
+                    {
+                        label: '标题',
+                        prop: 'headline',
+                        showOverflowTooltip: true
+                    },
+                    {
+                        label: '副标题',
+                        prop: 'subhead',
+                        showOverflowTooltip: true
+                    },
+                    {
+                        label: '内容',
+                        prop: 'content',
+                        showOverflowTooltip: true
+                    },
+                    {
+                        label: '创建时间',
+                        prop: 'createTime',
+                        width: '200px'
+                    },
+                    {
+                        label: '状态',
+                        slotName: 'status',
+                        width: '120px',
+                    },
+                    {
+                        label: '操作',
+                        slotName: 'operation',
+                        width: '200px',
+                        align: 'center'
+                    }
+                ],
+                searchItems: {
+                    // applicationDate: {
+                    //     type: 'dateRange',
+                    //     unlinkPanels: true,
+                    //     start: 'startTime',
+                    //     end: 'endTime',
+                    //     startPlaceholder: '开始时间',
+                    //     endPlaceholder: '结束时间',
+                    //     // miss: true,
+                    //     value: [this.$_dateOneWeekAgo, this.$_dateNow]
+                    // },
+                    type: {
+                        type: 'select',
+                        label: '业务模块',
+                        options: [],
+                        miss: true,
+                        value: _type
+                    },
+                    headline: {
+                        type: 'input',
+                        label: '标题',
+                    },
+                    status: {
+                        type: 'select',
+                        label: '上架状态',
+                        options: [
+                            {
+                                label: '全部',
+                                value: 'all'
+                            },
+                            {
+                                label: '是',
+                                value: '1'
+                            },
+                            {
+                                label: '否',
+                                value: '0'
+                            }
+                        ]
+                    }
+                },
+                tableDatas:[],
+                filter: {},
+                // maxId: 0
+            }
+        },
+        // computed: {
+        //     ...mapState({
+        //         isAdmin: state => state.global.user.role == '0'
+        //     })
+        // },
+        filters: {
+            getModule(mod) {
+                return this.moduleItems[mod] || ''
+            }
+        },
+        watch: {
+            $route(val) {
+                console.log('watch==', val)
+            }
+        },
+        async created() {
+            // http.queryDictItemByDictCode('flfg')
+            if( this.type.includes('flfg') || this.type.includes('xwgs') ) {
+                this.tableCols.splice(
+                    1,
+                    0,
+                    {
+                        label: '业务模块',
+                        slotName: 'module',
+                        width: '200px',
+                        align: 'center'
+                    }
+                )
+                let { data } = await http.queryDictItemByDictCode(this.module)
+                if( data && data.length ) {
+                    this.searchItems.type.options = [{ label: '全部', value: this.type }, ...data]
+                    data.forEach(d => {
+                        this.moduleItems[d.value] = d.label
+                    })
+                }
+                this.searchItems.type.miss = false
+                // this.searchItems.type.value = this.type
+            }
+        },
+        mounted() {
+            this.$refs.search.onGetFilter()
+            this.getData()
+        },
+        methods:{
+            ...mapActions(['setGuideStorage']),
+
+            handleTextareaValue(val) {
+                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
+            },
+
+            setSelectAllParams(params) {
+                Object.keys(params).forEach(key => {
+                    if( params[key] == 'all' ) {
+                        params[key] = ''
+                    }
+                })
+            },
+
+            async getData() {
+                let params = { ...this.filter, ...this.pagination }
+                if( !params.type ) {
+                    params.type = this.type
+                }
+                let { data } = await http.queryPrisonAffairs(params)
+                this.tableDatas = data && data.list || []
+                this.total = data && data.totalCount
+            },
+
+            handleSearch() {
+                const { rows } = this.pagination
+                this.loading = true
+                this.$refs.pagination.currentPage = 1
+                this.pagination = Object.assign({}, { page: 1, rows })
+                this.getData()
+            },
+
+            async handleClick(type, row) {
+                // 新增
+                if (type == 'add') {
+                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }` })
+                    // this.setGuideStorage()
+                // 修改
+                } else if (type == 'edit') {
+                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }?gid=${row.id}`
+                    })
+                    // this.setGuideStorage({
+                    //     guide: row.guide,
+                    //     content: row.content
+                    // })
+                // 预览
+                } else if (type == 'detail') {
+                    // this.$router.push({ path: '/operation-guide/detail' })
+                    // this.setGuideStorage({
+                    //     updatedTime: row.updatedTime,
+                    //     guide: row.guide,
+                    //     content: row.content,
+                    //     preContent: this.handleTextareaValue(row.content)
+                    // })
+                // 上下架
+                } else if (type == 'online' || type == 'offline') {
+                    await this.$confirm(`${ type == 'online' ? '上' : '下' }线此操作指引`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
+                    await http.updatePrisonAffairsStatus({ id: row.id, status: type == 'online' ? '1' : '0' })
+                    this.getData()
+
+                // 删除
+                } else if (type == 'delete') {
+                    await this.$confirm('删除此操作指引', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
+                    await http.deletePrisonAffairs(row.id)
+                    this.getData()
+                }
+            }
+        }
+    }
+</script>
+
+<style lang="scss" scoped>
+
+</style>
