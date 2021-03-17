@@ -147,7 +147,11 @@ export default {
   },
   methods: {
      async getDatas() {
-      let res = await http.getIslandList({ ...this.filter, ...this.pagination })
+       let params = { ...this.filter, ...this.pagination }
+       if( params.provincesId ) {
+         params.provinces = params.provincesId
+       }
+      let res = await http.getIslandList(params)
       this.tabledata=res
     },
     onSearch() {
