@@ -109,18 +109,18 @@
           @click="show.authorize = false">关闭</el-button>
       </div>
       <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
+          v-if="show.disagree"
+          class="button-box logMgCls">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
           <div>
-        <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
-          <el-option
-            v-for="(remark,index) in content"
-            :value="remark"
-            :label="remark"
-            :key="index" />
-        </el-select>
-        <el-button
+            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
+            <el-option
+              v-for="(remark,index) in content"
+              :value="remark"
+              :label="(index+1)+'、'+remark"
+              :key="index"/>
+          </el-select>
+           <el-button
             type="primary"
             :loading="btnDisable"
             @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
@@ -129,16 +129,13 @@
             :model="refuseForm"
             :rules="withdrawRule"
             ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
-              <el-input
-               class="bordertop"
-                :autosize="{ minRows: 1 }"
-                 style="border-top: none;"
+            class="withdraw-box logMgCls">
+            <el-form-item prop="anotherRemarks"  >
+               <el-input
+                :autosize="{ minRows: 6 ,maxRows:8 }"
                 type="textarea"
                 show-word-limit
-                :maxlength="refuseForm.lengthRemark"
+                maxlength="1000"
                 placeholder="请输入驳回原因..."
                 v-model="refuseForm.anotherRemarks"
               />
@@ -159,17 +156,17 @@
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
-      @close="closeAuthorize"
-      class="authorize-dialog"
+      @close="closeWithdraw()"
+      class="authorize-dialog logMgCls"
       title="撤回"
       width="530px">
      <div style="margin-bottom: 10px;">请选择撤回原因</div>
-          <div style="margin-bottom: 10px;">
-            <el-select v-model="remarks" :multiple="true" @change="withdrawFormChange" style="width:70%;margin-right:10px">
+         <div style="margin-bottom: 10px;">
+            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
             <el-option
               v-for="(remark,index) in content"
               :value="remark"
-              :label="remark"
+               :label="(index+1)+'、'+remark"
               :key="index"/>
           </el-select>
            <el-button
@@ -182,14 +179,12 @@
             :rules="withdrawRule"
             ref="withdrawForm"
             class="withdraw-box">
-            <el-form-item prop="withdrawReason" class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="withdrawForm.selectRemark"  :readonly="true"/>
-              <el-input
-               class="bordertop"
+            <el-form-item prop="withdrawReason">
+                <el-input
                 type="textarea"
                 show-word-limit
-                :maxlength="withdrawForm.lengthRemark"
-                :autosize="{ minRows: 1 }"
+                maxlength="1000"
+                :autosize="{ minRows: 6 ,maxRows:8 }"
                 placeholder="请输入撤回理由..."
                 v-model="withdrawForm.withdrawReason" />
             </el-form-item>
@@ -203,7 +198,7 @@
           class="button-add"
           size="mini"
           type="danger"
-          @click="show.withdraw = false">关闭</el-button>
+          @click="closeWithdraw()">关闭</el-button>
       </el-row>
     </el-dialog>
     <el-dialog
@@ -307,19 +302,17 @@ export default {
         contentId:"",
          withdrawForm: {
         selectRemark:"",
-        lengthRemark:1000,
         withdrawReason: ""
       },
       refuseForm: {
         selectRemark:"",
-        lengthRemark:1000,
         anotherRemarks: ""
       },
       withdrawRule: {
         anotherRemarks: [
           {
             validator:(rule,value,callback)=>{
-              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
+              if(this.refuseForm.anotherRemarks){
                   callback()
               }else{
                   callback(new Error('请填写驳回原因'))
@@ -330,7 +323,7 @@ export default {
         withdrawReason: [
           {
             validator:(rule,value,callback)=>{
-              if(this.withdrawForm.selectRemark||this.withdrawForm.withdrawReason){
+              if(this.withdrawForm.withdrawReason){
                   callback()
               }else{
                   callback(new Error('请填撤回原因'))
@@ -422,29 +415,29 @@ export default {
       'getCanceledVisit',
       'authorizeVisit',
       'withdrawVisit' ]),
-      refuseFormChange(e){
-      let str=""
+       refuseFormChange(e){
+        let str=""
+         if(!this.refuseForm.anotherRemarks){
+            this.refuseForm.anotherRemarks=""
+          }
         e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
+          if(!this.refuseForm.anotherRemarks.includes(item)){
+            str +=`${item}。\n`
           }
         })
-        this.refuseForm.selectRemark=str
-        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+        this.refuseForm.anotherRemarks+=str
     },
-    withdrawFormChange(e){
+     withdrawFormChange(e){
       let str=""
+       if(!this.withdrawForm.withdrawReason){
+            this.withdrawForm.withdrawReason=""
+          }
         e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
+          if(!this.withdrawForm.withdrawReason.includes(item)){
+            str +=`${item}。\n`
           }
         })
-        this.withdrawForm.selectRemark=str
-        this.withdrawForm.lengthRemark=1000-this.withdrawForm.selectRemark.length
+        this.withdrawForm.withdrawReason+=str
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
@@ -462,17 +455,7 @@ export default {
       if(str=='PASSED'){
         this.show.rejectEdit=true
       }else{
-        if(this.content[0]){
-          this.remarks.push(this.content[0])
-          //判断打开的是驳回还是撤回
-          if(isform){
-            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
-            this.withdrawForm.lengthRemark=997-this.content[0].length
-          }else{
-            this.refuseForm.selectRemark=`1、${this.content[0]}。`
-            this.refuseForm.lengthRemark=997-this.content[0].length
-          }
-        }
+        this.show.rejectEdit=false
       }
     },
     addReject(){
@@ -489,6 +472,15 @@ export default {
       this.onRejectshow(false,this.isform)
        this.show.editRebut=true
     },
+     closeWithdraw(e) {
+        this.show.withdraw=false
+        this.show.authorize=false
+        this.remarks = []
+        this.withdrawForm.withdrawReason=""
+        this.refuseForm.anotherRemarks=""
+        if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
+        if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+      },
      async onSubmitReject(){
       this.content=this.content.filter((res)=>res&&res.trim())
        if(this.content.length<1){
@@ -554,7 +546,10 @@ export default {
       let params = { id: this.toAuthorize.id, status: e }
       if (e === 'DENIED') {
           this.$refs.refuseForm.validate(valid => {
-          if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+              if(!this.refuseForm.anotherRemarks){
+              this.refuseForm.anotherRemarks=""
+            }
+          if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
           })
         if (params.remarks) this.handleSubmit(params)
       }
@@ -575,7 +570,10 @@ export default {
             id: this.toAuthorize.id,
             status: 'DENIED'
           }
-          params.remarks =this.withdrawForm.selectRemark + this.withdrawForm.withdrawReason.replace(/\s*/g, '')
+          if(!this.withdrawForm.withdrawReason){
+              this.withdrawForm.withdrawReason=""
+            }
+          params.remarks =this.withdrawForm.withdrawReason.replace(/\s*/g, '')
           this.withdrawVisit(params).then(res => {
             if (!res) return
             this.closeWithdraw()
@@ -592,6 +590,7 @@ export default {
       this.$refs['refuseForm'] && this.$refs['refuseForm'].resetFields()
     },
     closeWithdraw() {
+      this.remarks = []
       this.show.withdraw = false
       this.$refs['withdrawForm'].resetFields()
     }
@@ -599,23 +598,27 @@ export default {
 }
 </script>
 <style lang="stylus">
-.borderNone .el-form-item__content{
-    display: flex;
-    flex-direction: column;
+.logMgCls .el-select__tags-text {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.borderNone .el-textarea__inner{
-    border:1px solid #DCDFE6 ;
-    border-bottom:none;
-    border-radius:4px 4px 0 0;
-
+.logMgCls .el-select .el-tag__close.el-icon-close {
+  top: -7px;
 }
-.bordertop .el-textarea__inner{
-    border:1px solid #DCDFE6 ;
-    border-top:none;
-    border-radius:0px 0px 4px 4px;
-}
+ .el-select-dropdown{
+        max-width: 243px;
+    }
+    .el-select-dropdown__item{
+        display: inline-block;
+    }
+    .el-select-dropdown__item span {
+        min-width: 400px;
+        display: inline-block;
+   }
 </style>
-
 <style lang="scss" scoped>
 .el-table /deep/ td {
   padding: 7px 0;
@@ -623,6 +626,10 @@ export default {
 </style>
 
 <style type="text/stylus" lang="stylus" scoped>
+.flex-dialog
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 32px;
 .cell img
   width: 126.8px;
   cursor: pointer;
