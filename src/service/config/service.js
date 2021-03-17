@@ -12,7 +12,7 @@ let state = ''
 export const agency = urls.apiPath
 
 // 获取异步请求的url
-const getUrl = (url) => `${ agency }${ url }`
+const getUrl = (url) => /^(http|https).*/.test(url) ? url : `${ agency }${ url }`
 
 // http request 拦截器
 instance.interceptors.request.use(
@@ -141,8 +141,8 @@ export const patch = (url, data = {}, config = {}) =>
  * @param data
  * @returns {Promise}
  */
-export const put = (url, data = {}) =>
-  instance.put(getUrl(url), qs.stringify(data)).then(res => res)
+export const put = (url, data = {}, config = {}) =>
+  instance.put(getUrl(url), qs.stringify(data), config).then(res => res)
 
 export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
   headers: {
@@ -155,8 +155,8 @@ export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
  * @param data
  * @returns {Promise}
  */
-export const remove = (url, data = {}) =>
-  instance.delete(getUrl(url), qs.stringify(data)).then(res => res)
+export const remove = (url, config = {}) =>
+  instance.delete(getUrl(url), config).then(res => res)
 /**
  * 封装all请求
  * @param urls

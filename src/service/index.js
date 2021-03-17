@@ -5,6 +5,7 @@ import global from './modules/global'
 import superAdmin from './modules/superAdmin'
 import noPage from './modules/no-page'
 import repeat from './modules/repeat'
+import yangguang from './modules/yangguang-api'
 
 export default Object.assign(
   admin,
@@ -13,5 +14,6 @@ export default Object.assign(
   check,
   information,
   noPage,
-  repeat
+  repeat,
+  yangguang
 )
