@@ -207,10 +207,10 @@ let check = [{
     // component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve),
     meta: { permission: 'visit.data-import.pocket-money.import', breadcrumbName: '零花钱数据导入' }
   }, {
-    path: '/prisoner-data/pocket-money',
-    name: 'prisoner-pocket-money',
+    path: '/check-prisoner-data/reward-score-list',
+    name: 'prisoner-score-import-list',
     // component: helper.loadView('check-prisoner-data/pocket-money'),
-    component: 'check-prisoner-data/pocket-money',
+    component: 'check-prisoner-data/reward-score-list',
     // component: resolve => require(['@/views/check-prisoner-data/pocket-money'], resolve),
     meta: { permission: 'visit.data-import.prisoner-score.import', breadcrumbName: '服刑人员计分考核数据导入' }
   }, {
