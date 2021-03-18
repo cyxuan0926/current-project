@@ -111,6 +111,26 @@ export const postFile = (url, data = {}) => {
     }
   }).then(res => res)
 }
+export function postFormData(url = '', data = {}, config = {}) {
+  const formData = new FormData()
+    Object.keys(data).forEach(key => {
+      if (data[key]) {
+          if (key === 'file' && Array.isArray(data.file)) {
+              data.file.forEach(f => formData.append('file', f))
+          }
+          else {
+              formData.append(key, data[key])
+          }
+      }
+    })
+  return instance.request({
+    url,
+    data: formData,
+    method: 'POST',
+    headers: { 'content-type': 'multipart/form-data' },
+    ...config
+  })
+}
 /**
  * 封装patch文件请求
  * @param url
