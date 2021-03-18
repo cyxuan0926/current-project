@@ -26,7 +26,7 @@
             <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
               <el-input-number
                 type="number"
-                style="width: 150px"
+                style="width: 150px;margin-left:20px;"
                 :step="1"
                 step-strictly
                 :disabled="isDisabled"
@@ -485,6 +485,20 @@ export default {
           value: 0,
           setValueConfigs: [{ setValue: 1 }],
           func: this.onMeetingRoomSwitch
+        },
+          gkMessage : {
+          type: 'switch',
+          label: '国科短信模块开放',
+          disabled,
+          rules: ['required'],
+          value: 0
+        },
+          sunJail : {
+          type: 'switch',
+          label: '阳光监狱模块开放',
+          disabled,
+          rules: ['required'],
+          value: 0
         },
 
         thresholdConfigs: {

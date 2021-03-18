@@ -7,7 +7,7 @@
         :span="22"
         :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerRewardHref">罪犯奖惩信息导入模板</a>
+        <a :href="prisonerRewardHref">服刑人员计分考核数据导入</a>
       </el-col>
     </el-row>
     <el-row :gutter="0">
@@ -95,11 +95,11 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { uploadFileYangGuangHost, importPrisonerRewardPunishmentlist } from '@/service-yangguang/api/prisonerList'
+import http from '@/service'
 export default {
   data() {
     return {
-      prisonerRewardHref: `${ this.$urls.yangguangHost }download/downloadfile?filepath=prisoner_score_template.xls`,
+      prisonerRewardHref: `${ this.$urls.yangguangApiHost}${this.$urls.yangguangApiPath}/download/downloadfile?filepath=prisoner_score_template.xls`,
       fileList: []
     }
   },
@@ -114,13 +114,11 @@ export default {
     // 上传罪犯奖惩模板文件到服务端
     beforeUpload(file) {
       this.resetState({ prisonerRewardPunishmentResult: {} })
-      console.log(file)
-      uploadFileYangGuangHost(file).then(res => {
+      http.uploadFileYangGuangHost(file).then(res => {
         if (!res) return
-        console.log(res)
-          importPrisonerRewardPunishmentlist({ filepath: res.path }).then(res => {
+          http.importPrisonerScorelist({ filepath: res.data.path }).then(res => {
           if (!res) return
-          this.alertInformation(res)
+          this.alertInformation(res.data)
         })
       })
       return false

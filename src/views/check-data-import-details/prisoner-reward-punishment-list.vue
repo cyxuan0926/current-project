@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { getPrisonerBonusPenaltylist } from '@/service-yangguang/api/prisonerList'
+import http from '@/service'
 import Moment from 'moment'
 export default {
   data() {
@@ -96,8 +96,8 @@ export default {
   },
   methods: {
     async getDatas() {
-      let res = await getPrisonerBonusPenaltylist({ ...this.filter, ...this.pagination })
-      this.tabledata= res
+      let res = await http.getPrisonerBonusPenaltylist({ ...this.filter, ...this.pagination })
+      this.tabledata= res.data
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(0)
