@@ -27,7 +27,7 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   test: {
-    yangguangApiHost: 'http://192.168.1.28:8080', // 王冲本地ip（阳光）
+    yangguangApiHost: 'http://120.78.190.101:8113',
     yangguangApiPath: '/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     // apiHost: 'http://47.107.245.151:8021',
