@@ -71,5 +71,9 @@ export default {
 
   guideData(state) {
     return state.guideStorage
+  },
+
+  affairsData(state) {
+    return state.affairsStorage
   }
 }
