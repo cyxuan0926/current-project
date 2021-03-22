@@ -36,8 +36,12 @@ export default {
      getPrisonerBonusPenaltylist: params => ygApis.get('/prisoner_bonus_penalty/queryPrisonerBonusPenalty', params),
     // 数据管理-罪犯奖惩数据解析-上传到服务器
     importPrisonerRewardPunishmentlist: params => ygApis.get('/prisoner_bonus_penalty/processingYzk', params),
-    // 数据管理-计分考核数据解析-上传到服务器
+     // 数据管理-罪犯奖惩数据解析-验证
+     validatePrisonerRewardPunishmentlist: params => ygApis.get('/prisoner_bonus_penalty/validate', params),
+     // 数据管理-计分考核数据解析-上传到服务器
     importPrisonerScorelist: params => ygApis.get('/prisoner_score/processingYzk', params),
+    // 数据管理-计分考核数据解析-验证
+    validatePrisonerScorelist: params => ygApis.get('/prisoner_score/validate', params),
     // 数据导入uploadFile
     uploadFileYangGuangHost: params => ygApis.postFormData('/upload/uploadfile', { file: params })
 }

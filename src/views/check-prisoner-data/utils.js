@@ -54,6 +54,18 @@ function alertImportResult(result) {
     offset: 100
   })
 }
+function alertInformation(information) {
+  that.$notify({
+    title: '解析结果提示',
+    dangerouslyUseHTMLString: true,
+    message: `<p>新增：${ information.add_total }</p>
+              <p>成功：${ information.success_total }</p>
+              <p>修改：${ information.update_total }</p>
+              <p>失败：${ information.errors.length }</p>`,
+    duration: 8000,
+    offset: 100
+  })
+}
 export default {
-  alertParseResult, alertImportResult
+  alertParseResult, alertImportResult, alertInformation
 }
