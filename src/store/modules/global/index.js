@@ -1,6 +1,7 @@
 import getters from './getters'
 import actions from './actions'
 import mutations from './mutations'
+import { getGuideStorage, getAffairsStorage, getAffairsModule } from '@/utils/store'
 
 let state = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
@@ -23,19 +24,11 @@ let state = {
   loginHavePrisonerIn: false,
   jailsMeetingFloorStatus: false,
 
-  guideStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_GUIDE_DATA') && JSON.parse(window.sessionStorage.getItem('APP_GUIDE_DATA'))) || {
-    content: '',
-    guide: '',
-    updatedTime: '',
-    preContent: ''
-  },
+  guideStorage: getGuideStorage(),
 
-  affairsStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_AFFAIRS_DATA') && JSON.parse(window.sessionStorage.getItem('APP_AFFAIRS_DATA'))) || {
-    headline: '',
-    subhead: '',
-    content: '',
-    seq: 0
-  }
+  affairsStorage: getAffairsStorage(),
+
+  affairsModule: getAffairsModule()
 }
 
 export default {

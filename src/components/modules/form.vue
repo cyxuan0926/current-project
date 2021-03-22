@@ -34,7 +34,7 @@
             v-bind="item.attrs"
             v-on="item.events"
             :class="item.customClass">
-              <slot :name="item.slotName" />
+              <slot :name="item.slotName" :fields="fields" />
           </el-form-item>
         </template>
       </template>

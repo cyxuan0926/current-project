@@ -6,8 +6,8 @@
             @submit="handleSubmit"
             @preview="handlePreview"
             @back="handleBack"
-            :values="affairsData">
-            <template #seq="fields">
+            :values="affairsStorage">
+            <template #seq="{ fields }">
                 <el-input-number v-model="fields.seq" :min="0" :step="1" step-strictly placeholder="请输入序号"></el-input-number>
             </template>
         </m-form>
@@ -17,24 +17,31 @@
 <script>
     import http from '@/service'
     import isEqual from 'lodash/isEqual'
-    import { mapGetters, mapActions } from 'vuex'
+    import { mapState, mapActions } from 'vuex'
     export default {
         data() {
             return {
                 gid: this.$route.query && this.$route.query.gid || '',
                 formItems: {},
+                type: '',
+                isNeedQuery: false
             }
         },
         watch: {
             $route: {
                 handler(r) {
-                    this.initData(r.meta.typeId)
+                    let _type = r.meta.typeId
+                    this.isNeedQuery = _type.includes('meetingnotice') || _type.includes('servivceinfo')
+                    this.initData(_type)
                 },
                 immediate: true
             }
         },
         computed: {
-            ...mapGetters(['affairsData'])
+            ...mapState({
+                affairsStorage: state => state.global.affairsStorage,
+                affairsModule: state => state.global.affairsModule
+            })
         },
         methods: {
             ...mapActions(['setAffairsStorage']),
@@ -44,19 +51,21 @@
             },
 
             async initData(_type) {
+                this.type = _type
+                this.module = `sun_jail_${ _type }`
                 let _hasTypeSelect = _type.includes('flfg') || _type.includes('xwgs')
-                let _module = `sun_jail_${ _type }`
                 let _formItems = {
-                    buttons: !_id ?
+                    buttons: !this.gid ?
                         [ { add: { loading: false } }, { preview: { loading: false } }, 'back' ] :
                         [ { update: { loading: false } }, { preview: { loading: false } }, 'back'],
                     formConfigs: { labelWidth: '150px' },
-                    dissMissConfigs: _hasTypeSelect ? ['type'] : [],
+                    dissMissConfigs: !_hasTypeSelect ? ['type'] : [],
                     type: {
                         type: 'select',
                         label: '业务模块',
                         rules: ['required'],
-                        options: []
+                        options: this.affairsModule,
+                        value: this.$route.query && this.$route.query.type || '',
                     },
                     headline: {
                         type: 'input',
@@ -67,13 +76,17 @@
                     subhead: {
                         type: 'input',
                         label: '副标题',
-                        rules: ['required'],
                         maxlength: 100,
                     },
                     content: {
                         type: 'jaileditor',
                         label: '内容',
                         rules: ['required']
+                    },
+                    videoUrl: {
+                        type: 'uploadVideo',
+                        label: '视频',
+                        value: this.affairsStorage.videoUrl
                     },
                     seq: {
                         slotName: 'seq',
@@ -84,33 +97,41 @@
                         }
                     }
                 }
-                if( _type.includes('meetingnotice') || _type.includes('servivceinfo') ) {
-                    let { data } = await http.queryPrisonAffairs({ page: 1, rows: 10 })
+                if( this.isNeedQuery ) {
+                    let { data } = await http.queryPrisonAffairs({ page: 1, rows: 10, module: this.module })
                     if( data && data.list && data.list.length ) {
-                        let { headline, subhead, content, seq } = data[0]
-                        this.affairsData = { headline, subhead, content, seq }
+                        let { headline, subhead, content, seq } = data.list[0]
+                        this.setAffairsStorage({ headline, subhead, content, seq })
                     }
                 }
-
-                this.type = _type
-                this.module = _module
                 this.formItems = _formItems
             },
 
             async handleSubmit(fields) {
-                fields = Object.assign(
+                console.log('handleSubmi==', fields)
+                let params = Object.assign(
                     {
                         id: this.gid,
                         module: this.module,
-                        status: '0',
-                        type: this.type
+                        status: '0'
                     },
                     fields
                 )
                 //fields.preContent = this.handleTextareaValue(fields.content)
-                let { data } = await http[ this.isAdd ? 'savePrisonAffairs' : 'updatePrisonAffairs' ](fields)
+                let { data } = await http[ !this.gid ? 'savePrisonAffairs' : 'updatePrisonAffairs' ](params)
                 if( !!data ) {
-                    this.$router.push({ path: `/prison-affairs-list/${ this.$route.meta.typeId }` })
+                    if( !this.gid && !this.isNeedQuery ) {
+                        this.setAffairsStorage()
+                        this.initData(this.$route.meta.typeId)
+                    }else {
+                        this.setAffairsStorage({
+                            headline: fields.headline,
+                            subhead: fields.subhead,
+                            content: fields.content,
+                            videoUrl: fields.videoUrl,
+                            seq: fields.seq
+                        })
+                    }
                 }
             },
 
@@ -123,14 +144,13 @@
 
             async handleBack(fields) {
                 try {
-                    if( !isEqual(this.affairsData, fields)) {
+                    if( !isEqual(this.affairsStorage, fields)) {
                         await this.$confirm('页面内容已更新，您确定要离开吗？', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
                         })
                     }
-                    this.setGuideStorage()
                     this.$router.push({ path: `/prison-affairs-list/${ this.$route.meta.typeId }` })
                 } catch (error) {
                     console.log(error)

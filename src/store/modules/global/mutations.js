@@ -4,7 +4,11 @@ export default {
     state.guideStorage = params
   },
   SET_AFFAIRS_STORAGE(state, params) {
+    console.log('SET_AFFAIRS_STORAGE====', params)
     state.affairsStorage = params
+  },
+  APP_AFFAIRS_MODULE(state, params) {
+    state.affairsModule = params
   },
   setUser(state, params) {
     state.user = params || {}

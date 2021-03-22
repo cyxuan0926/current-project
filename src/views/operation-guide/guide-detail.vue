@@ -1,9 +1,9 @@
 <template>
     <div class="guide-detail">
         <div class="guide-detail-title">更新内容介绍</div>
-        <p class="guide-detail-date">{{guideData.updatedTime}}</p>
-        <div class="guide-detail-context" v-html="guideData.preContent"></div>
-        <div class="guide-detail-context" v-html="guideData.guide"></div>
+        <p class="guide-detail-date">{{guideStorage.updatedTime}}</p>
+        <div class="guide-detail-context" v-html="guideStorage.preContent"></div>
+        <div class="guide-detail-context" v-html="guideStorage.guide"></div>
         <div class="guide-detail-back">
             <el-button @click="handleBack">返回</el-button>
         </div>
@@ -11,10 +11,12 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapState } from 'vuex'
     export default {
         computed: {
-            ...mapGetters(['guideData'])
+            ...mapState({
+                guideStorage: state => state.global.guideStorage
+            })
         },
         methods: {
             handleBack() {

@@ -19,7 +19,7 @@
                 :cols="tableCols"
                 class="mini-td-padding">
                 <template #module="{ row }">
-                    <span>{{ moduleItems[row.module] }}</span>
+                    <span>{{ moduleItems[row.type] }}</span>
                 </template>
                 <template #status="{ row }">
                     <span>{{ row.status == '0' ? '否' : '是' }}</span>
@@ -68,7 +68,7 @@
 <script>
     import http from '@/service'
     import Moment from 'moment'
-    import { mapState, mapGetters, mapActions } from 'vuex'
+    import { mapState, mapActions } from 'vuex'
     export default {
         data() {
             return {
@@ -81,22 +81,22 @@
                 filter: {},
             }
         },
-        // computed: {
-        //     ...mapState({
-        //         isAdmin: state => state.global.user.role == '0'
-        //     })
-        // },
+        computed: {
+            ...mapState({
+                affairsStorage: state => state.global.affairsStorage,
+                affairsModule: state => state.global.affairsModule
+            })
+        },
         watch: {
             $route: {
                 handler(r) {
-                    console.log('route==', r)
                     this.initData(r.meta.typeId)
                 },
                 immediate: true
             }
         },
-        methods:{
-            ...mapActions(['setGuideStorage']),
+        methods: {
+            ...mapActions(['setAffairsStorage', 'setAffairsModule']),
 
             setTextareaValue(val) {
                 return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
@@ -104,14 +104,20 @@
 
             async initData(_type) {
                 let _hasTypeSelect = _type.includes('flfg') || _type.includes('xwgs')
-                let _moduleItems = {}
+                let _moduleItems = {
+                    workinfo: '工作动态',
+                    flfg: '法律法规',
+                    xwgs: '刑务公示',
+                    shbj: '社会帮教',
+                    meetingnotice: '会见须知',
+                    servivceinfo: '服务指南'
+                }
                 let _searchItems = {
                     type: {
                         type: 'select',
                         label: '业务模块',
                         options: [],
-                        miss: !_hasTypeSelect,
-                        value: _type
+                        miss: !_hasTypeSelect
                     },
                     headline: {
                         type: 'input',
@@ -136,7 +142,7 @@
                     {
                         label: '序号',
                         prop: 'seq',
-                        width: '150px'
+                        width: '80px'
                     },
                     {
                         label: '标题',
@@ -156,12 +162,14 @@
                     {
                         label: '创建时间',
                         prop: 'createTime',
-                        width: '200px'
+                        width: '120px',
+                        align: 'center'
                     },
                     {
                         label: '状态',
                         slotName: 'status',
-                        width: '120px',
+                        width: '60px',
+                        align: 'center'
                     },
                     {
                         label: '操作',
@@ -177,19 +185,21 @@
                         {
                             label: '业务模块',
                             slotName: 'module',
-                            width: '200px',
+                            width: '120px',
                             align: 'center'
                         }
                     )
                     let { data } = await http.queryDictItemByDictCode(`sun_jail_${ _type }`)
                     if( data && data.length ) {
-                        _searchItems.type.options = [{ label: '全部', value: _type }, ...data]
+                        _searchItems.type.options = data
                         data.forEach(d => {
                             _moduleItems[d.value] = d.label
                         })
+                        this.setAffairsModule(data)
                     }
                 }
                 this.type = _type
+                this.module = `sun_jail_${ _type }`
                 this.moduleItems = _moduleItems
                 this.searchItems = _searchItems
                 this.tableCols = _tableCols
@@ -201,9 +211,7 @@
 
             async getData() {
                 let params = { ...this.filter, ...this.pagination }
-                if( !params.type ) {
-                    params.type = this.type
-                }
+                params.module = this.module
                 let { data } = await http.queryPrisonAffairs(params)
                 this.tableDatas = data && data.list || []
                 this.total = data && data.totalCount
@@ -220,16 +228,19 @@
             async handleClick(type, row) {
                 // 新增
                 if (type == 'add') {
+                    this.setAffairsStorage()
                     this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }` })
-                    // this.setGuideStorage()
                 // 修改
                 } else if (type == 'edit') {
-                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }?gid=${row.id}`
+                    this.setAffairsStorage({
+                        headline: row.headline,
+                        subhead: row.subhead,
+                        content: row.content,
+                        videoUrl: row.videoUrl,
+                        seq: row.seq
                     })
-                    // this.setGuideStorage({
-                    //     guide: row.guide,
-                    //     content: row.content
-                    // })
+                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }?gid=${ row.id }&type=${ row.type }`
+                    })
                 // 预览
                 } else if (type == 'detail') {
                     // this.$router.push({ path: '/operation-guide/detail' })
@@ -241,7 +252,7 @@
                     // })
                 // 上下架
                 } else if (type == 'online' || type == 'offline') {
-                    await this.$confirm(`${ type == 'online' ? '上' : '下' }架此操作指引`, '提示', {
+                    await this.$confirm(`${ type == 'online' ? '上' : '下' }架此${ this.moduleItems[row.type] }`, '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'

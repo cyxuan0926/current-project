@@ -1,8 +1,8 @@
 import api from '@/service/modules/global'
-
 import repeatAPI from '@/service/modules/repeat'
-
 import { Message } from 'element-ui'
+import { initStore } from '@/common/constants/prisons'
+import { setGuideStorage, setAffairsStorage, setAffairsModule } from '@/utils/store'
 
 const getUrls = (params) => {
   let { urls, contents } = params
@@ -139,29 +139,19 @@ export default {
     }
   },
 
-  setGuideStorage({ commit }, storage = {
-    content: '',
-    guide: '',
-    updatedTime: '',
-    preContent: ''
-  }) {
-    if (window.sessionStorage) {
-      window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(storage))
-    }
+  setGuideStorage({ commit }, storage = initStore.APP_GUIDE_DATA()) {
+    setGuideStorage(storage)
     commit('SET_GUIDE_STORAGE', storage)
   },
 
-  setAffairsStorage({ commit }, storage = {
-    headline: '',
-    subhead: '',
-    content: '',
-    seq: 0,
-    preContent: ''
-  }) {
-    if (window.sessionStorage) {
-      window.sessionStorage.setItem('APP_AFFAIRS_DATA', JSON.stringify(storage))
-    }
+  setAffairsStorage({ commit }, storage = initStore.APP_AFFAIRS_DATA()) {
+    setAffairsStorage(storage)
     commit('SET_AFFAIRS_STORAGE', storage)
+  },
+
+  setAffairsModule({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
+    setAffairsModule(storage)
+    commit('APP_AFFAIRS_MODULE', storage)
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

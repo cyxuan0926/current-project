@@ -67,13 +67,5 @@ export default {
   // 除了ywt_admin/xx_sadmin其余都是需要权限的
   prisonChildApi(_, getters) {
     return (getters.isSuperAdmin || getters.isTenantAdmin) ? 'getJailPrisonSubs' : 'getJailPrisonSubsAuth'
-  },
-
-  guideData(state) {
-    return state.guideStorage
-  },
-
-  affairsData(state) {
-    return state.affairsStorage
   }
 }
