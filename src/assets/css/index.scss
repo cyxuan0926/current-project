@@ -44,15 +44,20 @@ a{
     background: #1D262A !important;
   }
   .iconfont,
-  .newiconfont {
+  .ywgk-iconfont {
     font-size: 22px;
     font-weight: 500;
     color: #b8c7ce;
     margin-left: -6px;
   }
-  .newicon-zhiyin {
+  .ywgk-icon-zhiyin,
+  .ywgk-icon-fpmanage {
     font-size: 18px;
-    margin-right: 4px;
+    margin-right: 2px;
+    margin-left: -4px;
+  }
+  .ywgk-icon-smsdata {
+    margin-right: 2px;
   }
   .second-level{
     &.is-active>.el-submenu__title{
