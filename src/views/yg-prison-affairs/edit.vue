@@ -117,6 +117,9 @@
                     },
                     fields
                 )
+                if( !params.type ) {
+                    params.type = this.type
+                }
                 //fields.preContent = this.handleTextareaValue(fields.content)
                 let { data } = await http[ !this.gid ? 'savePrisonAffairs' : 'updatePrisonAffairs' ](params)
                 if( !!data ) {
