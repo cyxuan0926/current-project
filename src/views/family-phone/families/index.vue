@@ -5,23 +5,25 @@
       :items="searchItems"
       @search="onSearch"
     >
-      <template slot="append">
-        <el-button type="primary" @click="onNewFamily">新增</el-button>
+      <template v-if="!isSuperAdmin">
+        <template slot="append">
+          <el-button type="primary" @click="onNewFamily">新增</el-button>
+
+          <m-excel-download
+            path="/"
+            :params="{}"
+            text="模板"
+          />
+
+          <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
+        </template>
 
         <m-excel-download
-          path="/"
+          slot="append"
+          :path="'/'"
           :params="{}"
-          text="模板"
         />
-
-        <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
       </template>
-
-      <m-excel-download
-        slot="append"
-        :path="'/'"
-        :params="{}"
-      />
     </m-search>
 
     <el-col :span="24">
@@ -227,6 +229,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import { familyPhoneFamiliesDataImportExcelConfig } from '@/common/excel-config'
@@ -268,51 +272,6 @@ export default {
       tabsItems,
 
       tabs: '0',
-
-      tableCols: [
-        {
-          type: 'selection'
-        },
-        {
-          label: '家属姓名',
-          slotName: 'name'
-        },
-        {
-          label: '家属电话'
-        },
-        {
-          label: '罪犯姓名'
-        },
-        {
-          label: '罪犯编号'
-        },
-        {
-          label: '监区'
-        },
-        {
-          label: '关系'
-        },
-        {
-          label: '新增或编辑时间',
-          minWidth: 120
-        },
-        {
-          label: '认证情况'
-        },
-        {
-          label: '家属类型'
-        },
-        {
-          label: '审核状态'
-        },
-        {
-          label: '是否接听电话和发送短信'
-        },
-        {
-          label: '操作',
-          slotName: 'operation'
-        }
-      ],
 
       searchItems: {
         name: {
@@ -474,10 +433,70 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['isSuperAdmin']),
+
     ...mapState({
       uploadResult: state => state.global.uploadResult,
       originalFamilyInformationDialogFormValues: state => state.familyInformationDialogFormValues
-    })
+    }),
+
+    tableCols() {
+      const cols = [
+        {
+          label: '家属姓名',
+          slotName: 'name'
+        },
+        {
+          label: '家属电话'
+        },
+        {
+          label: '罪犯姓名'
+        },
+        {
+          label: '罪犯编号'
+        },
+        {
+          label: '监区'
+        },
+        {
+          label: '关系'
+        },
+        {
+          label: '新增或编辑时间',
+          minWidth: 120
+        },
+        {
+          label: '认证情况'
+        },
+        {
+          label: '家属类型'
+        },
+        {
+          label: '审核状态'
+        },
+        {
+          label: '是否接听电话和发送短信'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
+        }
+      ], onlySuperAdminCols = [
+        {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName',
+          showOverflowTooltip: true
+        }
+      ]
+
+      if (this.isSuperAdmin) return [ ...onlySuperAdminCols, ...cols ]
+
+      return cols
+    }
   },
 
   watch: {

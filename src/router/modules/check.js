@@ -154,7 +154,7 @@ let check = [{
     name: 'meeting-justice-list',
     meta: {
       permission: 'visit.remote-visit-application.justice-list',
-      breadcrumbName: '亲情电话家属管理'
+      breadcrumbName: '亲情电话家属列表'
     },
     props: { hasPrisonAreaAuth: true, userHasPrisonArea: true },
     component: 'family-phone/families'

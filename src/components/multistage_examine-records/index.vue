@@ -86,6 +86,8 @@
           </template>
         </div>
       </template>
+
+      <slot name="append" />
     </div>
   </div>
 </template>

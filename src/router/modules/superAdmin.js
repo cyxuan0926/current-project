@@ -526,8 +526,26 @@ superAdmin = [{
       },
       component: 'coopertive-partner/share-list'
     }]
+  }, {
+    path: '/family-phone',
+    name: 'FamilyPhone',
+    redirect: {
+      path: '/family-phone/families'
+    },
+    children: [{
+      path: '/family-phone/families',
+      name: 'FamilyPhoneFamilies',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话家属信息',
+        permission: 'visit.family-phone.families-all.search'
+      },
+      component: 'family-phone/families'
+    }]
   }]
-
 superAdmin.forEach(item => {
   item.component = 'layout/the-frame'
 })

@@ -93,21 +93,6 @@
           </div>
         </template>
 
-        <template #phoneNum="{ row }">
-          <div>
-            <span>{{ row.phoneNum }}</span>
-
-            <el-button
-              v-if="!hasAllPrisonQueryAuth"
-              :disabled="!row.sysFlag"
-              size="small"
-              type="text"
-              style="margin-left: 5px;"
-              @click="onTimeEdit(row, 'phoneNum')"
-            >修改</el-button>
-          </div>
-        </template>
-
         <template #prisonTerm="{ row }">
           <span class="separate">{{ row.prisonTermStartedAt | dateFormate }}</span>
 
@@ -227,20 +212,6 @@
           <el-input-number
             :min="0"
             v-model="prisoner.smsNum"
-            controls-position="right"
-            @change="onTimesChange"
-          />
-        </el-form-item>
-
-        <el-form-item
-          v-if="timesDialogType === 'phoneNum'"
-          label="亲情电话次数"
-          :rules="[{ required: true, message: '请输入亲情电话次数' }]"
-          prop="phoneNum"
-        >
-          <el-input-number
-            :min="0"
-            v-model="prisoner.phoneNum"
             controls-position="right"
             @change="onTimesChange"
           />
@@ -629,7 +600,7 @@ export default {
 
       changeJailButtonLoading: false,
 
-      timesDialogType: '' // accessTime: 通话次数 smsNum; 短信次数 phoneNum: 亲情电话次数
+      timesDialogType: '' // accessTime: 通话次数 smsNum; 短信次数
     }
   },
   computed: {
@@ -1077,11 +1048,6 @@ export default {
           minWidth: 85,
           slotName: 'smsNum'
         },
-        {
-          label: '亲情电话次数/月',
-          minWidth: 85,
-          slotName: 'phoneNum'
-        },
         // {
         //   label: '刑期起止',
         //   minWidth: 140,
@@ -1137,8 +1103,7 @@ export default {
     timesDialogTitle() {
       const titles = {
         accessTime: '修改通话次数',
-        smsNum: '修改短信次数',
-        phoneNum: '修改亲情电话次数'
+        smsNum: '修改短信次数'
       }
 
       return titles[this.timesDialogType]
@@ -1257,8 +1222,7 @@ export default {
 
         const urls = {
           accessTime: '/prisoners/updateAccessTime',
-          smsNum: '/prisoners/updateSmsNum',
-          phoneNum: '/prisoners/updatePhoneNum'
+          smsNum: '/prisoners/updateSmsNum'
         }
 
         const res = await this.updatePrisonerTime({ params, url: urls[this.timesDialogType] })

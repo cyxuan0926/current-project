@@ -147,15 +147,15 @@
               format="HH:mm"
               :picker-options="selectRange"
               :clearable="false"
-              @change="handleTimepickerChange">
-            </el-time-picker>
+              @change="handleTimepickerChange"
+            />
             <label style="margin: 0 10px;">至</label>
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeEnd"
               format="HH:mm"
-              disabled>
-            </el-time-picker>
+              disabled
+            />
           </div>
           <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
         </section>
@@ -167,7 +167,8 @@
             <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
-              :name="t.value" />
+              :name="t.value"
+            />
           </el-tabs>
           <el-table
             :data="meetingAdjustmentCopy.terminals"
@@ -181,40 +182,44 @@
               fixed
               prop="terminalNumber"
               label="终端号"
-              min-width="80">
-            </el-table-column>
+              min-width="80"
+            />
+
             <el-table-column
               v-else
               prop="terminalNumber"
               label="终端号"
-              min-width="80">
-            </el-table-column>
+              min-width="80"
+            />
+
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="prisonConfigName"
               label="监区"
-              min-width="110">
-            </el-table-column>
+              min-width="110"
+            />
+
             <el-table-column
               v-else
               prop="prisonConfigName"
               label="监区"
-              min-width="110">
-            </el-table-column>
+              min-width="110"
+            />
+
             <el-table-column
               v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
               :prop="item"
               :label="item"
-              min-width="84">
-            </el-table-column>
+              min-width="84"
+            />
+
             <el-table-column
               v-if="show.meetingQueue"
               prop="noTimes"
               label="当日没有可选时间段"
-              min-width="84">
-            </el-table-column>
-
+              min-width="84"
+            />
           </el-table>
         </section>
       </div>
@@ -259,51 +264,65 @@
         class="button-box">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
       <div>
-            <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
-            <el-option
-              v-for="(remark,index) in content"
-              :value="remark"
-              :label="remark"
-              :key="index"/>
-          </el-select>
-           <el-button
-            type="primary"
-            :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
-          </div>
-          <el-form
-            :model="refuseForm"
-            :rules="withdrawRule"
-            ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
-              <el-input
-               class="bordertop"
-                :autosize="{ minRows: 1 }"
-                 style="border-top: none;"
-                type="textarea"
-                show-word-limit
-                :maxlength="refuseForm.lengthRemark"
-                placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
-            </el-form-item>
-          </el-form>
-          <el-button
-            plain
-            :loading="btnDisable"
-            @click="onAuthorization('DENIED')">提交</el-button>
-          <el-button
-            plain
-            @click="show.disagree = false">返回</el-button>
-          <el-button
-            type="danger"
-            plain
-            @click="closeWithdraw('refuseForm')">关闭</el-button>
-        </div>
+        <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
+          <el-option
+            v-for="(remark,index) in content"
+            :value="remark"
+            :label="remark"
+            :key="index"
+          />
+        </el-select>
 
+        <el-button
+          type="primary"
+          :loading="btnDisable"
+          @click="onRejectshow('PASSED')"
+        >编辑驳回原因</el-button>
+      </div>
 
+      <el-form
+        :model="refuseForm"
+        :rules="withdrawRule"
+        ref="refuseForm"
+        class="withdraw-box"
+      >
+        <el-form-item prop="anotherRemarks" class="borderNone">
+          <el-input
+            class="borderNone"
+            type="textarea"
+            maxlength="1000"
+            :autosize="{ minRows: 1 }"
+            v-model="refuseForm.selectRemark"
+            :readonly="true"
+          />
+
+          <el-input
+            class="bordertop"
+            :autosize="{ minRows: 1 }"
+            style="border-top: none;"
+            type="textarea"
+            show-word-limit
+            :maxlength="refuseForm.lengthRemark"
+            placeholder="请输入驳回原因..."
+            v-model="refuseForm.anotherRemarks"
+          />
+        </el-form-item>
+      </el-form>
+
+      <el-button
+        plain
+        :loading="btnDisable"
+        @click="onAuthorization('DENIED')"
+      >提交</el-button>
+
+      <el-button plain @click="show.disagree = false">返回</el-button>
+
+      <el-button
+        type="danger"
+        plain
+        @click="closeWithdraw('refuseForm')"
+      >关闭</el-button>
+    </div>
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"

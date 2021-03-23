@@ -35,6 +35,7 @@
             </el-input>
           </el-form-item>
         </el-col>
+
         <el-col :span="11" :offset="2">
           <el-form-item prop="startMoney" :rules="basicFormRules.startMoney">
             <el-input
@@ -47,6 +48,7 @@
           </el-form-item>
         </el-col>
       </template>
+
       <template #fixedMoney>
         <el-col :span="11">
           <el-form-item prop="fixedMoney" :rules="basicFormRules.fixedMoney">
@@ -60,6 +62,7 @@
           </el-form-item>
         </el-col>
       </template>
+
       <template #totalCost>
         <el-col :span="11">
           <el-form-item prop="typeTotalCost">
@@ -87,13 +90,14 @@
         @click="onHideChargeConfigsItems">取消</el-button>
     </el-row>
 
-    <!-- 外交领事官员收费配置 -->
+    <!-- 外交领事官员/短信/亲情电话收费配置 -->
     <m-form
       class="prison-charge-config_diplomaticConsulOfficial-form"
       ref="prison-charge-config_diplomaticConsulOfficial-form"
       :items="diplomaticConsulOfficialFormItems"
       :values="diplomaticConsulOfficialFormValues"
       @submit="onUpdate"
+      @response="onDiplomaticConsulOfficialFormSyncData"
     >
       <template #diplomaticConsulOfficialBasicConfigs>
         <el-col :span="11">
@@ -129,6 +133,60 @@
               v-model.trim="diplomaticConsulOfficialFormData.fixedMoney"
               placeholder="请输入基础时长后每分钟费用"
               :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+
+      <template #familyPhoneBasicConfigs>
+        <el-col :span="11">
+          <el-form-item prop="familyPhoneStartMinutes" :rules="diplomaticConsulOfficialRules.familyPhoneStartMinutes">
+            <el-input
+              v-model.trim.number="diplomaticConsulOfficialFormData.familyPhoneStartMinutes"
+              placeholder="请输入基础时间"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">分钟</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="11" :offset="2">
+          <el-form-item prop="familyPhoneStartMoney" :rules="diplomaticConsulOfficialRules.familyPhoneStartMoney">
+            <el-input
+              v-model.trim="diplomaticConsulOfficialFormData.familyPhoneStartMoney"
+              placeholder="请输入基础费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+
+      <template #familyPhoneFixedMoney>
+        <el-col :span="11">
+          <el-form-item prop="familyPhoneFixedMoney" :rules="diplomaticConsulOfficialRules.familyPhoneFixedMoney">
+            <el-input
+              v-model.trim="diplomaticConsulOfficialFormData.familyPhoneFixedMoney"
+              placeholder="请输入基础时长后每分钟费用"
+              :disabled="$route.meta.role === '3'"
+            >
+              <template slot="append">/元</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </template>
+
+      <template #familyPhoneTotalCost>
+        <el-col :span="11">
+          <el-form-item prop="familyPhoneTotalCost">
+            <el-input
+              v-model="familyPhoneTotalCost"
+              placeholder="请输入亲情电话总费用"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -189,26 +247,39 @@ export default {
 
     const validateMoney = (rule, value, callback) => {
       const { field, inputParams } = rule
+
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+
       if (inputParams[field] === '') callback(new Error('请输入基础费用'))
+
       else if (!feeReg.test(inputParams[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+
       else callback()
     }
 
     const validateMinutes = (rule, value, callback) => {
       const { field, inputParams, max } = rule
+
       const integerNumbers = Number.isInteger(inputParams[field])
+
       if (inputParams[field] === '') callback(new Error('请输入基础时间'))
+
       else if (!integerNumbers || inputParams[field] < 0) callback(new Error(`请输入整数`))
+
       else if (max && inputParams[field] > max) callback(new Error(`请输入整数, 并且最大不超过${ max }`))
+
       else callback()
     }
 
     const validateFixedMoney = (rule, value, callback) => {
       const { field, inputParams } = rule
+
       const feeReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+
       if (inputParams[field] === '') callback(new Error('请输入基础时长后每分钟费用'))
+
       else if (!feeReg.test(inputParams[field])) callback(new Error('请输入大于0的数字,且最多保留两位小数'))
+
       else callback()
     }
 
@@ -216,6 +287,12 @@ export default {
       'startMinutes',
       'startMoney',
       'fixedMoney'
+    ]
+
+    const familyPhoneFields = [
+      'familyPhoneStartMinutes',
+      'familyPhoneStartMoney',
+      'familyPhoneFixedMoney'
     ]
 
     const cols = [
@@ -303,7 +380,7 @@ export default {
       [0]: {
         itemConfigs: { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 },
 
-        dissMissConfigs: [ 'diplomaticConsulOfficialBasicConfigs',  'diplomaticConsulOfficialFixedMoney' ],
+        dissMissConfigs: [ 'diplomaticConsulOfficialBasicConfigs', 'diplomaticConsulOfficialFixedMoney' ],
 
         fields: []
       },
@@ -317,6 +394,34 @@ export default {
       }
     }
 
+    const familyPhoneChargeObject = {
+      [0]: {
+        itemConfigs: {
+          familyPhoneDuration: 10,
+          familyPhoneBasicConfigs: 0,
+          familyPhoneFixedMoney: 0,
+          familyPhoneTotalCost: 0
+        },
+
+        dissMissConfigs: [
+          'familyPhoneDuration',
+          'familyPhoneBasicConfigs',
+          'familyPhoneFixedMoney',
+          'familyPhoneTotalCost'
+        ],
+
+        fields: []
+      },
+
+      [1]: {
+        itemConfigs: {},
+
+        dissMissConfigs: [],
+
+        fields: familyPhoneFields
+      }
+    }
+
     const basicFormAllDissMissCofigs = [
       'basicConfigs',
       'fixedMoney',
@@ -324,18 +429,26 @@ export default {
       'onceMoney',
       'duration'
     ]
+
+    const basicStartMinutes = { validator: validateMinutes, trigger: 'blur' }
+
+    const basicStartMoney = { validator: validateMoney, trigger: 'blur' }
+
+    const basicFixedMoney = { validator: validateFixedMoney, trigger: 'blur' }
     return {
       id,
 
-      validateMoney,
+      basicStartMinutes,
 
-      validateMinutes,
+      basicStartMoney,
 
-      validateFixedMoney,
+      basicFixedMoney,
 
       basicFormAllDissMissCofigs,
 
       diplomatistChargeObject,
+
+      familyPhoneChargeObject,
 
       localChargeType: '',
 
@@ -371,9 +484,11 @@ export default {
 
           disabled,
 
-          func: this.onDiplomatistChargeChange,
+          func: this.onDiplomatistOrFamilyPhoneChargeChange,
 
           value: 0,
+
+          relativeProps: ['familyPhoneCharge'],
 
           configs: [
             // 关闭外交领事官员可视电话收费设置
@@ -412,7 +527,98 @@ export default {
 
             required: true
           }
-        }
+        },
+
+        messageCost: {
+          type: 'input',
+
+          label: '短信收费设置',
+
+          placeholder: '请输入短信收费',
+
+          disabled,
+
+          append: '元/条',
+
+          customClass: ['el-form-item__message-set'],
+
+          value: 0
+        },
+
+        // 亲情电话收费设置
+        familyPhoneCharge: {
+          type: 'switch',
+
+          label: '亲情电话收费设置',
+
+          disabled,
+
+          func: this.onDiplomatistOrFamilyPhoneChargeChange,
+
+          value: 0,
+
+          relativeProps: ['diplomatistCharge'],
+
+          configs: [
+            // 关闭亲情电话收费设置
+            {
+              value: 0,
+
+              itemConfigs: cloneDeep(familyPhoneChargeObject[0]['itemConfigs'])
+            },
+
+            // 打开亲情电话收费设置
+            {
+              value: 1,
+
+              itemConfigs: cloneDeep(familyPhoneChargeObject[1]['itemConfigs'])
+            }
+          ]
+        },
+
+        familyPhoneDuration: {
+          type: 'input',
+
+          label: '通话时长',
+
+          disabled: true,
+
+          rules: ['required'],
+
+          append: '分钟',
+
+          customClass: ['el-form-item_once-monney'],
+
+          value: 10
+        },
+
+        familyPhoneBasicConfigs: {
+          slotName: 'familyPhoneBasicConfigs',
+
+          attrs: {
+            label: '基础费用',
+            required: true
+          },
+
+          func: this.onReset
+        },
+
+        familyPhoneFixedMoney: {
+          slotName: 'familyPhoneFixedMoney',
+
+          attrs: {
+            label: '基础时长后每分钟费用',
+            required: true
+          }
+        },
+
+        familyPhoneTotalCost: {
+          slotName: 'familyPhoneTotalCost',
+
+          attrs: {
+            label: '亲情电话总费用'
+          }
+        },
       },
 
       diplomaticConsulOfficialFormData: {
@@ -420,7 +626,13 @@ export default {
 
         startMoney: 12,
 
-        fixedMoney: 1.8
+        fixedMoney: 1.8,
+
+        familyPhoneStartMinutes: 0,
+
+        familyPhoneStartMoney: 0,
+
+        familyPhoneFixedMoney: 0
       },
 
       basicFormItems: {
@@ -521,7 +733,9 @@ export default {
         }
       },
 
-      basicFormSyncData: {}
+      basicFormSyncData: {},
+
+      diplomaticConsulOfficialFormSyncData: {}
     }
   },
 
@@ -529,34 +743,44 @@ export default {
     ...mapState(['prisonChargeConfigs']),
 
     basicFormRules() {
+      const inputParams = this.basicFormData
+
       return ({
         startMinutes: [
-          { validator: this.validateMinutes, trigger: 'blur', inputParams: this.basicFormData, max: this.radio }
+          { ...cloneDeep(this.basicStartMinutes), inputParams, max: this.radio }
         ],
 
         startMoney: [
-          { validator: this.validateMoney, trigger: 'blur', inputParams: this.basicFormData }
+          { ...cloneDeep(this.basicStartMoney), inputParams }
         ],
 
         fixedMoney: [
-          { validator: this.validateFixedMoney, trigger: 'blur', inputParams: this.basicFormData }
+          { ...cloneDeep(this.basicFixedMoney), inputParams }
         ]
       })
     },
 
     diplomaticConsulOfficialRules() {
+      const inputParams =  this.diplomaticConsulOfficialFormData
+
+      const minutes = { ...cloneDeep(this.basicStartMinutes), inputParams }
+
+      const money = { ...cloneDeep(this.basicStartMoney), inputParams }
+
+      const fixedMoney = { ...cloneDeep(this.basicFixedMoney), inputParams }
+
       return ({
-        startMinutes: [
-          { validator: this.validateMinutes, trigger: 'blur', inputParams: this.diplomaticConsulOfficialFormData }
-        ],
+        startMinutes: [minutes],
 
-        startMoney: [
-          { validator: this.validateMoney, trigger: 'blur', inputParams: this.diplomaticConsulOfficialFormData }
-        ],
+        startMoney: [money],
 
-        fixedMoney: [
-          { validator: this.validateFixedMoney, trigger: 'blur', inputParams: this.diplomaticConsulOfficialFormData }
-        ]
+        fixedMoney: [fixedMoney],
+
+        familyPhoneStartMinutes: [{ ...minutes, max: 10 }],
+
+        familyPhoneStartMoney: [money],
+
+        familyPhoneFixedMoney: [fixedMoney]
       })
     },
 
@@ -567,7 +791,7 @@ export default {
         fixedMoney
       } = this.basicFormData
 
-      if (!this.radio || startMoney === '' || startMinutes === '' || fixedMoney === '' || this.localChargeType === 1) return 0
+      if (!this.radio || startMoney === '' || startMinutes === '' || fixedMoney === '' || this.localChargeType === 1 || +this.radio < +startMinutes) return 0
 
       else {
         const cost = new BigNumber(startMoney).plus(new BigNumber(this.radio - startMinutes).times(fixedMoney)).toNumber()
@@ -578,6 +802,22 @@ export default {
 
     currentChargeTypeConfigs() {
       return this.basicFormChargeObject[this.localChargeType]
+    },
+
+    familyPhoneTotalCost() {
+      const {
+        familyPhoneStartMinutes,
+        familyPhoneStartMoney,
+        familyPhoneFixedMoney
+      } = this.diplomaticConsulOfficialFormData, { familyPhoneDuration } = this.diplomaticConsulOfficialFormSyncData
+
+      if (!familyPhoneDuration || familyPhoneStartMinutes === '' || familyPhoneStartMoney === '' || familyPhoneFixedMoney === '') return 0
+
+      else {
+        const cost = new BigNumber(familyPhoneStartMoney).plus(new BigNumber(familyPhoneDuration - familyPhoneStartMinutes).times(familyPhoneFixedMoney)).toNumber()
+
+        return cost
+      }
     }
   },
 
@@ -593,32 +833,78 @@ export default {
 
     // 外交领事官员 初始化数据
     onReset(e, prop) {
-      const {  diplomatistMct } = this.prisonChargeConfigs
+      const { diplomatistMct, familyPhoneMct = {} } = this.prisonChargeConfigs
+
       let {
         startMoney = 15,
         startMinutes = 5,
         fixedMoney = 2.2
-      } = diplomatistMct
+      } = diplomatistMct, {
+        duration = 10,
+        familyPhoneStartMinutes = 0,
+        familyPhoneStartMoney = 0,
+        familyPhoneFixedMoney = 0
+      } = familyPhoneMct
 
-      startMoney = startMoney ? startMoney : 15
+      startMoney = startMoney || 15
 
-      startMinutes = startMinutes ? startMinutes : 5
+      startMinutes = startMinutes || 5
 
-      fixedMoney = fixedMoney ? fixedMoney : 2.2
+      fixedMoney = fixedMoney || 2.2
 
-      this.$set(this.diplomaticConsulOfficialFormData, 'startMinutes', startMinutes)
+      familyPhoneStartMinutes = familyPhoneStartMinutes || 0
 
-      this.$set(this.diplomaticConsulOfficialFormData, 'startMoney', startMoney)
+      familyPhoneStartMoney = familyPhoneStartMoney || 0
 
-      this.$set(this.diplomaticConsulOfficialFormData, 'fixedMoney', fixedMoney)
+      familyPhoneFixedMoney = familyPhoneFixedMoney || 0
+
+      const _temp = {
+        diplomatistCharge: [
+          {
+            key: 'startMinutes',
+            value: startMinutes
+          },
+          {
+            key: 'startMinutes',
+            value: startMinutes
+          },
+          {
+            key: 'fixedMoney',
+            value: fixedMoney
+          }
+        ],
+
+        familyPhoneCharge: [
+          {
+            key: 'familyPhoneStartMinutes',
+            value: familyPhoneStartMinutes
+          },
+          {
+            key: 'familyPhoneStartMoney',
+            value: familyPhoneStartMoney
+          },
+          {
+            key: 'familyPhoneFixedMoney',
+            value: familyPhoneFixedMoney
+          }
+        ]
+      }
+
+      _temp[prop].forEach(item => {
+        this.$set(this.diplomaticConsulOfficialFormData, item['key'], item['value'])
+      })
+
+      if (prop === 'familyPhoneCharge') this.$set(this.diplomaticConsulOfficialFormValues, 'familyPhoneDuration', duration)
     },
 
-    // 外交领事官员开关切换
-    onDiplomatistChargeChange(e, prop, item) {
+    // 外交领事官员开关/亲情电话收费开关切换
+    onDiplomatistOrFamilyPhoneChargeChange(e, prop, item) {
       this.$refs['prison-charge-config_diplomaticConsulOfficial-form'].radioChangeEvent(e, prop, item)
     },
 
     // 初始化数据
+    // familyPhoneMct：亲情电话收费配置
+    // familyPhoneCharge: 亲情电话收费开关
     async onInitData() {
       await this.getMeetingChargeTemplate({ id: this.id })
 
@@ -628,14 +914,28 @@ export default {
         chargeType,
         diplomatistCharge,
         prisonMctList,
-        diplomatistMct
+        diplomatistMct,
+        familyPhoneMct = {
+          duration: 10,
+          familyPhoneStartMinutes: 0,
+          familyPhoneStartMoney: 0,
+          familyPhoneFixedMoney: 0
+        },
+        familyPhoneCharge = 0,
+        messageCost = 0
       } = clonePrisonChargeConfigs
+
 
       this.localChargeType = chargeType
 
       this.basicFormValues = Object.assign({}, { chargeType })
 
-      this.diplomaticConsulOfficialFormValues = Object.assign({}, { diplomatistCharge })
+      this.diplomaticConsulOfficialFormValues = Object.assign({}, {
+        diplomatistCharge,
+        familyPhoneCharge,
+        familyPhoneDuration: familyPhoneMct['duration'],
+        messageCost
+      })
 
       for (let key of Object.keys(this.basicFormChargeObject)) {
         const temp = prisonMctList.filter(meetingDurationConfigs => meetingDurationConfigs.type === +key)
@@ -643,20 +943,39 @@ export default {
         this.$set(this.basicFormChargeObject[key], 'tableData', temp)
       }
 
-      const {
-        itemConfigs,
-        dissMissConfigs,
-        fields
-      } = this.diplomatistChargeObject[diplomatistCharge]
+      const _temp = [
+        {
+          key: 'diplomatistCharge',
+          values: this.diplomatistChargeObject[diplomatistCharge],
+          type: diplomatistCharge,
+          params: diplomatistMct
+        },
+        {
+          key: 'familyPhoneCharge',
+          values: this.familyPhoneChargeObject[familyPhoneCharge],
+          type: familyPhoneCharge,
+          params: familyPhoneMct
+        }
+      ]
 
-      this.$set(this.diplomaticConsulOfficialFormItems['diplomatistCharge']['configs'][diplomatistCharge], 'itemConfigs', itemConfigs)
+      _temp.forEach((item, index) => {
+        const {
+          itemConfigs,
+          dissMissConfigs,
+          fields
+        } = cloneDeep(item.values)
 
-      this.$set(this.diplomaticConsulOfficialFormItems, 'dissMissConfigs', dissMissConfigs)
+        this.$set(this.diplomaticConsulOfficialFormItems[item.key]['configs'][item.type], 'itemConfigs', itemConfigs)
 
-      fields.forEach(field => {
-        const values = diplomatistMct[field]
+        if (index !== 0) this.$set(this.diplomaticConsulOfficialFormItems, 'dissMissConfigs', [...this.diplomaticConsulOfficialFormItems['dissMissConfigs'], ...dissMissConfigs])
 
-        this.$set(this.diplomaticConsulOfficialFormData, field, values)
+        else this.$set(this.diplomaticConsulOfficialFormItems, 'dissMissConfigs', dissMissConfigs)
+
+        fields.forEach(field => {
+          const values = item['params'][field]
+
+          this.$set(this.diplomaticConsulOfficialFormData, field, values)
+        })
       })
 
       this.$set(this.basicFormItems, 'dissMissConfigs', this.basicFormAllDissMissCofigs)
@@ -740,6 +1059,10 @@ export default {
     // form组件响应的数据
     onBasicFormSyncData(values) {
       this.basicFormSyncData = Object.assign({}, values)
+    },
+
+    onDiplomaticConsulOfficialFormSyncData(values) {
+      this.diplomaticConsulOfficialFormSyncData = Object.assign({}, values)
     },
 
     // 预先保存收费配置
@@ -852,6 +1175,22 @@ export default {
 
     /deep/ .el-table {
       margin-bottom: 22px !important;
+    }
+  }
+
+  &_diplomaticConsulOfficial-form {
+    /deep/ .el-form-item {
+      &__message-set {
+        .el-form-item__content {
+          width: 36.5%;
+        }
+      }
+
+      &_once-monney {
+        .el-input {
+          width: 45.83333%;
+        }
+      }
     }
   }
 }
