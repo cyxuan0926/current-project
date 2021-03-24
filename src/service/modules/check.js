@@ -217,11 +217,6 @@ export default {
   importPrisonTerm: params => {
     return service.get('/prison_terms/processing', params).then(res => res && res.data)
   },
-  // 数据管理-罪犯奖惩数据导入-上传到服务器
-  importPrisonerRewardPunishment: params => {
-    return service.get('/prisoner_reward_punishments/processing', params).then(res => res && res.data)
-  },
-
   // 会见统计-远程免费会见纪录
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)

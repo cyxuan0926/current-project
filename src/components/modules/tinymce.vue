@@ -20,6 +20,7 @@
 import tinymceImage from './tinymce/tinymceImage'
 import tinymceVideo from './tinymce/tinymceVideo'
 import tinymceAudio from './tinymce/tinymceAudio'
+import urls from '@/service/urls'
 
 export default {
   components: { tinymceImage, tinymceVideo, tinymceAudio },
@@ -69,12 +70,16 @@ export default {
       init_instance_callback: editor => { //  media
         this.hasInit = true
         if (this.value) {
-          editor.setContent(this.value)
+          tinymce.activeEditor.setContent(this.value, { format: 'html' });
+          // editor.setContent(this.value)
         }
         editor.on('NodeChange Change KeyUp', (data) => {
           this.hasChange = true
           this.$emit('editorChange', editor.getContent({ format: 'row' }), editor.getContent({ format: 'text' }).substr(0, 500), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
         })
+      },
+      file_picker_callback(callback) {
+        console.log('file_picker_callback====')
       },
       setup: editor => {
         editor.addButton('imageUpload', {
@@ -111,19 +116,23 @@ export default {
       window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
     onVideoSuccess(e) {
+      console.log('onVideoSuccess====', e)
       if (!e) return
-      let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
-        <source
-          src='${ e }'
-          type='video/mp4'>
-        <source
-          src='${ e }'
-          type='video/webm'>
-        <source
-          src='${ e }'
-          type='video/ogg'>您的浏览器不支持Video标签。
-      </video>`
-      window.tinymce.get(this.tinymceId).insertContent(htmlString)
+      // let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
+      //   <source
+      //     src='${ e }'
+      //     type='video/mp4'>
+      //   <source
+      //     src='${ e }'
+      //     type='video/webm'>
+      //   <source
+      //     src='${ e }'
+      //     type='video/ogg'>您的浏览器不支持Video标签。
+      // </video>`
+      // let htmlString = `<video src="${ e }" controls="controls"></video>`
+      // let htmlString = `<p>这是hubi段落</p>`
+      // window.tinymce.get(this.tinymceId).insertContent(htmlString)
+      tinymce.activeEditor.selection.setContent(tinymce.activeEditor.dom.createHTML('video', { src: e, controls: 'controls', poster: `${ urls.apiHost }/static/images/video-cover.png` }))
     },
     onAudioSuccess(e) {
       if (!e) return

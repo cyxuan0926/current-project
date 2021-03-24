@@ -12,7 +12,14 @@
           <el-switch v-model="abnormalCallDurationSwitch" active-color="#13ce66" />
 
           <label v-if="abnormalCallDurationSwitch" class="sub-title">
-            <el-input v-model="abnormalCallDuration" style="width:100px;margin-left:20px;" type="number" min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input>
+            <el-input-number 
+                v-model="abnormalCallDuration"
+                type="number"
+                style="width: 150px;margin-left:20px;"
+                :step="1"
+                step-strictly
+                controls-position="right"
+                clearable min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input-number>
             <span style="margin-left:10px">秒</span>
             <font style="margin-left:20px" color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>

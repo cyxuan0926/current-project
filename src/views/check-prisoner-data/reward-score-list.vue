@@ -14,7 +14,7 @@
         :span="22"
         :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">罪犯奖惩信息导入模板</a>
+        <a :href="prisonerHref">服刑人员计分考核数据导入</a>
         </el-col>
       <el-col :gutter="0">
         <el-col
@@ -93,10 +93,14 @@
       <div class="tips">上传文件中部分服刑人员监区与原录入系统中的监区不符</div>
       <div style="text-align: center;">更换监区罪犯的通话申请未审批的将移交至新监区审核，已审核通过通话申请将根据新监区的通话申请排期表重新安排通话时间段，如同日申请的排期没有空闲时间段则取消当日转移罪犯的通话申请。</div>
        <el-table
-         :data="validatePrisonerResult.prisonerBonusPenalty"
-          style="width: 100%"
-          size="small"
-          strip>
+        :data="validatePrisonerResult.prisoners"
+        style="width: 100%"
+        size="small"
+        strip> 
+        <el-table-column
+            prop="year"
+            label="年"
+            width="150" />
             <el-table-column
             prop="monthName"
             label="月"
@@ -107,44 +111,76 @@
             width="150" />
             <el-table-column
             prop="prisonerNumber"
-            label="编号"/>
+            label="编号"
+            width="150" />
             <el-table-column
-            label="行政奖励">
+            label="基础分">
                   <el-table-column
-                    prop="praiseTimes"
-                    label="表扬数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="materialAwardTimes"
-                    label="物质奖励数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="meritTimes"
-                    label="立功个数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="greatMeritTimes"
-                    label="重大立功数">
-                  </el-table-column>
-            </el-table-column>
-            <el-table-column
-            label="行政处罚">
-                  <el-table-column
-                    prop="warnTimes"
-                    label="警告个数"
+                    prop="educationBaseScore"
+                    label="教育改造基础分"
                     width="120">
                   </el-table-column>
                   <el-table-column
-                    prop="mistakeTimes"
-                    label="记过个数"
+                    prop="workBaseScore"
+                    label="劳动改造基础分"
                     width="120">
                   </el-table-column>
                   <el-table-column
-                    prop="confinementTimes"
-                    label="禁闭个数"
+                    prop="monthBaseScore"
+                    label="当月基础分"
                     width="100">
                   </el-table-column>
             </el-table-column>
+            <el-table-column
+            label="加分"
+            width="150" >
+                  <el-table-column
+                    prop="educationAwardScore"
+                    label="教育改造加分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="workAwardScore"
+                    label="劳动改造加分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="monthAwardScore"
+                    label="当月加分"
+                    width="100">
+                  </el-table-column>
+            </el-table-column>
+            <el-table-column
+            label="扣分"
+            width="150" >
+                  <el-table-column
+                    prop="educationDeductScore"
+                    label="教育改造扣分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="workDeductScore"
+                    label="劳动改造扣分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="monthDeductScore"
+                    label="当月扣分"
+                    width="100">
+                  </el-table-column>
+            </el-table-column>
+             <el-table-column
+            prop="specialAwardScore"
+            label="专项加分"
+            width="150" />
+            <el-table-column
+            prop="punishScore"
+            label="处罚"
+            width="150" />
+            <el-table-column
+            prop="totalScore"
+            label="总得分"
+            width="150" />
       </el-table>
       <div
         slot="footer"
@@ -177,7 +213,7 @@
         fileList: [],
         visible: false,
         onProgress: false,
-        prisonerHref: `${ this.$urls.yangguangApiHost}${this.$urls.yangguangApiPath}/download/downloadfile?filepath=prisoner_bonus_penalty_template.xls`,
+        prisonerHref:`${ this.$urls.yangguangApiHost}${this.$urls.yangguangApiPath}/download/downloadfile?filepath=prisoner_score_template.xls`,
         active: 1,
         tabMapOptions: [
           { label: '读取excel' },
@@ -222,7 +258,7 @@
             this.percent += 20
             this.spendTime += 1
             this.status = this.status + 1
-              http.importPrisonerRewardPunishmentlist({ filepath: this.uploadResult.path }).then(res => {
+              http.importPrisonerScorelist({ filepath: this.uploadResult.path }).then(res => {
                 this.loading = false
                 this.visible = false
                 this.onProgress = false
@@ -280,7 +316,7 @@
                   count ++
                   if (count === 1) {
                     this.spendTime += 1
-                    http.validatePrisonerRewardPunishmentlist({ filepath: this.uploadResult.path }).then(res => {
+                    http.validatePrisonerScorelist({ filepath: this.uploadResult.path }).then(res => {
                       clearInterval(prisonYZXInterver)
                       if (!res) {
                         this.onProgress = false
@@ -292,7 +328,7 @@
                       }else{
                         this.validatePrisonerResult=res.data
                       }
-                      if (this.validatePrisonerResult.prisonerBonusPenalty && this.validatePrisonerResult.prisonerBonusPenalty.length > 0) {
+                      if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
                         this.status += 1
                         this.visible = true
                       }

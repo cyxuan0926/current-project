@@ -48,6 +48,7 @@
           v-if="item.type === 'month' && !item.miss"
           v-model="item.value"
           type="month"
+          :size="item.size"
           :clearable="!item.canNotClear"
           :editable="!item.canNotClear"
           :picker-options="item.pickerOptions"

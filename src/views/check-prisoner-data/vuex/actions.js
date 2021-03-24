@@ -41,14 +41,6 @@ export default {
       return true
     })
   },
-  // 罪犯奖惩模板上传成功后将罪犯奖惩模板导入到服务端
-  importPrisonerRewardPunishment: ({ commit }, params) => {
-    return http.importPrisonerRewardPunishment(params).then(res => {
-      if (!res) return
-      commit('importPrisonerRewardPunishment', res)
-      return true
-    })
-  },
   uploadAnalyticExcel: ({ commit }, params) => {
     let formData = new FormData()
     params && formData.append('file', params.values)

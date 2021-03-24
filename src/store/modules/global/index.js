@@ -1,6 +1,7 @@
 import getters from './getters'
 import actions from './actions'
 import mutations from './mutations'
+import { getGuideStorage, getAffairsStorage, getAffairsModule } from '@/utils/store'
 
 let state = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
@@ -21,14 +22,14 @@ let state = {
 
   jailsMeetingFloorStatus: false,
 
-  guideStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_GUIDE_DATA') && JSON.parse(window.sessionStorage.getItem('APP_GUIDE_DATA'))) || {
-    content: '',
-    guide: '',
-    updatedTime: '',
-    preContent: ''
-  },
   // 有转入信息
-  loginHavePrisonerIn: false
+  loginHavePrisonerIn: false,
+  
+  guideStorage: getGuideStorage(),
+
+  affairsStorage: getAffairsStorage(),
+
+  affairsModule: getAffairsModule()
 }
 
 export default {
