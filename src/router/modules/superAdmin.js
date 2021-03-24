@@ -85,7 +85,7 @@ superAdmin = [{
     //   component: loadView('sadmin-prison/prison-add')
     // },
     {
-      path: '/prison/process',
+      path: '/prison/process/:jailId',
       name: 'prison-process',
       props: { role: 0 },
       meta: {

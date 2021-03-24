@@ -82,7 +82,7 @@ let check = [{
     meta: { permission: 'visit.prison-settings.deploy', breadcrumbName: '相关配置管理' },
     component: 'check-meeting/meeting-deploy/meeting-deploy'
   }, {
-    path: '/meeting/deploy/process-edit/:id',
+    path: '/meeting/deploy/process-edit',
     meta: { permission: 'visit.prison-settings.process-edit', breadcrumbName: '审批流程管理' },
     component: 'check-meeting/meeting-deploy/meeting-process-edit'
   }, {

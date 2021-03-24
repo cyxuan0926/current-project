@@ -2,29 +2,15 @@
     <div class="meeting-process-container">
         <dl class="meeting-process-item">
             <dt class="clearfix">
-                <h3 class="pull-left">家属注册认证审核</h3>
-                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus">创建新审批</el-button>
+                <h3 class="pull-left">亲情电话家属管理审核</h3>
+                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus" @click="handleEditProcess('phonefamily')">{{ !phonefamilyData ? '创建新' : '编辑' }}审批</el-button>
             </dt>
             <dd><img src="@/assets/images/pro-test.jpg" alt=""></dd>
         </dl>
         <dl class="meeting-process-item">
             <dt class="clearfix">
-                <h3 class="pull-left">家属注册认证审核</h3>
-                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus">创建新审批</el-button>
-            </dt>
-            <dd><img src="@/assets/images/pro-test.jpg" alt=""></dd>
-        </dl>
-        <dl class="meeting-process-item">
-            <dt class="clearfix">
-                <h3 class="pull-left">家属注册认证审核</h3>
-                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus">创建新审批</el-button>
-            </dt>
-            <dd><img src="@/assets/images/pro-test.jpg" alt=""></dd>
-        </dl>
-        <dl class="meeting-process-item">
-            <dt class="clearfix">
-                <h3 class="pull-left">家属注册认证审核</h3>
-                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus">创建新审批</el-button>
+                <h3 class="pull-left">亲情电话次数修改审核</h3>
+                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus" @click="handleEditProcess('phonenumber')">{{ !phonenumber ? '创建新' : '编辑' }}审批</el-button>
             </dt>
             <dd><img src="@/assets/images/pro-test.jpg" alt=""></dd>
         </dl>
@@ -34,7 +20,15 @@
 <script>
     export default {
         data() {
-            return {}
+            return {
+                phonefamily: null,
+                phonenumber: null
+            }
+        },
+        methods: {
+            handleEditProcess(flag) {
+                this.$router.push({ path: '/meeting/deploy/process-edit' })
+            }
         }
     }
 </script>

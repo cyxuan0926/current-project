@@ -91,7 +91,7 @@ export default {
       if (type === 'visit') {
         _path = `/prison/visit/${ e }`
       } else if (type === 'process') {
-        _path = '/prison/process'
+        _path = `/prison/process/${ e }`
       }else {
         _path = `/remote/edit/${ e }?tag=usual`
       }
