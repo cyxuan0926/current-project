@@ -12,9 +12,7 @@
                 bpmnModeler: null
             }
         },
-        computed() {
-            
-        },
+        computed() {},
         methods: {
             openDiagram(xml) {
                 return this.bpmnModeler.importXML(xml)

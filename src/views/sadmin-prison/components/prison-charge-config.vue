@@ -226,6 +226,8 @@ import BigNumber from 'bignumber.js'
 
 import { Message } from 'element-ui'
 
+import { hasValue } from '@/utils/helper'
+
 export default {
   data() {
     const id = this.$route.params.id
@@ -264,9 +266,9 @@ export default {
 
       if (inputParams[field] === '') callback(new Error('请输入基础时间'))
 
-      else if (!integerNumbers || inputParams[field] < 0) callback(new Error(`请输入整数`))
+      else if (!integerNumbers || inputParams[field] < 0) callback(new Error(`请输入正整数`))
 
-      else if (max && inputParams[field] > max) callback(new Error(`请输入整数, 并且最大不超过${ max }`))
+      else if (max && inputParams[field] > max) callback(new Error(`请输入正整数, 并且最大不超过${ max }`))
 
       else callback()
     }
@@ -536,6 +538,8 @@ export default {
 
           placeholder: '请输入短信收费',
 
+          rules: ['isFee'],
+
           disabled,
 
           append: '元/条',
@@ -791,7 +795,14 @@ export default {
         fixedMoney
       } = this.basicFormData
 
-      if (!this.radio || startMoney === '' || startMinutes === '' || fixedMoney === '' || this.localChargeType === 1 || +this.radio < +startMinutes) return 0
+      if (
+        !hasValue(this.radio) ||
+        !hasValue(startMoney) ||
+        !hasValue(startMinutes) ||
+        !hasValue(fixedMoney) ||
+        this.localChargeType === 1 ||
+        +this.radio < +startMinutes
+      ) return 0
 
       else {
         const cost = new BigNumber(startMoney).plus(new BigNumber(this.radio - startMinutes).times(fixedMoney)).toNumber()
@@ -811,7 +822,12 @@ export default {
         familyPhoneFixedMoney
       } = this.diplomaticConsulOfficialFormData, { familyPhoneDuration } = this.diplomaticConsulOfficialFormSyncData
 
-      if (!familyPhoneDuration || familyPhoneStartMinutes === '' || familyPhoneStartMoney === '' || familyPhoneFixedMoney === '') return 0
+      if (
+        !hasValue(familyPhoneDuration) ||
+        !hasValue(familyPhoneStartMinutes) ||
+        !hasValue(familyPhoneStartMoney) ||
+        !hasValue(familyPhoneFixedMoney)
+      ) return 0
 
       else {
         const cost = new BigNumber(familyPhoneStartMoney).plus(new BigNumber(familyPhoneDuration - familyPhoneStartMinutes).times(familyPhoneFixedMoney)).toNumber()
@@ -846,17 +862,17 @@ export default {
         familyPhoneFixedMoney = 0
       } = familyPhoneMct
 
-      startMoney = startMoney || 15
+      startMoney = hasValue(startMoney) ? startMoney : 15
 
-      startMinutes = startMinutes || 5
+      startMinutes = hasValue(startMinutes) ? startMinutes : 5
 
-      fixedMoney = fixedMoney || 2.2
+      fixedMoney = hasValue(fixedMoney) ? fixedMoney : 2.2
 
-      familyPhoneStartMinutes = familyPhoneStartMinutes || 0
+      familyPhoneStartMinutes = hasValue(familyPhoneStartMinutes) ? familyPhoneStartMinutes : 0
 
-      familyPhoneStartMoney = familyPhoneStartMoney || 0
+      familyPhoneStartMoney = hasValue(familyPhoneStartMoney) ? familyPhoneStartMoney : 0
 
-      familyPhoneFixedMoney = familyPhoneFixedMoney || 0
+      familyPhoneFixedMoney = hasValue(familyPhoneFixedMoney) ? familyPhoneFixedMoney : 0
 
       const _temp = {
         diplomatistCharge: [
@@ -893,8 +909,6 @@ export default {
       _temp[prop].forEach(item => {
         this.$set(this.diplomaticConsulOfficialFormData, item['key'], item['value'])
       })
-
-      if (prop === 'familyPhoneCharge') this.$set(this.diplomaticConsulOfficialFormValues, 'familyPhoneDuration', duration)
     },
 
     // 外交领事官员开关/亲情电话收费开关切换
@@ -930,10 +944,11 @@ export default {
 
       this.basicFormValues = Object.assign({}, { chargeType })
 
+      // 基础数据类型不对
       this.diplomaticConsulOfficialFormValues = Object.assign({}, {
         diplomatistCharge,
         familyPhoneCharge,
-        familyPhoneDuration: familyPhoneMct['duration'],
+        familyPhoneDuration: hasValue(familyPhoneMct['duration']) ? familyPhoneMct['duration'] : 10,
         messageCost
       })
 
@@ -954,7 +969,12 @@ export default {
           key: 'familyPhoneCharge',
           values: this.familyPhoneChargeObject[familyPhoneCharge],
           type: familyPhoneCharge,
-          params: familyPhoneMct
+          params: familyPhoneMct,
+          currentKeys: [
+            'startMinutes',
+            'startMoney',
+            'fixedMoney'
+          ]
         }
       ]
 
@@ -963,18 +983,22 @@ export default {
           itemConfigs,
           dissMissConfigs,
           fields
-        } = cloneDeep(item.values)
+        } = cloneDeep(item.values), { key, type, params, currentKeys } = item
 
-        this.$set(this.diplomaticConsulOfficialFormItems[item.key]['configs'][item.type], 'itemConfigs', itemConfigs)
+        this.$set(this.diplomaticConsulOfficialFormItems[key]['configs'][type], 'itemConfigs', itemConfigs)
 
         if (index !== 0) this.$set(this.diplomaticConsulOfficialFormItems, 'dissMissConfigs', [...this.diplomaticConsulOfficialFormItems['dissMissConfigs'], ...dissMissConfigs])
 
         else this.$set(this.diplomaticConsulOfficialFormItems, 'dissMissConfigs', dissMissConfigs)
 
-        fields.forEach(field => {
-          const values = item['params'][field]
+        fields.forEach((field, index) => {
+          let values
 
-          this.$set(this.diplomaticConsulOfficialFormData, field, values)
+          if (currentKeys && Array.isArray(currentKeys) && currentKeys.length) values = params[currentKeys[index]]
+
+          else values = params[field]
+
+          hasValue(values) && this.$set(this.diplomaticConsulOfficialFormData, field, values)
         })
       })
 
@@ -1097,7 +1121,12 @@ export default {
     async onUpdate(values) {
       const copy = cloneDeep(this.prisonChargeConfigs)
 
-      const { diplomatistCharge } = values
+      const {
+        diplomatistCharge,
+        messageCost,
+        familyPhoneCharge,
+        familyPhoneDuration
+      } = values
 
       const { jailId } = copy
 
@@ -1109,7 +1138,9 @@ export default {
         diplomatistCharge,
         jailId,
         prisonMctList,
-        chargeType: this.localChargeType
+        chargeType: this.localChargeType,
+        messageCost: +messageCost,
+        familyPhoneCharge
       }
 
       if (diplomatistCharge) {
@@ -1120,6 +1151,45 @@ export default {
         params = {
           ...params,
           diplomatistMct
+        }
+      }
+
+      if (familyPhoneCharge) {
+        const _temp = [
+          {
+            key: 'familyPhoneFixedMoney',
+            defineKey: 'fixedMoney'
+          },
+          {
+            key: 'familyPhoneStartMinutes',
+            defineKey: 'startMinutes'
+          },
+          {
+            key: 'familyPhoneStartMoney',
+            defineKey: 'startMoney'
+          }
+        ]
+
+        let { familyPhoneMct } = copy
+
+        _temp.reduce((accumulator, currentItem) => {
+          const { key, defineKey } = currentItem
+
+          accumulator[defineKey] = +this.diplomaticConsulOfficialFormData[key]
+
+          return accumulator
+        }, familyPhoneMct)
+
+        familyPhoneMct = {
+          ...familyPhoneMct,
+          duration: familyPhoneDuration,
+          onceMoney: this.familyPhoneTotalCost,
+          version: 2
+        }
+
+        params = {
+          ...params,
+          familyPhoneMct
         }
       }
 
