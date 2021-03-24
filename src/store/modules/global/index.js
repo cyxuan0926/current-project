@@ -24,7 +24,6 @@ let state = {
 
   // 有转入信息
   loginHavePrisonerIn: false,
-  
   guideStorage: getGuideStorage(),
 
   affairsStorage: getAffairsStorage(),
