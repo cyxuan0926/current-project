@@ -182,6 +182,36 @@ let switches = {
       label: '转出',
       value: 2
     }
+  ],
+
+  familyPhoneAuthenticationType: [
+    {
+      label: '未认证',
+      value: 1
+    },
+    {
+      label: '已认证',
+      value: 2
+    }
+  ],
+
+  familyPhoneCheckType: [
+    {
+      label: '待审核',
+      value: 1
+    },
+    {
+      label: '已通过',
+      value: 2
+    },
+    {
+      label: '未通过',
+      value: 3
+    },
+    {
+      label: '已作废',
+      value: 4
+    }
   ]
 }
 

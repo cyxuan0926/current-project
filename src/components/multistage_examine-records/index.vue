@@ -1,51 +1,111 @@
 <template>
   <div class="main">
-    <div style="margin-bottom: 10px;">审核纪录:</div>
+    <div style="margin-bottom: 10px;">{{ title }}</div>
 
     <div class="multistage_examine-main">
-      <template v-for="(items, index) in values">
-        <div class="multistage_examine-item" :key="index">
-            <div :class="['detail-index', { 'border-bottom': index + 1 !== values.length }]">{{ index + 1 }}</div>
+      <template v-for="(valueItem, index) of basicValues">
+        <div class="multistage_examine-item" :key="`id-basic-multistage_examine-item-${ index + Math.random() }`">
+          <div :class="['detail-index', { 'border-bottom': values.length }]">{{ basicTitle }}</div>
 
-            <div :class="[ 'detail-content', { 'border-bottom': index + 1 !== values.length } ]">
-              <p class="detail-message-family detail-audit">
-                <span class="family-name audit-label label">审核员账号</span>
+          <template v-for="(item, index) of basicContentItems">
+            <div
+              :key="`id-detail-content-${ index + Math.random() }`"
+              :class="[
+                'detail-content',
+                {
+                  'border-bottom': values.length,
+                  'time-status': index + 1 ===  basicContentItems.length
+                },
+                item['className']
+              ]"
+            >
+              <template v-for="(pItem, iIndex) of item['pItem']['items']">
+                <p
+                  :key="`id-detail-message-family-${ iIndex + Math.random() }`"
+                  :class="[
+                    'detail-message-family',
+                    {
+                      'item-no-bottom': iIndex + 1 === item['pItem']['items'].length,
+                      'detail-status': index + 1 ===  basicContentItems.length && iIndex + 1 === item['pItem']['items'].length
+                    },
+                    item['pItem']['className']
+                  ]"
+                >
+                  <span :class="['family-name', pItem['labelClassName']]">{{ pItem['label'] }}</span>
 
-                <span class="family-nameDetail audit-value">{{ items[keys['userName']] }}</span>
-              </p>
-
-              <p class="detail-message-family item-no-bottom detail-advices">
-                <span class="family-name advices-label">审核意见</span>
-
-                <span class="family-nameDetail advices-value" >{{ items[keys['reamrks']] }}</span>
-              </p>
+                  <span :class="['family-nameDetail', pItem['valueClassName']]">{{
+                    pItem['formater'] ?
+                    (filters[pItem['formater']](valueItem[basicKeys[pItem['key']]])) :
+                    valueItem[basicKeys[pItem['key']]]
+                  }}</span>
+                </p>
+              </template>
             </div>
-
-            <div :class="['detail-content', 'time-status', { 'border-bottom': index + 1 !== values.length } ] ">
-              <p class="detail-message-family detail-audit-time">
-                <span class="family-name audit-time-label">审核时间</span>
-
-                <span class="family-nameDetail audit-time-value">{{ items[keys['createAt']] }}</span>
-              </p>
-
-              <p class="detail-message-family item-no-bottom detail-status">
-                <span class="family-name status-label">申请状态</span>
-
-                <span class="family-nameDetail status-value">{{ items[keys['status']] | multistageExamineRegistStatus }}</span>
-              </p>
-            </div>
-          </div>
+          </template>
+        </div>
       </template>
+
+      <template v-for="(items, indexs) in values">
+        <div class="multistage_examine-item" :key="indexs">
+          <div :class="['detail-index', { 'border-bottom': indexs + 1 !== values.length }]">{{ indexs + 1 }}</div>
+
+          <template v-for="(item, index) of recordContentItems">
+            <div
+              :key="`id-detail-content-record-${ index + Math.random() }`"
+              :class="[
+                'detail-content',
+                {
+                  'border-bottom': indexs + 1 !== values.length,
+                  'time-status': index + 1 ===  recordContentItems.length
+                },
+                item['className']
+              ]"
+            >
+              <template v-for="(pItem, iIndex) of item['pItem']['items']">
+                <p
+                  :key="`id-detail-message-family-${ iIndex + Math.random() }`"
+                  :class="[
+                    'detail-message-family',
+                    {
+                      'item-no-bottom': iIndex + 1 === item['pItem']['items'].length,
+                      'detail-status': index + 1 ===  recordContentItems.length && iIndex + 1 === item['pItem']['items'].length
+                    },
+                    item['pItem']['className']
+                  ]"
+                >
+                  <span :class="['family-name', pItem['labelClassName']]">{{ pItem['label'] }}</span>
+
+                  <span :class="['family-nameDetail', pItem['valueClassName']]">{{
+                    pItem['formater'] ?
+                    (filters[pItem['formater']](items[keys[pItem['key']]])) :
+                    items[keys[pItem['key']]]
+                  }}</span>
+                </p>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <slot name="append" />
     </div>
   </div>
 </template>
 <script>
+import filters from '@/filters'
+
 export default {
   props: {
     values: {
       type: Array,
 
       default: () => []
+    },
+
+    title: {
+      type: String,
+
+      default: '审核纪录:'
     },
 
     keys: {
@@ -60,72 +120,192 @@ export default {
 
         status: 'status'
       })
+    },
+
+    recordContentItems: {
+      type: Array,
+
+      default: () => ([
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核员账号',
+                key: 'userName'
+              },
+
+              {
+                label: '审核意见',
+                key: 'reamrks'
+              }
+            ]
+          }
+        },
+
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核时间',
+                key: 'createAt'
+              },
+
+              {
+                label: '申请状态',
+                key: 'status',
+                formater: 'multistageExamineRegistStatus'
+              }
+            ]
+          }
+        }
+      ])
+    },
+
+    basicKeys: {
+      type: Object,
+
+      default: () => ({
+        familyName: 'familyName',
+
+        content: 'content',
+
+        relationship: 'relationship',
+
+        name: 'name'
+      })
+    },
+
+    basicTitle: {
+      type: String,
+
+      default: '基本信息'
+    },
+
+    basicContentItems: {
+      type: Array,
+
+      default: () => ([
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '家属姓名',
+                key: 'familyName'
+              },
+
+              {
+                label: '审核内容',
+                key: 'content'
+              }
+            ]
+          }
+        },
+
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '罪犯姓名',
+                key: 'name'
+              },
+
+              {
+                label: '关系',
+                key: 'relationship'
+              }
+            ]
+          }
+        }
+      ])
+    },
+
+    basicValues: {
+      type: Array,
+
+      default: () => ([])
+    }
+  },
+
+  data() {
+    return {
+      filters
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  $border-style: 1px solid #E4E7ED;
+
  .detail-index {
     display: flex;
     width: 12%;
     align-items:center;
     justify-content: center;
-    border-right: 1px solid #E4E7ED
+    font-size: 13px;
   }
 
   .detail-message {
     width: 52%;
   }
 
-  .detail-message-family{
+  .detail-message-family {
     display: flex;
     font-size: 12px;
-    border-bottom: 1px solid #E4E7ED;
-    .family-name{
+    border-bottom: $border-style;
+    .family-name {
       width: 83px;
       background: #F5F7FA;
       text-align: right;
       padding-right: 10px;
-      border-right: 1px solid #E4E7ED;
+      border-right: $border-style;
+      border-left: $border-style;
     }
-    .family-nameDetail{
+    .family-nameDetail {
       flex: 1;
       padding-left: 10px;
-      border-right: 1px solid #E4E7ED
     }
 
   }
-  .detail-content{
+  .detail-content {
     flex: 1;
     font-size: 12px;
-    .family-name{
+    .family-name {
       background: #F5F7FA;
       padding-right: 10px;
       text-align: right;
-      border-right: 1px solid #E4E7ED;
+      border-right: $border-style;
     }
   }
 .multistage_examine-main {
   display: flex;
   flex-direction: column;
-  border: 1px solid #E4E7ED;
+  border: $border-style;
   margin-bottom: 10px;
 
   .multistage_examine-item {
     display: flex;
     width: 100%;
-    border-left: 1px solid #E4E7ED;
   }
 
   .detail-content {
     flex: 1;
-  }
-
-  .label {
-    background: #F5F7FA;
-
-    border-right: 1px solid #E4E7ED;
   }
 
   .item-no-bottom {
@@ -154,7 +334,7 @@ export default {
   }
 
   .border-bottom {
-    border-bottom: 1px solid #E4E7ED;
+    border-bottom: $border-style;
   }
 }
 </style>

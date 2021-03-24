@@ -1,5 +1,8 @@
 import { formatTime } from '@/utils/helper'
 
+// eslint-disable-next-line
+const filename_failed_data = '导入失败的数据'
+
 const prisonerExcelConfig = {
   filename: {
     value: '服刑人员信息'
@@ -80,7 +83,7 @@ const wardenMailboxExcelConfig = {
 
 const prisonerDataImportExcelConfig = {
   filename: {
-    value: '导入失败的数据'
+    value: filename_failed_data
   },
   header: ['罪犯编号', '罪犯名字', '性别', '犯罪事实', '附加刑', '刑期起日', '刑期止日', '监区', '原判刑期', '失败原因'],
   filterFields: [
@@ -114,4 +117,19 @@ const prisonerDataImportExcelConfig = {
   ]
 }
 
-export { prisonerExcelConfig, wardenMailboxExcelConfig, prisonerDataImportExcelConfig }
+const familyPhoneFamiliesDataImportExcelConfig = {
+  filename: {
+    value: filename_failed_data
+  },
+
+  header: ['家属姓名', '家属电话', '罪犯姓名', '罪犯编号', '监区', '关系', '是否替换已有家属', '被替换家属姓名', '失败原因'],
+
+  filterFields: []
+}
+
+export {
+  prisonerExcelConfig,
+  wardenMailboxExcelConfig,
+  prisonerDataImportExcelConfig,
+  familyPhoneFamiliesDataImportExcelConfig
+}

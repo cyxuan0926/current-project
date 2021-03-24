@@ -1,21 +1,29 @@
-@font-face {font-family: "newiconfont";
-  src: url('iconfont.eot?t=1610608791107'); /* IE9 */
-  src: url('iconfont.eot?t=1610608791107#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAMsAAsAAAAABuAAAALdAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCCcAqBZIFrATYCJAMICwYABCAFhG0HNhsXBsgOJQWdk5jDDUBEPEDrnt7szNfsCcyAEhkqo5GFdlGdzA75buf17/28Qkw51ZPAi1whLwU9aRSHuVu3fnDn2PP/uHf8l3jrnXc5rr1pUhdgHEiBjjmBAymQwLxh7AYVPLSegKyfBJbZpdXNwEmSdQsI+0SeAk4zpyQ5kaagDhibhNNqmsWR4jlOtd8Pf00KThRqUZazfEcJC/J/4LxDnK6mrYv7DonTw5lExBhAIqwGGpey7YNj2MpR0M4g4FiZgR+4qmrmYf94BEJdlt4G9NGZz8Qq2Y9KX4BEY+YD9jHtQxwRkHXXo+6tM8M/fWr9+LH1/Vvz+w8tF3oWC3R1taw9vHb3WNeWtqPrtw91aWbA919z/Dq7PXrcr/Xj17ZPn1o+fGjZtfrgYVkeu38vDy4ePstxr59LZ27ZS7gExcv9miXPudgPxQip/AXwrr98bLTgbfN/W/dqm1XhF2XVjTUXz6aGXaW6lWebVp8vTrdps/WNnTTgn0/RhdtKXdIXcmbfxzd6b8DrD8XOfzmguSngm39Tsz/IB1Adjmfi+X/8Gxtq1ZsbPbPfncoEvsd7X2rt1eGEzEzzTkyBP8oirEgxJ1MVKWQBo4X5bO80L8uomNZOfrJKu95+NGjq+hLmhr4jRE1DkESMgZrSFKhrmgbZaGWTS51htkJqYZQFDYIO7qDQzhOIOnhFEvEDarr5B3Udgi1ka4PvnKVhQXQpwogiiIX0CBQZXeMKDXHpMhsRP6BQeMppSa0IW0UPTB03YRkpQxrCIgZYB/k0QjjIYV2FpdpmSFF0aGBdQgxJEggxMpPH7wC9KInRVeBiFgyhEAgLoo2ARAydhqtrEy6rzzdCeAMUFIwoGzG2QjArsXkoVZIUAqRMqBGVPcolVoN4aQiCA3EwnQoq1VohCoUOMsCtJAiDSCIw+A2ZkvNqHKkwSb1Y/bt1kGWyIuQ5UZutlD46UCQK4oioAQAAAAA=') format('woff2'),
-  url('iconfont.woff?t=1610608791107') format('woff'),
-  url('iconfont.ttf?t=1610608791107') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-  url('iconfont.svg?t=1610608791107#iconfont') format('svg'); /* iOS 4.1- */
+@font-face {font-family: "ywgk-iconfont";
+  src: url('iconfont.eot?t=1616403448148'); /* IE9 */
+  src: url('iconfont.eot?t=1616403448148#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAS0AAsAAAAACYgAAARmAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDDAqGGIU4ATYCJAMQCwoABCAFhSkHRRtTCMiuB3hqoPa7aEwBk6XKgWGVx6L9s7toBuXUZrUrRxxCpVtEUBwZSKYC2y07JYIjfjH9AFAEwNlu3wc+HK8CG2AvSPRytDDCxfBTufBYanlrQhfU5l6TRdUmUNk0uf2fTf53HrQFV6Oxlqhgu9YHCBL7/rhf6U/cEni2AJCdtMI7Hm113XiHDXpzwngKsDNQy/zvBgJQ1GqHDCPGTYOEMQ4iAHII+i1IKS1WwSAkhQecGXOyCyIp3Cq8DNjp/z35oQ8kQCBGMO41aT+8HoOe7nOJZtwR86J9yAxnBsCdB1BAOwADsoXWKWgYbYdSFCvTorqcIfC55Lou5uEu9l8eQAgokBSGVCPJbhJ6SDybCQQ+z2OCAJ9LWlASZzEJUHiIFLJT1gxTLfF0ZUqlphtPKSlgmqY66sHyGdmW7y2kqEY13ErrGqUqmXHg6NWG0ukzD56/nCmZ5sUvxPHXS+3BU7Uz3v3pPZih5G7cVNWG69cUb661mlNj0ZJNW2zEocTZYafYRRGyrbIBkfPH7z90KZm7Qkj2asNlIHNJTeCUENphDyS68upiVjFyB7IH1fzzT4KNl6YZuRtVYvZqubjrciU7dG0JyxenaZUr9Ib9mX3TtAOx9cjRcuZqTYctO6XQcIkyZ8DIl0KIB6+sjhGz5PJqHqwNjXoJ/OyvEGKVuxJ/zDSnTTUvjxw3ZfzlZxc1R6x5kXtYtLw0rpcwkxY368L/K5ybnDlC6bWx/7rfVlW9nV97J9z9f5hpU8s+cuq0Unw2cMIIc1hNKFQzzBxxzBxZM5RiJTNGmMdGmkMp+lBzJH1EzTAWuWakOf7pzcK9e8Jmk+WyHWG8tXBof+PIw9fuvvPurV4qX+oYhUbclta44jkJvIAowJ8hnmmvg3diU++Dnm1GgzoJJK67lZqaQeWk4vvtqPiRjS6vV91O3o99sKPukZ2aW6EmPMNjxi2KkHTzx//+0ay7X9EFALhZupvuA9yn6XE6yDXifxrN/K/2wsNfjrwwv99vusGBj9f0P312M8uNoVsOJAI05v2LhsVrXTBeYOhYLPNsTgNpkLCmSGRYAChmAHBhOIt8OoS9FGIzofM8EgR5mgCla40ysgeIVEPBQzcBFG3NPV9VbBMoEssA2jhMAFHleRAYPgGqyjcIowQiiMqCRmIPIruDYkYw8YqqFsF5ZWjSttJ2Pa9bzoNeJ+azCtPK8qX+cHt69BTbvzhiJfPt0m9n2MlU0Inxzh06ocRIO2Ynhz0mtcTfJZ32cV/SifIRFfezIxGHx5NOyPamOwTS6Xifjh191Bt18DpRKIZKslnSbPW4OstxQV6OGJ9rTlOU8ZfyC2uPzVPY3HQXi7Akm/RIps9gS0pxHG66XGcddGqKjpTGmndcsjllCVneRVqaD+fqkxxR3IhuZlvEFDuUNI53hdi80joIdAjH9dGR7udrKu0wvTx6/wcAFMarsEAglDAiwnMNBJcHY3mpaKreSluSLx61YpbfBgAAAA==') format('woff2'),
+  url('iconfont.woff?t=1616403448148') format('woff'),
+  url('iconfont.ttf?t=1616403448148') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('iconfont.svg?t=1616403448148#ywgk-iconfont') format('svg'); /* iOS 4.1- */
 }
 
-.newiconfont {
-  font-family: "newiconfont" !important;
+.ywgk-iconfont {
+  font-family: "ywgk-iconfont" !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.newicon-zhiyin:before {
-  content: "\e672";
+.ywgk-icon-zhiyin:before {
+  content: "\e606";
+}
+
+.ywgk-icon-smsdata:before {
+  content: "\e607";
+}
+
+.ywgk-icon-fpmanage:before {
+  content: "\e608";
 }
 

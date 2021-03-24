@@ -66,14 +66,29 @@ let check = [{
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
     props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
+  }, {
+    path: '/meeting/message',
+    name: 'visit-list',
+    component: 'check-meeting/meeting-message',
+    props: { hasPrisonAreaAuth: true },
+    meta: { permission: 'visit.remote-visit-application.message', breadcrumbName: '短信申请管理' }
   }]
 }, {
   path: '/meeting/deploy',
-  redirect: { path: '/meeting/deploy/deploy' },
+  redirect: '/meeting/deploy/deploy',
+  meta: { breadcrumbName: '监狱配置管理' },
   children: [{
     path: '/meeting/deploy/deploy',
-    meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '监狱配置管理 ' },
+    meta: { permission: 'visit.prison-settings.deploy', breadcrumbName: '相关配置管理' },
     component: 'check-meeting/meeting-deploy/meeting-deploy'
+  }, {
+    path: '/meeting/deploy/process-edit',
+    meta: { permission: 'visit.prison-settings.process-edit', breadcrumbName: '审批流程管理' },
+    component: 'check-meeting/meeting-deploy/meeting-process-edit'
+  }, {
+    path: '/meeting/deploy/process-add',
+    meta: { permission: 'visit.prison-settings.process-edit', breadcrumbName: '审批流程管理' },
+    component: 'check-meeting/meeting-deploy/meeting-process-edit'
   }]
 }, {
   path: '/meeting-report',
@@ -110,7 +125,7 @@ let check = [{
     path: '/meeting-report/meeting-diplomatist-detail',
     component: 'check-meeting/meeting-diplomatist/meeting-diplomatist-detail',
     props: { hasDiplomatQueryAuth: true },
-    meta: { permission: 'visit.visit-statistic.cost-save.search', breadcrumbName: '外交领事官员可视电话详情表' }
+    meta: { permission: 'visit.remote-visit-application.diplomatic-consul-official.search', breadcrumbName: '外交领事官员可视电话详情表' }
   }, {
     path: '/meeting-report/meeting-statistic-table',
     component: 'gd-admin/gd-meeting/meeting-list',
@@ -128,6 +143,16 @@ let check = [{
       breadcrumbName: '亲情电话统计报表'
     },
     component: 'check-meeting/meeting-family-statistics'
+  }, {
+    // 暂时写页面用
+    path: '/meeting/justice-list',
+    name: 'meeting-justice-list',
+    meta: {
+      permission: 'visit.remote-visit-application.justice-list',
+      breadcrumbName: '亲情电话家属列表'
+    },
+    props: { hasPrisonAreaAuth: true, userHasPrisonArea: true },
+    component: 'family-phone/families'
   }]
 }, {
   path: '/mailbox',
@@ -162,6 +187,7 @@ let check = [{
     path: '/family/list',
     name: 'family-list',
     // component: helper.loadView('check-family/family-list'),
+    props: { hasPrisonAreaAuth: true },
     component: 'check-family/family-list',
     // component: resolve => require(['@/views/check-family/family-list'], resolve),
     meta: { permission: 'visit.family.search', breadcrumbName: '家属列表' }
@@ -213,6 +239,11 @@ let check = [{
     component: 'check-prisoner-data/inside-jails-costs',
     // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
     meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '狱内消费情况数据导入' }
+  }, {
+    path: '/prisoner-data/sensitive-characters',
+    name: 'HeiYuang-jail-prisoner-sensitive-characters',
+    component: 'literature/literature-sensitive-characters/literature-sensitive-characters',
+    meta: { permission: 'visit.sensitive-word.manage', breadcrumbName: '敏感词管理' }
   }]
 }, {
   path: '/import-data-details',

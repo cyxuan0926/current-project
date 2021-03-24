@@ -7,7 +7,7 @@
       ref="search"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" >
-        <el-button
+        <el-button  
         slot="append"
           class="m-excel-download"
           type="primary"
@@ -53,7 +53,7 @@
         <template
           slot="lastCoiumn"
           slot-scope="scope">
-
+          
           <template>
             <el-button
               v-if="scope.row.state == '0'"
@@ -176,8 +176,8 @@
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content"
-               :key='index'
+           <li v-for="(item,index) in content" 
+               :key='index' 
                class="infinite-list-item" style="line-height:32px">
                {{index+1}}.{{ item }}
             </li>
@@ -293,7 +293,7 @@
               <span class="family-name" >审核人姓名</span>
               <span class="family-nameDetail">{{toShow.auditName}}</span>
             </p>
-
+            
             <p class="detail-message-family">
                  <span class="family-name">申请状态</span>
                   <span class="family-nameDetail">
@@ -354,7 +354,7 @@ export default {
     ]
     const tabPanes = [
       {
-        label: '短信申请——sh',
+        label: '短信申请',
         name: '0'
       },
       {
@@ -659,19 +659,6 @@ export default {
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
         let res = await http.setRejectEdit(params)
-          if(res){
-          let params={}
-              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=4
-          let res = await http.getRejectEdit( params )
-          if(res.content){
-            this.content = res.content
-            this.contentId=res.id
-            this.updateer=res.updateEr
-          }else{
-            this.content = []
-          }
-      }
        this.show.editRebut=true
       }
     },
@@ -811,5 +798,5 @@ export default {
   cursor: pointer;
 .withdraw-box
   margin-bottom 20px;
-
+  
 </style>

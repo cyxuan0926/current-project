@@ -6,95 +6,98 @@
       :items="searchItems"
       @search="onSearch" >
       <template slot="append">
-        <el-button
-          type="primary"
-          @click="handleDelSensitiveCharacters">
-          删除
-        </el-button>
+        <el-button type="primary" @click="handleDelSensitiveCharacters">删除</el-button>
+
         <m-excel-download
           path="/download/downloadfile"
           :params="{ filepath: 'sensitive_words_template.xls' }"
-          text="模板" />
-        <el-button
-          type="primary"
-          @click="handleShowAddDialog">
-          新增
-        </el-button>
-        <m-excel-upload
-          url="/sensitiveword/upload"
-          :get-results="handleGetUploadResults" />
+          text="模板"
+        />
+
+        <el-button type="primary" @click="handleShowAddDialog">新增</el-button>
+
+        <m-excel-upload url="/sensitiveword/upload" :get-results="handleGetUploadResults" />
       </template>
-    </m-search>  
+    </m-search>
+
     <el-col :span="24">
       <m-table-new
         stripe
         :selection-change="handleSelectChange"
         :data="sensitiveWords"
         :cols="tableCols"
-        class="mini-td-padding">
+        class="mini-td-padding"
+      >
         <template #keyWord="{ row, $index }">
           <span v-if="!operationStatus[$index]">{{row.keyWord}}</span>
-            <el-input
-              v-else
-              v-model="operationInput[$index]"/>
+
+          <el-input v-else  v-model="operationInput[$index]"  />
         </template>
+
         <template #isEnabled="{ row, $index }" >
           <span v-if="!operationStatus[$index]">{{row.isEnabled | isTrue}}</span>
-            <el-select
-              v-else
-              v-model="operationSelects[$index]">
-              <el-option
-                v-for="(val, index) in constIsEnabledVaule"
-                :label="val.label"
-                :value="val.value"
-                :key="index" />
-            </el-select>
+
+          <el-select  v-else  v-model="operationSelects[$index]">
+            <el-option
+              v-for="(val, index) in constIsEnabledVaule"
+              :label="val.label"
+              :value="val.value"
+              :key="index"
+            />
+          </el-select>
         </template>
+
         <template #operate="{ row, $index }" >
-            <el-button
-              @click="handleOperate({ row, $index })"
-              type="primary"
-              plain>{{ !operationStatus[$index] ? '修改' : '保存' }}</el-button>
-          </template>
+          <el-button
+            @click="handleOperate({ row, $index })"
+            type="primary"
+            plain
+          >{{ !operationStatus[$index] ? '修改' : '保存' }}</el-button>
+        </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="totalPage"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="visible"
       :title="dialogOperationStatus ? '数据导入' : '新增敏感关键字'"
       class="authorize-dialog"
       width="530px"
-      @close="handleCloseDialog">
+      :close-on-click-modal="false"
+      @close="handleCloseDialog"
+    >
       <el-row v-if="dialogOperationStatus">
         <el-col style="line-height: 30px">
-          <i
-            class="el-icon-success green"
-            style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;" />{{!uploadResults.error_total ? `成功导入${uploadResults.success_total}条` : `成功：${uploadResults.success_total}条`}}<br>
+
           <template v-if="!!uploadResults.error_total">
-            <i
-            class="el-icon-error red"
-            style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
+            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;" />失败：{{uploadResults.error_total}}条
+
             <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据</p>
           </template>
         </el-col>
+
         <el-col class="button-box">
           <el-button
             size="small"
             @click="onExcelSure"
-            type="primary">
-            确定
-          </el-button>
+            type="primary"
+          >确定</el-button>
         </el-col>
       </el-row>
+
       <m-form
         v-else
         :items="dialogFormItems"
         @submit="handleSubmit"
         ref="dialogForm"
-        @cancel="visible = false"/>
+        @cancel="visible = false"
+      />
     </el-dialog>  
   </el-row>
 </template>
@@ -112,10 +115,12 @@ export default {
         label: '否'
       }
     ]
+
     const constSelectValue = {
       value: 'value',
       label: 'label'
     }
+
     const constIsEnabledVaule = [
       {
         value: 1,
@@ -126,6 +131,7 @@ export default {
         label: '否'
       }
     ]
+
     return {
       searchItems: {
         keyWord: {
@@ -139,6 +145,7 @@ export default {
           label: '是否有效'
         }
       },
+
       dialogFormItems: {
         formConfigs: { labelWidth: '120px' },
         keyWord: {
@@ -147,6 +154,7 @@ export default {
           rules: ['required'],
           clearable: true
         },
+
         isEnabled: {
           type: 'select',
           label: '是否有效',
@@ -155,6 +163,7 @@ export default {
           props: constSelectValue,
           value: 1
         },
+
         buttons: [
           'add',
           'cancel'
@@ -179,24 +188,29 @@ export default {
         },
         {
           label: '关键词',
-          slotName: 'keyWord'
+          slotName: 'keyWord',
+          showOverflowTooltip: true
         },
         {
           label: '是否有效',
-          slotName: 'isEnabled'
+          slotName: 'isEnabled',
+          width: 160
         },
         {
           label: '操作',
           slotName: 'operate',
-          align: "center"
+          align: "center",
+          width: 120
         }
       ],
       constIsEnabledVaule
     }
   },
+
   mounted() {
     this.getDatas()
   },
+
   methods: {
     ...mapActions('literature', [
       'getSensitivewords',
@@ -205,10 +219,12 @@ export default {
       'editSensitiveword'
       ]
     ),
+
     // 编号字段
     handleGetIndex(index) {
       return this.pagination.rows * (this.pagination.page - 1) + index + 1
     },
+
     // 获取数据
     async getDatas() {
       const params = { ...this.filter, ...this.pagination }
@@ -218,9 +234,11 @@ export default {
       this.operationSelects = new Array(this.totalPage).fill(1)
       this.operationInput = new Array(this.totalPage).fill('')
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     // 列表的操作
     async handleOperate(data) {
       const { row, $index } = data
@@ -228,32 +246,36 @@ export default {
         this.$set(this.operationStatus, $index, 1)
         this.$set(this.operationInput, $index, row.keyWord)
         this.$set(this.operationSelects, $index, row.isEnabled)
-      }
-      else {
+      } else {
         const params = { id: row.id, keyWord: this.operationInput[$index], isEnabled: this.operationSelects[$index]}
         const res = await this.editSensitiveword(params)
         if (res) this.getDatas()
       }
     },
+
     // 展示新增对话框
     handleShowAddDialog() {
       this.dialogOperationStatus = 0
       this.visible = true
     },
+
     // 关闭新增对话框
     handleCloseDialog() {
       this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
     },
+
     // 新增
     async handleSubmit(params) {
       const res = await this.addSensitiveword(params)
       this.handleCloseDialog()
       if (res) this.onSearch()
     },
+
     // 选择删除的数据
     handleSelectChange(data) {
       this.delSensitiveCharacters = data
     },
+
     // 删除敏感关键字
     handleDelSensitiveCharacters() {
       if (!this.delSensitiveCharacters.length) {
@@ -262,8 +284,7 @@ export default {
           message: '未选中任何记录',
           type: 'warning'
         })
-      }
-      else {
+      } else {
         const ids = (this.delSensitiveCharacters.map(item => item.id)).join(',')
         this.$confirm('请问确认删除选择的关键词吗？', '提示', {
         confirmButtonText: '确定',
@@ -276,6 +297,7 @@ export default {
         }).catch(() => {})
       }
     },
+
     handleGetUploadResults(response) {
       this.$message({
         showClose: true,
@@ -291,11 +313,13 @@ export default {
         }, 1000)
       }
     },
+
     onExcelSure() {
       this.visible = false
       if(this.uploadResults.success_total) this.onSearch()
     }
   },
+
   computed: {
     ...mapState('literature', ['sensitiveWords']),
   }

@@ -42,10 +42,10 @@
         :placeholder="item.placeholder || '请选择' + item.label"
         v-model="fields[prop]"
         :loading="item.loading"
-        :filterable="!!(item.filterable)"
+        :filterable="!!item.filterable"
         :disabled="item.disabled"
-        :collapse-tags="item.collapseTags || false"
-        :multiple="item.multiple || false"
+        :collapse-tags="!!item.collapseTags"
+        :multiple="!!item.multiple"
         @change="selectChangeEvent($event, prop, item)">
         <el-option
           v-for="option in item.options"
@@ -140,26 +140,32 @@ export default {
       type: Object,
       default: () => ({})
     },
+
     prop: {
       type: String,
       default: ''
     },
+
     fields: {
       type: Object,
       default: () => ({})
     },
+
     rule: {
       type: Array,
       default: () => []
     },
+
     'reset-field-value': {
       type: Function,
       default: () => () => {}
     },
+
     'select-change-event': {
       type: Function,
       default: () => () => {}
     },
+
     'radio-change-event': {
       type: Function,
       default: () => () => {}
@@ -170,6 +176,7 @@ export default {
       default: () => () => {}
     }
   },
+
   methods: {
     // editorChange(contents, text) {
     //   this.fields[this.prop] = contents
@@ -191,6 +198,7 @@ export default {
       }
       this.$emit('validateField', this.prop)
     },
+
     onSuccess(e) {
       this.fields[this.prop] = e
       this.$emit('validateField', this.prop)

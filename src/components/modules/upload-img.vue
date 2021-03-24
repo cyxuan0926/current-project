@@ -12,6 +12,7 @@
         style="width: 108px; height: 108px;"
         @click="handlePictureCardPreview">
     </div>
+
     <div class="upload-buttons">
       <el-upload
         v-bind="uploadAttrs"
@@ -23,7 +24,8 @@
         :on-exceed="handleExceed"
         :disabled="loading || Boolean(value)"
         :on-error="handleError"
-        :on-remove="handleRemove">
+        :on-remove="handleRemove"
+      >
         <!-- 这里用来插槽来扩展化 -->
         <template v-for="slotItem in slots['uploadSlots']">
           <template :slot="slotItem.type">
@@ -43,6 +45,7 @@
           <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
         </div> -->
       </el-upload>
+
       <el-button
         type="danger"
         size="small"
@@ -50,6 +53,7 @@
         style="margin-top: 10px;"
         @click="handleDelete">删除</el-button>
     </div>
+
     <span
       slot="tip"
       class="el-upload__tip"
@@ -57,13 +61,16 @@
       <template v-if="showTip">
         只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
       </template>
+
       <template v-if="ratio">,图片宽高比为<span class="red">{{ ratio }}</span></template>
     </span>
+
     <el-dialog :visible.sync="dialogVisible">
       <img
         width="100%"
         :src="imageUrl"
-        alt="">
+        alt="图片"
+      >
     </el-dialog>
   </div>
 

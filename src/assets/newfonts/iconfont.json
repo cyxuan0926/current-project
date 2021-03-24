@@ -1,16 +1,30 @@
 {
-  "id": "",
-  "name": "",
-  "font_family": "iconfont",
-  "css_prefix_text": "icon-",
+  "id": "2326772",
+  "name": "ywgk-icon",
+  "font_family": "ywgk-iconfont",
+  "css_prefix_text": "ywgk-icon-",
   "description": "",
   "glyphs": [
     {
-      "icon_id": "13640420",
-      "name": "操作指引",
-      "font_class": "caozuozhiyin",
-      "unicode": "e672",
-      "unicode_decimal": 58994
+      "icon_id": "20538095",
+      "name": "后台操作指引",
+      "font_class": "zhiyin",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "20538096",
+      "name": "短信相关数据查询",
+      "font_class": "smsdata",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "20538097",
+      "name": "亲情电话信息管理",
+      "font_class": "fpmanage",
+      "unicode": "e608",
+      "unicode_decimal": 58888
     }
   ]
 }

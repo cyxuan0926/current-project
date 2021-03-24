@@ -7,10 +7,10 @@ export default {
   getPrisonersAll({ commit }, params) {
     http.getPrisonersAll(params).then(res => res && commit('getPrisoners', res))
   },
-  updateAccessTime(_, params) {
-    return http.updateAccessTime(params).then(res => res)
+  updatePrisonerTime({ commit }, params) {
+    return http.updatePrisonerTime(params).then(res => res)
   },
-  addPrisonerBlacklist(_, params) {
+  addPrisonerBlacklist({ commit }, params) {
     return http.addPrisonerBlacklist(params).then(res => res)
   },
   getNotification({ commit }, params) {
@@ -20,10 +20,10 @@ export default {
       return true
     })
   },
-  updateNotification(_, params) {
+  updateNotification({ commit }, params) {
     return http.updateNotification(params).then(res => res)
   },
-  addNotification(_, params) {
+  addNotification({ commit }, params) {
     return http.addNotification(params).then(res => res)
   },
   getNotificationFamilies({ commit }, params) {
@@ -40,21 +40,21 @@ export default {
       return true
     })
   },
-  changePrisonArea(_, params) {
+  changePrisonArea({ commit }, params) {
     return http.changePrisonArea(params).then(res => res)
   },
-  removePrisonerBlacklist(_, params) {
+  removePrisonerBlacklist({ commit }, params) {
     return http.removePrisonerBlacklist(params).then(res => res)
   },
-  deletePrisonerData(_, params) {
+  deletePrisonerData({ commit }, params) {
     return http.deletePrisoners(params).then(res => res)
   },
-  addPrionser(_, params) {
+  addPrionser({ commit }, params) {
     return http.addPrionser(params).then(res => res)
   },
 
-  // 批量更换监区(ywt_admin)
-  async changePrisonAreaBatch(_, params) {
+  // 批量更换监区
+  async changePrisonAreaBatch({ commit }, params) {
     try {
       const { code } = await http.changePrisonAreaBatch(params)
 

@@ -5,7 +5,8 @@
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
-      :params="filter" />
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       ref="search"
@@ -564,7 +565,7 @@ import {
 } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
-import switches from '@/filters/modules/switches'
+
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
@@ -582,8 +583,6 @@ export default {
   },
   mixins: [prisonFilterCreator],
   data() {
-    const { belong } = prisons.PRISONAREA
-    const { options } = this.$store.getters.prisonAreaOptions
     return {
       showDetail: false,
       authorizeDetData: {},
@@ -600,13 +599,6 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        // prisonArea: {
-        //   type: 'select',
-        //   label: '监区',
-        //   options,
-        //   belong,
-        //   value: ''
-        // },
         auditName: {
           type: 'input',
           label: '审核人',
@@ -628,7 +620,7 @@ export default {
         nationality: {
           type: 'select',
           label: '家属类型',
-          options: switches['nationality'],
+          options: this.$store.state['nationality'],
           value: ''
         }
       },
@@ -802,7 +794,7 @@ export default {
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
-       let params={}
+      let params={}
           params.jailId=JSON.parse(localStorage.getItem('user')).jailId
           params.type=1
       let res = await http.getRejectEdit( params )

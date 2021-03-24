@@ -168,304 +168,305 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
-  import Utils from './utils'
-  import { prisonerDataImportExcelConfig } from '@/common/excel-config'
-  export default {
-    data() {
-      return {
-        tabs: 'second',
-        loading: false,
-        fileList: [],
-        visible: false,
-        onProgress: false,
-        prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`,
-        active: 1,
-        tabMapOptions: [
-          { label: '读取excel' },
-          { label: '解析excel' },
-          { label: '初始化数据' },
-          { label: '校验数据' },
-          { label: '导入数据' },
-          { label: '导入完成' }
-        ],
-        status: 0,
-        showProcessSteps: false,
-        spendTime: 0,
-        percent: 0,
-        prisonerDataImportExcelConfig
-      }
+import { mapActions, mapState } from 'vuex'
+import Utils from './utils'
+import { prisonerDataImportExcelConfig } from '@/common/excel-config'
+export default {
+  data() {
+    return {
+      tabs: 'second',
+      loading: false,
+      fileList: [],
+      visible: false,
+      onProgress: false,
+      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`,
+      active: 1,
+      tabMapOptions: [
+        { label: '读取excel' },
+        { label: '解析excel' },
+        { label: '初始化数据' },
+        { label: '校验数据' },
+        { label: '导入数据' },
+        { label: '导入完成' }
+      ],
+      status: 0,
+      showProcessSteps: false,
+      spendTime: 0,
+      percent: 0,
+      prisonerDataImportExcelConfig
+    }
+  },
+
+  computed: {
+    ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'prisonerYZKDataResult']),
+    ...mapState({
+      uploadResult: state => state.global.uploadResult
+    })
+  },
+
+  watch: {
+    tabs(val) {
+      if (this.$notify) this.$notify.closeAll()
+
+      if (val === 'first') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
+
+      else if (val === 'second') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`
+    }
+  },
+
+  mounted() {
+    this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
+  },
+
+  destroyed() {
+    if (this.$notify) this.$notify.closeAll()
+  },
+
+  methods: {
+    ...mapActions(['validatePrisonerYZK', 'validatePrisoner', 'importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
+
+    submitUpload() {
+      this.$refs.upload.submit()
     },
-    computed: {
-      ...mapState(['validatePrisonerResult', 'prisonerDataResult', 'prisonerYZKDataResult']),
-      ...mapState({
-        uploadResult: state => state.global.uploadResult
-      })
-    },
-    watch: {
-      tabs(val) {
-        if (this.$notify) {
-          this.$notify.closeAll()
-        }
-        if (val === 'first') {
-          this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
-        }
-        else if (val === 'second') {
-          this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`
-        }
-      }
-    },
-    mounted() {
-      this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
-    },
-    destroyed() {
-      if (this.$notify) {
-        this.$notify.closeAll()
-      }
-    },
-    methods: {
-      ...mapActions(['validatePrisonerYZK', 'validatePrisoner', 'importPrisoner', 'uploadFile', 'resetState', 'importPrisonerYZK']),
-      submitUpload() {
-        this.$refs.upload.submit()
-      },
-      onSubmit() {
-        this.loading = true
-        let index = 0
-        let interver = setInterval(() => {
-          index++
-          if (index === 1) {
-            this.percent += 20
-            this.spendTime += 1
-            this.status = this.status + 1
-            if (this.tabs === 'first') {
-              this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
-                this.loading = false
-                this.visible = false
-                this.onProgress = false
-                clearInterval(interver)
-                if (!res) {
-                  this.showProcessSteps = false
-                  this.status = 0
-                  this.spendTime = 0
-                  this.percent = 0
-                  return
-                }
-                this.spendTime += 1
-                this.status += 1
-                this.percent = 100
-                setTimeout(() => {
-                  this.showProcessSteps = false
-                  this.status = 0
-                  this.spendTime = 0
-                  this.percent = 0
-                  Utils.alertParseResult(this.prisonerDataResult)
-                }, 1000)
-              })
-            }
-            else if (this.tabs === 'second') {
-              this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-                this.loading = false
-                this.visible = false
-                this.onProgress = false
-                clearInterval(interver)
-                if (!res) {
-                  this.showProcessSteps = false
-                  this.status = 0
-                  this.spendTime = 0
-                  this.percent = 0
-                  return
-                }
-                this.spendTime += 1
-                this.status += 1
-                this.percent = 100
-                setTimeout(() => {
-                  this.showProcessSteps = false
-                  this.status = 0
-                  this.spendTime = 0
-                  this.percent = 0
-                  Utils.alertParseResult(this.prisonerYZKDataResult)
-                }, 1000)
-              })
-            }
-          } else {
-            this.spendTime += 1
-          }
-        }, 1000)
-      },
-      beforeUpload(file) {
-        this.onProgress = true
-        this.showProcessSteps = true
-        if (this.$notify) {
-          this.$notify.closeAll()
-        }
-        if (this.tabs === 'first') {
-          this.resetState({ prisonerDataResult: {} })
-        }
-        else if (this.tabs === 'second') {
-          this.resetState({ prisonerYZKDataResult: {} })
-        }
-        this.resetState({ validatePrisonerResult: {} })
-        let uploadInterver = setInterval(() => {
-          this.status += 1
-          this.percent += 15
-          this.spendTime += .5
-          if (this.status === 4) {
-            clearInterval(uploadInterver)
-            this.uploadFile(file).then(res => {
+
+    onSubmit() {
+      this.loading = true
+      let index = 0
+      let interver = setInterval(() => {
+        index++
+        if (index === 1) {
+          this.percent += 20
+          this.spendTime += 1
+          this.status = this.status + 1
+          if (this.tabs === 'first') {
+            this.importPrisoner({ filepath: this.uploadResult.path }).then(res => {
+              this.loading = false
+              this.visible = false
+              this.onProgress = false
+              clearInterval(interver)
               if (!res) {
-                this.onProgress = false
                 this.showProcessSteps = false
+                this.status = 0
                 this.spendTime = 0
                 this.percent = 0
-                this.status = 0
                 return
               }
-              if (this.tabs === 'first') {
-                let count = 0
-                let prisonerInterver = setInterval(() => {
-                  count ++
-                  if (count === 1) {
-                    this.spendTime += 1
-                    this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
-                      clearInterval(prisonerInterver)
-                      if (!res) {
-                        this.onProgress = false
-                        this.showProcessSteps = false
-                        this.spendTime = 0
-                        this.percent = 0
-                        this.status = 0
-                        return
-                      }
-                      if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
-                        this.status += 1
-                        this.visible = true
-                      }
-                      else {
-                        this.onSubmit()
-                      }
-                    })
-                  } else {
-                    this.spendTime += 1
-                  }
-                }, 1000)
-              }
-              else if (this.tabs === 'second') {
-                let count = 0
-                let prisonYZXInterver = setInterval(() =>{
-                  count ++
-                  if (count === 1) {
-                    this.spendTime += 1
-                    this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
-                      clearInterval(prisonYZXInterver)
-                      if (!res) {
-                        this.onProgress = false
-                        this.showProcessSteps = false
-                        this.spendTime = 0
-                        this.percent = 0
-                        this.status = 0
-                        return
-                      }
-                      if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
-                        this.status += 1
-                        this.visible = true
-                      }
-                      else {
-                        this.onSubmit()
-                      }
-                    })
-                  } else {
-                    this.spendTime += 1
-                  }
-                }, 1000)
-              }
+              this.spendTime += 1
+              this.status += 1
+              this.percent = 100
+              setTimeout(() => {
+                this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
+                Utils.alertParseResult(this.prisonerDataResult)
+              }, 1000)
             })
-          } else {
-            this.spendTime += 1
+          } else if (this.tabs === 'second') {
+            this.importPrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+              this.loading = false
+              this.visible = false
+              this.onProgress = false
+              clearInterval(interver)
+              if (!res) {
+                this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
+                return
+              }
+              this.spendTime += 1
+              this.status += 1
+              this.percent = 100
+              setTimeout(() => {
+                this.showProcessSteps = false
+                this.status = 0
+                this.spendTime = 0
+                this.percent = 0
+                Utils.alertParseResult(this.prisonerYZKDataResult)
+              }, 1000)
+            })
           }
-        }, 500)
-        return false
-      },
-      handleCancelUpload() {
-        this.visible = false
-      },
-      handleDialogClose() {
-        this.showProcessSteps = false
-        this.spendTime = 0
-        this.percent = 0
-        this.status = 0
-        this.onProgress = false
-      }
+        } else this.spendTime += 1
+      }, 1000)
+    },
+
+    beforeUpload(file) {
+      this.onProgress = true
+
+      this.showProcessSteps = true
+
+      if (this.$notify) this.$notify.closeAll()
+
+      if (this.tabs === 'first') this.resetState({ prisonerDataResult: {} })
+
+      else if (this.tabs === 'second') this.resetState({ prisonerYZKDataResult: {} })
+
+      this.resetState({ validatePrisonerResult: {} })
+
+      let uploadInterver = setInterval(() => {
+        this.status += 1
+        this.percent += 15
+        this.spendTime += .5
+        if (this.status === 4) {
+          clearInterval(uploadInterver)
+          this.uploadFile(file).then(res => {
+            if (!res) {
+              this.onProgress = false
+              this.showProcessSteps = false
+              this.spendTime = 0
+              this.percent = 0
+              this.status = 0
+              return
+            }
+
+            if (this.tabs === 'first') {
+              let count = 0
+              let prisonerInterver = setInterval(() => {
+                count ++
+                if (count === 1) {
+                  this.spendTime += 1
+                  this.validatePrisoner({ filepath: this.uploadResult.path }).then(res => {
+                    clearInterval(prisonerInterver)
+                    if (!res) {
+                      this.onProgress = false
+                      this.showProcessSteps = false
+                      this.spendTime = 0
+                      this.percent = 0
+                      this.status = 0
+                      return
+                    }
+
+                    if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+                      this.status += 1
+                      this.visible = true
+                    } else this.onSubmit()
+                  })
+                } else this.spendTime += 1
+              }, 1000)
+            } else if (this.tabs === 'second') {
+              let count = 0
+              let prisonYZXInterver = setInterval(() =>{
+                count ++
+                if (count === 1) {
+                  this.spendTime += 1
+                  this.validatePrisonerYZK({ filepath: this.uploadResult.path }).then(res => {
+                    clearInterval(prisonYZXInterver)
+                    if (!res) {
+                      this.onProgress = false
+                      this.showProcessSteps = false
+                      this.spendTime = 0
+                      this.percent = 0
+                      this.status = 0
+                      return
+                    }
+
+                    if (this.validatePrisonerResult.prisoners && this.validatePrisonerResult.prisoners.length > 0) {
+                      this.status += 1
+                      this.visible = true
+                    } else this.onSubmit()
+                  })
+                } else this.spendTime += 1
+              }, 1000)
+            }
+          })
+        } else this.spendTime += 1
+      }, 500)
+      return false
+    },
+
+    handleCancelUpload() {
+      this.visible = false
+    },
+
+    handleDialogClose() {
+      this.showProcessSteps = false
+      this.spendTime = 0
+      this.percent = 0
+      this.status = 0
+      this.onProgress = false
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
-  .row-container {
-    line-height: 40px;
-    .red {
-      color: #F56C6C;
-      font-weight: bold;
-    }
-  }
-  .button-group{
-    padding-bottom: 20px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    clear: both;
-  }
-  .tips-title{
-    display: block;
-    text-align: center;
+.row-container {
+  line-height: 40px;
+  .red {
+    color: #F56C6C;
     font-weight: bold;
   }
-  .tips{
-    color: #f56c6c;
-    font-weight: bold;
-    text-align: center;
-    // font-size: 12px;
+}
+
+.button-group {
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  clear: both;
+}
+
+.tips-title {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+
+.tips {
+  color: #f56c6c;
+  font-weight: bold;
+  text-align: center;
+  // font-size: 12px;
+}
+
+.table-box {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.el-steps {
+  /deep/ .el-step__title {
+    font-size: 12px;
+    line-height: 32px;
   }
-  .table-box{
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-  .el-steps {
-    /deep/ .el-step__title {
-      font-size: 12px;
-      line-height: 32px;
-    }
-  }
-  .process-col_tips {
-    width: 68%;
-    margin-left: 32%;
-    span {
-      color: #303133;
-      font-weight: bold;
-      & + span {
-        padding-left: 3%;
-      }
-    }
-  }
-  .process-col_waiting {
-    width: 60%;
-    margin-left: 40%;
+}
+
+.process-col_tips {
+  width: 68%;
+  margin-left: 32%;
+  span {
     color: #303133;
     font-weight: bold;
-  }
-  .fail-box {
-    width: 90%;
-    margin-left: 10%;
-    margin-top: 1%;
-    img {
-      width: 26px;
-    }
-    .content {
-      vertical-align: middle;
-      padding-left: 2px;
+    & + span {
+      padding-left: 3%;
     }
   }
-  .m-excel-export {
-    float: none;
-    margin-left: 2%;
+}
+
+.process-col_waiting {
+  width: 60%;
+  margin-left: 40%;
+  color: #303133;
+  font-weight: bold;
+}
+
+.fail-box {
+  width: 90%;
+  margin-left: 10%;
+  margin-top: 1%;
+  img {
+    width: 26px;
   }
+
+  .content {
+    vertical-align: middle;
+    padding-left: 2px;
+  }
+}
+
+.m-excel-export {
+  float: none;
+  margin-left: 2%;
+}
 </style>

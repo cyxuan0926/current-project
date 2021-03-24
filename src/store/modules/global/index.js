@@ -19,8 +19,6 @@ let state = {
   // 是否刷新多级审批消息铃铛
   isRefreshMultistageExamineMessageBell: false,
 
-  // 有转入信息
-  loginHavePrisonerIn: false,
   jailsMeetingFloorStatus: false,
 
   guideStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_GUIDE_DATA') && JSON.parse(window.sessionStorage.getItem('APP_GUIDE_DATA'))) || {
@@ -28,7 +26,9 @@ let state = {
     guide: '',
     updatedTime: '',
     preContent: ''
-  }
+  },
+  // 有转入信息
+  loginHavePrisonerIn: false
 }
 
 export default {

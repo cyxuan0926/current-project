@@ -208,8 +208,6 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import { mapState, mapActions } from 'vuex'
 
-import switches from '@/filters/modules/switches'
-
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
@@ -247,7 +245,7 @@ export default {
       status: {
         type: 'select',
         label: '审核状态',
-        options: switches.diplomaticConsulOfficialStatus,
+        options: this.$store.state.diplomaticConsulOfficialStatus,
         miss: true
       },
 

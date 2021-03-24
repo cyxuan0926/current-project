@@ -441,7 +441,7 @@ export default {
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
-       let params={}
+      let params={}
           params.jailId=JSON.parse(localStorage.getItem('user')).jailId
           params.type=3
       let res = await http.getRejectEdit( params )

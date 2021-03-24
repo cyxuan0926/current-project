@@ -62,37 +62,41 @@
           </el-input>
         </el-form-item>
 
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item ></el-form-item>
-          <el-form-item >
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item />
+          <el-form-item>
             <el-button type="primary" style="float: right; margin-right: 60px;" @click="submitTit()">提交</el-button>
           </el-form-item>
           </el-form>
     </el-tabs>
+
     <el-dialog
       title="提示"
       :visible.sync="dialogVisible"
-      width="500px">
+      width="500px"
+    >
       <span>监狱配置已开启二级审核，当开启自动审核后，二级审核将失效，确认开启自动审核吗？</span>
+
       <span slot="footer" class="dialog-footer">
-    <el-button @click="closeDeploy()">取 消</el-button>
-    <el-button type="primary" @click="submitDeploy()">确 定</el-button>
-  </span>
+        <el-button @click="closeDeploy">取 消</el-button>
+
+        <el-button type="primary" @click="submitDeploy">确 定</el-button>
+      </span>
     </el-dialog>
- </el-row>
+  </el-row>
 </template>
 
 <script>
-  import http from '@/service'
+import http from '@/service'
 
 import { faceRecognitionValues } from '@/common/constants/const'
 
@@ -126,10 +130,18 @@ import validator from '@/utils'
         }
       }
     },
-    computed: {
+
+    submitTit(){
+      //判断
+      if(this.autoAuthorizeMeeting==true&&this.multistageExamine==true){
+        this.dialogVisible=true
+      }else{
+        this.submitDeploy()
+      }
     },
-    mounted() {
-     this.getDeploy()
+
+    closeDeploy(){
+      this.dialogVisible = false
     },
     methods: {
       getDeploy(){
@@ -175,8 +187,8 @@ import validator from '@/utils'
           }
         })
       }
-    }
   }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -85,6 +85,19 @@ superAdmin = [{
     //   component: loadView('sadmin-prison/prison-add')
     // },
     {
+      path: '/prison/process/:jailId',
+      name: 'prison-process',
+      props: { role: 0 },
+      meta: {
+        role: '0',
+        permission: 'visit.prison-process.search',
+        breadcrumbName: '审批流程配置',
+        activeMenu: '/prison/list',
+        componentsUnRemoveKeepAlive: ['PrisonTab']
+      },
+      component: 'check-meeting/meeting-deploy/meeting-process'
+    },
+    {
       path: '/prison/visit/:id',
       name: 'prison-visit',
       props: { role: 0 },
@@ -485,6 +498,22 @@ superAdmin = [{
       meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
     }]
   }, {
+    path: '/prison-message',
+    name: 'prison-message',
+    meta: {
+      hidden: true,
+      breadcrumbName: '短信相关数据查询'
+    },
+    children: [{
+      path: '/prison-message/meeting-list',
+      component: 'check-message/message-list',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.prison-message.visit-message.search',
+        breadcrumbName: '短信申请管理列表'
+      }
+    }]
+    }, {
     path: '/coopertive-partner',
     name: 'coopertivePartner',
     redirect: {
@@ -502,8 +531,26 @@ superAdmin = [{
       },
       component: 'coopertive-partner/share-list'
     }]
+  }, {
+    path: '/family-phone',
+    name: 'FamilyPhone',
+    redirect: {
+      path: '/family-phone/families'
+    },
+    children: [{
+      path: '/family-phone/families',
+      name: 'FamilyPhoneFamilies',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话家属信息',
+        permission: 'visit.family-phone.families-all.search'
+      },
+      component: 'family-phone/families'
+    }]
   }]
-
 superAdmin.forEach(item => {
   item.component = 'layout/the-frame'
 })

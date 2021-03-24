@@ -1,9 +1,10 @@
 <template>
   <el-button
     class="m-excel-export"
-    type="primary"
     :loading="loading"
     @click="onDownload"
+    v-bind="buttonsProps['attrs']"
+    v-on="buttonsProps['listeners']"
   >
     <slot>导出 Excel</slot>
   </el-button>
@@ -28,6 +29,16 @@ export default {
       type: Boolean,
       default: true
     },
+
+    buttonsProps: {
+      type: Object,
+      default: () => ({
+        attrs: {
+          type: 'primary'
+        },
+        listeners: {}
+      })
+    }
   },
   data () {
     return {
