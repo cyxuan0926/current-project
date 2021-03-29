@@ -1,7 +1,7 @@
 import getters from './getters'
 import actions from './actions'
 import mutations from './mutations'
-import { getGuideStorage, getAffairsStorage, getAffairsModule } from '@/utils/store'
+import { getGuideStorage, getAffairsStorage, getAffairsModule, getXmlStorage } from '@/utils/store'
 
 let state = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
@@ -28,7 +28,9 @@ let state = {
 
   affairsStorage: getAffairsStorage(),
 
-  affairsModule: getAffairsModule()
+  affairsModule: getAffairsModule(),
+
+  processBpmnXml: getXmlStorage()
 }
 
 export default {

@@ -27,6 +27,7 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   test: {
+    bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
     yangguangApiHost: 'http://120.78.190.101:8113',
     yangguangApiPath: '/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
