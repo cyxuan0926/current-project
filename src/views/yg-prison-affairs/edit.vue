@@ -108,7 +108,6 @@
             },
 
             async handleSubmit(fields) {
-                console.log('handleSubmi==', fields)
                 let params = Object.assign(
                     {
                         id: this.gid,

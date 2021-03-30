@@ -162,7 +162,7 @@ export default {
     async onDownloadExcel() {
       this.downloading = true
 
-       const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
+      const times = helper.DateFormat(Date.now(), 'YYYYMMDDHHmmss')
 
       const formater = menuName => {
         return `${menuName + times}`

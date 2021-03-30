@@ -1,8 +1,9 @@
 <template>
   <el-button
     class="m-excel-download"
-    type="primary"
     @click="onDownloadExcel"
+    v-bind="buttonsProps['attrs']"
+    v-on="buttonsProps['listeners']"
   >
     {{ text }}
   </el-button>
@@ -19,6 +20,16 @@ export default {
     text: {
       type: String,
       default: '导出 Excel'
+    },
+
+    buttonsProps: {
+      type: Object,
+      default: () => ({
+        attrs: {
+          type: 'primary'
+        },
+        listeners: {}
+      })
     }
   },
 

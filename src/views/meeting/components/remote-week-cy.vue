@@ -397,7 +397,6 @@
       // 能否新增工作日
       canAddDay(configs,area) {
         let days = [],productiondays=[],dormitorydays=[],isCanAddDay= false
-        // console.log(configs)
         configs.forEach((config) => {
         if(this.separateByArea){
           if(config.area==1){
@@ -568,7 +567,6 @@
            configs.forEach((item,ind)=>{
                  if(ind==index){
                    if( item.area==1){
-                     console.log(configs1.length)
                      if(configs1.length>1){
                         this.allConfigs[type].splice(index, 1)
                      }else{

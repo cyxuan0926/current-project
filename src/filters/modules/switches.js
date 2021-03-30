@@ -198,19 +198,52 @@ let switches = {
   familyPhoneCheckType: [
     {
       label: '待审核',
-      value: 1
+      value: 0
     },
     {
       label: '已通过',
-      value: 2
+      value: 1
     },
     {
       label: '未通过',
-      value: 3
+      value: 2
     },
     {
       label: '已作废',
-      value: 4
+      value: 3
+    }
+  ],
+
+  familyTypeOptions: [
+    {
+      label: '附属家属',
+      value: 0
+    },
+    {
+      label: '主家属',
+      value: 1
+    }
+  ],
+
+  isChuyuType: [
+    {
+      label: '未出狱',
+      value: 0
+    },
+    {
+      label: '已出狱',
+      value: 1
+    }
+  ],
+
+  isJiesuanType: [
+    {
+      label: '未结算',
+      value: 0
+    },
+    {
+      label: '已结算',
+      value: 1
     }
   ]
 }
