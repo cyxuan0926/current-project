@@ -162,7 +162,7 @@
       title="短信内容"
       width="530px"
       class="authorize-dialog">
-      <div class="flex-dialog" v-if="show.editRebut">
+      <div class="flex-dialog">
         <div class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
           {{ messageContent }}
         </div>

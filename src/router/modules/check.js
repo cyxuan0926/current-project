@@ -145,7 +145,7 @@ let check = [{
     component: 'check-meeting/meeting-family-statistics'
   }, {
     // 暂时写页面用
-    path: '/meeting/justice-list',
+    path: '/meeting/justice-listaaa',
     name: 'meeting-justice-list',
     meta: {
       permission: 'visit.remote-visit-application.justice-list',
@@ -153,7 +153,18 @@ let check = [{
     },
     props: { hasPrisonAreaAuth: true, userHasPrisonArea: true },
     component: 'family-phone/families'
-  }]
+  }, {
+    // 暂时写页面用
+    path: '/meeting/justice-list',
+    name: 'meeting-justice-list',
+    meta: {
+      permission: 'visit.remote-visit-application.justice-list',
+      breadcrumbName: '亲情电话申请管理'
+    },
+    props: { hasPrisonAreaAuth: true, userHasPrisonArea: true },
+    component: 'family-phone/phone/index'
+  }
+]
 }, {
   path: '/mailbox',
   name: 'mailbox',
