@@ -2,7 +2,7 @@ import api from '@/service/modules/global'
 import repeatAPI from '@/service/modules/repeat'
 import { Message } from 'element-ui'
 import { initStore } from '@/common/constants/prisons'
-import { setGuideStorage, setAffairsStorage, setAffairsModule } from '@/utils/store'
+import { setGuideStorage, setAffairsStorage, setAffairsModule, setXmlStorage } from '@/utils/store'
 
 const getUrls = (params) => {
   let { urls, contents } = params
@@ -151,7 +151,12 @@ export default {
 
   setAffairsModule({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
     setAffairsModule(storage)
-    commit('APP_AFFAIRS_MODULE', storage)
+    commit('SET_AFFAIRS_MODULE', storage)
+  },
+
+  setXmlStorage({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
+    setXmlStorage(storage)
+    commit('SET_XML_STORAGE', storage)
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

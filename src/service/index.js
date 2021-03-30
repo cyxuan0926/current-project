@@ -6,6 +6,7 @@ import superAdmin from './modules/superAdmin'
 import noPage from './modules/no-page'
 import repeat from './modules/repeat'
 import yangguang from './modules/yangguang-api'
+import bpmn from './modules/bpmn-api'
 import mettingMessage from './modules/mettingMessage'
 
 export default Object.assign(
@@ -17,5 +18,6 @@ export default Object.assign(
   noPage,
   repeat,
   mettingMessage,
-  yangguang
+  yangguang,
+  bpmn
 )

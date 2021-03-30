@@ -8,7 +8,6 @@ const getItem = (store, key, isParse) => {
             return isParse ? JSON.parse(_data) : _data
         }
     }
-    console.log('getItem====', initStore[key]())
     return initStore[key] && initStore[key]()
 }
 const setItem = (store, key, value) => {
@@ -28,3 +27,7 @@ export const setAffairsModule = (val) => setItem(_session, 'APP_AFFAIRS_MODULE_D
 // 操作指引的详情数据
 export const getGuideStorage = () => getItem(_session, 'APP_GUIDE_DATA', true)
 export const setGuideStorage = (val) => setItem(_session, 'APP_GUIDE_DATA', val)
+
+// 流程设计xml
+export const getXmlStorage = () => getItem(_session, 'APP_BPMN_DATA')
+export const setXmlStorage = (val) => setItem(_session, 'APP_BPMN_DATA', val)
