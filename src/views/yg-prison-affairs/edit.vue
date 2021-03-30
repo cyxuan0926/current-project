@@ -11,6 +11,7 @@
                 <el-input-number v-model="fields.seq" :min="0" :step="1" step-strictly placeholder="请输入序号"></el-input-number>
             </template>
         </m-form>
+        <affairs-detail-modal v-model="affairsModalVisible" />
     </div>
 </template>
 
@@ -18,13 +19,18 @@
     import http from '@/service'
     import isEqual from 'lodash/isEqual'
     import { mapState, mapActions } from 'vuex'
+    import affairsDetailModal from './components/affairs-detail-modal.vue'
     export default {
+        components: {
+            affairsDetailModal
+        },
         data() {
             return {
                 gid: this.$route.query && this.$route.query.gid || '',
                 formItems: {},
                 type: '',
-                isNeedQuery: false
+                isNeedQuery: false,
+                affairsModalVisible: false
             }
         },
         watch: {
@@ -108,7 +114,6 @@
             },
 
             async handleSubmit(fields) {
-                console.log('handleSubmi==', fields)
                 let params = Object.assign(
                     {
                         id: this.gid,
@@ -124,8 +129,9 @@
                 let { data } = await http[ !this.gid ? 'savePrisonAffairs' : 'updatePrisonAffairs' ](params)
                 if( !!data ) {
                     if( !this.gid && !this.isNeedQuery ) {
-                        this.setAffairsStorage()
-                        this.initData(this.$route.meta.typeId)
+                        // this.setAffairsStorage()
+                        // this.initData(this.$route.meta.typeId)
+                        this.$router.push({ path: `/prison-affairs-list/${ this.type }` })
                     }else {
                         this.setAffairsStorage({
                             headline: fields.headline,
@@ -139,10 +145,16 @@
             },
 
             handlePreview(fields) {
-                // fields = Object.assign({ updatedTime: this.$_dateNow }, fields)
-                // fields.preContent = this.handleTextareaValue(fields.content)
-                // this.setGuideStorage(fields)
-                // this.$router.push({ path: '/operation-guide/detail' })
+                if( !fields.headline ) {
+                    this.$message.error('请填写标题')
+                    return
+                }
+                if( !fields.content ) {
+                    this.$message.error('请填写内容')
+                    return
+                }
+                this.setAffairsStorage(Object.assign({}, fields))
+                this.affairsModalVisible = true
             },
 
             async handleBack(fields) {

@@ -62,6 +62,7 @@
             ref="pagination"
             :total="total"
             @onPageChange="getData"/>
+        <affairs-detail-modal v-model="affairsModalVisible" />
     </el-row>
 </template>
 
@@ -69,7 +70,12 @@
     import http from '@/service'
     import Moment from 'moment'
     import { mapState, mapActions } from 'vuex'
+    import affairsDetailModal from './components/affairs-detail-modal.vue'
+    import { initStore } from '@/common/constants/prisons'
     export default {
+        components: {
+            affairsDetailModal
+        },
         data() {
             return {
                 type: '',
@@ -79,6 +85,7 @@
                 searchItems: {},
                 tableDatas:[],
                 filter: {},
+                affairsModalVisible: false
             }
         },
         computed: {
@@ -162,7 +169,7 @@
                     {
                         label: '创建时间',
                         prop: 'createTime',
-                        width: '120px',
+                        width: '150px',
                         align: 'center'
                     },
                     {
@@ -228,7 +235,7 @@
             async handleClick(type, row) {
                 // 新增
                 if (type == 'add') {
-                    this.setAffairsStorage()
+                    this.setAffairsStorage(Object.assign({}, initStore.APP_AFFAIRS_DATA(), { seq: this.total }))
                     this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }` })
                 // 修改
                 } else if (type == 'edit') {
@@ -243,13 +250,13 @@
                     })
                 // 预览
                 } else if (type == 'detail') {
-                    // this.$router.push({ path: '/operation-guide/detail' })
-                    // this.setGuideStorage({
-                    //     updatedTime: row.updatedTime,
-                    //     guide: row.guide,
-                    //     content: row.content,
-                    //     preContent: this.setTextareaValue(row.content)
-                    // })
+                    this.setAffairsStorage({
+                        headline: row.headline,
+                        subhead: row.subhead,
+                        content: row.content,
+                        videoUrl: row.videoUrl
+                    })
+                    this.affairsModalVisible = true
                 // 上下架
                 } else if (type == 'online' || type == 'offline') {
                     await this.$confirm(`${ type == 'online' ? '上' : '下' }架此${ this.moduleItems[row.type] }`, '提示', {

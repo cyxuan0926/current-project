@@ -8,7 +8,7 @@
       </div>
       <m-audio
         v-else
-        :value="value + '?token=' + $urls.token" />
+        :value="value" />
     </div>
     <div class="upload-buttons">
       <el-upload
@@ -95,7 +95,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
-          this.$emit('success', res.url)
+          this.$emit('success', `${res.url}?token=${this.$urls.token}`)
           let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
           this.setUrlStorage({ urls: [...urls, res.url] })
           this.setNewUrlStorage({ urls: [res.url] })
