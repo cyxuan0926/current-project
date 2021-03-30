@@ -19,7 +19,7 @@
                 :step="1"
                 step-strictly
                 controls-position="right"
-                clearable min="10" max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input-number>
+                clearable :min="10" :max="600" @blur="changeTimes()" placeholder="输入秒数"></el-input-number>
             <span style="margin-left:10px">秒</span>
             <font style="margin-left:20px" color='#C0C4CC'>说明: 每次通话时长不超过该时长时，该次通话不计入通话次数 </font>    
           </label>
@@ -138,18 +138,10 @@ import validator from '@/utils'
       }
     },
 
-    submitTit(){
-      //判断
-      if(this.autoAuthorizeMeeting==true&&this.multistageExamine==true){
-        this.dialogVisible=true
-      }else{
-        this.submitDeploy()
-      }
+    mounted() {
+     this.getDeploy()
     },
 
-    closeDeploy(){
-      this.dialogVisible = false
-    },
     methods: {
       getDeploy(){
         http.getMeetDeploy().then(res => {

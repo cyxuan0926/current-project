@@ -128,7 +128,6 @@ export default {
     },
   async mounted() {
     this.$set(this.searchItems['date'], 'value', this.MonthDate)
-    console.log( this.filter )
 
     this.getDatas()
   },

@@ -117,19 +117,8 @@ const prisonerDataImportExcelConfig = {
   ]
 }
 
-const familyPhoneFamiliesDataImportExcelConfig = {
-  filename: {
-    value: filename_failed_data
-  },
-
-  header: ['家属姓名', '家属电话', '罪犯姓名', '罪犯编号', '监区', '关系', '是否替换已有家属', '被替换家属姓名', '失败原因'],
-
-  filterFields: []
-}
-
 export {
   prisonerExcelConfig,
   wardenMailboxExcelConfig,
-  prisonerDataImportExcelConfig,
-  familyPhoneFamiliesDataImportExcelConfig
+  prisonerDataImportExcelConfig
 }

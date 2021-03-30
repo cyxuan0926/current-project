@@ -534,12 +534,13 @@ superAdmin = [{
   }, {
     path: '/family-phone',
     name: 'FamilyPhone',
-    redirect: {
-      path: '/family-phone/families'
+    meta: {
+      hidden: true,
+      breadcrumbName: '亲情电话信息管理'
     },
     children: [{
-      path: '/family-phone/families',
-      name: 'FamilyPhoneFamilies',
+      path: '/family-phone/families/list',
+      name: 'FamilyPhoneFamiliesList',
       props: {
         hasProvinceQueryAuth: true,
         hasOnlyAllPrisonQueryAuth: true
@@ -548,7 +549,19 @@ superAdmin = [{
         breadcrumbName: '亲情电话家属信息',
         permission: 'visit.family-phone.families-all.search'
       },
-      component: 'family-phone/families'
+      component: 'family-phone/families/list'
+    }, {
+      path: '/family-phone/conversation-cost-detail/list',
+      name: 'FamilyPhoneConversationCostDetailList',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话通话费用详情表',
+        permission: 'visit.family-phone.conversation-cost-detail-all.search'
+      },
+      component: 'family-phone/conversation-cost-detail/list'
     }]
   }]
 superAdmin.forEach(item => {

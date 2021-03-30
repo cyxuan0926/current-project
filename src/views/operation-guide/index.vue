@@ -151,7 +151,6 @@
                     this.total = res.total
                     // if( flag == 'mounted' && res.list && res.list.length ) {
                     //     this.maxId = res.list[0].id
-                    //     console.log('mounted', this.maxId)
                     // }
                 })
             },
