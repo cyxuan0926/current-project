@@ -21,7 +21,7 @@ export default {
 
   async operateFamilyPhoneFamilies(_, params) {
     try {
-      const response = await familyPhoneApi.newFamilyPhoneFamilies(params)
+      const response = await familyPhoneApi.operateFamilyPhoneFamilies(params)
 
       const isSucess = response ? response['code'] === 200 : response
 

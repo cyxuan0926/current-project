@@ -5,8 +5,8 @@
       :items="searchItems"
       @search="onSearch"
     >
-      <!-- v-if="!isSuperAdmin" -->
-      <template>
+
+      <template v-if="!isSuperAdmin">
         <template slot="append">
           <el-button type="primary" @click="onNewFamily">新增</el-button>
 
@@ -253,7 +253,7 @@
 
             <p style="padding-left: 30px">导入失败数据：
               <m-excel-download
-                path="/download/downloadfile"
+                path="/download/localfile"
                 :params="{ filepath: validateFamiliesResult.filePath }"
                 :buttonsProps="excelExportButtonProps"
                 text="导入失败的数据.xls"
@@ -729,7 +729,7 @@ export default {
 
                   setTimeout(() => {
                     this.uploadInnerDialogVisible = true
-                  }, 1000)
+                  }, 1500)
                 } else this.spendTime += 1
               }, 1000)
             } else this.spendTime += 1

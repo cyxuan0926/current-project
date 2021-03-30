@@ -14,7 +14,7 @@ export default {
   operateFamilyPhoneFamilies: inputs => {
     const { url, params } = inputs
 
-    return service.post(url, params)
+    return service.postFile(url, params)
   },
 
   // 亲情电话家属 - 导出excel
