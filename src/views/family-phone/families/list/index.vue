@@ -5,7 +5,6 @@
       :items="searchItems"
       @search="onSearch"
     >
-
       <template v-if="!isSuperAdmin">
         <template slot="append">
           <el-button
@@ -278,13 +277,76 @@
     </el-dialog>
 
     <el-dialog
-      class="authorize-dialog"
+      class="authorize-dialog detail-dialog"
       ref="detailOrAuthDialog"
       :visible.sync="detailOrAuthDialog.dialogVisible"
       title="详情"
       :close-on-click-modal="false"
     >
-      <m-multistage-records :basicValues="multistageRecordsBasicValues" />
+      <m-multistage-records
+        :basicValues="multistageRecordsBasicValues"
+        :values="multistageRecordsValues"
+        :hasSlot="true"
+      >
+        <!--  v-if="multistageRecordsValues.length" -->
+        <template #append>
+          <div class="multistage_examine-item">
+            <div :class="['detail-index']">{{ multistageRecordsValues.length + 1 }}</div>
+
+            <div :class="[ 'detail-content']">
+              <p class="detail-message-family detail-audit">
+                <span class="family-name audit-label label">审核员账号</span>
+
+                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['createRole'] }}</span>
+              </p>
+
+              <p class="detail-message-family detail-advices">
+                <span class="family-name advices-label">审核意见</span>
+
+                <span class="family-nameDetail advices-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+              </p>
+
+              <p class="detail-message-family item-no-bottom detail-audit">
+                <span class="family-name audit-label label">审核状态</span>
+
+                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+              </p>
+            </div>
+
+            <div :class="['detail-content', 'time-status']">
+              <p class="detail-message-family detail-audit-time">
+                <span class="family-name audit-time-label">审核人姓名</span>
+
+                <span class="family-nameDetail audit-time-value">{{ multistageRecordsLastValue['createUser'] }}</span>
+              </p>
+
+              <p class="detail-message-family detail-status">
+                <span class="family-name status-label">审核时间</span>
+
+                <span class="family-nameDetail status-value">{{ multistageRecordsLastValue['createAt'] }}</span>
+              </p>
+
+              <p class="detail-message-family item-no-bottom detail-advices">
+                <span class="family-name advices-label" />
+
+                <span class="family-nameDetail advices-value" />
+              </p>
+            </div>
+          </div>
+        </template>
+      </m-multistage-records>
+
+      <div class="button-box">
+        <repetition-el-buttons :buttonItems="authorizeButtons" />
+      </div>
+
+      <div v-if="detailOrAuthDialog.agree" class="button-box">
+        <repetition-el-buttons :buttonItems="showAgreeButtons" />
+      </div>
+
+      <div v-if="detailOrAuthDialog.disAgree" class="button-box">
+        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
+      </div>
     </el-dialog>
   </el-row>
 </template>
@@ -309,10 +371,12 @@ import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
 import { DateFormat } from '@/utils/helper'
+
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 export default {
   name: 'FamilyPhone_Families_List',
 
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator, registrationDialogCreator],
 
   data() {
     const tabsItems = [
@@ -362,7 +426,7 @@ export default {
           options: this.$store.state.familyPhoneAuthenticationType
         },
 
-        auditDetail: {
+        aduitDetail: {
           type: 'select',
           label: '审核状态',
           options: this.$store.state.familyPhoneCheckType,
@@ -502,10 +566,18 @@ export default {
       originalFamilyInformationDialogFormValues: {},
 
       detailOrAuthDialog: {
-        dialogVisible: false
+        dialogVisible: false,
+        agree: false,
+        disAgree: false
       },
 
-      multistageRecordsBasicValues: []
+      multistageRecordsBasicValues: [],
+
+      agreeText: '确定通过？',
+
+      multistageRecordsValues: [],
+
+      multistageRecordsLastValue: {}
     }
   },
 
@@ -513,7 +585,8 @@ export default {
     ...mapGetters(['isSuperAdmin']),
 
     ...mapState({
-      uploadResult: state => state.global.uploadResult
+      uploadResult: state => state.global.uploadResult,
+      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions
     }),
 
     ...mapState('familyPhone', [
@@ -608,7 +681,7 @@ export default {
   watch: {
     tabs(tab) {
       const temp = ['1', '0'], hiddenItems = [
-        'auditDetail',
+        'aduitDetail',
         'isPhoneSms',
         'isMore'
       ]
@@ -628,7 +701,7 @@ export default {
 
         this.$set(this.searchItems['isMore'], 'miss', true)
 
-        this.$set(this.searchItems['auditDetail'], 'options', this.$store.state.familyPhoneCheckType.slice(-2))
+        this.$set(this.searchItems['aduitDetail'], 'options', this.$store.state.familyPhoneCheckType.slice(-2))
 
         delete this.filter['isMore']
 
@@ -638,7 +711,7 @@ export default {
           this.$set(this.searchItems[key], 'miss', false)
         })
 
-        this.$set(this.searchItems['auditDetail'], 'options', this.$store.state.familyPhoneCheckType)
+        this.$set(this.searchItems['aduitDetail'], 'options', this.$store.state.familyPhoneCheckType)
       }
 
       this.$refs.search.onGetFilter()
@@ -648,7 +721,11 @@ export default {
   },
 
   methods: {
-    ...mapActions(['uploadFile', 'resetState']),
+    ...mapActions([
+      'uploadFile',
+      'resetState',
+      'getSubtaskPhone'
+    ]),
 
     ...mapActions('familyPhone', [
       'getFamiliesPaged',
@@ -659,7 +736,7 @@ export default {
     ]),
 
     async getDatas() {
-      if (this.tabs !== 'first' && !this.filter.auditDetail) this.filter.auditDetail = +this.tabs
+      if (this.tabs !== 'first' && !this.filter.aduitDetail) this.filter.aduitDetail = +this.tabs
 
       const params = {
         ...this.filter,
@@ -813,7 +890,7 @@ export default {
 
     // 提交
     onFamilyInformationDialogFormSubmit(params) {
-      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, this.familyInformationDialogFormValues)
+      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, params)
 
       if (hasNoChange) {
         this.$message({
@@ -962,7 +1039,8 @@ export default {
         familyName,
         relationship,
         criminalName,
-        remarks
+        remarks,
+        logs = []
       } = this.familyPhoneFamiliesDetail
 
       this.multistageRecordsBasicValues = new Array(1).fill({
@@ -972,7 +1050,12 @@ export default {
         remarks
       })
 
-      console.log(this.multistageRecordsBasicValues)
+      this.multistageRecordsValues = logs.slice(1)
+
+      this.multistageRecordsLastValue = logs.slice(-1)[0] || {}
+
+      console.log(logs.slice(-1)[0], this.multistageRecordsBasicValues, this.multistageRecordsValues, this.multistageRecordsLastValue)
+
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },
 
@@ -983,7 +1066,20 @@ export default {
 
     onAuthFamily(row) {
       console.log('审核', row)
-    }
+    },
+
+    onAgreeAuthorize() {
+    },
+
+    onCloseAuthorize() {
+      this.$set(this.detailOrAuthDialog, 'dialogVisible', false)
+    },
+
+    onAgreeAuthorizeGoBack() {
+      this.$set(this.detailOrAuthDialog, 'agree', false)
+    },
+
+    onDisagreeAuthorizeGoBack() {}
   },
 
   async mounted() {
@@ -993,6 +1089,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$border-style: 1px solid #E4E7ED;
+
 .el-steps {
   /deep/ .el-step__title {
     font-size: 12px;
@@ -1043,6 +1141,12 @@ export default {
   }
 }
 
+.detail-dialog {
+  /deep/ .button-box {
+    text-align: right;
+  }
+}
+
 .img-box {
   /deep/ .el-image {
     width: 32%;
@@ -1058,6 +1162,92 @@ export default {
     &.relation_img {
       width: 24% !important;
     }
+  }
+}
+
+
+.detail-index {
+  display: flex;
+  width: 12%;
+  align-items:center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.detail-message {
+  width: 52%;
+}
+
+.detail-message-family {
+  display: flex;
+  font-size: 12px;
+  border-bottom: $border-style;
+  .family-name {
+    width: 83px;
+    background: #F5F7FA;
+    text-align: right;
+    padding-right: 10px;
+    border-right: $border-style;
+    border-left: $border-style;
+  }
+  .family-nameDetail {
+    flex: 1;
+    padding-left: 10px;
+  }
+
+}
+.detail-content {
+  flex: 1;
+  font-size: 12px;
+  .family-name {
+    background: #F5F7FA;
+    padding-right: 10px;
+    text-align: right;
+    border-right: $border-style;
+  }
+}
+.multistage_examine-main {
+  display: flex;
+  flex-direction: column;
+  border: $border-style;
+  margin-bottom: 10px;
+
+  .multistage_examine-item {
+    display: flex;
+    width: 100%;
+  }
+
+  .detail-content {
+    flex: 1;
+  }
+
+  .item-no-bottom {
+    border-bottom: none;
+  }
+
+  span {
+    font-size: 12px;
+
+    padding: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+  }
+
+  .time-status {
+    display: flex;
+
+    flex-direction: column;
+    .detail-status {
+      flex: 1;
+    }
+  }
+
+  .border-bottom {
+    border-bottom: $border-style;
   }
 }
 </style>

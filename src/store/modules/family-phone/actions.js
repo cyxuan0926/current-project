@@ -69,5 +69,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async authFamilyPhoneFamilies(_, params) {
+    try {
+      const response = await familyPhoneApi.authFamilyPhoneFamilies(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }
