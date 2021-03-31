@@ -21,7 +21,7 @@
             <img
               src="/static/images/user2-160x160.jpg"
               class="avatar circle">
-            <span class="hidden-xs-only">{{ publicUserInfo.username }}</span>
+            <span class="hidden-xs-only">{{ publicUserInfo.nickname || publicUserInfo.username }}</span>
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="{ path: '/password/edit' }">修改用户密码</el-dropdown-item>

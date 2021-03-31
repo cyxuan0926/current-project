@@ -22,6 +22,9 @@ p{
 .bold{
   font-weight: bold;
 }
+.own-primary {
+  color: $color-primary;
+}
 .el-table--striped .el-table__body tr.el-table__row--striped td .three-line::after{
   background: #FAFAFA;
 }

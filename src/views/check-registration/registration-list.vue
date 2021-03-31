@@ -232,7 +232,7 @@
       title="详情"
       @close="showDetail = false"
     >
-      <registration-detail  :toAuthorize="authorizeDetData" />
+      <registration-detail :toAuthorize="authorizeDetData" />
       <div class="button-box view-box">
         <el-button
           type="danger"

@@ -10,13 +10,16 @@ import check from './modules/check'
 import information from './modules/information'
 import literature from './modules/literature'
 
+import familyPhone from './modules/family-phone'
+
 const routes = [
   ...superAdmin,
   ...admin,
   ...check,
   ...information,
   ...literature,
-  ...common
+  ...common,
+  ...familyPhone
 ]
 
 /**

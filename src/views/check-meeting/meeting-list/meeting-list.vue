@@ -27,79 +27,79 @@
         </template>
       </el-tabs>
     <m-table-new
-        stripe
-         :cols="tableCols"
-        ref="parentElTable"
-        :data="meetings.contents"
-        @sort-change="sortChange">
-        <template #meetingTime="{ row }">
-          <span >{{ row.meetingTime || row.applicationDate }}</span>
-        </template>
+      stripe
+      :cols="tableCols"
+      ref="parentElTable"
+      :data="meetings.contents"
+      @sort-change="sortChange">
+      <template #meetingTime="{ row }">
+        <span >{{ row.meetingTime || row.applicationDate }}</span>
+      </template>
 
-        <template #families="{ row }">
-          <div v-if="row.filterFamilies && row.filterFamilies.length">
-            <el-button
-              type="text"
-              size="small"
-              v-for="family in row.filterFamilies"
-              :key="family.familyId"
-              style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
-          </div>
-        </template>
-
-        <template #content="{ row }">
-          <span v-if="!row.content">
-            <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
-            <template v-else>{{ row.status | applyStatus }}</template>
-          </span>
-
-          <el-tooltip
-            v-else
-            :content="row.content"
-            placement="top" >
-            <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
-            <span v-else>{{ row.status | applyStatus }}</span>
-          </el-tooltip>
-        </template>
-
-        <template #operate="{ row }">
-          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-         <el-button
-            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
-            size="mini"
-            @click="handleAuthorization(row)">授权</el-button>
-
+      <template #families="{ row }">
+        <div v-if="row.filterFamilies && row.filterFamilies.length">
           <el-button
-            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-            size="mini"
-            @click="handleWithdraw(row)">撤回</el-button>
-
-          <el-button
-            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-            @click="handleWithdraw(scope.row)">撤回</el-button>
-
-            <el-button
-            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
-            size="mini"
-            class="button-detail"
-            @click="detailRemarks(row)">已备注</el-button>
-
-          <el-button
-            v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
-            size="mini"
-            class="button-detail"
-            @click="setRemarks(row)">备注</el-button>
-
-          <el-button
-            v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             type="text"
-            size="mini"
-            class="button-detail"
-            @click="onDetail(row)">详情</el-button>
-        </template>
-      </m-table-new>
-    </el-col>
+            size="small"
+            v-for="family in row.filterFamilies"
+            :key="family.familyId"
+            style="margin-left: 0px; margin-right: 8px;"
+            @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
+        </div>
+      </template>
+
+      <template #content="{ row }">
+        <span v-if="!row.content">
+          <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
+          <template v-else>{{ row.status | applyStatus }}</template>
+        </span>
+
+        <el-tooltip
+          v-else
+          :content="row.content"
+          placement="top" >
+          <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
+          <span v-else>{{ row.status | applyStatus }}</span>
+        </el-tooltip>
+      </template>
+
+      <template #operate="{ row }">
+        <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
+        <el-button
+          v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
+          size="mini"
+          @click="handleAuthorization(row)">授权</el-button>
+
+        <el-button
+          v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+          size="mini"
+          @click="handleWithdraw(row)">撤回</el-button>
+
+        <el-button
+          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+          @click="handleWithdraw(row)">撤回</el-button>
+
+        <el-button
+          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+          size="mini"
+          class="button-detail"
+          @click="detailRemarks(row)">已备注</el-button>
+
+        <el-button
+          v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
+          size="mini"
+          class="button-detail"
+          @click="setRemarks(row)">备注</el-button>
+
+        <el-button
+          v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+          type="text"
+          size="mini"
+          class="button-detail"
+          @click="onDetail(row)">详情</el-button>
+      </template>
+    </m-table-new>
+  </el-col>
 
     <m-pagination
       ref="pagination"
@@ -1260,7 +1260,6 @@
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
       await this.getDatas('mounted')
-
     },
     methods: {
       ...mapActions([

@@ -698,7 +698,6 @@ export default {
     },
     onAuthorization(e) {
       let params = { uid: this.toAuthorize.uid.toString(), state: parseInt(e) }
-      console.log(params)
       if (e === '2') {
           this.$refs.refuseForm.validate(valid => {
           if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')

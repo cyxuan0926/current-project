@@ -214,7 +214,6 @@
             })
               if(res.mime=='image/jpeg'|| res.mime=='image/jpg'||res.mime=='image/gif'||res.mime=='image/png'){
                 this.$set(this.formDate,"title",res.url)
-                console.log(this.formDate)
               }else{
                   this.$set(this.formDate,"content",res.url)
                   this.load = false;
@@ -432,7 +431,6 @@
     async mounted() {
         this.formDate=this.$route.query.formDate?this.$route.query.formDate:{}
 
-        console.log(this.provinceslist)
         if(this.$route.query.formDate){
             this.timedate=[this.$route.query.formDate.startDate,this.$route.query.formDate.endDate]
             this.status=this.$route.query.status

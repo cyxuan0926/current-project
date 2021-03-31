@@ -69,7 +69,7 @@
           :key="index"
           v-if="item.type === 'daterange' && !item.miss"
           v-model="item.value"
-          :clearable="item.clearable?false:true"
+          :clearable="!item.clearable"
           unlink-panels
           type="daterange"
           :start-placeholder="item.startPlaceholder || '开始时间'"

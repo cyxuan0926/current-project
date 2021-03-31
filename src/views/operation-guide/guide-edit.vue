@@ -65,7 +65,6 @@
                     fields = Object.assign({ id: this.gid }, fields)
                 }
                 let { data } = await http[ this.isAdd ? 'addBusGuide' : 'updateBusGuide' ](fields)
-                // console.log( fields.content.split('') )
                 // return
                 if( !!data ) {
                     // if( !this.isAdd ) {
