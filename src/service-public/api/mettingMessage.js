@@ -22,9 +22,13 @@ export function familyPhoneDetail(params) {
 }
 // 获取当前任务的下一任务
 export function getSubtaskPhone(params) {
-  return get('/task/get-subtask', params, { baseURL: urls.apiHost }).then(res => res && res.data)
+  return get('/task/get-subtask', params, { baseURL: urls.bpmnApiHost }).then(res => res && res.data)
+}
+// 通过审核
+export function authPhone(params) {
+  return post('/parse/familyphone/apply/auth', params, { baseURL: urls.jailApiHost }).then(res => res && res.data)
 }
 // 新增亲情电话申请
-export function familyPhoneAdd(params) {
-  return post('/parse/familyphone/apply/save', params, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+export function familyPhoneAdd(data) {
+  return post('/parse/familyphone/apply/save', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
 }
