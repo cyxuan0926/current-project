@@ -56,5 +56,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async getFamilyPhoneFamiliesDetail({ commit }, inputs) {
+    try {
+      const data = await familyPhoneApi.getFamilyPhoneFamiliesDetail(inputs)
+
+      commit('setFamilyPhoneFamiliesDetail', data || { logs: [] })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

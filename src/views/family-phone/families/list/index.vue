@@ -8,15 +8,24 @@
 
       <template v-if="!isSuperAdmin">
         <template slot="append">
-          <el-button type="primary" @click="onNewFamily">新增</el-button>
+          <el-button
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
+            type="primary"
+            @click="onNewFamily"
+          >新增</el-button>
 
           <m-excel-download
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             path="/download/downloadfile"
             :params="{ filepath: 'family_phone_manage_template.xls' }"
             text="模板"
           />
 
-          <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
+          <m-excel-upload
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
+            ref="mExcelUpload"
+            :configs="excelUploadConfigs"
+          />   
         </template>
 
         <template slot="append">
@@ -67,16 +76,16 @@
 
         <template #isPhoneSms="{ row }">{{ row.isPhoneSms | isTrue }}</template>
 
-        <template #operation>
+        <template #operation="{ row }">
           <!-- 待审核/亲情电话标签页 && 审批流过程中的时候 -->
           <template>
             <!-- 审批流程的最后一级已通过的标签还能再编辑一次 -->
-            <el-button type="text" @click="onEdit">编辑</el-button>
+            <el-button type="text" @click="onEdit(row)">编辑</el-button>
 
-            <el-button type="text">审核</el-button>
+            <el-button type="text" @click="onAuthFamily(row)">审核</el-button>
           </template>
 
-          <el-button type="text">详情</el-button>
+          <el-button type="text" @click="onGetDetail(row.id)">详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -266,6 +275,16 @@
           <el-button type="primary" @click="uploadInnerDialogVisible = false">确 定</el-button>
         </div>        
       </el-dialog>
+    </el-dialog>
+
+    <el-dialog
+      class="authorize-dialog"
+      ref="detailOrAuthDialog"
+      :visible.sync="detailOrAuthDialog.dialogVisible"
+      title="详情"
+      :close-on-click-modal="false"
+    >
+      <m-multistage-records :basicValues="multistageRecordsBasicValues" />
     </el-dialog>
   </el-row>
 </template>
@@ -478,7 +497,15 @@ export default {
 
       authorizeFamilyDetail: {},
 
-      downloading: false
+      downloading: false,
+
+      originalFamilyInformationDialogFormValues: {},
+
+      detailOrAuthDialog: {
+        dialogVisible: false
+      },
+
+      multistageRecordsBasicValues: []
     }
   },
 
@@ -491,8 +518,8 @@ export default {
 
     ...mapState('familyPhone', [
       'familiesPaged',
-      'originalFamilyInformationDialogFormValues',
-      'validateFamiliesResult'
+      'validateFamiliesResult',
+      'familyPhoneFamiliesDetail'
     ]),
 
     tableCols() {
@@ -569,7 +596,9 @@ export default {
 
         exportUrl: this.isSuperAdmin ? '/parse/familyphone/exportFamilyPhone' : '/parse/familyphone/exportFamilyPhone',
 
-        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save'
+        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save',
+
+        detailUrl: this.isSuperAdmin ? '' : '/familyPhoneManage/detail'
       }
 
       return urls
@@ -624,7 +653,9 @@ export default {
     ...mapActions('familyPhone', [
       'getFamiliesPaged',
       'operateFamilyPhoneFamilies',
-      'validateUploadFamilies'
+      'validateUploadFamilies',
+      'getFamilyPhoneFamiliesDetail',
+      'authFamilyPhoneFamilies'
     ]),
 
     async getDatas() {
@@ -642,7 +673,9 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    onEdit() {
+    onEdit(row) {
+      this.originalFamilyInformationDialogFormValues = Object.assign({}, row)
+
       this.familyInformationDialogOperationType = 1
 
       this.familyInformationVisible = true
@@ -804,11 +837,11 @@ export default {
 
     onOpenFamilyInformationDialog() {
       this.$nextTick(() => {
-        const disabledItemKeys = [
+        let disabledItemKeys = [
           'familyName',
           'criminalName',
           'criminalNumber',
-          'replaceName'
+          'relationship'
         ]
 
         if (this.familyInformationDialogOperationType) {
@@ -828,11 +861,43 @@ export default {
               value: 1
             }
           })
+
+          delete this.familyInformationDialogFormItems['isReplace']
+
+          delete this.familyInformationDialogFormItems['replaceName']
         } else {
           // 新增
+          disabledItemKeys = [...disabledItemKeys, 'replaceName']
+
           this.familyInformationDialogFormValues = {
             isReplace: 1
           }
+
+          this.familyInformationDialogFormItems = Object.assign({}, this.familyInformationDialogFormItems, {
+            isReplace: {
+              type: 'select',
+              label: '是否替换已有家属',
+              rules: ['required'],
+              options: this.$store.state.isTrue,
+              value: 1,
+              controlTheOther: true,
+              controlProps: ['replaceName'],
+              func: this.onReplaceFamilyChange
+            },
+
+            replaceName: {
+              type: 'input',
+              label: '被替换家属姓名',
+              dependingRelation: false,
+              disableDependingProp: 'isReplace',
+              changeRules: [{
+                message: '请输入被替换家属姓名',
+                validator: validator.required,
+                required: true
+              }],
+              clearable: true
+            }
+          })
 
           this.$set(this.familyInformationDialogFormItems, 'buttons', ['add', 'cancel'])
 
@@ -849,6 +914,8 @@ export default {
 
           else this.$set(this.familyInformationDialogFormItems[key], 'disabled', !!this.familyInformationDialogOperationType)
         })
+
+        this.$refs.familyInformationDialogForm && this.$refs.familyInformationDialogForm.onClearValidate()
       })
     },
 
@@ -884,6 +951,38 @@ export default {
       setTimeout(() => {
         this.downloading = false
       }, 300)
+    },
+
+    async onInitFamilyDetails(id) {
+      const url = this.apiUrls['detailUrl'], params = { id }
+
+      await this.getFamilyPhoneFamiliesDetail({ url, params })
+      console.log(this.familyPhoneFamiliesDetail)
+      const {
+        familyName,
+        relationship,
+        criminalName,
+        remarks
+      } = this.familyPhoneFamiliesDetail
+
+      this.multistageRecordsBasicValues = new Array(1).fill({
+        familyName,
+        relationship,
+        criminalName,
+        remarks
+      })
+
+      console.log(this.multistageRecordsBasicValues)
+      this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+    },
+
+    async onGetDetail(id) {
+      console.log('详情', id)
+      await this.onInitFamilyDetails(id)
+    },
+
+    onAuthFamily(row) {
+      console.log('审核', row)
     }
   },
 
@@ -941,6 +1040,24 @@ export default {
 .authorize-dialog {
   /deep/ .el-dialog__footer {
     padding: 0px 20px 20px 0px;
+  }
+}
+
+.img-box {
+  /deep/ .el-image {
+    width: 32%;
+    height: 110px;
+    margin-bottom: 5px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    &.relation_img {
+      width: 24% !important;
+    }
   }
 }
 </style>

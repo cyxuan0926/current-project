@@ -9,5 +9,9 @@ export default {
 
   setValidateFamiliesResult: (state, result) => {
     state.validateFamiliesResult = Object.assign({}, result)
+  },
+
+  setFamilyPhoneFamiliesDetail: (state, familyPhoneFamiliesDetail) => {
+    state.familyPhoneFamiliesDetail = familyPhoneFamiliesDetail
   }
 }

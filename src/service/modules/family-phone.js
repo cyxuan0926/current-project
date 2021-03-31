@@ -27,5 +27,12 @@ export default {
   // 亲情电话家属 - 导入 - 验证数据
   validateUploadFamilies: filepath => {
     return service.post('/parse/familyphone/validateFpm', { filepath }).then(response => response && response.data)
+  },
+
+  // 亲情电话家属 - 详情
+  getFamilyPhoneFamiliesDetail: inputs => {
+    const { url, params } = inputs
+
+    return service.get(url, params).then(response => response && response.data)
   }
 }
