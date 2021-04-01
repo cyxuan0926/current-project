@@ -77,11 +77,15 @@
 
         <template #operation="{ row }">
           <!-- 待审核/亲情电话标签页 && 审批流过程中的时候 -->
-          <template>
+          <template v-if="!isSuperAdmin">
             <!-- 审批流程的最后一级已通过的标签还能再编辑一次 -->
             <el-button type="text" @click="onEdit(row)">编辑</el-button>
 
-            <el-button type="text" @click="onAuthFamily(row)">审核</el-button>
+            <el-button
+              v-if="!!row.isCheck"
+              type="text"
+              @click="onAuthFamily(row)"
+            >审核</el-button>
           </template>
 
           <el-button type="text" @click="onGetDetail(row.id)">详情</el-button>
@@ -280,22 +284,24 @@
       class="authorize-dialog detail-dialog"
       ref="detailOrAuthDialog"
       :visible.sync="detailOrAuthDialog.dialogVisible"
-      title="详情"
-      :close-on-click-modal="false"
+      :title="detailOrAuthDialogTitle"
+      :close-on-click-modal="!!detailOrAuthDialogType"
     >
       <m-multistage-records
         :basicValues="multistageRecordsBasicValues"
         :values="multistageRecordsValues"
-        :hasSlot="true"
+        :hasSlot="!isEmpty(multistageRecordsLastValue)"
+        :recordContentItems="multistageRecordContentItems"
+        :keys="multistageRecordKeys"
       >
-        <!--  v-if="multistageRecordsValues.length" -->
-        <template #append>
+
+        <template v-if="!isEmpty(multistageRecordsLastValue)" #append>
           <div class="multistage_examine-item">
             <div :class="['detail-index']">{{ multistageRecordsValues.length + 1 }}</div>
 
             <div :class="[ 'detail-content']">
               <p class="detail-message-family detail-audit">
-                <span class="family-name audit-label label">审核员账号</span>
+                <span class="family-name audit-label label">审核人员账号</span>
 
                 <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['createRole'] }}</span>
               </p>
@@ -327,7 +333,7 @@
               </p>
 
               <p class="detail-message-family item-no-bottom detail-advices">
-                <span class="family-name advices-label" />
+                <span class="family-name advices-label">&nbsp;</span>
 
                 <span class="family-nameDetail advices-value" />
               </p>
@@ -336,14 +342,32 @@
         </template>
       </m-multistage-records>
 
-      <div class="button-box">
+      <div v-if="!detailOrAuthDialogType && !detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
 
-      <div v-if="detailOrAuthDialog.agree" class="button-box">
-        <repetition-el-buttons :buttonItems="showAgreeButtons" />
-      </div>
+      <!-- 同意的情况 -->
+      <template v-if="detailOrAuthDialog.agree">
+        <!-- 审批结束 -->
+        <div v-if="!isSubtask"  class="button-box">
+          <repetition-el-buttons :buttonItems="showAgreeButtons" />
+        </div>
 
+        <!-- 审批流程中 -->
+        <div v-else class="button-box">
+          <m-form
+            ref="agreeHasSubTaskForm"
+            :items="agreeHasSubTaskFormItems"
+            :values="agreeHasSubTaskFormValues"
+          >
+            <template #agreeButtons>
+              <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
+            </template>
+          </m-form>
+        </div>
+      </template>
+
+      <!-- 不同意的情况 -->
       <div v-if="detailOrAuthDialog.disAgree" class="button-box">
         <repetition-el-buttons :buttonItems="showDisagreebuttons" />
       </div>
@@ -373,6 +397,8 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
+import isEmpty from 'lodash/isEmpty'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -577,7 +603,64 @@ export default {
 
       multistageRecordsValues: [],
 
-      multistageRecordsLastValue: {}
+      multistageRecordsLastValue: {},
+
+      showAgreeHasSubTaskButtonLoading: false,
+
+      familiesRow: {},
+
+      agreeHasSubTaskFormValues: {},
+
+      multistageRecordContentItems: [
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核人员账号',
+                key: 'createRole'
+              },
+
+              {
+                label: '审核意见',
+                key: 'reamrks'
+              }
+            ]
+          }
+        },
+
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核人姓名',
+                key: 'createUser'
+              },
+
+              {
+                label: '审核时间',
+                key: 'createAt'
+              }
+            ]
+          }
+        }
+      ],
+
+      multistageRecordKeys: {
+        createUser: 'createUser',
+        createAt: 'createAt',
+        createRole: 'createRole',
+        reamrks: 'reamrks'
+      },
+
+      detailOrAuthDialogType: 0 // 0: 审核 1： 详情
     }
   },
 
@@ -644,6 +727,7 @@ export default {
         },
         {
           label: '操作',
+          width: '130px',
           slotName: 'operation'
         }
       ], onlySuperAdminCols = [
@@ -675,6 +759,75 @@ export default {
       }
 
       return urls
+    },
+
+    showAgreeHasSubTaskButtons() {
+      return [
+        {
+          text: '提交审核',
+
+          attrs: {
+            plain: true,
+            loading: this.showAgreeHasSubTaskButtonLoading
+          },
+
+          events: {
+            click: this.onPassedAuthorize
+          }
+        },
+
+        { ...this.goBackButton,
+          events: {
+            click: this.onAgreeHasSubTaskGoBack
+          }
+        },
+
+        this.closeButton
+      ]
+    },
+
+    isSubtask() {
+      return !!(this.processInstanceIdSubtaskOptions && Array.isArray(this.processInstanceIdSubtaskOptions) && this.processInstanceIdSubtaskOptions.length)
+    },
+
+    agreeHasSubTaskFormItems() {
+      return {
+        formConfigs: {
+          labelWidth: '85px'
+        },
+
+        remarks: {
+          type: 'textarea',
+          noLabel: true,
+          placeholder: '请输入审核意见',
+          customClass: ['none_margin-left']
+        },
+
+        nextCheckCode: {
+          type: 'select',
+          label: '请选择审核人',
+          placeholder: '请选择审核人',
+          options: this.processInstanceIdSubtaskOptions,
+          customClass: ['inline_block', 'el-form_item-nextCheckCode'],
+          props: {
+            label: 'taskName',
+            value: 'taskCode'
+          }
+        },
+
+        agreeButtons: {
+          slotName: 'agreeButtons',
+          customClass: [
+            'none_margin-left',
+            'inline_block',
+            'el-form_item-agreeButtons'
+          ]
+        }
+      }
+    },
+
+    detailOrAuthDialogTitle() {
+      return this.detailOrAuthDialogType ? '详情' : '审核'
     }
   },
 
@@ -1034,7 +1187,7 @@ export default {
       const url = this.apiUrls['detailUrl'], params = { id }
 
       await this.getFamilyPhoneFamiliesDetail({ url, params })
-      console.log(this.familyPhoneFamiliesDetail)
+
       const {
         familyName,
         relationship,
@@ -1054,32 +1207,75 @@ export default {
 
       this.multistageRecordsLastValue = logs.slice(-1)[0] || {}
 
-      console.log(logs.slice(-1)[0], this.multistageRecordsBasicValues, this.multistageRecordsValues, this.multistageRecordsLastValue)
-
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },
 
     async onGetDetail(id) {
-      console.log('详情', id)
+      this.detailOrAuthDialogType = 1
+
       await this.onInitFamilyDetails(id)
     },
 
-    onAuthFamily(row) {
-      console.log('审核', row)
+    async onAuthFamily(row) {
+      const { id } = row
+
+      this.familiesRow = Object.assign({}, row)
+
+      this.detailOrAuthDialogType = 0
+
+      await this.onInitFamilyDetails(id)
     },
 
-    onAgreeAuthorize() {
+    async onAgreeAuthorize() {
+      const { processInstanceId } = this.familiesRow
+
+      await this.getSubtaskPhone({ processInstanceId })
+
+      if (this.isSubtask) {
+        this.agreeHasSubTaskFormValues = {
+          remarks: '同意',
+          nextCheckCode: this.processInstanceIdSubtaskOptions[0]['taskCode'] || ''
+        }
+      }
+
+      this.$set(this.detailOrAuthDialog, 'agree', true)
     },
 
     onCloseAuthorize() {
+      this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onClearValidate()
+
       this.$set(this.detailOrAuthDialog, 'dialogVisible', false)
+
+      setTimeout(() => {
+        this.$set(this.detailOrAuthDialog, 'agree', false)
+
+        this.$set(this.detailOrAuthDialog, 'disAgree', false)
+      }, 200)
     },
 
     onAgreeAuthorizeGoBack() {
       this.$set(this.detailOrAuthDialog, 'agree', false)
     },
 
-    onDisagreeAuthorizeGoBack() {}
+    onDisagreeAuthorizeGoBack() {
+      this.$set(this.detailOrAuthDialog, 'disAgree', false)
+    },
+
+    isEmpty(input) {
+      return isEmpty(input)
+    },
+
+    onPassedAuthorize() {},
+
+    onAgreeHasSubTaskGoBack() {
+      this.$set(this.detailOrAuthDialog, 'agree', false)
+    },
+
+    onDisagreeAuthorize() {
+      this.$set(this.detailOrAuthDialog, 'disAgree', true)
+
+      this.buttonLoading = false
+    }
   },
 
   async mounted() {
@@ -1196,6 +1392,7 @@ $border-style: 1px solid #E4E7ED;
   }
 
 }
+
 .detail-content {
   flex: 1;
   font-size: 12px;
@@ -1206,6 +1403,7 @@ $border-style: 1px solid #E4E7ED;
     border-right: $border-style;
   }
 }
+
 .multistage_examine-main {
   display: flex;
   flex-direction: column;
@@ -1248,6 +1446,31 @@ $border-style: 1px solid #E4E7ED;
 
   .border-bottom {
     border-bottom: $border-style;
+  }
+}
+
+.yt-form {
+  /deep/ .none_margin-left {
+    .el-form-item__content {
+      margin-left: 0px !important;
+    }
+  }
+
+  /deep/ .inline_block {
+    display: inline-block;
+    margin-bottom: 0px;
+  }
+
+  /deep/ .el-form_item-agreeButtons {
+    width: 63.5%;
+
+    button {
+      width: 31% !important;
+    }
+  }
+
+  /deep/ .el-form_item-nextCheckCode {
+    width: 36%;
   }
 }
 </style>

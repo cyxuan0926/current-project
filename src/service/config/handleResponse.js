@@ -31,14 +31,15 @@ const urlWhiteList = [
 ]
 
 const noMessageUrlLists = [
-  '/jails/getPendingCount'
+  '/jails/getPendingCount',
+  '/task/get-subtask'
 ]
 
 const codes = {
   200: {
     resData: true,
     next: (params, url, baseURL) => {
-      if (urlWhiteList.includes(url) || noMessageUrlLists.includes(url.replace(`${ baseURL + agency }`, ''))) {
+      if (urlWhiteList.includes(url) || noMessageUrlLists.includes(url.replace(`${ baseURL + agency }`, '')) || noMessageUrlLists.includes(url.replace(`${ baseURL }`, ''))) {
         Message.closeAll()
         // tips('导入的Excel罪犯数据解析完成', 'success')
       }
