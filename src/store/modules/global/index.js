@@ -30,7 +30,9 @@ let state = {
 
   affairsModule: getAffairsModule(),
 
-  processBpmnXml: getXmlStorage()
+  processBpmnXml: getXmlStorage(),
+
+  processInstanceIdSubtaskOptions: []
 }
 
 export default {

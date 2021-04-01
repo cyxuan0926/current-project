@@ -152,3 +152,7 @@ export const _dateOneWeekAgo = Moment().subtract(7, 'days').format('YYYY-MM-DD')
 export const _timeNow = `${ _dateNow } 23:59:59`
 
 export const _timeOneWeekAgo = `${ _dateOneWeekAgo } 00:00:00`
+
+export const _operationAuthorizations = {
+  _familyPhoneFamiliesSubPrisonAreaAuth: 'visit.family-phone.families-sub-prison-area.auth'
+}

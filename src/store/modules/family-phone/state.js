@@ -12,5 +12,6 @@ export default {
     error_total: 0,
     filePath: '',
     total: 0
-  }
+  },
+  familyPhoneFamiliesDetail: {}
 }

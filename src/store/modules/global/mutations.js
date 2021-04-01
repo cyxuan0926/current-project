@@ -64,5 +64,9 @@ export default {
 
   setLoginHavePrisonerIn(state, loginHavePrisonerIn) {
     state.loginHavePrisonerIn = loginHavePrisonerIn
+  },
+
+  setSubtaskPhone: (state, data) => {
+    state.processInstanceIdSubtaskOptions = data
   }
 }

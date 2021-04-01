@@ -25,7 +25,8 @@ import {
   _dateNow,
   _dateOneWeekAgo,
   _timeNow,
-  _timeOneWeekAgo
+  _timeOneWeekAgo,
+  _operationAuthorizations
 } from '@/common/constants/const'
 
 Vue.use(ElementUI)
@@ -45,6 +46,8 @@ Vue.prototype.$_dateOneWeekAgo = _dateOneWeekAgo
 Vue.prototype.$_timeNow = _timeNow
 
 Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
+
+Vue.prototype.$_operationAuthorizations = _operationAuthorizations
 
 // 只在生产环境启用等保
 if (process.env.NODE_ENV === 'production') {

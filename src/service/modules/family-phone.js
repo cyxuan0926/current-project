@@ -14,7 +14,7 @@ export default {
   operateFamilyPhoneFamilies: inputs => {
     const { url, params } = inputs
 
-    return service.postFile(url, params)
+    return service.post(url, params)
   },
 
   // 亲情电话家属 - 导出excel
@@ -31,5 +31,17 @@ export default {
   // 亲情电话申请 - 导入 - 验证数据
   validateUploaPhone: filepath => {
     return service.post('/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)
+  },
+
+  // 亲情电话家属 - 详情
+  getFamilyPhoneFamiliesDetail: inputs => {
+    const { url, params } = inputs
+
+    return service.get(url, params).then(response => response && response.data)
+  },
+
+  // 亲情电话家属 - 审核
+  authFamilyPhoneFamilies: params => {
+    return service.post('/familyPhoneManage/auth', params)
   }
 }
