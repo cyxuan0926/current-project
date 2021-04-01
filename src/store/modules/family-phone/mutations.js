@@ -10,6 +10,10 @@ export default {
   setValidateFamiliesResult: (state, result) => {
     state.validateFamiliesResult = Object.assign({}, result)
   },
+  setValidatePhoneResult: (state, result) => {
+    state.validatePhoneResult = Object.assign({}, result)
+    console.log(state.validatePhoneResult)
+  },
 
   setFamilyPhoneFamiliesDetail: (state, familyPhoneFamiliesDetail) => {
     state.familyPhoneFamiliesDetail = familyPhoneFamiliesDetail

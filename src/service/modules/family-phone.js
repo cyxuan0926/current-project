@@ -28,6 +28,10 @@ export default {
   validateUploadFamilies: filepath => {
     return service.post('/parse/familyphone/validateFpm', { filepath }).then(response => response && response.data)
   },
+  // 亲情电话申请 - 导入 - 验证数据
+  validateUploaPhone: filepath => {
+    return service.post('/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)
+  },
 
   // 亲情电话家属 - 详情
   getFamilyPhoneFamiliesDetail: inputs => {
