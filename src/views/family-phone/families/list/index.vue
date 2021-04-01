@@ -368,10 +368,99 @@
       </template>
 
       <!-- 不同意的情况 -->
-      <div v-if="detailOrAuthDialog.disAgree" class="button-box">
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
+      <div v-if="detailOrAuthDialog.disAgree" class="button-box logMgCls">
+        <div style="margin-bottom: 10px;text-align: left;padding-left: 20px;">请选择驳回原因</div>
+      <div style="display: flex;padding-left: 20px;">
+            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
+            <el-option
+              v-for="(remark,index) in content"
+              :value="remark"
+              :label="(index+1)+'、'+remark"
+              :key="index"/>
+          </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+          style="padding-left:20px"
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks"  >
+               <el-input
+                :autosize="{ minRows: 6 ,maxRows:8 }"
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
+          </el-form>
+          <el-button
+          size="mini"
+            :loading="btnDisable"
+            @click="deniedAuthorization()">提交</el-button>
+          <el-button
+            size="mini"
+            @click="goBackAuth()">返回</el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            @click="show.authorize = false">关闭</el-button>
+        </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="show.rejectEdit"
+      title="编辑"
+      width="530px"
+      @close="changeClose()"
+      class="authorize-dialog">
+      <div class="flex-dialog" v-if="show.editRebut">
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+           <li v-for="(item,index) in content"
+               :key='index'
+               class="infinite-list-item" style="line-height:32px">
+               {{index+1}}.{{ item }}
+            </li>
+        </ul>
+         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
+      </div>
+       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
+         <span v-for="(item,index) in content" :key="index">
+        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
+           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
+        </el-input>
+         </span>
+      </div>
+      <el-row :gutter="0">
+
+        <el-button
+           v-if='show.editRebut'
+           type="primary"
+          class="button-add"
+          size="mini"
+          @click="onRejectEditshow()">编辑</el-button>
+          <span v-else>
+          <el-button
+          v-if='content.length>0'
+          type="primary"
+          class="button-add"
+          size="mini"
+          @click="onSubmitReject()">保存</el-button>
+           <el-button
+          type="primary"
+          class="button-add"
+          size="mini"
+          v-if='content.length<10'
+          @click="addReject()">新增</el-button>
+          </span>
+      </el-row>
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -397,6 +486,8 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+import { getRejectEdit, setRejectEdit } from '@/service-public/api/mettingMessage'
+
 
 import isEmpty from 'lodash/isEmpty'
 export default {
@@ -652,12 +743,38 @@ export default {
           }
         }
       ],
-
+      show:{
+        editRebut:true,
+        dialog:false
+      },
       multistageRecordKeys: {
         createUser: 'createUser',
         createAt: 'createAt',
         createRole: 'createRole',
         reamrks: 'reamrks'
+      },
+      refuseForm: {
+        selectRemark:"",
+        anotherRemarks: ""
+      },
+      content:[],
+      remarks:'',
+      updateer:'',
+      contentId:"",
+      btnDisable: false, // 按钮禁用与启用
+      uploadInnerDialogVisible: false,
+       withdrawRule: {
+        anotherRemarks: [
+          {
+            validator:(rule,value,callback)=>{
+              if(this.refuseForm.anotherRemarks){
+                  callback()
+              }else{
+                  callback(new Error('请填写驳回原因'))
+              }
+            }
+          }
+        ]
       },
 
       detailOrAuthDialogType: 0 // 0: 审核 1： 详情
@@ -1273,9 +1390,90 @@ export default {
 
     onDisagreeAuthorize() {
       this.$set(this.detailOrAuthDialog, 'disAgree', true)
+      //获取审批下一级
+      //this.getSubtask(this.toShow)
+      //获取驳回列表
+      this.onRejectshow(false)
 
       this.buttonLoading = false
-    }
+    },
+      refuseFormChange(e){
+        let str=""
+         if(!this.refuseForm.anotherRemarks){
+            this.refuseForm.anotherRemarks=""
+          }
+        e.forEach((item,index)=>{
+          if(!this.refuseForm.anotherRemarks.includes(item)){
+            str +=`${item}。\n`
+          }
+        })
+        this.refuseForm.anotherRemarks+=str
+    },
+    // 获取当前驳回原因列表
+  async onRejectshow(str,isform){
+       let params={}
+          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
+          params.type=6
+      let res = await getRejectEdit( params )
+      if(res.content){
+        this.content = res.content
+        this.contentId=res.id
+        this.updateer=res.updateEr
+      }else{
+        this.content = []
+      }
+      if(str=='PASSED'){
+        this.show.rejectEdit=true
+      }else{
+        this.show.rejectEdit=false
+      }
+    },
+    addReject(){
+      this.content.push('')
+    },
+    removeReject(index){
+      this.content.splice(index,1)
+    },
+    onRejectEditshow(){
+      this.show.editRebut=false
+    },
+     changeClose(){
+      this.onRejectshow(false,this.isform)
+       this.show.editRebut=true
+    },
+     async onSubmitReject(){
+      this.content=this.content.filter((res)=>res&&res.trim())
+       if(this.content.length<1){
+         this.$message({
+            message: '新增编辑内容不能为空',
+            type: 'error'
+          });
+          return false
+      }else{
+        let params={
+        id: this.contentId,
+        type:6,
+        content:this.content,
+        updateer:JSON.parse(localStorage.getItem('user')).realName,
+        jailId:JSON.parse(localStorage.getItem('user')).jailId
+        }
+        let res = await setRejectEdit(params)
+        if(res){
+          let params={}
+              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
+              params.type=6
+          let res = await getRejectEdit( params )
+          if(res.content){
+            this.content = res.content
+            this.contentId=res.id
+            this.updateer=res.updateEr
+          }else{
+            this.content = []
+          }
+      }
+       this.show.editRebut=true
+      }
+    },
   },
 
   async mounted() {

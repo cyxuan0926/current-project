@@ -42,7 +42,7 @@
         </template>
 
         <template #operation="{row}">
-          <el-button size="mini" @click="onAuthorize(row)">授权</el-button>
+          <el-button size="mini" @click="onAuthorize(row)">审核</el-button>
           <el-button type="text" @click="getDetail(row,true)">详情</el-button>
         </template>
       </m-table-new>
@@ -75,7 +75,7 @@
      <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
-      title="授权"
+      title="审核"
       width='780px'
       @close="closeWithdraw"
       :close-on-click-modal="false"
@@ -612,17 +612,6 @@ export default {
                   callback()
               }else{
                   callback(new Error('请填写驳回原因'))
-              }
-            }
-          }
-        ],
-      withdrawReason: [
-          {
-            validator:(rule,value,callback)=>{
-              if(this.withdrawForm.withdrawReason){
-                  callback()
-              }else{
-                  callback(new Error('请填撤回原因'))
               }
             }
           }
