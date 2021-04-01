@@ -28,7 +28,19 @@ export function getSubtaskPhone(params) {
 export function authPhone(params) {
   return post('/parse/familyphone/apply/auth', params, { baseURL: urls.jailApiHost }).then(res => res && res.data)
 }
+  // 获取驳回编辑列表 家属注册管理
+export function getRejectEdit(params) {
+    return get('/meetingsReviewWord/get', params, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+  }
+  // 保存修改驳回编辑列表 家属注册管理
+  export function setRejectEdit(params) {
+    return post('/meetingsReviewWord/edit', params, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+  }
 // 新增亲情电话申请
 export function familyPhoneAdd(data) {
   return post('/parse/familyphone/apply/save', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+}
+// 数据导入uploadFile
+export function validateDataFpna(params) {
+  return post('/parse/familyphone/apply/validateFpna', params).then(res => res && res.data)
 }

@@ -46,6 +46,20 @@ export default {
       Promise.reject(err)
     }
   },
+  async validateUploadPhone({ commit }, filepath) {
+    try {
+      const response = await familyPhoneApi.validateUploaPhone(filepath)
+
+      if (!response) return
+          console.log(response)
+      commit('setValidatePhoneResult', response)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
 
   async exportFamilyPhone(_, inputs) {
     try {

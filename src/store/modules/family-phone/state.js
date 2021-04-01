@@ -6,5 +6,11 @@ export default {
     error_total: 0,
     filePath: '',
     total: 0
+  },
+  validatePhoneResult: {
+    add_total: 0,
+    error_total: 0,
+    filePath: '',
+    total: 0
   }
 }
