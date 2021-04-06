@@ -85,7 +85,7 @@ superAdmin = [{
     //   component: loadView('sadmin-prison/prison-add')
     // },
     {
-      path: '/prison/process/:jailId',
+      path: '/prison/process/:jailId/:zipcode?',
       name: 'prison-process',
       props: { role: 0 },
       meta: {
@@ -543,7 +543,7 @@ superAdmin = [{
       name: 'FamilyPhoneFamiliesList',
       props: {
         hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
+        hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话家属信息',

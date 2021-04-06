@@ -47,7 +47,7 @@
 
       <template v-for="(items, indexs) in values">
         <div class="multistage_examine-item" :key="indexs">
-          <div :class="['detail-index', { 'border-bottom': indexs + 1 !== values.length }]">{{ indexs + 1 }}</div>
+          <div :class="['detail-index', { 'border-bottom': indexs + 1 !== values.length || hasSlot }]">{{ indexs + 1 }}</div>
 
           <template v-for="(item, index) of recordContentItems">
             <div
@@ -55,7 +55,7 @@
               :class="[
                 'detail-content',
                 {
-                  'border-bottom': indexs + 1 !== values.length,
+                  'border-bottom': indexs + 1 !== values.length || hasSlot,
                   'time-status': index + 1 ===  recordContentItems.length
                 },
                 item['className']

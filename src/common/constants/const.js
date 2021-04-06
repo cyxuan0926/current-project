@@ -7,7 +7,9 @@ export const responseURLWhiteLists = [
   '/registrations/getRelationshipFile',
   '/parse/familyphone/exportFamilyPhone',
   '/parse/familyphone/validateFpm',
-  '/parse/familyphone/apply/validateFpna'
+  '/parse/familyphone/apply/validateFpna',
+  '/processDefinition/showresource',
+  '/familyPhone/export'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。

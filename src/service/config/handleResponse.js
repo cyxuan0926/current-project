@@ -148,13 +148,13 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
-  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, ''))) {
+  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, '')) || responseURLWhiteLists.some(url => params.config.url.includes(url))) {
     if (params.status === 200 && !params.data.code) return params
   }
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
-    tips(params.data ? params.data.msg : handleErrorMessage(params.message))
+    tips(params.data ? (params.data.msg || params.data.message) : handleErrorMessage(params.message))
     return false
   }
   result.next && result.next(params.data, params.config.url, params.config.baseURL)
