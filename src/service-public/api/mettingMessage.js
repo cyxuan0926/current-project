@@ -48,6 +48,10 @@ export function phoneRecordList(data) {
 export function phoneRecordDetail(data) {
   return get('/tel/summary/getPhoneRecord', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
 }
+// 亲情电话通话费用结算表列表查询
+export function phoneSettleAccountsList(data) {
+  return get('/settleAccounts/findPage', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+}
 // 数据导入uploadFile
 export function validateDataFpna(params) {
   return post('/parse/familyphone/apply/validateFpna', params).then(res => res && res.data)

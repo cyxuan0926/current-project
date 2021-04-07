@@ -26,6 +26,12 @@ const routes = [
         meta: { permission: 'visit.family-phone.conversation-cost-detail.search', breadcrumbName: '亲情电话通话费用详情报表' },
         component: 'family-phone/conversation-cost-detail/list'
       }, {
+        path: '/family-phone-manage/phone-cost',
+        name: 'FamilyPhoneManageConversationCostDetailList',
+        props: { hasPrisonAreaAuth: true },
+        meta: { permission: 'visit.family-phone-cost.search', breadcrumbName: '亲情电话通话费用结算报表' },
+        component: 'family-phone/phone/phone-cost-list'
+      }, {
         path: '/family-phone-manage/phone-statistics-list',
         name: 'FamilyStatisticsList',
         props: { hasPrisonAreaAuth: true },

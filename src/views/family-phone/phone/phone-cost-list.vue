@@ -15,21 +15,13 @@
       <m-table-new stripe
          :data="tabledate.list"
          :cols="tableCols">
-
-        <template #aduitDetail="{row}">
-           <span> {{`${row.startTime}~${row.endTime}`}}</span>
-        </template>
-
-        <template #operation="{row}">
-          <el-button type="text" @click="getDetail(row,true)">详情</el-button>
-        </template>
       </m-table-new>
     </el-col>
 
     <m-pagination
       ref="pagination"
       @onPageChange="getDatas" 
-      :total="tabledate.pageCounts"
+      :total="tabledate.total"
     />
      <el-dialog
       :visible.sync="show.dialog"
@@ -47,23 +39,23 @@
               <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
-              <span class="family-name">罪犯编号</span>
-              <span class="family-nameDetail">{{toShow.criminalNumber}}</span>
+              <span class="family-name">罪犯姓名</span>
+              <span class="family-nameDetail">{{toShow.criminalName}}</span>
             </p>
           </div>
           <div class="detail-content">
             <p class="detail-message-family">
-              <span class="family-name">罪犯姓名</span>
-              <span class="family-nameDetail">{{toShow.criminalName}}</span>
+              <span class="family-name">与罪犯关系</span>
+              <span class="family-nameDetail">{{toShow.relationship}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
-              <span class="family-name">终端号</span>
-              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+              <span class="family-name">申请理由</span>
+              <span class="family-nameDetail">{{toShow.applyReason}}</span>
             </p>
           </div>
         </div>
          <div
-          v-for="(item,index) in toShow.timeSlot"
+          v-for="(item,index) in toShow.logs"
           :key='index'
           style="display: flex;border: 1px solid #E4E7ED;border-top: none"
         >
@@ -112,7 +104,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
-import { phoneRecordList, phoneRecordDetail}  from '@/service-public/api/mettingMessage'
+import { phoneSettleAccountsList}  from '@/service-public/api/mettingMessage'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -134,31 +126,23 @@ export default {
           label: '家属姓名'
         },
 
-        criminalName: {
+        prisonerName: {
           type: 'input',
           label: '罪犯姓名'
         },
 
-        criminalNumber: {
+        prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
         },
          applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
-            start: 'startTime',
-            end: 'endTime',
+            start: 'startDate',
+            end: 'endDate',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'
           },
-
-        status: {
-          type: 'select',
-          label: '通话状态',
-          options:[{label: '已完成', value: 'FINISHED'},{label: '通话中', value: 'MEETING_NO'},{label: '未接通', value: 'CALLFALL'}],
-          miss: false,
-          value:"",
-        },
       },
       show:{
         isAdd:false,
@@ -180,64 +164,60 @@ export default {
     tableCols() {
       const cols = [
         {
-          label: '监区',
-          prop: 'prisonArea'
+          label: '结算时间',
+          prop: 'settleAccountsAt',
+          minWidth: 150,
         },
         {
-          label: '罪犯编号',
-          prop: 'criminalNumber',
+          label: '结算通话开始日期',
+          prop: 'startTime',
+          minWidth: 150,
         },
         {
-          label: '罪犯姓名',
-          prop: 'criminalName'
+          label: '结算通话结束日期',
+          prop: 'endTime',
+          minWidth: 150,
         },
         {
-          label: '家属姓名',
-          prop: 'familyName'
+          label: '结算通话次数（次）',
+          minWidth: 150,
+          prop: 'number'
         },
         {
-          label: '家属电话',
-          minWidth: 120,
-          prop: 'familyPhone'
-        },
-         {
-          label: '总通话时间段',
-          slotName: 'aduitDetail',
-          minWidth: 300,
+          label: '出狱人员通话次数（次）',
+          minWidth: 180,
+          prop: 'releaseNumber'
+        },{
+          label: '结算总费用（元）',
+          minWidth: 130,
+          prop: 'expense'
+        },{
+          label: '出狱人员通话的费用（元）',
+          minWidth: 180,
+          prop: 'releaseExpense'
+        },{
+          label: '实际结算的费用',
+          minWidth: 130,
+          prop: 'expense'
         },
         {
-          label: '通话时长',
-          prop: 'duration'
-        },
-        {
-          label: '通话状态',
-          prop: 'status'
-        },
-        {
-          label: '操作',
-          slotName: 'operation',
-           minWidth: 140,
+          label: '结算人员',
+          prop: 'createdBy',
+          minWidth: 100,
         }
       ]
+
       return cols
     }
   },
   methods: {
-    async getDetail(e,type=false){
-       let res= await phoneRecordDetail({ videoId: e.uid })
-          if (!res) return
-        this.toShow = Object.assign({}, res, e)
-          if(type){
-            this.show.dialog = true
-          }
-    },
       onCloseShow() {
         this.show.dialog=false
         this.toShow ={}
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await phoneRecordList({
+     let res = await phoneSettleAccountsList({
         ...this.filter,
         ...this.pagination
       })
