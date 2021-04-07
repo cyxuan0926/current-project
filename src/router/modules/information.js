@@ -30,9 +30,9 @@ let infomation = [{
     // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }]
 }, {
-  path: '/prison-affairs-public',
-  name: 'prison-affairs-public-manage',
-  meta: { hidden: true, breadcrumbName: '狱务公开信息管理' },
+  path: '/yg-prison-affairs-public',
+  name: 'yg-prison-affairs-public-manage',
+  meta: { hidden: true, breadcrumbName: '阳光狱务公开信息管理' },
   children: [{
     // 阳光监狱-监狱工作动态
     path: '/prison-affairs-list/workinfo',
@@ -89,7 +89,12 @@ let infomation = [{
     name: 'prison-affairs-edit-servivceinfo',
     meta: { typeId: 'servivceinfo', permission: 'visit.prison-affairs.servivceinfo', breadcrumbName: '服务指南' },
     component: 'yg-prison-affairs/edit'
-  }, {
+  }]
+}, {
+  path: '/prison-affairs-public',
+  name: 'prison-affairs-public-manage',
+  meta: { hidden: true, breadcrumbName: '狱务公开信息管理' },
+  children: [{
     path: '/prison-affairs-public/prison-affairs-public',
     name: 'prison-affairs-public-prison-affairs-public',
     meta: { typeId: 1, hidden: true, breadcrumbName: '狱务公开' },
