@@ -157,7 +157,7 @@ export default {
         status: {
           type: 'select',
           label: '通话状态',
-          options:[{label: '已完成', value: 'FINISHED'},{label: '通话中', value: 'MEETING_NO'},{label: '未接通', value: 'CALLFALL'}],
+          options:[{label: '已结束', value: '2'},{label: '通话中', value: '1'},{label: '未接通', value: '0'}],
           miss: false,
           value:"",
         },
@@ -250,7 +250,6 @@ export default {
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
           if(type){
-            alert(111111)
             this.show.dialog = true
           }
     },
@@ -260,7 +259,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await http.familyPhoneSettleAccount({
+     let res = await http.familyPhoneAccountList({
         ...this.filter,
         ...this.pagination
       })

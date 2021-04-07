@@ -157,7 +157,7 @@ export default {
         status: {
           type: 'select',
           label: '通话状态',
-          options:[{label: '已完成', value: 'FINISHED'},{label: '通话中', value: 'MEETING_NO'},{label: '未接通', value: 'CALLFALL'}],
+          options:[{label: '已结束', value: '2'},{label: '通话中', value: '1'},{label: '未接通', value: '0'}],
           miss: false,
           value:"",
         },
@@ -189,56 +189,48 @@ export default {
           prop: 'jailName'
         },
         {
-          label: '监区',
-          prop: 'prisonConfigName'
+          label: '结算时间',
+          prop: 'createdAt',
+          minWidth: 150,
         },
         {
-          label: '罪犯编号',
-          prop: 'prisonerNumber',
+          label: '结算通话开始日期',
+          prop: 'startTime',
+          minWidth: 150,
         },
         {
-          label: '罪犯姓名',
-          prop: 'prisonerName'
+          label: '结算通话结束日期',
+          prop: 'endTime',
+          minWidth: 150,
         },
         {
-          label: '家属姓名',
-          prop: 'familyName'
+          label: '结算通话次数（次）',
+          minWidth: 150,
+          prop: 'number'
         },
         {
-          label: '家属电话',
-          minWidth: 120,
-          prop: 'familyPhone'
+          label: '出狱人员通话次数（次）',
+          minWidth: 180,
+          prop: 'releaseNumber'
         },{
-          label: '总通话时间段',
-          prop: 'totalTime',
-          minWidth: 300,
+          label: '结算总费用（元）',
+          minWidth: 130,
+          prop: 'expense'
         },{
-          label: '通话时长',
-          prop: 'totalDuration'
+          label: '出狱人员通话的费用（元）',
+          minWidth: 180,
+          prop: 'releaseExpense'
+        },{
+          label: '实际结算的费用',
+          minWidth: 130,
+          prop: 'finalExpense'
         },
         {
-          label: '申请状态',
-          slotName: 'status',
+          label: '结算人员',
+          slotName: 'createdBy',
           minWidth: 100,
-        },
-        {
-          label: '操作',
-          slotName: 'operation',
-           minWidth: 140,
-        }
-      ], onlySuperAdminCols = [
-        {
-          label: '省份',
-          prop: 'provinceName'
-        },
-        {
-          label: '监狱名称',
-          prop: 'jailName',
-          showOverflowTooltip: true
         }
       ]
-
-      if (this.isSuperAdmin) return [ ...onlySuperAdminCols, ...cols ]
 
       return cols
     }
@@ -250,7 +242,6 @@ export default {
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
           if(type){
-            alert(111111)
             this.show.dialog = true
           }
     },
@@ -260,7 +251,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await http.familyPhoneAccountList({
+     let res = await http.familyPhoneSettleAccount({
         ...this.filter,
         ...this.pagination
       })

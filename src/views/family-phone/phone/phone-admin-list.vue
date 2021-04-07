@@ -295,7 +295,6 @@ export default {
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
           if(type){
-            alert(111111)
             this.show.dialog = true
           }
     },

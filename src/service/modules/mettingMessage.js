@@ -13,7 +13,7 @@ const qaApis = {
 Object.keys(qaApis).forEach(m => {
   let _fn = qaApis[m]
   qaApis[m] = (...args) => {
-      args[0] = `${ config.qaYwgkapiHost }${ config.apiPath }${ args[0] }`
+      args[0] = `${ config.apiHost }${ config.apiPath }${ args[0] }`
       return _fn(...args)
   }
 })
