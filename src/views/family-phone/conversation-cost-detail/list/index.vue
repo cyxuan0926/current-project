@@ -1,6 +1,11 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-search ref="search" :items="searchItems">
+    <m-search
+      ref="search"
+      :items="searchItems"
+      @searchSelectChange="searchSelectChange"
+      @search="onSearch"
+    >
       <template #append>
         <m-excel-download :path="''" :params="{}" />
 
@@ -9,12 +14,27 @@
     </m-search>
 
     <el-col :span="24">
-      <m-table-new stripe :cols="tableCols"></m-table-new>
+      <m-table-new
+        stripe
+        :cols="tableCols"
+        :data="settleAccountsPaged.content"
+        :cell-class-name="tableCellClassName"
+      >
+        <template #time="{ row }">{{ row.startAt + '-' + row.endAt }}</template>
+
+        <template #detail>
+          <el-button type="text">详情</el-button>
+        </template>
+
+        <template #duration="{ row }">{{ row.duration | time }}</template>
+
+        <template #releaseType="{ row }">{{ row.releaseType | isReleaseType }}</template>
+      </m-table-new>
     </el-col>
 
     <m-pagination
       ref="pagination"
-      :total="1"
+      :total="settleAccountsPaged.totalCount"
       @onPageChange="getDatas"
     />
   </el-row>
@@ -28,6 +48,8 @@ import {
 } from 'vuex'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+import Moment from 'moment'
 export default {
   name: 'FamilyPhone_ConversationCostDetail_List',
 
@@ -54,7 +76,7 @@ export default {
         releaseType: {
           type: 'select',
           label: '是否出狱',
-          options: this.$store.state.isChuyuType
+          options: this.$store.state.isReleaseType
         },
 
         meetingTime: {
@@ -63,13 +85,19 @@ export default {
           start: 'meetingStartDate',
           end: 'meetingEndDate',
           startPlaceholder: '通话开始时间',
-          endPlaceholder: '通话结束时间'
+          endPlaceholder: '通话结束时间',
+          clearable: true,
+          pickerOptions: {
+            disabledDate: time => {
+              return time.getTime() > Date.now()
+            }
+          }
         },
 
         settleAccounts: {
           type: 'select',
           label: '是否结算',
-          options: this.$store.state.isJiesuanType
+          options: this.$store.state.isSettleAccounts
         },
 
         time: {
@@ -105,7 +133,7 @@ export default {
         },
         {
           label: '家属姓名',
-          slotName: 'familyName'
+          prop: 'familyName'
         },
         {
           label: '家属电话',
@@ -113,7 +141,8 @@ export default {
         },
         {
           label: '总通话时间段',
-          slotName: 'time'
+          slotName: 'time',
+          minWidth: 180
         },
         {
           label: '详情',
@@ -150,6 +179,14 @@ export default {
       if (this.isSuperAdmin) return [ ...onlySuperAdminCols, ...cols ]
 
       return cols
+    },
+
+    apiUrl() {
+      const urls = {
+        pagedUrl: this.isSuperAdmin ? '' : '/settleAccounts/page',
+      }
+
+      return urls
     }
   },
 
@@ -161,7 +198,35 @@ export default {
       'settleFamilyPhoneSettleAccounts'
     ]),
 
-    getDatas() {},
+    async getDatas() {
+      const inputs = {
+        url: this.apiUrl['pagedUrl'],
+
+        params: {
+          ...this.filter,
+          ...this.pagination
+        }
+      }
+
+      await this.getFamilyPhoneSettleAccounts(inputs)
+    },
+
+    onSearch() {
+      this.$refs.pagination.handleCurrentChange(1)
+    },
+
+    tableCellClassName({row, column, rowIndex, columnIndex}) {
+      console.log(row, column)
+      return 'red'
+    }
+  },
+
+  async mounted() {
+    await this.getDatas()
+
+    const { configs } = this.settleAccountsPaged
+
+    const { meetingEndDate = Moment().subtract(1, 'days').format('YYYY-MM-DD'), meetingStartDate } = configs
   }
 }
 </script>

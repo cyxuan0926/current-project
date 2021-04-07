@@ -75,7 +75,9 @@
           :start-placeholder="item.startPlaceholder || '开始时间'"
           :end-placeholder="item.endPlaceholder || '结束时间'"
           format="yyyy-MM"
-          value-format="yyyy-MM"/>
+          value-format="yyyy-MM"
+          :picker-options="item.pickerOptions"
+        />
         <el-date-picker
           :key="index"
           v-if="item.type === 'dateRange' && !item.miss"
@@ -87,7 +89,9 @@
           :start-placeholder="item.startPlaceholder || '开始时间'"
           :end-placeholder="item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"/>
+          value-format="yyyy-MM-dd"
+          :picker-options="item.pickerOptions"
+        />
         <m-month-range-picker
           :key="index"
           v-if="item.type=== 'monthrange' && !item.miss"

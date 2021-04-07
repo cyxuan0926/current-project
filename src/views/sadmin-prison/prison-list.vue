@@ -38,7 +38,7 @@
         <el-button
         type="text"
         size="mini"
-        @click="onVisit(row, 'process')">审批流程配置</el-button>
+        @click="onVisit(row.zipcode, 'process')">审批流程配置</el-button>
     </template>
   </m-table-new>
 </template>
@@ -91,9 +91,7 @@ export default {
       if (type === 'visit') {
         _path = `/prison/visit/${ e }`
       } else if (type === 'process') {
-        const { id, zipcode = '9999' } = e
-
-        _path = `/prison/process/${ id }/${ zipcode }`
+        _path = `/prison/process/${ e || '4411' }`
       }else {
         _path = `/remote/edit/${ e }?tag=usual`
       }

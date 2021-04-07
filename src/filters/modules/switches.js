@@ -225,7 +225,7 @@ let switches = {
     }
   ],
 
-  isChuyuType: [
+  isReleaseType: [
     {
       label: '未出狱',
       value: 0
@@ -236,7 +236,7 @@ let switches = {
     }
   ],
 
-  isJiesuanType: [
+  isSettleAccounts: [
     {
       label: '未结算',
       value: 0
