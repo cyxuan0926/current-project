@@ -177,7 +177,7 @@
         fileList: [],
         visible: false,
         onProgress: false,
-        prisonerHref: `${ this.$urls.yangguangApiHost}${this.$urls.yangguangApiPath}/download/downloadfile?filepath=prisoner_bonus_penalty_template.xls`,
+        prisonerHref: `${ this.$urls.ygApiHost}/download/downloadfile?filepath=prisoner_bonus_penalty_template.xls`,
         active: 1,
         tabMapOptions: [
           { label: '读取excel' },

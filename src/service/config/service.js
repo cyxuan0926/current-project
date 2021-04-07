@@ -11,8 +11,14 @@ let state = ''
 
 export const agency = urls.apiPath
 
-// 获取异步请求的url
-const getUrl = url => /^(http|https).*/.test(url) ? url : `${ agency }${ url }`
+// 获取异步请求的url 默认ygfw互联网
+export const getUrl = (url, path) => /^(http|https).*/.test(url) ? url : `${ !path ? agency : urls[path] }${ url }`
+// bpmn
+export const getBpmnUrl = url => getUrl(url, 'bpmnApiHost')
+// 阳光监狱
+export const getYgUrl = url => getUrl(url, 'ygApiHost')
+// 监狱内网
+export const getIntraUrl = url => getUrl(url, 'jailApiHost')
 
 // http request 拦截器
 instance.interceptors.request.use(

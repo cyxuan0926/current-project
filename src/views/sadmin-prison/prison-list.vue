@@ -93,7 +93,7 @@ export default {
       } else if (type === 'process') {
         const { id, zipcode = '9999' } = e
 
-        _path = `/prison/process/${ id }/${ zipcode }`
+        _path = `/prison/process/${ zipcode }`
       }else {
         _path = `/remote/edit/${ e }?tag=usual`
       }

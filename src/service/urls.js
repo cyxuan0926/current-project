@@ -28,8 +28,7 @@ const config = {
   },
   test: {
     bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
-    yangguangApiHost: 'http://120.78.190.101:8113',
-    yangguangApiPath: '/sunjail',
+    ygApiHost: 'http://120.78.190.101:8113/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     // http://8.129.14.169:8098/ywgk
     jailApiHost: `http://8.129.14.169:8098/ywgk`,
