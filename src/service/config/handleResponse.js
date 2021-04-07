@@ -31,14 +31,15 @@ const urlWhiteList = [
 ]
 
 const noMessageUrlLists = [
-  '/jails/getPendingCount'
+  '/jails/getPendingCount',
+  '/task/get-subtask'
 ]
 
 const codes = {
   200: {
     resData: true,
     next: (params, url, baseURL) => {
-      if (urlWhiteList.includes(url) || noMessageUrlLists.includes(url.replace(`${ baseURL + agency }`, ''))) {
+      if (urlWhiteList.includes(url) || noMessageUrlLists.includes(url.replace(`${ baseURL + agency }`, '')) || noMessageUrlLists.includes(url.replace(`${ baseURL }`, ''))) {
         Message.closeAll()
         // tips('导入的Excel罪犯数据解析完成', 'success')
       }
@@ -147,13 +148,13 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
-  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, ''))) {
+  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, '')) || responseURLWhiteLists.some(url => params.config.url.includes(url))) {
     if (params.status === 200 && !params.data.code) return params
   }
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data
   let result = codes[params.status === 200 ? params.data.code : params.status]
   if (!result) {
-    tips(params.data ? params.data.msg : handleErrorMessage(params.message))
+    tips(params.data ? (params.data.msg || params.data.message) : handleErrorMessage(params.message))
     return false
   }
   result.next && result.next(params.data, params.config.url, params.config.baseURL)

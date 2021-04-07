@@ -5,7 +5,7 @@
     <div class="multistage_examine-main">
       <template v-for="(valueItem, index) of basicValues">
         <div class="multistage_examine-item" :key="`id-basic-multistage_examine-item-${ index + Math.random() }`">
-          <div :class="['detail-index', { 'border-bottom': values.length }]">{{ basicTitle }}</div>
+          <div :class="['detail-index', { 'border-bottom': values.length || hasSlot }]">{{ basicTitle }}</div>
 
           <template v-for="(item, index) of basicContentItems">
             <div
@@ -13,7 +13,7 @@
               :class="[
                 'detail-content',
                 {
-                  'border-bottom': values.length,
+                  'border-bottom': values.length || hasSlot,
                   'time-status': index + 1 ===  basicContentItems.length
                 },
                 item['className']
@@ -47,7 +47,7 @@
 
       <template v-for="(items, indexs) in values">
         <div class="multistage_examine-item" :key="indexs">
-          <div :class="['detail-index', { 'border-bottom': indexs + 1 !== values.length }]">{{ indexs + 1 }}</div>
+          <div :class="['detail-index', { 'border-bottom': indexs + 1 !== values.length || hasSlot }]">{{ indexs + 1 }}</div>
 
           <template v-for="(item, index) of recordContentItems">
             <div
@@ -55,7 +55,7 @@
               :class="[
                 'detail-content',
                 {
-                  'border-bottom': indexs + 1 !== values.length,
+                  'border-bottom': indexs + 1 !== values.length || hasSlot,
                   'time-status': index + 1 ===  recordContentItems.length
                 },
                 item['className']
@@ -96,6 +96,11 @@ import filters from '@/filters'
 
 export default {
   props: {
+    hasSlot: {
+      type: Boolean,
+      default: false
+    },
+
     values: {
       type: Array,
 
@@ -175,11 +180,11 @@ export default {
       default: () => ({
         familyName: 'familyName',
 
-        content: 'content',
+        remarks: 'remarks',
 
         relationship: 'relationship',
 
-        name: 'name'
+        criminalName: 'criminalName'
       })
     },
 
@@ -207,7 +212,7 @@ export default {
 
               {
                 label: '审核内容',
-                key: 'content'
+                key: 'remarks'
               }
             ]
           }
@@ -222,7 +227,7 @@ export default {
             items: [
               {
                 label: '罪犯姓名',
-                key: 'name'
+                key: 'criminalName'
               },
 
               {

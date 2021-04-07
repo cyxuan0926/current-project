@@ -82,7 +82,9 @@ export default {
 
           label: '初审意见'
         }
-      }
+      },
+
+      agreeText: '确定申请通过？'
     }
   },
 
@@ -226,7 +228,7 @@ export default {
     showAgreeButtons() {
       return [
         {
-          text: '确定申请通过？',
+          text: this.agreeText,
 
           attrs: {
             plain: true,

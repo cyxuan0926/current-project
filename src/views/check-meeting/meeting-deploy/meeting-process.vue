@@ -5,8 +5,10 @@
                <h3 class="pull-left">{{ pro.label }}</h3>
                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus" @click="handleEditProcess(pro.value, bpmnXmls[i])">{{ !bpmnXmls[i] ? '创建新' : '编辑' }}审批</el-button>
             </dt>
-            <dd v-if="!!bpmnXmls[i]"><div class="bpmn-viewer" :ref="pro.value"></div></dd>
-            <dd v-else class="bpmn-none">还未添加审批流程</dd>
+            <template v-if="!!bpmnXmls[i]">
+               <dd ><div class="bpmn-viewer" :ref="pro.value"></div></dd>
+            </template>
+            <dd v-if="!bpmnXmls[i]" class="bpmn-none">还未添加审批流程</dd>
         </dl>
     </div>
 </template>
@@ -19,34 +21,35 @@
    export default {
       data() {
          return {
-            jailId: this.$route.params.jailId,
             bpmnXmls: [],
             bpmnList: prisons.bpmnList,
-            bpmnModelers: []
+            bpmnModelers: [],
+            zipcode: this.$route.params.zipcode || '4411'
          }
-      },
-      async created() {
-         this.bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.jailId }`)) )
       },
       methods: {
          ...mapActions(['setXmlStorage']),
          handleEditProcess(flag, xml) {
-            this.setXmlStorage( xml || initBpmnData(`${ flag }--${ this.jailId }`) )
-            this.$router.push({ path: `/meeting/deploy/process-edit?jailId=${ this.jailId }` })
+            this.setXmlStorage( xml || initBpmnData(`${ flag }--${ this.zipcode }`) )
+            this.$router.push({ path: `/meeting/deploy/process-edit?zipcode=${ this.zipcode }` })
          }
       },
-      mounted() {
+      async created() {
          try {
+            this.bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.zipcode }`)) )
             this.bpmnModelers = []
             this.bpmnXmls.forEach((xml, i) => {
+               // xml 不能只是单纯的判空出来 应该判断的是正常显示xml的情况
                if( !!xml ) {
-                  let viewer = new BpmnViewer({
-                     container: this.refs[ this.bpmnList[i].label ]
+                  this.$nextTick(() => {
+                        let viewer = new BpmnViewer({
+                        container: this.$refs[this.bpmnList[i].value][0]
+                     })
+                     viewer.importXML(xml).then(() => {
+                        viewer.get('canvas').zoom('fit-viewport')
+                     })
+                     this.bpmnModelers.push(viewer)
                   })
-                  viewer.importXML(xml).then(() => {
-                     viewer.get('canvas').zoom('fit-viewport')
-                  })
-                  this.bpmnModelers.push(viewer)
                }
             })
          } catch (error) {

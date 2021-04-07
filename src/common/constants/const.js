@@ -6,7 +6,10 @@ export const responseURLWhiteLists = [
   '/download/province/export',
   '/registrations/getRelationshipFile',
   '/parse/familyphone/exportFamilyPhone',
-  '/parse/familyphone/validateFpm'
+  '/parse/familyphone/validateFpm',
+  '/parse/familyphone/apply/validateFpna',
+  '/processDefinition/showresource',
+  '/familyPhone/export'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。
@@ -151,3 +154,7 @@ export const _dateOneWeekAgo = Moment().subtract(7, 'days').format('YYYY-MM-DD')
 export const _timeNow = `${ _dateNow } 23:59:59`
 
 export const _timeOneWeekAgo = `${ _dateOneWeekAgo } 00:00:00`
+
+export const _operationAuthorizations = {
+  _familyPhoneFamiliesSubPrisonAreaAuth: 'visit.family-phone.families-sub-prison-area.auth'
+}

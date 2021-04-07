@@ -12,7 +12,7 @@ let state = ''
 export const agency = urls.apiPath
 
 // 获取异步请求的url
-const getUrl = (url) => /^(http|https).*/.test(url) ? url : `${ agency }${ url }`
+const getUrl = url => /^(http|https).*/.test(url) ? url : `${ agency }${ url }`
 
 // http request 拦截器
 instance.interceptors.request.use(

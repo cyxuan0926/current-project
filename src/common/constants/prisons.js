@@ -39,12 +39,12 @@ export default {
       value: 'familymessage'
     },
     {
-      label: '亲情电话申请审核',
-      value: 'phonenumber'
-    },
-    {
       label: '亲情电话家属审核',
       value: 'phonefamily'
+    },
+    {
+      label: '亲情电话申请审核',
+      value: 'phonenumber'
     }
   ]
 }
@@ -72,7 +72,7 @@ export const initStore = {
   }
 }
 
-export const initBpmnData = (id) => {
+export const initBpmnData = id => {
   return `<?xml version="1.0" encoding="UTF-8"?>
   <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:yaoqiang="http://bpmn.sourceforge.net" xmlns:tns="http://sourceforge.net/bpmn/definitions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sourceforge.net/bpmn/definitions">
     <process id="${ id }" processType="None" isClosed="false" isExecutable="true">

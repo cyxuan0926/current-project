@@ -4,6 +4,8 @@ import { Message } from 'element-ui'
 import { initStore } from '@/common/constants/prisons'
 import { setGuideStorage, setAffairsStorage, setAffairsModule, setXmlStorage } from '@/utils/store'
 
+import { getSubtaskPhone } from '@/service-public/api/mettingMessage'
+
 const getUrls = (params) => {
   let { urls, contents } = params
   for (var i = 0; i < urls.length; i++) {
@@ -157,6 +159,20 @@ export default {
   setXmlStorage({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
     setXmlStorage(storage)
     commit('SET_XML_STORAGE', storage)
+  },
+
+  // 获取当前任务的下一任务
+  async getSubtaskPhone({ commit }, params) {
+    try {
+      const data = await getSubtaskPhone(params)
+
+      commit('setSubtaskPhone', data || [])
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

@@ -6,5 +6,5 @@ export default {
     // 上传xml字符串部署流程
     saveProcess: data => service.post(setBpmnUrl('/processDefinition/addDeploymentByString'), data),
     // 依据key获取流程定义图
-    getProcess: key => service.get(setBpmnUrl(`/processDefinition/showresource?key=${ key }`))
+    getProcess: key => service.get(setBpmnUrl(`/processDefinition/showresource?key=${ key }`)).then(response => response.data)
 }

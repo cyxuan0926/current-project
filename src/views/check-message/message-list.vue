@@ -28,21 +28,21 @@
       </el-tabs>
       <m-table-new
         stripe
-        :data="tabledate.messages"
+        :data="tabledate.meetings"
         class="mini-td-padding td"
         :cols="tableCols">
           <template
-          slot="message"
+          slot="content"
           slot-scope="scope">
           <span style="color:#409EFF;cursor: pointer;" @click="messageDetail(scope.row)">短信内容</span>
         </template>
         <template
-          slot="state"
+          slot="status"
           slot-scope="scope">
-          <span v-if="scope.row.state == '0'">未授权</span>
-          <span v-if="scope.row.state == '1'">已发送</span>
-          <span v-if="scope.row.state == '2'">已拒绝</span>
-          <span v-if="scope.row.state == '5'">已取消</span>
+          <span v-if="scope.row.status == 'PENDING'">未授权</span>
+          <span v-if="scope.row.status == 'PASSED'">已发送</span>
+          <span v-if="scope.row.status == 'DENIED'">已拒绝</span>
+          <span v-if="scope.row.status == 'CANCELED'">已取消</span>
         </template>
           <template
           slot="isSensitive"
@@ -54,104 +54,15 @@
           slot="lastCoiumn"
           slot-scope="scope">
           <template>
-              <span v-if="scope.row.state" style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
+              <span v-if="scope.row.status!='PENDING'" style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
          </template>
         </template>
       </m-table-new>
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="tabledate.totalElements"
+      :total="tabledate.total"
       @onPageChange="getDatas" />
-    <el-dialog
-      :visible.sync="show.authorize"
-      class="authorize-dialog"
-      @close="closeAuthorize()"
-      title="授权"
-      width="530px">
-      <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%">
-        <p>请审核短信内容：</p>
-        <div style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
-          {{ messageContent }}
-        </div>
-        </div>
-      <div
-        v-if="!show.agree && !show.disagree"
-        class="button-box">
-        <el-button
-          plain
-          @click="show.agree = true">同意</el-button>
-        <el-button
-          plain
-          @click="show.disagree = true">不同意</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <el-button
-          plain
-          @click="onAuthorization('1')">确定申请通过？</el-button>
-        <el-button
-          plain
-          @click="show.agree=false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-          <div>
-        <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
-          <el-option
-            v-for="(remark,index) in content"
-            :value="remark"
-            :label="remark"
-            :key="index" />
-        </el-select>
-        <el-button
-            type="primary"
-            :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
-          </div>
-          <el-form
-            :model="refuseForm"
-            :rules="withdrawRule"
-            ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
-              <el-input
-               class="bordertop"
-                :autosize="{ minRows: 1 }"
-                 style="border-top: none;"
-                type="textarea"
-                show-word-limit
-                :maxlength="refuseForm.lengthRemark"
-                placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
-            </el-form-item>
-          </el-form>
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('2')">提交</el-button>
-        <el-button
-          plain
-         @click="show.disagree = false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="closeAuthorize()">关闭</el-button>
-      </div>
-    </el-dialog>
      <el-dialog
       :visible.sync="show.message"
       title="短信内容"
@@ -162,52 +73,6 @@
           {{ messageContent }}
         </div>
       </div>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="show.rejectEdit"
-      title="编辑"
-      width="530px"
-      @close="changeClose()"
-      class="authorize-dialog">
-      <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content" 
-               :key='index' 
-               class="infinite-list-item" style="line-height:32px">
-               {{index+1}}.{{ item }}
-            </li>
-        </ul>
-         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
-      </div>
-       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
-         <span v-for="(item,index) in content" :key="index">
-        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
-           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
-        </el-input>
-         </span>
-      </div>
-      <el-row :gutter="0">
-        <el-button
-           v-if='show.editRebut'
-           type="primary"
-          class="button-add"
-          size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
-          <span v-else>
-          <el-button
-          v-if='content.length>0'
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onSubmitReject()">保存</el-button>
-           <el-button
-          type="primary"
-          class="button-add"
-          size="mini"
-          v-if='content.length<10'
-          @click="addReject()">新增</el-button>
-          </span>
-      </el-row>
     </el-dialog>
     <el-dialog
       :visible.sync="show.dialog"
@@ -222,13 +87,13 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">发送人姓名</span>
-              <span class="family-nameDetail">{{toShow.sendName}}</span>
+              <span class="family-nameDetail">{{toShow.senderName}}</span>
             </p>
 
             <p class="detail-message-family" style="border: none">
               <span class="family-name">接收人姓名</span>
 
-              <span class="family-nameDetail">{{toShow.receiveName}}</span>
+              <span class="family-nameDetail">{{toShow.receiverName}}</span>
             </p>
           </div>
 
@@ -250,14 +115,14 @@
         >
           <div class="family-detail">1</div>
           <div class="detail-message">
-            <template v-if="toShow.state == '5'">
+            <template v-if="toShow.status == 'CANCELED'">
             <p class="detail-message-family">
               <span class="family-name" >取消人姓名</span>
-              <span class="family-nameDetail">{{toShow.updateUser}}</span>
+              <span class="family-nameDetail">{{toShow.auditName}}</span>
             </p>
             <p class="detail-message-family" style="border: none" >
               <span class="family-name">取消时间</span>
-                 <span class="family-nameDetail">{{toShow.updateTime}}</span>
+                 <span class="family-nameDetail">{{toShow.auditTime}}</span>
             </p>
 
             </template>
@@ -272,19 +137,19 @@
                  <span class="family-nameDetail">{{toShow.auditTime}}</span>
             </p>
             <p
-              v-if="toShow.state == '2'"
+              v-if="toShow.status == 'DENIED'"
               class="detail-message-family"
               style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
             >
               <span class="family-name"  style="line-height: 40px">拒绝原因</span>
 
-              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{toShow.remarks}}</span>
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{toShow.remark}}</span>
             </p>
             </template>
           </div>
 
           <div class="detail-content">
-            <p class="detail-message-family" v-if="toShow.state != '5'"  >
+            <p class="detail-message-family" v-if="toShow.status != 'CANCELED'"  >
               <span class="family-name" >审核人姓名</span>
               <span class="family-nameDetail">{{toShow.auditName}}</span>
             </p>
@@ -292,9 +157,9 @@
             <p class="detail-message-family">
                  <span class="family-name">申请状态</span>
                   <span class="family-nameDetail">
-                      <span v-if="toShow.state == '1'">已发送</span>
-                      <span v-if="toShow.state == '2'">已拒绝</span>
-                      <span v-if="toShow.state == '5'">已取消</span>
+                      <span v-if="toShow.status == 'PASSED'">已发送</span>
+                      <span v-if="toShow.status == 'DENIED'">已拒绝</span>
+                      <span v-if="toShow.status == 'CANCELED'">已取消</span>
                   </span>
             </p>
           </div>
@@ -307,44 +172,39 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import validator from '@/utils'
+import { mapActions } from 'vuex'
 import Moment from 'moment'
-import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
-import { getMessagelist , dealMessage , exportMessage} from '@/service-public/api/mettingMessage'
 export default {
   mixins: [prisonFilterCreator],
   data() {
     const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
-    const { belong } = prisons.PRISONAREA
-    const { options } = this.$store.getters.prisonAreaOptions
+    const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
     const stateAll = [
       {
         label: '未授权',
-        value: '0'
+        value: 'PENDING'
       },
       {
         label: '已发送',
-        value: '1'
+        value: 'PASSED'
       },
       {
         label: '已拒绝',
-        value: '2'
+        value: 'DENIED'
       },{
         label: '已取消',
-        value: '5'
+        value: 'CANCELED'
       }
     ]
     const state = [
       {
         label: '已拒绝',
-        value: '2'
+        value: 'DENIED'
       },{
         label: '已取消',
-        value: '5'
+        value: 'CANCELED'
       }
     ]
     const tabPanes = [
@@ -354,19 +214,19 @@ export default {
       },
       {
         label: '已发送',
-        name: '1'
+        name: 'PASSED'
       },
       {
         label: '已拒绝',
-        name: '2'
+        name: 'DENIED,CANCELED'
       },
       {
         label: '未审核',
-        name: '3'
+        name: 'PENDING'
       }
     ]
     return {
-      tabs: '3',
+      tabs: 'PENDING',
       stateAll,
       state,
       toShow:{},
@@ -377,35 +237,35 @@ export default {
           type: 'input',
           label: '家属姓名'
         },
-        criminalNumber: {
+        prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
         },
         applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
-            start: 'startTime',
-            end: 'endTime',
+            start: 'startDate',
+            end: 'endDate',
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间'
           },
-        criminalName: {
+        prisonerName: {
           type: 'input',
           label: '罪犯姓名'
         },
-        state: {
+        status: {
           type: 'select',
           label: '申请状态',
           options: this.stateAll,
           miss:true,
           value:"",
         },
-         auditTime: {
+         auditAt: {
             type: 'date',
             label: '审核时间',
             value: ''
           },
-        isPrisonerSend: {
+        sendType: {
           type: 'select',
           label: '短信发送人',
           options: [{label:"家属",value:"0"},{label:"罪犯",value:"1"}]
@@ -431,40 +291,6 @@ export default {
         content:[],
         updateer:'',
         contentId:"",
-         withdrawForm: {
-        selectRemark:"",
-        lengthRemark:1000,
-        withdrawReason: ""
-      },
-      refuseForm: {
-        selectRemark:"",
-        lengthRemark:1000,
-        anotherRemarks: ""
-      },
-      withdrawRule: {
-        anotherRemarks: [
-          {
-            validator:(rule,value,callback)=>{
-              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
-                  callback()
-              }else{
-                  callback(new Error('请填写驳回原因'))
-              }
-            }
-          }
-        ],
-        withdrawReason: [
-          {
-            validator:(rule,value,callback)=>{
-              if(this.withdrawForm.selectRemark||this.withdrawForm.withdrawReason){
-                  callback()
-              }else{
-                  callback(new Error('请填撤回原因'))
-              }
-            }
-          }
-        ]
-      },
       remarks: [],
       tabPanes,
       todayDate,
@@ -473,30 +299,38 @@ export default {
       tabledate:{},
       tableCols: [
         {
+          label: '省份名称',
+          prop: 'provincesName'
+        },
+        {
+          label: '监狱名称',
+          prop: 'jailName'
+        },
+        {
           label: '监区',
-          prop: 'prisonAreaName'
+          prop: 'prisonArea'
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
+          prop: 'prisonerNumber',
           width: 110
         },
         {
           label: '发送人姓名',
-          prop: 'sendName'
+          prop: 'senderName'
         },
         {
           label: '申请时间',
-          prop: 'createTime',
+          prop: 'createdAt',
           width: 140
         },
         {
           label: '接收人姓名',
-          prop: 'receiveName'
+          prop: 'receiverName'
         },
         {
           label: '家属电话',
-          prop: 'familyPhone',
+          prop: 'phone',
           width: 140
         },
         {
@@ -506,7 +340,7 @@ export default {
         },
         {
           label: '短信内容',
-          slotName: 'message',
+          slotName: 'content',
           width: 136
         },
         {
@@ -516,7 +350,7 @@ export default {
         },
         {
           label: '申请状态',
-          slotName: 'state',
+          slotName: 'status',
           className: 'orange'
         },
         {
@@ -528,44 +362,31 @@ export default {
       ]
     }
   },
-  computed: {
-    ...mapState({
-      visits: state => state.visits,
-      frontRemarks: state => [
-        ...state.frontRemarks.slice(0, state.frontRemarks.length - 1),
-        '当月会见次数已达上限，请下月再申请',
-        '其他'
-      ]
-    })
-  },
   watch: {
     tabs(val) {
-      delete this.filter.state
-      if(val=="3" || val=="1"){
-        this.searchItems.state.miss = true
+      delete this.filter.status
+      if(val=="PENDING" || val=="PASSED"){
+        this.searchItems.status.miss = true
       }else if( val=='0') {
-          this.searchItems.state.miss = false
-          this.searchItems.state.value= ''
-          this.searchItems.state.options=this.stateAll
+          this.searchItems.status.miss = false
+          this.searchItems.status.value= ''
+          this.searchItems.status.options=this.stateAll
       }else{
-        this.searchItems.state.miss = false
-        this.searchItems.state.value= ''
-        this.searchItems.state.options=this.state
+        this.searchItems.status.miss = false
+        this.searchItems.status.value= ''
+        this.searchItems.status.options=this.state
       }
       this.onSearch()
-    },
-    remarks(val) {
-      if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
     }
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
+        startDate: this.todayDate,
+        endDate: this.oneMonthLater
       })
     },
   mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater,this.todayDate ])
     this.getDatas()
   },
   methods: {
@@ -574,99 +395,25 @@ export default {
       'getCanceledVisit',
       'authorizeVisit',
       'withdrawVisit' ]),
-      onDetail(row){
-        this.toShow=row
+     async onDetail(row){
+        let res = await http.getMessageDetail({id:row.id})
+        this.toShow=res
         this.show.dialog=true
       },
       messageDetail(row){
-        this.messageContent=row.message
+        this.messageContent=row.content
         this.show.message=true
       },
-      refuseFormChange(e){
-      let str=""
-        e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
-          }
-        })
-        this.refuseForm.selectRemark=str
-        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
-    },
-    // 获取当前驳回原因列表
-  async onRejectshow(str,isform){
-      let params={}
-          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-          params.type=4
-      let res = await http.getRejectEdit( params )
-      if(res.content){
-        this.content = res.content
-        this.contentId=res.id
-        this.updateer=res.updateEr
-      }else{
-        this.content = []
-      }
-      if(str=='PASSED'){
-        this.show.rejectEdit=true
-      }else{
-        if(this.content[0]){
-          this.remarks.push(this.content[0])
-          //判断打开的是驳回还是撤回
-          if(isform){
-            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
-            this.withdrawForm.lengthRemark=997-this.content[0].length
-          }else{
-            this.refuseForm.selectRemark=`1、${this.content[0]}。`
-            this.refuseForm.lengthRemark=997-this.content[0].length
-          }
-        }
-      }
-    },
-    addReject(){
-      this.content.push('')
-    },
-    removeReject(index){
-      this.content.splice(index,1)
-    },
-    onRejectEditshow(){
-      this.show.editRebut=false
-    },
-     changeClose(){
-      this.remarks=[]
-      this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
-    },
-     async onSubmitReject(){
-      this.content=this.content.filter((res)=>res&&res.trim())
-       if(this.content.length<1){
-         this.$message({
-            message: '新增编辑内容不能为空',
-            type: 'error'
-          });
-          return false
-      }else{
-        let params={
-        id: this.contentId,
-        type:4,
-        content:this.content,
-        updateer:JSON.parse(localStorage.getItem('user')).realName,
-        jailId:JSON.parse(localStorage.getItem('user')).jailId
-        }
-        let res = await http.setRejectEdit(params)
-       this.show.editRebut=true
-      }
-    },
     async onDownloadExcel(){
-      this.filter.tab = this.tabs
-       let res = await exportMessage({
+      this.filter.status = this.tabs?this.tabs:''
+       let res = await http.exportMessage({
         ...this.filter,
         ...this.pagination
       })
     },
    async getDatas() {
-     this.filter.tab = this.tabs
-     let res = await getMessagelist({
+     this.filter.status = this.tabs==0?null:this.tabs
+     let res = await http.getMessagelist({
         ...this.filter,
         ...this.pagination
       })
@@ -691,19 +438,9 @@ export default {
         this.isform=true
       this.show.withdraw = true
     },
-    onAuthorization(e) {
-      let params = { uid: this.toAuthorize.uid, state: e ,...this.$store.state.global.user}
-      if (e === '2') {
-          this.$refs.refuseForm.validate(valid => {
-          if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
-          })
-        if (params.remarks) this.handleSubmit(params)
-      }
-      else this.handleSubmit(params)
-    },
     async handleSubmit(params) {
 
-    let  res= await  dealMessage(params)
+    let  res= await  http.dealMessage(params)
         if (res){
         this.closeAuthorize()
         this.toAuthorize = {}

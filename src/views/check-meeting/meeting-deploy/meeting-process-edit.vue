@@ -58,8 +58,7 @@
                 this.auditorVisible = false
             },
             handleBack() {
-                console.log('handleBack=')
-                this.$router.push({ path: `/prison/process/${ this.$route.query.jailId }` })
+                this.$router.push({ path: `/prison/process/${ this.$route.query.zipcode }` })
             },
             // 保存bpmn流程图
             async handleSaveDiagram() {

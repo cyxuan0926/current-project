@@ -3,29 +3,38 @@
     <m-search
       ref="search"
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
-
       <template v-if="!isSuperAdmin">
         <template slot="append">
-          <el-button type="primary" @click="onNewFamily">新增</el-button>
+          <el-button
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
+            type="primary"
+            @click="onNewFamily"
+          >新增</el-button>
 
           <m-excel-download
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             path="/download/downloadfile"
             :params="{ filepath: 'family_phone_manage_template.xls' }"
             text="模板"
           />
 
-          <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
+          <m-excel-upload
+            v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
+            ref="mExcelUpload"
+            :configs="excelUploadConfigs"
+          />   
         </template>
+      </template>
 
-        <template slot="append">
-          <el-button
-            type="primary"
-            :loading="downloading"
-            @click="onDownloadExcel"
-          >导出 Excel</el-button>
-        </template>
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -67,16 +76,30 @@
 
         <template #isPhoneSms="{ row }">{{ row.isPhoneSms | isTrue }}</template>
 
-        <template #operation>
+        <template #operation="{ row }">
           <!-- 待审核/亲情电话标签页 && 审批流过程中的时候 -->
-          <template>
+          <template v-if="!isSuperAdmin">
             <!-- 审批流程的最后一级已通过的标签还能再编辑一次 -->
-            <el-button type="text" @click="onEdit">编辑</el-button>
+            <!-- isEdit: 当前用户编辑类型 0 未审核编辑 1 已通过最后一个审核人员角色编辑 2 已通过非最后一个审核人员角色编辑 3 不可编辑 -->
+            <el-button
+              v-if="row.isEdit !== 3"
+              type="text"
+              @click="onEdit(row)"
+            >编辑</el-button>
 
-            <el-button type="text">审核</el-button>
+            <el-button
+              v-if="!!row.isCheck"
+              type="text"
+              @click="onAuthFamily(row)"
+            >审核</el-button>
           </template>
 
-          <el-button type="text">详情</el-button>
+          <!-- 详情: 待审核的情况 且当前审批用户 -->
+          <el-button
+            v-if="!(row.aduitDetail === 0 && !!row.isCheck)"
+            type="text"
+            @click="onGetDetail(row.id)"
+          >详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -267,6 +290,214 @@
         </div>        
       </el-dialog>
     </el-dialog>
+
+    <el-dialog
+      class="authorize-dialog detail-dialog"
+      ref="detailOrAuthDialog"
+      :visible.sync="detailOrAuthDialog.dialogVisible"
+      :title="detailOrAuthDialogTitle"
+      :close-on-click-modal="!!detailOrAuthDialogType"
+    >
+      <m-multistage-records
+        :basicValues="multistageRecordsBasicValues"
+        :values="multistageRecordsValues"
+        :hasSlot="!isEmpty(multistageRecordsLastValue)"
+        :recordContentItems="multistageRecordContentItems"
+        :keys="multistageRecordKeys"
+      >
+        <template v-if="!isEmpty(multistageRecordsLastValue)" #append> 
+          <div class="multistage_examine-item">
+            <div :class="['detail-index']">{{ multistageRecordsValues.length + 1 }}</div>
+
+            <div :class="[ 'detail-content']">
+              <p class="detail-message-family detail-audit">
+                <span class="family-name audit-label label">审核员账号</span>
+
+                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['createRole'] }}</span>
+              </p>
+
+              <p class="detail-message-family detail-advices">
+                <span class="family-name advices-label">审核意见</span>
+
+                <span class="family-nameDetail advices-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+              </p>
+
+              <p class="detail-message-family item-no-bottom detail-audit">
+                <span class="family-name audit-label label">审核状态</span>
+
+                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+              </p>
+            </div>
+
+            <div :class="['detail-content', 'time-status']">
+              <p class="detail-message-family detail-audit-time">
+                <span class="family-name audit-time-label">审核人姓名</span>
+
+                <span class="family-nameDetail audit-time-value">{{ multistageRecordsLastValue['createUser'] }}</span>
+              </p>
+
+              <p class="detail-message-family detail-status">
+                <span class="family-name status-label">审核时间</span>
+
+                <span class="family-nameDetail status-value">{{ multistageRecordsLastValue['createAt'] }}</span>
+              </p>
+
+              <p class="detail-message-family item-no-bottom detail-advices">
+                <span class="family-name advices-label">&nbsp;</span>
+
+                <span class="family-nameDetail advices-value" />
+              </p>
+            </div>
+          </div>
+        </template>
+      </m-multistage-records>
+
+      <div v-if="!detailOrAuthDialogType && !detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
+        <repetition-el-buttons :buttonItems="authorizeButtons" />
+      </div>
+
+      <!-- 同意的情况 -->
+      <template v-if="detailOrAuthDialog.agree">
+        <!-- 审批结束 -->
+        <div v-if="!isSubtask"  class="button-box">
+          <repetition-el-buttons :buttonItems="showAgreeButtons" />
+        </div>
+
+        <!-- 审批流程中 -->
+        <div v-else class="button-box">
+          <m-form
+            ref="agreeHasSubTaskForm"
+            :items="agreeHasSubTaskFormItems"
+            :values="agreeHasSubTaskFormValues"
+            @submit="onAgreeHasSubTaskFormSubmit"
+          >
+            <template #agreeButtons>
+              <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
+            </template>
+          </m-form>
+        </div>
+      </template>
+
+      <!-- 不同意的情况 -->
+      <div v-if="detailOrAuthDialog.disAgree" class="button-box logMgCls">
+        <div style="margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
+
+        <div style="display: flex;">
+          <el-select
+            v-model="disArgeeRemarks"
+            :multiple="true"
+            :multiple-limit='5' 
+            collapse-tags
+            @change="refuseFormChange"
+            style="width:70%;margin-right:10px"
+          >
+            <el-option
+              v-for="(remark, index) in content"
+              :value="remark"
+              :label="(index + 1) + '、' + remark"
+              :key="index"
+            />
+          </el-select>
+
+          <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')"
+          >编辑驳回原因</el-button>
+        </div>
+
+        <el-form
+          :model="refuseForm"
+          :rules="withdrawRule"
+          ref="refuseForm"
+          class="withdraw-box"
+        >
+          <el-form-item prop="anotherRemarks">
+            <el-input
+              :autosize="{ minRows: 6, maxRows:8 }"
+              type="textarea"
+              show-word-limit
+              maxlength="1000"
+              placeholder="请输入驳回原因..."
+              v-model="refuseForm.anotherRemarks"
+            />
+          </el-form-item>
+        </el-form>
+
+        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="show.rejectEdit"
+      title="编辑"
+      width="530px"
+      @close="changeClose"
+      class="authorize-dialog">
+      <div class="flex-dialog" v-if="show.editRebut">
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+          <li
+            v-for="(item,index) in content"
+            :key='index'
+            class="infinite-list-item" style="line-height:32px">
+            {{ index + 1 }}.{{ item }}
+          </li>
+        </ul>
+
+        <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
+      </div>
+
+      <div
+        v-else
+        class="infinite-list"
+        style="margin-left:20px;min-height:400px"
+      >
+        <span v-for="(item,index) in content" :key="index">
+          <el-input
+            style="margin-bottom:10px"
+            maxlength="200"
+            v-model="content[index]"
+            placeholder="请输入内容"
+            clearable
+          >
+           <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="removeReject(index)"
+          />
+          </el-input>
+        </span>
+      </div>
+
+      <el-row :gutter="0">
+        <el-button
+          v-if="show.editRebut"
+          type="primary"
+          class="button-add"
+          size="mini"
+          @click="onRejectEditshow"
+        >编辑</el-button>
+
+        <span v-else>
+          <el-button
+            v-if="content.length>0"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="onSubmitReject"
+          >保存</el-button>
+
+          <el-button
+            v-if="content.length < 10"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="addReject"
+          >新增</el-button>
+        </span>
+      </el-row>
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -290,10 +521,16 @@ import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
 
 import { DateFormat } from '@/utils/helper'
+
+import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+import { getRejectEdit, setRejectEdit } from '@/service-public/api/mettingMessage'
+
+
+import isEmpty from 'lodash/isEmpty'
 export default {
   name: 'FamilyPhone_Families_List',
 
-  mixins: [prisonFilterCreator],
+  mixins: [prisonFilterCreator, registrationDialogCreator],
 
   data() {
     const tabsItems = [
@@ -343,7 +580,7 @@ export default {
           options: this.$store.state.familyPhoneAuthenticationType
         },
 
-        auditDetail: {
+        aduitDetail: {
           type: 'select',
           label: '审核状态',
           options: this.$store.state.familyPhoneCheckType,
@@ -478,7 +715,105 @@ export default {
 
       authorizeFamilyDetail: {},
 
-      downloading: false
+      downloading: false,
+
+      originalFamilyInformationDialogFormValues: {},
+
+      detailOrAuthDialog: {
+        dialogVisible: false,
+        agree: false,
+        disAgree: false
+      },
+
+      multistageRecordsBasicValues: [],
+
+      agreeText: '确定通过？',
+
+      multistageRecordsValues: [],
+
+      multistageRecordsLastValue: {},
+
+      familiesRow: {},
+
+      agreeHasSubTaskFormValues: {},
+
+      multistageRecordContentItems: [
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核员账号',
+                key: 'createRole'
+              },
+
+              {
+                label: '审核意见',
+                key: 'reamrks'
+              }
+            ]
+          }
+        },
+
+        {
+          className: [],
+
+          pItem: {
+            className: [],
+
+            items: [
+              {
+                label: '审核人姓名',
+                key: 'createUser'
+              },
+
+              {
+                label: '审核时间',
+                key: 'createAt'
+              }
+            ]
+          }
+        }
+      ],
+      show:{
+        editRebut:true,
+        dialog:false
+      },
+      multistageRecordKeys: {
+        createUser: 'createUser',
+        createAt: 'createAt',
+        createRole: 'createRole',
+        reamrks: 'reamrks'
+      },
+      refuseForm: {
+        anotherRemarks: ""
+      },
+      content: [],
+      disArgeeRemarks: "",
+      updateer: "",
+      contentId: "",
+      btnDisable: false, // 按钮禁用与启用
+      uploadInnerDialogVisible: false,
+       withdrawRule: {
+        anotherRemarks: [
+          {
+            validator:(rule,value,callback)=>{
+              if(this.refuseForm.anotherRemarks){
+                  callback()
+              }else{
+                  callback(new Error('请填写驳回原因'))
+              }
+            }
+          }
+        ]
+      },
+
+      detailOrAuthDialogType: 0, // 0: 审核 1： 详情
+
+      agreeHasSubTaskFormFields: {}
     }
   },
 
@@ -486,13 +821,14 @@ export default {
     ...mapGetters(['isSuperAdmin']),
 
     ...mapState({
-      uploadResult: state => state.global.uploadResult
+      uploadResult: state => state.global.uploadResult,
+      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions
     }),
 
     ...mapState('familyPhone', [
       'familiesPaged',
-      'originalFamilyInformationDialogFormValues',
-      'validateFamiliesResult'
+      'validateFamiliesResult',
+      'familyPhoneFamiliesDetail'
     ]),
 
     tableCols() {
@@ -544,12 +880,13 @@ export default {
         },
         {
           label: '操作',
+          width: '130px',
           slotName: 'operation'
         }
       ], onlySuperAdminCols = [
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provincesName'
         },
         {
           label: '监狱名称',
@@ -565,21 +902,92 @@ export default {
 
     apiUrls() {
       const urls = {
-        pagedUrl: this.isSuperAdmin ? '/familyPhoneManage/page' : '/familyPhoneManage/page',
+        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/familyPhoneManage/page',
 
-        exportUrl: this.isSuperAdmin ? '/parse/familyphone/exportFamilyPhone' : '/parse/familyphone/exportFamilyPhone',
+        exportUrl: this.isSuperAdmin ? '/familyPhone/export' : '/parse/familyphone/exportFamilyPhone',
 
-        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save'
+        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save',
+
+        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/familyPhoneManage/detail'
       }
 
       return urls
+    },
+
+    showAgreeHasSubTaskButtons() {
+      return [
+        {
+          text: '提交审核',
+
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+
+          events: {
+            click: this.onPassedAuthorize
+          }
+        },
+
+        { ...this.goBackButton,
+          events: {
+            click: this.onAgreeHasSubTaskGoBack
+          }
+        },
+
+        this.closeButton
+      ]
+    },
+
+    isSubtask() {
+      return !!(this.processInstanceIdSubtaskOptions && Array.isArray(this.processInstanceIdSubtaskOptions) && this.processInstanceIdSubtaskOptions.length)
+    },
+
+    agreeHasSubTaskFormItems() {
+      return {
+        formConfigs: {
+          labelWidth: '85px'
+        },
+
+        remarks: {
+          type: 'textarea',
+          noLabel: true,
+          placeholder: '请输入审核意见',
+          customClass: ['none_margin-left']
+        },
+
+        nextCheckCode: {
+          type: 'select',
+          label: '请选择审核人',
+          placeholder: '请选择审核人',
+          options: this.processInstanceIdSubtaskOptions,
+          customClass: ['inline_block', 'el-form_item-nextCheckCode'],
+          props: {
+            label: 'taskName',
+            value: 'taskCode'
+          }
+        },
+
+        agreeButtons: {
+          slotName: 'agreeButtons',
+          customClass: [
+            'none_margin-left',
+            'inline_block',
+            'el-form_item-agreeButtons'
+          ]
+        }
+      }
+    },
+
+    detailOrAuthDialogTitle() {
+      return this.detailOrAuthDialogType ? '详情' : '审核'
     }
   },
 
   watch: {
     tabs(tab) {
       const temp = ['1', '0'], hiddenItems = [
-        'auditDetail',
+        'aduitDetail',
         'isPhoneSms',
         'isMore'
       ]
@@ -599,7 +1007,7 @@ export default {
 
         this.$set(this.searchItems['isMore'], 'miss', true)
 
-        this.$set(this.searchItems['auditDetail'], 'options', this.$store.state.familyPhoneCheckType.slice(-2))
+        this.$set(this.searchItems['aduitDetail'], 'options', this.$store.state.familyPhoneCheckType.slice(-2))
 
         delete this.filter['isMore']
 
@@ -609,7 +1017,7 @@ export default {
           this.$set(this.searchItems[key], 'miss', false)
         })
 
-        this.$set(this.searchItems['auditDetail'], 'options', this.$store.state.familyPhoneCheckType)
+        this.$set(this.searchItems['aduitDetail'], 'options', this.$store.state.familyPhoneCheckType)
       }
 
       this.$refs.search.onGetFilter()
@@ -619,16 +1027,22 @@ export default {
   },
 
   methods: {
-    ...mapActions(['uploadFile', 'resetState']),
+    ...mapActions([
+      'uploadFile',
+      'resetState',
+      'getSubtaskPhone'
+    ]),
 
     ...mapActions('familyPhone', [
       'getFamiliesPaged',
       'operateFamilyPhoneFamilies',
-      'validateUploadFamilies'
+      'validateUploadFamilies',
+      'getFamilyPhoneFamiliesDetail',
+      'authFamilyPhoneFamilies'
     ]),
 
     async getDatas() {
-      if (this.tabs !== 'first' && !this.filter.auditDetail) this.filter.auditDetail = +this.tabs
+      if (this.tabs !== 'first' && !this.filter.aduitDetail) this.filter.aduitDetail = +this.tabs
 
       const params = {
         ...this.filter,
@@ -642,7 +1056,9 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    onEdit() {
+    onEdit(row) {
+      this.originalFamilyInformationDialogFormValues = Object.assign({}, row)
+
       this.familyInformationDialogOperationType = 1
 
       this.familyInformationVisible = true
@@ -779,8 +1195,8 @@ export default {
     },
 
     // 提交
-    onFamilyInformationDialogFormSubmit(params) {
-      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, this.familyInformationDialogFormValues)
+    onFamilyInformationDialogFormSubmit(values) {
+      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, values)
 
       if (hasNoChange) {
         this.$message({
@@ -791,7 +1207,25 @@ export default {
         })
       } else {
         (async () => {
-          const url = this.apiUrls['newOrEditUrl']
+          const url = this.apiUrls['newOrEditUrl'], {
+            familyPhone,
+            relationship,
+            id,
+            isPhoneSms,
+            isEdit
+          } = values
+
+          let params = values
+
+          if (this.familyInformationDialogOperationType) {
+            params = {
+              familyPhone,
+              relationship,
+              id,
+              isPhoneSms,
+              isEdit
+            }
+          }
 
           await this.operateFamilyPhoneFamilies({ url, params })
         })()
@@ -804,15 +1238,19 @@ export default {
 
     onOpenFamilyInformationDialog() {
       this.$nextTick(() => {
-        const disabledItemKeys = [
+        let disabledItemKeys = [
           'familyName',
           'criminalName',
           'criminalNumber',
-          'replaceName'
+          'relationship'
         ]
 
         if (this.familyInformationDialogOperationType) {
           // 编辑
+          const isPassed = [1, 2]
+
+          const { isEdit } = this.originalFamilyInformationDialogFormValues
+
           this.familyInformationDialogFormValues = cloneDeep(this.originalFamilyInformationDialogFormValues)
 
           this.$set(this.familyInformationDialogFormItems, 'buttons', [{
@@ -820,19 +1258,61 @@ export default {
             text: '提交审批'
           }, 'cancel'])
 
-          this.familyInformationDialogFormItems =Object.assign({}, this.familyInformationDialogFormItems, {
-            isPhoneSms: {
-              type: 'select',
-              label: '是否接听亲情电话',
-              options: this.$store.state.isTrue,
-              value: 1
-            }
-          })
+          if (isPassed.includes(isEdit) && disabledItemKeys.includes('relationship')) {
+            const index = disabledItemKeys.findIndex(key => key === 'relationship')
+
+            disabledItemKeys.splice(index, 1)
+
+            this.$set(this.familyInformationDialogFormItems['relationship'], 'disabled', false)
+          }
+
+          if (isEdit === 1) {
+            this.familyInformationDialogFormItems = Object.assign({}, this.familyInformationDialogFormItems, {
+              isPhoneSms: {
+                type: 'select',
+                label: '是否接听亲情电话',
+                options: this.$store.state.isTrue,
+                value: 1
+              }
+            })
+          }
+
+          delete this.familyInformationDialogFormItems['isReplace']
+
+          delete this.familyInformationDialogFormItems['replaceName']
         } else {
           // 新增
+          disabledItemKeys = [...disabledItemKeys, 'replaceName']
+
           this.familyInformationDialogFormValues = {
             isReplace: 1
           }
+
+          this.familyInformationDialogFormItems = Object.assign({}, this.familyInformationDialogFormItems, {
+            isReplace: {
+              type: 'select',
+              label: '是否替换已有家属',
+              rules: ['required'],
+              options: this.$store.state.isTrue,
+              value: 1,
+              controlTheOther: true,
+              controlProps: ['replaceName'],
+              func: this.onReplaceFamilyChange
+            },
+
+            replaceName: {
+              type: 'input',
+              label: '被替换家属姓名',
+              dependingRelation: false,
+              disableDependingProp: 'isReplace',
+              changeRules: [{
+                message: '请输入被替换家属姓名',
+                validator: validator.required,
+                required: true
+              }],
+              clearable: true
+            }
+          })
 
           this.$set(this.familyInformationDialogFormItems, 'buttons', ['add', 'cancel'])
 
@@ -849,6 +1329,8 @@ export default {
 
           else this.$set(this.familyInformationDialogFormItems[key], 'disabled', !!this.familyInformationDialogOperationType)
         })
+
+        this.$refs.familyInformationDialogForm && this.$refs.familyInformationDialogForm.onClearValidate()
       })
     },
 
@@ -873,17 +1355,297 @@ export default {
 
       const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
         tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
-        TABName = tabItem[0]['label']
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: this.apiUrls['exportUrl'],
+          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs }
+        }
+
+      if (this.isSuperAdmin) params['methods'] = 'get'
 
       await tokenExcel({
-        params: { url: this.apiUrls['exportUrl'], params: { ...this.filter, tab: this.tabs } },
-        actionName: 'familyPhone/exportFamilyPhone',
+        params,
+        actionName,
         menuName: `亲情电话家属管理-${ TABName }-${ times }`,
       })
 
       setTimeout(() => {
         this.downloading = false
       }, 300)
+    },
+
+    async onInitFamilyDetails(id) {
+      const url = this.apiUrls['detailUrl'], params = { id }
+
+      await this.getFamilyPhoneFamiliesDetail({ url, params })
+
+      const {
+        familyName,
+        relationship,
+        criminalName,
+        remarks,
+        logs = []
+      } = this.familyPhoneFamiliesDetail
+
+      this.multistageRecordsBasicValues = new Array(1).fill({
+        familyName,
+        relationship,
+        criminalName,
+        remarks
+      })
+
+      this.multistageRecordsValues = this.detailOrAuthDialogType ? logs.slice(1) : logs
+
+      this.multistageRecordsLastValue = this.detailOrAuthDialogType ? (logs.slice(-1)[0] || {}) : {}
+
+      this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+    },
+
+    async onGetDetail(id) {
+      this.detailOrAuthDialogType = 1
+
+      await this.onInitFamilyDetails(id)
+    },
+
+    async onAuthFamily(row) {
+      const { id } = row
+
+      this.familiesRow = Object.assign({}, row)
+
+      this.detailOrAuthDialogType = 0
+
+      await this.onInitFamilyDetails(id)
+    },
+
+    async onAgreeAuthorize() {
+      const { processInstanceId } = this.familiesRow
+
+      await this.getSubtaskPhone({ processInstanceId })
+
+      if (this.isSubtask) {
+        this.agreeHasSubTaskFormValues = {
+          remarks: '同意',
+          nextCheckCode: this.processInstanceIdSubtaskOptions[0]['taskCode'] || ''
+        }
+      }
+
+      this.$set(this.detailOrAuthDialog, 'agree', true)
+    },
+
+    onCloseAuthorize() {
+      this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onClearValidate()
+
+      this.$refs.refuseForm && this.$refs.refuseForm.clearValidate()
+
+      this.$set(this.detailOrAuthDialog, 'dialogVisible', false)
+
+      setTimeout(() => {
+        this.$set(this.detailOrAuthDialog, 'agree', false)
+
+        this.$set(this.detailOrAuthDialog, 'disAgree', false)
+      }, 200)
+    },
+
+    onAgreeAuthorizeGoBack() {
+      this.$set(this.detailOrAuthDialog, 'agree', false)
+    },
+
+    onDisagreeAuthorizeGoBack() {
+      this.$set(this.detailOrAuthDialog, 'disAgree', false)
+    },
+
+    isEmpty(input) {
+      return isEmpty(input)
+    },
+
+    // 同意 提交审批：同意并结束
+    async onPassedAuthorize() {
+      let inputs = {}
+
+      if (this.isSubtask) {
+        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
+        const { remarks, nextCheckCode } = this.agreeHasSubTaskFormFields
+
+        const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
+
+        inputs = {
+          remarks,
+          nextCheckRole: taskName,
+          nextCheckCode,
+          checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
+        }
+      } else {
+        inputs = {
+          checkState: 1
+        }
+      }
+
+      await this.onAuthorization(inputs)
+    },
+
+    onDeniedSubmit() {
+      const { anotherRemarks } = this.refuseForm
+
+      const remarks = anotherRemarks.replace(/\s*/g, '')
+
+      this.$refs.refuseForm.validate(async valid => {
+        if (valid) {
+          const inputs = {
+            checkState: 2,
+            remarks
+          }
+
+          await this.onAuthorization(inputs)
+        }
+      })
+    },
+
+    onAgreeHasSubTaskGoBack() {
+      this.$set(this.detailOrAuthDialog, 'agree', false)
+    },
+
+    onDisagreeAuthorize() {
+      //获取驳回列表
+      this.onRejectshow(false)
+
+      this.disArgeeRemarks = ''
+
+      this.refuseForm.anotherRemarks = ''
+
+      this.buttonLoading = false
+
+      this.$set(this.detailOrAuthDialog, 'disAgree', true)
+    },
+
+    refuseFormChange(e){
+      let str = ""
+
+      if (!this.refuseForm.anotherRemarks) {
+        this.refuseForm.anotherRemarks = ""
+      }
+
+      e.forEach((item,index) => {
+        if(!this.refuseForm.anotherRemarks.includes(item)) {
+          str +=`${item}。\n`
+        }
+      })
+
+      this.refuseForm.anotherRemarks += str
+    },
+
+    // 获取当前驳回原因列表
+    async onRejectshow(str,isform) {
+      let params={}
+
+      params.jailId = JSON.parse(localStorage.getItem('user')).jailId
+
+      params.type = 6
+
+      let res = await getRejectEdit( params )
+
+      if (res.content) {
+        this.content = res.content
+
+        this.contentId = res.id
+
+        this.updateer = res.updateEr
+      } else {
+        this.content = []
+      }
+
+      if(str === 'PASSED') {
+        this.show.rejectEdit = true
+      } else {
+        this.show.rejectEdit = false
+      }
+    },
+
+    addReject() {
+      this.content.push('')
+    },
+
+    removeReject(index) {
+      this.content.splice(index,1)
+    },
+
+    onRejectEditshow() {
+      this.show.editRebut = false
+    },
+
+    changeClose() {
+      this.onRejectshow(false, this.isform)
+
+      this.show.editRebut = true
+    },
+
+    async onSubmitReject() {
+      this.content = this.content.filter((res)=>res && res.trim())
+
+      if (this.content.length < 1) {
+        this.$message({
+          message: '新增编辑内容不能为空',
+          type: 'error'
+        })
+
+        return false
+      } else {
+        let params = {
+          id: this.contentId,
+          type:6,
+          content:this.content,
+          updateer:JSON.parse(localStorage.getItem('user')).realName,
+          jailId:JSON.parse(localStorage.getItem('user')).jailId
+        }
+
+        let res = await setRejectEdit(params)
+
+        if (res) {
+          let params = {}
+
+          params.jailId = JSON.parse(localStorage.getItem('user')).jailId
+
+          params.type = 6
+
+          let res = await getRejectEdit(params)
+
+          if (res.content) {
+            this.content = res.content
+            this.contentId = res.id
+            this.updateer = es.updateEr
+          } else {
+            this.content = []
+          }
+        }
+        this.show.editRebut=true
+      }
+    },
+
+    async onAuthorization(inputs = {}) {
+      const { id, processInstanceId } = this.familiesRow
+
+      const params = {
+        ...inputs,
+        id,
+        processInstanceId
+      }
+
+      this.buttonLoading = true
+
+      const result = await this.authFamilyPhoneFamilies(params)
+
+      this.buttonLoading = false
+
+      if (result) {
+        this.onCloseAuthorize()
+
+        this.getDatas()
+      }
+    },
+
+    onAgreeHasSubTaskFormSubmit(value) {
+      this.agreeHasSubTaskFormFields = Object.assign({}, value)
     }
   },
 
@@ -894,6 +1656,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$border-style: 1px solid #E4E7ED;
+
 .el-steps {
   /deep/ .el-step__title {
     font-size: 12px;
@@ -941,6 +1705,143 @@ export default {
 .authorize-dialog {
   /deep/ .el-dialog__footer {
     padding: 0px 20px 20px 0px;
+  }
+}
+
+.detail-dialog {
+  /deep/ .button-box {
+    text-align: right;
+  }
+}
+
+.img-box {
+  /deep/ .el-image {
+    width: 32%;
+    height: 110px;
+    margin-bottom: 5px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    &.relation_img {
+      width: 24% !important;
+    }
+  }
+}
+
+
+.detail-index {
+  display: flex;
+  width: 12%;
+  align-items:center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.detail-message {
+  width: 52%;
+}
+
+.detail-message-family {
+  display: flex;
+  font-size: 12px;
+  border-bottom: $border-style;
+  .family-name {
+    width: 83px;
+    background: #F5F7FA;
+    text-align: right;
+    padding-right: 10px;
+    border-right: $border-style;
+    border-left: $border-style;
+  }
+  .family-nameDetail {
+    flex: 1;
+    padding-left: 10px;
+  }
+
+}
+
+.detail-content {
+  flex: 1;
+  font-size: 12px;
+  .family-name {
+    background: #F5F7FA;
+    padding-right: 10px;
+    text-align: right;
+    border-right: $border-style;
+  }
+}
+
+.multistage_examine-main {
+  display: flex;
+  flex-direction: column;
+  border: $border-style;
+  margin-bottom: 10px;
+
+  .multistage_examine-item {
+    display: flex;
+    width: 100%;
+  }
+
+  .detail-content {
+    flex: 1;
+  }
+
+  .item-no-bottom {
+    border-bottom: none;
+  }
+
+  span {
+    font-size: 12px;
+
+    padding: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+  }
+
+  .time-status {
+    display: flex;
+
+    flex-direction: column;
+    .detail-status {
+      flex: 1;
+    }
+  }
+
+  .border-bottom {
+    border-bottom: $border-style;
+  }
+}
+
+.yt-form {
+  /deep/ .none_margin-left {
+    .el-form-item__content {
+      margin-left: 0px !important;
+    }
+  }
+
+  /deep/ .inline_block {
+    display: inline-block;
+    margin-bottom: 0px;
+  }
+
+  /deep/ .el-form_item-agreeButtons {
+    width: 63.5%;
+
+    button {
+      width: 31% !important;
+    }
+  }
+
+  /deep/ .el-form_item-nextCheckCode {
+    width: 36%;
   }
 }
 </style>
