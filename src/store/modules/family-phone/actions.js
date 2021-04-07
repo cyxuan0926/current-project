@@ -113,10 +113,12 @@ export default {
         releaseExpense: response['releaseExpense'],
         settleIds: response['settleIds'],
         expense: response['expense'],
-        releaseNumber: response['releaseNumber']
+        releaseNumber: response['releaseNumber'],
+        meetingEndDate: response['meetingEndDate'],
+        meetingStartDate: response['meetingStartDate']
       } : {}
 
-      commit('setSettleAccountsPaged', { list, size, configs })
+      commit('setSettleAccountsPaged', { content: list, totalCount: size, configs })
 
       return true
     }

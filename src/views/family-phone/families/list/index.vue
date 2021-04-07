@@ -1044,12 +1044,16 @@ export default {
     async getDatas() {
       if (this.tabs !== 'first' && !this.filter.aduitDetail) this.filter.aduitDetail = +this.tabs
 
-      const params = {
-        ...this.filter,
-        ...this.pagination
-      }, url = this.apiUrls['pagedUrl']
+      const inputs = {
+        url: this.apiUrls['pagedUrl'],
 
-      await this.getFamiliesPaged({ params, url })
+        params: {
+          ...this.filter,
+          ...this.pagination
+        }
+      }
+
+      await this.getFamiliesPaged(inputs)
     },
 
     onSearch() {

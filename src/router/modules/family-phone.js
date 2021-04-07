@@ -19,6 +19,12 @@ const routes = [
         props: { hasPrisonAreaAuth: true },
         meta: { permission: 'visit.family-phone.phone-jail.search', breadcrumbName: '亲情电话申请管理' },
         component: 'family-phone/phone'
+      }, {
+        path: '/family-phone-manage/conversation-cost-detail/list',
+        name: 'FamilyPhoneManageConversationCostDetailList',
+        props: { hasPrisonAreaAuth: true },
+        meta: { permission: 'visit.family-phone.conversation-cost-detail.search', breadcrumbName: '亲情电话通话费用详情报表' },
+        component: 'family-phone/conversation-cost-detail/list'
       }
     ]
   }
