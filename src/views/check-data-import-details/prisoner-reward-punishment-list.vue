@@ -82,8 +82,13 @@ export default {
          date: {
           type: 'month',
           label: '时间',
+          canNotClear:true,
           value: ''
         },
+        name:  {
+          type: 'input',
+          label: '罪犯姓名'
+        }
       }
     }
   },

@@ -8,7 +8,6 @@
       @search="onSearch" />
     <el-col :span="24">
       <el-table
-        class="border"
         :data="tabledata.list"
         style="width: 100%"> 
         <el-table-column
@@ -118,8 +117,13 @@ export default {
          date: {
           type: 'month',
           label: '时间',
+          canNotClear:true,
           value: ''
         },
+        name:  {
+          type: 'input',
+          label: '罪犯姓名'
+        }
       }
     }
   },
@@ -128,7 +132,6 @@ export default {
     },
   async mounted() {
     this.$set(this.searchItems['date'], 'value', this.MonthDate)
-
     this.getDatas()
   },
   methods: {
@@ -144,8 +147,4 @@ export default {
 </script>
 
 <style type="text/stylus" lang="stylus" >
-
-#body .el-table.border th, #body .el-table td{
- border-bottom: 1px solid #e6e6e6
-}
 </style>

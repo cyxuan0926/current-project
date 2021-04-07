@@ -40,6 +40,14 @@ export function getRejectEdit(params) {
 export function familyPhoneAdd(data) {
   return post('/parse/familyphone/apply/save', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
 }
+// 亲情电话通话统计表
+export function phoneRecordList(data) {
+  return get('/tel/summary/phoneRecordList', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+}
+// 亲情电话通话统计表详情
+export function phoneRecordDetail(data) {
+  return get('/tel/summary/getPhoneRecord', data, { baseURL: urls.jailApiHost }).then(res => res && res.data)
+}
 // 数据导入uploadFile
 export function validateDataFpna(params) {
   return post('/parse/familyphone/apply/validateFpna', params).then(res => res && res.data)
