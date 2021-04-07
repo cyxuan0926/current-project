@@ -19,6 +19,10 @@
             path="/download/downloadfile"
             :params="{ filepath: 'family_phone_manage_template.xls' }"
             text="模板"
+            :apiConfigs="{
+              apiHostKey: 'jailApiHost',
+              apiPathKey: 'temp'
+            }"
           />
 
           <m-excel-upload
@@ -818,7 +822,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isSuperAdmin']),
+    ...mapGetters(['isSuperAdmin', 'isPrisonInternetGetUrlWay']),
 
     ...mapState({
       uploadResult: state => state.global.uploadResult,
@@ -1046,11 +1050,11 @@ export default {
 
       const inputs = {
         url: this.apiUrls['pagedUrl'],
-
         params: {
           ...this.filter,
           ...this.pagination
-        }
+        },
+        isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
       }
 
       await this.getFamiliesPaged(inputs)
@@ -1363,7 +1367,8 @@ export default {
         actionName = 'familyPhone/exportFamilyPhone',
         params = {
           url: this.apiUrls['exportUrl'],
-          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs }
+          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
         }
 
       if (this.isSuperAdmin) params['methods'] = 'get'
@@ -1380,9 +1385,13 @@ export default {
     },
 
     async onInitFamilyDetails(id) {
-      const url = this.apiUrls['detailUrl'], params = { id }
+      const inputs = {
+        url: this.apiUrls['detailUrl'],
+        params: { id },
+        isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
+      }
 
-      await this.getFamilyPhoneFamiliesDetail({ url, params })
+      await this.getFamilyPhoneFamiliesDetail(inputs)
 
       const {
         familyName,

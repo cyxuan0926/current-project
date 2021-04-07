@@ -47,12 +47,26 @@ export default {
       default: () => ({
         attrs: {}
       })
+    },
+
+    apiConfigs: {
+      type: Object,
+      default: () => ({
+        apiHostKey: 'apiHost',
+        apiPathKey: 'apiPath'
+      })
     }
   },
 
   computed: {
     actionsUrl() {
-      return `${this.$urls.apiHost}${this.$urls.apiPath}${this.url}`
+      const { apiHostKey, apiPathKey } = this.apiConfigs
+
+      const apiHost = this.$urls[apiHostKey]
+
+      const apiPath = this.$urls[apiPathKey] || ''
+
+      return `${apiHost}${apiPath}${this.url}`
     }
   },
 

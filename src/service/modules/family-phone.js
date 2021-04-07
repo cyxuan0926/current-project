@@ -3,9 +3,13 @@ import * as service from '../config/service'
 export default {
   // 亲情电话家属管理 - 列表
   getFamilyPhoneFamilies: inputs => {
-    const { url, params } = inputs
+    const {
+      url,
+      params,
+      isPrisonInternetGetUrlWay
+    } = inputs
 
-    return service.get(url, params).then(response => response && response.data)
+    return service.get(isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params).then(response => response && response.data)
   },
 
   // 亲情电话家属管理 - 新增/编辑家属
@@ -14,19 +18,24 @@ export default {
   operateFamilyPhoneFamilies: inputs => {
     const { url, params } = inputs
 
-    return service.post(url, params)
+    return service.post(service['getIntraUrl'](url), params)
   },
 
   // 亲情电话家属 - 导出excel
   exportFamilyPhone: inputs => {
-    const { methods = 'post', params, url } = inputs
+    const {
+      methods = 'post',
+      params,
+      url,
+      isPrisonInternetGetUrlWay
+    } = inputs
 
-    return service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data)
+    return service[methods](isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params, { responseType: 'blob' }).then(response => response && response.data)
   },
 
   // 亲情电话家属 - 导入 - 验证数据
   validateUploadFamilies: filepath => {
-    return service.post('/parse/familyphone/validateFpm', { filepath }).then(response => response && response.data)
+    return service.post(service['getIntraUrl']('/parse/familyphone/validateFpm'), { filepath }).then(response => response && response.data)
   },
 
   // 亲情电话监管 - 查询
@@ -41,14 +50,18 @@ export default {
 
   // 亲情电话家属 - 详情
   getFamilyPhoneFamiliesDetail: inputs => {
-    const { url, params } = inputs
+    const {
+      url,
+      params,
+      isPrisonInternetGetUrlWay
+    } = inputs
 
-    return service.get(url, params).then(response => response && response.data)
+    return service.get(isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params).then(response => response && response.data)
   },
 
   // 亲情电话家属 - 审核
   authFamilyPhoneFamilies: params => {
-    return service.post('/familyPhoneManage/auth', params)
+    return service.post(service['getIntraUrl']('/familyPhoneManage/auth'), params)
   },
 
   // 亲情电话通话费用详情 - 列表

@@ -30,12 +30,24 @@ export default {
         },
         listeners: {}
       })
+    },
+
+    apiConfigs: {
+      type: Object,
+      default: () => ({
+        apiHostKey: 'apiHost',
+        apiPathKey: 'apiPath'
+      })
     }
   },
 
   methods: {
     onDownloadExcel() {
-      const { apiHost, apiPath } = urls
+      const { apiHostKey, apiPathKey } = this.apiConfigs
+
+      const apiHost = urls[apiHostKey]
+
+      const apiPath = urls[apiPathKey] || ''
 
       const params = this.params
 
