@@ -562,6 +562,31 @@ superAdmin = [{
         permission: 'visit.family-phone.conversation-cost-detail-all.search'
       },
       component: 'family-phone/conversation-cost-detail/list'
+    }, {
+      path: '/family-phone/call-supervise',
+      name: 'call-supervise',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话监管表',
+        permission: 'visit.family-phone.admin.supervise',
+        isAdmin: true
+      },
+      component: 'family-phone/call-supervise'
+    }, {
+      path: '/family-phone/call-statistics',
+      name: 'call-statistics',
+      // props: {
+      //   hasProvinceQueryAuth: true,
+      //   hasOnlyAllPrisonQueryAuth: true
+      // },
+      meta: {
+        breadcrumbName: '亲情电话通话统计表',
+        permission: 'visit.family-phone.admin.statistics'
+      },
+      component: 'family-phone/call-statistics'
     }]
   }]
 superAdmin.forEach(item => {

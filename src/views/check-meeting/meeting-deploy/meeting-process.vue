@@ -26,7 +26,7 @@
          }
       },
       async created() {
-         this.bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(b.value)) )
+         this.bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.jailId }`)) )
       },
       methods: {
          ...mapActions(['setXmlStorage']),

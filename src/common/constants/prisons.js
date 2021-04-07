@@ -23,12 +23,28 @@ export default {
   ],
   bpmnList: [
     {
-      label: '亲情电话家属管理审核',
-      value: 'phonefamily'
+      label: '家属注册认证审核',
+      value: 'familyregister'
     },
     {
-      label: '亲情电话次数修改审核',
+      label: '现场探视审核',
+      value: 'prisonervisit'
+    },
+    {
+      label: '可视电话审核',
+      value: 'meeting'
+    },
+    {
+      label: '亲情短信审核',
+      value: 'familymessage'
+    },
+    {
+      label: '亲情电话申请审核',
       value: 'phonenumber'
+    },
+    {
+      label: '亲情电话家属审核',
+      value: 'phonefamily'
     }
   ]
 }
