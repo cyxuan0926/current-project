@@ -7,6 +7,8 @@ import noPage from './modules/no-page'
 import repeat from './modules/repeat'
 import yangguang from './modules/yangguang-api'
 import bpmn from './modules/bpmn-api'
+import familyPhone from './modules/family-phone'
+import prisonIntranet from './modules/prison-intranet'
 import mettingMessage from './modules/mettingMessage'
 
 export default Object.assign(
@@ -19,5 +21,7 @@ export default Object.assign(
   repeat,
   mettingMessage,
   yangguang,
-  bpmn
+  bpmn,
+  familyPhone,
+  prisonIntranet
 )

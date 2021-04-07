@@ -3,6 +3,7 @@
     <m-search
       ref="search"
       :items="searchItems"
+      @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
       <template v-if="!isSuperAdmin">
@@ -26,14 +27,14 @@
             :configs="excelUploadConfigs"
           />   
         </template>
+      </template>
 
-        <template slot="append">
-          <el-button
-            type="primary"
-            :loading="downloading"
-            @click="onDownloadExcel"
-          >导出 Excel</el-button>
-        </template>
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -79,7 +80,12 @@
           <!-- 待审核/亲情电话标签页 && 审批流过程中的时候 -->
           <template v-if="!isSuperAdmin">
             <!-- 审批流程的最后一级已通过的标签还能再编辑一次 -->
-            <el-button type="text" @click="onEdit(row)">编辑</el-button>
+            <!-- isEdit: 当前用户编辑类型 0 未审核编辑 1 已通过最后一个审核人员角色编辑 2 已通过非最后一个审核人员角色编辑 3 不可编辑 -->
+            <el-button
+              v-if="row.isEdit !== 3"
+              type="text"
+              @click="onEdit(row)"
+            >编辑</el-button>
 
             <el-button
               v-if="!!row.isCheck"
@@ -88,7 +94,12 @@
             >审核</el-button>
           </template>
 
-          <el-button type="text" @click="onGetDetail(row.id)">详情</el-button>
+          <!-- 详情: 待审核的情况 且当前审批用户 -->
+          <el-button
+            v-if="!(row.aduitDetail === 0 && !!row.isCheck)"
+            type="text"
+            @click="onGetDetail(row.id)"
+          >详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -294,14 +305,13 @@
         :recordContentItems="multistageRecordContentItems"
         :keys="multistageRecordKeys"
       >
-
-        <template v-if="!isEmpty(multistageRecordsLastValue)" #append>
+        <template v-if="!isEmpty(multistageRecordsLastValue)" #append> 
           <div class="multistage_examine-item">
             <div :class="['detail-index']">{{ multistageRecordsValues.length + 1 }}</div>
 
             <div :class="[ 'detail-content']">
               <p class="detail-message-family detail-audit">
-                <span class="family-name audit-label label">审核人员账号</span>
+                <span class="family-name audit-label label">审核员账号</span>
 
                 <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['createRole'] }}</span>
               </p>
@@ -359,6 +369,7 @@
             ref="agreeHasSubTaskForm"
             :items="agreeHasSubTaskFormItems"
             :values="agreeHasSubTaskFormValues"
+            @submit="onAgreeHasSubTaskFormSubmit"
           >
             <template #agreeButtons>
               <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
@@ -369,95 +380,121 @@
 
       <!-- 不同意的情况 -->
       <div v-if="detailOrAuthDialog.disAgree" class="button-box logMgCls">
-        <div style="margin-bottom: 10px;text-align: left;padding-left: 20px;">请选择驳回原因</div>
-      <div style="display: flex;padding-left: 20px;">
-            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
+        <div style="margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
+
+        <div style="display: flex;">
+          <el-select
+            v-model="disArgeeRemarks"
+            :multiple="true"
+            :multiple-limit='5' 
+            collapse-tags
+            @change="refuseFormChange"
+            style="width:70%;margin-right:10px"
+          >
             <el-option
-              v-for="(remark,index) in content"
+              v-for="(remark, index) in content"
               :value="remark"
-              :label="(index+1)+'、'+remark"
-              :key="index"/>
+              :label="(index + 1) + '、' + remark"
+              :key="index"
+            />
           </el-select>
-           <el-button
+
+          <el-button
             type="primary"
             :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
-          </div>
-          <el-form
-          style="padding-left:20px"
-            :model="refuseForm"
-            :rules="withdrawRule"
-            ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  >
-               <el-input
-                :autosize="{ minRows: 6 ,maxRows:8 }"
-                type="textarea"
-                show-word-limit
-                maxlength="1000"
-                placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
-            </el-form-item>
-          </el-form>
-          <el-button
-          size="mini"
-            :loading="btnDisable"
-            @click="deniedAuthorization()">提交</el-button>
-          <el-button
-            size="mini"
-            @click="goBackAuth()">返回</el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            @click="show.authorize = false">关闭</el-button>
+            @click="onRejectshow('PASSED')"
+          >编辑驳回原因</el-button>
         </div>
+
+        <el-form
+          :model="refuseForm"
+          :rules="withdrawRule"
+          ref="refuseForm"
+          class="withdraw-box"
+        >
+          <el-form-item prop="anotherRemarks">
+            <el-input
+              :autosize="{ minRows: 6, maxRows:8 }"
+              type="textarea"
+              show-word-limit
+              maxlength="1000"
+              placeholder="请输入驳回原因..."
+              v-model="refuseForm.anotherRemarks"
+            />
+          </el-form-item>
+        </el-form>
+
+        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
+      </div>
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="changeClose()"
+      @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content"
-               :key='index'
-               class="infinite-list-item" style="line-height:32px">
-               {{index+1}}.{{ item }}
-            </li>
+          <li
+            v-for="(item,index) in content"
+            :key='index'
+            class="infinite-list-item" style="line-height:32px">
+            {{ index + 1 }}.{{ item }}
+          </li>
         </ul>
-         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
-      </div>
-       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
-         <span v-for="(item,index) in content" :key="index">
-        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
-           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
-        </el-input>
-         </span>
-      </div>
-      <el-row :gutter="0">
 
-        <el-button
-           v-if='show.editRebut'
-           type="primary"
-          class="button-add"
-          size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
-          <span v-else>
-          <el-button
-          v-if='content.length>0'
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onSubmitReject()">保存</el-button>
+        <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
+      </div>
+
+      <div
+        v-else
+        class="infinite-list"
+        style="margin-left:20px;min-height:400px"
+      >
+        <span v-for="(item,index) in content" :key="index">
+          <el-input
+            style="margin-bottom:10px"
+            maxlength="200"
+            v-model="content[index]"
+            placeholder="请输入内容"
+            clearable
+          >
            <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="removeReject(index)"
+          />
+          </el-input>
+        </span>
+      </div>
+
+      <el-row :gutter="0">
+        <el-button
+          v-if="show.editRebut"
           type="primary"
           class="button-add"
           size="mini"
-          v-if='content.length<10'
-          @click="addReject()">新增</el-button>
-          </span>
+          @click="onRejectEditshow"
+        >编辑</el-button>
+
+        <span v-else>
+          <el-button
+            v-if="content.length>0"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="onSubmitReject"
+          >保存</el-button>
+
+          <el-button
+            v-if="content.length < 10"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="addReject"
+          >新增</el-button>
+        </span>
       </el-row>
     </el-dialog>
 
@@ -696,8 +733,6 @@ export default {
 
       multistageRecordsLastValue: {},
 
-      showAgreeHasSubTaskButtonLoading: false,
-
       familiesRow: {},
 
       agreeHasSubTaskFormValues: {},
@@ -711,7 +746,7 @@ export default {
 
             items: [
               {
-                label: '审核人员账号',
+                label: '审核员账号',
                 key: 'createRole'
               },
 
@@ -754,13 +789,12 @@ export default {
         reamrks: 'reamrks'
       },
       refuseForm: {
-        selectRemark:"",
         anotherRemarks: ""
       },
-      content:[],
-      remarks:'',
-      updateer:'',
-      contentId:"",
+      content: [],
+      disArgeeRemarks: "",
+      updateer: "",
+      contentId: "",
       btnDisable: false, // 按钮禁用与启用
       uploadInnerDialogVisible: false,
        withdrawRule: {
@@ -777,7 +811,9 @@ export default {
         ]
       },
 
-      detailOrAuthDialogType: 0 // 0: 审核 1： 详情
+      detailOrAuthDialogType: 0, // 0: 审核 1： 详情
+
+      agreeHasSubTaskFormFields: {}
     }
   },
 
@@ -850,7 +886,7 @@ export default {
       ], onlySuperAdminCols = [
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provincesName'
         },
         {
           label: '监狱名称',
@@ -866,13 +902,13 @@ export default {
 
     apiUrls() {
       const urls = {
-        pagedUrl: this.isSuperAdmin ? '/familyPhoneManage/page' : '/familyPhoneManage/page',
+        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/familyPhoneManage/page',
 
-        exportUrl: this.isSuperAdmin ? '/parse/familyphone/exportFamilyPhone' : '/parse/familyphone/exportFamilyPhone',
+        exportUrl: this.isSuperAdmin ? '/familyPhone/export' : '/parse/familyphone/exportFamilyPhone',
 
         newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save',
 
-        detailUrl: this.isSuperAdmin ? '' : '/familyPhoneManage/detail'
+        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/familyPhoneManage/detail'
       }
 
       return urls
@@ -885,7 +921,7 @@ export default {
 
           attrs: {
             plain: true,
-            loading: this.showAgreeHasSubTaskButtonLoading
+            loading: this.buttonLoading
           },
 
           events: {
@@ -1159,8 +1195,8 @@ export default {
     },
 
     // 提交
-    onFamilyInformationDialogFormSubmit(params) {
-      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, params)
+    onFamilyInformationDialogFormSubmit(values) {
+      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, values)
 
       if (hasNoChange) {
         this.$message({
@@ -1171,7 +1207,25 @@ export default {
         })
       } else {
         (async () => {
-          const url = this.apiUrls['newOrEditUrl']
+          const url = this.apiUrls['newOrEditUrl'], {
+            familyPhone,
+            relationship,
+            id,
+            isPhoneSms,
+            isEdit
+          } = values
+
+          let params = values
+
+          if (this.familyInformationDialogOperationType) {
+            params = {
+              familyPhone,
+              relationship,
+              id,
+              isPhoneSms,
+              isEdit
+            }
+          }
 
           await this.operateFamilyPhoneFamilies({ url, params })
         })()
@@ -1193,6 +1247,10 @@ export default {
 
         if (this.familyInformationDialogOperationType) {
           // 编辑
+          const isPassed = [1, 2]
+
+          const { isEdit } = this.originalFamilyInformationDialogFormValues
+
           this.familyInformationDialogFormValues = cloneDeep(this.originalFamilyInformationDialogFormValues)
 
           this.$set(this.familyInformationDialogFormItems, 'buttons', [{
@@ -1200,14 +1258,24 @@ export default {
             text: '提交审批'
           }, 'cancel'])
 
-          this.familyInformationDialogFormItems =Object.assign({}, this.familyInformationDialogFormItems, {
-            isPhoneSms: {
-              type: 'select',
-              label: '是否接听亲情电话',
-              options: this.$store.state.isTrue,
-              value: 1
-            }
-          })
+          if (isPassed.includes(isEdit) && disabledItemKeys.includes('relationship')) {
+            const index = disabledItemKeys.findIndex(key => key === 'relationship')
+
+            disabledItemKeys.splice(index, 1)
+
+            this.$set(this.familyInformationDialogFormItems['relationship'], 'disabled', false)
+          }
+
+          if (isEdit === 1) {
+            this.familyInformationDialogFormItems = Object.assign({}, this.familyInformationDialogFormItems, {
+              isPhoneSms: {
+                type: 'select',
+                label: '是否接听亲情电话',
+                options: this.$store.state.isTrue,
+                value: 1
+              }
+            })
+          }
 
           delete this.familyInformationDialogFormItems['isReplace']
 
@@ -1287,11 +1355,18 @@ export default {
 
       const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
         tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
-        TABName = tabItem[0]['label']
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: this.apiUrls['exportUrl'],
+          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs }
+        }
+
+      if (this.isSuperAdmin) params['methods'] = 'get'
 
       await tokenExcel({
-        params: { url: this.apiUrls['exportUrl'], params: { ...this.filter, tab: this.tabs } },
-        actionName: 'familyPhone/exportFamilyPhone',
+        params,
+        actionName,
         menuName: `亲情电话家属管理-${ TABName }-${ times }`,
       })
 
@@ -1320,9 +1395,9 @@ export default {
         remarks
       })
 
-      this.multistageRecordsValues = logs.slice(1)
+      this.multistageRecordsValues = this.detailOrAuthDialogType ? logs.slice(1) : logs
 
-      this.multistageRecordsLastValue = logs.slice(-1)[0] || {}
+      this.multistageRecordsLastValue = this.detailOrAuthDialogType ? (logs.slice(-1)[0] || {}) : {}
 
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },
@@ -1361,6 +1436,8 @@ export default {
     onCloseAuthorize() {
       this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onClearValidate()
 
+      this.$refs.refuseForm && this.$refs.refuseForm.clearValidate()
+
       this.$set(this.detailOrAuthDialog, 'dialogVisible', false)
 
       setTimeout(() => {
@@ -1382,98 +1459,194 @@ export default {
       return isEmpty(input)
     },
 
-    onPassedAuthorize() {},
+    // 同意 提交审批：同意并结束
+    async onPassedAuthorize() {
+      let inputs = {}
+
+      if (this.isSubtask) {
+        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
+        const { remarks, nextCheckCode } = this.agreeHasSubTaskFormFields
+
+        const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
+
+        inputs = {
+          remarks,
+          nextCheckRole: taskName,
+          nextCheckCode,
+          checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
+        }
+      } else {
+        inputs = {
+          checkState: 1
+        }
+      }
+
+      await this.onAuthorization(inputs)
+    },
+
+    onDeniedSubmit() {
+      const { anotherRemarks } = this.refuseForm
+
+      const remarks = anotherRemarks.replace(/\s*/g, '')
+
+      this.$refs.refuseForm.validate(async valid => {
+        if (valid) {
+          const inputs = {
+            checkState: 2,
+            remarks
+          }
+
+          await this.onAuthorization(inputs)
+        }
+      })
+    },
 
     onAgreeHasSubTaskGoBack() {
       this.$set(this.detailOrAuthDialog, 'agree', false)
     },
 
     onDisagreeAuthorize() {
-      this.$set(this.detailOrAuthDialog, 'disAgree', true)
-      //获取审批下一级
-      //this.getSubtask(this.toShow)
       //获取驳回列表
       this.onRejectshow(false)
 
+      this.disArgeeRemarks = ''
+
+      this.refuseForm.anotherRemarks = ''
+
       this.buttonLoading = false
+
+      this.$set(this.detailOrAuthDialog, 'disAgree', true)
     },
-      refuseFormChange(e){
-        let str=""
-         if(!this.refuseForm.anotherRemarks){
-            this.refuseForm.anotherRemarks=""
-          }
-        e.forEach((item,index)=>{
-          if(!this.refuseForm.anotherRemarks.includes(item)){
-            str +=`${item}。\n`
-          }
-        })
-        this.refuseForm.anotherRemarks+=str
+
+    refuseFormChange(e){
+      let str = ""
+
+      if (!this.refuseForm.anotherRemarks) {
+        this.refuseForm.anotherRemarks = ""
+      }
+
+      e.forEach((item,index) => {
+        if(!this.refuseForm.anotherRemarks.includes(item)) {
+          str +=`${item}。\n`
+        }
+      })
+
+      this.refuseForm.anotherRemarks += str
     },
+
     // 获取当前驳回原因列表
-  async onRejectshow(str,isform){
-       let params={}
-          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-          params.type=6
+    async onRejectshow(str,isform) {
+      let params={}
+
+      params.jailId = JSON.parse(localStorage.getItem('user')).jailId
+
+      params.type = 6
+
       let res = await getRejectEdit( params )
-      if(res.content){
+
+      if (res.content) {
         this.content = res.content
-        this.contentId=res.id
-        this.updateer=res.updateEr
-      }else{
+
+        this.contentId = res.id
+
+        this.updateer = res.updateEr
+      } else {
         this.content = []
       }
-      if(str=='PASSED'){
-        this.show.rejectEdit=true
-      }else{
-        this.show.rejectEdit=false
+
+      if(str === 'PASSED') {
+        this.show.rejectEdit = true
+      } else {
+        this.show.rejectEdit = false
       }
     },
-    addReject(){
+
+    addReject() {
       this.content.push('')
     },
-    removeReject(index){
+
+    removeReject(index) {
       this.content.splice(index,1)
     },
-    onRejectEditshow(){
-      this.show.editRebut=false
+
+    onRejectEditshow() {
+      this.show.editRebut = false
     },
-     changeClose(){
-      this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
+
+    changeClose() {
+      this.onRejectshow(false, this.isform)
+
+      this.show.editRebut = true
     },
-     async onSubmitReject(){
-      this.content=this.content.filter((res)=>res&&res.trim())
-       if(this.content.length<1){
-         this.$message({
-            message: '新增编辑内容不能为空',
-            type: 'error'
-          });
-          return false
-      }else{
-        let params={
-        id: this.contentId,
-        type:6,
-        content:this.content,
-        updateer:JSON.parse(localStorage.getItem('user')).realName,
-        jailId:JSON.parse(localStorage.getItem('user')).jailId
+
+    async onSubmitReject() {
+      this.content = this.content.filter((res)=>res && res.trim())
+
+      if (this.content.length < 1) {
+        this.$message({
+          message: '新增编辑内容不能为空',
+          type: 'error'
+        })
+
+        return false
+      } else {
+        let params = {
+          id: this.contentId,
+          type:6,
+          content:this.content,
+          updateer:JSON.parse(localStorage.getItem('user')).realName,
+          jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
+
         let res = await setRejectEdit(params)
-        if(res){
-          let params={}
-              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=6
-          let res = await getRejectEdit( params )
-          if(res.content){
+
+        if (res) {
+          let params = {}
+
+          params.jailId = JSON.parse(localStorage.getItem('user')).jailId
+
+          params.type = 6
+
+          let res = await getRejectEdit(params)
+
+          if (res.content) {
             this.content = res.content
-            this.contentId=res.id
-            this.updateer=res.updateEr
-          }else{
+            this.contentId = res.id
+            this.updateer = es.updateEr
+          } else {
             this.content = []
           }
-      }
-       this.show.editRebut=true
+        }
+        this.show.editRebut=true
       }
     },
+
+    async onAuthorization(inputs = {}) {
+      const { id, processInstanceId } = this.familiesRow
+
+      const params = {
+        ...inputs,
+        id,
+        processInstanceId
+      }
+
+      this.buttonLoading = true
+
+      const result = await this.authFamilyPhoneFamilies(params)
+
+      this.buttonLoading = false
+
+      if (result) {
+        this.onCloseAuthorize()
+
+        this.getDatas()
+      }
+    },
+
+    onAgreeHasSubTaskFormSubmit(value) {
+      this.agreeHasSubTaskFormFields = Object.assign({}, value)
+    }
   },
 
   async mounted() {

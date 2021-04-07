@@ -13,6 +13,8 @@ export const tokenExcel = async({
 
   const res = await _Store.dispatch(actionName, params)
 
+  if (!res) return
+
   const url = helper.createObjectURL(res)
 
   const fileName = formater(menuName)

@@ -85,7 +85,7 @@ superAdmin = [{
     //   component: loadView('sadmin-prison/prison-add')
     // },
     {
-      path: '/prison/process/:jailId',
+      path: '/prison/process/:zipcode',
       name: 'prison-process',
       props: { role: 0 },
       meta: {
@@ -562,6 +562,19 @@ superAdmin = [{
         permission: 'visit.family-phone.conversation-cost-detail-all.search'
       },
       component: 'family-phone/conversation-cost-detail/list'
+    }, {
+      path: '/family-phone/call-supervise',
+      name: 'call-supervise',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话监管表',
+        permission: 'visit.family-phone.admin.supervise',
+        isAdmin: true
+      },
+      component: 'family-phone/call-supervise'
     }, {
       path: '/family-phone/call-statistics',
       name: 'FamilyPhoneCallStatisticsList',

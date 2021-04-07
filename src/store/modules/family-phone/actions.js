@@ -3,7 +3,6 @@ import familyPhoneApi from '@/service/modules/family-phone'
 export default {
   async getFamiliesPaged({ commit }, inputs) {
     try {
-      // 这里具体要根据ywt_admin 接口的响应体来兼容
       const response = await familyPhoneApi.getFamilyPhoneFamilies(inputs)
 
       const list = response ? response['list'] : []
@@ -51,7 +50,7 @@ export default {
       const response = await familyPhoneApi.validateUploaPhone(filepath)
 
       if (!response) return
-          console.log(response)
+
       commit('setValidatePhoneResult', response)
 
       return true
@@ -63,9 +62,11 @@ export default {
 
   async exportFamilyPhone(_, inputs) {
     try {
-      const { data } = await familyPhoneApi.exportFamilyPhone(inputs)
+      const response = await familyPhoneApi.exportFamilyPhone(inputs)
 
-      return data
+      if (!response) return
+
+      return response
     }
     catch (err) {
       Promise.reject(err)
@@ -76,7 +77,7 @@ export default {
     try {
       const data = await familyPhoneApi.getFamilyPhoneFamiliesDetail(inputs)
 
-      commit('setFamilyPhoneFamiliesDetail', data || { logs: [] })
+      commit('setFamilyPhoneFamiliesDetail', (data['data'] ? (data['data'] || { logs: [] }) : data) || { logs: [] })
 
       return true
     }
@@ -88,6 +89,71 @@ export default {
   async authFamilyPhoneFamilies(_, params) {
     try {
       const response = await familyPhoneApi.authFamilyPhoneFamilies(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getFamilyPhoneSettleAccounts({ commit }, inputs) {
+    try {
+      const response = await familyPhoneApi.getFamilyPhoneSettleAccounts(inputs)
+
+      const list = response ? response['list'] : []
+
+      const size = response ? response['size'] : 0
+
+      const configs = response ? {
+        number: response['number'],
+        expenseAll: response['expenseAll'],
+        releaseExpense: response['releaseExpense'],
+        settleIds: response['settleIds'],
+        expense: response['expense'],
+        releaseNumber: response['releaseNumber']
+      } : {}
+
+      commit('setSettleAccountsPaged', { list, size, configs })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getFamilyPhoneSettleAccountsDetail({ commit }, inputs) {
+    try {
+      const data = await familyPhoneApi.getFamilyPhoneSettleAccountsDetail(inputs)
+
+      commit('setFamilyPhoneSettleAccountsDetail', data || [])
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async editFamilyPhoneSettleAccountsRelease(_, params) {
+    try {
+      const response = await familyPhoneApi.editFamilyPhoneSettleAccountsRelease(params)
+
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async settleFamilyPhoneSettleAccounts(_, params) {
+    try {
+      const response = await familyPhoneApi.settleFamilyPhoneSettleAccounts(params)
 
       const isSucess = response ? response['code'] === 200 : response
 

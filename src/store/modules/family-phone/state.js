@@ -7,11 +7,17 @@ export default {
     filePath: '',
     total: 0
   },
+
   validatePhoneResult: {
     add_total: 0,
     error_total: 0,
     filePath: '',
     total: 0
   },
-  familyPhoneFamiliesDetail: {}
+
+  familyPhoneFamiliesDetail: {},
+
+  settleAccountsPaged: { content: [], totalCount: 0, configs: {} },
+
+  familyPhoneSettleAccountsDetail: []
 }
