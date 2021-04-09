@@ -27,9 +27,14 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   test: {
+    bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
+    ygApiHost: 'http://120.78.190.101:8113/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
+    // http://8.129.14.169:8098/ywgk
+    jailApiHost: `http://8.129.14.169:8098/ywgk`,
     // apiHost: 'http://47.107.245.151:8021',
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
+    // apiHost: 'http://8.129.14.169:8098',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk',
     audioUrl: `${ nodeUrl }/audio-server/audios`,
