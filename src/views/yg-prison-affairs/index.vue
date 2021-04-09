@@ -100,7 +100,7 @@
         },
         filters: {
             cleanHtmlTag(str) {
-                return str.replace(/<\/?[\w]+[^<]*>/g, '')
+                return str.replace(/&[\w]+;/g, '').replace(/<\/?[\w]+[^<]*>/g, '')
             }
         },
         watch: {
@@ -113,10 +113,6 @@
         },
         methods: {
             ...mapActions(['setAffairsStorage', 'setAffairsModule']),
-
-            setTextareaValue(val) {
-                return val.replace(/\r/g, '').replace(/\n/g, '<br/>')
-            },
 
             async initData(_type) {
                 let _hasTypeSelect = _type.includes('flfg') || _type.includes('xwgs')

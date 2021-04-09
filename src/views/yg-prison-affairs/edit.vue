@@ -8,7 +8,7 @@
             @back="handleBack"
             :values="affairsStorage">
             <template #seq="{ fields }">
-                <el-input-number v-model="fields.seq" :min="0" :step="1" step-strictly placeholder="请输入序号"></el-input-number>
+                <el-input-number v-model="fields.seq" :min="1" :step="1" step-strictly placeholder="请输入序号"></el-input-number>
             </template>
         </m-form>
         <affairs-detail-modal v-model="affairsModalVisible" />
