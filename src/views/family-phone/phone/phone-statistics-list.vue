@@ -63,51 +63,53 @@
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">终端号</span>
-              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+              <span class="family-nameDetail">{{toShow.terminalNumbers}}</span>
             </p>
           </div>
         </div>
          <div
-          v-for="(item,index) in toShow.timeSlot"
+          v-for="(item,index) in toShow.records"
           :key='index'
           style="display: flex;border: 1px solid #E4E7ED;border-top: none"
         >
           <div class="family-detail">{{index+1}}</div>
           <div class="detail-message">
-            <p class="detail-message-family">
-              <span class="family-name">审核人员账号</span>
-              <span class="family-nameDetail">{{item.createUser}}</span>
+            <p class="detail-message-family" v-if="item.status!=='FINISHED'">
+              <span class="family-name">呼叫时间</span>
+              <span class="family-nameDetail">{{item.optionTime}}</span>
             </p>
-            <p class="detail-message-family">
-              <span class="family-name">审核时间</span>
-              <span class="family-nameDetail">{{item.createTime}}</span>
+            <p class="detail-message-family" v-if="item.status=='FINISHED'">
+              <span class="family-name">通话时间</span>
+              <span class="family-nameDetail">{{item.optionTime}}</span>
             </p>
           </div>
           <div class="detail-content">
-            <p class="detail-message-family" >
-              <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
-              <p class="detail-message-family" >
-              <span class="family-name">审核人意见</span>
-              <span class="family-nameDetail">{{item.remarks}}</span></p>
+            <p class="detail-message-family"  v-if="item.status!=='FINISHED'">
+              <span class="family-name">呼叫状态</span>
+              <span class="family-nameDetail">
+                <template v-if="item.status=='MEETING_ON'">会见中</template>
+                <template v-if="item.status=='CALLFAIL'">未接通</template>
+                </span></p>
+              <p class="detail-message-family"  v-if="item.status=='FINISHED'">
+              <span class="family-name">
+                <template v-if="item.phoneType=='1'">语音通话时长</template>
+                <template v-if="item.phoneType=='2'">视频通话时长</template>
+              </span>
+              <span class="family-nameDetail">{{item.callStatusOrDuration}}</span></p>
+          </div>
+        </div>
+        <div style="display: flex;border: 1px solid #E4E7ED;border-top:none;" v-if="toShow.endReson">
+          <div class="family-detail">{{toShow.records.length+1}}</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">结束原因</span>
+              <span class="family-nameDetail">{{toShow.endReson}}</span>
+            </p>
           </div>
         </div>
       </div>
-
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
-     <el-dialog
-      :visible.sync="show.message"
-      title="申请理由"
-      width="530px"
-      class="authorize-dialog">
-      <div class="flex-dialog">
-        <div class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-          {{ messageContent }}
-        </div>
-      </div>
-    </el-dialog>
-
   </el-row>
 </template>
 
