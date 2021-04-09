@@ -36,7 +36,11 @@
       },
       async created() {
          try {
-            this.bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.zipcode }`)) )
+            let _bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.zipcode }`)) )
+            console.log('_bpmnXmls==', _bpmnXmls)
+            this.bpmnXmls = _bpmnXmls.map((res) => {
+               return !res ? null : res.data
+            })
             this.bpmnModelers = []
             this.bpmnXmls.forEach((xml, i) => {
                // xml 不能只是单纯的判空出来 应该判断的是正常显示xml的情况
@@ -88,10 +92,15 @@
          }
          border-bottom: 1px solid #ededed;
       }
+
+      dd {
+         margin: 0;
+         padding: 30px 50px 0;
+      }
    }
    .bpmn-viewer {
       width: 100%;
-      min-height: 240px;
+      min-height: 200px;
    }
    .bpmn-none {
       width: 100%;
@@ -99,5 +108,8 @@
       text-align: center;
       padding-top: 60px;
       color: #999;
+   }
+   /deep/ .bjs-powered-by {
+      display: none;
    }
 </style>

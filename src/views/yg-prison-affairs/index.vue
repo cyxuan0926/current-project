@@ -21,6 +21,9 @@
                 <template #module="{ row }">
                     <span>{{ moduleItems[row.type] }}</span>
                 </template>
+                <template #content="{ row }">
+                    <span>{{ row.content | cleanHtmlTag }}</span>
+                </template>
                 <template #status="{ row }">
                     <span>{{ row.status == '0' ? '否' : '是' }}</span>
                 </template>
@@ -91,8 +94,14 @@
         computed: {
             ...mapState({
                 affairsStorage: state => state.global.affairsStorage,
-                affairsModule: state => state.global.affairsModule
+                affairsModule: state => state.global.affairsModule,
+                user: state => state.global.user
             })
+        },
+        filters: {
+            cleanHtmlTag(str) {
+                return str.replace(/<\/?[\w]+[^<]*>/g, '')
+            }
         },
         watch: {
             $route: {
@@ -163,7 +172,7 @@
                     },
                     {
                         label: '内容',
-                        prop: 'content',
+                        slotName: 'content',
                         showOverflowTooltip: true
                     },
                     {
@@ -219,6 +228,7 @@
             async getData() {
                 let params = { ...this.filter, ...this.pagination }
                 params.module = this.module
+                params.jailId = this.user.jailId
                 let { data } = await http.queryPrisonAffairs(params)
                 this.tableDatas = data && data.list || []
                 this.total = data && data.totalCount
@@ -235,7 +245,7 @@
             async handleClick(type, row) {
                 // 新增
                 if (type == 'add') {
-                    this.setAffairsStorage(Object.assign({}, initStore.APP_AFFAIRS_DATA(), { seq: this.total }))
+                    this.setAffairsStorage(Object.assign({}, initStore.APP_AFFAIRS_DATA()))
                     this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }` })
                 // 修改
                 } else if (type == 'edit') {

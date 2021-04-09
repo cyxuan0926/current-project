@@ -46,7 +46,8 @@
         computed: {
             ...mapState({
                 affairsStorage: state => state.global.affairsStorage,
-                affairsModule: state => state.global.affairsModule
+                affairsModule: state => state.global.affairsModule,
+                user: state => state.global.user
             })
         },
         methods: {
@@ -118,7 +119,8 @@
                     {
                         id: this.gid,
                         module: this.module,
-                        status: '0'
+                        status: '0',
+                        jailId: this.user.jailId
                     },
                     fields
                 )

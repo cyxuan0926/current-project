@@ -38,11 +38,6 @@ export default {
     return service.post(service['getIntraUrl']('/parse/familyphone/validateFpm'), { filepath }).then(response => response && response.data)
   },
 
-  // 亲情电话监管 - 查询
-  getFamilyphoneSum: params => service.get('/familyphonesummary/findPage'),
-
-  // 亲情电话监管通话纪要复核内容 - 查询
-  getFamilyphoneSumCons: id => service.get(`/familyphonesummary/findSummary?videoId=${ id }`),
   // 亲情电话申请 - 导入 - 验证数据
   validateUploaPhone: filepath => {
     return service.post('/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)

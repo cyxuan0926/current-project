@@ -2,77 +2,39 @@
     <el-row
         class="row-container"
         :gutter="0">
-        <m-excel-download
+        <!-- <m-excel-download
             v-if="hasAllPrisonQueryAuth"
             path="/download/exportMettings"
-            :params="filter" />
+            :params="filter" /> -->
         <m-search
             :items="searchItems"
             ref="search"
-            @searchSelectChange="searchSelectChange"
             @search="onSearch" />
         <el-col :span="24">
             <m-table-new
                 stripe
-                :data="meetingsDiplomats.contents"
+                :data="tableDatas"
                 :cols="tableCols" >
-                <template
-                slot-scope="scope"
-                slot="meetingTime">
-                <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
-                </template>
-                <template
-                slot-scope="scope"
-                slot="families">
-                <div v-if="scope.row.filterFamilies && scope.row.filterFamilies.length">
+                <template #operation="{ row }">
                     <el-button
-                    type="text"
-                    size="small"
-                    v-for="family in scope.row.filterFamilies"
-                    :key="family.familyId"
-                    style="margin-left: 0px; margin-right: 8px;"
-                    @click="showFamilyDetail(family.familyId, scope.row.id)">{{ family.familyName }}</el-button>
-                </div>
-                </template>
-                <template
-                slot-scope="scope"
-                slot="status">
-                <span v-if="!scope.row.content">
-                    <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
-                    <template v-else>{{ scope.row.status | applyStatus }}</template>
-                </span>
-                <el-tooltip
-                    v-else
-                    :content="scope.row.content"
-                    placement="top" >
-                    <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
-                    <span v-else>{{ scope.row.status | applyStatus }}</span>
-                </el-tooltip>
-                </template>
-                <template
-                slot-scope="scope"
-                slot="operate">
-                <el-button
-                    v-if="scope.row.status == 'PENDING' && scope.row.isLock !== 1"
-                    size="mini"
-                    @click="handleAuthorization(scope.row)">授权</el-button>
-                <el-button
-                    v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1"
-                    size="mini"
-                    @click="handleWithdraw(scope.row)">撤回</el-button>
-                <el-button
-                    v-if="scope.row.status != 'PENDING'"
-                    type="text"
-                    size="mini"
-                    class="button-detail"
-                    @click="onDetail(scope.row)">详情</el-button>
+                        v-if="!isAdmin"
+                        size="mini"
+                        @click="handleMediaDet(row.uid)">查看视频录音详情</el-button>
+                    <el-button
+                        v-if="isAdmin || !!row.flag"
+                        size="mini"
+                        @click="handleQueryDet(row.uid)">查看通话纪要</el-button>
+                    <el-button
+                        v-if="!isAdmin && !row.flag"
+                        size="mini"
+                        @click="handleReview(row.uid)">复核</el-button>
                 </template>
             </m-table-new>
         </el-col>
         <m-pagination
             ref="pagination"
-            :total="meetingsDiplomats.total"
-            @onPageChange="getDatas" />
+            :total="total"
+            @onPageChange="getData" />
     </el-row>
 </template>
 
@@ -80,24 +42,60 @@
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
     import http from '@/service'
     import router from '@/router'
+    const isAdmin = window.location.href.includes('call-supervise-admin')
     export default {
-        mixins: [
-            router.currentRoute.meta.isAdmin ? prisonFilterCreator : {
-                data() {
-                    return {
-                        filter: {}
-                    }
+        mixins: [ isAdmin ? prisonFilterCreator : {
+            data() {
+                return {
+                    filter: {}
                 }
             }
-        ],
+        } ],
         data() {
             const tableCols = [
                 {
                     label: '监区名称',
                     prop: 'prisonArea'
+                },
+                {
+                    label: '罪犯编号',
+                    prop: 'criminalNumber'
+                },
+                {
+                    label: '罪犯姓名',
+                    prop: 'criminalName'
+                },
+                {
+                    label: '家属姓名',
+                    prop: 'familyName'
+                },
+                {
+                    label: '家属电话',
+                    prop: 'familyPhone'
+                },
+                {
+                    label: '通话开始时间',
+                    prop: 'startAt'
+                },
+                {
+                    label: '操作',
+                    slotName: 'operation'
                 }
             ]
+            if( isAdmin ) {
+                tableCols.unshift(
+                    {
+                        label: '省份',
+                        prop: 'provinceName'
+                    },
+                    {
+                        label: '监狱名称',
+                        prop: 'jailName'
+                    }
+                )
+            }
             return {
+                isAdmin,
                 searchItems: {
                     familyName: {
                         type: 'input',
@@ -122,21 +120,44 @@
                         value: [this.$_dateOneWeekAgo, this.$_dateNow]
                     }
                 },
-                tableData: [],
-                tableCols: []
+                tableDatas: [],
+                tableCols,
+                total: 0
             }
         },
-        created() {
-            http.getFamilyphoneSum()
-            http.getIntraFamilyphoneSum()
-            http.getIntraFamilyphoneCon('18')
-            http.getIntraFamilyphoneDet('18')
-            http.createIntraFamilyReview({
-                videoId: '18',
-                remarks: '测试测试测试测试用。。。',
-                createdBy: '9999_sh',
-                type: '2'
-            })
+        methods: {
+            onSearch() {
+                const { rows } = this.pagination
+                this.loading = true
+                this.$refs.pagination.currentPage = 1
+                this.pagination = Object.assign({}, { page: 1, rows })
+                this.getData()
+            },
+
+            async getData() {
+                const params = { ...this.filter, ...this.pagination }
+                let { data } = await http[ this.isAdmin ? 'getFamilyphoneSum' : 'getIntraFamilyphoneSum' ](params)
+                if( data && data.list ) {
+                    this.tableDatas = data.list
+                    this.total = data.totalElements
+                }
+            },
+
+            handleMediaDet() {
+                console.log(1)
+            },
+
+            handleQueryDet() {
+                console.log(1)
+            },
+
+            handleReview() {
+
+            }
+        },
+        mounted() {
+            this.$refs.search.onGetFilter()
+            this.getData()
         }
     }
 </script>

@@ -9,7 +9,7 @@ import yangguang from './modules/prison-yangguang/yangguang-api'
 import bpmn from './modules/bpmn/bpmn-api'
 import familyPhone from './modules/family-phone'
 import prisonIntranet from './modules/prison-intranet'
-import mettingMessage from './modules/mettingMessage'
+import ywgkApis from './modules/ywgk-internet'
 
 export default Object.assign(
   admin,
@@ -19,9 +19,9 @@ export default Object.assign(
   information,
   noPage,
   repeat,
-  mettingMessage,
   yangguang,
   bpmn,
   familyPhone,
-  prisonIntranet
+  prisonIntranet,
+  ywgkApis
 )
