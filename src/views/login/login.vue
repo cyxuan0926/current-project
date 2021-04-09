@@ -147,9 +147,9 @@ export default {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
             localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
             localStorage.setItem('publicUserInfo', JSON.stringify(this.publicUserInfo))
-            localStorage.setItem('menus', JSON.stringify(this.menus))
+            localStorage.setItem('menus', JSON.stringify(this.menus || []))
             this.setUser(Object.assign({}, this.user, {...helper.transitionRoleId(this.publicUserInfo.userRoles)}))
-            localStorage.setItem('user', JSON.stringify(this.user))
+            localStorage.setItem('user', JSON.stringify(this.user || {}))
 
             const { role, jailId } = this.user
             if ([1, -1].includes(parseInt(role))) {

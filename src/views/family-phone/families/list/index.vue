@@ -19,6 +19,10 @@
             path="/download/downloadfile"
             :params="{ filepath: 'family_phone_manage_template.xls' }"
             text="模板"
+            :apiConfigs="{
+              apiHostKey: 'jailApiHost',
+              apiPathKey: 'temp'
+            }"
           />
 
           <m-excel-upload
@@ -523,7 +527,6 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-import { getRejectEdit, setRejectEdit } from '@/service-public/api/mettingMessage'
 
 
 import isEmpty from 'lodash/isEmpty'
@@ -818,7 +821,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isSuperAdmin']),
+    ...mapGetters(['isSuperAdmin', 'isPrisonInternetGetUrlWay']),
 
     ...mapState({
       uploadResult: state => state.global.uploadResult,
@@ -1046,11 +1049,11 @@ export default {
 
       const inputs = {
         url: this.apiUrls['pagedUrl'],
-
         params: {
           ...this.filter,
           ...this.pagination
-        }
+        },
+        isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
       }
 
       await this.getFamiliesPaged(inputs)
@@ -1363,7 +1366,8 @@ export default {
         actionName = 'familyPhone/exportFamilyPhone',
         params = {
           url: this.apiUrls['exportUrl'],
-          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs }
+          params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
         }
 
       if (this.isSuperAdmin) params['methods'] = 'get'
@@ -1380,9 +1384,13 @@ export default {
     },
 
     async onInitFamilyDetails(id) {
-      const url = this.apiUrls['detailUrl'], params = { id }
+      const inputs = {
+        url: this.apiUrls['detailUrl'],
+        params: { id },
+        isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
+      }
 
-      await this.getFamilyPhoneFamiliesDetail({ url, params })
+      await this.getFamilyPhoneFamiliesDetail(inputs)
 
       const {
         familyName,
@@ -1547,7 +1555,7 @@ export default {
 
       params.type = 6
 
-      let res = await getRejectEdit( params )
+      let res = await http.getIntraRejectEdit( params )
 
       if (res.content) {
         this.content = res.content
@@ -1603,7 +1611,7 @@ export default {
           jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
 
-        let res = await setRejectEdit(params)
+        let res = await http.setIntraRejectEdit(params)
 
         if (res) {
           let params = {}
@@ -1612,7 +1620,7 @@ export default {
 
           params.type = 6
 
-          let res = await getRejectEdit(params)
+          let res = await http.getIntraRejectEdit(params)
 
           if (res.content) {
             this.content = res.content

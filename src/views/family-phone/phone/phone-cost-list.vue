@@ -15,23 +15,13 @@
       <m-table-new stripe
          :data="tabledate.list"
          :cols="tableCols">
-
-        <template #status="{row}">
-          <span v-if="row.status==0">未开始</span>
-          <span v-if="row.status==1">通话中</span>
-          <span v-if="row.status==2">已结束</span>
-        </template>
-
-        <template #operation="{row}">
-          <el-button type="text" @click="getDetail(row,true)">详情</el-button>
-        </template>
       </m-table-new>
     </el-col>
 
     <m-pagination
       ref="pagination"
       @onPageChange="getDatas" 
-      :total="tabledate.total"
+      :total="tabledate.size"
     />
      <el-dialog
       :visible.sync="show.dialog"
@@ -153,14 +143,6 @@ export default {
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'
           },
-
-        status: {
-          type: 'select',
-          label: '通话状态',
-          options:[{label: '已结束', value: '2'},{label: '通话中', value: '1'},{label: '未接通', value: '0'}],
-          miss: false,
-          value:"",
-        },
       },
       show:{
         isAdd:false,
@@ -182,15 +164,8 @@ export default {
     tableCols() {
       const cols = [
         {
-          label: '省份',
-          prop: 'provincesName'
-        },{
-          label: '监狱名称',
-          prop: 'jailName'
-        },
-        {
           label: '结算时间',
-          prop: 'createdAt',
+          prop: 'settleAccountsAt',
           minWidth: 150,
         },
         {
@@ -210,7 +185,7 @@ export default {
         },
         {
           label: '出狱人员通话次数（次）',
-          minWidth: 160,
+          minWidth: 180,
           prop: 'releaseNumber'
         },{
           label: '结算总费用（元）',
@@ -223,11 +198,11 @@ export default {
         },{
           label: '实际结算的费用',
           minWidth: 130,
-          prop: 'finalExpense'
+          prop: 'expense'
         },
         {
           label: '结算人员',
-          slotName: 'createdBy',
+          prop: 'createdBy',
           minWidth: 100,
         }
       ]
@@ -236,22 +211,13 @@ export default {
     }
   },
   methods: {
-    async getDetail(e,type=false){
-      console.log(e)
-       let res= await http.familyPhoneAccountDetail({ id: e.id })
-          if (!res) return
-        this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
-          if(type){
-            this.show.dialog = true
-          }
-    },
       onCloseShow() {
         this.show.dialog=false
         this.toShow ={}
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await http.familyPhoneSettleAccount({
+     let res = await http.phoneSettleAccountsList({
         ...this.filter,
         ...this.pagination
       })

@@ -14,7 +14,7 @@
         :span="22"
         :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">罪犯奖惩信息导入模板</a>
+        <a :href="prisonerHref">服刑人员奖惩信息导入模板</a>
         </el-col>
       <el-col :gutter="0">
         <el-col
@@ -76,10 +76,10 @@
       <img src="../../assets/images/excel.png" alt="excel图片">
       <span class="content">导入失败的数据:</span>
       <m-excel-export
-        :filename="prisonerDataImportExcelConfig.filename"
+        :filename="punishmentImportExcelConfig.filename"
         :jsonData="prisonerYZKDataResult.errors"
-        :header="prisonerDataImportExcelConfig.header"
-        :filterFields="prisonerDataImportExcelConfig.filterFields" />
+        :header="punishmentImportExcelConfig.header"
+        :filterFields="punishmentImportExcelConfig.filterFields" />
     </el-row>
     <el-dialog
       :visible.sync="visible"
@@ -169,7 +169,7 @@
   import { mapActions, mapState } from 'vuex'
   import Utils from './utils'
   import http from '@/service'
-  import { prisonerDataImportExcelConfig } from '@/common/excel-config'
+  import { punishmentImportExcelConfig } from '@/common/excel-config'
   export default {
     data() {
       return {
@@ -194,7 +194,7 @@
         uploadResult:{},
         validatePrisonerResult:{},
         prisonerYZKDataResult:{},
-        prisonerDataImportExcelConfig
+        punishmentImportExcelConfig
       }
     },
     computed: {

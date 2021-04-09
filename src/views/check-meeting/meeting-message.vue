@@ -318,7 +318,6 @@ import Moment from 'moment'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
-import { getMessagelist , dealMessage , exportMessage} from '@/service-public/api/mettingMessage'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -604,7 +603,7 @@ export default {
       let params={}
           params.jailId=JSON.parse(localStorage.getItem('user')).jailId
           params.type=4
-      let res = await http.getRejectEdit( params )
+      let res = await http.getIntraRejectEdit( params )
       if(res.content){
         this.content = res.content
         this.contentId=res.id
@@ -615,17 +614,7 @@ export default {
       if(str=='PASSED'){
         this.show.rejectEdit=true
       }else{
-        if(this.content[0]){
-          this.remarks.push(this.content[0])
-          //判断打开的是驳回还是撤回
-          if(isform){
-            this.withdrawForm.selectRemark=`1、${this.content[0]}。`
-            this.withdrawForm.lengthRemark=997-this.content[0].length
-          }else{
-            this.refuseForm.selectRemark=`1、${this.content[0]}。`
-            this.refuseForm.lengthRemark=997-this.content[0].length
-          }
-        }
+       this.show.rejectEdit=false
       }
     },
     addReject(){
@@ -658,20 +647,33 @@ export default {
         updateer:JSON.parse(localStorage.getItem('user')).realName,
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
-        let res = await http.setRejectEdit(params)
+        let res = await http.setIntraRejectEdit(params)
+          if(res){
+          let params={}
+              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
+              params.type=4
+          let res = await http.getIntraRejectEdit( params )
+          if(res.content){
+            this.content = res.content
+            this.contentId=res.id
+            this.updateer=res.updateEr
+          }else{
+            this.content = []
+          }
+        }
        this.show.editRebut=true
       }
     },
     async onDownloadExcel(){
       this.filter.tab = this.tabs
-       let res = await exportMessage({
+       let res = await http.exportMessage({
         ...this.filter,
         ...this.pagination
       })
     },
    async getDatas() {
      this.filter.tab = this.tabs
-     let res = await getMessagelist({
+     let res = await http.getIntraMessagelist({
         ...this.filter,
         ...this.pagination
       })
@@ -708,7 +710,7 @@ export default {
     },
     async handleSubmit(params) {
 
-    let  res= await  dealMessage(params)
+    let  res= await  dealIntraMessage(params)
         if (res){
         this.closeAuthorize()
         this.toAuthorize = {}
