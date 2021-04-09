@@ -34,7 +34,7 @@
             v-bind="item.attrs"
             v-on="item.events"
             :class="item.customClass">
-              <slot :name="item.slotName" />
+              <slot :name="item.slotName" :fields="fields" />
           </el-form-item>
         </template>
       </template>
@@ -236,6 +236,7 @@ export default {
       })
 
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : { ...fields, ...this.initFields }
+
       this.flag = true
     },
 
@@ -312,8 +313,11 @@ export default {
 
     resetFieldValue(...arg) {
       const [status, prop, { controlTheOther }] = arg
+
       if (!controlTheOther) return
+
       const fields = this.$refs.form.fields
+
       for(let [key, value] of Object.entries(this.items)) {
         if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
       }
@@ -349,10 +353,13 @@ export default {
               configs.forEach(item => {
                 if (this.fields[propItem] === item.value) {
                   if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
-                  for (let [key, value] of Object.entries(item.itemConfigs)) {
-                    this.dismiss.push(key)
-                    if (this.items[key] && this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
-                    else this.$set(this.fields, key, value)
+
+                  if (item.itemConfigs && Object.prototype.toString.call(item.itemConfigs) === '[object Object]') {
+                    for (let [key, value] of Object.entries(item.itemConfigs)) {
+                      this.dismiss.push(key)
+                      if (this.items[key] && this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
+                      else this.$set(this.fields, key, value)
+                    }
                   }
                 }
               })
