@@ -1,8 +1,10 @@
 import api from '@/service/modules/global'
-
 import repeatAPI from '@/service/modules/repeat'
-
 import { Message } from 'element-ui'
+import { initStore } from '@/common/constants/prisons'
+import { setGuideStorage, setAffairsStorage, setAffairsModule, setXmlStorage } from '@/utils/store'
+
+import http from '@/service'
 
 const getUrls = (params) => {
   let { urls, contents } = params
@@ -139,16 +141,38 @@ export default {
     }
   },
 
-  setGuideStorage({ commit }, storage = {
-    content: '',
-    guide: '',
-    updatedTime: '',
-    preContent: ''
-  }) {
-    if (window.sessionStorage) {
-      window.sessionStorage.setItem('APP_GUIDE_DATA', JSON.stringify(storage))
-    }
+  setGuideStorage({ commit }, storage = initStore.APP_GUIDE_DATA()) {
+    setGuideStorage(storage)
     commit('SET_GUIDE_STORAGE', storage)
+  },
+
+  setAffairsStorage({ commit }, storage = initStore.APP_AFFAIRS_DATA()) {
+    setAffairsStorage(storage)
+    commit('SET_AFFAIRS_STORAGE', storage)
+  },
+
+  setAffairsModule({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
+    setAffairsModule(storage)
+    commit('SET_AFFAIRS_MODULE', storage)
+  },
+
+  setXmlStorage({ commit }, storage = initStore.APP_AFFAIRS_MODULE_DATA()) {
+    setXmlStorage(storage)
+    commit('SET_XML_STORAGE', storage)
+  },
+
+  // 获取当前任务的下一任务
+  async getSubtaskPhone({ commit }, params) {
+    try {
+      const data = await http.getSubtaskPhone(params)
+
+      commit('setSubtaskPhone', data || [])
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {

@@ -30,6 +30,67 @@ let infomation = [{
     // component: resolve => require(['@/views/sadmin-prison/prison-edit'], resolve)
   }]
 }, {
+  path: '/yg-prison-affairs-public',
+  name: 'yg-prison-affairs-public-manage',
+  meta: { hidden: true, breadcrumbName: '阳光狱务公开信息管理' },
+  children: [{
+    // 阳光监狱-监狱工作动态
+    path: '/prison-affairs-list/workinfo',
+    name: 'prison-affairs-list-workinfo',
+    meta: { typeId: 'workinfo', permission: 'visit.prison-affairs.workinfo', breadcrumbName: '监狱工作动态' },
+    component: 'yg-prison-affairs/index'
+  }, {
+    path: '/prison-affairs-edit/workinfo',
+    name: 'prison-affairs-edit-workinfo',
+    meta: { typeId: 'workinfo', permission: 'visit.prison-affairs.workinfo.edit', breadcrumbName: '监狱工作动态' },
+    component: 'yg-prison-affairs/edit'
+  }, {
+    // 阳光监狱-法律法规
+    path: '/prison-affairs-list/flfg',
+    name: 'prison-affairs-list-flfg',
+    meta: { typeId: 'flfg', permission: 'visit.prison-affairs.flfg', breadcrumbName: '法律法规' },
+    component: 'yg-prison-affairs/index'
+  }, {
+    path: '/prison-affairs-edit/flfg',
+    name: 'prison-affairs-edit-flfg',
+    meta: { typeId: 'flfg', permission: 'visit.prison-affairs.flfg.edit', breadcrumbName: '法律法规' },
+    component: 'yg-prison-affairs/edit'
+  }, {
+    // 阳光监狱-刑务公示
+    path: '/prison-affairs-list/xwgs',
+    name: 'prison-affairs-list-xwgs',
+    meta: { typeId: 'xwgs', permission: 'visit.prison-affairs.xwgs', breadcrumbName: '刑务公示' },
+    component: 'yg-prison-affairs/index'
+  }, {
+    path: '/prison-affairs-edit/xwgs',
+    name: 'prison-affairs-edit-xwgs',
+    meta: { typeId: 'xwgs', permission: 'visit.prison-affairs.xwgs.edit', breadcrumbName: '刑务公示' },
+    component: 'yg-prison-affairs/edit'
+  }, {
+    // 阳光监狱-社会帮教
+    path: '/prison-affairs-list/shbj',
+    name: 'prison-affairs-list-shbj',
+    meta: { typeId: 'shbj', permission: 'visit.prison-affairs.shbj', breadcrumbName: '社会帮教' },
+    component: 'yg-prison-affairs/index'
+  }, {
+    path: '/prison-affairs-edit/shbj',
+    name: 'prison-affairs-edit-shbj',
+    meta: { typeId: 'shbj', permission: 'visit.prison-affairs.shbj.edit', breadcrumbName: '社会帮教' },
+    component: 'yg-prison-affairs/edit'
+  }, {
+    // 阳光监狱-会见须知
+    path: '/prison-affairs-edit/meetingnotice',
+    name: 'prison-affairs-edit-meetingnotice',
+    meta: { typeId: 'meetingnotice', permission: 'visit.prison-affairs.meetingnotice', breadcrumbName: '会见须知' },
+    component: 'yg-prison-affairs/edit'
+  }, {
+    // 阳光监狱-服务指南
+    path: '/prison-affairs-edit/servivceinfo',
+    name: 'prison-affairs-edit-servivceinfo',
+    meta: { typeId: 'servivceinfo', permission: 'visit.prison-affairs.servivceinfo', breadcrumbName: '服务指南' },
+    component: 'yg-prison-affairs/edit'
+  }]
+}, {
   path: '/prison-affairs-public',
   name: 'prison-affairs-public-manage',
   meta: { hidden: true, breadcrumbName: '狱务公开信息管理' },

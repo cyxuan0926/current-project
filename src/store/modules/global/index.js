@@ -1,6 +1,7 @@
 import getters from './getters'
 import actions from './actions'
 import mutations from './mutations'
+import { getGuideStorage, getAffairsStorage, getAffairsModule, getXmlStorage } from '@/utils/store'
 
 let state = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
@@ -19,16 +20,19 @@ let state = {
   // 是否刷新多级审批消息铃铛
   isRefreshMultistageExamineMessageBell: false,
 
-  // 有转入信息
-  loginHavePrisonerIn: false,
   jailsMeetingFloorStatus: false,
 
-  guideStorage: (window.sessionStorage && window.sessionStorage.getItem('APP_GUIDE_DATA') && JSON.parse(window.sessionStorage.getItem('APP_GUIDE_DATA'))) || {
-    content: '',
-    guide: '',
-    updatedTime: '',
-    preContent: ''
-  }
+  // 有转入信息
+  loginHavePrisonerIn: false,
+  guideStorage: getGuideStorage(),
+
+  affairsStorage: getAffairsStorage(),
+
+  affairsModule: getAffairsModule(),
+
+  processBpmnXml: getXmlStorage(),
+
+  processInstanceIdSubtaskOptions: []
 }
 
 export default {

@@ -3,6 +3,15 @@ export default {
   SET_GUIDE_STORAGE(state, params) {
     state.guideStorage = params
   },
+  SET_AFFAIRS_STORAGE(state, params) {
+    state.affairsStorage = params
+  },
+  SET_AFFAIRS_MODULE(state, params) {
+    state.affairsModule = params
+  },
+  SET_XML_STORAGE(state, params) {
+    state.processBpmnXml = params
+  },
   setUser(state, params) {
     state.user = params || {}
   },
@@ -55,5 +64,9 @@ export default {
 
   setLoginHavePrisonerIn(state, loginHavePrisonerIn) {
     state.loginHavePrisonerIn = loginHavePrisonerIn
+  },
+
+  setSubtaskPhone: (state, data) => {
+    state.processInstanceIdSubtaskOptions = data
   }
 }

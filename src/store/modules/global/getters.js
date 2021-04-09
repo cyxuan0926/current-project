@@ -69,7 +69,7 @@ export default {
     return (getters.isSuperAdmin || getters.isTenantAdmin) ? 'getJailPrisonSubs' : 'getJailPrisonSubsAuth'
   },
 
-  guideData(state) {
-    return state.guideStorage
+  isPrisonInternetGetUrlWay(_, getters) {
+    return !getters.isSuperAdmin && 'getIntraUrl'
   }
 }
