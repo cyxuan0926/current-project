@@ -11,6 +11,10 @@
         class="border"
         :data="tabledata.list"
         style="width: 100%">
+         <el-table-column
+            prop="year"
+            label="年"
+            width="150" />
             <el-table-column
             prop="monthName"
             label="月"

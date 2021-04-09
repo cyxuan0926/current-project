@@ -76,10 +76,10 @@
       <img src="../../assets/images/excel.png" alt="excel图片">
       <span class="content">导入失败的数据:</span>
       <m-excel-export
-        :filename="prisonerDataImportExcelConfig.filename"
+        :filename="scoreImportExcelConfig.filename"
         :jsonData="prisonerYZKDataResult.errors"
-        :header="prisonerDataImportExcelConfig.header"
-        :filterFields="prisonerDataImportExcelConfig.filterFields" />
+        :header="scoreImportExcelConfig.header"
+        :filterFields="scoreImportExcelConfig.filterFields" />
     </el-row>
     <el-dialog
       :visible.sync="visible"
@@ -205,7 +205,7 @@
   import { mapActions, mapState } from 'vuex'
   import Utils from './utils'
   import http from '@/service'
-  import { prisonerDataImportExcelConfig } from '@/common/excel-config'
+  import { scoreImportExcelConfig } from '@/common/excel-config'
   export default {
     data() {
       return {
@@ -230,7 +230,7 @@
         uploadResult:{},
         validatePrisonerResult:{},
         prisonerYZKDataResult:{},
-        prisonerDataImportExcelConfig
+        scoreImportExcelConfig
       }
     },
     computed: {

@@ -527,7 +527,6 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-import { getRejectEdit, setRejectEdit } from '@/service-public/api/mettingMessage'
 
 
 import isEmpty from 'lodash/isEmpty'
@@ -1556,7 +1555,7 @@ export default {
 
       params.type = 6
 
-      let res = await getRejectEdit( params )
+      let res = await http.getIntraRejectEdit( params )
 
       if (res.content) {
         this.content = res.content
@@ -1612,7 +1611,7 @@ export default {
           jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
 
-        let res = await setRejectEdit(params)
+        let res = await http.setIntraRejectEdit(params)
 
         if (res) {
           let params = {}
@@ -1621,7 +1620,7 @@ export default {
 
           params.type = 6
 
-          let res = await getRejectEdit(params)
+          let res = await http.getIntraRejectEdit(params)
 
           if (res.content) {
             this.content = res.content

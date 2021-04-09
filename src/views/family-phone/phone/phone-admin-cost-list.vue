@@ -210,7 +210,7 @@ export default {
         },
         {
           label: '出狱人员通话次数（次）',
-          minWidth: 180,
+          minWidth: 160,
           prop: 'releaseNumber'
         },{
           label: '结算总费用（元）',

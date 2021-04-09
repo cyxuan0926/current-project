@@ -437,9 +437,7 @@ import { mapActions, mapState } from 'vuex'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
-
-import { familyPhoneList ,familyPhoneDetail ,familyPhoneAdd,getSubtaskPhone,authPhone,getRejectEdit,setRejectEdit} from '@/service-public/api/mettingMessage'
-import validator from '@/utils'
+import http from '@/service'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -753,7 +751,7 @@ export default {
        let params={}
           params.jailId=JSON.parse(localStorage.getItem('user')).jailId
           params.type=5
-      let res = await getRejectEdit( params )
+      let res = await http.getIntraRejectEdit( params )
       if(res.content){
         this.content = res.content
         this.contentId=res.id
@@ -796,12 +794,12 @@ export default {
         updateer:JSON.parse(localStorage.getItem('user')).realName,
         jailId:JSON.parse(localStorage.getItem('user')).jailId
         }
-        let res = await setRejectEdit(params)
+        let res = await http.setIntraRejectEdit(params)
         if(res){
           let params={}
               params.jailId=JSON.parse(localStorage.getItem('user')).jailId
               params.type=5
-          let res = await getRejectEdit( params )
+          let res = await http.getIntraRejectEdit( params )
           if(res.content){
             this.content = res.content
             this.contentId=res.id
@@ -894,14 +892,14 @@ export default {
         let params=authApplePhone
         params.processInstanceId= this.toShow.processInstanceId
        params.applyId=this.toShow.id
-       let res= await  authPhone(params)
+       let res= await  http.authPhone(params)
           if (!res) return
           this.getDatas()
           this.closeWithdraw()
       },
      async getSubtask(e){
        this.toShow=e
-        let res= await getSubtaskPhone({processInstanceId: e.processInstanceId})
+        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
           if (!res) return
           this.selectProcessOption =res
           if(this.selectProcessOption.length){
@@ -911,7 +909,7 @@ export default {
           }
       },
     async getDetail(e,type=false){
-       let res= await familyPhoneDetail({ id: e.id })
+       let res= await http.familyPhoneDetail({ id: e.id })
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
           if(type){
@@ -924,7 +922,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await familyPhoneList({
+     let res = await http.familyPhoneList({
         ...this.filter,
         ...this.pagination
       })
@@ -1060,7 +1058,7 @@ export default {
     },
     async onFamilyInformationDialogFormSubmit(data) {
       if (data) {
-        let res= await familyPhoneAdd(data)
+        let res= await http.familyPhoneAdd(data)
           if (!res) return
           setTimeout(() =>{
             this.onCloseFamilyInformationDialog()

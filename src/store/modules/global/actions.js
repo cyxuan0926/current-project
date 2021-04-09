@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 import { initStore } from '@/common/constants/prisons'
 import { setGuideStorage, setAffairsStorage, setAffairsModule, setXmlStorage } from '@/utils/store'
 
-import { getSubtaskPhone } from '@/service-public/api/mettingMessage'
+import http from '@/service'
 
 const getUrls = (params) => {
   let { urls, contents } = params
@@ -164,7 +164,7 @@ export default {
   // 获取当前任务的下一任务
   async getSubtaskPhone({ commit }, params) {
     try {
-      const data = await getSubtaskPhone(params)
+      const data = await http.getSubtaskPhone(params)
 
       commit('setSubtaskPhone', data || [])
 

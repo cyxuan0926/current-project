@@ -21,7 +21,7 @@
     <m-pagination
       ref="pagination"
       @onPageChange="getDatas" 
-      :total="tabledate.total"
+      :total="tabledate.size"
     />
      <el-dialog
       :visible.sync="show.dialog"
@@ -104,7 +104,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
-import { phoneSettleAccountsList}  from '@/service-public/api/mettingMessage'
+import http from '@/service'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -217,7 +217,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await phoneSettleAccountsList({
+     let res = await http.phoneSettleAccountsList({
         ...this.filter,
         ...this.pagination
       })

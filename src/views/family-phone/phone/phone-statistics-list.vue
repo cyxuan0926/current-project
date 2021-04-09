@@ -19,6 +19,11 @@
         <template #aduitDetail="{row}">
            <span> {{`${row.startTime}~${row.endTime}`}}</span>
         </template>
+          <template #status="{row}">
+           <span v-if="row.status=='FINISHED'">已完成</span>
+           <span v-if="row.status=='MEETING_NO'">通话中</span>
+           <span v-if="row.status=='CALLFALL'">未接通</span>
+        </template>
 
         <template #operation="{row}">
           <el-button type="text" @click="getDetail(row,true)">详情</el-button>
@@ -112,7 +117,8 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
-import { phoneRecordList, phoneRecordDetail}  from '@/service-public/api/mettingMessage'
+
+import http from '@/service'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -211,7 +217,7 @@ export default {
         },
         {
           label: '通话状态',
-          prop: 'status'
+          slotName: 'status'
         },
         {
           label: '操作',
@@ -224,7 +230,7 @@ export default {
   },
   methods: {
     async getDetail(e,type=false){
-       let res= await phoneRecordDetail({ videoId: e.uid })
+       let res= await http.phoneRecordDetail({ videoId: e.uid })
           if (!res) return
         this.toShow = Object.assign({}, res, e)
           if(type){
@@ -237,7 +243,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await phoneRecordList({
+     let res = await http.phoneRecordList({
         ...this.filter,
         ...this.pagination
       })
