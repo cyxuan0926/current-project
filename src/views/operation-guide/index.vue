@@ -12,7 +12,6 @@
     <m-search
       ref="search"
       :items="searchItems"
-      @searchSelectChange="searchSelectChange"
       @search="onSearch">
     </m-search>
     <el-col :span="24">
@@ -63,13 +62,9 @@
 
 
 <script>
-  import prisonFilterCreator from '@/mixins/prison-filter-creator'
-  import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
-  import Moment from 'moment'
   import { mapState, mapGetters, mapActions } from 'vuex'
     export default {
-        mixins: [prisonFilterCreator,registrationDialogCreator],
         data() {
             return {
                 total: 0,

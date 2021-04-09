@@ -563,16 +563,15 @@ superAdmin = [{
       },
       component: 'family-phone/conversation-cost-detail/list'
     }, {
-      path: '/family-phone/call-supervise',
-      name: 'call-supervise',
+      path: '/family-phone/call-supervise-admin',
+      name: 'call-supervise-admin',
       props: {
         hasProvinceQueryAuth: true,
         hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话监管表',
-        permission: 'visit.family-phone.admin.supervise',
-        isAdmin: true
+        permission: 'visit.family-phone.admin.supervise'
       },
       component: 'family-phone/call-supervise'
     }, {
