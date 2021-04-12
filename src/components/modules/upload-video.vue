@@ -12,13 +12,13 @@
         poster="/static/images/video-background.png"
         style="width: 192px; height: 108px;">
         <source
-          :src="value + '?token=' + $urls.token"
+          :src="value"
           type='video/mp4'>
         <source
-          :src="value + '?token=' + $urls.token"
+          :src="value"
           type='video/webm'>
         <source
-          :src="value + '?token=' + $urls.token"
+          :src="value"
           type='video/ogg'>您的浏览器不支持Video标签。
       </video>
       <span
@@ -101,7 +101,7 @@ export default {
       switch (res.code) {
         case 200:
           this.$message.success('视频上传成功')
-          this.$emit('success', res.url)
+          this.$emit('success', `${res.url}?token=${this.$urls.token}`)
           let urls = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : []
           this.setUrlStorage({ urls: [...urls, res.url] })
           this.setNewUrlStorage({ urls: [res.url] })
