@@ -58,6 +58,7 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   production: {
+    ygApiHost: 'https://sunjail-api.yuwugongkai.com/sunjail',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
     apiHost: 'https://www.yuwugongkai.com',
     financeApiHost: 'https://finance-api.yuwugongkai.com',
