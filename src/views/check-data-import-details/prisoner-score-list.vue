@@ -10,8 +10,8 @@
       <el-table
         class="border"
         :data="tabledata.list"
-        style="width: 100%">
-         <el-table-column
+        style="width: 100%"> 
+        <el-table-column
             prop="year"
             label="年"
             width="150" />
@@ -25,44 +25,76 @@
             width="150" />
             <el-table-column
             prop="prisonerNumber"
-            label="编号"/>
+            label="编号"
+            width="150" />
             <el-table-column
-            label="行政奖励">
+            label="基础分">
                   <el-table-column
-                    prop="praiseTimes"
-                    label="表扬数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="materialAwardTimes"
-                    label="物质奖励数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="meritTimes"
-                    label="立功个数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="greatMeritTimes"
-                    label="重大立功数">
-                  </el-table-column>
-            </el-table-column>
-            <el-table-column
-            label="行政处罚">
-                  <el-table-column
-                    prop="warnTimes"
-                    label="警告个数"
+                    prop="educationBaseScore"
+                    label="教育改造基础分"
                     width="120">
                   </el-table-column>
                   <el-table-column
-                    prop="mistakeTimes"
-                    label="记过个数"
+                    prop="workBaseScore"
+                    label="劳动改造基础分"
                     width="120">
                   </el-table-column>
                   <el-table-column
-                    prop="confinementTimes"
-                    label="禁闭个数"
+                    prop="monthBaseScore"
+                    label="当月基础分"
                     width="100">
                   </el-table-column>
             </el-table-column>
+            <el-table-column
+            label="加分"
+            width="150" >
+                  <el-table-column
+                    prop="educationAwardScore"
+                    label="教育改造加分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="workAwardScore"
+                    label="劳动改造加分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="monthAwardScore"
+                    label="当月加分"
+                    width="100">
+                  </el-table-column>
+            </el-table-column>
+            <el-table-column
+            label="扣分"
+            width="150" >
+                  <el-table-column
+                    prop="educationDeductScore"
+                    label="教育改造扣分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="workDeductScore"
+                    label="劳动改造扣分"
+                    width="120">
+                  </el-table-column>
+                  <el-table-column
+                    prop="monthDeductScore"
+                    label="当月扣分"
+                    width="100">
+                  </el-table-column>
+            </el-table-column>
+             <el-table-column
+            prop="specialAwardScore"
+            label="专项加分"
+            width="150" />
+            <el-table-column
+            prop="punishScore"
+            label="处罚"
+            width="150" />
+            <el-table-column
+            prop="totalScore"
+            label="总得分"
+            width="150" />
       </el-table>
     </el-col>
     <m-pagination
@@ -73,7 +105,7 @@
 </template>
 
 <script>
-import http from '@/service'
+ import http from '@/service'
 import Moment from 'moment'
 export default {
   data() {
@@ -105,7 +137,7 @@ export default {
   },
   methods: {
     async getDatas() {
-      let res = await http.getPrisonerBonusPenaltylist({ ...this.filter, ...this.pagination })
+      let res = await http.getPrisonerScorelist({ ...this.filter, ...this.pagination })
       this.tabledata= res.data
     },
     onSearch() {
