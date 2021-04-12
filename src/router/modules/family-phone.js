@@ -27,7 +27,7 @@ const routes = [
         component: 'family-phone/conversation-cost-detail/list'
       }, {
         path: '/family-phone-manage/phone-cost',
-        name: 'FamilyPhoneManageConversationCostDetailList',
+        name: 'FamilyPhoneManagePhoneCost',
         props: { hasPrisonAreaAuth: true },
         meta: { permission: 'visit.family-phone-cost.search', breadcrumbName: '亲情电话通话费用结算报表' },
         component: 'family-phone/phone/phone-cost-list'

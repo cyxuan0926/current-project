@@ -311,9 +311,9 @@
       >
         <template v-if="!isEmpty(multistageRecordsLastValue)" #append> 
           <div class="multistage_examine-item">
-            <div :class="['detail-index']">{{ multistageRecordsValues.length + 1 }}</div>
+            <div class="detail-index">{{ multistageRecordsValues.length + 1 }}</div>
 
-            <div :class="[ 'detail-content']">
+            <div class="detail-content">
               <p class="detail-message-family detail-audit">
                 <span class="family-name audit-label label">审核员账号</span>
 
@@ -333,7 +333,7 @@
               </p>
             </div>
 
-            <div :class="['detail-content', 'time-status']">
+            <div class="detail-content time-status">
               <p class="detail-message-family detail-audit-time">
                 <span class="family-name audit-time-label">审核人姓名</span>
 
@@ -363,7 +363,7 @@
       <!-- 同意的情况 -->
       <template v-if="detailOrAuthDialog.agree">
         <!-- 审批结束 -->
-        <div v-if="!isSubtask"  class="button-box">
+        <div v-if="!isSubtask" class="button-box">
           <repetition-el-buttons :buttonItems="showAgreeButtons" />
         </div>
 
@@ -393,7 +393,7 @@
             :multiple-limit='5' 
             collapse-tags
             @change="refuseFormChange"
-            style="width:70%;margin-right:10px"
+            style="width:70%; margin-right:10px"
           >
             <el-option
               v-for="(remark, index) in content"
@@ -527,7 +527,6 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-
 
 import isEmpty from 'lodash/isEmpty'
 export default {
@@ -1700,10 +1699,6 @@ $border-style: 1px solid #E4E7ED;
   /deep/ .el-dialog__body {
     padding-bottom: 30px !important;
   }
-
-  /deep/ .button-box {
-    padding-bottom: 0px;
-  }
 }
 
 .el-upload__excel {
@@ -1717,6 +1712,10 @@ $border-style: 1px solid #E4E7ED;
 .authorize-dialog {
   /deep/ .el-dialog__footer {
     padding: 0px 20px 20px 0px;
+  }
+
+  /deep/ .button-box {
+    padding-bottom: 0px;
   }
 }
 
@@ -1762,7 +1761,7 @@ $border-style: 1px solid #E4E7ED;
   font-size: 12px;
   border-bottom: $border-style;
   .family-name {
-    width: 83px;
+    width: 35%;
     background: #F5F7FA;
     text-align: right;
     padding-right: 10px;

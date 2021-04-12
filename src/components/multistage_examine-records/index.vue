@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <div style="margin-bottom: 10px;">{{ title }}</div>
+    <div v-if="title" style="margin-bottom: 10px;">{{ title }}</div>
 
     <div class="multistage_examine-main">
       <template v-for="(valueItem, index) of basicValues">
@@ -275,7 +275,7 @@ export default {
     font-size: 12px;
     border-bottom: $border-style;
     .family-name {
-      width: 83px;
+      width: 35%;
       background: #F5F7FA;
       text-align: right;
       padding-right: 10px;

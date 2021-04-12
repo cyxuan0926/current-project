@@ -245,6 +245,25 @@ let switches = {
       label: '已结算',
       value: 1
     }
+  ],
+
+  conversationCostDetailStatus: [
+    {
+      label: '呼叫已接通',
+      value: 'MEETING_ON'
+    },
+    {
+      label: '呼叫已接通',
+      value: 'FINISHED'
+    },
+    {
+      label: '呼叫未接通',
+      value: 'CALLFAIL'
+    },
+    {
+      label: '呼叫未接通',
+      value: 'FAULT'
+    }
   ]
 }
 

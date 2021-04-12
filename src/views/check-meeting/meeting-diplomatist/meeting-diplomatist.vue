@@ -283,6 +283,7 @@ import prisons from '@/common/constants/prisons'
 import http from '@/service'
 import { Message } from 'element-ui'
 
+import Moment from 'moment'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -324,6 +325,8 @@ export default {
         value: 0
       }
     ]
+
+    const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
     return {
       tabsItems,
       valueTime:new Date(),
@@ -527,7 +530,9 @@ export default {
         { ...goBackButton,
           events: { click: this.onAgreeAuthorizeGoBack } },
           closeButton
-      ]
+      ],
+
+      oneMonthLater
     }
   },
   components: {
@@ -718,7 +723,7 @@ export default {
     }
   },
   mounted() {
-    this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+    this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateNow, this.oneMonthLater])
   },
   created(){
    this.tabs="PENDING"

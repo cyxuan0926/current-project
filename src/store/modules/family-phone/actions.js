@@ -103,19 +103,25 @@ export default {
     try {
       const response = await familyPhoneApi.getFamilyPhoneSettleAccounts(inputs)
 
-      const list = response ? response['list'] : []
+      const list = response ? response['list'].map(item => {
+        item['settleAccounts'] = +item['settleAccounts'] || 0
+
+        item['releaseType'] = +item['releaseType'] || 0
+
+        return item
+      }) : []
 
       const size = response ? response['size'] : 0
 
       const configs = response ? {
-        number: response['number'],
-        expenseAll: response['expenseAll'],
-        releaseExpense: response['releaseExpense'],
-        settleIds: response['settleIds'],
-        expense: response['expense'],
-        releaseNumber: response['releaseNumber'],
-        meetingEndDate: response['meetingEndDate'],
-        meetingStartDate: response['meetingStartDate']
+        number: response['number'] || 0,
+        expenseAll: response['expenseAll'] || 0,
+        releaseExpense: response['releaseExpense'] || 0,
+        settleIds: response['settleIds'] || [],
+        expense: response['expense'] || 0,
+        releaseNumber: response['releaseNumber'] || 0,
+        meetingEndDate: response['meetingEndDate'] || '',
+        meetingStartDate: response['meetingStartDate'] || ''
       } : {}
 
       commit('setSettleAccountsPaged', { content: list, totalCount: size, configs })
@@ -144,7 +150,7 @@ export default {
     try {
       const response = await familyPhoneApi.editFamilyPhoneSettleAccountsRelease(params)
 
-      const isSucess = response ? response['code'] === 200 : response
+      const isSucess = response && response['code'] === 200
 
       return isSucess
     }
@@ -157,9 +163,22 @@ export default {
     try {
       const response = await familyPhoneApi.settleFamilyPhoneSettleAccounts(params)
 
-      const isSucess = response ? response['code'] === 200 : response
+      if (!response) return
 
-      return isSucess
+      return response
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async exportFamilyPhoneSettleAccounts(_, inputs) {
+    try {
+      const response = await familyPhoneApi.exportFamilyPhoneSettleAccounts(inputs)
+
+      if (!response) return
+
+      return response
     }
     catch (err) {
       Promise.reject(err)

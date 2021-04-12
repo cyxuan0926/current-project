@@ -68,7 +68,7 @@ let check = [{
     meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
   }, {
     path: '/meeting/message',
-    name: 'visit-list',
+    name: 'MeetingMessage',
     component: 'check-meeting/meeting-message',
     props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.remote-visit-application.message', breadcrumbName: '短信申请管理' }

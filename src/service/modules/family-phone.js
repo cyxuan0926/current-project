@@ -61,27 +61,45 @@ export default {
 
   // 亲情电话通话费用详情 - 列表
   getFamilyPhoneSettleAccounts: inputs => {
-    const { url, params } = inputs
+    const {
+      url,
+      params,
+      isPrisonInternetGetUrlWay
+    } = inputs
 
-    return service.get(url, params).then(response => response && response.data)
+    return service.get(isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params).then(response => response && response.data)
   },
 
   // 亲情电话通话费用详情 - 详情
   getFamilyPhoneSettleAccountsDetail: inputs => {
-    const { url, params } = inputs
+    const {
+      url,
+      params,
+      isPrisonInternetGetUrlWay
+    } = inputs
 
-    return service.get(url, params).then(response => response && response.data)
+    return service.get(isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params).then(response => response && response.data)
   },
 
   // 亲情电话通话费用详情 - 编辑是否出狱状态
   editFamilyPhoneSettleAccountsRelease: params => {
-    return service.post('/settleAccounts/editRelease', params)
+    return service.post(service['getIntraUrl']('/settleAccounts/editRelease'), params)
   },
 
   // 亲情电话通话费用详情 - 结算
   settleFamilyPhoneSettleAccounts: params => {
-    return service.post('/settleAccounts/settlement', params)
-  }
+    return service.post(service['getIntraUrl']('/settleAccounts/settlement'), params, { responseType: 'blob' }).then(response => response && response.data)
+  },
+
   // 亲情电话通话费用详情 - 导出
-  // exportFamilyPhoneSettleAccounts:
+  exportFamilyPhoneSettleAccounts: inputs => {
+    const {
+      methods = 'post',
+      params,
+      url,
+      isPrisonInternetGetUrlWay
+    } = inputs
+
+    return service[methods](isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params, { responseType: 'blob' }).then(response => response && response.data)
+  }
 }

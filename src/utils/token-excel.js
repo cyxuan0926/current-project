@@ -30,4 +30,6 @@ export const tokenExcel = async({
   document.getElementById('linkId').click()
 
   document.body.removeChild(document.getElementById('linkId'))
+
+  return true
 }

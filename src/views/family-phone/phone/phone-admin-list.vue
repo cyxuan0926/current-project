@@ -330,7 +330,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;
