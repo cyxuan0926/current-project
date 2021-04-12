@@ -1,5 +1,8 @@
 import { formatTime } from '@/utils/helper'
 
+// eslint-disable-next-line
+const filename_failed_data = '导入失败的数据'
+
 const prisonerExcelConfig = {
   filename: {
     value: '服刑人员信息'
@@ -80,7 +83,7 @@ const wardenMailboxExcelConfig = {
 
 const prisonerDataImportExcelConfig = {
   filename: {
-    value: '导入失败的数据'
+    value: filename_failed_data
   },
   header: ['罪犯编号', '罪犯名字', '性别', '犯罪事实', '附加刑', '刑期起日', '刑期止日', '监区', '原判刑期', '失败原因'],
   filterFields: [
@@ -113,5 +116,59 @@ const prisonerDataImportExcelConfig = {
     { key: 'reason' }
   ]
 }
+//  奖惩失败数据
+const punishmentImportExcelConfig = {
+  filename: {
+    value: filename_failed_data
+  },
+  header: ['年份', '月份', '姓名', '编号', '表扬数', '物质奖励数', '立功个数', '重大立功数', '警告个数', '记过个数', '禁闭个数', '失败原因'],
+  filterFields: [
+    { key: 'year' },
+    { key: 'monthName' },
+    { key: 'name' },
+    { key: 'prisonerNumber' },
+    { key: 'praiseTimes' },
+    { key: 'materialAwardTimes' },
+    { key: 'meritTimes' },
+    { key: 'greatMeritTimes' },
+    { key: 'warnTimes' },
+    { key: 'mistakeTimes' },
+    { key: 'confinementTimes' },
+    { key: 'reason' }
+  ]
+}
+//  积分考核失败数据
+const scoreImportExcelConfig = {
+  filename: {
+    value: filename_failed_data
+  },
+  header: ['年份', '月份', '姓名', '编号', '教育改造基础分', '劳动改造基础分', '当月基础分', '教育改造加分', '劳动改造加分', '当月加分', '教育改造扣分', '劳动改造扣分', '当月扣分', '专项加分', '处罚', '总得分', '失败原因'],
+  filterFields: [
+    { key: 'year' },
+    { key: 'monthName' },
+    { key: 'name' },
+    { key: 'prisonerNumber' },
+    { key: 'educationBaseScore' },
+    { key: 'workBaseScore' },
+    { key: 'monthBaseScore' },
+    { key: 'educationAwardScore' },
+    { key: 'workAwardScore' },
+    { key: 'monthAwardScore' },
+    { key: 'educationDeductScore' },
+    { key: 'workDeductScore' },
+    { key: 'monthDeductScore' },
+    { key: 'specialAwardScore' },
+    { key: 'punishScore' },
+    { key: 'totalScore' },
+    { key: 'reason' }
+  ]
+}
 
-export { prisonerExcelConfig, wardenMailboxExcelConfig, prisonerDataImportExcelConfig }
+
+export {
+  prisonerExcelConfig,
+  wardenMailboxExcelConfig,
+  prisonerDataImportExcelConfig,
+  punishmentImportExcelConfig,
+  scoreImportExcelConfig
+}
