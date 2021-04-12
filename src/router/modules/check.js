@@ -198,7 +198,7 @@ let check = [{
     // component: helper.loadView('check-prisoner-data/reward-punishment'),
     component: 'check-prisoner-data/reward-punishment',
     // component: resolve => require(['@/views/check-prisoner-data/reward-punishment'], resolve),
-    meta: { permission: 'visit.data-import.reward-punishment.import', breadcrumbName: '罪犯奖惩数据导入' }
+    meta: { permission: 'visit.data-import.reward-punishment.import', breadcrumbName: '服刑人员奖惩数据导入' }
   }, {
     path: '/prisoner-data/pocket-money',
     name: 'prisoner-pocket-money',

@@ -72,6 +72,7 @@ export default {
         if (this.value) {
           tinymce.activeEditor.setContent(this.value, { format: 'html' });
           // editor.setContent(this.value)
+          // window.tinymce.get(this.tinymceId).insertContent(this.value)
         }
         editor.on('NodeChange Change KeyUp', (data) => {
           this.hasChange = true
