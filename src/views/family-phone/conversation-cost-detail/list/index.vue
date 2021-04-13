@@ -26,7 +26,7 @@
         class="table-new"
         stripe
         :cols="tableCols"
-        :data="settleAccountsPaged.content"
+        :data="localTableData"
         :cell-class-name="tableCellClassName"
       >
         <template #time="{ row }">{{ row.startAt + '-' + row.endAt }}</template>
@@ -205,6 +205,8 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import isEmpty from 'lodash/isEmpty'
+
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'FamilyPhone_ConversationCostDetail_List',
 
@@ -396,7 +398,9 @@ export default {
 
       audioDuration: '',
 
-      audioTime: ''
+      audioTime: '',
+
+      localTableData: []
     }
   },
 
@@ -534,6 +538,10 @@ export default {
 
         this.isEdit = new Array(+totalCount).fill(false)
       }
+
+      const { content } = this.settleAccountsPaged
+
+      this.localTableData = cloneDeep(content)
     },
 
     onSearch() {
@@ -581,9 +589,15 @@ export default {
       if (type) this.$set(this.isEdit, index, true)
 
       if (!type) {
-        const result = await this.editFamilyPhoneSettleAccountsRelease({ id, releaseType })
+        const { content } = this.settleAccountsPaged
 
-        if (result) this.getDatas()
+        const hasChanged = releaseType !== content[index]['releaseType']
+
+        if (hasChanged) {
+          const result = await this.editFamilyPhoneSettleAccountsRelease({ id, releaseType })
+
+          if (result) this.getDatas()
+        } else this.$set(this.isEdit, index, false)
       }
     },
 
