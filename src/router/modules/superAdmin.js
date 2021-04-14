@@ -573,7 +573,7 @@ superAdmin = [{
         breadcrumbName: '亲情电话监管表',
         permission: 'visit.family-phone.admin.supervise'
       },
-      component: 'family-phone/call-supervise'
+      component: 'family-phone/supervise/index'
     }, {
       path: '/family-phone/call-statistics',
       name: 'FamilyPhoneCallStatisticsList',

@@ -11,6 +11,12 @@
             ref="search"
             @search="onSearch" />
         <el-col :span="24">
+            <el-tabs
+                v-model="tab"
+                type="card">
+                <el-tab-pane label="亲情电话" name="1" />
+                <el-tab-pane label="可视电话" name="2" />
+            </el-tabs>
             <m-table-new
                 stripe
                 :data="tableDatas"
@@ -18,16 +24,19 @@
                 <template #operation="{ row }">
                     <el-button
                         v-if="!isAdmin"
+                        type="text"
                         size="mini"
-                        @click="handleMediaDet(row.uid)">查看视频录音详情</el-button>
+                        @click="handleReview(row, 'media')">查看视频录音详情</el-button>
                     <el-button
                         v-if="isAdmin || !!row.flag"
+                        type="text"
                         size="mini"
-                        @click="handleQueryDet(row.uid)">查看通话纪要</el-button>
+                        @click="handleReview(row, 'query')">查看通话纪要</el-button>
                     <el-button
                         v-if="!isAdmin && !row.flag"
+                        type="text"
                         size="mini"
-                        @click="handleReview(row.uid)">复核</el-button>
+                        @click="handleReview(row, 'submit')">复核</el-button>
                 </template>
             </m-table-new>
         </el-col>
@@ -35,15 +44,20 @@
             ref="pagination"
             :total="total"
             @onPageChange="getData" />
+        <call-summary-modal v-model="summaryModalVisble" :reviewData="reviewData" @on-save="handleSaveSummary" />
     </el-row>
 </template>
 
 <script>
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
+    import callSummaryModal from './components/call-summary-modal'
     import http from '@/service'
     import router from '@/router'
-    const isAdmin = window.location.href.includes('call-supervise-admin')
+    const isAdmin = !window.location.href.includes('call-supervise-admin')
     export default {
+        components: {
+            callSummaryModal
+        },
         mixins: [ isAdmin ? prisonFilterCreator : {
             data() {
                 return {
@@ -96,6 +110,8 @@
             }
             return {
                 isAdmin,
+                tab: '1', // 1-亲情电话 2-可视电话
+                summaryModalVisble: false,
                 searchItems: {
                     familyName: {
                         type: 'input',
@@ -122,7 +138,23 @@
                 },
                 tableDatas: [],
                 tableCols,
-                total: 0
+                total: 0,
+                reviewData: {}
+            }
+        },
+        created() {
+            // http.getFamilyphoneSumCons('135')
+            // http.getIntraFamilyphoneSum()
+            // this.getIntraFamilyphoneCon('')
+            // http.createIntraFamilyReview({
+
+            // })
+            // http.getIntraFamilyphoneDet()
+        },
+        watch: {
+            tab() {
+                this.$refs.search.onClear()
+                this.getData()
             }
         },
         methods: {
@@ -135,7 +167,7 @@
             },
 
             async getData() {
-                const params = { ...this.filter, ...this.pagination }
+                const params = { tab: this.tab, ...this.filter, ...this.pagination }
                 let { data } = await http[ this.isAdmin ? 'getFamilyphoneSum' : 'getIntraFamilyphoneSum' ](params)
                 if( data && data.list ) {
                     this.tableDatas = data.list
@@ -143,16 +175,18 @@
                 }
             },
 
-            handleMediaDet() {
-                console.log(1)
+            handleReview({ callId, meetingId }, type) {
+                this.reviewData = {
+                    tab,
+                    callId,
+                    meetingId,
+                    type,
+                    title: type == 'media' ? '通话视频或录音' : '通话纪要'
+                }
+                this.summaryModalVisble = true
             },
-
-            handleQueryDet() {
-                console.log(1)
-            },
-
-            handleReview() {
-
+            async handleSaveSummary(data) {
+                await http.createIntraFamilyReview(data)
             }
         },
         mounted() {
