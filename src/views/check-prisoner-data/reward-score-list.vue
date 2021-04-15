@@ -234,7 +234,10 @@
       }
     },
     computed: {
-      ...mapState([ 'prisonerDataResult'])
+      ...mapState({
+        prisonerDataResult: 'prisonerDataResult',
+        jailId: state => state.global.user.jailId
+      })
     },
     mounted() {
       this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })
@@ -258,7 +261,7 @@
             this.percent += 20
             this.spendTime += 1
             this.status = this.status + 1
-              http.importPrisonerScorelist({ filepath: this.uploadResult.path }).then(res => {
+              http.importPrisonerScorelist({ filepath: this.uploadResult.path, jailId: this.jailId }).then(res => {
                 this.loading = false
                 this.visible = false
                 this.onProgress = false
@@ -316,7 +319,7 @@
                   count ++
                   if (count === 1) {
                     this.spendTime += 1
-                    http.validatePrisonerScorelist({ filepath: this.uploadResult.path }).then(res => {
+                    http.validatePrisonerScorelist({ filepath: this.uploadResult.path, jailId: this.jailId }).then(res => {
                       clearInterval(prisonYZXInterver)
                       if (!res) {
                         this.onProgress = false

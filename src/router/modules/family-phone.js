@@ -37,6 +37,11 @@ const routes = [
         props: { hasPrisonAreaAuth: true },
         meta: { permission: 'visit.family-phone.phone-statistics-jail.search', breadcrumbName: '亲情电话通话统计表' },
         component: 'family-phone/phone/phone-statistics-list'
+      }, {
+        path: '/family-phone-manage/phone-supervise',
+        name: 'FamilyPhoneSupervise',
+        meta: { permission: 'visit.family-phone.phone-supervise', breadcrumbName: '亲情电话监管表' },
+        component: 'family-phone/supervise/index'
       }
     ]
   }
