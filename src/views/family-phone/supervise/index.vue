@@ -2,13 +2,12 @@
     <el-row
         class="row-container"
         :gutter="0">
-        {{ isAdmin }}
         <m-excel-download
-            :path="`${ isAdmin ? '/familyphonesummary/export' : '/download/exportVideoTelSummary' }`"
+            :path="`${ isAdmin ? '/familyphonesummary/export' : `/download/exportVideoTelSummary?tab=${ tab }` }`"
             :params="filter"
             :apiConfigs="{
               apiHostKey: `${ isAdmin ? 'apiHost' : 'jailApiHost' }`,
-              apiPathKey: 'apiPath'
+              apiPathKey: `${ isAdmin ? 'apiPath' : '' }`
             }" />
         <m-search
             :items="searchItems"
@@ -24,7 +23,20 @@
             <m-table-new
                 stripe
                 :data="tableDatas"
-                :cols="tableCols" >
+                :cols="tableCols">
+                <template #familyName="{ row }">
+                    <template v-if="tab == '1' && !row.isReg">
+                        <span v-for="f in row.families" :key="f.familyId">{{ f.familyName }}</span>
+                    </template>
+                    <template v-if="tab == '1' && row.isReg || tab == '2'">
+                        <el-button
+                            v-for="f in row.families"
+                            :key="f.familyId"
+                            type="text"
+                            size="mini"
+                            @click="handleQueryFamilyDet(row, f.familyId)">{{ f.familyName }}</el-button>
+                    </template>
+                </template>
                 <template #operation="{ row }">
                     <el-button
                         v-if="!isAdmin"
@@ -48,17 +60,22 @@
             ref="pagination"
             :total="total"
             @onPageChange="getData" />
-        <call-summary-modal v-model="summaryModalVisble" :reviewData="reviewData" @on-save="handleSaveSummary" />
+        <!-- 家属详情 -->
+        <family-detail-modal v-model="familyModalVisible" :familyData="familyData" />
+        <!-- 音视频和通话纪要 -->
+        <call-summary-modal v-model="summaryModalVisible" :reviewData="reviewData" @on-save="handleSaveSummary" />
     </el-row>
 </template>
 
 <script>
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
-    import callSummaryModal from './components/call-summary-modal'
+    import familyDetailModal from '@/components/family/family-detail-modal.vue'
+    import callSummaryModal from './components/call-summary-modal.vue'
     import http from '@/service'
     import router from '@/router'
     export default {
         components: {
+            familyDetailModal,
             callSummaryModal
         },
         mixins: [ window.location.href.includes('call-supervise-admin') ? prisonFilterCreator : {
@@ -85,7 +102,7 @@
                 },
                 {
                     label: '家属姓名',
-                    prop: 'familyName'
+                    slotName: 'familyName'
                 },
                 {
                     label: '家属电话',
@@ -116,7 +133,8 @@
             return {
                 isAdmin,
                 tab: '1', // 1-亲情电话 2-可视电话
-                summaryModalVisble: false,
+                familyModalVisible: false,
+                summaryModalVisible: false,
                 searchItems: {
                     familyName: {
                         type: 'input',
@@ -144,7 +162,8 @@
                 tableDatas: [],
                 tableCols,
                 total: 0,
-                reviewData: {}
+                reviewData: {},
+                familyData: {}
             }
         },
         watch: {
@@ -166,6 +185,14 @@
                 const params = Object( this.isAdmin ? { type: this.tab } : { tab: this.tab }, { ...this.filter, ...this.pagination } )
                 let { data } = await http[ this.isAdmin ? 'getFamilyphoneSum' : 'getIntraFamilyphoneSum' ](params)
                 if( data && data.list ) {
+                    data.list.forEach(d => {
+                        if( !d.families || !d.families.length ) {
+                            d.families = [{
+                                familyId: d.familyId,
+                                familyName: d.familyName
+                            }]
+                        }
+                    })
                     this.tableDatas = data.list
                     this.total = data.totalElements
                 }
@@ -183,7 +210,19 @@
                     tab: this.tab,
                     isAdmin: this.isAdmin
                 }
-                this.summaryModalVisble = true
+                this.summaryModalVisible = true
+            },
+            async handleQueryFamilyDet({ criminalNumber, meetingId }, familyId) {
+                let _params = {
+                    meetingId,
+                    criminalNumber,
+                    familyId
+                }
+                if( !this.isAdmin ) {
+                    let { data } = await http[ this.tab == '1' ? 'getIntraFamilyInfo' : 'getIntraMeetingInfo' ](_params)
+                    this.familyData = data.family
+                    this.familyModalVisible = true
+                }
             },
             async handleSaveSummary(data) {
                 await http.createIntraFamilyReview(data)

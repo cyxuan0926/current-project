@@ -1,14 +1,18 @@
 import * as service from '@/service/config/service'
 
 export default {
-    // 亲情监管列表查询
+    // 亲情监管 列表查询
     getIntraFamilyphoneSum: params => service.get(service.getIntraUrl('/tel/summary/videoTelSummaryList'), params),
-    // 亲情监管通话纪要查询
+    // 亲情监管 通话纪要查询
     getIntraFamilyphoneCon: params => service.get(service.getIntraUrl('/tel/summary/showSummary'), params),
-    // 亲情监管通话复核-添加通话纪要
+    // 亲情监管 通话复核-添加通话纪要
     createIntraFamilyReview: data => service.postObj(service.getIntraUrl('/tel/summary/saveSummary'), data),
-    // 亲情监管音视频详情查询
+    // 亲情监管 音视频详情查询
     getIntraFamilyphoneDet: params => service.get(service.getIntraUrl('/tel/summary/showVideoTelSummaryDetails'), params),
+    // 亲情监管 可视电话家属详情
+    getIntraMeetingInfo: params => service.get(service.getIntraUrl('/meetings/familyDetail'), params),
+    // 亲情监管 亲情电话家属详情
+    getIntraFamilyInfo: params => service.get(service.getIntraUrl('/familyPhoneManage/familyDetail'), params),
     // 查询亲情电话申请列表
      familyPhoneList: params => {
           return service.get(service.getIntraUrl('/parse/familyphone/apply/page'), params).then(res => res && res.data)
