@@ -2,6 +2,7 @@
     <el-row
         class="row-container"
         :gutter="0">
+        {{ isAdmin }}
         <m-excel-download
             :path="`${ isAdmin ? '/familyphonesummary/export' : '/download/exportVideoTelSummary' }`"
             :params="filter"
@@ -56,12 +57,11 @@
     import callSummaryModal from './components/call-summary-modal'
     import http from '@/service'
     import router from '@/router'
-    const isAdmin = !window.location.href.includes('call-supervise-admin')
     export default {
         components: {
             callSummaryModal
         },
-        mixins: [ isAdmin ? prisonFilterCreator : {
+        mixins: [ window.location.href.includes('call-supervise-admin') ? prisonFilterCreator : {
             data() {
                 return {
                     filter: {}
@@ -69,6 +69,7 @@
             }
         } ],
         data() {
+            const isAdmin = window.location.href.includes('call-supervise-admin')
             const tableCols = [
                 {
                     label: '监区名称',
@@ -170,8 +171,11 @@
                 }
             },
 
-            handleReview({ callId, meetingId, flag }, type) {
+            // getFamilyphoneSum - 外网返回 uid
+            // getIntraFamilyphoneSum - 监狱内网 callId
+            handleReview({ uid, callId, meetingId, flag }, type) {
                 this.reviewData = {
+                    uid,
                     callId,
                     meetingId,
                     flag,

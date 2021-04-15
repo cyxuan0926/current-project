@@ -112,15 +112,17 @@
         },
         methods: {
             async getSummaryDetails() {
-                let _params = {
-                    callId: this.reviewData.callId,
-                    tab: this.reviewData.tab,
+                let _params = this.reviewData.isAdmin ? {
+                    videoId: this.reviewData.uid,
                     type: this.reviewData.tab
-                }
-                if( _params.tab == '2' ) {
-                    _params.meetingId = this.reviewData.meetingId
+                } : {
+                    callId: this.reviewData.callId,
+                    tab: this.reviewData.tab
                 }
                 if( this.reviewData.type == 'media' ) {
+                    if( _params.tab == '2' ) {
+                        _params.meetingId = this.reviewData.meetingId
+                    }
                     let { data } = await http.getIntraFamilyphoneDet(_params)
                     if( data.details && data.details.records ) {
                         this.tableDatas = data.details.records
