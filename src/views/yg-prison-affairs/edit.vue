@@ -71,8 +71,7 @@
                         type: 'select',
                         label: '业务模块',
                         rules: ['required'],
-                        options: this.affairsModule,
-                        value: this.$route.query && this.$route.query.type || '',
+                        options: this.affairsModule
                     },
                     headline: {
                         type: 'input',
