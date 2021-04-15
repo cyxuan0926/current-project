@@ -10,6 +10,6 @@ export default{
         return service.post(service.getIntraUrl('/msg/terminal/dealMessage'), params).then(res => res && res.data)
       },
       exportMessage: params => {
-        return service.get(service.getIntraUrl('/export/exportSmsManage'), params).then(res => res && res.data)
+        return service.get(service.getIntraUrl('/export/exportSmsManage'), params, { responseType: 'blob' })
       }
 }

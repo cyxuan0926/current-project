@@ -27,9 +27,9 @@ getMessageDetail: params => {
   return qaApis.get('/familyMessage/getDetail', params).then(res => res && res.data)
 },
 // 短信导出列表
- exportMessage: params => {
-  return qaApis.get('/export/exportSmsManage', params, { responseType: 'blob' }).then(res => res && res.data)
-},
+//  exportMessage: params => {
+//   return qaApis.get('/export/exportSmsManage', params, { responseType: 'blob' }).then(res => res && res.data)
+// },
 // 查询亲情电话申请列表ywt-admin
  familyPhoneList: params => {
   return qaApis.get('/parse/familyphone/apply/page', params).then(res => res && res.data)

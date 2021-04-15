@@ -28,7 +28,7 @@
       </template>
       <template
         slot="append"
-        v-if=" user.role === '6' ">
+        v-if=" user.role ">
         <el-button
           type="primary"
           :loading="downloading"

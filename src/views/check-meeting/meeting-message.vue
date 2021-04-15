@@ -318,6 +318,7 @@ import Moment from 'moment'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
+import { helper } from '@/utils'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -666,10 +667,18 @@ export default {
     },
     async onDownloadExcel(){
       this.filter.tab = this.tabs
-       let res = await http.exportMessage({
-        ...this.filter,
-        ...this.pagination
-      })
+       let link = document.createElement('a'),
+           res = await http.exportMessage({}),
+          url = helper.createObjectURL(res.data)
+      link.href = url
+      link.id = 'linkId'
+      link.setAttribute('download', '账户管理记录.xls')
+      document.body.appendChild(link)
+      document.getElementById('linkId').click()
+      document.body.removeChild(document.getElementById('linkId'))
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
     },
    async getDatas() {
      this.filter.tab = this.tabs
