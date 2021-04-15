@@ -250,9 +250,10 @@
                         subhead: row.subhead,
                         content: row.content,
                         videoUrl: row.videoUrl,
-                        seq: row.seq
+                        seq: row.seq,
+                        type: row.type
                     })
-                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }?gid=${ row.id }&type=${ row.type }`
+                    this.$router.push({ path: `/prison-affairs-edit/${ this.$route.meta.typeId }?gid=${ row.id }`
                     })
                 // 预览
                 } else if (type == 'detail') {
