@@ -6,7 +6,7 @@ export default {
     // 亲情监管通话纪要查询
     getIntraFamilyphoneCon: params => service.get(service.getIntraUrl('/tel/summary/showSummary'), params),
     // 亲情监管通话复核-添加通话纪要
-    createIntraFamilyReview: data => service.post(service.getIntraUrl('/tel/summary/saveSummary'), data),
+    createIntraFamilyReview: data => service.postObj(service.getIntraUrl('/tel/summary/saveSummary'), data),
     // 亲情监管音视频详情查询
     getIntraFamilyphoneDet: params => service.get(service.getIntraUrl('/tel/summary/showVideoTelSummaryDetails'), params),
     // 查询亲情电话申请列表

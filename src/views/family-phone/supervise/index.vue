@@ -2,10 +2,13 @@
     <el-row
         class="row-container"
         :gutter="0">
-        <!-- <m-excel-download
-            v-if="hasAllPrisonQueryAuth"
-            path="/download/exportMettings"
-            :params="filter" /> -->
+        <m-excel-download
+            :path="`${ isAdmin ? '/familyphonesummary/export' : '/download/exportVideoTelSummary' }`"
+            :params="filter"
+            :apiConfigs="{
+              apiHostKey: `${ isAdmin ? 'apiHost' : 'jailApiHost' }`,
+              apiPathKey: 'apiPath'
+            }" />
         <m-search
             :items="searchItems"
             ref="search"
@@ -93,6 +96,7 @@
                 },
                 {
                     label: '操作',
+                    align: 'center',
                     slotName: 'operation'
                 }
             ]
@@ -142,15 +146,6 @@
                 reviewData: {}
             }
         },
-        created() {
-            // http.getFamilyphoneSumCons('135')
-            // http.getIntraFamilyphoneSum()
-            // this.getIntraFamilyphoneCon('')
-            // http.createIntraFamilyReview({
-
-            // })
-            // http.getIntraFamilyphoneDet()
-        },
         watch: {
             tab() {
                 this.$refs.search.onClear()
@@ -167,7 +162,7 @@
             },
 
             async getData() {
-                const params = { tab: this.tab, ...this.filter, ...this.pagination }
+                const params = Object( this.isAdmin ? { type: this.tab } : { tab: this.tab }, { ...this.filter, ...this.pagination } )
                 let { data } = await http[ this.isAdmin ? 'getFamilyphoneSum' : 'getIntraFamilyphoneSum' ](params)
                 if( data && data.list ) {
                     this.tableDatas = data.list
@@ -175,18 +170,20 @@
                 }
             },
 
-            handleReview({ callId, meetingId }, type) {
+            handleReview({ callId, meetingId, flag }, type) {
                 this.reviewData = {
-                    tab,
                     callId,
                     meetingId,
+                    flag,
                     type,
-                    title: type == 'media' ? '通话视频或录音' : '通话纪要'
+                    tab: this.tab,
+                    isAdmin: this.isAdmin
                 }
                 this.summaryModalVisble = true
             },
             async handleSaveSummary(data) {
                 await http.createIntraFamilyReview(data)
+                this.getData()
             }
         },
         mounted() {

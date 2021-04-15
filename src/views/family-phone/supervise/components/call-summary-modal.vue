@@ -1,54 +1,48 @@
 <template>
-    <el-dialog :visible.sync="visible" :title="reviewData.title" width="720px">
+    <el-dialog :visible.sync="visible" :title="`${ reviewData.type == 'media' ? '通话视频或录音' : '通话纪要' }`" width="720px" @close="handleClose">
         <div class="summary-scroller">
-            <el-table
-                class="summary-table"
-                :data="tableData"
-                style="width: 100%">
-                <el-table-column
-                    prop="date"
-                    label="日期"
-                    width="180">
-                </el-table-column>
-                <el-table-column
-                    prop="name"
-                    label="姓名"
-                    width="180">
-                </el-table-column>
-                <el-table-column
-                    prop="address"
-                    label="地址">
-                </el-table-column>
-            </el-table>
-            <div class="summary-container clearfix">
+            <template v-if="reviewData.type == 'media'">
+                <m-table-new
+                    stripe
+                    :data="tableDatas"
+                    :cols="tableCols"
+                    :height="245">
+                    <template #media="{ row }">
+                        <template v-if="row.phoneType == '1'">
+                            <m-audio v-if="row.filePath" :value="`${ row.filePath }?token=${ $urls.token }`" />
+                            <span v-else>暂无音频</span>
+                        </template>
+                        <template v-if="row.phoneType != '1'">
+                            <video
+                                v-if="row.filePath"
+                                controls
+                                poster="/static/images/video-background.png"
+                                style="width: 198px; height: 112px;"
+                                :src="`${ row.filePath }?token=${ $urls.token }`">
+                            </video>
+                            <span v-else>暂无视频</span>
+                        </template>
+                    </template>
+                    <template #duration="{ row }">
+                        {{ row.duration | formatDuration }}
+                    </template>
+                </m-table-new>
+            </template>
+            <div class="summary-container clearfix" v-for="r in records">
                 <dl class="summary-item">
                     <dt>通话纪要记录人：</dt>
-                    <dd>狱警姓名或账号</dd>
+                    <dd>{{ r.createdBy }}</dd>
                 </dl>
                 <dl class="summary-item">
                     <dt>记录时间：</dt>
-                    <dd>2021-03-10 11:30:23</dd>
+                    <dd>{{ r.createdAt }}</dd>
                 </dl>
                 <dl class="summary-item" style="width: 100%;">
                     <dt>通话纪要内容：</dt>
-                    <dd>点击通话视频或录音栏的视频录音详情，打开视频录音弹窗，弹窗中包括罪犯姓名、家属姓名、视频录音文件 以及 通话纪要；点击弹窗中的视频或录音，可看或听视频和录音的具体内容，视频录音不可删除、编辑；可查看通话纪要，已符合的通话纪要不可编辑；</dd>
+                    <dd>{{ r.remarks }}</dd>
                 </dl>
             </div>
-            <div class="summary-container clearfix">
-                <dl class="summary-item">
-                    <dt>通话纪要记录人：</dt>
-                    <dd>狱警姓名或账号</dd>
-                </dl>
-                <dl class="summary-item">
-                    <dt>记录时间：</dt>
-                    <dd>2021-03-10 11:30:23</dd>
-                </dl>
-                <dl class="summary-item" style="width: 100%;">
-                    <dt>通话纪要内容：</dt>
-                    <dd>点击通话视频或录音栏的视频录音详情，打开视频录音弹窗，弹窗中包括罪犯姓名、家属姓名、视频录音文件 以及 通话纪要；</dd>
-                </dl>
-            </div>
-            <div class="summary-form">
+            <div class="summary-form" v-if="reviewData.flag == '0'">
                 <el-input
                     type="textarea"
                     placeholder="请补充通话纪要"
@@ -57,7 +51,7 @@
             </div>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="visible = false">取 消</el-button>
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="handleSubmit">确 定</el-button>
         </span>
     </el-dialog>
@@ -72,54 +66,88 @@
             reviewData: Object,
             onSave: Function
         },
+        filters: {
+            formatDuration(val) {
+                let _h, _m, _s;
+                _h = parseInt(val / 3600)
+                _s = val % 3600
+                _m = parseInt( _s / 60 )
+                _s %= 60
+                return `${ _h ? `${ _h }时` : '' }${ _m ? `${ _m }分` : '' }${ _s ? `${ _s }秒` : '' }`
+            }
+        },
         watch: {
             value: {
                 handler(val) {
                     this.visible = val
-                    this.getSummaryDetails()
-                },
-                immediate: true
+                    val && this.getSummaryDetails()
+                }
             }
         },
         data() {
             return {
                 visible: false,
+                remarks: '',
+                records: [],
                 tableDatas: [],
                 tableCols: [
                     {
                         label: '视频或录音',
-                        slotName: 'media'
+                        slotName: 'media',
+                        align: 'center'
                     },
                     {
                         label: '通话时间段',
-                        prop: 'callTime'
+                        prop: 'callTime',
+                        align: 'center'
                     },
                     {
                         label: '通话时长',
-                        prop: 'duration'
+                        slotName: 'duration',
+                        width: '100px',
+                        align: 'center'
                     }
                 ]
             }
         },
         methods: {
             async getSummaryDetails() {
+                let _params = {
+                    callId: this.reviewData.callId,
+                    tab: this.reviewData.tab,
+                    type: this.reviewData.tab
+                }
+                if( _params.tab == '2' ) {
+                    _params.meetingId = this.reviewData.meetingId
+                }
                 if( this.reviewData.type == 'media' ) {
-                    let _params = {
-                        callId: this.reviewData.callId,
-                        tab: this.reviewData.tab
-                    }
-                    if( _params.tab == '2' ) {
-                        _params.meetingId = this.reviewData.meetingId
-                    }
-                    let { data } = http.getIntraFamilyphoneDet(_params)
+                    let { data } = await http.getIntraFamilyphoneDet(_params)
                     if( data.details && data.details.records ) {
                         this.tableDatas = data.details.records
                     }
                 }
+                let { data: _data } = await http[ this.reviewData.isAdmin ? 'getFamilyphoneSumCons' : 'getIntraFamilyphoneCon' ](_params)
+                if( _data ) {
+                    this.records = _data
+                }
             },
 
             handleSubmit() {
+                if( this.reviewData.flag == '0' && !this.remarks ) {
+                    this.$message.error('请输入通话纪要')
+                    return
+                }
+                let _summary = Object.assign(
+                    { type: '2', remarks: this.remarks },
+                    this.reviewData.tab == '1' ? { videoId: this.reviewData.callId } : { sequence: this.reviewData.callId }
+                )
+                this.$emit('on-save', _summary)
+                this.handleClose()
+            },
 
+            handleClose() {
+                this.$emit('input', false)
+                this.remarks = ''
             }
         },
     }
