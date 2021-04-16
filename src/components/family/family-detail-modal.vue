@@ -39,11 +39,11 @@
             <el-col class="img-box">
                 <label>关系证明：</label>
                 <div class="img-items">
-                    <m-img-viewer v-for="(item, index) of familyDetData.relationalProofUrls"
-                        :key="index"
+                    <m-img-viewer v-for="(u, i) of familyDetData.relationalProofUrls"
+                        :key="i"
                         title="关系证明图"
                         :class="{ 'relation_img': familyDetData.relationalProofUrls.length !== 1 }"
-                        :url="item.url" />
+                        :url="u" />
                 </div>
             </el-col>
         </el-row>
@@ -91,7 +91,7 @@
                 _data.relationalProofUrls = []
                 let _keys = [ 'familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4' ]
                 Object.keys(_data).forEach(key => {
-                    if( _keys.includes(key) ) {
+                    if( _keys.includes(key) && _data[key] ) {
                         _data.relationalProofUrls.push( _data[key] )
                     }
                 })
