@@ -30,7 +30,7 @@
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row, 'remote')">可视电话配置</el-button>
+        @click="onVisit(row.id, 'remote')">可视电话配置</el-button>
       <el-button
         type="text"
         size="mini"
