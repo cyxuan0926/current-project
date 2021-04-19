@@ -318,7 +318,8 @@ import Moment from 'moment'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
-import { helper } from '@/utils'
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -666,19 +667,28 @@ export default {
       }
     },
     async onDownloadExcel(){
-      this.filter.tab = this.tabs
-       let link = document.createElement('a'),
-           res = await http.exportMessage({}),
-          url = helper.createObjectURL(res.data)
-      link.href = url
-      link.id = 'linkId'
-      link.setAttribute('download', '账户管理记录.xls')
-      document.body.appendChild(link)
-      document.getElementById('linkId').click()
-      document.body.removeChild(document.getElementById('linkId'))
+       this.downloading = true
+
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        tabItem = this.tabPanes.filter(tabItem => tabItem.name === this.tabs),
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/export/exportSmsManage",
+          methods:'get',
+          params: { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: "getIntraUrl"
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `短信申请管理-${ TABName }-${ times }`,
+      })
+
       setTimeout(() => {
         this.downloading = false
       }, 300)
+
     },
    async getDatas() {
      this.filter.tab = this.tabs

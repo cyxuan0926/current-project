@@ -5,11 +5,13 @@
       :items="searchItems"
       @search="onSearch"
     >
-        <m-excel-download
-          slot="append"
-          :path="'/'"
-          :params="{}"
-        />
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+       </template>
     </m-search>
     <el-col :span="24">
       <m-table-new stripe
@@ -128,6 +130,7 @@ export default {
       messageContent:"",
       todayDate,
       oneMonthLater,
+      downloading:false,
       tabledate:{},
       toShow:{},
       searchItems: {
@@ -236,8 +239,28 @@ export default {
     }
   },
   methods: {
+       // 导出excel
+    async onDownloadExcel() {
+     this.downloading = true
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/download/settle-account/export",
+          methods:'get',
+          params: { ...this.filter},
+          isPrisonInternetGetUrlWay: false
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `亲情电话通话统计报表-${ times }`,
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
     async getDetail(e,type=false){
-      console.log(e)
        let res= await http.familyPhoneAccountDetail({ id: e.id })
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
@@ -267,8 +290,8 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        startTime: this.oneMonthLater,
-        endTime: this.todayDate
+        startDate: this.oneMonthLater,
+        endDate: this.todayDate
       })
     },
   mounted() {
