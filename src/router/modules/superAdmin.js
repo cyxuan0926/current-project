@@ -555,7 +555,7 @@ superAdmin = [{
       name: 'FamilyPhoneConversationCostDetailList',
       props: {
         hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
+        hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话通话费用详情表',
