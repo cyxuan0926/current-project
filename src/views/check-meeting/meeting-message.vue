@@ -318,6 +318,8 @@ import Moment from 'moment'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -665,11 +667,28 @@ export default {
       }
     },
     async onDownloadExcel(){
-      this.filter.tab = this.tabs
-       let res = await http.exportMessage({
-        ...this.filter,
-        ...this.pagination
+       this.downloading = true
+
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        tabItem = this.tabPanes.filter(tabItem => tabItem.name === this.tabs),
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/export/exportSmsManage",
+          methods:'get',
+          params: { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: "getIntraUrl"
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `短信申请管理-${ TABName }-${ times }`,
       })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+
     },
    async getDatas() {
      this.filter.tab = this.tabs

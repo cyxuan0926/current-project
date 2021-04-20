@@ -5,11 +5,13 @@
       :items="searchItems"
       @search="onSearch"
     >
-        <m-excel-download
-          slot="append"
-          :path="'/'"
-          :params="{}"
-        />
+     <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+       </template>
     </m-search>
     <el-col :span="24">
       <el-tabs v-model="tabs" type="card">
@@ -41,7 +43,7 @@
       @onPageChange="getDatas" 
       :total="tabledate.size"
     />
-     <el-dialog
+    <el-dialog
       :visible.sync="show.dialog"
       title="详情"
       width="780px"
@@ -120,6 +122,8 @@
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
 import http from '@/service'
@@ -157,6 +161,7 @@ export default {
       tabs: '0',
       todayDate,
       oneMonthLater,
+      downloading: false,
       tabledate:{},
       toShow:{},
       searchItems: {
@@ -289,8 +294,30 @@ export default {
   },
 
   methods: {
-    async getDetail(e,type=false){
-      console.log(e)
+       // 导出excel
+    async onDownloadExcel() {
+     this.downloading = true
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/parse/familyphone/apply/export",
+          methods:'get',
+          params: { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: false
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `亲情电话申请管理报表-${ TABName }-${ times }`,
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
+     async getDetail(e,type=false){
        let res= await http.familyPhoneDetail({ id: e.id })
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
@@ -304,7 +331,7 @@ export default {
       },
     async getDatas() {
      this.filter.tab = this.tabs
-     let res = await http.familyPhoneList({
+     let res = await http.QAYWT_familyPhoneList({
         ...this.filter,
         ...this.pagination
       })
@@ -320,12 +347,12 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        startTime: this.oneMonthLater,
-        endTime: this.todayDate
+        startDate: this.oneMonthLater,
+        endDate: this.todayDate
       })
     },
   mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
+     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater,this.todayDate ])
     this.getDatas()
   }
 }
