@@ -108,7 +108,7 @@ superAdmin = [{
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
-      component: 'meeting/visit-config'
+      component: 'meeting/visit-configs'
       // component: resolve => require(['@/views/meeting/visit-config'], resolve)
       // component: helper.loadView('meeting/visit-config')
       // }, {

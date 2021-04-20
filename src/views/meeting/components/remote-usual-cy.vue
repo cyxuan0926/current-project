@@ -19,7 +19,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div  v-if="separateByArea[type]">
+        <div v-if="separateByArea[type]">
           <el-form >
             <el-form-item label="请选择生产区设备:" style="width:450px">
               <div class="prisonlabel">
@@ -136,7 +136,7 @@
     </div>
     <div class="button-box">
       <el-button
-        v-if="superAdmin"
+        v-if="isSuperAdmin"
         size="small"
         @click="onGoBack">返回</el-button>
       <!--v-if="!updateShow && permission === 'edit'"-->
@@ -413,13 +413,13 @@
         }
       }
 
-      if (!this.superAdmin) this.$delete(item, 'duration')
+      if (!this.isSuperAdmin) this.$delete(item, 'duration')
 
       return this.allConfigs.map(configs => {
         return configs.map((config, index, target) => {
           const cloneItem = cloneDeep(item)
 
-          if (this.superAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
+          if (this.isSuperAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
 
           this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
@@ -1004,7 +1004,6 @@
     }
     .prisonlabel{
       width: 240px;
-      display: inline-block;
       min-height:34px ;
       margin-top: 4px;
       border: 1px solid #dcdfe6 ;

@@ -77,11 +77,6 @@
             </template>
             
             <template v-if="config.timeperiodQueue.length">
-              <!-- 通话时长/时间间隔 -->
-              <!-- <div v-if="!superAdmin" class="none_superAdmin">
-                <label >通话时长</label>
-                <span>{{ config.duration }} 分钟</span>
-              </div> -->
               <m-form
                 class="duration-interval-form"
                 :items="durationIntervalItems[type][index]"
@@ -183,7 +178,7 @@
 
     <div class="button-box">
       <el-button
-        v-if="superAdmin"
+        v-if="isSuperAdmin"
         size="small"
         @click="onGoBack">返回</el-button>
 

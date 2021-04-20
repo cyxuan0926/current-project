@@ -30,7 +30,7 @@
         <template v-if="config.timeperiodQueue.length">
           <!-- 通话时长/时间间隔 -->
 
-          <!-- <div v-if="!superAdmin" class="none_superAdmin">
+          <!-- <div v-if="!isSuperAdmin" class="none_superAdmin">
             <label >通话时长</label>
             <span>{{ config.duration }} 分钟</span>
           </div> -->
@@ -347,11 +347,11 @@
             rules: ['required', 'isNumber']
           }
         }
-        // if (!this.superAdmin) this.$delete(item, 'duration')
+        // if (!this.isSuperAdmin) this.$delete(item, 'duration')
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
-            // if (this.superAdmin ) {
+            // if (this.isSuperAdmin ) {
             //   this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
             // }
             this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)

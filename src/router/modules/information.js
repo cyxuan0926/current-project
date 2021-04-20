@@ -281,7 +281,7 @@ let infomation = [{
     name: 'visit-config',
     props: { role: 3 },
     meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '现场探视预约配置' },
-    component: 'meeting/visit-config'
+    component: 'meeting/visit-configs'
     // component: resolve => require(['@/views/meeting/visit-config'], resolve)
     // component: helper.loadView('meeting/visit-config')
   }]
