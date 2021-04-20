@@ -543,7 +543,7 @@ superAdmin = [{
       name: 'FamilyPhoneFamiliesList',
       props: {
         hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
+        hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话家属信息',

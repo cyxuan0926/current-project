@@ -271,7 +271,6 @@ export default {
       }, 300)
     },
     async getDetail(e,type=false){
-      console.log(e)
        let res= await http.familyPhoneAccountDetail({ id: e.id })
           if (!res) return
         this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
