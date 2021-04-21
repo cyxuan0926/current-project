@@ -45,6 +45,7 @@
           <el-select
             v-model="prisonUser.roleIds"
             placeholder="请选择角色"
+            multiple
             clearable>
             <template v-for="item in rolesList">
               <el-option            
@@ -120,7 +121,7 @@ export default {
     onSubmit() {
       this.$refs.prisonUser.validate(valid => {
         if (valid) {
-          let {id, policeNumber, prisonConfigIds, realName, roleIds, username} = this.prisonUser, params = { id, policeNumber, prisonConfigIds, realName, roleIds:[roleIds], username}
+          let {id, policeNumber, prisonConfigIds, realName, roleIds, username} = this.prisonUser, params = { id, policeNumber, prisonConfigIds, realName, roleIds, username}
           if (!this.hasPrisonArea || !params.prisonConfigIds.length) params.prisonConfigIds = null
           else {
             params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {

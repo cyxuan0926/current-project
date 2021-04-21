@@ -52,6 +52,7 @@
           <el-select
             v-model="prisonUser.roleIds"
             placeholder="请选择角色"
+            multiple
             clearable>
             <template v-for="item in rolesList">
               <el-option               
@@ -97,7 +98,7 @@ export default {
         roleIds: [{ required: true, message: '请选择角色' }]
       },
       hasPrisonArea: true,
-      prisonUser: { prisonConfigIds: [] }
+      prisonUser: { prisonConfigIds: [], roleIds: [] }
       // prisonConfigIdsProps: {
       //   label: 'name',
       //   value: 'id',
@@ -165,7 +166,7 @@ export default {
         if (valid) {
           const res = await this.estimateUsername({username: this.prisonUser.username})
           if(!res) return
-          let params = Object.assign({}, this.prisonUser, {roleIds: [this.prisonUser.roleIds]})
+          let params = Object.assign({}, this.prisonUser, {roleIds: this.prisonUser.roleIds})
           if (!this.hasPrisonArea) delete params.prisonConfigIds
           else {
             params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
