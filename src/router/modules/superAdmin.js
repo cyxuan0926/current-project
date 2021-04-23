@@ -491,12 +491,26 @@ superAdmin = [{
         permission: 'visit.meeting.family-phone.search'
       },
       component: 'check-meeting/meeting-family-statistics'
-    }, {
+    },
+    //  {
+    //   path: '/meeting-report/meeting-sadmin-island-list',
+    //   component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
+    //   props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+    //   meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
+    // },
+    //  {
+    //   path: '/meeting-report/meeting-sadmin-island-list',
+    //   component: 'gd-admin/gd-meeting/sadmin-meeting-call-detail',
+    //   props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+    //   meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '服刑人员会见登记表-广西' }
+    // },
+    {
       path: '/meeting-report/meeting-sadmin-island-list',
-      component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
+      component: 'gd-admin/gd-meeting/sadmin-meeting-user-number',
       props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
-      meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
-    }]
+      meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '会见量和参会人数统计报表' }
+    }
+  ]
   }, {
     path: '/prison-message',
     name: 'prison-message',
