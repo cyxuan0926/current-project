@@ -1204,6 +1204,8 @@ export default {
     onFamilyInformationDialogFormSubmit(values) {
       const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, values)
 
+      let isSucess = false
+
       if (hasNoChange) {
         this.$message({
           showClose: true,
@@ -1213,33 +1215,17 @@ export default {
         })
       } else {
         (async () => {
-          const url = this.apiUrls['newOrEditUrl'], {
-            familyPhone,
-            relationship,
-            id,
-            isPhoneSms,
-            isEdit
-          } = values
+          const url = this.apiUrls['newOrEditUrl']
 
-          let params = values
-
-          if (this.familyInformationDialogOperationType) {
-            params = {
-              familyPhone,
-              relationship,
-              id,
-              isPhoneSms,
-              isEdit
-            }
-          }
-
-          await this.operateFamilyPhoneFamilies({ url, params })
+          isSucess = await this.operateFamilyPhoneFamilies({ url, values })
         })()
       }
 
       setTimeout(() =>{
         this.onCloseFamilyInformationDialog()
       }, 1000)
+
+      if (isSucess) this.getDatas()
     },
 
     onOpenFamilyInformationDialog() {
@@ -1259,10 +1245,17 @@ export default {
 
           this.familyInformationDialogFormValues = cloneDeep(this.originalFamilyInformationDialogFormValues)
 
-          this.$set(this.familyInformationDialogFormItems, 'buttons', [{
-            add: true,
-            text: '提交审批'
-          }, 'cancel'])
+          if (isEdit === 2) {
+            this.$set(this.familyInformationDialogFormItems, 'buttons', [{
+              add: true,
+              text: '提交审批'
+            }, 'cancel'])
+          } else {
+            this.$set(this.familyInformationDialogFormItems, 'buttons', [{
+              add: true,
+              text: '保存'
+            }, 'cancel'])
+          }
 
           if (isPassed.includes(isEdit) && disabledItemKeys.includes('relationship')) {
             const index = disabledItemKeys.findIndex(key => key === 'relationship')
@@ -1368,13 +1361,15 @@ export default {
           params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs },
           isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
         }
+
       if (this.isSuperAdmin) params['methods'] = 'get'
-    console.log(params)
+
       await tokenExcel({
         params,
         actionName,
         menuName: `亲情电话家属管理-${ TABName }-${ times }`,
       })
+
       setTimeout(() => {
         this.downloading = false
       }, 300)
@@ -1546,7 +1541,7 @@ export default {
 
     // 获取当前驳回原因列表
     async onRejectshow(str,isform) {
-      let params={}
+      let params = {}
 
       params.jailId = JSON.parse(localStorage.getItem('user')).jailId
 
@@ -1602,10 +1597,10 @@ export default {
       } else {
         let params = {
           id: this.contentId,
-          type:6,
-          content:this.content,
-          updateer:JSON.parse(localStorage.getItem('user')).realName,
-          jailId:JSON.parse(localStorage.getItem('user')).jailId
+          type: 6,
+          content: this.content,
+          updateer: JSON.parse(localStorage.getItem('user')).realName,
+          jailId: JSON.parse(localStorage.getItem('user')).jailId
         }
 
         let res = await http.setIntraRejectEdit(params)
@@ -1627,7 +1622,7 @@ export default {
             this.content = []
           }
         }
-        this.show.editRebut=true
+        this.show.editRebut = true
       }
     },
 

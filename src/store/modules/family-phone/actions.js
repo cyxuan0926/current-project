@@ -22,7 +22,7 @@ export default {
     try {
       const response = await familyPhoneApi.operateFamilyPhoneFamilies(params)
 
-      const isSucess = response ? response['code'] === 200 : response
+      const isSucess = response && response['code'] === 200
 
       return isSucess
     }
