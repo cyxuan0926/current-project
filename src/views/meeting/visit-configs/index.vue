@@ -4,72 +4,109 @@
       v-model="activeName"
       type="border-card"
       class="min-height-400"
-      @tab-click="handleClick">
-      <!-- 常规配置才有可视电话申请提前天数这个配置 -->
+      @tab-click="handleClick"
+    >
       <div v-if="haveRemoteVisitDay" class="remote-visit-form">
-        <remote-visit-day v-model="advanceDayLimit_" :on-submit="handleUpdateAdvanceDayLimit" />
+        <remote-visit-day
+          v-model="advanceDayLimit_"
+          :on-submit="handleUpdateAdvanceDayLimit"
+          :tipText="tipText"
+          :formLabelText="formLabelText"
+        />
+      </div>
+
+      <div class="el-form-item meeting_windowSize">
+        <label class="el-form-item__label">现场探视窗口个数</label>
+
+        <div class="form-meeting_windowSize">
+          <el-input
+            class="part-right"
+            v-model.number="windowSize"
+            size="small"
+            placeholder="请填写现场探视窗口个数"
+          >
+            <template slot="append">/个</template>
+          </el-input>
+
+          <span v-if="Boolean(errorMsg)" class="tips">{{ errorMsg }}</span>
+        </div>
       </div>
 
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
           :key='item.key'
-          :name="item.key">
-
+          :name="item.key"
+        >
           <keep-alive>
-            <component v-if='activeName === item.key' :is="activeName" />
+            <component v-if='activeName === item.key' :is="activeName" v-model="windowSize" />
           </keep-alive>
         </el-tab-pane>
       </template>
     </el-tabs>
   </div>
-
 </template>
 
 <script>
-import remoteVisitDay from './components/remote-visit-day-cy'
-import usual from './components/remote-usual-cy'
-import special from './components/remote-special-cy'
-import times from './components/remote-times'
+import remoteVisitDay from '../components/remote-visit-day-cy'
 
-import meetingFloor from './components/remote-meeting-floor'
+import usual from './components/visit-usual'
 
-import { mapActions, mapState, mapMutations } from 'vuex';
+import special from './components/visit-special'
+
+import { mapActions, mapState, mapMutations } from 'vuex'
+
+import validator from '@/utils'
 export default {
   components: {
     // 可视电话提前天数
     remoteVisitDay,
+
     // 常规配置
     usual,
+
     // 特殊配置
-    special,
-    // 每人日申请次数限制配置
-    times,
-
-    // 会见楼配置
-    meetingFloor
+    special
   },
-  data() {
-    const remoteVisitDayNames = ['usual', 'meetingFloor']
 
+  data() {
+    const remoteVisitDayNames = ['usual']
+
+    const tabMapOptions = [
+      {
+        label: '现场探视常规配置',
+        key: 'usual'
+      },
+
+      {
+        label: '现场探视特殊日期配置',
+        key: 'special'
+      }
+    ]
     return {
+      tabMapOptions,
+
       // 标签页 也对应组件名称
       activeName: 'usual',
+
       // 标签页选项
+      advanceDayLimit_: [2, 15],
 
-      advanceDayLimit_: [2, 15], // 实际操作的远程探视申请需提前天数(cy)
+      remoteVisitDayNames,
 
-      remoteVisitDayNames
+      tipText: '*家属预约现场探视日期设置，以自然日为单位',
+
+      formLabelText: '现场探视预约日期管理',
+
+      windowSize: 1
     }
   },
   computed: {
     // 最开始的远程探视申请需提前天数
-    // ['advanceDayLimit']
     ...mapState({
       advanceDayLimit: state => state.advanceDayLimit,
-
-      jailsMeetingFloorStatus: state => state.global.jailsMeetingFloorStatus
     }),
+
     // 监狱id
     jailId() {
       return this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
@@ -80,34 +117,28 @@ export default {
       return this.remoteVisitDayNames.includes(this.activeName)
     },
 
-    tabMapOptions() {
-      let _tabMapOptions = [
-        {
-          label: '常规配置',
-          key: 'usual'
-        },
-        {
-          label: '会见楼配置',
-          key: 'meetingFloor'
-        },
-        {
-          label: '特殊日期配置',
-          key: 'special'
-        },
-        {
-          label: '每人日申请次数限制配置',
-          key: 'times'
+    errorMsg() {
+      if (this.windowSize === null || this.windowSize === undefined) return ''
+
+      let msg = '', handleValid = v => {
+        if (typeof v === 'object') {
+          if (!msg) msg = v.message
         }
-      ]
+      }
 
-      if (!this.jailsMeetingFloorStatus) _tabMapOptions.splice(1, 1)
+      validator.required({ message: '请填写现场探视窗口个数' }, this.windowSize, handleValid)
 
-      return _tabMapOptions
+      validator.isNumber({}, this.windowSize, handleValid)
+
+      validator.numberRange({ min: 1, max: 60 }, this.windowSize, handleValid)
+
+      return msg
     }
   },
   watch: {
     // 路由变化
     '$route': 'render',
+
     // 路由的参数变化
     '$route.query': {
       handler(query) {
@@ -118,7 +149,8 @@ export default {
         }
       }
     },
-    // 初始化实际操作的远程探视申请需提前天数(cy)
+
+    // 初始化实际操作的远程探视申请需提前天数
     advanceDayLimit: {
       immediate: true,
       handler(val) {
@@ -126,19 +158,21 @@ export default {
       }
     }
   },
+
   // 获取申请提前天数
   async created() {
-    await Promise.all([this.getRemoteAdvanceDayLimits({ jailId: this.jailId }), this.getJailsMeetingFloorStatus(this.jailId)])
+    await this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
   },
+
   // 渲染组件
   mounted() {
     this.render()
   },
+
   methods: {
     ...mapActions([
       'getRemoteAdvanceDayLimits',
-      'updateRemoteAdvanceDayLimit',
-      'getJailsMeetingFloorStatus'
+      'updateRemoteAdvanceDayLimit'
     ]),
 
     ...mapMutations((['setAdvanceDayLimits'])),
@@ -147,19 +181,18 @@ export default {
     handleClick() {
       this.$router.replace({ query: { tag: this.activeName } })
     },
+
     // 渲染函数
     render() {
       // 第一次渲染
       if (!this.$route.query.tag) {
         // 跳转到对应的
         this.$router.replace({ query: { tag: this.activeName } })
-      }
-      else if (this.$route.query.tag !== this.activeName) {
-        if (this.tabMapOptions.find(item => item.key === this.$route.query.tag) || this.$route.query.tag === 'meetingFloor') {
+      } else if (this.$route.query.tag !== this.activeName) {
+        if (this.tabMapOptions.find(item => item.key === this.$route.query.tag)) {
           // 把标签页对应到对应组件
           this.activeName = this.$route.query.tag
-        }
-        else {
+        } else {
           // 否则就是强制到常规配置标签页
           this.activeName = this.tabMapOptions[0].key
           // 更新路由配置
@@ -167,6 +200,7 @@ export default {
         }
       }
     },
+
     // 可视电话申请需求提前天数 更新操作实际调用的方法
     async handleUpdateAdvanceDayLimit() {
       const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
@@ -183,8 +217,34 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.w80{
+.w80 {
   padding: 20px 10%;
+
+  .meeting_windowSize {
+    display: flex;
+    align-items: center;
+    margin: 10px 0px;
+
+    label {
+      float: none;
+    }
+
+    .form-meeting_windowSize {
+      width: calc(100% - 150px);
+      position: relative;
+
+      .tips {
+        color: #F56C6C;
+        position: absolute;
+        left: 0;
+        top: 32px;
+      }
+
+      .part-right {
+        width: 40%;
+      }
+    }
+  }
 }
 
 .remote-visit-form {

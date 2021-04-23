@@ -1368,15 +1368,13 @@ export default {
           params: this.isSuperAdmin ? this.filter : { ...this.filter, tab: this.tabs },
           isPrisonInternetGetUrlWay: this.isPrisonInternetGetUrlWay
         }
-
       if (this.isSuperAdmin) params['methods'] = 'get'
-
+    console.log(params)
       await tokenExcel({
         params,
         actionName,
         menuName: `亲情电话家属管理-${ TABName }-${ times }`,
       })
-
       setTimeout(() => {
         this.downloading = false
       }, 300)

@@ -175,6 +175,8 @@
 import { mapActions } from 'vuex'
 import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 import http from '@/service'
 export default {
   mixins: [prisonFilterCreator],
@@ -381,8 +383,8 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        startDate: this.todayDate,
-        endDate: this.oneMonthLater
+        startDate:this.oneMonthLater,
+        endDate: this.todayDate
       })
     },
   mounted() {
@@ -405,11 +407,25 @@ export default {
         this.show.message=true
       },
     async onDownloadExcel(){
-      this.filter.status = this.tabs?this.tabs:''
-       let res = await http.exportMessage({
-        ...this.filter,
-        ...this.pagination
+       this.downloading = true
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        tabItem = this.tabPanes.filter(tabItem => tabItem.name === this.tabs),
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/familyMessage/export",
+          methods:'get',
+          params: { ...this.filter,status:this.tabs==0?null:this.tabs },
+          isPrisonInternetGetUrlWay: false
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `短信申请管理报表-${TABName}-${ times }`,
       })
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
     },
    async getDatas() {
      this.filter.status = this.tabs==0?null:this.tabs

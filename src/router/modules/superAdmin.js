@@ -108,7 +108,7 @@ superAdmin = [{
         activeMenu: '/prison/list',
         componentsUnRemoveKeepAlive: ['PrisonTab']
       },
-      component: 'meeting/visit-config'
+      component: 'meeting/visit-configs'
       // component: resolve => require(['@/views/meeting/visit-config'], resolve)
       // component: helper.loadView('meeting/visit-config')
       // }, {
@@ -557,7 +557,7 @@ superAdmin = [{
       name: 'FamilyPhoneFamiliesList',
       props: {
         hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
+        hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话家属信息',
@@ -569,7 +569,7 @@ superAdmin = [{
       name: 'FamilyPhoneConversationCostDetailList',
       props: {
         hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
+        hasAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话通话费用详情表',

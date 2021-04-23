@@ -5,11 +5,13 @@
       :items="searchItems"
       @search="onSearch"
     >
-        <m-excel-download
-          slot="append"
-          :path="'/'"
-          :params="{}"
-        />
+    <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+       </template>
     </m-search>
     <el-col :span="24">
       <m-table-new stripe
@@ -119,7 +121,8 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
-
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 import http from '@/service'
 export default {
   name: 'FamilyPhone_Families',
@@ -134,6 +137,7 @@ export default {
       messageContent:"",
       todayDate,
       oneMonthLater,
+      downloading: false,
       tabledate:{},
       toShow:{},
       searchItems: {
@@ -231,6 +235,27 @@ export default {
     }
   },
   methods: {
+      // 导出excel
+    async onDownloadExcel() {
+     this.downloading = true
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/download/exportVideoTelRecords",
+          methods:'get',
+          params: { ...this.filter},
+          isPrisonInternetGetUrlWay: "getIntraUrl"
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `亲情电话通话统计表-${ times }`,
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
     async getDetail(e,type=false){
        let res= await http.phoneRecordDetail({ videoId: e.uid })
           if (!res) return

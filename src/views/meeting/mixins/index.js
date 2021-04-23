@@ -6,10 +6,9 @@ import {
 
 import Moment from 'moment'
 
-import roles from '@/common/constants/roles'
-
 import { weeks } from '@/common/constants/const'
 
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -19,9 +18,7 @@ export default {
 
   computed: {
     // 国科服务管理员
-    superAdmin() {
-      return this.$store.getters.role === roles.SUPER_ADMIN
-    }
+    ...mapGetters(['isSuperAdmin'])
   },
 
   methods: {

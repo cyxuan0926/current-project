@@ -30,7 +30,7 @@
       <el-button
         type="text"
         size="mini"
-        @click="onVisit(row, 'remote')">可视电话配置</el-button>
+        @click="onVisit(row.id, 'remote')">可视电话配置</el-button>
       <el-button
         type="text"
         size="mini"
@@ -89,10 +89,10 @@ export default {
     onVisit(e, type) {
       let _path
       if (type === 'visit') {
-        _path = `/prison/visit/${ e }`
+        _path = `/prison/visit/${ e }?tag=usual`
       } else if (type === 'process') {
         _path = `/prison/process/${ e || '4411' }`
-      }else {
+      } else {
         _path = `/remote/edit/${ e }?tag=usual`
       }
       this.$router.push({path: _path})

@@ -15,11 +15,13 @@
           <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
         </template>
       </template>
-        <m-excel-download
-          slot="append"
-          :path="'/'"
-          :params="{}"
-        />
+       <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+       </template>
     </m-search>
 
     <el-col :span="24">
@@ -36,13 +38,26 @@
       <m-table-new stripe
          :data="tabledate.list"
          :cols="tableCols">
+          <template #familyName="{ row }">
+                    <template v-if="!row.isReg">
+                        <span v-for="f in row.families" :key="f.familyId">{{ f.familyName }}</span>
+                    </template>
+                    <template v-if="row.isReg">
+                        <el-button
+                            v-for="f in row.families"
+                            :key="f.familyId"
+                            type="text"
+                            size="mini"
+                            @click="handleQueryFamilyDet(row, f.familyId)">{{ f.familyName }}</el-button>
+                    </template>
+                </template>
 
         <template #applyReason="{row}">
            <span style="color:#409EFF;cursor: pointer;" @click="messageDetail(row)">申请理由</span>
         </template>
 
         <template #operation="{row}">
-          <el-button size="mini" @click="onAuthorize(row)">审核</el-button>
+          <el-button size="mini" v-if="row.aduitDetail=='待审核'"  @click="onAuthorize(row)">审核</el-button>
           <el-button type="text" @click="getDetail(row,true)">详情</el-button>
         </template>
       </m-table-new>
@@ -423,16 +438,15 @@
           </span>
       </el-row>
     </el-dialog>
-
+ <!-- 家属详情 -->
+        <family-detail-modal v-model="show.familyModalVisible" :familyData="familyData" />
   </el-row>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
-
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 import { mapActions, mapState } from 'vuex'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
@@ -484,6 +498,7 @@ export default {
       oneMonthLater,
       tabledate:{},
       toShow:{},
+      downloading: false,
       selectProcessOption:[],
       searchItems: {
         familyName: {
@@ -581,6 +596,7 @@ export default {
         agree: false,
         process:false,
         editRebut:true,
+        familyModalVisible:false,
         dialog:false
       },
 
@@ -664,7 +680,7 @@ export default {
         },
         {
           label: '家属姓名',
-          prop: 'familyName'
+          slotName: 'familyName'
         },
         {
           label: '家属电话',
@@ -722,6 +738,16 @@ export default {
   methods: {
     ...mapActions(['uploadFile','resetState']),
      ...mapActions('familyPhone', ['validateUploadPhone']),
+        async handleQueryFamilyDet({ criminalNumber, meetingId }, familyId) {
+                let _params = {
+                    meetingId,
+                    criminalNumber,
+                    familyId
+                }
+                    let { data } = await http.getIntraFamilyInfo(_params)
+                    this.familyData = data.family
+                    this.show.familyModalVisible = true
+            },
       refuseFormChange(e){
         let str=""
          if(!this.refuseForm.anotherRemarks){
@@ -945,6 +971,30 @@ export default {
       this.$nextTick(() => {
         this.$refs.mExcelUpload.onManualUpload()
       })
+    },
+      // 导出excel
+    async onDownloadExcel() {
+     this.downloading = true
+
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+        TABName = tabItem[0]['label'],
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/parse/familyphone/apply/exportFamilyPhoneApply",
+          methods:'post',
+          params: { ...this.filter, tab: this.tabs },
+          isPrisonInternetGetUrlWay: "getIntraUrl"
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `亲情电话申请管理-${ TABName }-${ times }`,
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
     },
 
     beforeUpload(file) {

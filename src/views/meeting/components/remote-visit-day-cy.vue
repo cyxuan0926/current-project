@@ -1,6 +1,6 @@
 <template>
   <el-form>
-    <el-form-item label="可视电话预约日期管理">
+    <el-form-item :label="formLabelText">
       <div class="remote-visit-box">
         <el-select
           v-model="advanceDayLimit_[0]"
@@ -26,9 +26,8 @@
           </el-option>
         </el-select>
         &nbsp;&nbsp;天内(包含)
-        <p class="tip">
-          *家属预约可视电话日期设置，以自然日为单位
-        </p>
+        <p class="tip">{{ tipText }}</p>
+
         <div
           v-if="hasUpdateBtn && hasChange"
           class="operate"
@@ -61,6 +60,16 @@ export default {
     onSubmit: {
       type: Function,
       default: () => () => {}
+    },
+
+    formLabelText: {
+      type: String,
+      default: '可视电话预约日期管理'
+    },
+
+    tipText: {
+      type: String,
+      default: ' *家属预约可视电话日期设置，以自然日为单位'
     }
   },
   data() {

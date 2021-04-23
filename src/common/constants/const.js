@@ -3,13 +3,18 @@ import Moment from 'moment'
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
+  '/download/exportVideoTelRecords',
   '/download/province/export',
+  '/familyMessage/export',
   '/registrations/getRelationshipFile',
   '/parse/familyphone/exportFamilyPhone',
   '/parse/familyphone/validateFpm',
   '/parse/familyphone/apply/validateFpna',
+  '/parse/familyphone/apply/exportFamilyPhoneApply',
+  '/parse/familyphone/apply/export',
   '/processDefinition/showresource',
   '/familyPhone/export',
+  '/export/exportSmsManage',
   '/settleAccounts/exportDetailExcel',
   '/settleAccounts/settlement',
   '/settleAccounts/export'

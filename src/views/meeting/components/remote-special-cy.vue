@@ -481,7 +481,7 @@
     </div>
     <div
       class="button-box"
-      v-if="superAdmin" >
+      v-if="isSuperAdmin" >
       <el-button
         size="small"
         @click="onGoBack">返回</el-button>
