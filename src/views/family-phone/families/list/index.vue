@@ -1201,10 +1201,26 @@ export default {
     },
 
     // 提交
-    onFamilyInformationDialogFormSubmit(values) {
-      const hasNoChange = isEqual(this.originalFamilyInformationDialogFormValues, values)
+    async onFamilyInformationDialogFormSubmit(values) {
+      const _origin_temp = {
+        familyPhone: this.originalFamilyInformationDialogFormValues['familyPhone'],
+        relationship: this.originalFamilyInformationDialogFormValues['relationship'],
+        id: this.originalFamilyInformationDialogFormValues['id'],
+        isPhoneSms: this.originalFamilyInformationDialogFormValues['isPhoneSms'],
+        isEdit: this.originalFamilyInformationDialogFormValues['isEdit']
+      }
 
-      let isSucess = false
+      const _values_temp = {
+        familyPhone: values['familyPhone'],
+        relationship: values['relationship'],
+        id: values['id'],
+        isPhoneSms: values['isPhoneSms'],
+        isEdit: values['isEdit']
+      }
+
+      const hasNoChange = isEqual(_values_temp, _origin_temp)
+
+      let isSuccess = false
 
       if (hasNoChange) {
         this.$message({
@@ -1214,18 +1230,14 @@ export default {
           type: 'error'
         })
       } else {
-        (async () => {
-          const url = this.apiUrls['newOrEditUrl']
+        const url = this.apiUrls['newOrEditUrl']
 
-          isSucess = await this.operateFamilyPhoneFamilies({ url, values })
-        })()
+        isSuccess = await this.operateFamilyPhoneFamilies({ url, params: values })
       }
 
-      setTimeout(() =>{
-        this.onCloseFamilyInformationDialog()
-      }, 1000)
+      this.onCloseFamilyInformationDialog()
 
-      if (isSucess) this.getDatas()
+      if (isSuccess) this.getDatas()
     },
 
     onOpenFamilyInformationDialog() {
