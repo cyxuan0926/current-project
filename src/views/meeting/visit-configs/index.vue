@@ -17,25 +17,6 @@
         </div>
       </template>
 
-      <template v-if="haveRemoteVisitDay">
-        <div class="el-form-item meeting_windowSize">
-          <label class="el-form-item__label">现场探视窗口个数</label>
-
-          <div class="form-meeting_windowSize">
-            <el-input
-              class="part-right"
-              v-model="windowSize"
-              size="small"
-              placeholder="请填写现场探视窗口个数"
-            >
-              <template slot="append">/个</template>
-            </el-input>
-
-            <span v-if="Boolean(errorMsg)" class="tips">{{ errorMsg }}</span>
-          </div>
-        </div>
-      </template>
-
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
@@ -43,16 +24,32 @@
           :name="item.key"
         >
           <keep-alive>
-            <component
-              v-if='activeName === item.key'
-              :is="activeName"
-              v-model="windowSize"
-            >
-              <template #visitMessage>
+            <component v-if='activeName === item.key' :is="activeName">
+              <template #windowSize="{ scope }">
+                <div class="el-form-item meeting_windowSize">
+                  <label class="el-form-item__label">现场探视窗口个数</label>
+
+                  <div class="form-meeting_windowSize">
+                    <el-input
+                      class="part-right"
+                      v-model="scope['windowSize']"
+                      size="small"
+                      placeholder="请填写现场探视窗口个数"
+                    >
+                      <template slot="append">/个</template>
+                    </el-input>
+
+                    <span v-if="Boolean(errorMsg(scope['windowSize']))" class="tips">{{ errorMsg(scope['windowSize']) }}</span>
+                  </div>
+                </div>
+              </template>
+
+              <template #visitNotice="{ scope }">
                 <m-form
                   class="el-form_visit-message"
                   ref="visitMessageForm"
                   :items="visitMessageFormItems"
+                  :values="scope"
                   @response="onResponse"
                 >
                   <p class="red" style="margin: 5px 0px 10px 105px;">*请填写现场探视注意事项，当家属预约现场探视时会提醒；预约成功后系统会将该信息发送至家属app端。</p>
@@ -117,15 +114,13 @@ export default {
 
       formLabelText: '现场探视预约日期管理',
 
-      windowSize: '1',
-
       visitMessageFormItems: {
         formConfigs: {
           labelWidth: '107px',
           hideRequiredAsterisk: true
         },
 
-        message: {
+        notice: {
           type: 'textarea',
           label: '现场探视须知',
           maxlength: 2000,
@@ -153,24 +148,6 @@ export default {
     // 是否拥有配置日期组件
     haveRemoteVisitDay() {
       return this.remoteVisitDayNames.includes(this.activeName)
-    },
-
-    errorMsg() {
-      if (this.windowSize === null || this.windowSize === undefined) return ''
-
-      let msg = '', handleValid = v => {
-        if (typeof v === 'object') {
-          if (!msg) msg = v.message
-        }
-      }
-
-      validator.required({ message: '请填写现场探视窗口个数' }, this.windowSize, handleValid)
-
-      validator.isNumber({}, this.windowSize, handleValid)
-
-      validator.numberRange({ min: 1, max: 60 }, this.windowSize, handleValid)
-
-      return msg
     }
   },
 
@@ -263,24 +240,48 @@ export default {
       })
     },
 
+    // 手动强制更新 提示的内容
     onInitMessageValue(value) {
       const setValue = value
 
-      this.$set(this.visitMessageFormItems['message'], 'setValueConfigs', [{ setValue }])
+      this.$set(this.visitMessageFormItems['notice'], 'setValueConfigs', [{ setValue }])
 
-      this.$refs['visitMessageForm'][0].setFieldValue('', 'message', this.visitMessageFormItems['message'])
+      this.$refs['visitMessageForm'][0].setFieldValue('', 'notice', this.visitMessageFormItems['notice'])
     },
 
-    async onParentSubimt() {
+    // 调用
+    async onParentSubimt(windowSizes) {
       try {
         const isChecked = await this.$refs['visitMessageForm'][0].onCheck()
 
-        if (this.haveRemoteVisitDay) return !this.errorMsg && isChecked && this.formModel
+        let windowSizeChecked = false
 
-        else isChecked && this.formModel
+        if (Array.isArray(windowSizes)) windowSizeChecked = windowSizes.every(windowSize => !this.errorMsg(windowSize))
+
+        if (Object.prototype.toString.call(windowSizes) === '[object String]') windowSizeChecked = !this.errorMsg(windowSizes)
+
+        return windowSizeChecked && isChecked && this.formModel
       } catch (err) {
         Promise.reject(err)
       }
+    },
+
+    errorMsg(windowSize) {
+      if (windowSize === null || windowSize === undefined) return ''
+
+      let msg = '', handleValid = v => {
+        if (typeof v === 'object') {
+          if (!msg) msg = v.message
+        }
+      }
+
+      validator.required({ message: '请填写现场探视窗口个数' }, windowSize, handleValid)
+
+      validator.isNumber({}, windowSize, handleValid)
+
+      validator.numberRange({ min: 1, max: 60 }, windowSize, handleValid)
+
+      return msg
     }
   }
 }

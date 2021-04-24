@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <slot name="windowSize" :scope="windowSizeScope" />
+
     <div class="el-form-item cycle">
       <label class="el-form-item__label c-label">周期配置</label>
 
@@ -162,7 +164,7 @@
       </div>
     </template>
 
-    <slot name="visitMessage" />
+    <slot name="visitNotice" :scope="visitNoticeScope" />
 
     <div class="button-box">
       <el-button
@@ -242,13 +244,6 @@ export default {
 
   mixins: [normalMixins],
 
-  props: {
-    value: {
-      type: String,
-      default: '1'
-    }
-  },
-
   data() {
     const validateDay = (rule, value, callback) => {
       const {
@@ -270,8 +265,6 @@ export default {
       else callback()
     }
     return {
-
-      windowSize: '1',
 
       daysPrisonAreaDialogVisible: false,
 
@@ -353,7 +346,15 @@ export default {
 
       allConfigs: [],
 
-      timeSwitch: 0
+      timeSwitch: 0,
+
+      visitNoticeScope: {
+        notice: ''
+      },
+
+      windowSizeScope: {
+        windowSize: '1'
+      }
     }
   },
 
@@ -446,21 +447,13 @@ export default {
     }
   },
 
-  watch: {
-    value: {
-      handler(val) {
-        this.windowSize = val
-      }
-    }
-  },
-
   methods: {
     ...mapActions(['getJailPrisonAreas']),
 
     async onUpdate() {
-      const result = await this.$parent.$parent.$parent.onParentSubimt()
+      const result = await this.$parent.$parent.$parent.onParentSubimt(this.windowSizeScope['windowSize'])
 
-      console.log(this.windowSize, result)
+      console.log(result, this.visitNoticeScope, this.windowSizeScope)
     },
 
     onCheckboxChange(value, key) {
@@ -519,7 +512,7 @@ export default {
   async activated() {
     // this.$nextTick(() => {
     //   this.$emit('input', '3')
-
+    //   // 这个是赋值提示内容
     //   this.$parent.$parent.$parent.onInitMessageValue('撒大大大')
     // })
   }

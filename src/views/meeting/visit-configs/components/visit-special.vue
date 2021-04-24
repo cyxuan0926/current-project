@@ -1,6 +1,6 @@
 <template>
   <div>
-    <slot name="visitMessage" />
+    <slot name="visitNotice" />
   </div>
 </template>
 
