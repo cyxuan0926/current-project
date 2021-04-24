@@ -7,9 +7,9 @@ export default {
     try {
       const res = await http.getRemoteAdvanceDayLimit(inputs)
 
-      const advanceDayLimit = res ? ( res['advanceDayLimit'] || res['startDay'] || 2 ) : 2
+      const advanceDayLimit = res ? (res['advanceDayLimit'] || res['startDay'] || 2) : 2
 
-      const dayInLimit = res ?  ( res['dayInLimit'] || res['endDay'] || 15 ) : 15
+      const dayInLimit = res ? (res['dayInLimit'] || res['endDay'] || 15) : 15
 
       commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
     }
