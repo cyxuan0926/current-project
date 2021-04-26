@@ -775,19 +775,6 @@
             label: '罪犯编号'
           },
 
-          // prisonArea: {
-          //   type: 'select',
-          //   label: '监区',
-          //   options,
-          //   belong,
-          //   value: ''
-          // },
-          // applicationDate: {
-          //   type: 'date',
-          //   label: '申请通话时间',
-          //   miss: true,
-          //   value: ''
-          // },
           applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
@@ -797,6 +784,12 @@
             endPlaceholder: '通话结束时间'
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
+          },
+            area: {
+            type: 'select',
+            label: '通话区域',
+            options: this.$store.state.areaOptions,
+            value: ''
           },
 
           prisonerName: {

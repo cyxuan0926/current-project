@@ -458,7 +458,7 @@
           <el-button
             plain
             :loading="btnDisable"
-            @click="onAuthorization('WITHDRAW')">提交</el-button>
+            @click="submitReject()">提交</el-button>
           <el-button
             type="danger"
             plain
@@ -939,6 +939,20 @@ export default {
 
       this.dialogTitle = '授权'
     },
+    submitReject(){
+       this.$confirm('撤回该家属认证后，该家属的所有预约均将取消，请问确认撤回吗?', '提示', {
+                          confirmButtonText: '确定',
+                          cancelButtonText: '取消',
+                          type: 'warning'
+                        }).then(() => {
+                          this.onAuthorization('WITHDRAW')
+                        }).catch(() => {
+                          this.$message({
+                            type: 'info',
+                            message: '已取消撤回'
+                          });
+                        });
+    },
     onAuthorization(e) {
       this.btnDisable = true
       let params = { id: this.toAuthorize.id, status: e }
@@ -978,9 +992,7 @@ export default {
 
     onCloseWithdrawDialog() {
       this.closeWithdraw()
-
       this.toAuthorize = {}
-
       this.getDatas()
     },
 

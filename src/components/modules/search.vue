@@ -54,6 +54,17 @@
           :picker-options="item.pickerOptions"
           value-format="yyyy-MM"
           :placeholder="item.label"/>
+          <el-date-picker
+          :key="index"
+          v-if="item.type === 'year' && !item.miss"
+          v-model="item.value"
+          type="year"
+          :size="item.size"
+          :clearable="!item.canNotClear"
+          :editable="!item.canNotClear"
+          :picker-options="item.pickerOptions"
+          value-format="yyyy"
+          :placeholder="item.label"/>
         <el-date-picker
           :key="index"
           v-if="item.type === 'datetimerange' && !item.miss"
