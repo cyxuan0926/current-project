@@ -48,7 +48,7 @@ export default {
 
       res.prisonConfigIds = prisonConfigIds
 
-      res.roleIds = role[0]
+      res.roleIds = role
 
       commit('getPrisonUserDetail', res)
 

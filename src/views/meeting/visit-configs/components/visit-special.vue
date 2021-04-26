@@ -1,9 +1,9 @@
 <template>
-  <h2>222</h2>
+  <div>
+    <slot name="visitNotice" />
+  </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {}
 </script>

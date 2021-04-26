@@ -1,24 +1,22 @@
 import * as service from '@/service/config/service'
 
 export default {
-  // 远程探视提前申请天数配置-获取
-  getRemoteAdvanceDayLimit: (params) => {
+  // 远程/实地探视提前申请天数配置-获取
+  getRemoteAdvanceDayLimit: inupts => {
+    const { params, url = '/jails/getAdvanceDayLimit' } = inupts
+
     const defaultParams = {
       jailId: '' // 监狱id
     }
-    params = Object.assign({}, defaultParams, params)
 
-    return service.get('/jails/getAdvanceDayLimit', params).then(res => res && res.data)
+    return service.get(url, { ...defaultParams, ...params }).then(res => res && res.data)
   },
-  // 远程探视提前申请天数配置-修改
-  updateRemoteAdvanceDayLimit: (params) => {
-    const defaultParams = {
-      jailId: '', // 监狱id
-      advanceDayLimit: [2, 15] // 提前预约天数
-    }
-    params = Object.assign({}, defaultParams, params)
 
-    return service.post('/jails/updateAdvanceDayLimit', params).then(res => res && res.code === 200)
+  // 远程探视提前申请天数配置-修改
+  updateRemoteAdvanceDayLimit: inputs => {
+    const { params, url = '/jails/updateAdvanceDayLimit' } = inputs
+
+    return service.post(url, params).then(res => res && res.code === 200)
   },
   // 监狱常规配置-获取
   getRemoteNormalConfig: (params) => {

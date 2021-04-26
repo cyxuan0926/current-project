@@ -3,31 +3,34 @@ import http from './service'
 import { weeks } from '@/common/constants/const'
 
 export default {
-  getRemoteAdvanceDayLimits: async({ commit }, params) => {
+  getRemoteAdvanceDayLimits: async({ commit }, inputs) => {
     try {
-      const res = await http.getRemoteAdvanceDayLimit(params)
+      const res = await http.getRemoteAdvanceDayLimit(inputs)
 
-      let { advanceDayLimit, dayInLimit } = res
+      const advanceDayLimit = res ? (res['advanceDayLimit'] || res['startDay'] || 2) : 2
 
-      if (!advanceDayLimit) advanceDayLimit = 2
+      const dayInLimit = res ? (res['dayInLimit'] || res['endDay'] || 15) : 15
 
-      if (!dayInLimit) dayInLimit = 15
-      res && commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
+      commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
     }
-    catch (err) { console.log(err) }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
 
-  getRemoteAdvanceDayLimit: async({ commit }, params) => {
-    try {
-      const res = await http.getRemoteAdvanceDayLimit(params)
-      res && commit('setAdvanceDayLimit', res)
-    }
-    catch (err) { console.log(err) }
-  },
+  // getRemoteAdvanceDayLimit: async({ commit }, params) => {
+  //   try {
+  //     const res = await http.getRemoteAdvanceDayLimit(params)
+  //     res && commit('setAdvanceDayLimit', res)
+  //   }
+  //   catch (err) { console.log(err) }
+  // },
   updateRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
+
       commit('setAdvanceDayLimit', params)
+
       return true
     }
     catch (err) { console.log(err) }
