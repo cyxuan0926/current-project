@@ -41,13 +41,10 @@
 
     <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
-        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
-
-        <el-button type="primary" @click="showDelPrionser">删除</el-button>
-
-        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
-
         <el-button type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
+        <el-button type="primary" @click="showDelPrionser">离监</el-button>
+        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
       </template>
     </el-row>
 
@@ -456,6 +453,11 @@
       @open="onOpenDialog"
       width="530px"
     >
+    <div class="el-message-box__container" style="margin:24px 0 24px  71px;">
+      <div class="el-message-box__status el-icon-warning"></div>
+      <div class="el-message-box__message"><p> 提示：如果是转监，请使用转监功能，不要做离监操作！</p>
+      </div>
+      </div>
       <m-form
         v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
@@ -683,13 +685,25 @@ export default {
           value: '刑满释放'
         },
         {
-          label: '已被执行',
-          value: '已被执行'
+          label: '保外就医',
+          value: '保外就医'
         },
         {
-          label: '其他',
-          value: '其他'
+          label: '因病去世',
+          value: '因病去世'
+        },
+        {
+          label: '离监探亲',
+          value: '离监探亲'
+        },
+        {
+          label: '错误数据',
+          value: '错误数据'
         }
+        // {
+        //   label: '其他',
+        //   value: '其他'
+        // }
       ]
 
       const otherDelReasonDetail = {
@@ -926,7 +940,7 @@ export default {
           }, { dissMissConfigs }, formButton)
           break
         case 4:
-          title = '请选择删除原因'
+          title = '请选择离监原因'
           formButton.buttons = [
             {
               add: 'add',
@@ -1699,7 +1713,7 @@ export default {
       if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
-          message: '请选择需要删除的数据！',
+          message: '请选择要离监的数据！',
           type: 'warning'
         })
       } else {
