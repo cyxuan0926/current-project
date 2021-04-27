@@ -395,22 +395,16 @@
     // 通话时长和间隔时间
     durationIntervalItems() {
       const item = {
-        formConfigs: {
-          labelWidth: '81px',
-          hideRequiredAsterisk: true,
-        },
+        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+
         duration: {
           label: '通话时长',
           type: 'input',
           append: '分钟',
           rules: ['required', 'isPositiveIntegers']
         },
-        interval: {
-          label: '间隔时间',
-          type: 'input',
-          append: '分钟',
-          rules: ['required', 'isNumber']
-        }
+
+        interval: cloneDeep(this.interval)
       }
 
       if (!this.isSuperAdmin) this.$delete(item, 'duration')

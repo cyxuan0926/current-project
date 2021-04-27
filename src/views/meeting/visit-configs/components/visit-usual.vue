@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-    <slot name="windowSize" :scope="windowSizeScope" />
-
     <div class="el-form-item cycle">
       <label class="el-form-item__label c-label">周期配置</label>
 
@@ -31,6 +29,8 @@
         <template v-for="(config, index) in configs">
           <div :key="index" class="config-box">
             <template>
+              <slot name="windowSize" :scope="windowSizeScope" />
+
               <div class="el-form-item days-prison-area_configs">
                 <label class="el-form-item__label c-label">工作日和监区配置</label>
 
@@ -353,24 +353,13 @@ export default {
       },
 
       windowSizeScope: {
-        windowSize: '1'
+        windowSize: ['1']
       }
     }
   },
 
   computed: {
-    ...mapState(['jailPrisonAreas']),
-
-    filterPrisonAreaOptions() {
-      const noPrisonArea = [
-        {
-          id: -1,
-          name: '全监狱'
-        }
-      ]
-
-      return this.jailPrisonAreas
-    },
+    ...mapState([]),
 
     daysPrisonAreaDialogFormRules() {
       const temp = [
@@ -402,10 +391,7 @@ export default {
 
     durationIntervalItems() {
       const item = {
-        formConfigs: {
-          labelWidth: '81px',
-          hideRequiredAsterisk: true,
-        },
+        formConfigs: cloneDeep(this.durationIntervalormConfigs),
 
         duration: {
           label: '通话时长',
@@ -413,16 +399,11 @@ export default {
           rules: [
             'required',
             'isNumber',
-            '1-numberRange-60'
+            'numberRange1-60'
           ]
         },
 
-        interval: {
-          label: '间隔时间',
-          type: 'input',
-          append: '分钟',
-          rules: ['required', 'isNumber']
-        }
+        interval: cloneDeep(this.interval)
       }
 
       return this.allConfigs.map(configs => {
@@ -448,12 +429,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['getJailPrisonAreas']),
+    ...mapActions([]),
 
     async onUpdate() {
       const result = await this.$parent.$parent.$parent.onParentSubimt(this.windowSizeScope['windowSize'])
 
-      console.log(result, this.visitNoticeScope, this.windowSizeScope)
+      console.log(result, this.windowSizeScope)
     },
 
     onCheckboxChange(value, key) {
@@ -509,13 +490,7 @@ export default {
     }
   },
 
-  async activated() {
-    // this.$nextTick(() => {
-    //   this.$emit('input', '3')
-    //   // 这个是赋值提示内容
-    //   this.$parent.$parent.$parent.onInitMessageValue('撒大大大')
-    // })
-  }
+  async activated() {}
 }
 </script>
 
