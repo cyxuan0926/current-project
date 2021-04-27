@@ -1643,7 +1643,7 @@ export default {
 
       const params = {
         ...inputs,
-        id,
+        familyPhoneId: id,
         processInstanceId
       }
 
