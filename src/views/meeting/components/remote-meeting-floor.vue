@@ -313,7 +313,7 @@ export default {
   computed: {
     // 常规配置
     // 会见楼配置
-    ...mapState(['meetingRoomConfigs', 'jailPrisonAreas']),
+    ...mapState(['meetingRoomConfigs']),
 
     hasConfigAfter() {
       return !!(this.allConfigs[1]
@@ -387,22 +387,16 @@ export default {
     // 通话时长和间隔时间
     durationIntervalItems() {
       const item = {
-        formConfigs: {
-          labelWidth: '81px',
-          hideRequiredAsterisk: true,
-        },
+        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+
         duration: {
           label: '通话时长',
           type: 'select',
           options: this.localDurations,
           rules: ['required']
         },
-        interval: {
-          label: '间隔时间',
-          type: 'input',
-          append: '分钟',
-          rules: ['required', 'isNumber']
-        }
+
+        interval: cloneDeep(this.interval)
       }
 
       return this.allConfigs.map(configs => {
@@ -416,18 +410,6 @@ export default {
           return cloneItem
         })
       })
-    },
-
-    filterPrisonAreaOptions() {
-      const { prisonBranch } = this.meetingRoomConfigs
-
-      if (!+prisonBranch) return [
-        {
-          id: -1,
-          name: '全监狱'
-        }
-      ]
-      else return this.jailPrisonAreas
     },
 
     localDurations() {
@@ -463,10 +445,7 @@ export default {
       'getComplexConfigFloorDetail',
 
       // 保存会见楼配置
-      'saveComplexConfigFloorDetail',
-
-      // 获取监区
-      'getJailPrisonAreas'
+      'saveComplexConfigFloorDetail'
     ]),
 
     onClose() {
@@ -488,6 +467,8 @@ export default {
 
       if (+prisonBranch) {
         await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: this.jailId } })
+
+        this.prisonBranch = prisonBranch
 
         Message.closeAll()
       }
@@ -701,18 +682,10 @@ export default {
     // 配置监区按钮
     // index：序号 type：正在生效/将要生效 configs：当前配置信息
     onDeployPrisonArea(index, type, configs, init) {
-      const selectItem = {
-        type: 'select',
-        placeholder: '请选择监区',
-        multiple: true,
-        options: this.filterPrisonAreaOptions,
-        props: { label: 'name', value: 'id' },
-        rules: ['required'],
-        collapseTags: true
-      },
+      const selectItem = cloneDeep(this.prisonAreasItem),
+
       formConfigs = {
-        labelWidth: '80px',
-        hideRequiredAsterisk: true,
+        ...cloneDeep(this.durationIntervalormConfigs),
         inline: true
       },
       items = {

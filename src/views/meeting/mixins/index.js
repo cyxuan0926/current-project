@@ -8,20 +8,69 @@ import Moment from 'moment'
 
 import { weeks } from '@/common/constants/const'
 
-import { mapGetters } from 'vuex'
+import {
+  mapGetters,
+  mapActions,
+  mapState
+} from 'vuex'
 export default {
   data() {
+    const interval = {
+      label: '间隔时间',
+      type: 'input',
+      append: '分钟',
+      rules: ['required', 'isNumber']
+    }
+
+    const durationIntervalormConfigs = {
+      labelWidth: '81px',
+      hideRequiredAsterisk: true
+    }
     return {
-      jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
+      jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
+
+      prisonBranch: '0',
+
+      interval,
+
+      durationIntervalormConfigs
     }
   },
 
   computed: {
     // 国科服务管理员
-    ...mapGetters(['isSuperAdmin'])
+    ...mapGetters(['isSuperAdmin']),
+
+    ...mapState(['jailPrisonAreas']),
+
+    filterPrisonAreaOptions() {
+      if (!+this.prisonBranch) {
+        return [
+          {
+            id: -1,
+            name: '全监狱'
+          }
+        ]
+      }
+
+      else return this.jailPrisonAreas
+    },
+
+    prisonAreasItem() {
+      return {
+        label: '选择监区',
+        type: 'select',
+        rules: ['required'],
+        options: this.filterPrisonAreaOptions,
+        props: { label: 'name', value: 'id' },
+        collapseTags: true
+      }
+    }
   },
 
   methods: {
+    ...mapActions(['getJailPrisonAreas']),
+
     // 数字转汉字
     convertToChinaNum(o) {
       return convertToChinaNum(o)
