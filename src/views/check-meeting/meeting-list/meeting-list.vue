@@ -1061,6 +1061,11 @@
               showOverflowTooltip: true
             },
             {
+              label: '性别',
+              prop: 'gender',
+              minWidth: 50
+            },
+            {
               label: '申请时间',
               prop: 'createdAt',
               minWidth: 130

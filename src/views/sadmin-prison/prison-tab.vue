@@ -9,7 +9,8 @@
     <m-search
       ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange" />
     <el-tabs
       v-model="activeName"
       type="card"
@@ -33,9 +34,11 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 export default {
   name: 'PrisonTab',
+  mixins: [ prisonFilterCreator ],
   data () {
     const listTabs = ['prison', 'tenant']
 
@@ -56,16 +59,16 @@ export default {
       ],
       activeName: this.$route.path.slice(this.$route.path.indexOf('/')+1, this.$route.path.lastIndexOf('/')),
       searchItems: {
-        title: {
-          type: 'input',
-          label: '监狱名称',
-          miss: false
-        },
-        name: {
-          type: 'input',
-          label: '租户名称',
-          miss: true
-        }
+        // title: {
+        //   type: 'input',
+        //   label: '监狱名称',
+        //   miss: false
+        // },
+        // name: {
+        //   type: 'input',
+        //   label: '租户名称',
+        //   miss: true
+        // },
       },
       total: 0,
       filter: {},
@@ -161,13 +164,17 @@ export default {
 
       const tabsSearchItemsObject = {
         tenant: {
-          title: true,
-          name: false
+          // title: true,
+          // name: false,
+          provincesId: false,
+          jailId: false
         },
 
         prison: {
-          title: false,
-          name: true
+          // title: false,
+          // name: true,
+          provincesId: false,
+          jailId: false
         },
 
         'face-recognition': {

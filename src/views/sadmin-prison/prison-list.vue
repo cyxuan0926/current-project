@@ -51,6 +51,10 @@ export default {
     return {
       tableCols: [
         {
+          label: '省份',
+          prop: 'provincesName',
+        },
+        {
           label: '监狱名称',
           prop: 'title',
           showOverflowTooltip: true

@@ -1236,6 +1236,10 @@ export default {
           label: '罪犯编号',
           prop: 'prisonerNumber',
           showOverflowTooltip: true
+        },
+        {
+          label: '性别',
+          prop: 'gender'
         }
       ]
 
@@ -1290,14 +1294,14 @@ export default {
       if (this.isPrisonerTabVal) {
         if (!this.hasAllPrisonQueryAuth) prisonerCols.splice(1, 2)
 
-        if (this.isSuperAdmin) prisonerCols.splice(5, 1)
+        if (this.isSuperAdmin) prisonerCols.splice(6, 1)
 
         return prisonerCols
       } else {
         if (this.hasAllPrisonQueryAuth) {
           transferOutPrisonersAllCols.splice(2, 1)
 
-          transferOutPrisonersAllCols.splice(9, 1)
+          transferOutPrisonersAllCols.splice(10, 1)
         }
 
         else transferOutPrisonersAllCols.splice(1, 2)

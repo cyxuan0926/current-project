@@ -24,14 +24,6 @@ export default {
     return {
       tableCols: [
         {
-          label: '租户名称',
-          prop: 'name'
-        },
-        {
-          label: '编号',
-          prop: 'code'
-        },
-        {
           label: '省',
           prop: 'provinceName'
         },
@@ -42,6 +34,14 @@ export default {
         {
           label: '街道',
           prop: 'streetDetail'
+        },
+        {
+          label: '租户名称',
+          prop: 'name'
+        },
+        {
+          label: '编号',
+          prop: 'code'
         },
         {
           label: '租户状态',

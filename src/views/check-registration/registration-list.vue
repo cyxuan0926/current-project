@@ -63,7 +63,8 @@
           min-width="50"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
+            <!-- <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span> -->
+            <span>{{scope.row.name}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -125,6 +126,10 @@
           show-overflow-tooltip
           label="罪犯编号"
           min-width="50"
+        />
+        <el-table-column
+          prop="gender"
+          label="性别"
         />
         <!-- <el-table-column
           v-if="isInWhitelist"

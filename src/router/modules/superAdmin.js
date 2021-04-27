@@ -10,6 +10,7 @@ superAdmin = [{
     name: 'prison-manage-first',
     meta: { breadcrumbName: '监狱管理' },
     component: 'sadmin-prison/prison-tab',
+    props: { hasProvinceQueryAuth: true, hasOnlyAllPrisonQueryAuth: true },
     // component: helper.loadView('sadmin-prison/prison-tab'),
     // component: resolve => require(['@/views/sadmin-prison/prison-tab'], resolve),
     children: [{
@@ -152,7 +153,7 @@ superAdmin = [{
   children: [{
     path: '/prison-area/list',
     name: 'prison-area-list',
-    props: { hasAllPrisonQueryAuth: true },
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: { permission: 'visit.prison-area.all-prison.search', breadcrumbName: '监区列表' },
     component: 'sadmin-prison-area/prison-area-list'
     // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
@@ -173,7 +174,7 @@ superAdmin = [{
   children: [{
     path: '/prison-user/list',
     name: 'prison-user-list',
-    props: { role: '0', hasAllPrisonQueryAuth: true },
+    props: { role: '0', hasOnlyAllPrisonQueryAuth: true },
     meta: { permission: 'visit.account.all-prison.search', breadcrumbName: '监狱用户列表' },
     component: 'sadmin-prison-user/prison-user-list'
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
