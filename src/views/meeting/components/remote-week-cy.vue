@@ -10,9 +10,10 @@
             :disabled="!!config.timeperiodQueue.length || (!config.timeperiodQueue.length && !!config.queue.length)">
             <template v-for="(w, i) in week">
               <el-checkbox
-                :key="i"
                 v-if="showWeek(w, config, index, configs)"
-                :label="w.value">{{ w.label }}</el-checkbox>
+                :key="i"
+                :label="w.value"
+              >{{ w.label }}</el-checkbox>
             </template>
           </el-checkbox-group>
           <el-button
@@ -227,28 +228,7 @@
         basicConfig,
         effectiveDate: '',
         dateValue: '',
-        tableData: [{
-          terminalNumber: '123',
-          name: '453',
-          prisonArea: '223',
-          name1: '554',
-          name2: '232',
-          name3: '楼44层',
-        },{
-          terminalNumber: '22',
-          name: '',
-          prisonArea: '34',
-          name1: '44',
-          name2: '22',
-          name3: '',
-        },{
-          terminalNumber: '终端号',
-          name: '终端别名',
-          prisonArea: '监区',
-          name1: '分监区',
-          name2: '',
-          name3: '',
-        }],
+        tableData: [],
         selectOption:[],
         multipleSelection:[],
         canAddLastIndex: []
@@ -553,47 +533,48 @@
         const beforDuration = cloneDeep(configBefore)[0].duration
 
         const initDuration = beforDuration
-        this.$nextTick(function() {
-            if(this.separateByArea){
-              let configs1=[],configs2=[]
-              configs.forEach((item,ind)=>{
-                if( item.area==1){
-                  configs1.push(item)
-                }
-                if( item.area==2){
-                  configs2.push(item)
-                }
-              })
-           configs.forEach((item,ind)=>{
-                 if(ind==index){
-                   if( item.area==1){
-                     if(configs1.length>1){
-                        this.allConfigs[type].splice(index, 1)
-                     }else{
-                       this.$set(this.allConfigs[type], index, {days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
-                     }
-                   }
-                   if( item.area==2){
-                      if(configs2.length>1){
-                        this.allConfigs[type].splice(index, 1)
-                     }else{
-                        this.$set(this.allConfigs[type], index, {days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
-                     }
-                   }
-                    if(!item.area){
-                      this.$set(this.allConfigs[type], 0,{days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
-                       this.$set(this.allConfigs[type], 1, { days: [],config: [], queue: [],timeperiod: [],timeperiodQueue: [], interval: 5, duration: 25,area:2,showError: [] })
-                    }
-                }
-              })
-            }else{
-              if (configs.length > 1){
-                 this.allConfigs[type].splice(index, 1)
-              }else {
-                this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
 
-                this.$set(this.filterDuration, type, initDuration)
+        this.$nextTick(function() {
+          if (this.separateByArea) {
+            let configs1=[],configs2=[]
+            configs.forEach((item,ind)=>{
+              if(item.area === 1){
+                configs1.push(item)
               }
+              if( item.area === 2){
+                configs2.push(item)
+              }
+            })
+            configs.forEach((item,ind) => {
+              if (ind === index) {
+                if (item.area === 1) {
+                  if (configs1.length > 1) {
+                    this.allConfigs[type].splice(index, 1)
+                  } else {
+                    this.$set(this.allConfigs[type], index, {days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
+                  }
+                }
+                if (item.area === 2) {
+                  if (configs2.length > 1){
+                    this.allConfigs[type].splice(index, 1)
+                  } else {
+                    this.$set(this.allConfigs[type], index, { days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:2,showError: [] })
+                  }
+                }
+                if (!item.area) {
+                  this.$set(this.allConfigs[type], 0,{ days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
+                  this.$set(this.allConfigs[type], 1, { days: [],config: [], queue: [],timeperiod: [],timeperiodQueue: [], interval: 5, duration: 25,area:2,showError: [] })
+                }
+              }
+            })
+          } else {
+            if (configs.length > 1) {
+              this.allConfigs[type].splice(index, 1)
+            } else {
+              this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+
+              this.$set(this.filterDuration, type, initDuration)
+            }
           }
         })
       },
@@ -618,36 +599,36 @@
         }
         // 没有配置时间(新增工作日)s
         else {
-          let days = [],productiondays=[],dormitorydays=[]
+          let days = [], productiondays=[], dormitorydays=[]
           // 新增后的常规配置信息:key
           configs.forEach((config, i) => {
             // 已经配置了的日期
-            if(i !== index){
-            if(this.separateByArea){
-              if(config.area==2){
-                productiondays = productiondays.concat( config.days )
-              }
-              if(config.area==1){
-                dormitorydays = dormitorydays.concat( config.days )
-              }
+            if(i !== index) {
+              if(this.separateByArea) {
+                if(config.area === 2)  {
+                  productiondays = productiondays.concat( config.days )
+                }
+                if(config.area === 1){
+                  dormitorydays = dormitorydays.concat( config.days )
+                }
               } else {
-            days = days.concat(config.days)
-           }
+                days = days.concat(config.days)
+              }
             }
           })
-          if(this.separateByArea){
-            if(config.area==2){
-              return  !productiondays.some(v => v === w.value)
+
+          if(this.separateByArea) {
+            if(config.area === 2) {
+              return !productiondays.some(v => v === w.value)
             }
-            if(config.area==1){
-              return  !dormitorydays.some(v => v === w.value)
+            if(config.area === 1){
+              return !dormitorydays.some(v => v === w.value)
             }
-          }else{
+          } else  {
             return !days.some(v => v === w.value)
           }
-          // 过滤已经配置了的日子
         }
-      },
+      }
     }
   }
 </script>
