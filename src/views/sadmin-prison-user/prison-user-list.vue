@@ -16,6 +16,7 @@
     <m-search
       :items="searchItems"
       @search="onSearch"
+      @searchSelectChange="searchSelectChange"
     />
     <el-col :span="24">
       <m-table-new
@@ -59,21 +60,30 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { getUserStorage } from '@/utils/store'
+const _role = getUserStorage().role
 
 export default {
   name: 'AccountList',
 
-  props: {
-    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
-    hasAllPrisonQueryAuth: Boolean
-  },
+  // props: {
+  //   // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+  //   hasAllPrisonQueryAuth: Boolean
+  // },
+
+  mixins: [ _role == '0' ? prisonFilterCreator : {} ],
+
   data() {
     // let options = {
     //   roleId: { type: 'select', label: '角色' },
     //   jail: { type: 'select', label: '监狱名称', belong: { value: 'id', label: 'name' }, filterable: true }
     // },
     let options = {
-      roleId: { type: 'select', label: '角色' }
+      roleId: {
+        type: 'select',
+        label: '角色'
+      }
     },
     { role } = JSON.parse(localStorage.getItem('user')),
     routeRole = this.$route.matched[this.$route.matched.length - 1].props.default.role
@@ -141,12 +151,10 @@ export default {
   },
   async mounted() {
     // if (this.routeRole === '0') {
-    //   const res = await this.getAllTenants()
-    //   if (res) {
-    //     this.$set(this.searchItems.jail, 'getting', true)
-    //     this.$set(this.searchItems.jail, 'options', this.allTenants)
-    //     this.$set(this.searchItems.jail, 'getting', false)
-    //   }
+    //   await this.getPrisonAll()
+    //   this.$set(this.searchItems.jail, 'getting', true)
+    //   this.$set(this.searchItems.jail, 'options', this.prisonAll)
+    //   this.$set(this.searchItems.jail, 'getting', false)
     // }
     await this.getDatas()
     if (this.user.role === '-1') {

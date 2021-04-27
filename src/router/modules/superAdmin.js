@@ -10,6 +10,7 @@ superAdmin = [{
     name: 'prison-manage-first',
     meta: { breadcrumbName: '监狱管理' },
     component: 'sadmin-prison/prison-tab',
+    props: { hasProvinceQueryAuth: true, hasOnlyAllPrisonQueryAuth: true },
     // component: helper.loadView('sadmin-prison/prison-tab'),
     // component: resolve => require(['@/views/sadmin-prison/prison-tab'], resolve),
     children: [{
@@ -152,7 +153,7 @@ superAdmin = [{
   children: [{
     path: '/prison-area/list',
     name: 'prison-area-list',
-    props: { hasAllPrisonQueryAuth: true },
+    props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
     meta: { permission: 'visit.prison-area.all-prison.search', breadcrumbName: '监区列表' },
     component: 'sadmin-prison-area/prison-area-list'
     // component: resolve => require(['@/views/sadmin-prison-area/prison-area-list'], resolve)
@@ -173,7 +174,7 @@ superAdmin = [{
   children: [{
     path: '/prison-user/list',
     name: 'prison-user-list',
-    props: { role: '0', hasAllPrisonQueryAuth: true },
+    props: { role: '0', hasOnlyAllPrisonQueryAuth: true },
     meta: { permission: 'visit.account.all-prison.search', breadcrumbName: '监狱用户列表' },
     component: 'sadmin-prison-user/prison-user-list'
     // component: resolve => require(['@/views/sadmin-prison-user/prison-user-list'], resolve)
@@ -260,6 +261,7 @@ superAdmin = [{
     children: [{
       path: '/advertisement/list',
       name: 'advertisement-list',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: { permission: 'visit.advertisement.search', breadcrumbName: '广告列表' },
       component: 'sadmin-advertisement/advertisement-list'
       // component: resolve => require(['@/views/sadmin-advertisement/advertisement-list'], resolve)
@@ -491,12 +493,26 @@ superAdmin = [{
         permission: 'visit.meeting.family-phone.search'
       },
       component: 'check-meeting/meeting-family-statistics'
-    }, {
+    },
+     {
       path: '/meeting-report/meeting-sadmin-island-list',
       component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
       props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: { permission: 'visit.visit-statistic.sadmin-island-list', breadcrumbName: '非大陆居民通话统计报表' }
-    }]
+    },
+     {
+      path: '/prison-data/sadmin-meeting-detail-guangxi',
+      component: 'gd-admin/gd-meeting/sadmin-meeting-call-detail',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: { permission: 'visit.visit-search.sadmin-meeting-detail-guangxi', breadcrumbName: '服刑人员会见登记表-广西' }
+    },
+    {
+      path: '/prison-data/meeting-sadmin-userNumber-list',
+      component: 'gd-admin/gd-meeting/sadmin-meeting-user-number',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: { permission: 'visit.visit-search.sadmin-meeting-userNumber-list', breadcrumbName: '会见量和参会人数统计报表' }
+    }
+  ]
   }, {
     path: '/prison-message',
     name: 'prison-message',
