@@ -73,7 +73,7 @@
         </template>
 
         <template #familyType="{ row }">
-          <span v-if="!!row.status">{{ row.familyType | familyTypeOptions }}</span>
+          <span v-if="!!row.status && (row.familyType || row.familyType === 0)">{{ row.familyType | familyTypeOptions }}</span>
         </template>
 
         <template #aduitDetail="{ row }">{{ row.aduitDetail | familyPhoneCheckType }}</template>

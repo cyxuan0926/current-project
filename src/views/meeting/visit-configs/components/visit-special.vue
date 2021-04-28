@@ -16,10 +16,12 @@
               type="dates"
               value-format="yyyy-MM-dd"
               placeholder="选择日期"
+              :picker-options="pickerOptions"
+              @change="onSureDates"
             />
           </el-tooltip>
 
-          <el-radio-group>
+          <el-radio-group v-model="config.enabledMeeting" @change="onChangeEnabledMeeting(config)">
             <el-radio :label="1">支持预约申请</el-radio>
             <el-radio :label="0">不支持预约申请</el-radio>
           </el-radio-group>
@@ -28,13 +30,14 @@
             plain
             type="danger"
             size="mini"
-            @click="handleDeleteConfig"
+            @click="onDeleteConfig"
           >删除当前日期配置</el-button>
 
           <!--可保存状态并且是国科服务管理员并且是编辑状态-->
           <el-button
             type="primary"
             size="mini"
+            @click="onSave"
           >保存</el-button>
 
           <!--编辑状态并且不支持通话并且选择了日期并且国科服务管理员角色并且是最新一个配置的-->
@@ -42,6 +45,7 @@
             size="mini"
             type="success"
             class="button-float"
+            @click="onAddDay"
           >新增特殊日期</el-button>
         </div>
       </div>
@@ -113,6 +117,7 @@
                   :prev="config.queue[o - 1]"
                   :next="config.queue[o + 1]"
                   type="queue"
+                  @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
                 />
 
                 <!-- 通常规时间配置 -->
@@ -163,7 +168,17 @@ export default {
   mixins: [normalMixins],
 
   data() {
-    return {}
+    return {
+      config: {
+        enabledMeeting: 1
+      },
+
+      pickerOptions: {
+        disabledDate: time => {
+          return false
+        }
+      }
+    }
   },
 
   computed: {
@@ -200,7 +215,7 @@ export default {
 
     onResponse(values) {},
 
-    handleDeleteConfig(config, index) {
+    onDeleteConfig(config, index) {
       if (config.id) {
         this.$confirm('是否确认删除？', '提示', {
           confirmButtonText: '确定',
@@ -208,7 +223,27 @@ export default {
           type: 'warning'
         }).then(() => {})
       } else this.splice(index)
-    }
+    },
+
+    // 切换是否支持会见
+    onChangeEnabledMeeting(config) {
+      console.log(config)
+    },
+
+    // 确定选择的日期
+    onSureDates() {},
+
+    // 保存按钮
+    onSave() {},
+
+    // 新增特殊日期
+    onAddDay() {},
+
+    // 新增时间段
+    onNewTimePeriod() {},
+
+    // 生成通话时间段
+    onFigureOut() {}
   },
 
   async activated() {}
