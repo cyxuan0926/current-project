@@ -729,7 +729,7 @@ export default {
     },
     async handleSubmit(params) {
 
-    let  res= await  dealIntraMessage(params)
+    let  res= await http.dealIntraMessage(params)
         if (res){
         this.closeAuthorize()
         this.toAuthorize = {}

@@ -448,6 +448,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
 import { mapActions, mapState } from 'vuex'
+import familyDetailModal from '@/components/family/family-detail-modal.vue'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
@@ -456,6 +457,10 @@ export default {
   name: 'FamilyPhone_Families',
 
   mixins: [prisonFilterCreator,registrationDialogCreator],
+
+  components: {
+    familyDetailModal
+  },
 
   data() {
    const authApplePhoneInfo={
@@ -490,6 +495,7 @@ export default {
     const clearable = true
     return {
       tabsItems,
+      familyData: {},
       messageContent:"",
       prisonerHref:`/download/downloadfile?filepath=family_phone_apply_template.xls`,
       src:"",

@@ -78,13 +78,7 @@
             familyDetailModal,
             callSummaryModal
         },
-        mixins: [ window.location.href.includes('call-supervise-admin') ? prisonFilterCreator : {
-            data() {
-                return {
-                    filter: {}
-                }
-            }
-        } ],
+        mixins: [ prisonFilterCreator ],
         data() {
             const isAdmin = window.location.href.includes('call-supervise-admin')
             const tableCols = [
