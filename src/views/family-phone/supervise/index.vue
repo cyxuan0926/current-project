@@ -176,7 +176,7 @@
             },
 
             async getData() {
-                const params = Object( this.isAdmin ? { type: this.tab } : { tab: this.tab }, { ...this.filter, ...this.pagination } )
+                const params = Object.assign( this.isAdmin ? { type: this.tab } : { tab: this.tab }, { ...this.filter, ...this.pagination } )
                 let { data } = await http[ this.isAdmin ? 'getFamilyphoneSum' : 'getIntraFamilyphoneSum' ](params)
                 if( data && data.list ) {
                     data.list.forEach(d => {
