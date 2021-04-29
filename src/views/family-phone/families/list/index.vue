@@ -546,7 +546,7 @@ export default {
       },
       {
         label: '未通过',
-        name: '2'
+        name: '-1'
       },
       {
         label: '待审核',
@@ -1002,7 +1002,7 @@ export default {
 
           delete this.filter[key]
         })
-      } else if (tab === '2') {
+      } else if (tab === '-1') {
         hiddenItems.forEach(key => {
           this.$set(this.searchItems[key], 'miss', false)
         })
