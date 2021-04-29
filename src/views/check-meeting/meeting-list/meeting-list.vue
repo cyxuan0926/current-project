@@ -785,7 +785,7 @@
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
-            area: {
+          area: {
             type: 'select',
             label: '通话区域',
             options: this.$store.state.areaOptions,
