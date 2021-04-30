@@ -2,17 +2,25 @@
     <el-row
         class="row-container"
         :gutter="0">
-        <m-excel-download
+        <m-search
+            :items="searchItems"
+            ref="search"
+            @search="onSearch">
+            <!-- <m-excel-download
             :path="`${ isAdmin ? '/familyphonesummary/export' : `/download/exportVideoTelSummary?tab=${ tab }` }`"
             :params="filter"
             :apiConfigs="{
               apiHostKey: `${ isAdmin ? 'apiHost' : 'jailApiHost' }`,
               apiPathKey: `${ isAdmin ? 'apiPath' : '' }`
-            }" />
-        <m-search
-            :items="searchItems"
-            ref="search"
-            @search="onSearch" />
+            }" /> -->
+            <template slot="append">
+                <el-button
+                    type="primary"
+                    :loading="downloading"
+                    @click="handleExportExcel"
+                    >导出 Excel</el-button>
+            </template>
+        </m-search>
         <el-col :span="24">
             <el-tabs
                 v-model="tab"
@@ -73,6 +81,8 @@
     import callSummaryModal from './components/call-summary-modal.vue'
     import http from '@/service'
     import router from '@/router'
+    import { saveAs } from 'file-saver'
+    import { DateFormat } from '@/utils/helper'
     export default {
         components: {
             familyDetailModal,
@@ -126,6 +136,7 @@
             }
             return {
                 isAdmin,
+                downloading: false,
                 tab: '1', // 1-亲情电话 2-可视电话
                 familyModalVisible: false,
                 summaryModalVisible: false,
@@ -221,6 +232,21 @@
             async handleSaveSummary(data) {
                 await http.createIntraFamilyReview(data)
                 this.getData()
+            },
+
+            async handleExportExcel() {
+                if (this.downloading) {
+                    return
+                }
+                this.downloading = true
+                const params = Object.assign( this.isAdmin ? { type: this.tab } : { tab: this.tab }, { ...this.filter } )
+                try {
+                    let data = await http[ this.isAdmin ? 'exportFamilyphoneSum' : 'exportIntraFamilyphoneSum' ](params)
+                    saveAs(data, `亲情电话监管-${ this.tab == '1' ? '亲情电话' : '可视电话' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    this.downloading = false
+                } catch (error) {
+                    this.downloading = false
+                }
             }
         },
         mounted() {

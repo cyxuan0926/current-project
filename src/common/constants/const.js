@@ -17,7 +17,9 @@ export const responseURLWhiteLists = [
   '/export/exportSmsManage',
   '/settleAccounts/exportDetailExcel',
   '/settleAccounts/settlement',
-  '/settleAccounts/export'
+  '/settleAccounts/export',
+  '/familyphonesummary/export',
+  '/download/exportVideoTelSummary'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。

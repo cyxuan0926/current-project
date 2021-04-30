@@ -3,6 +3,8 @@ import * as service from '@/service/config/service'
 export default {
     // 亲情监管 列表查询
     getIntraFamilyphoneSum: params => service.get(service.getIntraUrl('/tel/summary/videoTelSummaryList'), params),
+    // 亲情监管 列表导出
+    exportIntraFamilyphoneSum: params => service.get(service.getIntraUrl('/download/exportVideoTelSummary'), params, { responseType: 'blob' }).then(res => res && res.data),
     // 亲情监管 通话纪要查询
     getIntraFamilyphoneCon: params => service.get(service.getIntraUrl('/tel/summary/showSummary'), params),
     // 亲情监管 通话复核-添加通话纪要
