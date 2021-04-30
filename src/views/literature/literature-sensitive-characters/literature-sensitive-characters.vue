@@ -23,7 +23,7 @@
     <el-col :span="24">
       <m-table-new
         stripe
-        :selection-change="handleSelectChange"
+        @selection-change="handleSelectChange"
         :data="sensitiveWords"
         :cols="tableCols"
         class="mini-td-padding"

@@ -302,57 +302,93 @@
       :title="detailOrAuthDialogTitle"
       :close-on-click-modal="!!detailOrAuthDialogType"
     >
-      <m-multistage-records
-        :basicValues="multistageRecordsBasicValues"
-        :values="multistageRecordsValues"
-        :hasSlot="!isEmpty(multistageRecordsLastValue)"
-        :recordContentItems="multistageRecordContentItems"
-        :keys="multistageRecordKeys"
-      >
-        <template v-if="!isEmpty(multistageRecordsLastValue)" #append> 
-          <div class="multistage_examine-item">
-            <div class="detail-index">{{ multistageRecordsValues.length + 1 }}</div>
+      <m-multistage-records :basicValues="multistageRecordsBasicValues" :hasSlot="!!multistageRecordsValues.length">
+        <template v-if="multistageRecordsValues.length" #append>
+          <template v-for="(item, index) in multistageRecordsValues">
+            <div class="multistage_examine-item" :key="item.id">
+            <div :class="['detail-index', { 'border-bottom': index + 1 !== multistageRecordsValues.length }]">{{ index + 1 }}</div>
 
             <div class="detail-content">
               <p class="detail-message-family detail-audit">
-                <span class="family-name audit-label label">审核员账号</span>
+                <template v-if="item.logType === 1">
+                  <span class="family-name audit-label label">审核员账号</span>
 
-                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['createRole'] }}</span>
+                  <span class="family-nameDetail audit-value">{{ item['createRole'] }}</span>
+                </template>
+
+                <template v-else>
+                  <span class="family-name audit-label label">操作人姓名</span>
+
+                  <span class="family-nameDetail audit-value">{{ item['createUser'] }}</span>
+                </template>
               </p>
 
-              <p class="detail-message-family detail-advices">
-                <span class="family-name advices-label">审核意见</span>
+              <p :class="[
+                'detail-message-family',
+                'detail-advices',
+                { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+              ]">
+                <template v-if="item.logType === 1">
+                  <span class="family-name advices-label">审核意见</span>
 
-                <span class="family-nameDetail advices-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+                  <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
+                </template>
+
+                <template v-else>
+                  <span class="family-name advices-label">修改内容</span>
+
+                  <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
+                </template>
               </p>
 
-              <p class="detail-message-family item-no-bottom detail-audit">
+              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" class="detail-message-family item-no-bottom detail-audit">
                 <span class="family-name audit-label label">审核状态</span>
 
-                <span class="family-nameDetail audit-value">{{ multistageRecordsLastValue['remarks'] }}</span>
+                <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
               </p>
             </div>
 
             <div class="detail-content time-status">
               <p class="detail-message-family detail-audit-time">
-                <span class="family-name audit-time-label">审核人姓名</span>
+                <template v-if="item.logType === 1">
+                  <span class="family-name audit-time-label">审核人姓名</span>
 
-                <span class="family-nameDetail audit-time-value">{{ multistageRecordsLastValue['createUser'] }}</span>
+                  <span class="family-nameDetail audit-time-value">{{ item['createUser'] }}</span>
+                </template>
+
+                <template v-else>
+                  <span class="family-name audit-time-label">修改时间</span>
+
+                  <span class="family-nameDetail audit-time-value">{{ item['createAt'] }}</span>
+                </template>
               </p>
 
-              <p class="detail-message-family detail-status">
-                <span class="family-name status-label">审核时间</span>
+              <p :class="[
+                'detail-message-family',
+                'detail-status',
+                { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+              ]">
+                <template v-if="item.logType === 1">
+                  <span class="family-name status-label">审核时间</span>
 
-                <span class="family-nameDetail status-value">{{ multistageRecordsLastValue['createAt'] }}</span>
+                  <span class="family-nameDetail status-value">{{ item['createAt'] }}</span>
+                </template>
+
+                <template v-else>
+                  <span class="family-name status-label">&nbsp;</span>
+
+                  <span class="family-nameDetail status-value" />
+                </template>
               </p>
 
-              <p class="detail-message-family item-no-bottom detail-advices">
+              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" class="detail-message-family item-no-bottom detail-advices">
                 <span class="family-name advices-label">&nbsp;</span>
 
                 <span class="family-nameDetail advices-value" />
               </p>
             </div>
           </div>
+          </template>
         </template>
       </m-multistage-records>
 
@@ -375,7 +411,17 @@
             :values="agreeHasSubTaskFormValues"
             @submit="onAgreeHasSubTaskFormSubmit"
           >
-            <template #agreeButtons>
+            <template #nextCheckCodeAgreeButtons>
+              <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
+                <template v-for="item in processInstanceIdSubtaskOptions">
+                  <el-option
+                    :key="item.taskCode"
+                    :label="item.taskName"
+                    :value="item.taskCode"
+                  />
+                </template>
+                
+              </el-select>
               <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
             </template>
           </m-form>
@@ -527,8 +573,6 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-
-import isEmpty from 'lodash/isEmpty'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -739,57 +783,11 @@ export default {
 
       agreeHasSubTaskFormValues: {},
 
-      multistageRecordContentItems: [
-        {
-          className: [],
-
-          pItem: {
-            className: [],
-
-            items: [
-              {
-                label: '审核员账号',
-                key: 'createRole'
-              },
-
-              {
-                label: '审核意见',
-                key: 'reamrks'
-              }
-            ]
-          }
-        },
-
-        {
-          className: [],
-
-          pItem: {
-            className: [],
-
-            items: [
-              {
-                label: '审核人姓名',
-                key: 'createUser'
-              },
-
-              {
-                label: '审核时间',
-                key: 'createAt'
-              }
-            ]
-          }
-        }
-      ],
       show:{
         editRebut:true,
         dialog:false
       },
-      multistageRecordKeys: {
-        createUser: 'createUser',
-        createAt: 'createAt',
-        createRole: 'createRole',
-        reamrks: 'reamrks'
-      },
+
       refuseForm: {
         anotherRemarks: ""
       },
@@ -815,7 +813,11 @@ export default {
 
       detailOrAuthDialogType: 0, // 0: 审核 1： 详情
 
-      agreeHasSubTaskFormFields: {}
+      agreeHasSubTaskFormFields: {},
+
+      agreeHasSubTaskFormData: {
+        nextCheckCode: ''
+      }
     }
   },
 
@@ -832,6 +834,8 @@ export default {
       'validateFamiliesResult',
       'familyPhoneFamiliesDetail'
     ]),
+
+    ...mapState('account', ['publicUserInfo']),
 
     tableCols() {
       const cols = [
@@ -958,25 +962,12 @@ export default {
           customClass: ['none_margin-left']
         },
 
-        nextCheckCode: {
-          type: 'select',
-          label: '请选择审核人',
-          placeholder: '请选择审核人',
-          options: this.processInstanceIdSubtaskOptions,
-          customClass: ['inline_block', 'el-form_item-nextCheckCode'],
-          props: {
-            label: 'taskName',
-            value: 'taskCode'
+        nextCheckCodeAgreeButtons: {
+          slotName: 'nextCheckCodeAgreeButtons',
+          customClass: ['el-from_item-nextCheckCodeAgreeButtons'],
+          attrs: {
+            label: '请选择审核人'
           }
-        },
-
-        agreeButtons: {
-          slotName: 'agreeButtons',
-          customClass: [
-            'none_margin-left',
-            'inline_block',
-            'el-form_item-agreeButtons'
-          ]
         }
       }
     },
@@ -1230,9 +1221,27 @@ export default {
           type: 'error'
         })
       } else {
+        let params = values
+
         const url = this.apiUrls['newOrEditUrl']
 
-        isSuccess = await this.operateFamilyPhoneFamilies({ url, params: values })
+        if (this.familyInformationDialogOperationType = 1) {
+          const roleName =
+            this.publicUserInfo
+            && this.publicUserInfo.userRoles
+            && Array.isArray(this.publicUserInfo.userRoles)
+            && this.publicUserInfo.userRoles.length
+            ? this.publicUserInfo.userRoles[0].roleName
+            : ''
+
+          params = {
+            ...params,
+            taskName: this.originalFamilyInformationDialogFormValues['taskName'],
+            roleName
+          }
+        }
+
+        isSuccess = await this.operateFamilyPhoneFamilies({ url, params })
       }
 
       this.onCloseFamilyInformationDialog()
@@ -1411,9 +1420,7 @@ export default {
         remarks
       })
 
-      this.multistageRecordsValues = this.detailOrAuthDialogType ? logs.slice(1) : logs
-
-      this.multistageRecordsLastValue = this.detailOrAuthDialogType ? (logs.slice(-1)[0] || {}) : {}
+      this.multistageRecordsValues = logs
 
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },
@@ -1442,8 +1449,9 @@ export default {
       if (this.isSubtask) {
         this.agreeHasSubTaskFormValues = {
           remarks: '同意',
-          nextCheckCode: this.processInstanceIdSubtaskOptions[0]['taskCode'] || ''
         }
+
+        this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
       }
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
@@ -1471,10 +1479,6 @@ export default {
       this.$set(this.detailOrAuthDialog, 'disAgree', false)
     },
 
-    isEmpty(input) {
-      return isEmpty(input)
-    },
-
     // 同意 提交审批：同意并结束
     async onPassedAuthorize() {
       let inputs = {}
@@ -1482,7 +1486,9 @@ export default {
       if (this.isSubtask) {
         this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
 
-        const { remarks, nextCheckCode } = this.agreeHasSubTaskFormFields
+        const { remarks } = this.agreeHasSubTaskFormFields
+
+        const { nextCheckCode } = this.agreeHasSubTaskFormData
 
         const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
 
@@ -1639,12 +1645,17 @@ export default {
     },
 
     async onAuthorization(inputs = {}) {
-      const { id, processInstanceId } = this.familiesRow
+      const {
+        id,
+        processInstanceId,
+        taskName
+      } = this.familiesRow
 
       const params = {
         ...inputs,
         familyPhoneId: id,
-        processInstanceId
+        processInstanceId,
+        taskName
       }
 
       this.buttonLoading = true
@@ -1843,21 +1854,18 @@ $border-style: 1px solid #E4E7ED;
     }
   }
 
-  /deep/ .inline_block {
-    display: inline-block;
-    margin-bottom: 0px;
-  }
+  /deep/ .el-from_item-nextCheckCodeAgreeButtons {
+    .el-form-item__content {
+      display: flex;
+      .el-row {
+        flex: 1 0 72%;
 
-  /deep/ .el-form_item-agreeButtons {
-    width: 63.5%;
-
-    button {
-      width: 31% !important;
+        button {
+          width: 30% !important;
+          margin-left: 3% !important;
+        }
+      }
     }
-  }
-
-  /deep/ .el-form_item-nextCheckCode {
-    width: 36%;
   }
 }
 </style>

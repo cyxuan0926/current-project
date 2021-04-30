@@ -305,7 +305,9 @@
       </template>
 
       <template v-if="!hasAllPrisonQueryAuth">
-        <div v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine" class="button-box">
+        <div
+          v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
+          class="button-box">
           <el-button
             plain
             @click="show.agree = true">同意</el-button>
@@ -1252,6 +1254,4 @@ export default {
   display: flex;
   >>> .el-image
     height: auto;
-
-
 </style>

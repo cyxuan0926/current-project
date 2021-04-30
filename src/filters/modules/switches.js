@@ -264,6 +264,21 @@ let switches = {
       label: '呼叫未接通',
       value: 'FAULT'
     }
+  ],
+
+  familyPhoneDetailTypes: [
+    {
+      label: '通过',
+      value: 1
+    },
+    {
+      label: '未通过',
+      value: 2
+    },
+    {
+      label: '提交下级审核',
+      value: 3
+    }
   ]
 }
 
