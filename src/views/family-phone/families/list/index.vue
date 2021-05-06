@@ -341,7 +341,7 @@
                 </template>
               </p>
 
-              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" class="detail-message-family item-no-bottom detail-audit">
+              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="['detail-message-family', {'item-no-bottom': index + 1 ===multistageRecordsValues.length }, 'detail-audit']">
                 <span class="family-name audit-label label">审核状态</span>
 
                 <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
@@ -381,7 +381,7 @@
                 </template>
               </p>
 
-              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" class="detail-message-family item-no-bottom detail-advices">
+              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="['detail-message-family', {'item-no-bottom': index + 1 ===multistageRecordsValues.length }, 'detail-advices']">
                 <span class="family-name advices-label">&nbsp;</span>
 
                 <span class="family-nameDetail advices-value" />

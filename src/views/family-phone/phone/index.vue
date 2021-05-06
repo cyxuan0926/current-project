@@ -990,7 +990,7 @@ export default {
           url: "/parse/familyphone/apply/exportFamilyPhoneApply",
           methods:'post',
           params: { ...this.filter, tab: this.tabs },
-          isPrisonInternetGetUrlWay: "getIntraUrl"
+          isPrisonInternetGetUrlWay: "getHyUrl"
         }
       await tokenExcel({
         params,

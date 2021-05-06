@@ -7,7 +7,7 @@
         </div>
         <el-dialog title="请选择审核人员" :visible.sync="auditorVisible" width="30%">
             <el-select v-model="candidateGroups" placeholder="请选择" size="small">
-                <el-option v-for="opt in candidateOpts" :key="opt.value" :label="opt.label" :value="opt.value"></el-option>
+                <el-option v-for="opt in candidateOpts" :key="opt.value" :label="opt.label" :value="opt.label"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="auditorVisible = false" size="small">取 消</el-button>
@@ -22,7 +22,7 @@
     import customControlsModule from './custom'
     import { mapState, mapActions } from 'vuex'
     import http from '@/service'
-    import prisons from '@/common/constants/prisons'
+    import { getProcessRoles } from '@/service-public/api/account'
     import "bpmn-js/dist/assets/diagram-js.css"
     import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css"
     import "bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css"
@@ -34,13 +34,22 @@
                 element: null,
                 candidateGroups: '',
                 auditorVisible: false,
-                candidateOpts: prisons.auditorRoles
+                candidateOpts: []
             }
         },
         computed: {
             ...mapState({
                 processBpmnXml: state => state.global.processBpmnXml
             })
+        },
+        async created() {
+            let res = await getProcessRoles(this.$route.query.zipcode)
+            if( res && res.length ) {
+                this.candidateOpts = res.map(r => ({
+                    label: r.name,
+                    value: r.id
+                }))
+            }
         },
         methods: {
             ...mapActions(['setXmlStorage']),
@@ -50,7 +59,7 @@
             handleAuditorSave() {
                 if( this.element ) {
                     let modeling = this.bpmnModeler.get('modeling')
-                    modeling.updateLabel(this.element, this.candidateOpts.find(o => o.value === this.candidateGroups).label)
+                    modeling.updateLabel(this.element, this.candidateGroups)
                     modeling.updateProperties(this.element, {
                         'activiti:candidateGroups': this.candidateGroups
                     })
