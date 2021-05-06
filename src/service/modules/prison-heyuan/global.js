@@ -2,8 +2,8 @@ import * as service from '@/service/config/service'
 
 export default {
       // 获取当前任务的下一任务
-     getSubtaskPhone: params => {
-    return service.get(service.getBpmnUrl('/task/get-subtask'), params).then(res => res && res.data)
+    getSubtaskPhone: params => {
+      return service.get(service.getBpmnUrl('/task/get-subtask'), params).then(res => res && res.data)
     },
      // 获取驳回编辑列表监狱内网
      getIntraRejectEdit: params => {
