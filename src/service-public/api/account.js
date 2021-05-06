@@ -66,3 +66,8 @@ export function modifyMyPasswordByToken({ token, newPassword }) {
 export function getPublicUsers(params) {
   return get('/users', params)
 }
+
+// 获取流程角色
+export function getProcessRoles(id) {
+  return get(`/roles/tenant/${ id }`)
+}

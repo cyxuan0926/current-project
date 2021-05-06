@@ -244,7 +244,7 @@ export default {
           url: "/download/exportVideoTelRecords",
           methods:'get',
           params: { ...this.filter},
-          isPrisonInternetGetUrlWay: "getIntraUrl"
+          isPrisonInternetGetUrlWay: "getHyUrl"
         }
       await tokenExcel({
         params,

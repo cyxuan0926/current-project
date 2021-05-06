@@ -677,7 +677,7 @@ export default {
           url: "/export/exportSmsManage",
           methods:'get',
           params: { ...this.filter, tab: this.tabs },
-          isPrisonInternetGetUrlWay: "getIntraUrl"
+          isPrisonInternetGetUrlWay: "getHyUrl"
         }
       await tokenExcel({
         params,

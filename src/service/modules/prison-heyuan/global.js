@@ -7,10 +7,10 @@ export default {
     },
      // 获取驳回编辑列表监狱内网
      getIntraRejectEdit: params => {
-      return service.get(service.getIntraUrl('/meetingsReviewWord/get'), params).then(res => res && res.data)
+      return service.get(service.getHyUrl('/meetingsReviewWord/get'), params).then(res => res && res.data)
     },
      // 保存修改驳回编辑列表监狱内网
      setIntraRejectEdit: data => {
-      return service.postObj(service.getIntraUrl('/meetingsReviewWord/edit'), data).then(res => res && res.data)
+      return service.postObj(service.getHyUrl('/meetingsReviewWord/edit'), data).then(res => res && res.data)
     }
 }
