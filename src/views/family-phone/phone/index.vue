@@ -386,7 +386,7 @@
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
-        <div class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+        <div class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
           {{ messageContent }}
         </div>
       </div>
@@ -943,7 +943,7 @@ export default {
     async getDetail(e,type=false){
        let res= await http.familyPhoneDetail({ id: e.id })
           if (!res) return
-        this.toShow = Object.assign({}, res, {processInstanceId: e.processInstanceId,id: e.id })
+        this.toShow = Object.assign({}, res, e)
           if(type){
             this.show.dialog = true
           }

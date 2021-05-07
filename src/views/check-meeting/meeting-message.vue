@@ -39,7 +39,7 @@
         <template
           slot="state"
           slot-scope="scope">
-          <span v-if="scope.row.state == '0'">未授权</span>
+          <span v-if="scope.row.state == '0'">未审核</span>
           <span v-if="scope.row.state == '1'">已发送</span>
           <span v-if="scope.row.state == '2'">已拒绝</span>
           <span v-if="scope.row.state == '5'">已取消</span>
@@ -58,7 +58,7 @@
             <el-button
               v-if="scope.row.state == '0'"
               size="mini"
-              @click="handleAuthorization(scope.row)">授权</el-button>
+              @click="handleAuthorization(scope.row)">审核</el-button>
               <span v-else style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
           </template>
         </template>
@@ -72,7 +72,7 @@
       :visible.sync="show.authorize"
       class="authorize-dialog"
       @close="closeAuthorize()"
-      title="授权"
+      title="审核"
       width="530px">
       <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%">
         <p>请审核短信内容：</p>
@@ -163,7 +163,8 @@
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
-        <div class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+        <div class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;
+">
           {{ messageContent }}
         </div>
       </div>
@@ -329,7 +330,7 @@ export default {
     const { options } = this.$store.getters.prisonAreaOptions
     const stateAll = [
       {
-        label: '未授权',
+        label: '未审核',
         value: '0'
       },
       {
