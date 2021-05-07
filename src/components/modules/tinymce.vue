@@ -116,7 +116,6 @@ export default {
       window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
     onVideoSuccess(e) {
-      console.log('onVideoSuccess====', e)
       if (!e) return
       // let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
       //   <source
