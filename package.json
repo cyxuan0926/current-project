@@ -27,6 +27,8 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "bpmn-js": "^8.2.2",
+    "bpmn-js-properties-panel": "^0.43.0",
+    "camunda-bpmn-moddle": "^5.1.2",
     "diagram-js": "^7.2.3",
     "element-ui": "^2.13.0",
     "file-saver": "^2.0.2",
