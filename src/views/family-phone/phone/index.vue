@@ -57,7 +57,7 @@
         </template>
 
         <template #operation="{row}">
-          <el-button size="mini" v-if="row.aduitDetail=='待审核'"  @click="onAuthorize(row)">审核</el-button>
+          <el-button size="mini" v-if="row.aduitDetail=='待审核'&&row.isCheck"  @click="onAuthorize(row)">审核</el-button>
           <el-button type="text" @click="getDetail(row,true)">详情</el-button>
         </template>
       </m-table-new>
@@ -202,7 +202,7 @@
            <div
         v-if="show.disagree"
         class="button-box logMgCls">
-        <div style="margin-bottom: 10px;text-align: left;padding-left: 20px;">请选择驳回原因</div>
+        <div style="margin-bottom: 10px;padding-left: 20px;">请选择驳回原因</div>
       <div style="display: flex;padding-left: 20px;">
             <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
@@ -499,7 +499,7 @@ export default {
       messageContent:"",
       prisonerHref:`/download/downloadfile?filepath=family_phone_apply_template.xls`,
       src:"",
-      tabs: '0',
+      tabs: '3',
       todayDate,
       oneMonthLater,
       tabledate:{},
@@ -868,6 +868,7 @@ export default {
        this.show.disagree = false
        this.remarks=''
        this.show.agree = false
+       this.show.authorize=false
        this.toShow={}
        this.authApplePhone=Object.assign( {} ,this.authApplePhone,  this.authApplePhoneInfo)
        this.refuseForm.anotherRemarks=""
@@ -892,16 +893,20 @@ export default {
         if(this.authApplePhone.nextCheckCode =='visit.approve.end'){
             this.authApplePhone.checkState=1
         }else{
-          this.authApplePhone.checkState=3
-          if(!this.authApplePhone.nextCheckCode){
-             this.$message({
-              showClose: true,
-              message: '请选择流程节点',
-              duration: 2000,
-              type: 'error'
-            })
-          return false
-          }
+           if(this.show.process){
+             this.authApplePhone.checkState=3
+              if(!this.authApplePhone.nextCheckCode){
+                  this.$message({
+                    showClose: true,
+                    message: '请选择流程节点',
+                    duration: 2000,
+                    type: 'error'
+                  })
+                return false
+                }
+            }else{
+                 this.authApplePhone.checkState=1
+            }
         }
       }else{
            this.authApplePhone.checkState=1
@@ -936,6 +941,7 @@ export default {
           this.selectProcessOption =res
           if(this.selectProcessOption.length){
             this.show.process=true
+            this.authApplePhone.nextCheckCode=this.selectProcessOption[0].taskCode
           }else{
              this.show.process=false
           }
@@ -1118,6 +1124,7 @@ export default {
           if (!res) return
           setTimeout(() =>{
             this.onCloseFamilyInformationDialog()
+            this.getDatas()
           }, 1000)
       }else{
         this.$message({
@@ -1142,7 +1149,10 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
+<style lang="stylus">
+.logMgCls {
+  text-align:left
+}
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;
@@ -1164,7 +1174,6 @@ export default {
         display: inline-block;
    }
 </style>
-
 
 <style lang="scss" scoped>
 .el-steps {

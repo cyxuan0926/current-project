@@ -68,9 +68,9 @@
         </template>
         <template slot-scope="scope"
           slot="operate">
-          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
          <el-button
-            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))"
+            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))&& scope.row.isCheck"
             size="mini"
             @click="handleAuthorization(scope.row)">审核</el-button>
           <el-button
@@ -89,7 +89,7 @@
             class="button-detail"
             @click="setRemarks(scope.row)">备注</el-button>
                <el-button
-            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
+            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )||scope.row.isCheck==0"
             type="text"
             size="mini"
             class="button-detail"
@@ -107,7 +107,6 @@
       :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
-      @close="closeAuthorize"
       title="请选择通话时间段"
       width="900px">
       <div
@@ -216,10 +215,81 @@
         </section>
       </div>
       <span v-if="show.agree" slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
+          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
+          <el-button @click="show.agree=false">取 消</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="show.authorize"
+      class="authorize-dialog"
+      @close="closeAuthorize"
+      title="审核"
+      :close-on-click-modal="false"
+      width="780px">
+        <div style="max-height:380px;overflow: auto">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
+          <div class="family-detail">基本信息</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">家属姓名</span>
+              <span class="family-nameDetail">{{toShow.names}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">关系</span>
+              <span class="family-nameDetail">{{toShow.relationship}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">罪犯姓名</span>
+              <span class="family-nameDetail">{{toShow.prisonerName}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">申请探视时间</span>
+              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+            </p>
+          </div>
+        </div>
+         <!-- <div
+          v-for="(item,index) in toShow.logs"
+          :key='index'
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">审核人员账号</span>
+              <span class="family-nameDetail">{{item.createUser}}</span>
+            </p>
+            <p class="detail-message-family">
+              <span class="family-name">审核时间</span>
+              <span class="family-nameDetail">{{item.createTime}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family" >
+              <span class="family-name">审核人姓名</span>
+              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
+              <p class="detail-message-family" >
+              <span class="family-name">审核人意见</span>
+              <span class="family-nameDetail">{{item.remarks}}</span></p>
+          </div>
+        </div> -->
+      </div>
 
-         <label style="display: inline-block;float: left; padding-left: 20px;">
+
+
+      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
+        <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
+      </template>
+       <span slot="footer" class="dialog-footer">
+      <div
+        v-if="!show.agree && !show.disagree && !show.multistageExamine"
+      >
+          <label v-if="show.subTask&&show.process" style="display: inline-block;float: left; padding-left: 20px;">
                   <span style="padding-right: 12px;">选择流程节点:</span>
-                    <el-select v-model="submitSuccessParams.nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
+                    <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
                     <el-option
                       v-for="item in selectProcessOption"
                       :key="item.taskCode"
@@ -230,27 +300,6 @@
                 </label>
 
 
-
-
-          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
-          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
-          <el-button @click="show.agree=false">取 消</el-button>
-        </span>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="show.authorize"
-      class="authorize-dialog"
-      @close="closeAuthorize"
-      title="授权"
-      :close-on-click-modal="false"
-      width="530px">
-      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
-        <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
-      </template>
-
-      <div
-        v-if="!show.agree && !show.disagree && !show.multistageExamine"
-        class="button-box">
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
 
@@ -299,7 +348,7 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
-
+ </span>
 
     </el-dialog>
     <el-dialog
@@ -818,6 +867,7 @@
           }
         },
         show: {
+          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -839,7 +889,8 @@
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams: null,
+        submitSuccessParams: {},
+        nextCheckCode:'',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -903,7 +954,7 @@
         todayDate,
 
         oneMonthLater,
-
+        submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -1629,6 +1680,7 @@
         this.getMeetTimeConfig()
         this.$message.closeAll()
         this.getSubtask(e)
+        this.toShow= Object.assign( {}, this.toShow, e )
       },
        selectTask(select){
         let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
@@ -1640,6 +1692,7 @@
           this.selectProcessOption =res
           if(this.selectProcessOption.length){
             this.show.process=true
+            this.nextCheckCode=this.selectProcessOption[0].taskCode
           }else{
              this.show.process=false
           }
@@ -1738,8 +1791,20 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
-        this.show.agree = true
-        this.buttonLoading = false
+        if (this.toShow.isChoiceTime&& !this.show.subTask) {
+          this.show.agree = true
+           this.buttonLoading = false
+        } else {
+           this.submitParams = {
+            meetingId: this.toShow.id,
+            terminalId: this.toShow.terminalId,
+            meetingTime: this.toShow.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextCheckCode: this.nextCheckCode
+          }
+          this.submitMeetingAuthorize()
+        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1760,18 +1825,18 @@
       },
 
       // 覆盖mixin 高级审批提交情况下的提交操作
-      onMultistageExamineGoSubmit() {
-        this.show.multistageExamine = true
+      // onMultistageExamineGoSubmit() {
+      //   this.show.multistageExamine = true
 
-        this.buttonLoading = false
-      },
+      //   this.buttonLoading = false
+      // },
 
       // 覆盖mixin 高级审批提交情况下的返回操作
-      onMultistageExamineGoBack() {
-        this.show.multistageExamine = false
+      // onMultistageExamineGoBack() {
+      //   this.show.multistageExamine = false
 
-        this.$refs['multistage_examine-form'].handleResetField()
-      },
+      //   this.$refs['multistage_examine-form'].handleResetField()
+      // },
 
       // 覆盖mixin 高级审批提交情况下的确认操作
       onMultistageExamineSubmit() {
@@ -1855,13 +1920,16 @@
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-          let params = {
+           this.submitParams = {
             meetingId: this.toAuthorize.id,
             terminalId: this.submitSuccessParams.terminalId,
-            meetingTime: this.submitSuccessParams.meetingTime
+            meetingTime: this.submitSuccessParams.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextCheckCode: this.nextCheckCode
           }
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
-            params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+             this.submitParams.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
             if (this.checkInmeetings()) {
@@ -1869,18 +1937,21 @@
               this.isShowTips = true
               return
             }
-            params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+             this.submitParams.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
           }
-          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
+          this.show.subTask = this.submitParams.meetingTime ? true : false
+          this.show.agree = false;
+        }
+      },
+      submitMeetingAuthorize() {
+         http.meetingSelectAuthorize(this.submitParams).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
             this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
-            this.show.agree = false;
             this.getDatas('handleSubmit')
           })
-        }
       },
       onWithdraw(arg) {
        this.btnDisable = true
@@ -1917,6 +1988,10 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
+        this.submitParams=null
+        this.show.subTask=false
+        this.show.process=false
+        this.nextCheckCode=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
@@ -2044,6 +2119,9 @@
 </style>
 
 <style lang="stylus">
+.logMgCls {
+  text-align:left
+}
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;

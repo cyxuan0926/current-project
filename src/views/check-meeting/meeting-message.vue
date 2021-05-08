@@ -76,11 +76,11 @@
       width="530px">
       <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%">
         <p>请审核短信内容：</p>
-        <div style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
+        <div v-html="messageContent" style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
           {{ messageContent }}
         </div>
         </div>
-      <div
+      <div style="margin-top:10px"
         v-if="!show.agree && !show.disagree"
         class="button-box">
         <el-button
@@ -95,6 +95,7 @@
           @click="show.authorize = false">关闭</el-button>
       </div>
       <div
+         style="margin-top:10px"
         v-if="show.agree"
         class="button-box">
         <el-button
@@ -108,42 +109,51 @@
           plain
           @click="show.authorize = false">关闭</el-button>
       </div>
-      <div
-        v-if="show.disagree"
-        class="button-box">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-          <div>
-        <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
-          <el-option
-            v-for="(remark,index) in content"
-            :value="remark"
-            :label="remark"
-            :key="index" />
-        </el-select>
-        <el-button
+       <!-- 不同意的情况 -->
+      <div v-if="show.disagree" class="button-box logMgCls">
+        <div style="margin-top:10px;margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
+
+        <div style="display: flex;">
+          <el-select
+            v-model="disArgeeRemarks"
+            :multiple="true"
+            :multiple-limit='5' 
+            collapse-tags
+            @change="refuseFormChange"
+            style="width:70%; margin-right:10px"
+          >
+            <el-option
+              v-for="(remark, index) in content"
+              :value="remark"
+              :label="(index + 1) + '、' + remark"
+              :key="index"
+            />
+          </el-select>
+
+          <el-button
             type="primary"
             :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
-          </div>
-          <el-form
-            :model="refuseForm"
-            :rules="withdrawRule"
-            ref="refuseForm"
-            class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  class="borderNone">
-              <el-input  class="borderNone" type="textarea" maxlength="1000"  :autosize="{ minRows: 1 }" v-model="refuseForm.selectRemark"  :readonly="true"/>
-              <el-input
-               class="bordertop"
-                :autosize="{ minRows: 1 }"
-                 style="border-top: none;"
-                type="textarea"
-                show-word-limit
-                :maxlength="refuseForm.lengthRemark"
-                placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
-            </el-form-item>
-          </el-form>
+            @click="onRejectshow('PASSED')"
+          >编辑驳回原因</el-button>
+        </div>
+
+        <el-form
+          :model="refuseForm"
+          :rules="withdrawRule"
+          ref="refuseForm"
+          class="withdraw-box"
+        >
+          <el-form-item prop="anotherRemarks">
+            <el-input
+              :autosize="{ minRows: 6, maxRows:8 }"
+              type="textarea"
+              show-word-limit
+              maxlength="1000"
+              placeholder="请输入驳回原因..."
+              v-model="refuseForm.anotherRemarks"
+            />
+          </el-form-item>
+        </el-form>
         <el-button
           plain
           :loading="btnDisable"
@@ -163,56 +173,78 @@
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog">
-        <div class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;
-">
+        <div  v-html="messageContent" class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
           {{ messageContent }}
         </div>
       </div>
     </el-dialog>
-    <el-dialog
+      <el-dialog
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="changeClose()"
+      @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
-           <li v-for="(item,index) in content" 
-               :key='index' 
-               class="infinite-list-item" style="line-height:32px">
-               {{index+1}}.{{ item }}
-            </li>
+        <ul class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
+          <li
+            v-for="(item,index) in content"
+            :key='index'
+            class="infinite-list-item" style="line-height:32px">
+            {{ index + 1 }}.{{ item }}
+          </li>
         </ul>
-         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
+
+        <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
       </div>
-       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
-         <span v-for="(item,index) in content" :key="index">
-        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
-           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
-        </el-input>
-         </span>
+
+      <div
+        v-else
+        class="infinite-list"
+        style="margin-left:20px;min-height:400px"
+      >
+        <span v-for="(item,index) in content" :key="index">
+          <el-input
+            style="margin-bottom:10px"
+            maxlength="200"
+            v-model="content[index]"
+            placeholder="请输入内容"
+            clearable
+          >
+           <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="removeReject(index)"
+          />
+          </el-input>
+        </span>
       </div>
+
       <el-row :gutter="0">
         <el-button
-           v-if='show.editRebut'
-           type="primary"
+          v-if="show.editRebut"
+          type="primary"
           class="button-add"
           size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
-          <span v-else>
+          @click="onRejectEditshow"
+        >编辑</el-button>
+
+        <span v-else>
           <el-button
-          v-if='content.length>0'
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onSubmitReject()">保存</el-button>
-           <el-button
-          type="primary"
-          class="button-add"
-          size="mini"
-          v-if='content.length<10'
-          @click="addReject()">新增</el-button>
-          </span>
+            v-if="content.length>0"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="onSubmitReject"
+          >保存</el-button>
+
+          <el-button
+            v-if="content.length < 10"
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="addReject"
+          >新增</el-button>
+        </span>
       </el-row>
     </el-dialog>
     <el-dialog
@@ -452,27 +484,17 @@ export default {
         anotherRemarks: [
           {
             validator:(rule,value,callback)=>{
-              if(this.refuseForm.selectRemark||this.refuseForm.anotherRemarks){
+              if(this.refuseForm.anotherRemarks){
                   callback()
               }else{
                   callback(new Error('请填写驳回原因'))
               }
             }
           }
-        ],
-        withdrawReason: [
-          {
-            validator:(rule,value,callback)=>{
-              if(this.withdrawForm.selectRemark||this.withdrawForm.withdrawReason){
-                  callback()
-              }else{
-                  callback(new Error('请填撤回原因'))
-              }
-            }
-          }
         ]
       },
       remarks: [],
+      disArgeeRemarks: "",
       tabPanes,
       todayDate,
       oneMonthLater,
@@ -589,17 +611,20 @@ export default {
         this.messageContent=row.message
         this.show.message=true
       },
-      refuseFormChange(e){
-      let str=""
-        e.forEach((item,index)=>{
-          if(index==(e.length-1)){
-             str +=`${index+1}、${item}。`
-          }else{
-             str +=`${index+1}、${item}。\n`
-          }
-        })
-        this.refuseForm.selectRemark=str
-        this.refuseForm.lengthRemark=1000-this.refuseForm.selectRemark.length
+      refuseFormChange(e) {
+       let str = ""
+
+      if (!this.refuseForm.anotherRemarks) {
+        this.refuseForm.anotherRemarks = ""
+      }
+
+      e.forEach((item,index) => {
+        if(!this.refuseForm.anotherRemarks.includes(item)) {
+          str +=`${item}。\n`
+        }
+      })
+
+      this.refuseForm.anotherRemarks += str
     },
     // 获取当前驳回原因列表
   async onRejectshow(str,isform){
@@ -708,6 +733,8 @@ export default {
       this.show.disagree = false
       this.show.authorize = true
       this.messageContent=e.message
+      this.disArgeeRemarks=''
+      this.refuseForm.anotherRemarks=''
       this.onRejectshow(false,false)
       this.isform=false
     },
@@ -722,7 +749,7 @@ export default {
       let params = { uid: this.toAuthorize.uid.toString(), state: parseInt(e) }
       if (e === '2') {
           this.$refs.refuseForm.validate(valid => {
-          if (valid) params.remarks =this.refuseForm.selectRemark + this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+          if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
           })
         if (params.remarks) this.handleSubmit(params)
       }
@@ -820,4 +847,29 @@ export default {
 .withdraw-box
   margin-bottom 20px;
   
+</style>
+<style lang="stylus">
+.logMgCls {
+  text-align:left
+}
+.logMgCls .el-select__tags-text {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logMgCls .el-select .el-tag__close.el-icon-close {
+  top: -7px;
+}
+ .el-select-dropdown{
+        max-width: 243px;
+    }
+    .el-select-dropdown__item{
+        display: inline-block;
+    }
+    .el-select-dropdown__item span {
+        min-width: 400px;
+        display: inline-block;
+   }
 </style>

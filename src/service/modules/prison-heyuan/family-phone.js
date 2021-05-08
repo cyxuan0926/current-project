@@ -25,11 +25,11 @@ export default {
      },
     // 新增亲情电话申请
       familyPhoneAdd: data => {
-        return service.post(service.getHyUrl('/parse/familyphone/apply/save'), data).then(res => res && res.data)
+        return service.postObj(service.getHyUrl('/parse/familyphone/apply/save'), data).then(res => res && res.data)
      },
        // 通过审核
        authPhone: data => {
-        return service.post(service.getHyUrl('/parse/familyphone/apply/auth'), data).then(res => res && res.data)
+        return service.postObj(service.getHyUrl('/parse/familyphone/apply/auth'), data).then(res => res && res.data)
     },
        // 亲情电话通话统计表
        phoneRecordList: params => {
