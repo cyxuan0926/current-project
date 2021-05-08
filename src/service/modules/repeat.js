@@ -89,7 +89,7 @@ export default {
 
   // 可视电话统计报表-导出excel
   exportMeetingStatistics: params => {
-    return service.get('/download/province/export', params, { responseType: 'blob' })
+    return service.get('/download/province/export', params, { responseType: 'blob' }).then(res => res && res.data)
   },
 
   // 初级授权
