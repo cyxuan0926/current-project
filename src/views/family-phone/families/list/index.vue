@@ -420,8 +420,8 @@
                     :value="item.taskCode"
                   />
                 </template>
-                
               </el-select>
+
               <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
             </template>
           </m-form>
@@ -1260,7 +1260,10 @@ export default {
 
         if (this.familyInformationDialogOperationType) {
           // 编辑
-          const isPassed = [1, 2]
+          // isEdit: 2 是重新走审批流程的
+          // 1，2 是审核通过后的编辑
+          // 0 是未授权的编辑
+          const isRelationshipEdit = [0, 1]
 
           const { isEdit } = this.originalFamilyInformationDialogFormValues
 
@@ -1278,7 +1281,7 @@ export default {
             }, 'cancel'])
           }
 
-          if (isPassed.includes(isEdit) && disabledItemKeys.includes('relationship')) {
+          if (isRelationshipEdit.includes(isEdit) && disabledItemKeys.includes('relationship')) {
             const index = disabledItemKeys.findIndex(key => key === 'relationship')
 
             disabledItemKeys.splice(index, 1)
@@ -1295,7 +1298,7 @@ export default {
                 value: 1
               }
             })
-          }
+          } else delete this.familyInformationDialogFormItems['isPhoneSms']
 
           delete this.familyInformationDialogFormItems['isReplace']
 
@@ -1528,9 +1531,9 @@ export default {
       this.$set(this.detailOrAuthDialog, 'agree', false)
     },
 
-    onDisagreeAuthorize() {
+    async onDisagreeAuthorize() {
       //获取驳回列表
-      this.onRejectshow(false)
+      await this.onRejectshow(false)
 
       this.disArgeeRemarks = ''
 
@@ -1596,8 +1599,8 @@ export default {
       this.show.editRebut = false
     },
 
-    changeClose() {
-      this.onRejectshow(false, this.isform)
+    async changeClose() {
+      await this.onRejectshow(false, this.isform)
 
       this.show.editRebut = true
     },

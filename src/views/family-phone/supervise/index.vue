@@ -33,10 +33,10 @@
                 :data="tableDatas"
                 :cols="tableCols">
                 <template #familyName="{ row }">
-                    <template v-if="tab == '1' && !row.isReg">
+                    <template v-if="tab == '1' && row.isReg == '0'">
                         <span v-for="f in row.families" :key="f.familyId">{{ f.familyName }}</span>
                     </template>
-                    <template v-if="tab == '1' && row.isReg || tab == '2'">
+                    <template v-if="tab == '1' && row.isReg == '1' || tab == '2'">
                         <el-button
                             v-for="f in row.families"
                             :key="f.familyId"

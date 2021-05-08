@@ -63,7 +63,7 @@ export default {
 
   async exportMeetingStatistics({ commit }, params) {
     try {
-      const { data } = await http.exportMeetingStatistics(params)
+      const data = await http.exportMeetingStatistics(params)
 
       return data
     }
