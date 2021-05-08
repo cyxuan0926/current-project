@@ -10,7 +10,7 @@
       <el-table
         class="border"
         :data="tabledata.list"
-        style="width: 100%"> 
+        style="width: 100%">
         <el-table-column
             prop="year"
             label="年"
@@ -137,7 +137,8 @@ export default {
   },
   methods: {
     async getDatas() {
-      let res = await http.getPrisonerScorelist({ ...this.filter, ...this.pagination })
+       let jailId=JSON.parse(localStorage.getItem('user')).jailId
+      let res = await http.getPrisonerScorelist({ ...this.filter,jailId:jailId, ...this.pagination })
       this.tabledata= res.data
     },
     onSearch() {

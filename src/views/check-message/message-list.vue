@@ -65,7 +65,7 @@
       @onPageChange="getDatas" />
      <el-dialog
       :visible.sync="show.message"
-      title="短信内容"
+      title="短信内容1111"
       width="530px"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">

@@ -1,5 +1,7 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+<el-row
+    class="row-container"
+    :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
@@ -12,9 +14,10 @@
         :params="excelFilter"
       />
     </m-search>
-
     <el-col :span="24">
-      <el-tabs v-model="tabs" type="card">
+      <el-tabs
+        v-model="tabs"
+        type="card">
         <template v-for="(tab, index) in tabsItems">
           <el-tab-pane
             :key="index"
@@ -23,87 +26,74 @@
           />
         </template>
       </el-tabs>
-
-      <m-table-new
+    <m-table-new
         stripe
-        :cols="tableCols"
-        ref="parentElTable"
         :data="meetings.contents"
         @sort-change="sortChange"
+        :cols="tableCols"
+        ref="parentElTable"
       >
-        <template #meetingTime="{ row }">
-          <span >{{ row.meetingTime || row.applicationDate }}</span>
+        <template
+          slot-scope="scope"
+          slot="meetingTime">
+          <span >{{ scope.row.meetingTime || scope.row.applicationDate }}</span>
         </template>
-
-        <template #families="{ row }">
-          <div v-if="row.filterFamilies && row.filterFamilies.length">
-            <template v-for="family in row.filterFamilies">
-              <el-button
-                :key="family.familyId"
-                type="text"
-                size="small"
-                style="margin-left: 0px; margin-right: 8px;"
-                @click="showFamilyDetail(family.familyId, row.id)"
-              >{{ family.familyName }}</el-button>
-            </template>
+        <template
+          slot-scope="scope"
+          slot="families">
+          <div v-if="scope.row.filterFamilies && scope.row.filterFamilies.length">
+            <el-button
+              type="text"
+              size="small"
+              v-for="family in scope.row.filterFamilies"
+              :key="family.familyId"
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(family.familyId, scope.row.id)">{{ family.familyName }}</el-button>
           </div>
         </template>
-
-        <template #content="{ row }">
-          <span v-if="!row.content">
-            <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
-            <template v-else>{{ row.status | applyStatus }}</template>
+        <template
+          slot-scope="scope"
+          slot="content">
+          <span v-if="!scope.row.content">
+            <template v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</template>
+            <template v-else>{{ scope.row.status | applyStatus }}</template>
           </span>
-
           <el-tooltip
             v-else
-            :content="row.content"
+            :content="scope.row.content"
             placement="top" >
-            <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
-            <span v-else>{{ row.status | applyStatus }}</span>
+            <span v-if="scope.row.status === 'PENDING' && scope.row.isLock === 1">处理中</span>
+            <span v-else>{{ scope.row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
-
-        <template #operate="{ row }">
-          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-          <el-button
-            v-if="(row.status === 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
+        <template slot-scope="scope"
+          slot="operate">
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
+         <el-button
+            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))&& scope.row.isCheck"
             size="mini"
-            @click="handleAuthorization(row)"
-          >授权</el-button>
-
+            @click="handleAuthorization(scope.row)">审核</el-button>
           <el-button
-            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            v-else-if="scope.row.status === 'PASSED' && scope.row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
-            @click="handleWithdraw(row)"
-          >撤回</el-button>
+            @click="handleWithdraw(scope.row)">撤回</el-button>
 
-          <template v-if="tabs === 'UNUSUAL'">
-            <template v-if="row.unusualRemark">
-              <el-button @click="handleWithdraw(row)">撤回</el-button>
-
-              <el-button
-                class="button-detail"
-                size="mini"
-                @click="detailRemarks(row)"
-              >已备注</el-button>
-            </template>
-           
             <el-button
-              v-else
-              class="button-detail"
-              size="mini"
-              @click="setRemarks(row)"
-            >备注</el-button>
-          </template>
-
-          <el-button
-            v-if="row.status !== 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            v-if="tabs == 'UNUSUAL'&& scope.row.unusualRemark"
+            size="mini"
             class="button-detail"
+            @click="detailRemarks(scope.row)">已备注</el-button>
+            <el-button
+            v-if="tabs == 'UNUSUAL'&& !scope.row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(scope.row)">备注</el-button>
+               <el-button
+            v-if="scope.row.status != 'PENDING' || ( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor )||scope.row.isCheck==0"
             type="text"
             size="mini"
-            @click="onDetail(row)"
-          >详情</el-button>
+            class="button-detail"
+            @click="onDetail(scope.row)">详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -113,325 +103,308 @@
       :total="meetings.total"
       @onPageChange="getDatas"
     />
-
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
-      @close="closeAuthorize"
       title="请选择通话时间段"
-      width="900px"
-    >
-      <div v-if="show.agree" class="button-box">
+      width="900px">
+      <div
+        v-if="show.agree"
+        class="button-box">
         <section v-show="isSpecial">
           <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
             <label class="filter__label special">选择区域</label>
-
-            <el-select
-              style="width: 200px"
-              v-model="areaTypes"
-              placeholder="请选择区域"
-            >
+            <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
               <el-option
                 v-for="item in areaOptions"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value"
-              />
+                :value="item.value">
+              </el-option>
             </el-select>
           </div>
-
           <div class="across-filter">
             <label class="filter__label special">通话时长</label>
-
-            <el-select
-              style="width: 200px"
-              v-model="crossDuration"
-              placeholder="请选择通话时长"
-              @change="handleDurationChange"
-            >
+            <el-select style="width: 200px" v-model="crossDuration" placeholder="请选择通话时长" @change="handleDurationChange">
               <el-option
                 v-for="d in durationOptions"
                 :key="d.value"
                 :label="d.label"
-                :value="d.value"
-              />
+                :value="d.value">
+              </el-option>
             </el-select>
           </div>
-
           <div class="across-filter">
             <label class="filter__label special">可视电话通话时间</label>
-
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeStart"
               format="HH:mm"
               :picker-options="selectRange"
               :clearable="false"
-              @change="handleTimepickerChange"
-            />
-
+              @change="handleTimepickerChange">
+            </el-time-picker>
             <label style="margin: 0 10px;">至</label>
-
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeEnd"
               format="HH:mm"
-              disabled
-            />
+              disabled>
+            </el-time-picker>
           </div>
-
-          <p class="timerange-tips" v-show="isShowTips">{{ showTips }}</p>
+          <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
         </section>
-
         <section v-show="!isSpecial">
           <el-tabs
             v-if="isSeparateByArea || isUseMeetingFloor"
             v-model="areaTabs"
-            type="card"
-          >
+            type="card">
             <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
-              :name="t.value"
-            />
+              :name="t.value" />
           </el-tabs>
-
           <el-table
-            class="tableBorder"
             :data="meetingAdjustmentCopy.terminals"
             border
             @cell-click="cellClick"
             :row-class-name="tableRowClassName"
             :cell-style="cellStyle"
-          >
+            class="tableBorder">
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="terminalNumber"
               label="终端号"
-              min-width="80"
-            />
-
+              min-width="80">
+            </el-table-column>
             <el-table-column
               v-else
               prop="terminalNumber"
               label="终端号"
-              min-width="80"
-            />
-
+              min-width="80">
+            </el-table-column>
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="prisonConfigName"
               label="监区"
-              min-width="110"
-            />
-
+              min-width="110">
+            </el-table-column>
             <el-table-column
               v-else
               prop="prisonConfigName"
               label="监区"
-              min-width="110"
-            />
-
+              min-width="110">
+            </el-table-column>
             <el-table-column
               v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
               :prop="item"
               :label="item"
-              min-width="84"
-            />
-
+              min-width="84">
+            </el-table-column>
             <el-table-column
               v-if="show.meetingQueue"
               prop="noTimes"
               label="当日没有可选时间段"
-              min-width="84"
-            />
+              min-width="84">
+            </el-table-column>
+
           </el-table>
         </section>
       </div>
-
-      <span
-        v-if="show.agree"
-        class="dialog-footer"
-        slot="footer"
-      >
-        <el-button
-          v-if="submitSuccessParams && userDefinedDuration"
-          type="primary"
-          @click="handleShowOther"
-        >{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
-
-        <el-button
-          type="primary"
-          :disabled="!submitSuccessParams"
-          @click="submitSuccess"
-        >确 定</el-button>
-
-        <el-button @click="show.agree = false">取 消</el-button>
-      </span>
+      <span v-if="show.agree" slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
+          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
+          <el-button @click="show.agree=false">取 消</el-button>
+        </span>
     </el-dialog>
-
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
       @close="closeAuthorize"
-      title="授权"
+      title="审核"
       :close-on-click-modal="false"
-    >
+      width="780px">
+        <div style="max-height:380px;overflow: auto">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
+          <div class="family-detail">基本信息</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">家属姓名</span>
+              <span class="family-nameDetail">{{toShow.names}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">关系</span>
+              <span class="family-nameDetail">{{toShow.relationship}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">罪犯姓名</span>
+              <span class="family-nameDetail">{{toShow.prisonerName}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">申请探视时间</span>
+              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+            </p>
+          </div>
+        </div>
+         <!-- <div
+          v-for="(item,index) in toShow.logs"
+          :key='index'
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">审核人员账号</span>
+              <span class="family-nameDetail">{{item.createUser}}</span>
+            </p>
+            <p class="detail-message-family">
+              <span class="family-name">审核时间</span>
+              <span class="family-nameDetail">{{item.createTime}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family" >
+              <span class="family-name">审核人姓名</span>
+              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
+              <p class="detail-message-family" >
+              <span class="family-name">审核人意见</span>
+              <span class="family-nameDetail">{{item.remarks}}</span></p>
+          </div>
+        </div> -->
+      </div>
+
+
+
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
+       <span slot="footer" class="dialog-footer">
+      <div
+        v-if="!show.agree && !show.disagree && !show.multistageExamine"
+      >
+          <label v-if="show.subTask&&show.process" style="display: inline-block;float: left; padding-left: 20px;">
+                  <span style="padding-right: 12px;">选择流程节点:</span>
+                    <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
+                    <el-option
+                      v-for="item in selectProcessOption"
+                      :key="item.taskCode"
+                      :label="item.taskName"
+                      :value="item.taskCode">
+                    </el-option>
+                  </el-select>
+                </label>
 
-      <div v-if="!show.agree && !show.disagree && !show.multistageExamine" class="button-box">
+
         <repetition-el-buttons :buttonItems="authorizeButtons" />
       </div>
 
-      <div v-if="show.disagree" class="button-box logMgCls">
+      <div
+        v-if="show.disagree"
+        class="button-box logMgCls">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
-
-        <div>
-          <el-select
-            v-model="remarks"
-            :multiple="true"
-            style="width:70%; margin-right:10px"
-            @change="refuseFormChange"
-          >
+      <div>
+            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
               v-for="(remark,index) in content"
               :value="remark"
-              :label="remark"
-              :key="index"
-            />
+              :label="(index+1)+'、'+remark"
+              :key="index"/>
           </el-select>
-
-          <el-button
+           <el-button
             type="primary"
             :loading="btnDisable"
-            @click="onRejectshow('PASSED')"
-          >编辑驳回原因</el-button>
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks"  >
+               <el-input
+                :autosize="{ minRows: 6 ,maxRows:8 }"
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('DENIED')">提交</el-button>
+          <el-button
+            plain
+            @click="show.disagree = false">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
+ </span>
 
-        <el-form
-          class="withdraw-box"
-          ref="refuseForm"
-          :model="refuseForm"
-          :rules="withdrawRule"
-        >
-          <el-form-item prop="anotherRemarks" class="borderNone">
-            <el-input
-              v-model="refuseForm.selectRemark"
-              class="borderNone"
-              type="textarea"
-              maxlength="1000"
-              :autosize="{ minRows: 1 }"  
-              :readonly="true"
-            />
-
-            <el-input
-              v-model="refuseForm.anotherRemarks"
-              class="bordertop"
-              :autosize="{ minRows: 1 }"
-              style="border-top: none;"
-              type="textarea"
-              show-word-limit
-              :maxlength="refuseForm.lengthRemark"
-              placeholder="请输入驳回原因..."
-            />
-          </el-form-item>
-        </el-form>
-
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('DENIED')"
-        >提交</el-button>
-
-        <el-button plain @click="show.disagree = false">返回</el-button>
-
-        <el-button
-          type="danger"
-          plain
-          @click="closeWithdraw('refuseForm')"
-        >关闭</el-button>
-      </div>
     </el-dialog>
-
     <el-dialog
       :visible.sync="show.withdraw"
       @close="closeWithdraw"
       class="authorize-dialog logMgCls"
       title="撤回"
       :close-on-click-modal="false"
-    >
-      <div style="margin-bottom: 10px;">请选择撤回原因</div>
+      width="530px">
 
-      <div style="margin-bottom: 10px;">
-        <el-select
-          v-model="remarks"
-          style="width:70%; margin-right:10px"
-          :multiple="true"
-          :multiple-limit="5"
-          collapse-tags
-          @change="withdrawFormChange"
-        >
-          <template v-for="(remark,index) in content">
+ <div style="margin-bottom: 10px;">请选择撤回原因</div>
+          <div style="margin-bottom: 10px;">
+            <el-select v-model="remarks" :multiple="true"  :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
             <el-option
+              v-for="(remark,index) in content"
               :value="remark"
-              :label="(index + 1)+'、'+remark"
-              :key="index"
-            />
-          </template> 
-        </el-select>
-
-        <el-button
-          type="primary"
-          :loading="btnDisable"
-          @click="onRejectshow('PASSED')"
-        >编辑驳回原因</el-button>
-      </div>
-
-      <el-form
-        class="withdraw-box"
-        ref="withdrawForm"
-        :model="withdrawForm"
-        :rules="withdrawRule"
-      >
-        <el-form-item prop="withdrawReason" >
-          <el-input
-            v-model="withdrawForm.withdrawReason"
-            type="textarea"
-            show-word-limit
-            maxlength="1000"
-            :autosize="{ minRows: 6,maxRows:8 }"
-            placeholder="请输入撤回理由..."
-          />
-        </el-form-item>
-      </el-form>
-
-      <el-button
-        plain
-        :loading="btnDisable"
-        @click="onWithdraw('WITHDRAW')"
-      >提交</el-button>
-
-      <el-button
-        type="danger"
-        plain
-        @click="closeWithdraw('withdrawForm')"
-      >关闭</el-button>
+              :label="(index+1)+'、'+remark"
+              :key="index"/>
+          </el-select>
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+            :model="withdrawForm"
+            :rules="withdrawRule"
+            ref="withdrawForm"
+            class="withdraw-box">
+            <el-form-item prop="withdrawReason" >
+             <el-input
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                :autosize="{ minRows: 6,maxRows:8 }"
+                placeholder="请输入撤回理由..."
+                v-model="withdrawForm.withdrawReason" />
+            </el-form-item>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onWithdraw('WITHDRAW')">提交</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('withdrawForm')">关闭</el-button>
     </el-dialog>
-
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
       width="780px"
       class="authorize-dialog"
       lock-scroll
-      @close="onCloseShow"
-    >
-      <div style="max-height:380px; overflow: auto">
+      @close="onCloseShow">
+      <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
 
@@ -466,10 +439,10 @@
 
         <div
           v-for="(item,index) in toShow.changeLogs"
-          :key="index"
+          :key=index
           style="display: flex;border: 1px solid #E4E7ED;border-top: none"
         >
-          <div class="family-detail">{{ index + 1 }}</div>
+          <div class="family-detail">{{index+1}}</div>
 
           <div class="detail-message">
             <p class="detail-message-family" v-if="item.operateAccount">
@@ -481,8 +454,8 @@
               <span class="family-nameDetail">{{item.operateAccount}}</span>
             </p>
 
-            <template v-if="item.meetingCalls">
-              <label v-for="(val, keys) in item.meetingCalls" :key="keys">
+            <template v-if="item.meetingCalls" >
+              <label v-for="(val,keys) in item.meetingCalls" :key=keys >
                 <p class="detail-message-family" >
                   <span class="family-name">通话时间</span>
 
@@ -508,23 +481,18 @@
               <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
 
               <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
-
               <span class="family-name" v-if="item.status=='CALL'">呼叫时间</span>
-
-              <template v-if="item.status=='CALL'">
+              <template  v-if="item.status=='CALL'">
                  <span class="family-nameDetail">{{ item.createdAt | Date }}</span>
               </template>
-
-              <template v-else>
+              <template  v-else>
                 <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
               </template>
-            </p>
-
+               </p>
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
-              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px"
-            >
+              style="border-top:  1px solid #E4E7ED;border-bottom: none;text-align: justify;line-height: 18px">
               <span class="family-name" style="line-height: 40px">拒绝原因</span>
 
               <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
@@ -539,7 +507,6 @@
 
               <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ item.remark }}</span>
             </p>
-
             <p
               v-if="item.remark && item.status=='SUBMIT'"
               class="detail-message-family"
@@ -557,52 +524,49 @@
 
               <span class="family-name" v-if="item.status=='CANCELED'" >取消人姓名</span>
 
-              <span class="family-nameDetail">{{item.operateName}}</span>
-            </p>
+              <span class="family-nameDetail">{{item.operateName}}</span></p>
 
-            <template v-if="item.meetingCalls">
-              <label v-for="(val, keys) in item.meetingCalls" :key="keys">
-                <p class="detail-message-family" >
-                  <span class="family-name">通话时长</span>
+              <template v-if="item.meetingCalls">
+                <label v-for="(val,keys) in item.meetingCalls" :key=keys  >
+                  <p class="detail-message-family" >
+                    <span class="family-name">通话时长</span>
 
-                  <span class="family-nameDetail">{{ val.callDuration | time }}</span>
-                </p>
-
-                <label v-if="val.remark">
-                  <p
-                    v-if="keys!=item.meetingCalls.length-1"
-                    class="detail-message-family"
-                    :style="{height:parseInt( val.itemHeigh+1)+'px'}"
-                  >
-                    <span class="family-name">&nbsp;</span>
-
-                    <span class="family-nameDetail">&nbsp;</span>
+                    <span class="family-nameDetail">{{ val.callDuration | time }}</span>
                   </p>
+
+                  <label v-if="val.remark">
+                    <p
+                      v-if="keys!=item.meetingCalls.length-1"
+                      class="detail-message-family"
+                      :style="{height:parseInt( val.itemHeigh+1)+'px'}"
+                    >
+                      <span class="family-name">&nbsp;</span>
+
+                      <span class="family-nameDetail">&nbsp;</span>
+                    </p>
+                  </label>
                 </label>
-              </label>
-            </template>
+              </template>
 
             <p class="detail-message-family">
               <template v-if="item.status!=='CALL'">
                  <span class="family-name">申请状态</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'PASSED'">已通过</span>
+              <span class="family-nameDetail" v-if="item.status=='PASSED'">已通过</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'CANCELED'">已取消</span>
+              <span class="family-nameDetail" v-if="item.status=='CANCELED'">已取消</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'DENIED'">已拒绝</span>
+              <span class="family-nameDetail" v-if="item.status=='DENIED'">已拒绝</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'EXPIRED'">已过期</span>
+              <span class="family-nameDetail" v-if="item.status=='EXPIRED'">已过期</span>
+              <span class="family-nameDetail" v-if="item.status=='ENDED'">已结束</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'ENDED'">已结束</span>
+              <span class="family-nameDetail" v-if="item.status=='FINISHED'">已完成</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'FINISHED'">已完成</span>
+              <span class="family-nameDetail" v-if="item.status=='MEETING_ON'">通话中</span>
+              <span class="family-nameDetail" v-if="item.status=='SUBMIT'">已提交二级审核</span>
 
-                <span class="family-nameDetail" v-if="item.status === 'MEETING_ON'">通话中</span>
-
-                <span class="family-nameDetail" v-if="item.status === 'SUBMIT'">已提交二级审核</span>
               </template>
-
               <template v-if="item.status=='CALL'">
                 <span class="family-name">呼叫状态</span>
                 <span class="family-nameDetail">{{ item.statusName }}</span>
@@ -611,15 +575,17 @@
           </div>
         </div>
       </div>
-    </el-dialog>
 
+      <span slot="footer" class="dialog-footer"></span>
+    </el-dialog>
     <el-dialog
       title="家属信息"
       class="family-dialog"
       :visible.sync="show.familiesDetialInform"
-      @close="closeFamilyDetail"
-    >
-      <family-detail-information :elItems="familyDetailInformationItems" :detailData="family">
+      @close="closeFamilyDetail">
+      <family-detail-information
+        :elItems="familyDetailInformationItems"
+        :detailData="family">
         <template #familyInformation="{ scope }">
           <div class="img-items">
             <m-img-viewer
@@ -627,13 +593,11 @@
               title="身份证正面"
               isRequired
             />
-
             <m-img-viewer
               :url="scope.familyIdCardBack"
               title="身份证背面"
               isRequired
             />
-
             <m-img-viewer
               :url="scope.familyAvatarUrl"
               title="头像"
@@ -641,23 +605,23 @@
             />
           </div>
         </template>
-
         <template #familyRelationalInformation="{ scope }">
           <div class="img-items">
-            <template v-for="(item, index) of scope.relationalProofUrls">
-              <m-img-viewer
-                :key="index"
-                title="关系证明图"
-                :class="{ 'relation_img': scope.relationalProofUrls.length !== 1 }"
-                :url="item.url"
-              />
-            </template>
+            <m-img-viewer
+              v-for="(item, index) of scope.relationalProofUrls"
+              :key="index"
+              title="关系证明图"
+              :class="{ 'relation_img': scope.relationalProofUrls.length !== 1 }"
+              :url="item.url"
+            />
           </div>
         </template>
-
         <template #familyMeetNoticeInformation="{ scope }">
           <div class="img-items">
-            <m-img-viewer :url="scope.meetNoticeUrl" title="可视电话通知单" />
+            <m-img-viewer
+              :url="scope.meetNoticeUrl"
+              title="可视电话通知单"
+            />
           </div>
         </template>
       </family-detail-information>
@@ -668,116 +632,76 @@
       class="authorize-dialog"
       width="600px"
       @close="closeAuthorize"
-      title="备注信息"
-    >
+      title="备注信息">
       <el-form label-width="80px" class="demo-ruleForm">
         <el-form-item label="备注" prop="desc">
-          <el-input
-            v-model="getRemarks"
-            type="textarea"
-            :autosize="{ minRows: 6, maxRows: 8 }"
-            maxlength="300" 
-            placeholder="请输入内容"
-            show-word-limit
-          />
+          <el-input type="textarea" v-model="getRemarks" :autosize="{ minRows: 6, maxRows: 8}" maxlength="300"  placeholder="请输入内容" show-word-limit></el-input>
         </el-form-item>
       </el-form>
-
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitRemarks()">提 交</el-button>
-      </span>
+       <span  slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitRemarks()">提 交</el-button>
+        </span>
     </el-dialog>
-
-    <el-dialog
+     <el-dialog
       :visible.sync="show.userRemarks"
       class="authorize-dialog"
       width="600px"
-      title="备注信息"
       @close="closeAuthorize"
-    >
-      <el-form
-        label-width="130px"
-        style="max-height:400px;"
-        class="demo-ruleForm"
-      >
+      title="备注信息">
+      <el-form label-width="130px" style="max-height:400px" class="demo-ruleForm">
         <el-form-item label="增加备注用户:" prop="desc">
-          <span >{{ optionsRemarks.unusualRemarkUser }}</span>
+          <span >{{optionsRemarks.unusualRemarkUser}}</span>
         </el-form-item>
-
         <el-form-item label="增加备注内容:" prop="desc">
-          <span >{{ optionsRemarks.unusualRemark }}</span>
+          <span >{{optionsRemarks.unusualRemark}}</span>
         </el-form-item>
       </el-form>
     </el-dialog>
-
-    <el-dialog
+     <el-dialog
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      class="authorize-dialog"
-      @close="changeClose"
-    >
+      @close="changeClose()"
+      class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left: 20px; min-height: 400px; width: 100%;">
-          <li v-for="(item,index) in content"
-            :key='index'
-            class="infinite-list-item"
-            style="line-height:32px"
-          >
-            {{ index+1 }}.{{ item }}
-          </li>
+        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+           <li v-for="(item,index) in content"
+               :key='index'
+               class="infinite-list-item" style="line-height:32px">
+               {{index+1}}.{{ item }}
+            </li>
         </ul>
-        <p style="margin-left:20px;">编辑用户:{{ updateer }}</p>
+         <p style="margin-left:20px;">编辑用户:{{updateer}}</p>
       </div>
-
-      <div
-        v-else
-        class="infinite-list"
-        style="margin-left: 20px;min-height: 400px;"
-      >
-        <span v-for="(item,index) in content" :key="index">
-          <el-input
-            v-model="content[index]"
-            style="margin-bottom:10px"
-            maxlength="200"
-            placeholder="请输入内容"
-            clearable
-          >
-           <el-button
-            slot="append"
-            icon="el-icon-close"
-            @click="removeReject(index)"
-          />
-          </el-input>
-        </span>
+       <div class="infinite-list" v-else style="margin-left:20px;min-height:400px">
+         <span v-for="(item,index) in content" :key="index">
+        <el-input style="margin-bottom:10px" maxlength="200" v-model="content[index]" placeholder="请输入内容" clearable>
+           <el-button slot="append" icon="el-icon-close" @click="removeReject(index)"></el-button>
+        </el-input>
+         </span>
       </div>
-
       <el-row :gutter="0">
+
         <el-button
-          v-if='show.editRebut'
+           v-if='show.editRebut'
+           type="primary"
+          class="button-add"
+          size="mini"
+          @click="onRejectEditshow()">编辑</el-button>
+          <span v-else>
+          <el-button
+          v-if='content.length>0'
           type="primary"
           class="button-add"
           size="mini"
-          @click="onRejectEditshow"
-        >编辑</el-button>
-
-        <span v-else>
-          <el-button
-            v-if='content.length > 0'
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="onSubmitReject"
-          >保存</el-button>
-
-          <el-button
-            v-if='content.length < 10'
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="addReject"
-          >新增</el-button>
-        </span>
+          @click="onSubmitReject()">保存</el-button>
+           <el-button
+          type="primary"
+          class="button-add"
+          size="mini"
+          v-if='content.length<10'
+          @click="addReject()">新增</el-button>
+          </span>
       </el-row>
     </el-dialog>
   </el-row>
@@ -823,7 +747,7 @@
           name: 'UNUSUAL'
         },
         {
-          label: '未授权',
+          label: '未审核',
           name: 'PENDING'
         }
 
@@ -943,6 +867,7 @@
           }
         },
         show: {
+          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -964,7 +889,8 @@
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams: null,
+        submitSuccessParams: {},
+        nextCheckCode:'',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -1009,6 +935,8 @@
         ],
         meetingAdjustment: {},
 
+        selectProcessOption:[],
+
         meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
@@ -1026,7 +954,7 @@
         todayDate,
 
         oneMonthLater,
-
+        submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -1075,10 +1003,6 @@
         'isSuccessFirstLevelSubmitMeeting',
         'unusualMeetingPageData'
       ]),
-
-      ...mapState({
-        processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions
-      }),
 
       ...mapGetters([
         'isShowPhone',
@@ -1161,8 +1085,7 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              showOverflowTooltip: true
+              prop: 'prisonerNumber'
             },
             {
               label: '罪犯姓名',
@@ -1188,8 +1111,7 @@
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              showOverflowTooltip: true
+              prop: 'phone'
             },
             {
               label: '关系',
@@ -1214,7 +1136,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 120,
+              minWidth: 180,
               align: 'center'
             }
           ]
@@ -1370,8 +1292,8 @@
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
 
       await this.getDatas('mounted')
-    },
 
+    },
     methods: {
       ...mapActions([
         'getMeetings',
@@ -1382,15 +1304,13 @@
         'getMeettingsDetail',
         'firstLevelAuthorize',
         'getMeettingsChangelogDetail',
-        'getUnusualMeetingPage',
-        'getSubtaskPhone'
+        'getUnusualMeetingPage'
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-
       setRemarks(row){
         this.show.setRemarks=true
-        this.getMeetingId=row.id
+         this.getMeetingId=row.id
       },
       submitRemarks(){
         if(this.getRemarks){
@@ -1419,7 +1339,7 @@
         this.optionsRemarks=row
         this.show.userRemarks=true
       },
-      refuseFormChange(e){
+        refuseFormChange(e){
         let str=""
          if(!this.refuseForm.anotherRemarks){
             this.refuseForm.anotherRemarks=""
@@ -1526,9 +1446,8 @@
       },
       cellClick(row, column,cell,event){
         let cellStr=cell.querySelector(".cell").textContent
-
-        if(cellStr) {
-        } else {
+        if(cellStr){
+        }else{
           if(column.label=='监区'){
             return false
           }else if(column.label=='当日没有可选时间段'){
@@ -1760,8 +1679,24 @@
         }
         this.getMeetTimeConfig()
         this.$message.closeAll()
+        this.getSubtask(e)
+        this.toShow= Object.assign( {}, this.toShow, e )
       },
-
+       selectTask(select){
+        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
+        this.submitSuccessParams.nextCheckRole=obj[0].taskName
+      },
+      async getSubtask(e){
+        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
+          if (!res) return
+          this.selectProcessOption =res
+          if(this.selectProcessOption.length){
+            this.show.process=true
+            this.nextCheckCode=this.selectProcessOption[0].taskCode
+          }else{
+             this.show.process=false
+          }
+      },
       async handleWithdraw(e) {
         const { id } = e
         this.onRejectshow(false,true)
@@ -1856,8 +1791,20 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
-        this.show.agree = true
-        this.buttonLoading = false
+        if (this.toShow.isChoiceTime&& !this.show.subTask) {
+          this.show.agree = true
+           this.buttonLoading = false
+        } else {
+           this.submitParams = {
+            meetingId: this.toShow.id,
+            terminalId: this.toShow.terminalId,
+            meetingTime: this.toShow.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextCheckCode: this.nextCheckCode
+          }
+          this.submitMeetingAuthorize()
+        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1878,18 +1825,18 @@
       },
 
       // 覆盖mixin 高级审批提交情况下的提交操作
-      onMultistageExamineGoSubmit() {
-        this.show.multistageExamine = true
+      // onMultistageExamineGoSubmit() {
+      //   this.show.multistageExamine = true
 
-        this.buttonLoading = false
-      },
+      //   this.buttonLoading = false
+      // },
 
       // 覆盖mixin 高级审批提交情况下的返回操作
-      onMultistageExamineGoBack() {
-        this.show.multistageExamine = false
+      // onMultistageExamineGoBack() {
+      //   this.show.multistageExamine = false
 
-        this.$refs['multistage_examine-form'].handleResetField()
-      },
+      //   this.$refs['multistage_examine-form'].handleResetField()
+      // },
 
       // 覆盖mixin 高级审批提交情况下的确认操作
       onMultistageExamineSubmit() {
@@ -1973,13 +1920,16 @@
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-          let params = {
+           this.submitParams = {
             meetingId: this.toAuthorize.id,
             terminalId: this.submitSuccessParams.terminalId,
-            meetingTime: this.submitSuccessParams.meetingTime
+            meetingTime: this.submitSuccessParams.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextCheckCode: this.nextCheckCode
           }
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
-            params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+             this.submitParams.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
             if (this.checkInmeetings()) {
@@ -1987,18 +1937,21 @@
               this.isShowTips = true
               return
             }
-            params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+             this.submitParams.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
           }
-          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
+          this.show.subTask = this.submitParams.meetingTime ? true : false
+          this.show.agree = false;
+        }
+      },
+      submitMeetingAuthorize() {
+         http.meetingSelectAuthorize(this.submitParams).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
             this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
-            this.show.agree = false;
             this.getDatas('handleSubmit')
           })
-        }
       },
       onWithdraw(arg) {
        this.btnDisable = true
@@ -2035,6 +1988,10 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
+        this.submitParams=null
+        this.show.subTask=false
+        this.show.process=false
+        this.nextCheckCode=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
@@ -2161,7 +2118,10 @@
   }
 </style>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
+.logMgCls {
+  text-align:left
+}
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;
