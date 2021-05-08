@@ -366,7 +366,7 @@
         </template>
 
         <!-- 不同意 -->
-        <div v-if="show.disagree" class="button-box logMgCls">
+        <div v-if="show.disagree" class="button-box logMgCls el-row_callback">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
 
           <div>
@@ -1070,7 +1070,7 @@ export default {
 
       this.buttonLoading = true
 
-      let params = { id: this.toAuthorize.id, status: e, processInstanceId, ...inputs }
+      let params = { id: this.toAuthorize.id, processInstanceId, ...inputs }
 
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED') {
@@ -1088,7 +1088,14 @@ export default {
             else this.buttonLoading = false
           })
         }
-        if(e === 'WITHDRAW'){
+        if(e === 'WITHDRAW') {
+          params = {
+            ...params,
+            checkState: 4
+          }
+
+          params.status = e
+
           this.$refs.withdrawForm.validate(valid => {
             if(!this.withdrawForm.withdrawReason){
               this.withdrawForm.withdrawReason = ""
@@ -1356,6 +1363,7 @@ export default {
         const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
 
         inputs = {
+          taskName,
           remarks,
           nextCheckRole: taskName,
           nextCheckCode,
