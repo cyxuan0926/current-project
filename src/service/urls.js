@@ -33,7 +33,7 @@ const config = {
     // http://8.129.14.169:8098/ywgk
     jailApiHost: 'http://8.129.14.169:8098/ywgk',
     // apiHost: 'http://47.107.245.151:8021',
-   // apiHost: 'http://qa-ywgk.yuwugongkai.com',
+    // apiHost: 'http://qa-ywgk.yuwugongkai.com',
     apiHost: 'http://8.129.14.169:8098',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     apiPath: '/ywgk',

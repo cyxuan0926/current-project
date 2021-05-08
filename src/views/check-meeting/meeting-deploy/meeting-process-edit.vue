@@ -1,6 +1,9 @@
 <template>
     <div class="meeting-process-container">
-        <div class="meeting-process-canvas" ref="process"></div>
+        <div class="meeting-process-canvas-wrap">
+            <div class="meeting-process-canvas" ref="process"></div>
+            <div class="properties-panel-parent" id="js-properties-panel"></div>
+        </div>
         <div class="meeting-process-btns">
             <el-button type="primary" size="small" @click="handleSaveDiagram">保存</el-button>
             <el-button plain type="primary" size="small" @click="handleBack">返回</el-button>
@@ -19,6 +22,9 @@
 
 <script>
     import BpmnModeler from "bpmn-js/lib/Modeler"
+    import propertiesPanelModule from 'bpmn-js-properties-panel'
+    import propertiesProviderModule from "bpmn-js-properties-panel/lib/provider/camunda"
+    import camundaModdleDescriptor from "camunda-bpmn-moddle/resources/camunda"
     import customControlsModule from './custom'
     import { mapState, mapActions } from 'vuex'
     import http from '@/service'
@@ -27,6 +33,7 @@
     import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css"
     import "bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css"
     import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css"
+    import "bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css";
     export default {
         data() {
             return {
@@ -108,9 +115,17 @@
         async mounted() {
             this.bpmnModeler = new BpmnModeler({
                 container: this.$refs.process,
+                propertiesPanel: {
+                    parent: '#js-properties-panel'
+                },
                 additionalModules: [
+                    propertiesProviderModule,
+                    propertiesPanelModule,
                     customControlsModule
-                ]
+                ],
+                moddleExtensions: {
+                    camunda: camundaModdleDescriptor
+                }
             })
             this.initBpmnEvents()
             try {
@@ -127,23 +142,38 @@
 
 <style lang="scss" scoped>
     .meeting-process-container {
-        width: 80%;
+        // width: 80%;
         position: absolute;
-        left: 10%;
-        right: 10%;
-        bottom: 60px;
+        left: 30px;
+        right: 30px;
+        bottom: 0;
         top: 30px;
         display: flex;
         flex-direction: column;
     }
+    .meeting-process-canvas-wrap {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
     .meeting-process-canvas {
         flex: 1;
+    }
+    .properties-panel-parent {
+        width: 300px;
+        overflow: auto;
     }
     .meeting-process-btns {
         height: 60px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
+    }
+    /deep/ .bpp-properties-panel [type=text] {
+        width: 80%;
+    }
+    /deep/ .bpp-textfield .clear {
+        display: none;
     }
     /deep/ .djs-container {
         background-color: #eee;
