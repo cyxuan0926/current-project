@@ -830,7 +830,8 @@ export default {
     ]),
 
     ...mapState({
-      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions
+      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions,
+      currentProcessTaskInformation: state => state.global.currentProcessTaskInformation
     }),
 
     ...mapGetters([
@@ -857,7 +858,7 @@ export default {
     agreeHasSubTaskFormItems() {
       return {
         formConfigs: {
-          labelWidth: '85px'
+          labelWidth: '90px'
         },
 
         remarks: {
@@ -885,7 +886,8 @@ export default {
       'getNotification',
       'getRegistrationNotificationDetail',
       'firstLevelAuthorize',
-      'getSubtaskPhone'
+      'getSubtaskPhone',
+      'getProcessTask'
     ]),
 
     refuseFormChange(e) {
@@ -1043,11 +1045,13 @@ export default {
 
     // 点击授权按钮
      async handleAuthorization(e) {
-      const { id } = e
+      const { processInstanceId } = e
 
       this.registrationRow = Object.assign({}, e)
 
-      this.toAuthorize = await this.onGetRegistrationDetail(e)
+      const promises = await Promise.all([this.onGetRegistrationDetail(e), this.getProcessTask(processInstanceId)])
+
+      this.toAuthorize = promises[0]
 
       this.show.agree = false
 
@@ -1074,10 +1078,13 @@ export default {
 
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED') {
+          const { taskName } = this.currentProcessTaskInformation
+
           // 不同意
           params = {
             ...params,
-            checkState: 2
+            checkState: 2,
+            taskName
           }
 
           this.$refs.refuseForm.validate(valid => {
@@ -1156,8 +1163,6 @@ export default {
 
     // 点击撤回按钮
     async handleCallback(e) {
-      const { id } = e
-
       this.registrationRow = Object.assign({}, e)
 
       this.toAuthorize = await this.onGetRegistrationDetail(e)
@@ -1351,7 +1356,11 @@ export default {
 
     // 同意 提交审批：同意并结束
     async onPassedAuthorize() {
-      let inputs = {}
+      const { taskName } = this.currentProcessTaskInformation
+
+      let inputs = {
+        taskName
+      }
 
       if (this.isSubtask) {
         this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
@@ -1363,7 +1372,7 @@ export default {
         const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
 
         inputs = {
-          taskName,
+          ...inputs,
           remarks,
           nextCheckRole: taskName,
           nextCheckCode,
@@ -1371,6 +1380,7 @@ export default {
         }
       } else {
         inputs = {
+          ...inputs,
           checkState: 1
         }
       }

@@ -299,7 +299,7 @@
           <div class="detail-content">
             <p class="detail-message-family" >
               <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
+              <span class="family-nameDetail">{{item.createName}}</span></p>
               <p class="detail-message-family" >
               <span class="family-name">审核人意见</span>
               <span class="family-nameDetail">{{item.remarks}}</span></p>
@@ -967,7 +967,6 @@ export default {
       this.tabledate=res
     },
      messageDetail(row){
-       console.log(row)
         this.messageContent=row.applyReason
         this.show.message=true
       },
