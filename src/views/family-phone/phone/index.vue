@@ -299,7 +299,7 @@
           <div class="detail-content">
             <p class="detail-message-family" >
               <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
+              <span class="family-nameDetail">{{item.createName}}</span></p>
               <p class="detail-message-family" >
               <span class="family-name">审核人意见</span>
               <span class="family-nameDetail">{{item.remarks}}</span></p>
@@ -934,15 +934,16 @@ export default {
           this.getDatas()
           this.closeWithdraw()
       },
-     async getSubtask(e){
-       this.toShow=e
+     async getSubtask ( e ) {
+       this.toShow = e
         let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
           if (!res) return
-          this.selectProcessOption =res
-          if(this.selectProcessOption.length){
-            this.show.process=true
-            this.authApplePhone.nextCheckCode=this.selectProcessOption[0].taskCode
-          }else{
+          this.selectProcessOption = res
+          if (this.selectProcessOption.length) {
+            this.show.process = true
+            this.authApplePhone.nextCheckCode = this.selectProcessOption[0].taskCode
+            this.authApplePhone.nextCheckRole = this.selectProcessOption[0].taskCode
+          } else {
              this.show.process=false
           }
       },
