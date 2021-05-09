@@ -32,7 +32,9 @@ let state = {
 
   processBpmnXml: getXmlStorage(),
 
-  processInstanceIdSubtaskOptions: []
+  processInstanceIdSubtaskOptions: [],
+
+  currentProcessTaskInformation: {}
 }
 
 export default {

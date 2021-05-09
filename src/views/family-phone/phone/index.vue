@@ -968,7 +968,6 @@ export default {
       this.tabledate=res
     },
      messageDetail(row){
-       console.log(row)
         this.messageContent=row.applyReason
         this.show.message=true
       },
