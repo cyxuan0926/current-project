@@ -195,7 +195,7 @@ export default {
 
   // 监狱管理-人脸识别配置-获取
   getFaceRecognitionConfigs: params => {
-    return service.get('/dict', params)
+    return service.get('/dict', params).then(response => response && response.data)
   },
 
   // 监狱管理-人脸识别配置-更新

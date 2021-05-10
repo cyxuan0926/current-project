@@ -145,7 +145,7 @@ export default {
         // 为常规配置的时候
         if (this.haveRemoteVisitDay) {
           // 获取可视电话申请需提前天数
-          await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfig' })
+          await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
         }
       }
     },
@@ -161,7 +161,7 @@ export default {
 
   // 获取申请提前天数
   async created() {
-    await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfig' })
+    await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
   },
 
   // 渲染组件

@@ -130,7 +130,7 @@
 
                 <!--编辑状态并且支持通话并且选择了日期并且国科服务管理员角色并且是最新配置并且初始化了通话时间段-->
                 <el-button
-                  v-if="(permission === 'edit' || (permission === 'add' && configs.length < 10)) && (index === configs.length - 1 && config.queue.length > 0)"
+                  v-if="index === configs.length - 1 && config.queue.length > 0"
                   class="button-float"
                   size="mini"
                   type="success"
@@ -234,7 +234,14 @@ export default {
     onSureDates() {},
 
     // 保存按钮
-    onSave() {},
+    async onSave() {
+      try {
+        const result = await this.onPreOperation()
+        console.log(result)
+      } catch (err) {
+        Promise.reject(err)
+      }
+    },
 
     // 新增特殊日期
     onAddDay() {},
@@ -243,7 +250,22 @@ export default {
     onNewTimePeriod() {},
 
     // 生成通话时间段
-    onFigureOut() {}
+    onFigureOut() {},
+
+    onPreOperation(options = {}) {
+      const basicOptins = {
+        closeOnClickModal: false,
+
+        closeOnPressEscape: false,
+
+        customClass: 'a'
+      }
+
+      return this.$confirm('修改特殊日期配置后，系统会取消或调整当前日期已有的申请，确定修改吗？', {
+        ...basicOptins,
+        ...options
+      })
+    }
   },
 
   async activated() {}

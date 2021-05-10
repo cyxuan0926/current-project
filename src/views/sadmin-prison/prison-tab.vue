@@ -1,20 +1,23 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download
       v-if="activeName === 'prison'"
       path="/download/exportJails" 
-      :params="filter" />
+      :params="filter"
+    />
+
     <m-search
       ref="search"
       :items="searchItems"
       @search="onSearch"
-      @searchSelectChange="searchSelectChange" />
+      @searchSelectChange="searchSelectChange"
+    />
+
     <el-tabs
       v-model="activeName"
       type="card"
-      @tab-click="handleClick">
+      @tab-click="handleClick"
+    >
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
@@ -23,7 +26,9 @@
         />
       </template>
     </el-tabs>
+
     <router-view />
+
     <m-pagination
       v-if="paginationShow"
       ref="pagination"
@@ -34,8 +39,8 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   name: 'PrisonTab',
   mixins: [ prisonFilterCreator ],
@@ -178,8 +183,10 @@ export default {
         },
 
         'face-recognition': {
-          title: true,
-          name: true
+          // title: true,
+          // name: true,
+          provincesId: true,
+          jailId: true
         }
       }
 

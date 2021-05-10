@@ -523,6 +523,7 @@ export default {
   }
 
   .cycle {
+    padding-top: 10px;
     margin-bottom: 0px;
     label {
       width: 95px !important;
