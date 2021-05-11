@@ -9,27 +9,32 @@ export const tokenExcel = async({
     type = 'xls',
     formater = function(input = menuName) { return input }
   }) => {
-  let link = document.createElement('a')
+  try {
+    let link = document.createElement('a')
 
-  const res = await _Store.dispatch(actionName, params)
+    const res = await _Store.dispatch(actionName, params)
 
-  if (!res) return
+    if (!res) return
 
-  const url = helper.createObjectURL(res)
+    const url = helper.createObjectURL(res)
 
-  const fileName = formater(menuName)
+    const fileName = formater(menuName)
 
-  link.href = url
+    link.href = url
 
-  link.id = 'linkId'
+    link.id = 'linkId'
 
-  link.setAttribute('download', `${ fileName }.${ type }`)
+    link.setAttribute('download', `${ fileName }.${ type }`)
 
-  document.body.appendChild(link)
+    document.body.appendChild(link)
 
-  document.getElementById('linkId').click()
+    document.getElementById('linkId').click()
 
-  document.body.removeChild(document.getElementById('linkId'))
+    document.body.removeChild(document.getElementById('linkId'))
 
-  return true
+    return true
+  }
+  catch (err) {
+    Promise.reject(err)
+  }
 }

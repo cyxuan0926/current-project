@@ -70,6 +70,6 @@ export default {
   },
 
   isPrisonInternetGetUrlWay(_, getters) {
-    return !getters.isSuperAdmin && 'getIntraUrl'
+    return !getters.isSuperAdmin && 'getHyUrl'
   }
 }

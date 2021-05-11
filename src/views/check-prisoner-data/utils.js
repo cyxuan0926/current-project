@@ -66,6 +66,7 @@ function alertInformation(information) {
     offset: 100
   })
 }
+
 export default {
   alertParseResult, alertImportResult, alertInformation
 }

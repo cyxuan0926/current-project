@@ -225,7 +225,7 @@ export default {
           url: "/settleAccounts/exportSettleAccounts",
           methods:'get',
           params: { ...this.filter},
-          isPrisonInternetGetUrlWay: "getIntraUrl"
+          isPrisonInternetGetUrlWay: "getHyUrl"
         }
       await tokenExcel({
         params,

@@ -50,10 +50,11 @@
             </div>
         </template>
 
-
-      <template v-if="toAuthorize.changeList">
-        <m-multistage-records :values="toAuthorize.changeList"/>
-      </template>
+        <m-multistage-records
+            :basicContentItems="basicContentItems"
+            :basicValues="basicValues"
+            :values="toAuthorize.changeList"
+        />
     </div>
 </template>
 
@@ -62,7 +63,19 @@
         props: {
             toAuthorize: {
                 type: Object,
-                default: {}
+                default: {
+                    changeList: []
+                }
+            },
+
+            basicValues: {
+                type: Array,
+                default: () => []
+            },
+
+            basicContentItems: {
+                type: Array,
+                default: () => []
             }
         },
         computed: {

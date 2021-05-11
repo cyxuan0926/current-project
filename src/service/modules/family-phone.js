@@ -18,7 +18,7 @@ export default {
   operateFamilyPhoneFamilies: inputs => {
     const { url, params } = inputs
 
-    return service.post(service['getIntraUrl'](url), params)
+    return service.post(service['getHyUrl'](url), params)
   },
 
   // 亲情电话家属 - 导出excel
@@ -35,7 +35,7 @@ export default {
 
   // 亲情电话家属 - 导入 - 验证数据
   validateUploadFamilies: filepath => {
-    return service.post(service['getIntraUrl']('/parse/familyphone/validateFpm'), { filepath }).then(response => response && response.data)
+    return service.post(service['getHyUrl']('/parse/familyphone/validateFpm'), { filepath }).then(response => response && response.data)
   },
 
   // 亲情电话申请 - 导入 - 验证数据
@@ -56,7 +56,7 @@ export default {
 
   // 亲情电话家属 - 审核
   authFamilyPhoneFamilies: params => {
-    return service.post(service['getIntraUrl']('/familyPhoneManage/auth'), params)
+    return service.post(service['getHyUrl']('/familyPhoneManage/auth'), params)
   },
 
   // 亲情电话通话费用详情 - 列表
@@ -83,12 +83,12 @@ export default {
 
   // 亲情电话通话费用详情 - 编辑是否出狱状态
   editFamilyPhoneSettleAccountsRelease: params => {
-    return service.post(service['getIntraUrl']('/settleAccounts/editRelease'), params)
+    return service.post(service['getHyUrl']('/settleAccounts/editRelease'), params)
   },
 
   // 亲情电话通话费用详情 - 结算
   settleFamilyPhoneSettleAccounts: params => {
-    return service.post(service['getIntraUrl']('/settleAccounts/settlement'), params, { responseType: 'blob' }).then(response => response && response.data)
+    return service.post(service['getHyUrl']('/settleAccounts/settlement'), params, { responseType: 'blob' }).then(response => response && response.data)
   },
 
   // 亲情电话通话费用详情 - 导出
