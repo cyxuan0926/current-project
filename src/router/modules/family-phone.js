@@ -41,6 +41,7 @@ const routes = [
         path: '/family-phone-manage/phone-supervise',
         name: 'FamilyPhoneSupervise',
         meta: { permission: 'visit.family-phone.phone-supervise', breadcrumbName: '亲情电话监管表' },
+        props: { hasPrisonAreaAuth: true },
         component: 'family-phone/supervise/index'
       }
     ]

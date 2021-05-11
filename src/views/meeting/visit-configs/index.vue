@@ -25,14 +25,14 @@
         >
           <keep-alive>
             <component v-if='activeName === item.key' :is="activeName">
-              <template #windowSize="{ scope }">
+              <template #windowSize="{ scope, index }">
                 <div class="el-form-item meeting_windowSize">
                   <label class="el-form-item__label">现场探视窗口个数</label>
 
                   <div class="form-meeting_windowSize">
                     <el-input
                       class="part-right"
-                      v-model="scope['windowSize']"
+                      v-model="scope[index]['windowSize']"
                       size="small"
                       placeholder="请填写现场探视窗口个数"
                     >
@@ -48,7 +48,7 @@
                 <m-form
                   class="el-form_visit-message"
                   ref="visitMessageForm"
-                  :items="visitMessageFormItems"
+                  :items="visitMessageFormItems()"
                   :values="scope"
                   @response="onResponse"
                 >
@@ -114,22 +114,6 @@ export default {
 
       formLabelText: '现场探视预约日期管理',
 
-      visitMessageFormItems: {
-        formConfigs: {
-          labelWidth: '107px',
-          hideRequiredAsterisk: true
-        },
-
-        notice: {
-          type: 'textarea',
-          label: '现场探视须知',
-          maxlength: 2000,
-          showWordLimit: true,
-          rows: 4,
-          rules: ['required']
-        }
-      },
-
       formModel: {}
     }
   },
@@ -157,11 +141,11 @@ export default {
 
     // 路由的参数变化
     '$route.query': {
-      handler(query) {
+      async handler(query) {
         // 为常规配置的时候
         if (this.haveRemoteVisitDay) {
           // 获取可视电话申请需提前天数
-          this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfig' })
+          await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
         }
       }
     },
@@ -177,7 +161,7 @@ export default {
 
   // 获取申请提前天数
   async created() {
-    await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfig' })
+    await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
   },
 
   // 渲染组件
@@ -282,6 +266,31 @@ export default {
       validator.numberRange({ min: 1, max: 60 }, windowSize, handleValid)
 
       return msg
+    },
+
+    visitMessageFormItems(inputs = {}) {
+      const items = {
+        formConfigs: {
+          labelWidth: '107px',
+          hideRequiredAsterisk: true
+        },
+
+        notice: {
+          type: 'textarea',
+          label: '现场探视须知',
+          maxlength: 2000,
+          showWordLimit: true,
+          rows: 4,
+          rules: ['required'],
+          disabled: !this.haveRemoteVisitDay
+        }
+      }
+
+      const { noticeRules = ['required'] } = inputs
+
+      this.$set(items['notice'], 'rules', noticeRules)
+
+      return items
     }
   }
 }

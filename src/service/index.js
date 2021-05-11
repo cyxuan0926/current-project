@@ -5,10 +5,10 @@ import global from './modules/global'
 import superAdmin from './modules/superAdmin'
 import noPage from './modules/no-page'
 import repeat from './modules/repeat'
-import yangguang from './modules/prison-yangguang/yangguang-api'
-import bpmn from './modules/bpmn/bpmn-api'
 import familyPhone from './modules/family-phone'
-import prisonIntranet from './modules/prison-intranet'
+import bpmnApis from './modules/bpmn/bpmn-api'
+import yangguangApis from './modules/prison-yangguang/yangguang-api'
+import heyuanApis from './modules/prison-heyuan'
 import ywgkApis from './modules/ywgk-internet'
 
 export default Object.assign(
@@ -19,9 +19,9 @@ export default Object.assign(
   information,
   noPage,
   repeat,
-  yangguang,
-  bpmn,
   familyPhone,
-  prisonIntranet,
+  bpmnApis,
+  yangguangApis,
+  heyuanApis,
   ywgkApis
 )

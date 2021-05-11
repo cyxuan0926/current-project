@@ -159,6 +159,7 @@ export default {
   watch: {
     faceRecognitionConfigs: {
       handler: function(val) {
+        console.log(val)
         const {
           afrIOSSetValue,
           afrAndroidSetValue,

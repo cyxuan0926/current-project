@@ -253,6 +253,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import Moment from 'moment'
 import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
@@ -264,22 +265,49 @@ export default {
     const { options } = this.$store.getters.prisonAreaOptions
     const tabPanes = [
       {
-        label: '会见预约',
+        label: '现场探视申请',
         name: 'first'
       },
       {
-        label: '已取消',
-        name: 'CANCELED'
+        label: '审核已通过',
+        name: 'PASSED'
+      },
+      {
+        label: '审核未通过',
+        name: 'DENIED,CANCELED'
+      },
+      {
+        label: '未授权',
+        name: 'PENDING'
       }
     ]
     return {
       tabs: 'first',
       searchItems: {
-        // prisonerNumber: { type: 'input', label: '罪犯编号' },
         name: {
           type: 'input',
           label: '家属姓名'
         },
+        prisonerNumber: {
+          type: 'input',
+          label: '罪犯编号'
+        },
+        applicationDate: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'applicationStartDate',
+          end: 'applicationEndDate',
+          startPlaceholder: '通话开始时间',
+          endPlaceholder: '通话结束时间',
+          // miss: true,
+          value: [ this.$_dateNow, Moment().add(1, 'months').format('YYYY-MM-DD') ]
+        },
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名',
+          miss: false,
+          value: ''
+        }
         // prisonArea: {
         //   type: 'select',
         //   label: '监区',
@@ -336,38 +364,53 @@ export default {
       tabPanes,
       tableCols: [
         {
-          label: '家属姓名',
-          prop: 'name'
-        },
-        {
-          label: '身份证信息',
-          slotName: 'idcards',
-          width: 156
+          label: '监区',
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber'
         },
         {
-          label: '监区',
-          prop: 'prisonArea'
+          label: '罪犯姓名',
+          prop: 'prisonerName',
+          showOverflowTooltip: true
+        },
+        {
+          label: '性别',
+          prop: 'gender',
+          minWidth: 50
+        },
+        {
+          label: '申请时间',
+          prop: 'createdAt',
+          minWidth: 130
+        },
+        {
+          label: '申请通话时间',
+          prop: 'meetingTime',
+          slotName: 'meetingTime',
+          sortable: 'custom',
+          minWidth: 135
+        },
+        {
+          label: '家属',
+          slotName: 'families',
+          minWidth: 115
+        },
+        {
+          label: '家属电话',
+          prop: 'phone'
         },
         {
           label: '关系',
           prop: 'relationship'
         },
         {
-          label: '申请时间',
-          prop: 'applicationDate'
-        },
-        {
-          label: '批次(窗口号)',
-          slotName: 'window',
-          width: 136
-        },
-        {
           label: '申请状态',
-          slotName: 'status',
+          slotName: 'content',
+          minWidth: 80,
           className: 'orange'
         },
         {
@@ -376,6 +419,47 @@ export default {
           slotName: 'lastCoiumn',
           showOverflowTooltip: true
         }
+        // {
+        //   label: '家属姓名',
+        //   prop: 'name'
+        // },
+        // {
+        //   label: '身份证信息',
+        //   slotName: 'idcards',
+        //   width: 156
+        // },
+        // {
+        //   label: '罪犯编号',
+        //   prop: 'prisonerNumber'
+        // },
+        // {
+        //   label: '监区',
+        //   prop: 'prisonArea'
+        // },
+        // {
+        //   label: '关系',
+        //   prop: 'relationship'
+        // },
+        // {
+        //   label: '申请时间',
+        //   prop: 'applicationDate'
+        // },
+        // {
+        //   label: '批次(窗口号)',
+        //   slotName: 'window',
+        //   width: 136
+        // },
+        // {
+        //   label: '申请状态',
+        //   slotName: 'status',
+        //   className: 'orange'
+        // },
+        // {
+        //   label: '操作',
+        //   minWidth: 100,
+        //   slotName: 'lastCoiumn',
+        //   showOverflowTooltip: true
+        // }
       ]
     }
   },

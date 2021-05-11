@@ -68,5 +68,9 @@ export default {
 
   setSubtaskPhone: (state, data) => {
     state.processInstanceIdSubtaskOptions = data
+  },
+
+  setCurrentProcessTaskInformation: (state, currentProcessTaskInformation) => {
+    state.currentProcessTaskInformation = Object.assign({}, currentProcessTaskInformation)
   }
 }

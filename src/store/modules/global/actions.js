@@ -173,6 +173,22 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  // 获取当前节点任务
+  async getProcessTask({ commit }, processInstanceId) {
+    try {
+      const data = await http.getProcessTask(processInstanceId)
+
+      const currentProcessTaskInformation = data ? (data['data'] || {}) : {}
+
+      commit('setCurrentProcessTaskInformation', currentProcessTaskInformation)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {
