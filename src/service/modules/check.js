@@ -9,6 +9,8 @@ export default {
   getRegistrationsDetail: params => {
     return service.get('/registrations/getDetail', params).then(res => res && res.data)
   },
+  //  家属注册下载
+  exportFamilyRegJails: params => service.get('/registrations/exportFamilyRegJails', params, { responseType: 'blob' }).then(res => res && res.data),
   // 家属注册管理-未审核-会见告知书详情
   getRegistrationNotificationDetail: params => {
     return service.get('/notification/detail-registration', params).then(res => res && res.data)

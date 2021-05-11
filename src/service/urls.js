@@ -32,9 +32,9 @@ const config = {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     // http://8.129.14.169:8098/ywgk
     jailApiHost: 'http://8.129.14.169:8098/ywgk',
-   //  apiHost: 'http://192.168.1.43:8022',
+    // apiHost: 'http://192.168.1.43:8022',
     // apiHost: 'http://47.107.245.151:8021',
-      // apiHost: 'http://qa-ywgk.yuwugongkai.com',
+    // apiHost: 'http://qa-ywgk.yuwugongkai.com',
     // apiHost: 'http://8.129.14.169:8098',
     apiHost: 'http://120.78.190.101:8021',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',

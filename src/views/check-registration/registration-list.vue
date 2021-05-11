@@ -12,8 +12,13 @@
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
-      <template #append v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)">
-        <el-button type="primary" @click="onDownload('all')">下载关系证明</el-button>
+      <template #append >
+        <el-button v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)" type="primary" @click="onDownload('all')">下载关系证明</el-button>
+          <el-button
+                    type="primary"
+                    :loading="downloading"
+                    @click="handleExportExcel"
+                    >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -474,7 +479,7 @@
           <el-button
             plain
             :loading="buttonLoading"
-            @click="onAuthorization('WITHDRAW')"
+            @click="submitReject()"
           >提交</el-button>
 
           <el-button
@@ -611,7 +616,8 @@ import {
 } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
-
+import { saveAs } from 'file-saver'
+import { DateFormat } from '@/utils/helper'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
@@ -715,7 +721,7 @@ export default {
         ]
       },
       remarks: [],
-
+      downloading: false,
       tabs: 'PENDING',
       notificationShow: false,
       dialogTitle: '',
@@ -889,7 +895,20 @@ export default {
       'getSubtaskPhone',
       'getProcessTask'
     ]),
-
+    async handleExportExcel() {
+                if (this.downloading) {
+                    return
+                }
+                this.downloading = true
+                const params = Object.assign( { status: this.tab }, { ...this.filter } )
+                try {
+                    let data = await http.exportFamilyRegJails(params)
+                    saveAs(data, `家属注册列表-${ this.tab == '1' ? '亲情电话' : '可视电话' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    this.downloading = false
+                } catch (error) {
+                    this.downloading = false
+                }
+    },
     refuseFormChange(e) {
         let str=""
          if(!this.refuseForm.anotherRemarks){
@@ -1068,7 +1087,20 @@ export default {
 
       this.dialogTitle = '授权'
     },
-
+     submitReject(){
+       this.$confirm('撤回该家属认证后，该家属的所有预约均将取消，请问确认撤回吗?', '提示', {
+                          confirmButtonText: '确定',
+                          cancelButtonText: '取消',
+                          type: 'warning'
+                        }).then(() => {
+                          this.onAuthorization('WITHDRAW')
+                        }).catch(() => {
+                          this.$message({
+                            type: 'info',
+                            message: '已取消撤回'
+                          });
+                        });
+    },
     onAuthorization(e, inputs = {}) {
       const { processInstanceId } = this.registrationRow
 
@@ -1391,7 +1423,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;
