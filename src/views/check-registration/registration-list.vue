@@ -17,6 +17,13 @@
           下载关系证明
         </el-button>
       </template>
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+       </template>
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -568,6 +575,7 @@ import prisons from '@/common/constants/prisons'
 
 import registrationDetail from './registration-detail'
 import http from '@/service'
+import { DateFormat } from '@/utils/helper'
 
 import { tokenExcel } from '@/utils/token-excel'
 
@@ -668,6 +676,7 @@ export default {
       },
       remarks: [],
       btnDisable: false, // 按钮禁用与启用
+      downloading:false,
       tabs: 'PENDING',
       notificationShow: false,
       dialogTitle: '',
@@ -767,6 +776,27 @@ export default {
       'firstLevelAuthorize'
     ]),
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+      // 导出excel
+    async onDownloadExcel() {
+     this.downloading = true
+      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/registrations/exportFamilyRegJails",
+          methods:'get',
+          params: { ...this.filter},
+          isPrisonInternetGetUrlWay: false
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `家属注册列表-${ times }`,
+      })
+
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
+    },
     refuseFormChange(e){
         let str=""
          if(!this.refuseForm.anotherRemarks){
