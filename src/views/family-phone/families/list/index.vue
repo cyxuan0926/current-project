@@ -301,6 +301,7 @@
       :visible.sync="detailOrAuthDialog.dialogVisible"
       :title="detailOrAuthDialogTitle"
       :close-on-click-modal="!!detailOrAuthDialogType"
+      @close="onCloseAuthorize"
     >
       <m-multistage-records :basicValues="multistageRecordsBasicValues" :hasSlot="!!multistageRecordsValues.length">
         <template v-if="multistageRecordsValues.length" #append>
@@ -392,90 +393,93 @@
         </template>
       </m-multistage-records>
 
-      <div v-if="!detailOrAuthDialogType && !detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
-      </div>
-
-      <!-- 同意的情况 -->
-      <template v-if="detailOrAuthDialog.agree">
-        <!-- 审批结束 -->
-        <div v-if="!isSubtask" class="button-box">
-          <repetition-el-buttons :buttonItems="showAgreeButtons" />
+      <!-- 审核 -->
+      <template v-if="!detailOrAuthDialogType">
+        <div v-if="!detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
+          <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
-        <!-- 审批流程中 -->
-        <div v-else class="button-box">
-          <m-form
-            ref="agreeHasSubTaskForm"
-            :items="agreeHasSubTaskFormItems"
-            :values="agreeHasSubTaskFormValues"
-            @submit="onAgreeHasSubTaskFormSubmit"
-          >
-            <template #nextCheckCodeAgreeButtons>
-              <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
-                <template v-for="item in processInstanceIdSubtaskOptions">
-                  <el-option
-                    :key="item.taskCode"
-                    :label="item.taskName"
-                    :value="item.taskCode"
-                  />
-                </template>
-              </el-select>
+        <!-- 同意的情况 -->
+        <template v-if="detailOrAuthDialog.agree">
+          <!-- 审批结束 -->
+          <div v-if="!isSubtask" class="button-box">
+            <repetition-el-buttons :buttonItems="showAgreeButtons" />
+          </div>
 
-              <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
-            </template>
-          </m-form>
+          <!-- 审批流程中 -->
+          <div v-else class="button-box">
+            <m-form
+              ref="agreeHasSubTaskForm"
+              :items="agreeHasSubTaskFormItems"
+              :values="agreeHasSubTaskFormValues"
+              @submit="onAgreeHasSubTaskFormSubmit"
+            >
+              <template #nextCheckCodeAgreeButtons>
+                <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
+                  <template v-for="item in processInstanceIdSubtaskOptions">
+                    <el-option
+                      :key="item.taskCode"
+                      :label="item.taskName"
+                      :value="item.taskCode"
+                    />
+                  </template>
+                </el-select>
+
+                <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
+              </template>
+            </m-form>
+          </div>
+        </template>
+
+        <!-- 不同意的情况 -->
+        <div v-if="detailOrAuthDialog.disAgree" class="button-box logMgCls">
+          <div style="margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
+
+          <div style="display: flex;">
+            <el-select
+              v-model="disArgeeRemarks"
+              :multiple="true"
+              :multiple-limit='5' 
+              collapse-tags
+              @change="refuseFormChange"
+              style="width:70%; margin-right:10px"
+            >
+              <el-option
+                v-for="(remark, index) in content"
+                :value="remark"
+                :label="(index + 1) + '、' + remark"
+                :key="index"
+              />
+            </el-select>
+
+            <el-button
+              type="primary"
+              :loading="btnDisable"
+              @click="onRejectshow('PASSED')"
+            >编辑驳回原因</el-button>
+          </div>
+
+          <el-form
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box"
+          >
+            <el-form-item prop="anotherRemarks">
+              <el-input
+                :autosize="{ minRows: 6, maxRows:8 }"
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
+          </el-form>
+
+          <repetition-el-buttons :buttonItems="showDisagreebuttons" />
         </div>
       </template>
-
-      <!-- 不同意的情况 -->
-      <div v-if="detailOrAuthDialog.disAgree" class="button-box logMgCls">
-        <div style="margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
-
-        <div style="display: flex;">
-          <el-select
-            v-model="disArgeeRemarks"
-            :multiple="true"
-            :multiple-limit='5' 
-            collapse-tags
-            @change="refuseFormChange"
-            style="width:70%; margin-right:10px"
-          >
-            <el-option
-              v-for="(remark, index) in content"
-              :value="remark"
-              :label="(index + 1) + '、' + remark"
-              :key="index"
-            />
-          </el-select>
-
-          <el-button
-            type="primary"
-            :loading="btnDisable"
-            @click="onRejectshow('PASSED')"
-          >编辑驳回原因</el-button>
-        </div>
-
-        <el-form
-          :model="refuseForm"
-          :rules="withdrawRule"
-          ref="refuseForm"
-          class="withdraw-box"
-        >
-          <el-form-item prop="anotherRemarks">
-            <el-input
-              :autosize="{ minRows: 6, maxRows:8 }"
-              type="textarea"
-              show-word-limit
-              maxlength="1000"
-              placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks"
-            />
-          </el-form-item>
-        </el-form>
-
-        <repetition-el-buttons :buttonItems="showDisagreebuttons" />
-      </div>
     </el-dialog>
 
     <el-dialog
@@ -937,7 +941,7 @@ export default {
 
         { ...this.goBackButton,
           events: {
-            click: this.onAgreeHasSubTaskGoBack
+            click: this.onAgreeAuthorizeGoBack
           }
         },
 
@@ -952,7 +956,7 @@ export default {
     agreeHasSubTaskFormItems() {
       return {
         formConfigs: {
-          labelWidth: '85px'
+          labelWidth: '90px'
         },
 
         remarks: {
@@ -1468,9 +1472,9 @@ export default {
       this.$set(this.detailOrAuthDialog, 'dialogVisible', false)
 
       setTimeout(() => {
-        this.$set(this.detailOrAuthDialog, 'agree', false)
+        this.onAgreeAuthorizeGoBack()
 
-        this.$set(this.detailOrAuthDialog, 'disAgree', false)
+        this.onDisagreeAuthorizeGoBack()
       }, 200)
     },
 
@@ -1525,10 +1529,6 @@ export default {
           await this.onAuthorization(inputs)
         }
       })
-    },
-
-    onAgreeHasSubTaskGoBack() {
-      this.$set(this.detailOrAuthDialog, 'agree', false)
     },
 
     async onDisagreeAuthorize() {
