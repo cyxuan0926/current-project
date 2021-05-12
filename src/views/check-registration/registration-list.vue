@@ -903,7 +903,7 @@ export default {
                 const params = Object.assign( { status: this.tab }, { ...this.filter } )
                 try {
                     let data = await http.exportFamilyRegJails(params)
-                    saveAs(data, `家属注册列表-${ this.tab == '1' ? '亲情电话' : '可视电话' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    saveAs(data, `家属注册列表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
                     this.downloading = false
                 } catch (error) {
                     this.downloading = false

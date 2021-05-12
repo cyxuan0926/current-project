@@ -529,7 +529,11 @@ export default {
       {
         label: '已删除',
         value: 3
-      }
+      },
+      {
+        label: '已离监',
+        value: 4
+      },
     ]
     const notifyOptions = [
       {
@@ -1713,7 +1717,7 @@ export default {
       if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
-          message: '请选择要离监的数据！',
+          message: '提示：如果是转监，请使用转监功能，不要做离监操作！',
           type: 'warning'
         })
       } else {
