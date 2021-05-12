@@ -51,7 +51,6 @@
 
 <script>
 import http from '@/service'
- import { mapState } from 'vuex'
 import Moment from 'moment'
 import { saveAs } from 'file-saver'
 import { DateFormat } from '@/utils/helper'
@@ -126,7 +125,6 @@ export default {
     },
      async getDatas() {
        let endobj=null
-       console.log(this.searchItems)
        let params = { ...this.filter }
        let res = await http.getMettinMemberStatis(params)
         if (!res) return this.noData=true

@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @searchSelectChange="searchSelectChange"
       @search="onSearch" >
         <template slot="append">
         <el-button
@@ -37,7 +36,7 @@
 import http from '@/service'
 import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
-import { tokenExcel } from '@/utils/token-excel'
+import { saveAs } from 'file-saver'
 
 export default {
   data() {

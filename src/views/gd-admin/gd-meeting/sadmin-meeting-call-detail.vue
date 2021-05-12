@@ -38,7 +38,7 @@ import http from '@/service'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
-import { tokenExcel } from '@/utils/token-excel'
+import { saveAs } from 'file-saver'
 
 export default {
   mixins: [prisonFilterCreator],
