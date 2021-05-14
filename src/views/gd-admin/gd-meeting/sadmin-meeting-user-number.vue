@@ -56,7 +56,7 @@ import http from '@/service'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
-import { tokenExcel } from '@/utils/token-excel'
+import { saveAs } from 'file-saver'
 
 export default {
   mixins: [prisonFilterCreator],
@@ -129,29 +129,22 @@ export default {
   methods: {
      // 导出excel
     async onDownloadExcel() {
-     this.downloading = true
-      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-        actionName = 'familyPhone/exportFamilyPhone',
-        params = {
-          url: "/meetingMembersStatistics/export",
-          methods:'post',
-          params: { ...this.filter},
-          isPrisonInternetGetUrlWay: false
-        }
-      await tokenExcel({
-        params,
-        actionName,
-        menuName: `会见量和参会人数统计报表-${ times }`,
-      })
-
-      setTimeout(() => {
-        this.downloading = false
-      }, 300)
+         if (this.downloading) {
+                    return
+         }
+         this.downloading = true
+         let params = { ...this.filter, jailId: this.searchItems.jailId.value }
+         try {
+             let data = await http.exportMeetingStatis(params)
+             saveAs(data, `会见量和参会人数统计报表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+             this.downloading = false
+             } catch (error) {
+              this.downloading = false
+            }
     },
-
      async getDatas() {
        let endobj=null
-       let params = { ...this.filter, jailId: this.searchItems.jailId.value }
+       let params = { ...this.filter, jailId: this.searchItems.jailId.value, type: this.filter.dataType  }
        let res = await http.getMettinMemberStatis(params)
         if (!res) return this.noData=true
           Object.values(res).forEach(val=>{

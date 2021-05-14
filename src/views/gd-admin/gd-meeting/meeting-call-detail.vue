@@ -4,7 +4,6 @@
     :gutter="0">
     <m-search
       :items="searchItems"
-      @searchSelectChange="searchSelectChange"
       @search="onSearch" >
         <template slot="append">
         <el-button
@@ -37,7 +36,7 @@
 import http from '@/service'
 import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
-import { tokenExcel } from '@/utils/token-excel'
+import { saveAs } from 'file-saver'
 
 export default {
   data() {
@@ -155,24 +154,18 @@ export default {
   methods: {
      // 导出excel
     async onDownloadExcel() {
-     this.downloading = true
-      const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-        actionName = 'familyPhone/exportFamilyPhone',
-        params = {
-          url: "/meetingCallDetail/export",
-          methods:'post',
-          params: { ...this.filter},
-          isPrisonInternetGetUrlWay: false
-        }
-      await tokenExcel({
-        params,
-        actionName,
-        menuName: `亲情电话通话统计报表-${ times }`,
-      })
-
-      setTimeout(() => {
-        this.downloading = false
-      }, 300)
+                if (this.downloading) {
+                    return
+                }
+                this.downloading = true
+                const params = Object.assign( { ...this.filter} )
+                try {
+                    let data = await http.exportMeetingCallDetail(params)
+                    saveAs(data, `服刑人员会见登记表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    this.downloading = false
+                } catch (error) {
+                    this.downloading = false
+                }
     },
 
      async getDatas() {
