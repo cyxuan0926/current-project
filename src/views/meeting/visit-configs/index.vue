@@ -25,32 +25,34 @@
         >
           <keep-alive>
             <component v-if='activeName === item.key' :is="activeName">
-              <template #windowSize="{ scope, index }">
+              <template #windowSize="{ scope }">
                 <div class="el-form-item meeting_windowSize">
                   <label class="el-form-item__label">现场探视窗口个数</label>
 
                   <div class="form-meeting_windowSize">
                     <el-input
                       class="part-right"
-                      v-model="scope[index]['windowSize']"
+                      v-model="scope['window_size']"
                       size="small"
                       placeholder="请填写现场探视窗口个数"
                     >
                       <template slot="append">/个</template>
                     </el-input>
 
-                    <span v-if="Boolean(errorMsg(scope['windowSize']))" class="tips">{{ errorMsg(scope['windowSize']) }}</span>
+                    <span v-if="Boolean(errorMsg(scope['window_size']))" class="tips">{{ errorMsg(scope['window_size']) }}</span>
                   </div>
                 </div>
               </template>
 
-              <template #visitNotice="{ scope }">
+              <template #visitNotice>
                 <m-form
                   class="el-form_visit-message"
                   ref="visitMessageForm"
-                  :items="visitMessageFormItems()"
-                  :values="scope"
-                  @response="onResponse"
+                  :items="visitMessageFormItems"
+                  :values="visitNotice"
+                  @response="onVisitMessageResponse"
+                  @submit="onUpdateNotice"
+                  @back="onGoBack"
                 >
                   <p class="red" style="margin: 5px 0px 10px 105px;">*请填写现场探视注意事项，当家属预约现场探视时会提醒；预约成功后系统会将该信息发送至家属app端。</p>
                 </m-form>
@@ -122,6 +124,7 @@ export default {
     // 最开始的远程探视申请需提前天数
     ...mapState({
       advanceDayLimit: state => state.advanceDayLimit,
+      visitNotice: state => state.visitNotice
     }),
 
     // 监狱id
@@ -132,6 +135,31 @@ export default {
     // 是否拥有配置日期组件
     haveRemoteVisitDay() {
       return this.remoteVisitDayNames.includes(this.activeName)
+    },
+
+    visitMessageFormItems() {
+      const items = {
+        formConfigs: {
+          labelWidth: '105px',
+          hideRequiredAsterisk: true
+        },
+
+        notice: {
+          type: 'textarea',
+          label: '现场探视须知',
+          maxlength: 2000,
+          showWordLimit: true,
+          rows: 4,
+          rules: !this.haveRemoteVisitDay ? [] : ['required'],
+          disabled: !this.haveRemoteVisitDay
+        },
+
+        buttons: ['update', 'back']
+      }
+
+      if (!this.haveRemoteVisitDay) delete items['buttons']
+
+      return items
     }
   },
 
@@ -143,6 +171,8 @@ export default {
     '$route.query': {
       async handler(query) {
         // 为常规配置的时候
+        await this.getVisitNotice(this.jailId)
+
         if (this.haveRemoteVisitDay) {
           // 获取可视电话申请需提前天数
           await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
@@ -161,7 +191,7 @@ export default {
 
   // 获取申请提前天数
   async created() {
-    await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
+    await Promise.all([this.getVisitNotice(this.jailId), this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })])
   },
 
   // 渲染组件
@@ -172,7 +202,8 @@ export default {
   methods: {
     ...mapActions([
       'getRemoteAdvanceDayLimits',
-      'updateRemoteAdvanceDayLimit'
+      'updateRemoteAdvanceDayLimit',
+      'getVisitNotice'
     ]),
 
     ...mapMutations((['setAdvanceDayLimits'])),
@@ -212,15 +243,19 @@ export default {
           endDay: dayInLimit
         },
 
-        url: '/visit/config/setNormalConfigDay'
+        url: '/visit/config/setNormalConfigDay',
+
+        methods: 'postObj'
       })
 
       if (isSucess) this.setAdvanceDayLimits(this.advanceDayLimit_)
     },
 
-    onResponse(params) {
+    onVisitMessageResponse(params) {
       this.$nextTick(() => {
         this.formModel = Object.assign({}, params)
+
+        this.$forceUpdate()
       })
     },
 
@@ -236,7 +271,7 @@ export default {
     // 调用
     async onParentSubimt(windowSizes) {
       try {
-        const isChecked = await this.$refs['visitMessageForm'][0].onCheck()
+        // const isChecked = await this.$refs['visitMessageForm'][0].onCheck()
 
         let windowSizeChecked = false
 
@@ -244,7 +279,8 @@ export default {
 
         if (Object.prototype.toString.call(windowSizes) === '[object String]') windowSizeChecked = !this.errorMsg(windowSizes)
 
-        return windowSizeChecked && isChecked && this.formModel
+        //  && isChecked
+        return windowSizeChecked
       } catch (err) {
         Promise.reject(err)
       }
@@ -268,30 +304,47 @@ export default {
       return msg
     },
 
-    visitMessageFormItems(inputs = {}) {
-      const items = {
-        formConfigs: {
-          labelWidth: '107px',
-          hideRequiredAsterisk: true
-        },
+    async onUpdateNotice(params) {
+      const hasNoChanged = this.visitNotice['notice'].replace(/\s*/g, '') === params['notice'].replace(/\s*/g, '')
 
-        notice: {
-          type: 'textarea',
-          label: '现场探视须知',
-          maxlength: 2000,
-          showWordLimit: true,
-          rows: 4,
-          rules: ['required'],
-          disabled: !this.haveRemoteVisitDay
-        }
+      if (hasNoChanged) {
+        this.$message({
+          showClose: true,
+          message: '现场探视须知没有变化，无需编辑！',
+          duration: 3000,
+          type: 'error'
+        })
       }
+    },
 
-      const { noticeRules = ['required'] } = inputs
-
-      this.$set(items['notice'], 'rules', noticeRules)
-
-      return items
+    onGoBack() {
+      this.$router.back()
     }
+
+    // visitMessageFormItems(inputs = {}) {
+    //   const items = {
+    //     formConfigs: {
+    //       labelWidth: '107px',
+    //       hideRequiredAsterisk: true
+    //     },
+
+    //     notice: {
+    //       type: 'textarea',
+    //       label: '现场探视须知',
+    //       maxlength: 2000,
+    //       showWordLimit: true,
+    //       rows: 4,
+    //       rules: ['required'],
+    //       // disabled: !this.haveRemoteVisitDay
+    //     }
+    //   }
+
+    //   const { noticeRules = ['required'] } = inputs
+
+    //   this.$set(items['notice'], 'rules', noticeRules)
+
+    //   return items
+    // }
   }
 }
 </script>
@@ -303,13 +356,14 @@ export default {
     display: flex;
     align-items: center;
     margin: 10px 0px;
+    margin-bottom: 15px;
 
     label {
       float: none;
     }
 
     .form-meeting_windowSize {
-      width: calc(100% - 150px);
+      width: calc(100% - 153px);
       position: relative;
 
       .tips {
@@ -346,6 +400,10 @@ export default {
     .el-textarea {
       width: 75%;
     }
+  }
+
+  /deep/ .button-box {
+    padding-bottom: 0px;
   }
 }
 </style>

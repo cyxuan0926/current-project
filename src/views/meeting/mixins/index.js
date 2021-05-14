@@ -8,6 +8,8 @@ import Moment from 'moment'
 
 import { weeks } from '@/common/constants/const'
 
+import { daysTransformWeeksParams, dayTransformProp } from '../utils'
+
 import {
   mapGetters,
   mapActions,
@@ -60,9 +62,11 @@ export default {
       return {
         label: '选择监区',
         type: 'select',
+        placeholder: '请选择监区',
         rules: ['required'],
         options: this.filterPrisonAreaOptions,
         props: { label: 'name', value: 'id' },
+        multiple: true,
         collapseTags: true
       }
     }
@@ -160,6 +164,77 @@ export default {
       }
 
       this.$set(noEqual[type], index, result)
+    },
+
+    // 日期监区配置过滤
+    daysAndPrisonAreaFilterParams(params, selfKeys = []) {
+      let result = []
+
+      params.forEach(config => {
+        const {
+          duration,
+          interval,
+          days,
+          queue,
+          timeperiodQueue
+        } = config
+
+        if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
+
+        let c = [], period = []
+
+        queue.forEach(q => c.push(q.join('-')))
+
+        timeperiodQueue.forEach(t => period.push(t.join('-')))
+
+        const weeksPrisonAreas = daysTransformWeeksParams(days, config)
+
+        const basic = { days, config: c, duration, interval, timeperiod: period, floorDetai: weeksPrisonAreas }
+
+        selfKeys.forEach(key => {
+          basic[key] = config[key]
+        })
+
+        result.push(basic)
+      })
+
+      return result
+    },
+
+    // 提交参数
+    filterSubmittingParams(
+      configs,
+      filterParams,
+      effectiveDate,
+      configurationsFloorDetailKey = 'configurationsFloorDetail',
+      complexNormalConfigKey = 'complexNormalConfig'
+    ) {
+      const { jailId, prisonBranch } = configs
+
+      return filterParams.reduce((accumulator, currentItem) => {
+        const { floorDetai, ...configAfter } = currentItem
+
+        const { days } = configAfter
+
+        let configurationsFloorDetailItem = days.map(day => {
+          const { key } = dayTransformProp(day)
+
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : []
+
+          return {
+            days: day,
+            jailId,
+            prisonConfigId,
+            effectiveDate
+          }
+        })
+
+        accumulator[configurationsFloorDetailKey] = [...accumulator[configurationsFloorDetailKey], ...configurationsFloorDetailItem]
+
+        accumulator[complexNormalConfigKey].configAfter.push(configAfter)
+
+        return accumulator
+      }, { [configurationsFloorDetailKey]: [], [complexNormalConfigKey]: { enabledAt: effectiveDate, jailId, configAfter: [] } })
     }
   }
 }

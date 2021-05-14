@@ -14,9 +14,13 @@ export default {
 
   // 远程探视提前申请天数配置-修改
   updateRemoteAdvanceDayLimit: inputs => {
-    const { params, url = '/jails/updateAdvanceDayLimit' } = inputs
+    const {
+      params,
+      url = '/jails/updateAdvanceDayLimit',
+      methods = 'post'
+    } = inputs
 
-    return service.post(url, params).then(res => res && res.code === 200)
+    return service[methods](url, params).then(res => res && res.code === 200)
   },
   // 监狱常规配置-获取
   getRemoteNormalConfig: (params) => {
@@ -93,5 +97,20 @@ export default {
   // 保存会见楼配置
   saveComplexConfigFloorDetail: params => {
     return service.postObj('/complex_config/saveFloorConfig', params)
+  },
+
+  // 实地会见 - 获取常规配置
+  getVisitNormalConfigs: jailId => {
+    return service.get('/visit/config/getNormalConfig', { jailId }).then(res => res && res.code === 200 && res.data)
+  },
+
+  // 实地会见 - 更新常规配置
+  updateVisitNormalConfigs: params => {
+    return service.postObj('/visit/config/saveNormalConfig', params).then(res => res && res.code === 200)
+  },
+
+  // 实地会见 - 获取实地会见须知
+  getVisitNotice: jailId => {
+    return service.get('/visit/config/getNotice', { jailId }).then(res => res && res.data)
   }
 }

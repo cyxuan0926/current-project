@@ -2,6 +2,7 @@ import http from './service'
 
 import { weeks } from '@/common/constants/const'
 
+/* eslint-disable */
 export default {
   getRemoteAdvanceDayLimits: async({ commit }, inputs) => {
     try {
@@ -18,13 +19,6 @@ export default {
     }
   },
 
-  // getRemoteAdvanceDayLimit: async({ commit }, params) => {
-  //   try {
-  //     const res = await http.getRemoteAdvanceDayLimit(params)
-  //     res && commit('setAdvanceDayLimit', res)
-  //   }
-  //   catch (err) { console.log(err) }
-  // },
   updateRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
@@ -33,7 +27,9 @@ export default {
 
       return true
     }
-    catch (err) { console.log(err) }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
   // v2.6.4 获取远程常规配置(hb)
   getRemoteNormalConfig: ({ commit }, params) => {
@@ -507,11 +503,176 @@ export default {
     }
   },
 
-  async saveComplexConfigFloorDetail({ commit }, params) {
+  async saveComplexConfigFloorDetail(_, params) {
     try {
-      const { code } = await http.saveComplexConfigFloorDetail(params)
+      const data = await http.saveComplexConfigFloorDetail(params)
 
-      return code === 200
+      return data && data['code'] === 200
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitNormalConfigs({ commit }, prisonId) {
+    try {
+      const response = await http.getVisitNormalConfigs(prisonId)
+
+      if (!response) return
+
+      const {
+        complexNormalConfig,
+        prisonBranch,
+        configurationsFloorDetailNow,
+        configurationsFloorDetailFuture
+      } = response
+
+      const {
+        configAfter,
+        configBefore,
+        enabledAt,
+        endDay,
+        id,
+        jailId,
+        timeSwitch,
+        updatedAt,
+        startDay
+      } = complexNormalConfig
+
+      // 时间配置
+      const allTimeConfigs = [configBefore, configAfter]
+
+      // 日期监区配置
+      const allPrisonWeekConfigs = [configurationsFloorDetailNow, configurationsFloorDetailFuture]
+
+      const filterAllTimeConfigs = allTimeConfigs.map((configs, index) => {
+        if (!configs || (Array.isArray(configs) && !configs.length)) {
+          return [
+            { days: [],
+              interval: 5,
+              duration: 25,
+              timeperiod: [],
+              config: [],
+              queue: [],
+              timeperiodQueue: [],
+              showError: [],
+              type: index,
+              Monday: [],
+              Wednesday: [],
+              Thursday: [],
+              Friday: [],
+              Tuesday: [],
+              Saturday: [],
+              Sunday: [],
+              window_size: '1',
+              checkForm: []
+            }
+          ]
+        }
+        else {
+          return configs.map(config => {
+            const { timeperiod } = config
+
+            const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+            config['showError'] = new Array(length).fill(false)
+
+            config['window_size'] = String(config['window_size']) || '1'
+
+            const filterParams = [
+              {
+                key: 'config',
+                value: 'queue'
+              },
+              {
+                key: 'timeperiod',
+                value: 'timeperiodQueue'
+              }
+            ]
+            filterParams.forEach(params => {
+              config[params['value']] = []
+              if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
+                config[params['key']].forEach(c => {
+                  config[params['value']].push(c.split('-'))
+                })
+              }
+              else config[params['key']] = []
+            })
+
+            let weekConfigs = {}, checkForm = []
+
+            allPrisonWeekConfigs[index].forEach(prisonWeekConfig => {
+              weeks.forEach(day => {
+                // 拥有的日期
+                if (+day.value === +prisonWeekConfig.days) {
+                  const { key } = day
+
+                  let { prisonConfigId } = prisonWeekConfig
+
+                  prisonConfigId = prisonConfigId && Array.isArray(prisonConfigId) ? prisonConfigId.map(item => +item) : []
+
+                  // 特殊处理 全监狱 id默认为 -1
+                  if (!+prisonBranch) prisonConfigId = [-1]
+
+                  weekConfigs = {
+                    ...weekConfigs,
+                    [key]: prisonConfigId
+                  }
+
+                  checkForm.push(key)
+                }
+              })
+            })
+
+            return { ...config, ...weekConfigs, checkForm }
+          })
+        }
+      })
+
+      commit('setVisitNormalConfigs', {
+        timeSwitch: timeSwitch ? +timeSwitch : 0,
+        prisonBranch,
+        jailId,
+        id,
+        updatedAt,
+        startDay,
+        enabledAt,
+        endDay,
+        configBefore: filterAllTimeConfigs[0],
+        configAfter: filterAllTimeConfigs[1]
+      })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitNormalConfigs(_, params) {
+    try {
+      const result = await http.updateVisitNormalConfigs(params)
+
+      return result
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitNotice({ commit }, jailId) {
+    try {
+      let notice = await http.getVisitNotice(jailId)
+
+      if (Object.prototype.toString.call(notice) === '[object Object]') notice = `
+        根据疫情防控相关要求，现场会见实行预约办理。
+        会见当天，提供健康码、旅居史和7日内核酸检测报告，对体温超过37.3℃、有咳嗽、流涕、红眼、皮疹等可疑传染性疾病症状的人员，
+        以及到过中高风险地区疫情地区的和境外人员一律不允许进入监管区。具体情况请咨询各监狱。
+      `
+
+      commit('setVisitNotice', notice.replace(/\s*/g, ''))
+
+      return true
     }
     catch (err) {
       Promise.reject(err)
