@@ -189,7 +189,6 @@
         @click="onUpdate">更新</el-button>
     </div>
 
-    <!-- @close="onClose" -->
     <el-dialog
       class="authorize-dialog"
       :visible.sync="visible"
@@ -236,8 +235,6 @@ import cloneDeep from 'lodash/cloneDeep'
 import { Message } from 'element-ui'
 
 import { weeks, meetingChargeConfigDurations } from '@/common/constants/const'
-
-import { daysTransformWeeksParams, dayTransformProp } from '../utils'
 
 // 现在交互流程这样 修改工作日后 必须先配置监区 才会有保存按钮
 // 修改工作日:工作日 不禁用 保存按钮显示/新增的时候隐藏并且没有配置监区的时候隐藏
@@ -357,7 +354,7 @@ export default {
     // 如果有after 默认值是enableAt 范围是当前日期的第二天起 到 enableAt
     pickerOptions() {
       return {
-        disabledDate: (time) => {
+        disabledDate: time => {
           if (!this.hasOriginConfigAfter) {
             return time.getTime() < Date.now()
           }
@@ -448,10 +445,6 @@ export default {
       'saveComplexConfigFloorDetail'
     ]),
 
-    onClose() {
-      this.visible = false
-      this.initConfigs()
-    },
 
     async initConfigs() {
       await this.getComplexConfigFloorDetail(this.jailId)
@@ -544,30 +537,6 @@ export default {
       }
     },
 
-    // 参数化(update)
-    filterParams(params) {
-      let result = []
-
-      params.forEach(config => {
-        const { duration, interval, days, queue, timeperiodQueue } = config
-
-        if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
-
-        let c = []
-
-        let period = []
-
-        queue.forEach(q => c.push(q.join('-')))
-
-        timeperiodQueue.forEach(t => period.push(t.join('-')))
-
-        const weeksPrisonAreas = daysTransformWeeksParams(days, config)
-
-        result.push({ days, config: c, duration, interval, timeperiod: period, floorDetai: weeksPrisonAreas })
-      })
-
-      return result
-    },
 
     // 更新按钮的方法
     // 只有before
@@ -581,7 +550,7 @@ export default {
       // 只有正在生效的
       if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) hasNoChanged = !this.hasConfigBeforeChange
 
-      else hasNoChanged = isEqual(this.filterParams(after), this.filterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+      else hasNoChanged = isEqual(this.daysAndPrisonAreaFilterParams(after), this.daysAndPrisonAreaFilterParams(configAfter)) && enabledAt === this.computedEffectiveDate
 
       if (hasNoChanged) {
         this.$message({
@@ -602,42 +571,11 @@ export default {
 
       const [before, after] = this.allConfigs
 
-      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.filterParams(before)
+      if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.daysAndPrisonAreaFilterParams(before)
 
-      else filterParams = this.filterParams(after)
+      else filterParams = this.daysAndPrisonAreaFilterParams(after)
 
-      const {
-        id,
-        jailId,
-        prisonBranch
-      } = this.meetingRoomConfigs
-
-      const params = filterParams.reduce((accumulator, currentItem) => {
-        const { floorDetai, ...configAfter } = currentItem
-
-        const { days } = configAfter
-
-        // 这里需要变得是
-
-        let configurationsFloorDetailItem = days.map(day => {
-          const { key } = dayTransformProp(day)
-
-          let prisonConfigId = +prisonBranch ? floorDetai[key] : []
-
-          return {
-            days: day,
-            jailId,
-            prisonConfigId,
-            effectiveDate: this.computedEffectiveDate
-          }
-        })
-
-        accumulator.configurationsFloorDetail = [...accumulator.configurationsFloorDetail, ...configurationsFloorDetailItem]
-
-        accumulator.complexNormalConfig.configAfter.push(configAfter)
-
-        return accumulator
-      }, { configurationsFloorDetail: [], complexNormalConfig: { enabledAt: this.computedEffectiveDate, jailId, configAfter: [] }})
+      const params = this.filterSubmittingParams(this.meetingRoomConfigs, filterParams, this.computedEffectiveDate)
 
       this.loading = true
 
@@ -645,7 +583,9 @@ export default {
 
       this.loading = false
 
-      isSucess && this.onClose()
+      this.visible = false
+
+      isSucess && await this.initConfigs()
     },
 
     // 新增一个时间段 配置默认的会见时间段(update)
@@ -690,32 +630,32 @@ export default {
       },
       items = {
         Monday: {
-          label: '星期一',
-          ...selectItem
+          ...selectItem,
+          label: '星期一'
         },
         Tuesday: {
-          label: '星期二',
-          ...selectItem
+          ...selectItem,
+          label: '星期二'
         },
         Wednesday: {
-          label: '星期三',
-          ...selectItem
+          ...selectItem,
+          label: '星期三'
         },
         Thursday: {
-          label: '星期四',
-          ...selectItem
+          ...selectItem,
+          label: '星期四'
         },
         Friday: {
-          label: '星期五',
-          ...selectItem
+          ...selectItem,
+          label: '星期五'
         },
         Saturday: {
-          label: '星期六',
-          ...selectItem
+          ...selectItem,
+          label: '星期六'
         },
         Sunday: {
-          label: '星期日',
-          ...selectItem
+          ...selectItem,
+          label: '星期日'
         }
       }
 
@@ -898,7 +838,7 @@ export default {
       margin-bottom: 13px;
 
       .el-form-item__content {
-        width: 30%;
+        width: 30% !important;
       }
 
       label {
