@@ -717,6 +717,8 @@ export default {
       this.$set(this.hasChangeDaysPrisonAreConfigShow[type], index, true)
 
       this.$set(this.editPrisonAreConfigShow[type], index, false)
+
+      this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
     },
 
     // 保存
@@ -732,6 +734,8 @@ export default {
         if (!this.hasOriginConfigAfter && !this.hasOriginConfigBefore) this.$set(this.newConfigTimeShow[type], index, true)
 
         this.$set(this.hasChangePrisonAreConfigSaveShow[type], index, false)
+
+        this.$set(this.hasChangeDaysDisabled[type], index, true)
 
         this.$set(this.preSaveSuccess[type], index, true)
 

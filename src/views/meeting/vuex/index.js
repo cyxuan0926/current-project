@@ -27,7 +27,9 @@ let state = {
   // 实地会见须知
   visitNotice: {
     notice: ''
-  }
+  },
+
+  visitTimeSwitch: 0
 }
 
 export default {

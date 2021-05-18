@@ -1,5 +1,5 @@
 <template>
-  <div v-if="inited" class="container">
+  <div class="container">
     <div class="el-form-item cycle">
       <label class="el-form-item__label c-label">周期配置</label>
 
@@ -11,7 +11,6 @@
           :active-value="1"
           :inactive-value="0"
           :width="60"
-          @change="onMeetingCycle($event)"
         />
       </div>
 
@@ -20,6 +19,7 @@
           <el-button
             size="small"
             type="primary"
+            @click="onSaveTimeSwitch"
           >更新</el-button>
         </div>
       </template>
@@ -27,8 +27,8 @@
 
     <template v-for="(configs, type) in allConfigs">
       <div
-        v-if="type === 0 || (type === 1 && hasConfigAfter) || hasOriginConfigAfter"
-        class="m-container"
+        v-if="(type === 0 && hasOriginConfigBefore) || (type === 1 && (!hasOriginConfigBefore || hasOriginConfigAfter)) && inited"
+        :class="['m-container', { 'border_top': type === 1 && hasOriginConfigAfter && !hasOriginConfigBefore }]"
         :key="type"
       >
         <template v-if="type === 1 && hasOriginConfigAfter">
@@ -39,133 +39,131 @@
 
         <template v-for="(config, index) in configs">
           <div :key="index" class="config-box">
-            <template>
-              <slot name="windowSize" :scope="config" />
+            <slot name="windowSize" :scope="config" :attrsConfigs="windowSizesDisabled[type][index]" />
 
-              <div class="el-form-item days-prison-area_configs">
-                <label class="el-form-item__label c-label">工作日和监区配置</label>
+            <div class="el-form-item days-prison-area_configs">
+              <label class="el-form-item__label c-label">工作日和监区配置</label>
 
-                <div class="form-days-prison-area_configs">
-                  <template v-if="!!daysPrisonAreaConfigsTableData[type][index].length">
-                    <m-table-new :cols="daysPrisonAreaConfigsTableCols" :data="daysPrisonAreaConfigsTableData[type][index]">
-                      <template #day="{ row }">{{ row.day | weeksOptions }}</template>
+              <div class="form-days-prison-area_configs">
+                <template v-if="!!daysPrisonAreaConfigsTableData[type][index].length">
+                  <m-table-new :cols="daysPrisonAreaConfigsTableCols" :data="daysPrisonAreaConfigsTableData[type][index]">
+                    <template #day="{ row }">{{ row.day | weeksOptions }}</template>
 
-                      <template #prisonArea="{ row }">{{ filterPrisonArea(row.prisonArea) }}</template>
-                    </m-table-new>
-                  </template>
-
-                  <div :class="['button-box', { 'no_margin-top': !daysPrisonAreaConfigsTableData[type][index].length }]">
-                    <template>
-                      <el-button
-                        v-if="!daysPrisonAreaConfigsTableData[type][index].length"
-                        type="primary"
-                        size="mini"
-                        @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
-                      >配置工作日和监区</el-button>
-
-                      <el-button
-                        v-else
-                        type="primary"
-                        size="mini"
-                        @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
-                      >修改工作日和监区</el-button>
-                    </template>
-                    
-                    <el-button
-                      v-if="!config.timeperiodQueue.length && daysPrisonAreaConfigsTableData[type][index].length"
-                      type="primary"
-                      size="mini"
-                      @click="onHandleConfig(index, type)"
-                    >配置时间段参数</el-button>
-                  </div>
-                </div>
-              </div>
-
-              <template v-if="config.timeperiodQueue.length">
-                <m-form
-                  class="duration-interval-form"
-                  :ref="`${type}form${index}`"
-                  :items="durationIntervalItems[type][index]"
-                  :values="{ index: index, duration: config.duration, interval: config.interval, type: type }"
-                  @response="onResponse"
-                />
-
-                <template v-for="(queue, o) in config.timeperiodQueue">
-                  <div :key="o" class="timeperiod">
-                    <label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>
-
-                    <div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">
-                      <m-time-range-selector
-                        :val="queue"
-                        :configs="{
-                          prev: {
-                            attrs: {
-                              prefixIcon: 'ower-cssName'
-                            }
-                          }
-                        }"
-                        :disabled="!!config.queue.length"
-                        :prev="config.timeperiodQueue[o - 1]"
-                        :next="config.timeperiodQueue[o + 1]"
-                        type="queue"
-                        @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
-                      />
-
-                      <div v-if="config['showError'][o]" class="error__tip">时间段区间小于通话时长</div>
-                    </div>
-
-                    <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1)">
-                      <el-button
-                        v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
-                        type="primary"
-                        size="mini"
-                        style="margin-right: 10px;"
-                        @click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index, type)"
-                      >新增时间段</el-button>
-
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="onFigureOut(config, index, type)"
-                      >生成探视时间段</el-button>
-
-                      <el-button
-                        v-if="config.timeperiodQueue.length > 1"
-                        size="mini"
-                        type="danger"
-                        @click="onDelTimePriod(config)"
-                      >删除时间段</el-button>
-                    </template>
-                  </div>
+                    <template #prisonArea="{ row }">{{ filterPrisonArea(row.prisonArea) }}</template>
+                  </m-table-new>
                 </template>
 
-                <div class="el-row_queue" v-if="config.queue.length && flag">
-                  <label class="c-label">时间段分配</label>
-
-                  <div class="el-row_queue-configs">
-                    <!-- 时间范围选择器 -->
-                    <template v-for="(queue, o) in config.queue">
-                      <m-time-range-selector
-                        :key="o"
-                        :val="queue"
-                        :disabled="true"
-                        :prev="config.queue[o - 1]"
-                        :next="config.queue[o + 1]"
-                        type="queue"
-                      />
-                    </template>
-
-                    <!-- 国科服务管理员角色 -->
+                <div :class="['button-box', { 'no_margin-top': !daysPrisonAreaConfigsTableData[type][index].length }]">
+                  <template v-if="!isCantUpdate">
                     <el-button
-                      v-if="!hasOriginConfigAfter || type === 1"
+                      v-if="!daysPrisonAreaConfigsTableData[type][index].length"
+                      type="primary"
                       size="mini"
-                      class="button-float"
-                      :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
-                      @click="onRestQueue(config)"
-                    >重置时间段</el-button>
+                      @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
+                    >配置工作日和监区</el-button>
+
+                    <el-button
+                      v-if="daysPrisonAreaConfigsTableData[type][index].length && (!hasOriginConfigAfter || type === 1)"
+                      type="primary"
+                      size="mini"
+                      @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
+                    >修改工作日和监区</el-button>
+                  </template>
+                    
+                  <el-button
+                    v-if="!config.timeperiodQueue.length && daysPrisonAreaConfigsTableData[type][index].length"
+                    type="primary"
+                    size="mini"
+                    @click="onHandleConfig(index, type)"
+                  >配置时间段参数</el-button>
+                </div>
+              </div>
+            </div>
+
+            <template v-if="config.timeperiodQueue.length">
+              <m-form
+                class="duration-interval-form"
+                :ref="`${type}form${index}`"
+                :items="durationIntervalItems[type][index]"
+                :values="{ index: index, duration: config.duration, interval: config.interval, type: type }"
+                @response="onResponse"
+              />
+
+              <template v-for="(queue, o) in config.timeperiodQueue">
+                <div :key="o" class="timeperiod">
+                  <label class="c-label">{{ '时间段' + convertToChinaNum(o + 1) }}</label>
+
+                  <div :class="['range-selecor__container', { 'error-status': config['showError'][o] } ]">
+                    <m-time-range-selector
+                      :val="queue"
+                      :configs="{
+                        prev: {
+                          attrs: {
+                            prefixIcon: 'ower-cssName'
+                          }
+                        }
+                      }"
+                      :disabled="!!config.queue.length"
+                      :prev="config.timeperiodQueue[o - 1]"
+                      :next="config.timeperiodQueue[o + 1]"
+                      type="queue"
+                      @handleBlur="handleBlur($event, config.timeperiodQueue, index)"
+                    />
+
+                    <div v-if="config['showError'][o]" class="error__tip">时间段区间小于通话时长</div>
                   </div>
+
+                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1) && !isCantUpdate">
+                    <el-button
+                      v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
+                      type="primary"
+                      size="mini"
+                      style="margin-right: 10px;"
+                      @click="onNewTimePeriod(config.timeperiodQueue[config.timeperiodQueue.length - 1], index, type)"
+                    >新增时间段</el-button>
+
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      @click="onFigureOut(config, index, type)"
+                    >生成探视时间段</el-button>
+
+                    <el-button
+                      v-if="config.timeperiodQueue.length > 1"
+                      size="mini"
+                      type="danger"
+                      @click="onDelTimePriod(config)"
+                    >删除时间段</el-button>
+                  </template>
                 </div>
               </template>
+
+              <div class="el-row_queue" v-if="config.queue.length">
+                <label class="c-label">时间段分配</label>
+
+                <div class="el-row_queue-configs">
+                  <!-- 时间范围选择器 -->
+                  <template v-for="(queue, o) in config.queue">
+                    <m-time-range-selector
+                      :key="o"
+                      :val="queue"
+                      :disabled="true"
+                      :prev="config.queue[o - 1]"
+                      :next="config.queue[o + 1]"
+                      type="queue"
+                    />
+                  </template>
+
+                  <!-- 国科服务管理员角色 -->
+                  <el-button
+                    v-if="(!hasOriginConfigAfter || type === 1) && !isCantUpdate"
+                    size="mini"
+                    class="button-float"
+                    :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
+                    @click="onRestQueue(config)"
+                  >重置时间段</el-button>
+                </div>
+              </div>
             </template>
           </div>
         </template>
@@ -190,7 +188,7 @@
 
     <div class="button-box">
       <el-button
-        v-if="!updateShow"
+        v-if="!updateShow && !isCantUpdate"
         size="small"
         type="primary"
         @click="onUpdate"
@@ -299,8 +297,6 @@ export default {
 
       queue: ['09:00', '10:00'],
 
-      flag: true,
-
       daysPrisonAreaDialogVisible: false,
 
       form: {},
@@ -367,7 +363,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['visitNormalConfigs']),
+    ...mapState(['visitNormalConfigs', 'visitTimeSwitch']),
 
     daysPrisonAreaDialogFormRules() {
       const temp = [
@@ -512,20 +508,28 @@ export default {
 
     // 周期配置开关
     timeSwitchHasChanged() {
-      const { timeSwitch } = this.visitNormalConfigs
-
-      return this.timeSwitch !== timeSwitch
+      return this.timeSwitch !== this.visitTimeSwitch
     },
 
     // 不能修改情况
     isCantUpdate() {
-      return !this.timeSwitch
+      return !this.visitTimeSwitch && (this.hasOriginConfigBefore || (!this.hasOriginConfigBefore && this.hasOriginConfigAfter))
+    },
+
+    windowSizesDisabled() {
+      return this.allConfigs.map((configs, type) => {
+        return configs.map((config, index, target) => {
+          const disabled = this.hasOriginConfigAfter && type !== 1 || this.isCantUpdate
+
+          return { disabled }
+        })
+      })
     }
   },
 
   watch: {
     allConfigs: {
-      handler: function (value) {
+      handler: function(value) {
         if (this.hasConfigAfter) this.updateShow = value[1].some(item => !item.queue.length)
 
         else this.updateShow = value[0].some(item => !item.queue.length)
@@ -535,7 +539,18 @@ export default {
   },
 
   methods: {
-    ...mapActions(['getVisitNormalConfigs', 'updateVisitNormalConfigs']),
+    ...mapActions([
+      'getVisitNormalConfigs',
+      'updateVisitNormalConfigs',
+      'updateTimeSwitch',
+      'getVisitTimeSwitch'
+    ]),
+
+    async initTimeSwitch() {
+      await this.getVisitTimeSwitch(this.jailId)
+
+      this.timeSwitch = this.visitTimeSwitch
+    },
 
     async initConfigs() {
       this.inited = false
@@ -545,8 +560,7 @@ export default {
       const {
         prisonBranch,
         configBefore,
-        configAfter,
-        timeSwitch
+        configAfter
       } = this.visitNormalConfigs
 
       if (+prisonBranch) {
@@ -562,8 +576,6 @@ export default {
       const configsAfter = cloneDeep(configAfter)
 
       this.allConfigs = [configsBefore, configsAfter]
-
-      this.timeSwitch = timeSwitch
 
       this.inited = true
     },
@@ -597,21 +609,28 @@ export default {
 
         else hasNoChanged = isEqual(this.daysAndPrisonAreaFilterParams(after, ['window_size']), this.daysAndPrisonAreaFilterParams(configAfter, ['window_size'])) && enabledAt === this.computedEffectiveDate
 
-        if (hasNoChanged) {
-          this.$message({
-            showClose: true,
-            message: '配置没有变化，无需编辑！',
-            duration: 3000,
-            type: 'error'
-          })
-        } else {
+        if (hasNoChanged) this.onMessage()
+
+        else {
           let filterParams
 
           if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.daysAndPrisonAreaFilterParams(before, ['window_size'])
 
           else filterParams = this.daysAndPrisonAreaFilterParams(after, ['window_size'])
 
-          const params = this.filterSubmittingParams(this.visitNormalConfigs, filterParams, this.computedEffectiveDate, 'configurationsNoramlDetail')
+          const params = this.filterSubmittingParams(
+            this.visitNormalConfigs,
+            filterParams,
+            this.computedEffectiveDate,
+            'configurationsNoramlDetail',
+            'complexNormalNormal'
+          )
+
+          await this.updateVisitNormalConfigs(params)
+
+          setTimeout(async () => {
+            await this.initConfigs()
+          }, 2000)
         }
       }
     },
@@ -626,17 +645,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.daysPrisonAreaDialogForm.onClearValidate()
       })
-    },
-
-    // 周期配置开关
-    // 如果有周期配置 那展示周期配置 没有就配置新的周期配置
-    onMeetingCycle(value) {
-      if (!this.hasOriginConfigAfter) {
-
-      } else {
-        if (!value) {}
-      }
-      console.log(value)
     },
 
     // 新增/修改日期监区配置
@@ -771,17 +779,67 @@ export default {
 
     onPrisonAreaDisabled(key) {
       return !this.checkForm.includes(key)
+    },
+
+    onMessage(params = {}) {
+      const configs = {
+        showClose: true,
+        message: '配置没有变化，无需编辑！',
+        duration: 3000,
+        type: 'error',
+        ...params
+      }
+
+      this.$message(configs)
+    },
+
+    onSaveTimeSwitch() {
+      if (this.timeSwitch && !this.hasOriginConfigBefore) {
+        this.onMessage({
+          message: '现场探视开关打开后，请配置工作日和监区，以及探视时间段。',
+          type: 'warning'
+        })
+
+        this.timeSwitch = 0
+
+        return
+      }
+
+      if (!this.timeSwitch) {
+        this.onMessage({
+          message: '现场探视开关关闭后，家属的现场探视申请通道就会关闭！',
+          type: 'warning',
+          duration: 1000
+        })
+      }
+
+      const params = {
+        jailId: this.jailId,
+        timeSwitch: this.timeSwitch
+      }
+
+      setTimeout(async () => {
+        await this.updateTimeSwitch(params)
+
+        await this.initTimeSwitch()
+      }, 1000)
     }
   },
 
   async activated() {
-    await this.initConfigs()
+    await Promise.all([this.initConfigs(), this.initTimeSwitch()])
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .container {
+  .border_top {
+    border-top: 1px solid #dcdfe6;
+    padding-top: 10px;
+    margin-top: 5px;
+  }
+
   .m-container + .m-container {
     border-top: 1px solid #dcdfe6;
     padding-top: 10px;

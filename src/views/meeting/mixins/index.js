@@ -209,7 +209,7 @@ export default {
       configurationsFloorDetailKey = 'configurationsFloorDetail',
       complexNormalConfigKey = 'complexNormalConfig'
     ) {
-      const { jailId, prisonBranch } = configs
+      const { jailId = this.jailId, prisonBranch } = configs
 
       return filterParams.reduce((accumulator, currentItem) => {
         const { floorDetai, ...configAfter } = currentItem
@@ -223,7 +223,7 @@ export default {
 
           return {
             days: day,
-            jailId,
+            jailId: jailId || +this.jailId,
             prisonConfigId,
             effectiveDate
           }
@@ -234,7 +234,7 @@ export default {
         accumulator[complexNormalConfigKey].configAfter.push(configAfter)
 
         return accumulator
-      }, { [configurationsFloorDetailKey]: [], [complexNormalConfigKey]: { enabledAt: effectiveDate, jailId, configAfter: [] } })
+      }, { [configurationsFloorDetailKey]: [], [complexNormalConfigKey]: { enabledAt: effectiveDate, jailId: jailId || +this.jailId, configAfter: [] } })
     }
   }
 }
