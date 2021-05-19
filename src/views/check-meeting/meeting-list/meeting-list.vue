@@ -70,7 +70,7 @@
           slot="operate">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
          <el-button
-            v-if="( scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor ))&& scope.row.isCheck"
+            v-if="(scope.row.status == 'PENDING' && scope.row.isLock !== 1 && operateQueryAuth === true && ( !( haveMultistageExamine && scope.row.authorizeLevel === 1 && !isAdvancedAuditor) || scope.row.isCheck  ))"
             size="mini"
             @click="handleAuthorization(scope.row)">审核</el-button>
           <el-button

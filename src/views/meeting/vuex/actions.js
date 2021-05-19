@@ -13,6 +13,8 @@ export default {
       const dayInLimit = res ? (res['dayInLimit'] || res['endDay'] || 15) : 15
 
       commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
+
+      return res
     }
     catch (err) {
       Promise.reject(err)
@@ -534,7 +536,6 @@ export default {
         endDay,
         id,
         jailId,
-        timeSwitch,
         updatedAt,
         startDay
       } = complexNormalConfig
@@ -630,7 +631,6 @@ export default {
       })
 
       commit('setVisitNormalConfigs', {
-        timeSwitch: timeSwitch ? +timeSwitch : 0,
         prisonBranch,
         jailId,
         id,
@@ -664,13 +664,95 @@ export default {
     try {
       let notice = await http.getVisitNotice(jailId)
 
-      if (Object.prototype.toString.call(notice) === '[object Object]') notice = `
+      if (!notice || Object.prototype.toString.call(notice) === '[object Object]') notice = `
         根据疫情防控相关要求，现场会见实行预约办理。
         会见当天，提供健康码、旅居史和7日内核酸检测报告，对体温超过37.3℃、有咳嗽、流涕、红眼、皮疹等可疑传染性疾病症状的人员，
         以及到过中高风险地区疫情地区的和境外人员一律不允许进入监管区。具体情况请咨询各监狱。
       `
 
       commit('setVisitNotice', notice.replace(/\s*/g, ''))
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateTimeSwitch(_, params) {
+    try {
+      await http.updateTimeSwitch(params)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitSpecialConfigs({ commit }, jailId) {
+    try {
+      const response = await http.getVisitSpecialConfigs(jailId)
+
+      console.log(response)
+      if (!response) return
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async addVisitSpecialConfig(_, parmas) {
+    try {
+      const response = await http.addVisitSpecialConfig(parmas)
+
+      console.log(response)
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async delVisitSpecialConfig(_, parmas) {
+    try {
+      const response = await http.delVisitSpecialConfig(parmas)
+
+      console.log(response)
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitSpecialConfig(_, parmas) {
+    try {
+      await http.updateVisitSpecialConfig(parmas)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitTimeSwitch({ commit }, jailId) {
+    try {
+      const response = await http.getVisitTimeSwitch(jailId)
+
+      const timeSwitch = response ? response['data'] ? +response['data'] : 0 : 0
+
+      commit('setVisitTimeSwitch', timeSwitch)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitNotice(_, params) {
+    try {
+      await http.updateVisitNotice(params)
 
       return true
     }

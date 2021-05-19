@@ -54,5 +54,9 @@ export default {
 
   setVisitNotice(state, notice) {
     state.visitNotice = Object.assign({}, { notice })
+  },
+
+  setVisitTimeSwitch(state, visitTimeSwitch) {
+    state.visitTimeSwitch = visitTimeSwitch
   }
 }

@@ -25,12 +25,13 @@
         >
           <keep-alive>
             <component v-if='activeName === item.key' :is="activeName">
-              <template #windowSize="{ scope }">
+              <template #windowSize="{ scope = { window_size: 1, queue: []  }, attrsConfigs = { disabled: false } }">
                 <div class="el-form-item meeting_windowSize">
                   <label class="el-form-item__label">现场探视窗口个数</label>
 
                   <div class="form-meeting_windowSize">
                     <el-input
+                      :disabled="attrsConfigs['disabled']"
                       class="part-right"
                       v-model="scope['window_size']"
                       size="small"
@@ -75,6 +76,8 @@ import special from './components/visit-special'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
 import validator from '@/utils'
+
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   components: {
     // 可视电话提前天数
@@ -116,7 +119,9 @@ export default {
 
       formLabelText: '现场探视预约日期管理',
 
-      formModel: {}
+      formModel: {},
+
+      visitNormalDaysConfigs: {}
     }
   },
 
@@ -157,9 +162,11 @@ export default {
         buttons: ['update', 'back']
       }
 
-      if (!this.haveRemoteVisitDay) delete items['buttons']
+      let cloneDeepItem = cloneDeep(items)
 
-      return items
+      if (!this.haveRemoteVisitDay) delete cloneDeepItem['buttons']
+
+      return cloneDeepItem
     }
   },
 
@@ -171,12 +178,7 @@ export default {
     '$route.query': {
       async handler(query) {
         // 为常规配置的时候
-        await this.getVisitNotice(this.jailId)
-
-        if (this.haveRemoteVisitDay) {
-          // 获取可视电话申请需提前天数
-          await this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
-        }
+        await this.onPromises()
       }
     },
 
@@ -191,19 +193,17 @@ export default {
 
   // 获取申请提前天数
   async created() {
-    await Promise.all([this.getVisitNotice(this.jailId), this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })])
-  },
-
-  // 渲染组件
-  mounted() {
     this.render()
+
+    await this.onPromises()
   },
 
   methods: {
     ...mapActions([
       'getRemoteAdvanceDayLimits',
       'updateRemoteAdvanceDayLimit',
-      'getVisitNotice'
+      'getVisitNotice',
+      'updateVisitNotice'
     ]),
 
     ...mapMutations((['setAdvanceDayLimits'])),
@@ -236,9 +236,11 @@ export default {
     async handleUpdateAdvanceDayLimit() {
       const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
 
+      const { id } = this.visitNormalDaysConfigs
+
       const isSucess = await this.updateRemoteAdvanceDayLimit({
         params: {
-          jailId: this.jailId,
+          id,
           startDay: advanceDayLimit,
           endDay: dayInLimit
         },
@@ -314,11 +316,37 @@ export default {
           duration: 3000,
           type: 'error'
         })
+      } else {
+        const notice = params['notice'].replace(/\s*/g, '')
+
+        const inputs = {
+          jailId: this.jailId,
+          notice
+        }
+
+        await this.updateVisitNotice(inputs)
+
+        setTimeout(async () => {
+          await this.getVisitNotice(this.jailId)
+        }, 2000)
       }
     },
 
     onGoBack() {
       this.$router.back()
+    },
+
+    async onPromises() {
+      let promises = [this.getVisitNotice(this.jailId)]
+
+      if (this.haveRemoteVisitDay) promises = [
+        ...promises,
+        this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
+      ]
+
+      const response = await Promise.all(promises)
+
+      this.visitNormalDaysConfigs = response[1] || {}
     }
 
     // visitMessageFormItems(inputs = {}) {

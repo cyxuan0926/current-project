@@ -453,7 +453,7 @@
       @open="onOpenDialog"
       width="530px"
     >
-    <div class="el-message-box__container" style="margin:24px 0 24px  71px;">
+    <div  v-if="operationType==4" class="el-message-box__container" style="margin:24px 0 24px  71px;">
       <div class="el-message-box__status el-icon-warning"></div>
       <div class="el-message-box__message"><p> 提示：如果是转监，请使用转监功能，不要做离监操作！</p>
       </div>
@@ -940,7 +940,31 @@ export default {
               type: 'input',
               label: '原判刑期',
               clearable: true
-            }
+            },
+             level: {
+              type: 'select',
+              label: '管教级别',
+              options: [
+                      {
+                        label: '宽管级',
+                        value: '1'
+                      },
+                      {
+                        label: '普管级',
+                        value: '2'
+                      },
+                      {
+                        label: '考察级',
+                        value: '3'
+                      },
+                      {
+                        label: '严管级',
+                        value: '4'
+                      }
+                    ],
+              props: genderProps,
+              value: ''
+            },
           }, { dissMissConfigs }, formButton)
           break
         case 4:
