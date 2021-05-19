@@ -71,6 +71,46 @@ superAdmin = [{
      props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' }
   }]
 }, {
+  path: '/other-units',
+  name: 'other-units',
+  meta: {
+    hidden: true,
+    permission: 'visit.other-units',
+    breadcrumbName: '其他'
+  },
+  children: [
+    {
+      path: '/other-units/list',
+      name: 'other-units-list',
+      meta: {
+        permission: 'visit.other-units.index',
+        breadcrumbName: '其他单位管理'
+      },
+      component: 'sadmin-other/index',
+      props: { hasProvinceQueryAuth: true }
+    }
+  ]
+}, {
+  path: '/sadmin-terminal-call',
+  name: 'sadmin-terminal-call',
+  meta: {
+    hidden: true,
+    permission: 'visit.sadmin-terminal-call',
+    breadcrumbName: '终端呼叫终端'
+  },
+  children: [
+    {
+      path: '/sadmin-terminal-call/list',
+      name: 'sadmin-terminal-call-list',
+      meta: {
+        permission: 'visit.sadmin-terminal-call.index',
+        breadcrumbName: '终端呼叫终端详情'
+      },
+      component: 'sadmin-terminal-call/index',
+      props: { hasProvinceQueryAuth: true }
+    }
+  ]
+}, {
   path: '/prison',
   name: 'prison-manage',
   meta: {
@@ -299,13 +339,13 @@ superAdmin = [{
   }, {
     path: '/terminal',
     name: 'terminal',
-    meta: { hidden: true, breadcrumbName: '终端管理' },
+    meta: { breadcrumbName: '终端管理' },
     children: [{
       path: '/terminal/list',
       name: 'terminal-list',
       meta: {
         permission: 'visit.terminal.search',
-        breadcrumbName: '终端列表',
+        breadcrumbName: '监狱终端管理',
         componentsToKeepAlive: ['TerminalList']
       },
       component: 'sadmin-terminal/terminal-list'
@@ -335,6 +375,35 @@ superAdmin = [{
       component: 'sadmin-terminal/terminal-edit'
       // component: resolve => require(['@/views/sadmin-terminal/terminal-edit'], resolve)
       // component: helper.loadView('sadmin-terminal/terminal-edit')
+    }, {
+      path: '/other-terminal/list',
+      name: 'other-terminal-list',
+      meta: {
+        permission: 'visit.other.terminal.search',
+        breadcrumbName: '其他机构终端管理',
+        componentsToKeepAlive: ['OtherTerminalList']
+      },
+      component: 'sadmin-terminal/other-list'
+    }, {
+      path: '/other-terminal/add',
+      name: 'other-terminal-add',
+      meta: {
+        deep: true,
+        permission: 'visit.other.terminal.add',
+        breadcrumbName: '新增终端',
+        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+      },
+      component: 'sadmin-terminal/other-add'
+    }, {
+      path: '/other-terminal/edit/:id',
+      name: 'other-terminal-edit',
+      meta: {
+        deep: true,
+        permission: 'visit.other.terminal.edit',
+        breadcrumbName: '编辑终端',
+        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+      },
+      component: 'sadmin-terminal/other-edit'
     }]
   }, {
     path: '/version',

@@ -5,7 +5,6 @@
     <m-search
       :items="searchItems"
       ref="search"
-      @searchSelectChange="searchSelectChange"
       @search="onSearch" />
     <el-col :span="24">
       <el-tabs
@@ -278,7 +277,7 @@ export default {
         name: 'DENIED,CANCELED'
       },
       {
-        label: '未审核',
+        label: '未授权',
         name: 'PENDING'
       }
     ]

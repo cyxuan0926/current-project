@@ -134,6 +134,12 @@ export default {
   withdrawVisit: params => {
     return service.post('/prisoner_visits/withdraw', params).then(res => res && res.code === 200)
   },
+  // 实地探监管理-获取实地会见配置信息
+  getVisitsConfigDetail: jailId => service.get(`/prisoner_visits/configDetail?jailId=${ jailId }`),
+  // 实地探监管理-获取实地会见配置时间表
+  getVisitsConfigMeetingtime: id => service.get(`/prisoner_visits/query-meettime-config?id=${ id }`),
+  // 实地探监管理-获取实地会见状态变更详情
+  getVisitsChangelog: id => service.get(`/prisoner_visits/visit-changelog?visitId=${ id }`),
   // 监狱长信箱-列表
   getMailboxes: params => {
     return service.get('/mailboxes/page', params).then(res => res && res.data)
