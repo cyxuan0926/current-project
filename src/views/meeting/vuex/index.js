@@ -29,7 +29,9 @@ let state = {
     notice: ''
   },
 
-  visitTimeSwitch: 0
+  visitTimeSwitch: 0,
+
+  visitSpecialConfigs: {}
 }
 
 export default {

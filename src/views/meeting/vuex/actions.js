@@ -694,8 +694,99 @@ export default {
     try {
       const response = await http.getVisitSpecialConfigs(jailId)
 
-      console.log(response)
-      if (!response) return
+      const { branch_prison = 0, confList = [] } = response || {}
+
+      let configs = []
+
+      if (!response || !confList || (Array.isArray(confList) && !confList.length)) {
+        configs = [
+          {
+            enabledMeeting: 1,
+            day: '',
+            config: [],
+            queue: [],
+            duration: 25,
+            interval: 5,
+            timeperiod: [],
+            timeperiodQueue: [],
+            showError: [],
+            window_size: '1',
+            jailId: +jailId,
+            status: 1,
+            prisonConfigIds: +branch_prison ? [] : [-1]
+          }
+        ]
+      } else {
+        configs = confList.map(config => {
+          const {
+            enabledMeeting,
+            day,
+            windowNum,
+            settings,
+            prisonConfigIds
+          } = config
+
+          const {
+            interval,
+            duration,
+            timeperiod
+          } = settings
+
+          const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+          config['window_size'] = String(windowNum) || '1'
+
+          config['showError'] = new Array(length).fill(false)
+
+          config['prisonConfigIds'] = branch_prison ? (prisonConfigIds ? prisonConfigIds.split(',').map(item => +item) : []) : [-1]
+
+          config['oldDay'] = day
+
+          config['old_window_size'] = String(windowNum) || '1'
+
+          config['oldEnabled'] = enabledMeeting || 0
+
+          config['oldPrisonConfigIds'] = branch_prison ? (prisonConfigIds ? prisonConfigIds.split(',').map(item => +item) : []) : [-1]
+
+          config['duration'] = duration || 25
+
+          config['interval'] = interval || 5
+
+          const filterParams = [
+            {
+              key: 'config',
+              value: 'queue'
+            },
+            {
+              key: 'timeperiod',
+              value: 'timeperiodQueue'
+            }
+          ]
+
+          filterParams.forEach(params => {
+            config[params['value']] = []
+
+            if (settings[params['key']] && Array.isArray(settings[params['key']]) && settings[params['key']].length) {
+              settings[params['key']].forEach(c => {
+                config[params['value']].push(c.split('-'))
+              })
+            } else config[params['key']] = []
+          })
+
+          config['config'] = settings['config']
+
+          delete config['settings']
+
+          return config
+        })
+      }
+
+      commit('setVisitSpecialConfigs', {
+        prisonBranch: branch_prison,
+        complexVisitSpecialConfigs: configs
+      })
+
+      return true
     }
     catch (err) {
       Promise.reject(err)
@@ -706,7 +797,9 @@ export default {
     try {
       const response = await http.addVisitSpecialConfig(parmas)
 
-      console.log(response)
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
     }
     catch (err) {
       Promise.reject(err)
@@ -717,7 +810,9 @@ export default {
     try {
       const response = await http.delVisitSpecialConfig(parmas)
 
-      console.log(response)
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
     }
     catch (err) {
       Promise.reject(err)

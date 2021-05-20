@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-if="inited" class="container">
     <div class="el-form-item cycle">
       <label class="el-form-item__label c-label">周期配置</label>
 
@@ -27,7 +27,7 @@
 
     <template v-for="(configs, type) in allConfigs">
       <div
-        v-if="(type === 0 && hasOriginConfigBefore) || (type === 1 && (!hasOriginConfigBefore || hasOriginConfigAfter)) && inited"
+        v-if="(type === 0 && hasOriginConfigBefore) || (type === 1 && (!hasOriginConfigBefore || hasOriginConfigAfter)) "
         :class="['m-container', { 'border_top': type === 1 && hasOriginConfigAfter && !hasOriginConfigBefore }]"
         :key="type"
       >
@@ -85,7 +85,12 @@
                 class="duration-interval-form"
                 :ref="`${type}form${index}`"
                 :items="durationIntervalItems[type][index]"
-                :values="{ index: index, duration: config.duration, interval: config.interval, type: type }"
+                :values="{
+                  index: index,
+                  duration: config.duration,
+                  interval: config.interval,
+                  type: type
+                }"
                 @response="onResponse"
               />
 
@@ -138,7 +143,7 @@
                 </div>
               </template>
 
-              <div class="el-row_queue" v-if="config.queue.length">
+              <div v-if="config.queue.length" class="el-row_queue">
                 <label class="c-label">时间段分配</label>
 
                 <div class="el-row_queue-configs">
@@ -553,8 +558,6 @@ export default {
     },
 
     async initConfigs() {
-      this.inited = false
-
       await this.getVisitNormalConfigs(this.jailId)
 
       const {
@@ -576,8 +579,6 @@ export default {
       const configsAfter = cloneDeep(configAfter)
 
       this.allConfigs = [configsBefore, configsAfter]
-
-      this.inited = true
     },
 
     async onUpdate() {
@@ -699,7 +700,12 @@ export default {
     },
 
     onResponse(params) {
-      const { index, duration, interval, type } = params
+      const {
+        index,
+        duration,
+        interval,
+        type
+      } = params
 
       this.$set(this.allConfigs[type][index], 'duration', duration)
 
@@ -794,7 +800,7 @@ export default {
     },
 
     onSaveTimeSwitch() {
-      if (this.timeSwitch && !this.hasOriginConfigBefore) {
+      if (this.timeSwitch && !this.hasOriginConfigBefore && !this.hasOriginConfigAfter) {
         this.onMessage({
           message: '现场探视开关打开后，请配置工作日和监区，以及探视时间段。',
           type: 'warning'
@@ -827,7 +833,11 @@ export default {
   },
 
   async activated() {
+    this.inited = false
+
     await Promise.all([this.initConfigs(), this.initTimeSwitch()])
+
+    this.inited = true
   }
 }
 </script>

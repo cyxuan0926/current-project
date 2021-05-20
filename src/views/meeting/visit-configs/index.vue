@@ -402,7 +402,7 @@ export default {
       }
 
       .part-right {
-        width: 40%;
+        width: 35%;
       }
     }
   }
