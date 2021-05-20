@@ -58,5 +58,9 @@ export default {
 
   setVisitTimeSwitch(state, visitTimeSwitch) {
     state.visitTimeSwitch = visitTimeSwitch
+  },
+
+  setVisitSpecialConfigs(state, visitSpecialConfigs) {
+    state.visitSpecialConfigs = Object.assign({}, visitSpecialConfigs)
   }
 }
