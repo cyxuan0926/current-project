@@ -55,7 +55,7 @@
             multiple
             clearable>
             <template v-for="item in rolesList">
-              <el-option               
+              <el-option
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"/>
@@ -70,20 +70,6 @@
             v-model.trim="prisonUser.username"
             placeholder="请填写用户名"/>
         </el-form-item>
-         <el-form-item
-          label="终端账号"
-          prop="terminalAccount">
-           <el-select
-            v-model="prisonUser.terminalAccount"
-            placeholder="终端账号">
-            <template v-for="item in terminalAccountOptions">
-              <el-option               
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"/>
-              </template>
-          </el-select>
-         </el-form-item>
       </el-form>
       <el-button
         class="submit"
@@ -104,18 +90,15 @@ import validator from '@/utils'
 
 export default {
   data() {
-    const terminalAccountOptions = [{ value : 0, label: '不是' }, { value : 1, label: '是' }]
     return {
       rules: {
         policeNumber: [{ required: true, message: '请填写狱警号' }],
         realName: [{ required: true, message: '请填写真实姓名' }],
         username: [{ validator: validator.containerLetter }],
-        roleIds: [{ required: true, message: '请选择角色' }],
-        terminalAccount: [{ required: true, message: '请选择终端账号' }],
+        roleIds: [{ required: true, message: '请选择角色' }]
       },
-      terminalAccountOptions,
       hasPrisonArea: true,
-      prisonUser: { prisonConfigIds: [], roleIds: [], terminalAccount: 0 }
+      prisonUser: { prisonConfigIds: [], roleIds: [] }
       // prisonConfigIdsProps: {
       //   label: 'name',
       //   value: 'id',
