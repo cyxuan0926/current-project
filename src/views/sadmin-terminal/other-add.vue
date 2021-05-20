@@ -25,7 +25,7 @@
                     terminalSn: '',
                     roomNumber: '',
                     orgType: '',
-                    orgName: '胡陛个人律师事务所',
+                    orgName: '',
                     hostPassword: '',
                     mettingPassword: ''
                 },
@@ -58,7 +58,7 @@
                     orgType: {
                         type: 'select',
                         label: '单位类型',
-                        options: filters.orgTypes,
+                        options: filters.orgTypes.slice(1),
                         rules: ['required']
                     },
                     orgName: {

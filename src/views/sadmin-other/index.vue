@@ -5,13 +5,17 @@
         <m-search
             :items="searchItems"
             ref="search"
-            @search="onSearch">
+            @search="onSearch"
+            @searchSelectChange="searchSelectChange">
         </m-search>
         <el-col :span="24">
             <m-table-new
                 stripe
                 :data="tableDatas"
                 :cols="tableCols">
+                <template #orgType="{ row }">
+                    <span>{{ row.orgType | orgTypes }}</span>
+                </template>
                 <!-- <template #operation="{ row }">
                 </template> -->
             </m-table-new>
@@ -25,10 +29,52 @@
 
 <script>
     import http from '@/service'
+    import filters from '@/filters/modules/switches'
+    import { mapActions } from 'vuex'
     export default {
         data() {
             return {
-                searchItems: {},
+                searchItems: {
+                    provinceCode: {
+                        label: '省份',
+                        type: 'select',
+                        options: [],
+                        belong: {
+                            label: 'name',
+                            value: 'id'
+                        },
+                        selectKey: 'provinceCode',
+                        value: ''
+                    },
+                    cityCode: {
+                        label: '市',
+                        type: 'select',
+                        options: [],
+                        belong: {
+                            label: 'name',
+                            value: 'id'
+                        },
+                        selectKey: 'cityCode',
+                        value: ''
+                    },
+                    orgType: {
+                        label: '单位类型',
+                        type: 'select',
+                        options: filters.orgTypes.slice(1),
+                        selectKey: 'orgType',
+                        value: ''
+                    },
+                    orgName: {
+                        label: '单位名称',
+                        type: 'select',
+                        options: [],
+                        belong: {
+                            label: 'orgName',
+                            value: 'orgName'
+                        },
+                        value: ''
+                    }
+                },
                 tableDatas: [],
                 tableCols: [
                     {
@@ -41,26 +87,32 @@
                     },
                     {
                         label: '区县',
-                        prop: 'prisonArea'
+                        prop: 'countyName'
                     },
                     {
                         label: '单位类型',
-                        prop: 'prisonArea'
+                        slotName: 'orgType'
                     },
                     {
                         label: '单位名称',
-                        prop: 'prisonArea'
+                        prop: 'orgName'
                     },
                     {
                         label: '地址',
-                        prop: 'prisonArea',
+                        prop: 'streetDetail',
                         showOverflowTooltip: true
                     }
                 ],
                 total: 0
             }
         },
+        async created() {
+            let { options } = await this.getProvincesAll()
+            this.searchItems.provinceCode.options = options || []
+        },
         methods: {
+            ...mapActions(['getProvincesAll', 'getCities']),
+
             onSearch() {
                 const { rows } = this.pagination
                 this.loading = true
@@ -72,9 +124,28 @@
             async getData() {
                 const params = Object.assign( {}, { ...this.filter, ...this.pagination } )
                 let { data } = await http.getOtherOrgs(params)
-                if( data && data.list ) {
-                    this.tableDatas = data.list
-                    this.total = data.totalElements
+                if( data && data.otherOrgInfo ) {
+                    this.tableDatas = data.otherOrgInfo
+                    this.total = data.total
+                }
+            },
+
+            async searchSelectChange(key, val) {
+                if( key == 'orgType' ) {
+                    let { data } = await http.getOrgNames(val)
+                    this.searchItems.orgName.options = data || []
+                    this.searchItems.orgName.value = ''
+                }
+                if( key == 'cityCode' ) {
+                    this.searchItems.orgType.value = ''
+                    this.searchItems.orgName.value = ''
+                }
+                if( key == 'provinceCode' ) {
+                    let { citys } = await http.getCities(val)
+                    this.searchItems.cityCode.options = citys || []
+                    this.searchItems.cityCode.value = ''
+                    this.searchItems.orgType.value = ''
+                    this.searchItems.orgName.value = ''
                 }
             }
         },

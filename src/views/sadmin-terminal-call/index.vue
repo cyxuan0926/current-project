@@ -115,7 +115,7 @@
                     callOrgType: {
                         label: '单位类型',
                         type: 'select',
-                        options: filters.orgTypes,
+                        options: filters.orgTypes.slice(0, 3),
                         selectKey: 'callOrgType',
                         value: ''
                     },
@@ -125,9 +125,10 @@
                         options: [],
                         belong: {
                             label: 'orgName',
-                            value: 'id'
+                            value: 'orgName'
                         },
-                        value: ''
+                        value: '',
+                        filterable: true
                     },
                     calledOrgType: {
                         label: '被呼叫单位类型',
@@ -142,9 +143,10 @@
                         options: [],
                         belong: {
                             label: 'orgName',
-                            value: 'id'
+                            value: 'orgName'
                         },
-                        value: ''
+                        value: '',
+                        filterable: true
                     },
                     ..._searchItems
                 }
@@ -202,7 +204,7 @@
                     this.searchItems.callOrgType.value = ''
                     this.searchItems.calledOrgType.value = ''
                     this.searchItems.callOrgName.value = ''
-                    this.searchItems.calledOrgName.value = ''
+                    this.searchItems.calledOrgCode.value = ''
                 }
             }
         },

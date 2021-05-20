@@ -11,14 +11,15 @@
         <m-search
             :items="searchItems"
             ref="search"
-            @search="onSearch">
+            @search="onSearch"
+            @searchSelectChange="searchSelectChange">
         </m-search>
         <el-col :span="24">
             <m-table-new
                 stripe
                 :data="tableDatas"
                 :cols="tableCols">
-                <template #meetingEnabled="{ row }">{{ row.meetingEnabled | isOpened}}</template>
+                <template #isEnabled="{ row }">{{ row.isEnabled | isOpened}}</template>
                 <template #terminalType="{ row }">{{ row.orgType | orgTypes }}</template>
                 <template #operation="{ row }">
                     <el-button
@@ -41,11 +42,29 @@
 
 <script>
     import http from '@/service'
+    import filters from '@/filters/modules/switches'
     export default {
         name: 'OtherTerminalList',
         data() {
             return {
                 searchItems: {
+                    orgType: {
+                        label: '单位类型',
+                        type: 'select',
+                        options: filters.orgTypes.slice(1),
+                        selectKey: 'orgType',
+                        value: ''
+                    },
+                    orgName: {
+                        label: '单位名称',
+                        type: 'select',
+                        options: [],
+                        belong: {
+                            label: 'orgName',
+                            value: 'orgName'
+                        },
+                        value: ''
+                    },
                     isEnabled: {
                         type: 'select',
                         label: '终端状态',
@@ -93,12 +112,14 @@
                     },
                     {
                         label: '终端状态',
-                        slotName: 'meetingEnabled',
-                        minWidth: 95
+                        slotName: 'isEnabled',
+                        minWidth: 60
                     },
                     {
                         label: '操作',
-                        slotName: 'operation'
+                        slotName: 'operation',
+                        width: '150px',
+                        align: 'center'
                     }
                 ],
                 total: 0
@@ -148,6 +169,13 @@
                 if( data && data.terminals ) {
                     this.tableDatas = data.terminals
                     this.total = data.total
+                }
+            },
+            async searchSelectChange(key, val) {
+                if( key == 'orgType' ) {
+                    let { data } = await http.getOrgNames(val, 0)
+                    this.searchItems.orgName.options = data || []
+                    this.searchItems.orgName.value = ''
                 }
             }
         },

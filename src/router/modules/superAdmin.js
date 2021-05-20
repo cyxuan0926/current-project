@@ -393,7 +393,7 @@ superAdmin = [{
         breadcrumbName: '新增终端',
         componentsUnRemoveKeepAlive: ['OtherTerminalList']
       },
-      component: 'sadmin-terminal/other-add'
+      component: 'sadmin-terminal/other-edit'
     }, {
       path: '/other-terminal/edit/:id',
       name: 'other-terminal-edit',

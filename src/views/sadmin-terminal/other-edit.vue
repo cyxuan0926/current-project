@@ -18,10 +18,22 @@
     import http from '@/service'
     export default {
         data() {
+            let _this = this
+            let tid = _this.$route.params.id
             return {
-                otherTerminalData: {},
+                tid,
+                otherTerminalData: {
+                    terminalNumber: '',
+                    terminalName: '',
+                    terminalSn: '',
+                    roomNumber: '',
+                    orgType: '',
+                    orgName: '',
+                    hostPassword: '',
+                    mettingPassword: ''
+                },
                 formItems: {
-                    buttons: [ { update: { loading: false } }, 'back' ],
+                    buttons: [ !tid ? { add: { loading: false } } : { update: { loading: false } }, 'back' ],
                     formConfigs: { labelWidth: '150px' },
                     terminalNumber: {
                         type: 'input',
@@ -49,14 +61,25 @@
                     orgType: {
                         type: 'select',
                         label: '单位类型',
-                        options: filters.orgTypes,
-                        rules: ['required']
+                        options: filters.orgTypes.slice(1),
+                        rules: ['required'],
+                        async func(e, prop, item, fields) {
+                            let { data } = await http.getOrgNames(e, 0)
+                            _this.formItems.organizationId.options = data || []
+                            if (fields) {
+                                fields.organizationId = ''
+                            }
+                        }
                     },
-                    orgName: {
+                    organizationId: {
                         type: 'select',
                         label: '单位名称',
                         options: [],
-                        rules: ['required']
+                        rules: [{ required: true, trigger: 'blur', message: '请输入单位名称' }],
+                        props: {
+                            label: 'orgName',
+                            value: 'id'
+                        }
                     },
                     hostPassword: {
                         type: 'input',
@@ -74,13 +97,17 @@
             }
         },
         created() {
-            this.getTerDet()
+            if (this.tid) {
+               this.getTerDet()
+            }
         },
         methods: {
             async getTerDet() {
-                let res =  await http.getOtherTerminalDetail(this.$route.params.id)
+                let res =  await http.getOtherTerminalDetail(this.tid)
                 if( res && res.data ) {
-                    this.otherTerminalData = res.data
+                    let _terminals = res.data.terminals
+                    this.formItems.orgType.func(_terminals.orgType)
+                    this.otherTerminalData = _terminals || {}
                 }
             },
             async handleSubmit(fields) {

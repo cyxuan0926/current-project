@@ -134,7 +134,8 @@ export default {
   getTerminalCallTerminal: params => service.get('/terminalCallTerminal/page', params),
   // 根据单位类型查询单位名称
   // 0-监狱、1-司法局、2-司法所、3-律师事务所、4-心理咨询机构
-  getOrgNames: type => service.get(`/terminalCallTerminal/orgNames?orgType=${ type }`),
+  // 0-启用、1-禁用
+  getOrgNames: (type, status) => service.get(`/terminalCallTerminal/orgNames?orgType=${ type }${ typeof status === 'undefined' ? '' : '&orgStatus=0' }`),
   // 查询分配的终端
   getTerminal: params => {
     return service.get('/terminals/getUsableTerminals', params).then(res => res && res.data)
