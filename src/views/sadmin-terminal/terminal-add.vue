@@ -139,7 +139,7 @@ export default {
 
   data() {
     const checkAreaId = (rule, value, callback) => {
-      if (!value && value !== null) {
+      if (!value) {
         callback(new Error('请选择监区'))
       } else callback()
     }

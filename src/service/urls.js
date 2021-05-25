@@ -34,7 +34,7 @@ const config = {
     jailApiHost: 'http://8.129.14.169:8098/ywgk',
     // apiHost: 'http://192.168.1.43:8022',
     // apiHost: 'http://47.107.245.151:8021',
-     apiHost: 'http://qa-ywgk.yuwugongkai.com',
+    apiHost: 'http://qa-ywgk.yuwugongkai.com',
     // apiHost: 'http://8.129.14.169:8098',
     // apiHost: 'http://120.78.190.101:8021',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
@@ -44,8 +44,8 @@ const config = {
     // fileUrl: `${ nodeUrl }/image-server`,
     videoUrl: `${ nodeUrl }/video-server/videos`,
     socketUrl: 'ws://qa-ywgk.yuwugongkai.com/ywgk/websocket',
+    // socketUrl: 'ws://8.129.14.169:8098/ywgk/websocket',
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
-    // socketUrl: 'ws://47.107.245.151:8021/ywgk/websocket'
   },
   auth: {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
