@@ -260,30 +260,47 @@ let infomation = [{
     // component: resolve => require(['@/views/info-prison-affairs-public/edit'], resolve)
     // component: helper.loadView('info-prison-affairs-public/edit')
   }]
-}, {
-  path: '/remote',
-  name: 'remote',
-  meta: { hidden: true, breadcrumbName: '可视电话信息' },
+},
+// {
+//   path: '/remote',
+//   name: 'remote',
+//   meta: { hidden: true, breadcrumbName: '预约管理' },
+//   children: [{
+//     path: '/remote/edit',
+//     name: 'remote-edit-information',
+//     meta: { role: '3', permission: 'visit.remote-visit-configure.search', breadcrumbName: '可视电话配置' },
+//     component: 'meeting/remote-edit-cy'
+//     // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
+//     // component: helper.loadView('meeting/remote-edit')
+//   }]
+// },
+// {
+//   path: '/visit',
+//   name: 'visit',
+//   meta: { hidden: true, breadcrumbName: '现场探视预约信息' },
+//   children: [{
+//     path: '/visit/config',
+//     name: 'visit-config',
+//     meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '现场探视预约配置' },
+//     component: 'meeting/visit-configs'
+//     // component: resolve => require(['@/views/meeting/visit-config'], resolve)
+//     // component: helper.loadView('meeting/visit-config')
+//   }]
+// },
+{
+  path: '/appointment',
+  name: 'Appointment',
+  meta: { hidden: true, breadcrumbName: '预约管理' },
   children: [{
     path: '/remote/edit',
     name: 'remote-edit-information',
     meta: { role: '3', permission: 'visit.remote-visit-configure.search', breadcrumbName: '可视电话配置' },
     component: 'meeting/remote-edit-cy'
-    // component: resolve => require(['@/views/meeting/remote-edit'], resolve)
-    // component: helper.loadView('meeting/remote-edit')
-  }]
-}, {
-  path: '/visit',
-  name: 'visit',
-  meta: { hidden: true, breadcrumbName: '现场探视预约信息' },
-  children: [{
+  }, {
     path: '/visit/config',
     name: 'visit-config',
-    props: { role: 3 },
     meta: { role: '3', permission: 'visit.field-visit-configure.search', breadcrumbName: '现场探视预约配置' },
     component: 'meeting/visit-configs'
-    // component: resolve => require(['@/views/meeting/visit-config'], resolve)
-    // component: helper.loadView('meeting/visit-config')
   }]
 }]
 

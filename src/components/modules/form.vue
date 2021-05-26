@@ -142,7 +142,6 @@ export default {
     values: {
       handler: function(val) {
         this.fields = Object.assign({}, this.fields, val)
-        console.log('fields===', this.fields)
       },
       deep: true
     },

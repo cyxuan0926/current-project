@@ -37,7 +37,6 @@
       async created() {
          try {
             let _bpmnXmls = await Promise.all( this.bpmnList.map(b => http.getProcess(`${ b.value }--${ this.zipcode }`)) )
-            console.log('_bpmnXmls==', _bpmnXmls)
             this.bpmnXmls = _bpmnXmls.map((res) => {
                return !res ? null : res.data
             })

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "21793281",
+      "name": "预约管理",
+      "font_class": "appointment",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
       "icon_id": "21733432",
       "name": "终端呼叫终端详情",
       "font_class": "terminal-call",

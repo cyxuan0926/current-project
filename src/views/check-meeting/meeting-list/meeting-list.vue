@@ -1468,7 +1468,6 @@
             }
           }
         }
-        console.log(this.submitSuccessParams)
       },
       setMeetingAdjustment({meetingQueue,meetings,terminals}){
         terminals.filter(item=>{
@@ -1925,7 +1924,6 @@
             this.submitParams.processInstanceId = this.toShow.processInstanceId
             this.submitParams.isChoiceTime = this.toShow.isChoiceTime
             this.submitParams.nextCheckCode = this.nextCheckCode
-            console.log()
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
              this.submitParams.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
@@ -1942,7 +1940,6 @@
         }
       },
       submitMeetingAuthorize() {
-        console.log(this.submitParams)
          http.meetingSelectAuthorize(this.submitParams).then(res => {
             if (!res) return
             this.closeAuthorize()
