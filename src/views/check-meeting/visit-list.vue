@@ -23,7 +23,7 @@
             :name="tab.name" />
         </template>
       </el-tabs>
-    <m-table-new
+      <m-table-new
         stripe
         :data="meetings.contents"
         @sort-change="sortChange"
@@ -81,6 +81,7 @@
       :total="meetings.total"
       @onPageChange="getDatas"
     />
+    
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="show.agree"
@@ -129,6 +130,7 @@
           <el-button @click="show.agree=false">取 消</el-button>
         </span>
     </el-dialog>
+    
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
@@ -234,7 +236,7 @@
             :rules="withdrawRule"
             ref="refuseForm"
             class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  >
+            <el-form-item prop="anotherRemarks">
                <el-input
                 :autosize="{ minRows: 6 ,maxRows:8 }"
                 type="textarea"
@@ -625,7 +627,6 @@
           label: '未审核',
           name: 'PENDING'
         }
-
       ]
       // 证件照片class
       // const idCardClassName = 'img-idCard'
@@ -649,6 +650,7 @@
 
       // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
+        user: this.$store.state.global.user,
         meetings: {
           contents: [],
           total: 0
@@ -731,19 +733,33 @@
           }
         },
         show: {
-          subTask:false,
+          // subTask:false,
+          // authorize: false,
+          // agree: false,
+          // disagree: false,
+          // withdraw: false,
+          // detail: false,
+          // dialog:false,
+          // rejectEdit:false,
+          // editRebut:true,
+          // meetingQueue:false,
+          // familiesDetialInform: false,
+          // multistageExamine: false,
+          // userRemarks:false
+
+          subTask: true,
           authorize: false,
           agree: false,
-          disagree: false,
+          disagree: true,
           withdraw: false,
           detail: false,
           dialog:false,
           rejectEdit:false,
-          editRebut:true,
-          meetingQueue:false,
+          editRebut: false,
+          meetingQueue: false,
           familiesDetialInform: false,
           multistageExamine: false,
-          userRemarks:false
+          userRemarks: false
         },
         operateQueryAuth:false,
         toAuthorize: {},
@@ -862,7 +878,8 @@
         'frontRemarks',
         'meetingRefresh',
         'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData'
+        'unusualMeetingPageData',
+        'global'
       ]),
 
       ...mapGetters([
@@ -1136,26 +1153,14 @@
       //   applicationStartDate: this.todayDate,
       //   applicationEndDate: this.oneMonthLater
       // })
-
+      console.log('created==', this.user)
     },
 
     async mounted() {
-      // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
-      //   // this.$set(this.searchItems.applicationDate, 'miss', true)
-      //   // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      // }
-      // else {
-        // this.$set(this.searchItems.applicationDate, 'miss', false)
-        // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
-      // }
-      // this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
-
-      // await this.getDatas('mounted')
       this.$refs.search.onGetFilter()
       this.getDatas()
-
     },
+
     methods: {
       ...mapActions([
         // 'getMeetings',
@@ -1194,72 +1199,63 @@
         })
         this.withdrawForm.withdrawReason+=str
     },
+
     // 获取当前驳回原因列表
-  async onRejectshow(str,isform){
-       let params = {}
-          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-          params.type=2
-      let res = await http.getRejectEdit( params )
-      if(res.content){
-        this.content = res.content
-        this.contentId=res.id
-        this.updateer=res.updateEr
-      }else{
-        this.content = []
-      }
-      if(str=='PASSED'){
-        this.show.rejectEdit=true
-      }else{
-        this.show.rejectEdit=false
-      }
+    async getRejectContent() {
+      let { content, contentId, updateEr } = await http.getRejectEdit({
+        type: 3,
+        jailId: this.user.jailId
+      })
+      this.content = content || []
+      this.contentId = contentId
+      this.updateer = updateEr
     },
+
+    onRejectshow(str,isform){
+      this.getRejectContent()
+      this.show.rejectEdit = str == 'PASSED'
+    },
+
     addReject(){
       this.content.push('')
     },
+
     removeReject(index){
       this.content.splice(index,1)
     },
+
     onRejectEditshow(){
       this.show.editRebut=false
     },
-     changeClose(){
+
+    changeClose(){
       this.remarks=[]
       this.onRejectshow(false,this.isform)
        this.show.editRebut=true
     },
-     async onSubmitReject(){
-      this.content=this.content.filter((res)=>res&&res.trim())
-       if(this.content.length<1){
-         this.$message({
-            message: '新增编辑内容不能为空',
-            type: 'error'
-          });
-          return false
-      }else{
-        let params={
-        id: this.contentId,
-        type:2,
-        content:this.content,
-        updateer:JSON.parse(localStorage.getItem('user')).realName,
-        jailId:JSON.parse(localStorage.getItem('user')).jailId
-        }
-        let res = await http.setRejectEdit(params)
-        if(res){
-          let params={}
-              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=2
-          let res = await http.getRejectEdit( params )
-          if(res.content){
-            this.content = res.content
-            this.contentId=res.id
-            this.updateer=res.updateEr
-          }else{
-            this.content = []
-          }
+
+    async onSubmitReject(){
+      this.content = this.content.filter(c => c && c.trim() )
+      if (!this.content.length) {
+        this.$message({
+          message: '新增编辑内容不能为空',
+          type: 'error'
+        })
+        return
       }
-       this.show.editRebut=true
-      }
+      try {
+        await http.setRejectEdit({
+          id: this.contentId,
+          type: 3,
+          content: this.content,
+          updateer: this.user.realName,
+          jailId: this.user.jailId
+        })
+        await this.getRejectContent()
+        this.show.editRebut = true
+      } catch (error) {}
     },
+
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -1448,12 +1444,12 @@
         this.showTips = ''
         this.isShowTips = false
         this.onRejectshow(false,false)
-        this.isform=false
+        this.isform = false
         this.$message.closeAll()
         this.getSubtask(e)
-        this.toShow= Object.assign( {}, this.toShow, e )
+        this.toShow = Object.assign({}, this.toShow, e)
       },
-       selectTask(select){
+      selectTask(select){
         let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
         this.submitSuccessParams.nextCheckRole=obj[0].taskName
       },
