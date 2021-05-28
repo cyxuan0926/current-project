@@ -60,6 +60,7 @@ const config = {
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
   production: {
+    bpmnApiHost: 'https://activiti-api.yuwugongkai.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
     apiHost: 'https://www.yuwugongkai.com',
     financeApiHost: 'https://finance-api.yuwugongkai.com',
