@@ -169,8 +169,8 @@
       </template>
 
       <span slot="footer" class="dialog-footer">
-        <div v-if="!show.agree && !show.disagree && !show.multistageExamine">
-          <label v-if="show.subTask&&show.process" style="display: inline-block;float: left; padding-left: 20px;">
+        <div v-if="!show.agree && !show.disagree">
+          <label v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
             <span style="padding-right: 12px;">选择流程节点:</span>
             <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
               <el-option
@@ -717,7 +717,6 @@
           // editRebut:true,
           // meetingQueue:false,
           // familiesDetialInform: false,
-          // multistageExamine: false,
           // userRemarks:false
 
           subTask: true,
@@ -731,7 +730,6 @@
           editRebut: false,
           meetingQueue: false,
           familiesDetialInform: false,
-          multistageExamine: false,
           userRemarks: false
         },
         operateQueryAuth:false,
@@ -1410,7 +1408,6 @@
         this.toAuthorize = await http.getVisitsDetail(id)
         this.show.agree = false
         this.show.disagree = false
-        this.show.multistageExamine = false
         this.submitSuccessParams = null
         this.isSpecial = false
         this.showTips = ''
