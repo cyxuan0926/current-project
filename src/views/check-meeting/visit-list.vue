@@ -126,9 +126,9 @@
           </el-table>
       </div>
       <span v-if="show.agree" slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
-          <el-button @click="show.agree=false">取 消</el-button>
-        </span>
+        <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
+        <el-button @click="show.agree=false">取 消</el-button>
+      </span>
     </el-dialog>
     
     <el-dialog
@@ -138,7 +138,7 @@
       title="审核"
       :close-on-click-modal="false"
       width="780px">
-        <div style="max-height:380px;overflow: auto">
+      <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
           <div class="detail-message">
@@ -162,74 +162,48 @@
             </p>
           </div>
         </div>
-         <!-- <div
-          v-for="(item,index) in toShow.logs"
-          :key='index'
-          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
-        >
-          <div class="family-detail">{{index+1}}</div>
-          <div class="detail-message">
-            <p class="detail-message-family">
-              <span class="family-name">审核人员账号</span>
-              <span class="family-nameDetail">{{item.createUser}}</span>
-            </p>
-            <p class="detail-message-family">
-              <span class="family-name">审核时间</span>
-              <span class="family-nameDetail">{{item.createTime}}</span>
-            </p>
-          </div>
-          <div class="detail-content">
-            <p class="detail-message-family" >
-              <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
-              <p class="detail-message-family" >
-              <span class="family-name">审核人意见</span>
-              <span class="family-nameDetail">{{item.remarks}}</span></p>
-          </div>
-        </div> -->
       </div>
-
-
-
-      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
+      
+      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
-       <span slot="footer" class="dialog-footer">
-      <div
-        v-if="!show.agree && !show.disagree && !show.multistageExamine"
-      >
+
+      <span slot="footer" class="dialog-footer">
+        <div v-if="!show.agree && !show.disagree && !show.multistageExamine">
           <label v-if="show.subTask&&show.process" style="display: inline-block;float: left; padding-left: 20px;">
-                  <span style="padding-right: 12px;">选择流程节点:</span>
-                    <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
-                    <el-option
-                      v-for="item in selectProcessOption"
-                      :key="item.taskCode"
-                      :label="item.taskName"
-                      :value="item.taskCode">
-                    </el-option>
-                  </el-select>
-                </label>
+            <span style="padding-right: 12px;">选择流程节点:</span>
+            <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
+              <el-option
+                v-for="item in selectProcessOption"
+                :key="item.taskCode"
+                :label="item.taskName"
+                :value="item.taskCode">
+              </el-option>
+            </el-select>
+          </label>
+          <repetition-el-buttons :buttonItems="authorizeButtons" />
+        </div>
 
-
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
-      </div>
-
-      <div
-        v-if="show.disagree"
-        class="button-box logMgCls">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-      <div>
-            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
-            <el-option
-              v-for="(remark,index) in content"
-              :value="remark"
-              :label="(index+1)+'、'+remark"
-              :key="index"/>
-          </el-select>
-           <el-button
-            type="primary"
-            :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+        <div v-if="show.disagree" class="button-box logMgCls">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
+          <div>
+            <el-select 
+              style="width:70%; margin-right:10px"
+              v-model="remarks"
+              :multiple="true"
+              :multiple-limit="5"
+              @change="refuseFormChange"
+              collapse-tags>
+              <el-option
+                v-for="(remark,index) in content"
+                :value="remark"
+                :label="(index+1)+'、'+remark"
+                :key="index"/>
+            </el-select>
+            <el-button
+              type="primary"
+              :loading="btnDisable"
+              @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
           </div>
           <el-form
             :model="refuseForm"
@@ -237,14 +211,13 @@
             ref="refuseForm"
             class="withdraw-box">
             <el-form-item prop="anotherRemarks">
-               <el-input
+              <el-input
                 :autosize="{ minRows: 6 ,maxRows:8 }"
                 type="textarea"
                 show-word-limit
                 maxlength="1000"
                 placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
+                v-model="refuseForm.anotherRemarks"/>
             </el-form-item>
           </el-form>
           <el-button
@@ -259,9 +232,9 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
- </span>
-
+      </span>
     </el-dialog>
+    
     <el-dialog
       :visible.sync="show.withdraw"
       @close="closeWithdraw"
@@ -748,7 +721,7 @@
           // userRemarks:false
 
           subTask: true,
-          authorize: false,
+          authorize: true,
           agree: false,
           disagree: true,
           withdraw: false,
