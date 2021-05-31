@@ -178,12 +178,12 @@ export default {
           message: '请填写参会密码',
           trigger: 'blur'
         }],
-        roomNumber: [{
-          validator: validate.isPositiveIntegers,
-          required: true,
-          ownMessage: '请填写会议室号',
-          trigger: 'blur'
-        }],
+        // roomNumber: [{
+        //   validator: validate.isPositiveIntegers,
+        //   required: true,
+        //   ownMessage: '请填写会议室号',
+        //   trigger: 'blur'
+        // }],
         terminalType: [
           {
             required: true,
