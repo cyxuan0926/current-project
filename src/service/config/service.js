@@ -29,11 +29,10 @@ instance.interceptors.request.use(
     const { access_token, token_type } = store.state.account.accountInfo
     if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
     state = history.state
-
     if (access_token) {
       config.headers.Authorization = `${ token_type } ${ access_token }`
     }
-
+    config.headers.appVersion = '3'
     return config
   },
   error => Promise.reject(error)
