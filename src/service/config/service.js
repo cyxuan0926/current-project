@@ -35,7 +35,6 @@ instance.interceptors.request.use(
     if (access_token) {
       config.headers.Authorization = `${ token_type } ${ access_token }`
     }
-    config.headers.appVersion = '3'
     return config
   },
   error => Promise.reject(error)
