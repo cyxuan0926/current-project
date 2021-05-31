@@ -168,16 +168,16 @@ export default {
           required: true,
           message: '请选择楼层'
         }],
-        hostPassword: [{
-          required: true,
-          message: '请填写主持人密码',
-          trigger: 'blur'
-        }],
-        mettingPassword: [{
-          required: true,
-          message: '请填写参会密码',
-          trigger: 'blur'
-        }],
+        // hostPassword: [{
+        //   required: true,
+        //   message: '请填写主持人密码',
+        //   trigger: 'blur'
+        // }],
+        // mettingPassword: [{
+        //   required: true,
+        //   message: '请填写参会密码',
+        //   trigger: 'blur'
+        // }],
         // roomNumber: [{
         //   validator: validate.isPositiveIntegers,
         //   required: true,
