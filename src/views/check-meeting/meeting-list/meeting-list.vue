@@ -744,7 +744,7 @@
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
       const todayDate = this.$_dateNow
 
-      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -921,7 +921,7 @@
 
         todayDate,
 
-        oneMonthLater,
+        // oneMonthLater,
 
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
@@ -1243,7 +1243,7 @@
     created() {
       this.filterInit = Object.assign({}, this.filterInit, {
         applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
+        applicationEndDate: this.todayDate
       })
     },
 
@@ -1257,7 +1257,7 @@
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
-      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.todayDate])
 
       await this.getDatas('mounted')
     },
