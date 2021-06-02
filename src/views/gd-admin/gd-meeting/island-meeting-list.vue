@@ -12,7 +12,7 @@
         :data="tabledata.report"
         :cols="tableCols">
          <template #familyType="{ row }">
-           <span v-if="row.familyType==0">大陆</span>
+           <span v-if="row.familyType==3">非中国籍</span>
            <span v-if="row.familyType==1">港澳</span>
            <span v-if="row.familyType==2">台湾</span>
         </template>
