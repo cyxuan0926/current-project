@@ -11,10 +11,10 @@
         stripe
         :data="tabledata.report"
         :cols="tableCols">
-         <template #domicile="{ row }">
-           <span v-if="row.domicile==0">大陆</span>
-           <span v-if="row.domicile==1">港澳</span>
-           <span v-if="row.domicile==2">台湾</span>
+         <template #familyType="{ row }">
+           <span v-if="row.familyType==0">大陆</span>
+           <span v-if="row.familyType==1">港澳</span>
+           <span v-if="row.familyType==2">台湾</span>
         </template>
         </m-table-new>
     </el-col>
@@ -36,8 +36,8 @@ export default {
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
      const options = [
       {
-        label: '大陆居民',
-        value: '0'
+        label: '非中国籍家属',
+        value: '3'
       },
       {
         label: '港澳居民',
@@ -54,9 +54,9 @@ export default {
         endDate
       },
       searchItems: {
-        domicile: {
+        familyType: {
             type: 'select',
-            label: '国家或地区名称',
+            label: '家属类型',
             options,
             value: ''
         },
@@ -70,10 +70,10 @@ export default {
       },
      tableCols: [
        {
-          label: '地区',
-          prop: 'domicile',
+          label: '家属类型',
+          prop: 'familyType',
           minWidth: '8.2%',
-          slotName: 'domicile'
+          slotName: 'familyType'
         },
         {
           label: '申请次数(次)',
