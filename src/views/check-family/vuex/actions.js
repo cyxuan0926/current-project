@@ -24,5 +24,19 @@ export default {
     catch (err) {
       throw err
     }
+  },
+
+  // 删除警员家属信息
+  async deletePoliceFamily(_, phoneNumber) {
+    try {
+      const response = await http.deletePoliceFamily(phoneNumber)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }
