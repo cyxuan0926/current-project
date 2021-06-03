@@ -746,7 +746,7 @@
 
       // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
 
-      const tenDaysAgo = Moment().subtract(10, 'days').format('YYYY-MM-DD')
+      const tenDaysLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -964,7 +964,7 @@
       },
       remarks: [],
 
-      tenDaysAgo
+      tenDaysLater
       }
     },
     computed: {
@@ -1246,12 +1246,12 @@
 
     created() {
       const dateInit = {
-        applicationEndDate: this.todayDate
+        applicationStartDate: this.todayDate
       }
 
-      if (this.isSuperAdmin) dateInit['applicationStartDate'] = this.todayDate
+      if (this.isSuperAdmin) dateInit['applicationEndDate'] = this.todayDate
 
-      else dateInit['applicationStartDate'] = this.tenDaysAgo
+      else dateInit['applicationEndDate'] = this.tenDaysLater
 
       this.filterInit = Object.assign({}, this.filterInit, dateInit)
     },
@@ -1266,7 +1266,7 @@
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
-      let date = [this.tenDaysAgo, this.todayDate]
+      let date = [this.todayDate, this.tenDaysLater]
 
       if (this.isSuperAdmin) date = [this.todayDate, this.todayDate]
 

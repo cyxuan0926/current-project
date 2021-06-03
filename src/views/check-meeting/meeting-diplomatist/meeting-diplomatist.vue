@@ -326,7 +326,7 @@ export default {
       }
     ]
 
-    const tenDaysAgo = Moment().subtract(10, 'days').format('YYYY-MM-DD')
+    const tenDaysLater = Moment().add(10, 'days').format('YYYY-MM-DD')
     return {
       tabsItems,
       valueTime:new Date(),
@@ -532,7 +532,7 @@ export default {
           closeButton
       ],
 
-      tenDaysAgo
+      tenDaysLater
     }
   },
   components: {
@@ -723,7 +723,7 @@ export default {
     }
   },
   mounted() {
-    this.$set(this.searchItems['applicationDate'], 'value', [this.tenDaysAgo, this.$_dateNow])
+    this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateNow, this.tenDaysLater])
   },
   created(){
    this.tabs="PENDING"
