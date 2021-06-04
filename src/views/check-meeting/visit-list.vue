@@ -25,7 +25,7 @@
       </el-tabs>
       <m-table-new
         stripe
-        :data="meetings.contents"
+        :data="visits.contents"
         @sort-change="sortChange"
         :cols="tableCols"
         ref="parentElTable">
@@ -78,9 +78,8 @@
 
     <m-pagination
       ref="pagination"
-      :total="meetings.total"
-      @onPageChange="getDatas"
-    />
+      :total="visits.total"
+      @onPageChange="getDatas"/>
     
     <el-dialog
       :close-on-click-modal="false"
@@ -92,14 +91,14 @@
         v-if="show.agree"
         class="button-box">
           <el-table
-            :data="meetingAdjustmentCopy.terminals"
+            :data="meetingAdjustment.terminals"
             border
             @cell-click="cellClick"
             :row-class-name="tableRowClassName"
             :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
-              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
+              v-if="meetingAdjustment.meetingQueue && meetingAdjustment.meetingQueue.length > 7"
               fixed
               prop="terminalNumber"
               label="窗口序号"
@@ -112,7 +111,7 @@
               min-width="80">
             </el-table-column>
             <el-table-column
-              v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
+              v-for="(item,index) in meetingAdjustment.meetingQueue" :key="index"
               :prop="item"
               :label="item"
               min-width="84">
@@ -624,7 +623,7 @@
       // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
-        meetings: {
+        visits: {
           contents: [],
           total: 0
         },
@@ -706,31 +705,31 @@
           }
         },
         show: {
-          // subTask:false,
-          // authorize: false,
+          subTask:false,
+          authorize: false,
+          agree: false,
+          disagree: false,
+          withdraw: false,
+          detail: false,
+          dialog:false,
+          rejectEdit:false,
+          editRebut:true,
+          meetingQueue:false,
+          familiesDetialInform: false,
+          userRemarks:false
+
+          // subTask: true,
+          // authorize: true,
           // agree: false,
           // disagree: false,
           // withdraw: false,
           // detail: false,
           // dialog:false,
           // rejectEdit:false,
-          // editRebut:true,
-          // meetingQueue:false,
+          // editRebut: false,
+          // meetingQueue: false,
           // familiesDetialInform: false,
-          // userRemarks:false
-
-          subTask: true,
-          authorize: true,
-          agree: false,
-          disagree: true,
-          withdraw: false,
-          detail: false,
-          dialog:false,
-          rejectEdit:false,
-          editRebut: false,
-          meetingQueue: false,
-          familiesDetialInform: false,
-          userRemarks: false
+          // userRemarks: false
         },
         operateQueryAuth:false,
         toAuthorize: {},
@@ -784,8 +783,6 @@
         meetingAdjustment: {},
 
         selectProcessOption:[],
-
-        meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
           userName: 'operateName',
@@ -1252,15 +1249,15 @@
             return false
           }
           else{
-            this.meetingAdjustmentCopy.terminals.filter(item=>{
-              this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
+            this.meetingAdjustment.terminals.filter(item=>{
+              this.meetingAdjustment.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
                   item[val] = ""
                 }
               })
             } )
             row[column.label]=this.toAuthorize.name
-            this.$set(this.meetingAdjustmentCopy.terminals, row.index,row)
+            this.$set(this.meetingAdjustment.terminals, row.index,row)
           }
           for (let index in row) {
             if(row[index]==this.toAuthorize.name){
@@ -1280,9 +1277,9 @@
           ...this.filter,
           ...this.pagination
         }
-        let { meetings, total } = await http.getVisits(params)
-        if (meetings && meetings.length) {
-          meetings.forEach(m => {
+        let { visits, total } = await http.getVisits(params)
+        if (visits && visits.length) {
+          visits.forEach(m => {
             if (!m.families) {
               m.families = [{
                 familyId: m.familyId,
@@ -1291,8 +1288,8 @@
             }
           })
         }
-        this.meetings.contents = meetings || []
-        this.meetings.total = total
+        this.visits.contents = visits || []
+        this.visits.total = total
       },
 
       async onSearch() {
@@ -1377,7 +1374,7 @@
       },
 
       checkInmeetings() {
-        return this.meetingAdjustmentCopy.meetingQueue.some(m => {
+        return this.meetingAdjustment.meetingQueue.some(m => {
           let {sm, em} = this.getStartandEndTime(m)
           return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
         })
@@ -1403,9 +1400,19 @@
         this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
       },
 
+      // 获取实地探监预约配置
+      async getVisitTimeConfig(id) {
+        let res = await http.getVisitsConfigMeetingtime(id)
+        this.show.authorize = true
+        // this.show.meetingQueue
+        // this.meetingAdjustment =
+      },
+
+      // 表格操作-审核
       async handleAuthorization(e) {
+        console.log('handleAuthorization===', e)
         const { id } = e
-        this.toAuthorize = await http.getVisitsDetail(id)
+        // this.toAuthorize = await http.getVisitsDetail(id)
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
@@ -1415,8 +1422,9 @@
         this.onRejectshow(false,false)
         this.isform = false
         this.$message.closeAll()
-        this.getSubtask(e)
+        // this.getSubtask(e)
         this.toShow = Object.assign({}, this.toShow, e)
+        // this.getVisitTimeConfig(id)
       },
       selectTask(select){
         let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
@@ -1527,20 +1535,21 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
-        if (this.toShow.isChoiceTime&& !this.show.subTask) {
-          this.show.agree = true
-           this.buttonLoading = false
-        } else {
-           this.submitParams = {
-            meetingId: this.toShow.id,
-            terminalId: this.toShow.terminalId ? this.toShow.terminalId : this.submitSuccessParams.terminalId,
-            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
-            processInstanceId: this.toShow.processInstanceId,
-            isChoiceTime: this.toShow.isChoiceTime,
-            nextCheckCode: this.nextCheckCode
-          }
-          this.submitMeetingAuthorize()
-        }
+        this.show.agree = true
+        // if (this.toShow.isChoiceTime && !this.show.subTask) {
+        //   this.show.agree = true
+        //   this.buttonLoading = false
+        // } else {
+        //    this.submitParams = {
+        //     meetingId: this.toShow.id,
+        //     terminalId: this.toShow.terminalId ? this.toShow.terminalId : this.submitSuccessParams.terminalId,
+        //     meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
+        //     processInstanceId: this.toShow.processInstanceId,
+        //     isChoiceTime: this.toShow.isChoiceTime,
+        //     nextCheckCode: this.nextCheckCode
+        //   }
+        //   this.submitMeetingAuthorize()
+        // }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1678,7 +1687,7 @@
         }
       },
       submitMeetingAuthorize() {
-         http.meetingSelectAuthorize(this.submitParams).then(res => {
+         http.authorizeVisitByProcess(this.submitParams).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
