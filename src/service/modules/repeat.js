@@ -165,5 +165,10 @@ export default {
     const { url, params } = args
 
     return service.get(url, params)
+  },
+
+  // 家属信息管理 - 删除警员家属信息
+  deletePoliceFamily: phoneNumber => {
+    return service.get(`/police/delete/${ phoneNumber }`)
   }
 }

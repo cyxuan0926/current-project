@@ -732,6 +732,8 @@
       const todayDate = this.$_dateNow
 
       // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+
+      const tenDaysLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -948,6 +950,8 @@
         ]
       },
       remarks: [],
+
+      tenDaysLater
       }
     },
     computed: {
@@ -1163,7 +1167,7 @@
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
-        this.toShow.changerType=false
+        this.toShow.changerType = false
         if (val === 'PENDING') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
@@ -1228,10 +1232,15 @@
     },
 
     created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.todayDate
-      })
+      const dateInit = {
+        applicationStartDate: this.todayDate
+      }
+
+      if (this.isSuperAdmin) dateInit['applicationEndDate'] = this.todayDate
+
+      else dateInit['applicationEndDate'] = this.tenDaysLater
+
+      this.filterInit = Object.assign({}, this.filterInit, dateInit)
     },
 
     async mounted() {
@@ -1244,7 +1253,11 @@
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
-      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.todayDate])
+      let date = [this.todayDate, this.tenDaysLater]
+
+      if (this.isSuperAdmin) date = [this.todayDate, this.todayDate]
+
+      this.$set(this.searchItems.applicationDate, 'value', date)
 
       await this.getDatas('mounted')
     },

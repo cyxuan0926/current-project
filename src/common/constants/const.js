@@ -168,3 +168,6 @@ export const _timeOneWeekAgo = `${ _dateOneWeekAgo } 00:00:00`
 export const _operationAuthorizations = {
   _familyPhoneFamiliesSubPrisonAreaAuth: 'visit.family-phone.families-sub-prison-area.auth'
 }
+
+// 监狱内网白名单(租户编号)
+export const prisonerInsideWhiteLists = ['4411']

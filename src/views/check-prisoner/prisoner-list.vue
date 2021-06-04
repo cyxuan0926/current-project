@@ -486,7 +486,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
 
-import { provinceJailLevelConfigsParamsName } from '@/common/constants/const'
+import { provinceJailLevelConfigsParamsName, prisonerInsideWhiteLists } from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -659,6 +659,8 @@ export default {
     ...mapState({
       user: state => state.global.user
     }),
+
+    ...mapState('account', ['publicUserInfo']),
 
     dialogContent() {
       const genderOptions = [
@@ -1288,9 +1290,18 @@ export default {
       ]
 
       if (this.isPrisonerTabVal) {
-        if (!this.hasAllPrisonQueryAuth) prisonerCols.splice(1, 2)
-
         if (this.isSuperAdmin) prisonerCols.splice(5, 1)
+
+        else {
+          const { tenantCode } = this.publicUserInfo
+
+          prisonerCols.splice(1, 2)
+
+          if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
+            prisonerCols.splice(3, 1)
+            prisonerCols.splice(5, 1)
+          }
+        }
 
         return prisonerCols
       } else {
