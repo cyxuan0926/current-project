@@ -83,6 +83,14 @@
               移出黑名单
             </el-button>
           </template>
+
+          <template #operation="{ row }">
+            <el-button
+              type="text"
+              size="small"
+              @click="onDelete(row.phone)"
+            >删除</el-button>
+          </template>
       </m-table-new>
     </el-col>
     <m-pagination
@@ -344,6 +352,10 @@ export default {
         {
           label: '家属手机号码',
           prop: 'phone'
+        },
+        {
+          label: '操作',
+          slotName: 'operation'
         }
       ]
 
@@ -380,7 +392,8 @@ export default {
       'getFamilies',
       'addFamilyBlacklist',
       'removeFamilyBlacklist',
-      'getPoliceFamilies'
+      'getPoliceFamilies',
+      'deletePoliceFamily'
     ]),
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY) {
@@ -485,6 +498,19 @@ export default {
       filters.map(filter => {
         this.$set(this.searchItems[filter], 'value', '')
         delete this.filter[filter]
+      })
+    },
+
+    // 删除
+    onDelete(phone) {
+      this.$confirm('删除后不可拨打可视电话，你确认删除吗？', '提醒', {
+        type: 'warning',
+        closeOnClickModal: false,
+        callback: async() => {
+          const result = await this.deletePoliceFamily(phone)
+
+          if (result) await this.getDatas()
+        }
       })
     }
   }
