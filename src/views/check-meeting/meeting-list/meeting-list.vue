@@ -264,14 +264,13 @@
         class="button-box logMgCls">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
       <div>
-        <el-select v-model="remarks" :multiple="true" @change="refuseFormChange" style="width:70%;margin-right:10px">
-          <el-option
-            v-for="(remark,index) in content"
-            :value="remark"
-            :label="remark"
-            :key="index"
-          />
-        </el-select>
+        <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
+            <el-option
+              v-for="(remark,index) in content"
+              :value="remark"
+              :label="(index+1)+'、'+remark"
+              :key="index"/>
+          </el-select>
 
         <el-button
           type="primary"
@@ -286,29 +285,17 @@
         ref="refuseForm"
         class="withdraw-box"
       >
-        <el-form-item prop="anotherRemarks" class="borderNone">
-          <el-input
-            class="borderNone"
-            type="textarea"
-            maxlength="1000"
-            :autosize="{ minRows: 1 }"
-            v-model="refuseForm.selectRemark"
-            :readonly="true"
-          />
-
-          <el-input
-            class="bordertop"
-            :autosize="{ minRows: 1 }"
-            style="border-top: none;"
-            type="textarea"
-            show-word-limit
-            :maxlength="refuseForm.lengthRemark"
-            placeholder="请输入驳回原因..."
-            v-model="refuseForm.anotherRemarks"
-          />
-        </el-form-item>
+          <el-form-item prop="anotherRemarks"  >
+               <el-input
+                :autosize="{ minRows: 6 ,maxRows:8 }"
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
       </el-form>
-
       <el-button
         plain
         :loading="btnDisable"
@@ -2120,4 +2107,29 @@
     >>> .el-button
       &:first-of-type
         width: 31% !important;
+</style>
+<style lang="stylus">
+.logMgCls {
+  text-align:left
+}
+.logMgCls .el-select__tags-text {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logMgCls .el-select .el-tag__close.el-icon-close {
+  top: -7px;
+}
+ .el-select-dropdown{
+        max-width: 243px;
+    }
+    .el-select-dropdown__item{
+        display: inline-block;
+    }
+    .el-select-dropdown__item span {
+        min-width: 400px;
+        display: inline-block;
+   }
 </style>
