@@ -169,22 +169,22 @@ export default {
           required: true,
           message: '请选择楼层'
         }],
-        hostPassword: [{
-          required: true,
-          message: '请填写主持人密码',
-          trigger: 'blur'
-        }],
-        mettingPassword: [{
-          required: true,
-          message: '请填写参会密码',
-          trigger: 'blur'
-        }],
-        roomNumber: [{
-          validator: validate.isPositiveIntegers,
-          required: true,
-          ownMessage: '请填写会议室号',
-          trigger: 'blur'
-        }],
+        // hostPassword: [{
+        //   required: true,
+        //   message: '请填写主持人密码',
+        //   trigger: 'blur'
+        // }],
+        // mettingPassword: [{
+        //   required: true,
+        //   message: '请填写参会密码',
+        //   trigger: 'blur'
+        // }],
+        // roomNumber: [{
+        //   validator: validate.isPositiveIntegers,
+        //   required: true,
+        //   ownMessage: '请填写会议室号',
+        //   trigger: 'blur'
+        // }],
         terminalType: [
           {
             required: true,
