@@ -159,7 +159,7 @@ export default {
           disabled: !this.haveRemoteVisitDay
         },
 
-        buttons: ['update', 'back']
+        buttons: ['back', 'update']
       }
 
       let cloneDeepItem = cloneDeep(items)
@@ -337,12 +337,27 @@ export default {
     },
 
     async onPromises() {
-      let promises = [this.getVisitNotice(this.jailId)]
+      let maps = [{
+        method: this.getVisitNotice,
 
-      if (this.haveRemoteVisitDay) promises = [
-        ...promises,
-        this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId }, url: '/visit/config/getNormalConfigDay' })
+        params: this.jailId
+      }]
+
+      if (this.haveRemoteVisitDay) maps = [
+        ...maps,
+        {
+          method: this.getRemoteAdvanceDayLimits,
+
+          inputs: {
+            params: { jailId: this.jailId },
+            url: '/visit/config/getNormalConfigDay'
+          }
+        }
       ]
+
+      const promises = maps.map(item => {
+        return item['params'] ? item['method'](item['params']) : item['method']({...item['inputs']})
+      })
 
       const response = await Promise.all(promises)
 

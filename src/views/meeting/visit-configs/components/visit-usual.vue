@@ -1,7 +1,7 @@
 <template>
   <div v-if="inited" class="container">
     <div class="el-form-item cycle">
-      <label class="el-form-item__label c-label">周期配置</label>
+      <label class="el-form-item__label c-label">现场探视预约开关</label>
 
       <div class="form-meeting_cycle">
         <el-switch
@@ -11,18 +11,9 @@
           :active-value="1"
           :inactive-value="0"
           :width="60"
+          :disabled="!!timeSwitch && initComponentStatus && newStatusHasPrisonAreaConfigs"
         />
       </div>
-
-      <template v-if="timeSwitchHasChanged">
-        <div class="button-box">
-          <el-button
-            size="small"
-            type="primary"
-            @click="onSaveTimeSwitch"
-          >更新</el-button>
-        </div>
-      </template>
     </div>
 
     <template v-for="(configs, type) in allConfigs">
@@ -54,21 +45,21 @@
                 </template>
 
                 <div :class="['button-box', { 'no_margin-top': !daysPrisonAreaConfigsTableData[type][index].length }]">
-                  <template v-if="!isCantUpdate">
-                    <el-button
-                      v-if="!daysPrisonAreaConfigsTableData[type][index].length"
-                      type="primary"
-                      size="mini"
-                      @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
-                    >配置工作日和监区</el-button>
+                  <el-button
+                    v-if="!daysPrisonAreaConfigsTableData[type][index].length"
+                    :disabled="!timeSwitch"
+                    type="primary"
+                    size="mini"
+                    @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
+                  >配置工作日和监区</el-button>
 
-                    <el-button
-                      v-if="daysPrisonAreaConfigsTableData[type][index].length && (!hasOriginConfigAfter || type === 1)"
-                      type="primary"
-                      size="mini"
-                      @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
-                    >修改工作日和监区</el-button>
-                  </template>
+                  <el-button
+                    v-if="daysPrisonAreaConfigsTableData[type][index].length && (!hasOriginConfigAfter || type === 1)"
+                    type="primary"
+                    :disabled="!timeSwitch"
+                    size="mini"
+                    @click="onHandleDaysPrisonAreaConfigs(type, index, config)"
+                  >修改工作日和监区</el-button>
                     
                   <el-button
                     v-if="!config.timeperiodQueue.length && daysPrisonAreaConfigsTableData[type][index].length"
@@ -118,7 +109,7 @@
                     <div v-if="config['showError'][o]" class="error__tip">时间段区间小于通话时长</div>
                   </div>
 
-                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1) && !isCantUpdate">
+                  <template v-if="o === config.timeperiodQueue.length -1 && !config.queue.length  && (!hasOriginConfigAfter || type === 1) && !!timeSwitch">
                     <el-button
                       v-if="config.timeperiodQueue[config.timeperiodQueue.length - 1][1] !== '23:59'"
                       type="primary"
@@ -161,7 +152,7 @@
 
                   <!-- 国科服务管理员角色 -->
                   <el-button
-                    v-if="(!hasOriginConfigAfter || type === 1) && !isCantUpdate"
+                    v-if="(!hasOriginConfigAfter || type === 1) && !!timeSwitch"
                     size="mini"
                     class="button-float"
                     :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -175,7 +166,7 @@
       </div>
     </template>
 
-    <template v-if="hasOriginConfigAfter || hasConfigBeforeChange">
+    <template v-if="hasOriginConfigAfter || hasConfigBeforeChange || newStatusHasConfigAfterChange">
       <div class="effective__date">
         <label class="c-label" style="line-height: 35px; width: 95px;">生效日期</label>
 
@@ -183,7 +174,7 @@
           v-model="computedEffectiveDate"
           :picker-options="pickerOptions"
           type="date"
-          :disabled="isCantUpdate"
+          :disabled="!timeSwitch"
           :clearable="false"
           :value-format="'yyyy-MM-dd'"
           placeholder="选择生效日期"
@@ -193,7 +184,7 @@
 
     <div class="button-box">
       <el-button
-        v-if="!updateShow && !isCantUpdate"
+        v-if="!updateShow"
         size="small"
         type="primary"
         @click="onUpdate"
@@ -270,6 +261,8 @@ import { weeks } from '@/common/constants/const'
 import isEqual from 'lodash/isEqual'
 
 import Moment from 'moment'
+
+import { Message } from 'element-ui'
 export default {
   components: {
     remoteWeekCy
@@ -363,7 +356,9 @@ export default {
 
       dateValue: '',
 
-      timeSwitch: 0
+      timeSwitch: 0,
+
+      newStatusHasPrisonAreaConfigs: false
     }
   },
 
@@ -517,18 +512,26 @@ export default {
     },
 
     // 不能修改情况
-    isCantUpdate() {
-      return !this.visitTimeSwitch && (this.hasOriginConfigBefore || (!this.hasOriginConfigBefore && this.hasOriginConfigAfter))
-    },
+    // isCantUpdate() {
+    //   return !this.visitTimeSwitch && (this.hasOriginConfigBefore || (!this.hasOriginConfigBefore && this.hasOriginConfigAfter))
+    // },
 
     windowSizesDisabled() {
       return this.allConfigs.map((configs, type) => {
         return configs.map((config, index, target) => {
-          const disabled = this.hasOriginConfigAfter && type !== 1 || this.isCantUpdate
+          const disabled = (this.hasOriginConfigAfter && type !== 1) || !this.timeSwitch
 
           return { disabled }
         })
       })
+    },
+
+    newStatusHasConfigAfterChange() {
+      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !isEqual(this.allConfigs[1], this.visitNormalConfigs['configAfter'])
+    },
+
+    initComponentStatus() {
+      return !(this.hasOriginConfigBefore || this.hasOriginConfigAfter)
     }
   },
 
@@ -610,9 +613,43 @@ export default {
 
         else hasNoChanged = isEqual(this.daysAndPrisonAreaFilterParams(after, ['window_size']), this.daysAndPrisonAreaFilterParams(configAfter, ['window_size'])) && enabledAt === this.computedEffectiveDate
 
-        if (hasNoChanged) this.onMessage()
+        let updateMaps = [], initMaps = []
 
-        else {
+        if (this.timeSwitchHasChanged) {
+          if (!this.timeSwitch) {
+            this.onMessage({
+              message: '现场探视开关关闭后，家属的现场探视申请通道就会关闭！',
+              type: 'warning',
+              duration: 700
+            })
+          }
+        } else {
+          if (hasNoChanged) this.onMessage()
+        }
+
+        if (this.timeSwitchHasChanged) {
+          const params = {
+            jailId: this.jailId,
+            timeSwitch: this.timeSwitch
+          }
+
+          updateMaps = [
+            ...updateMaps,
+            {
+              method: this.updateTimeSwitch,
+              params
+            }
+          ]
+
+          initMaps = [
+            ...initMaps,
+            {
+              method: this.initTimeSwitch
+            }
+          ]
+        }
+
+        if (!hasNoChanged) {
           let filterParams
 
           if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) filterParams = this.daysAndPrisonAreaFilterParams(before, ['window_size'])
@@ -627,11 +664,32 @@ export default {
             'complexNormalNormal'
           )
 
-          await this.updateVisitNormalConfigs(params)
+          updateMaps = [
+            {
+              method: this.updateVisitNormalConfigs,
+              params
+            },
+            ...updateMaps
+          ]
 
+          initMaps = [
+            {
+              method: this.initConfigs
+            },
+            ...initMaps
+          ]
+        }
+
+        if (initMaps.length || updateMaps.length) {
           setTimeout(async () => {
-            await this.initConfigs()
-          }, 2000)
+            await Promise.all(updateMaps.map(item => item['method'](item['params'])))
+
+            Message.closeAll()
+
+            await Promise.all(initMaps.map(item => item['method'](item['params'])))
+
+            Message.closeAll()
+          }, 500)
         }
       }
     },
@@ -755,6 +813,8 @@ export default {
         else this.allConfigs[this.allConfigsType][this.configIndex][key] && delete this.allConfigs[this.allConfigsType][this.configIndex][key]
       })
 
+      this.newStatusHasPrisonAreaConfigs = true
+
       this.onDaysPrisonAreaDialogClose()
     },
 
@@ -797,38 +857,6 @@ export default {
       }
 
       this.$message(configs)
-    },
-
-    onSaveTimeSwitch() {
-      if (this.timeSwitch && !this.hasOriginConfigBefore && !this.hasOriginConfigAfter) {
-        this.onMessage({
-          message: '现场探视开关打开后，请配置工作日和监区，以及探视时间段。',
-          type: 'warning'
-        })
-
-        this.timeSwitch = 0
-
-        return
-      }
-
-      if (!this.timeSwitch) {
-        this.onMessage({
-          message: '现场探视开关关闭后，家属的现场探视申请通道就会关闭！',
-          type: 'warning',
-          duration: 1000
-        })
-      }
-
-      const params = {
-        jailId: this.jailId,
-        timeSwitch: this.timeSwitch
-      }
-
-      setTimeout(async () => {
-        await this.updateTimeSwitch(params)
-
-        await this.initTimeSwitch()
-      }, 1000)
     }
   },
 
