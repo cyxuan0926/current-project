@@ -391,6 +391,11 @@ export default {
           showOverflowTooltip: true
         },
         {
+          label: '证件号',
+          prop: 'uuid',
+          showOverflowTooltip: true
+        },
+        {
           label: '身份证件信息',
           slotName: 'idCards',
           minWidth: 148
