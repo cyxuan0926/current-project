@@ -396,6 +396,11 @@ export default {
           minWidth: 148
         },
         {
+          label: '证件号',
+          prop: 'uuid',
+          showOverflowTooltip: true
+        },
+        {
           label: '身份证件有效期至',
           prop: 'idValidDate',
           minWidth: 120
