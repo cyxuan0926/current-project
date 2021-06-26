@@ -13,7 +13,10 @@ let check = [{
     meta: { permission: 'visit.family-registration.search', breadcrumbName: '家属注册列表' },
     // component: resolve => require(['@/views/check-registration/registration-list'], resolve)
     // component: helper.loadView('check-registration/registration-list')
-    component: 'check-registration/registration-list'
+    // 河源分支
+    component: 'check-registration/registration-list-heyuan'
+    // 以前逻辑
+    // component: 'check-registration/registration-list'
   }]
 }, {
   path: '/diplomatic-consul-official',
@@ -38,7 +41,10 @@ let check = [{
     name: 'meeting-list',
     // component: helper.loadView('check-meeting/meeting-list'),
     // component: 'check-meeting/meeting-list',
-    component: 'check-meeting/meeting-list/meeting-list',
+    // 以前逻辑
+    // component: 'check-meeting/meeting-list/meeting-list',
+    // 河源逻辑
+    component: 'check-meeting/meeting-list/meeting-list-heyuan',
     props: { hasPrisonAreaAuth: true },
     // component: resolve => require(['@/views/check-meeting/meeting-list'], resolve),
     meta: { permission: 'visit.remote-visit-application.search', breadcrumbName: '可视电话申请列表' }
@@ -164,7 +170,10 @@ let check = [{
     path: '/prisoner/list',
     name: 'prisoner-list',
     // component: helper.loadView('check-prisoner/prisoner-list'),
-    component: 'check-prisoner/prisoner-list',
+    // 以前逻辑
+    // component: 'check-prisoner/prisoner-list',
+    // 河源逻辑
+    component: 'check-prisoner/prisoner-list-heyuan',
     // component: resolve => require(['@/views/check-prisoner/prisoner-list'], resolve),
     props: { hasPrisonAreaAuth: true },
     meta: { permission: 'visit.prisoner.search', breadcrumbName: '服刑人员列表' }
