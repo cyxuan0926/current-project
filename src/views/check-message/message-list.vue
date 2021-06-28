@@ -7,7 +7,7 @@
       ref="search"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" >
-        <el-button  
+        <el-button
         slot="append"
           class="m-excel-download"
           type="primary"
@@ -153,7 +153,7 @@
               <span class="family-name" >审核人姓名</span>
               <span class="family-nameDetail">{{toShow.auditName}}</span>
             </p>
-            
+
             <p class="detail-message-family">
                  <span class="family-name">申请状态</span>
                   <span class="family-nameDetail">
@@ -248,8 +248,8 @@ export default {
             unlinkPanels: true,
             start: 'startDate',
             end: 'endDate',
-            startPlaceholder: '通话开始时间',
-            endPlaceholder: '通话结束时间'
+            startPlaceholder: '申请开始时间',
+            endPlaceholder: '申请结束时间'
           },
         prisonerName: {
           type: 'input',
