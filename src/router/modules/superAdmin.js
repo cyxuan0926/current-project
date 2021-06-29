@@ -295,6 +295,22 @@ superAdmin = [{
       // component: helper.loadView('sadmin-whitemember/whitemember-list')
     }]
   }, {
+    path: '/terminal-upgrade',
+    name: 'terminal-upgrade',
+    meta: { hidden: true, breadcrumbName: '终端设备升级表' },
+    children: [{
+      path: '/terminal-upgrade/list',
+      name: 'terminal-upgrade-list',
+      meta: {
+        permission: 'visit.terminal-upgrade.list',
+        breadcrumbName: '终端设备升级表'
+      },
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      component: 'sadmin-terminal/terminal-upgrade-list'
+      // component: resolve => require(['@/views/sadmin-whitemember/whitemember-list'], resolve)
+      // component: helper.loadView('sadmin-whitemember/whitemember-list')
+    }]
+  }, {
     path: '/terminal',
     name: 'terminal',
     meta: { hidden: true, breadcrumbName: '终端管理' },

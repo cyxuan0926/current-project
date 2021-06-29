@@ -399,3 +399,16 @@ export function convertToChinaNum(num) {
 
     return result
 }
+
+export const getMonthTime = (m) => {
+  let res = [],
+      _cur = Moment()
+  res.push(_cur.format('YYYY-MM-DD'))
+  if (m > 0) {
+      res.push(_cur.add(m, 'M').format('YYYY-MM-DD'))
+  }
+  else if (m < 0) {
+      res.unshift(_cur.subtract(Math.abs(m), 'M').format('YYYY-MM-DD'))
+  }
+  return res
+}
