@@ -96,6 +96,6 @@ export const searchItems = () => ({
         startPlaceholder: '开始时间',
         endPlaceholder: '结束时间',
         // miss: true,
-        value: getMonthTime(1)
+        value: getMonthTime(-1)
     }
 })
