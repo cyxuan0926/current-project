@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "22556857",
+      "name": "终端设备升级表",
+      "font_class": "terminal-upgrade",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "21793281",
+      "name": "预约管理",
+      "font_class": "appointment",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "21733432",
+      "name": "终端呼叫终端详情",
+      "font_class": "terminal-call",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "21733433",
+      "name": "其他单位管理",
+      "font_class": "otherorgs",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
       "icon_id": "20538095",
       "name": "后台操作指引",
       "font_class": "zhiyin",
