@@ -93,6 +93,10 @@
 
             async getData() {
                 const params = Object.assign({ ...this.filter, ...this.pagination })
+                // 为了兼容接口 getTerminalStatistics 传provinceId
+                if( this.tab == '2' ) {
+                    params.provinceId = params.provincesId
+                }
                 let { data } = await http[ this.tab == '1' ? 'getTerminalDetlist' : 'getTerminalStatistics' ](params)
                 if( data && (data.records || data.pageInfo) ) {
                     let _records = data.records || data.pageInfo.records || []
@@ -116,7 +120,7 @@
                     return
                 }
                 this.loading.download = true
-                const params = { ...this.filter }
+                const params = { ...this.filter, page: 1, rows: this.total }
                 try {
                     let data = await http.exportTerminalUpgrade(params)
                     saveAs(data, `终端设备升级${ this.tab == '1' ? '详情表' : '统计表' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
