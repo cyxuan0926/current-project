@@ -5,7 +5,8 @@
         <m-search
             :items="searchItems"
             ref="search"
-            @search="onSearch">
+            @search="onSearch"
+            @searchSelectChange="searchSelectChange">
             <template slot="append">
                 <el-button
                     type="primary"
