@@ -122,6 +122,9 @@
                 }
                 this.loading.download = true
                 const params = { ...this.filter, page: 1, rows: this.total }
+                if (params.provincesId) {
+                    params.provinceId = params.provincesId
+                }
                 try {
                     let data = await http.exportTerminalUpgrade(params)
                     saveAs(data, `终端设备升级${ this.tab == '1' ? '详情表' : '统计表' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
