@@ -46,6 +46,7 @@
 </template>
 
 <script>
+    import moment from 'moment'
     import prisonFilterCreator from '@/mixins/prison-filter-creator'
     import http from '@/service'
     import { tabcols, searchItems } from './constants/index'
@@ -124,10 +125,11 @@
                 const params = { ...this.filter, page: 1, rows: this.total }
                 if (params.provincesId) {
                     params.provinceId = params.provincesId
+                    delete params.provincesId
                 }
                 try {
-                    let data = await http.exportTerminalUpgrade(params)
-                    saveAs(data, `终端设备升级${ this.tab == '1' ? '详情表' : '统计表' }-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    let data = await http[ this.tab == '1' ? 'exportTerminalUpgradeDetail' : 'exportTerminalUpgradeStatic' ](params)
+                    saveAs(data, `终端设备升级${ this.tab == '1' ? '详情表' : '统计表' }-${ DateFormat(Date.now(),'YYYY.MM.DD HH:mm:ss') }.xls`)
                     this.loading.download = false
                 } catch (error) {
                     this.loading.download = false
