@@ -7,6 +7,7 @@ import noPage from './modules/no-page'
 import repeat from './modules/repeat'
 import familyPhone from './modules/family-phone'
 import bpmnApis from './modules/bpmn/bpmn-api'
+import terminalApis from './modules/monitoring/terminal-api'
 import yangguangApis from './modules/prison-yangguang/yangguang-api'
 import heyuanApis from './modules/prison-heyuan'
 import ywgkApis from './modules/ywgk-internet'
@@ -23,5 +24,6 @@ export default Object.assign(
   bpmnApis,
   yangguangApis,
   heyuanApis,
-  ywgkApis
+  ywgkApis,
+  terminalApis
 )
