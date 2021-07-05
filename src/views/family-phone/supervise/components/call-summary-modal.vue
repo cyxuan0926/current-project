@@ -9,7 +9,7 @@
                     :height="245">
                     <template #media="{ row }">
                         <template v-if="row.phoneType == '1'">
-                            <m-audio v-if="row.filePath" :value="`${ row.filePath }?token=${ $urls.token }`" />
+                            <m-audio style="margin: 0 auto;" v-if="row.filePath" :value="`${ row.filePath }?token=${ $urls.token }`" />
                             <span v-else>暂无音频</span>
                         </template>
                         <template v-if="row.phoneType != '1'">
@@ -28,19 +28,21 @@
                     </template>
                 </m-table-new>
             </template>
-            <div class="summary-container clearfix" v-for="r in records">
-                <dl class="summary-item">
-                    <dt>通话纪要记录人：</dt>
-                    <dd>{{ r.createdBy }}</dd>
-                </dl>
-                <dl class="summary-item">
-                    <dt>记录时间：</dt>
-                    <dd>{{ r.createdAt }}</dd>
-                </dl>
-                <dl class="summary-item" style="width: 100%;">
-                    <dt>通话纪要内容：</dt>
-                    <dd>{{ r.remarks }}</dd>
-                </dl>
+            <div class="summary-container-wrap">
+                <div class="summary-container clearfix" v-for="r in records">
+                    <dl class="summary-item">
+                        <dt>通话纪要记录人：</dt>
+                        <dd>{{ r.createdBy }}</dd>
+                    </dl>
+                    <dl class="summary-item">
+                        <dt>记录时间：</dt>
+                        <dd>{{ r.createdAt }}</dd>
+                    </dl>
+                    <dl class="summary-item" style="width: 100%;">
+                        <dt>通话纪要内容：</dt>
+                        <dd>{{ r.remarks }}</dd>
+                    </dl>
+                </div>
             </div>
             <div class="summary-form" v-if="reviewData.flag == '0'">
                 <el-input
@@ -50,7 +52,7 @@
                     :rows="3"></el-input>
             </div>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer" class="dialog-footer" v-if="reviewData.flag == '0'">
             <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="handleSubmit">确 定</el-button>
         </span>
@@ -77,11 +79,11 @@
             }
         },
         watch: {
-            value: {
-                handler(val) {
-                    this.visible = val
-                    val && this.getSummaryDetails()
-                }
+            value(val) {
+                this.visible = val
+            },
+            reviewData() {
+                this.getSummaryDetails()
             }
         },
         data() {
@@ -132,6 +134,9 @@
                 if( _data ) {
                     this.records = _data
                 }
+                this.$nextTick(() => {
+                    this.$emit('input', true)
+                })
             },
 
             handleSubmit() {
@@ -156,23 +161,25 @@
 </script>
 
 <style lang="scss" scoped>
+    .summary-container-wrap {
+        margin-top: 16px;
+        max-height: 180px;
+        overflow-y: auto;
+    }
     .summary-scroller {
         width: 100%;
-        max-height: 360px;
-        overflow: auto;
     }
     .summary-table {
         margin-bottom: 30px;
     }
     .summary-container {
-        padding: 0 16px;
+        padding: 16px 16px 0;
         &.clearfix {
             display: table;
             content: '';
             clear: both;
         }
         & + .summary-container {
-            padding-top: 16px;
             border-top: 1px solid #ededed;
         }
     }
@@ -190,6 +197,6 @@
         }
     }
     .summary-form {
-        padding: 16px 16px 0;
+        // padding: 16px 0 0;
     }
 </style>

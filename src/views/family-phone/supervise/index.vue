@@ -71,7 +71,7 @@
         <!-- 家属详情 -->
         <family-detail-modal v-model="familyModalVisible" :familyData="familyData" />
         <!-- 音视频和通话纪要 -->
-        <call-summary-modal v-model="summaryModalVisible" :reviewData="reviewData" @on-save="handleSaveSummary" />
+        <call-summary-modal class="call-summary-modal" v-model="summaryModalVisible" :reviewData="reviewData" @on-save="handleSaveSummary" />
     </el-row>
 </template>
 
@@ -215,7 +215,6 @@
                     tab: this.tab,
                     isAdmin: this.isAdmin
                 }
-                this.summaryModalVisible = true
             },
             async handleQueryFamilyDet({ criminalNumber, meetingId }, familyId) {
                 let _params = {
@@ -257,5 +256,7 @@
 </script>
 
 <style lang="scss" scoped>
-
+    .call-summary-modal /deep/ .el-dialog__body {
+        padding-top: 0;
+    }
 </style>
