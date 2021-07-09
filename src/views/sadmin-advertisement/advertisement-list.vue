@@ -96,8 +96,10 @@
 <script>
 
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { getPagedMessagInside, getadserviceslist, deleteInside, onlineInside, offlineInside } from '@/service-public/api/inside'
 export default {
+   mixins: [prisonFilterCreator],
   data() {
     return {
       tabledata:{},
@@ -124,12 +126,18 @@ export default {
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
-
-        // provinceId: { type: 'select', label: '省份', getting: true, belong, filterable: true },
-        // typeId: { type: 'select', label: '广告类型', getting: true, belong },
-        // name: { type: 'input', label: '广告名称' }
       },
       tableCols: [
+             {
+                prop: 'province',
+                label: '省份',
+                width: '130px'
+            },
+             {
+                  prop: 'title',
+                label: '监狱名称',
+                width: '130px'
+            },
             {
                 prop: 'adservicesName',
                 label: '广告所属服务',

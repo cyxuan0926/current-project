@@ -156,6 +156,28 @@ let switches = {
       value: 1
     }
   ],
+  orgTypes: [
+    {
+      label: '监狱',
+      value: 0
+    },
+    {
+      label: '司法局',
+      value: 1
+    },
+    {
+      label: '司法所',
+      value: 2
+    },
+    {
+      label: '律师事务所',
+      value: 3
+    },
+    {
+      label: '心理咨询机构',
+      value: 4
+    }
+  ],
   areaOptions: [
     {
       label: '监舍区',
@@ -279,6 +301,16 @@ let switches = {
       label: '提交下级审核',
       value: 3
     }
+  ],
+
+  weeksOptions: [
+    { label: '星期一', value: 'Monday' },
+    { label: '星期二', value: 'Tuesday' },
+    { label: '星期三', value: 'Wednesday' },
+    { label: '星期四', value: 'Thursday' },
+    { label: '星期五', value: 'Friday' },
+    { label: '星期六', value: 'Saturday' },
+    { label: '星期日', value: 'Sunday' }
   ]
 }
 

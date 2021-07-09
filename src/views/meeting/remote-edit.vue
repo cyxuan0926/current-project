@@ -95,14 +95,14 @@ export default {
         // 为常规配置的时候
         if (query.tag === 'usual') {
           // 获取可视电话申请需提前天数
-          this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
+          // this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
         }
       }
     }
   },
   // 获取申请提前天数
   created() {
-    this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
+    // this.getRemoteAdvanceDayLimit({ jailId: this.jailId })
   },
   // 渲染组件
   mounted() {
@@ -140,10 +140,10 @@ export default {
     // 可视电话申请需求提前天数 更新操作实际调用的方法
     handleUpdateAdvanceDayLimit() {
       // hb
-      this.updateRemoteAdvanceDayLimit({
-        jailId: this.jailId,
-        ...this.dayLimit
-      })
+      // this.updateRemoteAdvanceDayLimit({
+      //   jailId: this.jailId,
+      //   ...this.dayLimit
+      // })
     }
   }
 }

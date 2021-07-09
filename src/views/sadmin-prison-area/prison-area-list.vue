@@ -15,7 +15,8 @@
       :params="filter" />
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange" />
     <el-col :span="24">
       <m-table-new
         stripe
@@ -98,23 +99,28 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
+import { getUserStorage } from '@/utils/store'
+const _role = getUserStorage().role
 export default {
-  props: {
-    // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
-    hasAllPrisonQueryAuth: Boolean
-  },
+  // props: {
+  //   // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
+  //   hasAllPrisonQueryAuth: Boolean
+  // },
+  mixins: [ _role != '4' && _role != '-1' ? prisonFilterCreator : {} ],
   data() {
     return {
-      searchItems: {
-        jailId: {
-          type: 'select',
-          label: '监狱名称',
-          getting: true,
-          belong: { value: 'id', label: 'title' },
-          filterable: true
-        }
-      },
+      searchItems: {},
+      // searchItems: {
+      //   jailId: {
+      //     type: 'select',
+      //     label: '监狱名称',
+      //     getting: true,
+      //     belong: { value: 'id', label: 'title' },
+      //     filterable: true
+      //   }
+      // },
       dialogVisible: false,
       prisonArea: {},
       allPrisonAreas: [],
@@ -152,6 +158,10 @@ export default {
     tableCols() {
       let cols = [
         {
+          label: '省份',
+          prop: 'provinceName'
+        },
+        {
           label: '监狱名称',
           prop: 'jailName'
         },
@@ -186,11 +196,11 @@ export default {
     if ( data.maxLevel ) {
       this.maxLevel = data.maxLevel
     }
-    if (this.user.role !== '4' && this.user.role !== '-1') {
-      await this.getPrisonAll()
-      this.searchItems.jailId.options = this.prisonAll
-      this.searchItems.jailId.getting = false
-    }
+    // if (this.user.role !== '4' && this.user.role !== '-1') {
+    //   await this.getPrisonAll()
+    //   this.searchItems.jailId.options = this.prisonAll
+    //   this.searchItems.jailId.getting = false
+    // }
   },
   methods: {
     ...mapActions([

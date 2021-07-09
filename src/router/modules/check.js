@@ -149,6 +149,22 @@ let check = [{
       breadcrumbName: '亲情电话统计报表'
     },
     component: 'check-meeting/meeting-family-statistics'
+  }, {
+    path: '/meeting/meeting-detail-guangxi',
+    name: 'meeting-meeting-detail-guangxi',
+    meta: {
+      permission: 'visit.visit-search.metting-detail-guangxi.search',
+      breadcrumbName: '服刑人员会见登记表'
+    },
+    component: 'gd-admin/gd-meeting/meeting-call-detail'
+  }, {
+    path: '/meeting/meeting-userNumber-list',
+    name: 'meeting-meeting-userNumber-list',
+    meta: {
+      permission: 'visit.visit-search.metting-userNumber-list.search',
+      breadcrumbName: '会见量和参会人数统计表'
+    },
+    component: 'gd-admin/gd-meeting/meeting-user-number'
   }]
 }, {
   path: '/mailbox',

@@ -19,7 +19,19 @@ let state = {
   remoteSpecialConfig: [{ effectDate: '', queue: [null], originQueue: '', originDate: '', canAddQueue: false, loading: false }],
 
   // 会见楼配置
-  meetingRoomConfigs: {}
+  meetingRoomConfigs: {},
+
+  // 实地会见常规配置
+  visitNormalConfigs: {},
+
+  // 实地会见须知
+  visitNotice: {
+    notice: ''
+  },
+
+  visitTimeSwitch: 0,
+
+  visitSpecialConfigs: {}
 }
 
 export default {

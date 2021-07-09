@@ -9,6 +9,8 @@ export default {
   getRegistrationsDetail: params => {
     return service.get('/registrations/getDetail', params).then(res => res && res.data)
   },
+  //  家属注册下载
+  exportFamilyRegJails: params => service.get('/registrations/exportFamilyRegJails', params, { responseType: 'blob' }).then(res => res && res.data),
   // 家属注册管理-未审核-会见告知书详情
   getRegistrationNotificationDetail: params => {
     return service.get('/notification/detail-registration', params).then(res => res && res.data)
@@ -128,10 +130,20 @@ export default {
   authorizeVisit: params => {
     return service.post('/prisoner_visits/auth', params).then(res => res && res.code === 200)
   },
+
+  // 实地探监管理-授权 有流程节点
+  authorizeVisitByProcess: params => service.post('/prisoner_visits/authvisit', params),
+
   // 实地探监管理-撤回
   withdrawVisit: params => {
     return service.post('/prisoner_visits/withdraw', params).then(res => res && res.code === 200)
   },
+  // 实地探监管理-获取实地会见配置信息
+  getVisitsConfigDetail: jailId => service.get(`/prisoner_visits/configDetail?jailId=${ jailId }`),
+  // 实地探监管理-获取实地会见配置时间表
+  getVisitsConfigMeetingtime: id => service.get(`/prisoner_visits/query-meettime-config?id=${ id }`),
+  // 实地探监管理-获取实地会见状态变更详情
+  getVisitsChangelog: id => service.get(`/prisoner_visits/visit-changelog?visitId=${ id }`),
   // 监狱长信箱-列表
   getMailboxes: params => {
     return service.get('/mailboxes/page', params).then(res => res && res.data)

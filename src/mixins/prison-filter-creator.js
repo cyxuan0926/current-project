@@ -102,9 +102,9 @@ export default {
       Message.closeAll()
 
       this.searchItems.jailId.options = this.$store.state.prisonAll
-
-      this.$set(this.searchItems['jailId'], 'value', this.jailId)
-
+      if (this.jailId) {
+        this.$set(this.searchItems['jailId'], 'value', this.jailId)
+      }
       this.searchItems.jailId.getting = false
     },
 

@@ -481,7 +481,7 @@
     </div>
     <div
       class="button-box"
-      v-if="superAdmin" >
+      v-if="isSuperAdmin" >
       <el-button
         size="small"
         @click="onGoBack">返回</el-button>
@@ -546,16 +546,9 @@ export default {
 
     durationIntervalItems() {
       const item = {
-        formConfigs: {
-          labelWidth: '81px',
-          hideRequiredAsterisk: true,
-        },
-        interval: {
-          label: '间隔时间',
-          type: 'input',
-          append: '分钟',
-          rules: ['required', 'isNumber']
-        }
+        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+
+        interval: cloneDeep(this.interval)
       }
 
       return this.configs.map((config, index, target) => {
@@ -1001,7 +994,6 @@ export default {
   }
     .prisonlabel{
       width: 240px;
-      display: inline-block;
       min-height:34px ;
       margin-top: 4px;
       border: 1px solid #dcdfe6 ;

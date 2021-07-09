@@ -41,13 +41,10 @@
 
     <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
-        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
-
-        <el-button type="primary" @click="showDelPrionser">删除</el-button>
-
-        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
-
         <el-button type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
+        <el-button type="primary" @click="showDelPrionser">离监</el-button>
+        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
       </template>
     </el-row>
 
@@ -456,6 +453,11 @@
       @open="onOpenDialog"
       width="530px"
     >
+    <div  v-if="operationType==4" class="el-message-box__container" style="margin:24px 0 24px  71px;">
+      <div class="el-message-box__status el-icon-warning"></div>
+      <div class="el-message-box__message"><p> 提示：如果是转监，请使用转监功能，不要做离监操作！</p>
+      </div>
+      </div>
       <m-form
         v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
@@ -527,7 +529,11 @@ export default {
       {
         label: '已删除',
         value: 3
-      }
+      },
+      {
+        label: '已离监',
+        value: 4
+      },
     ]
     const notifyOptions = [
       {
@@ -685,13 +691,25 @@ export default {
           value: '刑满释放'
         },
         {
-          label: '已被执行',
-          value: '已被执行'
+          label: '保外就医',
+          value: '保外就医'
         },
         {
-          label: '其他',
-          value: '其他'
+          label: '因病去世',
+          value: '因病去世'
+        },
+        {
+          label: '离监探亲',
+          value: '离监探亲'
+        },
+        {
+          label: '错误数据',
+          value: '错误数据'
         }
+        // {
+        //   label: '其他',
+        //   value: '其他'
+        // }
       ]
 
       const otherDelReasonDetail = {
@@ -924,11 +942,35 @@ export default {
               type: 'input',
               label: '原判刑期',
               clearable: true
-            }
+            },
+             level: {
+              type: 'select',
+              label: '管教级别',
+              options: [
+                      {
+                        label: '宽管级',
+                        value: '1'
+                      },
+                      {
+                        label: '普管级',
+                        value: '2'
+                      },
+                      {
+                        label: '考察级',
+                        value: '3'
+                      },
+                      {
+                        label: '严管级',
+                        value: '4'
+                      }
+                    ],
+              props: genderProps,
+              value: ''
+            },
           }, { dissMissConfigs }, formButton)
           break
         case 4:
-          title = '请选择删除原因'
+          title = '请选择离监原因'
           formButton.buttons = [
             {
               add: 'add',
@@ -1238,6 +1280,10 @@ export default {
           label: '罪犯编号',
           prop: 'prisonerNumber',
           showOverflowTooltip: true
+        },
+        {
+          label: '性别',
+          prop: 'gender'
         }
       ]
 
@@ -1298,7 +1344,7 @@ export default {
           prisonerCols.splice(1, 2)
 
           if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
-            prisonerCols.splice(3, 1)
+            prisonerCols.splice(4, 1)
             prisonerCols.splice(5, 1)
           }
         }
@@ -1308,7 +1354,7 @@ export default {
         if (this.hasAllPrisonQueryAuth) {
           transferOutPrisonersAllCols.splice(2, 1)
 
-          transferOutPrisonersAllCols.splice(9, 1)
+          transferOutPrisonersAllCols.splice(10, 1)
         }
 
         else transferOutPrisonersAllCols.splice(1, 2)
@@ -1706,7 +1752,7 @@ export default {
       if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
-          message: '请选择需要删除的数据！',
+          message: '提示：如果是转监，请使用转监功能，不要做离监操作！',
           type: 'warning'
         })
       } else {

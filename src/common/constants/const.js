@@ -21,7 +21,8 @@ export const responseURLWhiteLists = [
   '/familyphonesummary/export',
   '/download/exportVideoTelSummary',
   '/terminal/version/exportUpdateDetail',
-  '/terminal/version/exportUpgradeStatistics'
+  '/terminal/version/exportUpgradeStatistics',
+  '/registrations/exportFamilyRegJails'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。

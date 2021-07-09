@@ -1,6 +1,6 @@
 import http from '@/service'
-
 import repeatAPI from '@/service/modules/repeat'
+import { getUserStorage } from '@/utils/store'
 
 export default {
   getMeetings({ commit }, params) {
@@ -97,26 +97,61 @@ export default {
   withdrawVisit({ commit }, params) {
     return http.withdrawVisit(params).then(res => res)
   },
-  async getMeetingCostSavingIndividual({ commit }, payload) {
+  meetingCostCommonAction({ commit }, payload) {
+    if (payload && payload.meetingDistances && payload.meetingDistances.length) {
+      const _user = getUserStorage()
+      const _text = '总计：'
+      let _row = {}
+      if (_user.role === '0') {
+        if (payload.actype) {
+          _row = {
+            provinceName: _text
+          }
+        }
+      }
+      else {
+        if (payload.actype === 'INDIVIDUAL') {
+          _row = {
+            familyName: _text
+          }
+        }
+        else {
+          _row = {
+            provinceName: _text
+          }
+        }
+      }
+      payload.meetingDistances.push(
+        Object.assign(
+          {
+            distance: payload.totalDistance,
+            saveMoney: payload.totalSaveMoney
+          },
+          _row
+        )
+      )
+    }
+    commit('setMeetingCostSaving', payload)
+  },
+  async getMeetingCostSavingIndividual({ dispatch, commit }, payload) {
     const data = await repeatAPI.getMeetingCostSavingIndividual(payload)
-
     data.meetingDistances = data.personalDimensions
-    commit('setMeetingCostSaving', data || {})
-
+    data.actype = 'INDIVIDUAL'
+    // commit('setMeetingCostSaving', data || {})
+    dispatch('meetingCostCommonAction', data || {})
     return data
   },
-  async getMeetingCostSavingPrisonArea({ commit }, payload) {
+  async getMeetingCostSavingPrisonArea({ dispatch, commit }, payload) {
     const data = await repeatAPI.getMeetingCostSavingPrisonArea(payload)
-
-    commit('setMeetingCostSaving', data || {})
-
+    data.actype = 'PRISON_AREA'
+    // commit('setMeetingCostSaving', data || {})
+    dispatch('meetingCostCommonAction', data || {})
     return data
   },
-  async getMeetingCostSavingPrison({ commit }, payload) {
+  async getMeetingCostSavingPrison({ dispatch, commit }, payload) {
     const data = await repeatAPI.getMeetingCostSavingPrison(payload)
-
-    commit('setMeetingCostSaving', data || {})
-
+    // commit('setMeetingCostSaving', data || {})
+    dispatch('meetingCostCommonAction', data || {})
     return data
   },
   async gdGetFamilyMeetingDetail({ commit }, params) {

@@ -7,8 +7,8 @@
                         <el-option v-for="(item,index) in provinceslist" :key='index' :label="item.name" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>
-                         <el-form-item   style="width:380px" label="广告所属监狱">
-                        <el-select v-model="formDate.jailId" filterable clearable placeholder="广告所属监狱">
+                         <el-form-item   style="width:500px" label="广告所属监狱">
+                        <el-select   style="width:380px" v-model="formDate.jailId" filterable clearable  multiple collapse-tags placeholder="广告所属监狱">
                         <el-option v-for="(item,index) in jailIdlist" :key='index' :label="item.title" :value="item.id"></el-option>
                         </el-select>
                         </el-form-item>

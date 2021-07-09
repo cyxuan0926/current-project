@@ -284,6 +284,9 @@ export default {
     },
 
     ruleSwitch(rule, label, type, ruleMessages, placeholder) {
+      if( typeof rule == 'object' ) {
+        return rule
+      }
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
@@ -334,7 +337,7 @@ export default {
         })
       }
 
-      item && item.func && item.func(e, prop, item)
+      item && item.func && item.func(e, prop, item, this.fields)
     },
 
     radioChangeEvent(e, prop, item) {
