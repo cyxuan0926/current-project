@@ -26,6 +26,7 @@
           :label="pane.label"
           :name="pane.name"/>
       </el-tabs>
+
       <m-table-new
         stripe
         :data="tabledate.messages"

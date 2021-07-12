@@ -243,6 +243,7 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
+
         applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
