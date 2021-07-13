@@ -358,7 +358,7 @@ export default {
   mixins: [prisonFilterCreator],
   data() {
     const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+    const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     const stateAll = [
@@ -590,12 +590,12 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
+        startTime:  this.oneMonthLater,
+        endTime:this.todayDate
       })
     },
   mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+     this.$set(this.searchItems.applicationDate, 'value', [ this.oneMonthLater, this.todayDate])
     this.getDatas()
   },
   methods: {
