@@ -483,11 +483,9 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
 
-
-import { provinceJailLevelConfigsParamsName, prisonerInsideWhiteLists } from '@/common/constants/const'
-
 import {
   provinceJailLevelConfigsParamsName,
+  prisonerInsideWhiteLists,
   $likeName,
   $likePrisonerNumber
 } from '@/common/constants/const'

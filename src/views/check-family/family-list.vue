@@ -404,7 +404,7 @@ export default {
         },
         {
           label: '操作',
-          slotName: 'operation'          
+          slotName: 'operation'
         }
       ]
 

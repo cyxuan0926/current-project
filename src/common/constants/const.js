@@ -149,7 +149,6 @@ export const prisonAreaLevelObject = {
 
 export const _thisYear = Moment().format('YYYY')
 
-<<<<<<< HEAD
 export const weeks = [
   { label: '星期一', value: 1, key: 'Monday' },
   { label: '星期二', value: 2, key: 'Tuesday' },
@@ -176,7 +175,7 @@ export const _operationAuthorizations = {
 
 // 监狱内网白名单(租户编号)
 export const prisonerInsideWhiteLists = ['4411']
-=======
+
 // 星号隐藏配置
 export const asteriskDisplayConst = {
   // 身份证
@@ -223,4 +222,4 @@ export const $likeIdCard = {
   isDesensitizationCol,
   asteriskProp: 'asterisk_idCard'
 }
->>>>>>> feature-dengbao-next
+
