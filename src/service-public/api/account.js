@@ -1,7 +1,14 @@
 import { get, postForm, put, post } from '../request'
 
-export function login({ username, password }) {
+export function login({
+  username,
+  password,
+  code,
+  codeKey
+}) {
   return postForm('/oauth/token', {
+    codeKey,
+    code,
     username,
     password,
     grant_type: 'password',
@@ -70,4 +77,9 @@ export function getPublicUsers(params) {
 // 获取流程角色
 export function getProcessRoles(id) {
   return get(`/roles/tenant/${ id }`)
+}
+
+// 获取验证码
+export const getCaptcha = () => {
+  return get('/captcha')
 }

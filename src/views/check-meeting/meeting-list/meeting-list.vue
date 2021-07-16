@@ -14,6 +14,7 @@
         :params="excelFilter"
       />
     </m-search>
+
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -26,80 +27,83 @@
           />
         </template>
       </el-tabs>
-    <m-table-new
-      stripe
-      :cols="tableCols"
-      ref="parentElTable"
-      :data="meetings.contents"
-      @sort-change="sortChange">
-      <template #meetingTime="{ row }">
-        <span >{{ row.meetingTime || row.applicationDate }}</span>
-      </template>
 
-      <template #families="{ row }">
-        <div v-if="row.filterFamilies && row.filterFamilies.length">
+      <m-table-new
+        stripe
+        :cols="tableCols"
+        ref="parentElTable"
+        :data="meetings.contents"
+        @sort-change="sortChange"
+      >
+        <template #meetingTime="{ row }">
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
+        </template>
+
+        <template #families="{ row }">
+          <div v-if="row.filterFamilies && row.filterFamilies.length">
+            <el-button
+              type="text"
+              size="small"
+              v-for="family in row.filterFamilies"
+              :key="family.familyId"
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName | asteriskDisplay('asterisk_name') }}</el-button>
+          </div>
+        </template>
+
+        <template #content="{ row }">
+          <span v-if="!row.content">
+            <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
+            <template v-else>{{ row.status | applyStatus }}</template>
+          </span>
+
+          <el-tooltip
+            v-else
+            :content="row.content"
+            placement="top" >
+            <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
+            <span v-else>{{ row.status | applyStatus }}</span>
+          </el-tooltip>
+        </template>
+
+        <template #operate="{ row }">
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
           <el-button
+            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
+            size="mini"
+            @click="handleAuthorization(row)">授权</el-button>
+
+          <el-button
+            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            size="mini"
+            @click="handleWithdraw(row)">撤回</el-button>
+
+          <el-button v-if="tabs == 'UNUSUAL'&& row.unusualRemark" @click="handleWithdraw(row)">撤回</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="detailRemarks(row)"
+          >已备注</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(row)"
+          >备注</el-button>
+
+          <el-button
+            v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             type="text"
-            size="small"
-            v-for="family in row.filterFamilies"
-            :key="family.familyId"
-            style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
-        </div>
-      </template>
-
-      <template #content="{ row }">
-        <span v-if="!row.content">
-          <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
-          <template v-else>{{ row.status | applyStatus }}</template>
-        </span>
-
-        <el-tooltip
-          v-else
-          :content="row.content"
-          placement="top" >
-          <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
-          <span v-else>{{ row.status | applyStatus }}</span>
-        </el-tooltip>
-      </template>
-
-      <template #operate="{ row }">
-        <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-        <el-button
-          v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
-          size="mini"
-          @click="handleAuthorization(row)">授权</el-button>
-
-        <el-button
-          v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-          size="mini"
-          @click="handleWithdraw(row)">撤回</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-          @click="handleWithdraw(row)">撤回</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-          size="mini"
-          class="button-detail"
-          @click="detailRemarks(row)">已备注</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
-          size="mini"
-          class="button-detail"
-          @click="setRemarks(row)">备注</el-button>
-
-        <el-button
-          v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-          type="text"
-          size="mini"
-          class="button-detail"
-          @click="onDetail(row)">详情</el-button>
-      </template>
-    </m-table-new>
-  </el-col>
+            size="mini"
+            class="button-detail"
+            @click="onDetail(row)"
+          >详情</el-button>
+        </template>
+      </m-table-new>
+    </el-col>
 
     <m-pagination
       ref="pagination"
@@ -680,7 +684,12 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+  import {
+    withdrawOrAnthorinputReason,
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -1044,12 +1053,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true
+              ...$likeName
             },
             {
               label: '申请时间',
@@ -1065,12 +1075,19 @@
             },
             {
               label: '家属',
-              slotName: 'families',
-              minWidth: 115
+              prop: 'filterFamilies',
+              minWidth: 115,
+              ...$likeName,
+              desensitizationColsConfigs: {
+                keyWord: 'familyId',
+                prop: 'familyName',
+                desensitizationColSlotName: 'families'
+              }
             },
             {
               label: '家属电话',
-              prop: 'phone'
+              prop: 'phone',
+              ...$likePhone
             },
             {
               label: '关系',

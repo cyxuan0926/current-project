@@ -9,7 +9,16 @@
             class="mini-td-padding"
             style="width: 100%">
             <template #name="{ row }">
-                <span v-for="(f, i) in row.families" :key="f.familyId">{{f.familyName}}<i v-if="i != row.families.length - 1">，</i></span>
+              <template v-for="(f, i) in row.families" >
+                <el-popover
+                  :key="f.familyId"
+                  popper-class="is-asterisk_display"
+                  placement="top-start"
+                  trigger="hover"
+                  :content="f.familyName">
+                  <span slot="reference">{{f.familyName | asteriskDisplay('asterisk_name')}}<i v-if="i != row.families.length - 1">，</i></span>
+                </el-popover>
+              </template>
             </template>
             <template #status="{ row }">
                 <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>

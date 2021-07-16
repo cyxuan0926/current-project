@@ -1,5 +1,7 @@
 import Moment from 'moment'
 
+const isDesensitizationCol = true
+
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
@@ -147,6 +149,7 @@ export const prisonAreaLevelObject = {
 
 export const _thisYear = Moment().format('YYYY')
 
+<<<<<<< HEAD
 export const weeks = [
   { label: '星期一', value: 1, key: 'Monday' },
   { label: '星期二', value: 2, key: 'Tuesday' },
@@ -173,3 +176,51 @@ export const _operationAuthorizations = {
 
 // 监狱内网白名单(租户编号)
 export const prisonerInsideWhiteLists = ['4411']
+=======
+// 星号隐藏配置
+export const asteriskDisplayConst = {
+  // 身份证
+  asterisk_idCard: {
+    start: 6,
+    asteriskCount: 8
+  },
+
+  // 电话号码
+  asterisk_phone: {
+    start: 3,
+    asteriskCount: 4
+  },
+
+  // 服刑人员编号
+  asterisk_prisonerNumber: {
+    start: 4,
+    asteriskCount: 4
+  },
+
+  // 姓名
+  asterisk_name: {
+    start: 1
+  }
+}
+
+// table 脱敏列基本配置
+export const $likeName = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_name'
+}
+
+export const $likePrisonerNumber = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_prisonerNumber'
+}
+
+export const $likePhone = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_phone'
+}
+
+export const $likeIdCard = {
+  isDesensitizationCol,
+  asteriskProp: 'asterisk_idCard'
+}
+>>>>>>> feature-dengbao-next

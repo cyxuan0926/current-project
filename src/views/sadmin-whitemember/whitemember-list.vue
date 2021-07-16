@@ -96,6 +96,9 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+import { $likePhone } from '@/common/constants/const'
+// import helper from '@/utils'
+
 export default {
   data() {
     const validatePhone = (rule, value, callback) => {
@@ -137,7 +140,8 @@ export default {
         },
         {
           label: '手机号',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         },
         {
           label: '备注',

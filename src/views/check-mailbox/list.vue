@@ -20,40 +20,38 @@
     />
 
     <el-col :span="24" class="el-col__no-tabs__margin">
-      <m-table
+      <m-table-new
         class="has-img"
         :data="mailboxes.contents"
         :cols="tableCols"
       >
-        <template
-          v-if="scope.row.imageUrls.length"
-          slot="imageUrls"
-          slot-scope="scope"
-        >
-          <m-img-viewer
-            v-if="!hasOnlyAllPrisonQueryAuth"
-            :publicUrl="scope.row.imageUrls[0]"
-            isRequired
-          />
+        <template #imageUrls="{ row }">
+          <template v-if="row.imageUrls.length">
+            <m-img-viewer
+              v-if="!hasOnlyAllPrisonQueryAuth"
+              :publicUrl="row.imageUrls[0]"
+              isRequired
+            />
 
-          <m-img-viewer
-            v-else
-            v-for="(url,index) of scope.row.imageUrls"
-            :class="!index ? '' : 'img-viewer__hidden'"
-            :key="url"
-            :toolbar=" hasOnlyAllPrisonQueryAuth && scope.row.imageUrls.length > 1 ? toolbar : {} "
-            :publicUrl="url"
-            isRequired
-          />
+            <m-img-viewer
+              v-else
+              v-for=" (url,index) of row.imageUrls"
+              :class="!index ? '' : 'img-viewer__hidden'"
+              :key="url"
+              :toolbar=" hasOnlyAllPrisonQueryAuth && row.imageUrls.length > 1 ? toolbar : {} "
+              :publicUrl="url"
+              isRequired
+            />
+          </template>
         </template>
 
-        <template slot="isReply" slot-scope="scope">
-          {{ scope.row.isReply | isTrue }}
+        <template #isReply="{ row }">
+          {{ row.isReply | isTrue }}
         </template>
 
-        <template slot="operate" slot-scope="scope">
+        <template #operate="{ row }">
           <el-button
-            v-if="!scope.row.isReply"
+            v-if="!row.isReply"
             size="mini"
             class="button-column"
             @click="handleReply(scope.row)"
@@ -82,7 +80,7 @@
             @click="getDetail(scope.row)"
           >详细内容</el-button>
         </template>
-      </m-table>
+      </m-table-new>
     </el-col>
 
     <m-pagination
@@ -171,6 +169,9 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+import { $likeName } from '@/common/constants/const'
+
 // import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
   mixins: [prisonFilterCreator],
@@ -232,7 +233,8 @@ export default {
       const commonCols = [
         {
           label: '用户',
-          prop: 'name'
+          prop: 'name',
+          ...$likeName
         },
         {
           label: '信件类别',

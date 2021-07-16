@@ -51,7 +51,7 @@
               type="text"
               size="small"
               @click="showPrisonerDetail(prisoner)"
-            >{{ prisoner.name }}</el-button>
+            >{{ prisoner.name | asteriskDisplay('asterisk_name') }}</el-button>
           </template>
         </template>
 
@@ -84,7 +84,7 @@
             size="small"
             @click="onDelete(row.phone)"
           >删除</el-button>
-          </template>
+        </template>
       </m-table-new>
     </el-col>
 
@@ -157,6 +157,12 @@ import validator from '@/utils'
 import prisons from '@/common/constants/prisons'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+import {
+  $likeName,
+  $likePhone,
+  $likePrisonerNumber
+} from '@/common/constants/const'
 
 const prisonerDetailRows = [
   [
@@ -343,7 +349,8 @@ export default {
       const familyTableCols = [
         {
           label: '家属姓名',
-          prop: 'name'
+          prop: 'name',
+          ...$likeName
         },
         {
           label: '身份证信息',
@@ -359,7 +366,14 @@ export default {
         {
           label: '对应罪犯',
           minWidth: '180px',
-          slotName: 'prisoners'
+          slotName: 'prisoners',
+          prop: 'prisonerList',
+          ...$likeName,
+          desensitizationColsConfigs: {
+            keyWord: 'prisonerId',
+            prop: 'name',
+            desensitizationColSlotName: 'prisoners'
+          }
         },
         {
           label: '操作',
@@ -370,23 +384,27 @@ export default {
       const jailerFamiliesTableCols = [
         {
           label: '警员姓名',
-          prop: 'policeName'
+          prop: 'policeName',
+          ...$likeName
         },
         {
           label: '警员编号',
-          prop: 'policeNumber'
+          prop: 'policeNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '家属姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          ...$likeName
         },
         {
           label: '家属手机号码',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         },
         {
           label: '操作',
-          slotName: 'operation'
+          slotName: 'operation'          
         }
       ]
 

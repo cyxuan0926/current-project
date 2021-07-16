@@ -57,13 +57,19 @@
           min-width="50"
           show-overflow-tooltip
         />
+
         <el-table-column
-          show-overflow-tooltip
           label="家属姓名"
           min-width="50"
         >
-          <template slot-scope="scope">
-            <span>{{scope.row.name + (scope.row.businessType == 3 ? '（附）' : '')}}</span>
+          <template #default="{ row }">
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.name + (row.businessType == 3 ? '（附）' : '')">
+              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name') }}</span>
+            </el-popover>
           </template>
         </el-table-column>
         <el-table-column
@@ -71,7 +77,18 @@
           prop="phone"
           min-width="90"
           label="家属电话"
-        />
+        >
+         <template #default="{ row }">
+           <el-popover
+            popper-class="is-asterisk_display"
+            placement="top-start"
+            trigger="hover"
+            :content="row.phone">
+            <span slot="reference">{{ row.phone | asteriskDisplay('asterisk_phone') }}</span>
+          </el-popover>
+         </template>
+        </el-table-column>
+
         <el-table-column
           width="148px"
           label="身份证件信息">
@@ -97,6 +114,7 @@
             />
           </template>
         </el-table-column>
+
         <!-- <el-table-column
           label="身份证件有效期至"
           prop="validDate"
@@ -107,25 +125,45 @@
           show-overflow-tooltip
           min-width="70"
         />
+
         <el-table-column
           label="申请时间"
           min-width="120"
         >
           <template slot-scope="scope"> {{ scope.row.createdAt | Date }} </template>
         </el-table-column>
+
         <el-table-column
           prop="prisonerName"
-          show-overflow-tooltip
           label="罪犯姓名"
           min-width="55"
-          sortable="custom"
-        />
+        >
+          <template #default="{ row }">
+           <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.prisonerName">
+              <span slot="reference">{{ row.prisonerName | asteriskDisplay('asterisk_name') }}</span>
+          </el-popover>
+         </template>
+        </el-table-column>
+
         <el-table-column
           prop="prisonerNumber"
-          show-overflow-tooltip
           label="罪犯编号"
           min-width="50"
-        />
+        >
+          <template #default="{ row }">
+           <el-popover
+            popper-class="is-asterisk_display"
+            placement="top-start"
+            trigger="hover"
+            :content="row.prisonerNumber">
+            <span slot="reference">{{ row.prisonerNumber | asteriskDisplay('asterisk_prisonerNumber') }}</span>
+          </el-popover>
+         </template>
+        </el-table-column>
         <!-- <el-table-column
           v-if="isInWhitelist"
           prop="prisonerName"
@@ -133,18 +171,21 @@
           label="罪犯姓名"
           min-width="55"
         /> -->
+
         <el-table-column
           prop="prisonArea"
           show-overflow-tooltip
           label="监区"
           min-width="50"
         />
+
         <el-table-column
           prop="relationship"
           label="关系"
           min-width="50"
           show-overflow-tooltip
         />
+
         <el-table-column
           label="家属可视电话告知书"
           min-width="65"
@@ -182,6 +223,7 @@
             {{ scope.row.auditRealName }} ({{ scope.row.auditUserName }})<br >
             {{ scope.row.auditAt | Date }}</template>
         </el-table-column>
+
         <el-table-column
           label="操作"
           min-width="60"
