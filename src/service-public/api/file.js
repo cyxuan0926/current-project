@@ -1,7 +1,7 @@
 import { get } from '../request'
 
-export const downloadPublicServiceFile = (filename, attachment = true) => {
+export const downloadPublicServiceFile = (url, attachment = true) => {
   const responseType = 'blob'
 
-  return get(`/files/${filename}`, { attachment }, { responseType })
+  return get(url, { attachment }, { responseType })
 }

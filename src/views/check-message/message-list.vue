@@ -178,6 +178,12 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
 import http from '@/service'
+
+import {
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -315,11 +321,13 @@ export default {
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          width: 110
+          width: 110,
+          ...$likePrisonerNumber
         },
         {
           label: '发送人姓名',
-          prop: 'senderName'
+          prop: 'senderName',
+          ...$likeName
         },
         {
           label: '申请时间',
@@ -328,12 +336,14 @@ export default {
         },
         {
           label: '接收人姓名',
-          prop: 'receiverName'
+          prop: 'receiverName',
+          ...$likeName
         },
         {
           label: '家属电话',
           prop: 'phone',
-          width: 140
+          width: 140,
+          ...$likePhone
         },
         {
           label: '关系',

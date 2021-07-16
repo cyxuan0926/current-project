@@ -400,7 +400,7 @@ export function convertToChinaNum(num) {
     return result
 }
 
-export const getMonthTime = (m) => {
+export const getMonthTime = m => {
   let res = [],
       _cur = Moment()
   res.push(_cur.format('YYYY-MM-DD'))

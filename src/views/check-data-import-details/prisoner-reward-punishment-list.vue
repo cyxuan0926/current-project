@@ -5,28 +5,57 @@
     <m-search
       ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    />
     <el-col :span="24">
       <el-table
         class="border"
         :data="tabledata.list"
-        style="width: 100%">
-         <el-table-column
-            prop="year"
-            label="年"
-            width="150" />
-            <el-table-column
-            prop="monthName"
-            label="月"
-            width="150" />
-            <el-table-column
-            prop="name"
-            label="姓名"
-            width="150" />
-            <el-table-column
-            prop="prisonerNumber"
-            label="编号"/>
-            <el-table-column
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="year"
+          label="年"
+          width="150"
+        />
+
+        <el-table-column
+          prop="monthName"
+          label="月"
+          width="150"
+        />
+
+        <el-table-column
+          prop="name"
+          label="姓名"
+          width="150"
+        >
+          <template #default="{ row }">
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.name"
+            >
+              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name') }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="prisonerNumber" label="编号">
+          <template #default="{ row }">
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.prisonerNumber"
+            >
+              <span slot="reference">{{ row.prisonerNumber | asteriskDisplay('asterisk_prisonerNumber') }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+
+        <el-table-column
             label="行政奖励">
                   <el-table-column
                     prop="praiseTimes"

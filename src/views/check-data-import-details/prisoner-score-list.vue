@@ -20,13 +20,33 @@
             label="月"
             width="150" />
             <el-table-column
-            prop="name"
-            label="姓名"
-            width="150" />
-            <el-table-column
-            prop="prisonerNumber"
-            label="编号"
-            width="150" />
+          prop="name"
+          label="姓名"
+          width="150"
+        >
+          <template #default="{ row }">
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.name"
+            >
+              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name') }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+            <el-table-column prop="prisonerNumber" label="编号">
+          <template #default="{ row }">
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.prisonerNumber"
+            >
+              <span slot="reference">{{ row.prisonerNumber | asteriskDisplay('asterisk_prisonerNumber') }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
             <el-table-column
             label="基础分">
                   <el-table-column

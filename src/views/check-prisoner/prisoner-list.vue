@@ -131,7 +131,8 @@
             type="text"
             size="small"
             style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(item)">{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
+            @click="showFamilyDetail(item)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
         <template #notifyId="{ row }">
@@ -1245,7 +1246,8 @@ export default {
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          ...$likePrisonerNumber
         }
       ]
 

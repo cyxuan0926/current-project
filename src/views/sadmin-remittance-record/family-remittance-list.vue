@@ -85,7 +85,8 @@ export default {
         },
         {
           label: '汇款家属',
-          prop: 'familyName'
+          prop: 'familyName',
+          showOverflowTooltip: true
         },
         {
           label: '汇款金额(元)',

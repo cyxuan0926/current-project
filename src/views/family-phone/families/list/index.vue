@@ -63,9 +63,9 @@
             v-if="!!row.status"
             type="text"
             @click="onViewAuthorizeFamily(row)"
-          >{{ row.familyName }}</el-button>
+          >{{ row.familyName | asteriskDisplay('asterisk_name') }}</el-button>
 
-          <span v-else>{{ row.familyName }}</span>
+          <span v-else>{{ row.familyName | asteriskDisplay('asterisk_name') }}</span>
         </template>
 
         <template #status="{ row }">
@@ -577,6 +577,12 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
+import {
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -849,15 +855,18 @@ export default {
         },
         {
           label: '家属电话',
-          prop: 'familyPhone'
+          prop: 'familyPhone',
+          ...$likePhone
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName'
+          prop: 'criminalName',
+          ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber'
+          prop: 'criminalNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '监区',

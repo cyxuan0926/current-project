@@ -64,6 +64,7 @@ export default {
     //   default: false
     // }
   },
+
   methods: {
     showImg() {
       const commonToolbar = {

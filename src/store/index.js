@@ -42,6 +42,8 @@ import filter from './modules/filter'
 
 import familyPhone from './modules/family-phone'
 
+import files from './modules/file'
+
 import 'babel-polyfill'
 
 Vue.use(Vuex)
@@ -101,6 +103,7 @@ export default new Vuex.Store({
     trade,
     coopertivePartner,
     diplomaticConsulOfficial,
-    familyPhone
+    familyPhone,
+    files
   }
 })

@@ -3,13 +3,13 @@ import { downloadPublicServiceFile } from '@/service-public/api/file'
 import { createObjectURL } from '@/utils/helper'
 
 export default {
-  async downloadPublicServiceFile({ commit }, { filename, attachment }) {
+  async downloadPublicServiceFile({ commit }, { url, attachment }) {
     try {
-      const data = await downloadPublicServiceFile(filename, attachment)
+      const data = await downloadPublicServiceFile(url, attachment)
 
-      const url = createObjectURL(data)
+      const URL = data ? createObjectURL(data) : ''
 
-      commit('setPublicServiceFileUrl', url)
+      commit('setPublicServiceFileUrl', URL)
 
       return true
     }

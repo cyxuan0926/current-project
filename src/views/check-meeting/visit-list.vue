@@ -337,52 +337,7 @@ export default {
         ]
       },
       remarks: [],
-      tabPanes,
-      tableCols: [
-        {
-          label: '家属姓名',
-          prop: 'name',
-          ...$likeName
-        },
-        {
-          label: '身份证信息',
-          slotName: 'idcards',
-          width: 156
-        },
-        {
-          label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
-        },
-        {
-          label: '监区',
-          prop: 'prisonArea'
-        },
-        {
-          label: '关系',
-          prop: 'relationship'
-        },
-        {
-          label: '申请时间',
-          prop: 'applicationDate'
-        },
-        {
-          label: '批次(窗口号)',
-          slotName: 'window',
-          width: 136
-        },
-        {
-          label: '申请状态',
-          slotName: 'status',
-          className: 'orange'
-        },
-        {
-          label: '操作',
-          minWidth: 100,
-          slotName: 'lastCoiumn',
-          showOverflowTooltip: true
-        }
-      ]
+      tabPanes
     }
   },
   computed: {
@@ -392,7 +347,67 @@ export default {
         ...state.frontRemarks.slice(0, state.frontRemarks.length - 1),
         '当月会见次数已达上限，请下月再申请',
         '其他'
-      ]
+      ],
+
+      tableCols() {
+        let familyCol = {
+          label: '家属姓名',
+          prop: 'name',
+          ...$likeName
+        }
+
+        if (this.tabs === 'first') familyCol['prop'] = 'familyName'
+
+        return [
+          familyCol,
+
+          {
+            label: '身份证信息',
+            slotName: 'idcards',
+            width: 156
+          },
+
+          {
+            label: '罪犯编号',
+            prop: 'prisonerNumber',
+            ...$likePrisonerNumber
+          },
+
+          {
+            label: '监区',
+            prop: 'prisonArea'
+          },
+
+          {
+            label: '关系',
+            prop: 'relationship'
+          },
+
+          {
+            label: '申请时间',
+            prop: 'applicationDate'
+          },
+
+          {
+            label: '批次(窗口号)',
+            slotName: 'window',
+            width: 136
+          },
+
+          {
+            label: '申请状态',
+            slotName: 'status',
+            className: 'orange'
+          },
+
+          {
+            label: '操作',
+            minWidth: 100,
+            slotName: 'lastCoiumn',
+            showOverflowTooltip: true
+          }
+        ]
+      }
     })
   },
   watch: {
