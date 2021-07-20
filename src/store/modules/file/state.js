@@ -1,3 +1,1 @@
-export default {
-  publicServiceImageUrl: ''
-}
+export default {}

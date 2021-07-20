@@ -90,36 +90,6 @@
         </el-table-column>
 
         <el-table-column
-          width="148px"
-          label="身份证件信息">
-          <template slot-scope="scope">
-            <m-img-viewer
-              :url="scope.row.idCardFront"
-              isRequired
-              :toolbar="{ prev: 1, next: 1 }"
-              title="身份证正面照"
-            />
-            <m-img-viewer
-              isRequired
-              :url="scope.row.idCardBack"
-              :toolbar="{ prev: 1, next: 1 }"
-              title="身份证背面照"
-            />
-            <m-img-viewer
-              isRequired
-              class="img-viewer__hidden"
-              :url="scope.row.avatarUrl"
-              :toolbar="{ prev: 1, next: 1 }"
-              title="头像"
-            />
-          </template>
-        </el-table-column>
-
-        <!-- <el-table-column
-          label="身份证件有效期至"
-          prop="validDate"
-        /> -->
-        <el-table-column
           label="家属类型"
           prop="domicileName"
           show-overflow-tooltip
@@ -164,13 +134,6 @@
           </el-popover>
          </template>
         </el-table-column>
-        <!-- <el-table-column
-          v-if="isInWhitelist"
-          prop="prisonerName"
-          show-overflow-tooltip
-          label="罪犯姓名"
-          min-width="55"
-        /> -->
 
         <el-table-column
           prop="prisonArea"
@@ -251,10 +214,7 @@
                 @click="handleAuthorDetail(scope.row.id)">详情
               </el-button>
             </template>
-            <!-- <el-button
-              v-if="hasProvinceQueryAuth"
-              size="mini"
-              @click="onView(scope.row)">查看</el-button> -->
+
             <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
@@ -275,13 +235,16 @@
       @close="showDetail = false"
     >
       <registration-detail :toAuthorize="authorizeDetData" />
+
       <div class="button-box view-box">
         <el-button
           type="danger"
           plain
-          @click="showDetail = false">关闭</el-button>
+          @click="showDetail = false"
+        >关闭</el-button>
       </div>
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
@@ -290,10 +253,8 @@
       :close-on-click-modal="false"
     >
       <div style="margin-bottom: 10px;">请核对申请人信息:</div>
-      <div
-        class="img-box"
-        :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}"
-      >
+
+      <div class="img-box" :style="{'margin-bottom': toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length || toAuthorize.meetNoticeUrl ? '10px' : '40px'}">
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.idCardFront}]"
@@ -301,6 +262,7 @@
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证正面照"
         />
+
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.idCardBack}]"
@@ -308,6 +270,7 @@
           :toolbar="{ prev: 1, next: 1 }"
           title="身份证背面照"
         />
+
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.avatarUrl}]"
@@ -316,8 +279,10 @@
           title="头像"
         />
       </div>
+
       <template v-if="toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length" >
         <div style="margin-bottom: 10px;">请核对关系证明:</div>
+
         <div class="img-box">
           <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls" >
             <m-img-viewer
@@ -331,6 +296,7 @@
           </template>
         </div>
       </template>
+
       <template v-if="!!toAuthorize.meetNoticeUrl">
         <div style="margin-bottom: 10px;">可视电话通知单:</div>
         <div class="img-box">
@@ -470,13 +436,21 @@
           class="button-box logMgCls">
           <div style="margin-bottom: 10px;">请选择撤回原因</div>
           <div>
-            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
-            <el-option
-              v-for="(remark,index) in content"
-              :value="remark"
-               :label="(index+1)+'、'+remark"
-              :key="index"/>
-          </el-select>
+            <el-select
+              v-model="remarks"
+              :multiple="true"
+              :multiple-limit='5'
+              collapse-tags
+              @change="withdrawFormChange"
+              style="width:70%;margin-right:10px"
+            >
+              <el-option
+                v-for="(remark,index) in content"
+                :value="remark"
+                :label="(index+1)+'、'+remark"
+                :key="index"
+              />
+            </el-select>
            <el-button
             type="primary"
             :loading="btnDisable"
@@ -618,6 +592,7 @@ import { tokenExcel } from '@/utils/token-excel'
 import moment from 'moment'
 
 import { helper } from '@/utils'
+import { Message } from 'element-ui'
 
 export default {
   components: {
@@ -954,7 +929,36 @@ export default {
 
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
 
-      if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+      if ( _authorizeDetData ) {
+        const {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        } = _authorizeDetData
+
+        const urls = {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        }
+
+        const _key = `registration_${ id }`
+
+        const URLS = await helper.batchDownloadPublicImageURL(urls, _key)
+
+        const input = {
+          ..._authorizeDetData,
+          ...URLS
+        }
+
+        result = this.set_relationalProofUrls(input)
+      }
 
       return result
     },
@@ -974,6 +978,7 @@ export default {
       this.show.multistageExamine = false
 
       this.onRejectshow(false,false)
+
       this.isform=false
      // this.remarks = this.content[0]
 

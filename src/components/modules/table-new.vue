@@ -22,7 +22,8 @@
                 popper-class="is-asterisk_display"
                 placement="top-start"
                 trigger="hover"
-                :content="item[col['desensitizationColsConfigs']['prop']]">
+                :content="item[col['desensitizationColsConfigs']['prop']]"
+              >
                 <span slot="reference">
                   <slot :name="col['desensitizationColsConfigs']['desensitizationColSlotName'] || 'defalut'" v-bind="{ item, scope }">{{ item[col['desensitizationColsConfigs']['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
                 </span>

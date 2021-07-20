@@ -20,97 +20,83 @@
         stripe
         :data="visits.contents"
         class="mini-td-padding td"
-        :cols="tableCols">
-        <template #idcards="{ row }">
-          <div class="idcard-box">
-            <m-img-viewer
-              v-if="row.idCardFront"
-              :url="row.idCardFront"
-              title="身份证正面"
-            />
-
-            <m-img-viewer
-              v-if="row.idCardBack"
-              :url="row.idCardBack"
-              title="身份证背面"
-            />
-          </div>
-        </template>
-
-        <template #window="{ row }">
-          <span v-if="row.window">
-            {{ row.batch }} ({{ row.window }}窗口)
-          </span>
-        </template>
-        <template #status="{ row }">
-          <span v-if="!row.remarks">{{ row.status | applyStatus }}</span>
-
-          <el-tooltip
-            v-else
-            :content="row.remarks"
-            placement="top">
-            <span>{{ row.status | applyStatus }}</span>
-          </el-tooltip>
-        </template>
-
-        <template #lastCoiumn="{ row }">
-          <span v-if="tabs === 'CANCELED'">{{ row.cause }}</span>
-
-          <template v-else>
-            <el-button
-              v-if="row.status == 'PENDING'"
-              size="mini"
-              @click="handleAuthorization(row)">授权</el-button>
-
-            <el-button
-              v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1"
-              size="mini"
-              @click="handleWithdraw(row)">撤回</el-button>
+        :cols="tableCols"
+      >
+          <template #window="{ row }">
+            <span v-if="row.window">
+              {{ row.batch }} ({{ row.window }}窗口)
+            </span>
           </template>
-        </template>
-      </m-table-new>
-    </el-col>
-    <m-pagination
-      ref="pagination"
-      :total="visits.total"
-      @onPageChange="getDatas" />
-    <el-dialog
-      :visible.sync="show.authorize"
-      class="authorize-dialog"
-      @close="closeAuthorize"
-      title="授权"
-      width="530px">
-      <div
-        v-if="!show.agree && !show.disagree"
-        class="button-box">
-        <el-button
-          plain
-          @click="show.agree = true">同意</el-button>
-        <el-button
-          plain
-          @click="show.disagree = true">不同意</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <el-button
-          plain
-          @click="onAuthorization('PASSED')">确定申请通过？</el-button>
-        <el-button
-          plain
-          @click="show.agree=false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <div
-          v-if="show.disagree"
-          class="button-box logMgCls">
+
+          <template #status="{ row }">
+            <span v-if="!row.remarks">{{ row.status | applyStatus }}</span>
+
+            <el-tooltip
+              v-else
+              :content="row.remarks"
+              placement="top">
+              <span>{{ row.status | applyStatus }}</span>
+            </el-tooltip>
+          </template>
+
+          <template #lastCoiumn="{ row }">
+            <span v-if="tabs === 'CANCELED'">{{ row.cause }}</span>
+
+            <template v-else>
+              <el-button
+                v-if="row.status == 'PENDING'"
+                size="mini"
+                @click="handleAuthorization(row)"
+              >授权</el-button>
+
+              <el-button
+                v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1"
+                size="mini"
+                @click="handleWithdraw(row)"
+              >撤回</el-button>
+            </template>
+          </template>
+        </m-table-new>
+      </el-col>
+
+      <m-pagination
+        ref="pagination"
+        :total="visits.total"
+        @onPageChange="getDatas"
+      />
+
+      <el-dialog
+        :visible.sync="show.authorize"
+        class="authorize-dialog"
+        @close="closeAuthorize"
+        title="授权"
+        width="530px"
+      >
+        <div v-if="!show.agree && !show.disagree" class="button-box">
+          <el-button plain @click="show.agree = true">同意</el-button>
+
+          <el-button plain @click="show.disagree = true">不同意</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false"
+          >关闭</el-button>
+        </div>
+
+        <div v-if="show.agree" class="button-box">
+          <el-button plain @click="onAuthorization('PASSED')">确定申请通过？</el-button>
+
+          <el-button plain @click="show.agree=false">返回</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false"
+          >关闭</el-button>
+        </div>
+
+        <div v-if="show.disagree" class="button-box logMgCls">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
           <div>
             <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
@@ -360,12 +346,6 @@ export default {
 
         return [
           familyCol,
-
-          {
-            label: '身份证信息',
-            slotName: 'idcards',
-            width: 156
-          },
 
           {
             label: '罪犯编号',

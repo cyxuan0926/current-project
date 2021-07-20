@@ -34,7 +34,7 @@
       >
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
 
-        <template #idCards="{ row }">
+        <!-- <template #idCards="{ row }">
           <template v-for="(item, index) in row.diplomaticConsulOfficialUrls">
             <m-img-viewer 
               :key="index"
@@ -48,7 +48,7 @@
               ]"
             />
           </template>
-        </template>
+        </template> -->
 
         <template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>
 
@@ -391,11 +391,11 @@ export default {
           prop: 'name',
           ...$likeName
         },
-        {
-          label: '身份证件信息',
-          slotName: 'idCards',
-          minWidth: 148
-        },
+        // {
+        //   label: '身份证件信息',
+        //   slotName: 'idCards',
+        //   minWidth: 148
+        // },
         {
           label: '证件号',
           prop: 'uuid',

@@ -30,7 +30,7 @@
         :cols="tableCols"
         class="mini-td-padding"
       >
-        <template #idCard="{ row }">
+        <!-- <template #idCard="{ row }">
           <m-img-viewer
             :url="row.idCardFront"
             title="身份证正面照"
@@ -42,7 +42,7 @@
             title="身份证背面照"
             isRequired
           />
-        </template>
+        </template> -->
 
         <template #prisoners="{ row }">
           <template v-for="prisoner in row.prisonerList">
@@ -59,7 +59,7 @@
           <el-button
             type="text"
             size="small"
-            @click="getFamilyDetail(row.id)"
+            @click="onShowFamilyDetail(row)"
           >账号信息</el-button>
 
           <el-button
@@ -146,6 +146,55 @@
         @cancel="visible = false"
       />
     </el-dialog>
+
+    <el-dialog
+      title="账号信息"
+      class="authorize-dialog"
+      :visible.sync="informationVisible"
+      @close="onCloseInformation"
+    >
+      <div class="detail-container">
+        <div
+          class="detail-item"
+          v-for="(item, index) in detailItems"
+          :key="`id-family-detail-item-${ index }`"
+        >
+          <label>{{ item.label }}：</label>
+
+          <span>{{ familyInformationDetails[item['prop']] }}</span>
+        </div>
+
+        <div class="detail-item" style="margin-bottom: 10px;font-weight: bold;">请核对家属信息:</div>
+
+        <div class="img-box">
+          <span>{{ familyInformationDetails.idCardFront }}</span>
+          <span>{{ familyInformationDetails.idCardBack }}</span>
+          <m-img-viewer
+            isRequired
+            :class="[{ 'el-image__no-box_shadow': !familyInformationDetails.idCardFront }]"
+            :url="familyInformationDetails.idCardFront"
+            :toolbar="{ prev: 1, next: 1 }"
+            title="身份证正面照"
+          />
+
+          <m-img-viewer
+            isRequired
+            :class="[{ 'el-image__no-box_shadow': !familyInformationDetails.idCardBack }]"
+            :url="familyInformationDetails.idCardBack"
+            :toolbar="{ prev: 1, next: 1 }"
+            title="身份证背面照"
+          />
+        </div>
+
+        <div class="button-box">
+          <el-button
+            type="primary"
+            size="small"
+            @click="onCloseInformation"
+          >关闭</el-button>
+        </div>
+    </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -163,6 +212,8 @@ import {
   $likePhone,
   $likePrisonerNumber
 } from '@/common/constants/const'
+
+import { batchDownloadPublicImageURL } from '@/utils/helper'
 
 const prisonerDetailRows = [
   [
@@ -211,6 +262,20 @@ const tabOptions = {
   FAMILY: 'families'
 }
 
+const detailItems = [
+  {
+    label: '姓名',
+    prop: 'name'
+  },
+  {
+    label: '邮编',
+    prop: 'postalCode'
+  },
+  {
+    label: '家庭地址',
+    prop: 'homeAddress'
+  }
+]
 export default {
   mixins: [prisonFilterCreator],
 
@@ -294,12 +359,16 @@ export default {
         // }
       },
       filter: {},
-      excelReason: ''
+      excelReason: '',
+
+      informationVisible: false,
+
+      detailItems
     }
   },
 
   computed: {
-    ...mapState(['families']),
+    ...mapState(['families', 'familyInformationDetails']),
 
     dialogContent() {
       let title,
@@ -352,11 +421,11 @@ export default {
           prop: 'name',
           ...$likeName
         },
-        {
-          label: '身份证信息',
-          width: '148px',
-          slotName: 'idCard'
-        },
+        // {
+        //   label: '身份证信息',
+        //   width: '148px',
+        //   slotName: 'idCard'
+        // },
         {
           label: '黑名单原因',
           prop: 'reason',
@@ -452,7 +521,8 @@ export default {
       'addFamilyBlacklist',
       'removeFamilyBlacklist',
       'getPoliceFamilies',
-      'deletePoliceFamily'
+      'deletePoliceFamily',
+      'getFamilyDetail'
     ]),
 
     getDatas() {
@@ -475,10 +545,21 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    getFamilyDetail(e) {
-      this.$router.push({
-        path: `/family/detail/${ e }`
-      })
+    async onShowFamilyDetail(row) {
+      const { id, idCardBack, idCardFront } = row
+
+      const URLS = { idCardBack, idCardFront }, _key = `family_${ id }`
+
+      const result = await Promise.all([this.getFamilyDetail({ id }), batchDownloadPublicImageURL(URLS, _key)])
+
+      const families = {
+        ...this.familyInformationDetails,
+        ...result[1]
+      }
+
+      this.$store.commit('getFamilyDetail', { families })
+
+      this.informationVisible = true
     },
 
     showPrisonerDetail(prisoner) {
@@ -580,6 +661,13 @@ export default {
           if (result) await this.getDatas()
         }
       })
+    },
+
+    // 关闭账号信息弹框
+    onCloseInformation() {
+      this.informationVisible = false
+
+      this.$store.commit('getFamilyDetail', {})
     }
   }
 }
@@ -615,6 +703,40 @@ export default {
 
   .el-button {
     flex-grow: 1;
+  }
+}
+
+.detail-container{
+  width: 90%;
+  margin: auto;
+}
+.detail-container .detail-item{
+  line-height: 24px;
+  overflow: hidden;
+
+}
+.detail-container .detail-item label{
+  width: 100px;
+  font-weight: bold;
+  float: left;
+}
+.detail-container .detail-item span{
+  width: calc(100% - 100px);
+  float: right;
+}
+
+.authorize-dialog {
+  /deep/ .img-box {
+    .el-image {
+      width: 40%;
+      height: 110px;
+      margin-bottom: 5px;
+        img {
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+        }
+    }
   }
 }
 </style>

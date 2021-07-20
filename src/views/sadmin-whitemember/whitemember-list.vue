@@ -96,7 +96,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-import { $likePhone } from '@/common/constants/const'
+import { $likePhone, $likeName } from '@/common/constants/const'
 // import helper from '@/utils'
 
 export default {
@@ -136,7 +136,8 @@ export default {
       tableCols: [
         {
           label: '用户姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          ...$likeName
         },
         {
           label: '手机号',
