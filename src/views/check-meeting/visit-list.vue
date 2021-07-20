@@ -43,6 +43,7 @@
               @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
           </div>
         </template>
+
         <template #content="{ row }">
           <span v-if="!row.content">
             <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
@@ -56,18 +57,37 @@
             <span v-else>{{ row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
+
         <template #operate="{ row }">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
          <el-button
-            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && ( !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor) || row.isCheck  ))"
+            v-if="(
+              row.status == 'PENDING' && 
+              row.isLock !== 1 && 
+              operateQueryAuth === true && 
+              ( 
+                !( 
+                  haveMultistageExamine && 
+                  row.authorizeLevel === 1 && 
+                  !isAdvancedAuditor
+                ) || row.isCheck  
+              )
+            )"
             size="mini"
             @click="handleAuthorization(row)">审核</el-button>
           <el-button
-            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
+            v-else-if="
+              row.status === 'PASSED' && 
+              row.isWithdrawFlag === 1  && 
+              operateQueryAuth === true && 
+                !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(row)">撤回</el-button>
           <el-button
-            v-if="row.status != 'PENDING' || ( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )|| row.isCheck==0"
+            v-if="
+              row.status != 'PENDING' || 
+              ( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor ) || 
+              row.isCheck==0"
             type="text"
             size="mini"
             class="button-detail"
@@ -87,9 +107,7 @@
       class="authorize-dialog"
       title="请选择探视时间段"
       width="900px">
-      <div
-        v-if="show.agree"
-        class="button-box">
+      <div class="button-box">
           <el-table
             :data="meetingAdjustment.terminals"
             border
@@ -280,6 +298,7 @@
             plain
             @click="closeWithdraw('withdrawForm')">关闭</el-button>
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
@@ -461,6 +480,7 @@
 
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
+
     <el-dialog
       title="家属信息"
       class="family-dialog"
