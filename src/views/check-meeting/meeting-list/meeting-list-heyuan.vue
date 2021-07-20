@@ -2133,13 +2133,13 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .el-select-dropdown{
+ .logMgCls .el-select-dropdown{
         max-width: 243px;
     }
-    .el-select-dropdown__item{
+    .logMgCls .el-select-dropdown__item{
         display: inline-block;
     }
-    .el-select-dropdown__item span {
+    .logMgCls .el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }
