@@ -130,6 +130,22 @@
           show-overflow-tooltip
           min-width="50"
         />
+        <el-table-column label="管教级别" min-width="70">
+          <template #default="{ row }">
+           <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           label="监区"
@@ -681,6 +697,17 @@ export default {
           type: 'select',
           label: '家属类型',
           options: this.$store.state['nationality'],
+          value: ''
+        },
+        level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
           value: ''
         }
       },
@@ -1451,13 +1478,13 @@ export default {
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .el-select-dropdown{
+ .logMgCls .el-select-dropdown{
         max-width: 243px;
     }
-    .el-select-dropdown__item{
+    .logMgCls .el-select-dropdown__item{
         display: inline-block;
     }
-    .el-select-dropdown__item span {
+    .logMgCls .el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

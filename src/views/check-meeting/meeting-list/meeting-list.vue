@@ -33,6 +33,21 @@
         :data="meetings.contents"
         @sort-change="sortChange"
       >
+      
+       <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
@@ -832,14 +847,23 @@
             options: this.$store.state.areaOptions,
             value: ''
           },
-
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
-
+           level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
+          value: ''
+        },
           status: {
             type: 'select',
             label: '申请状态',
@@ -1097,6 +1121,11 @@
               label: '罪犯姓名',
               prop: 'prisonerName',
               showOverflowTooltip: true
+            },
+             {
+              label: '管教级别',
+              slotName: 'level',
+              minWidth: 75
             },
             {
               label: '性别',
@@ -2141,13 +2170,13 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .el-select-dropdown{
+.logMgCls .el-select-dropdown{
         max-width: 243px;
     }
-    .el-select-dropdown__item{
+.logMgCls .el-select-dropdown__item{
         display: inline-block;
     }
-    .el-select-dropdown__item span {
+.logMgCls .el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

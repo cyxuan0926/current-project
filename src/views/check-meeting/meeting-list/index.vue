@@ -30,7 +30,7 @@
             :key="index"
             :label="tab.label"
             :name="tab.name" />
-        </template>  
+        </template>
       </el-tabs>
       <m-table-new
         stripe
@@ -184,7 +184,7 @@
           />
         </template>
         <template #familyRelationalProofUrl="{ scope }">
-          <m-img-viewer 
+          <m-img-viewer
             :url="scope.familyRelationalProofUrl"
             title="关系证明图"
           />
