@@ -123,15 +123,13 @@
           <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
         </template>
 
-        <template #families="{ row }">
+        <template #families="{ item }">
           <el-button
             type="text"
             size="small"
-            v-for="family in row.families"
-            :key="family.id"
             style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family)"
-          >{{ family.familyName }}</el-button>
+            @click="showFamilyDetail(item)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
         <template #notifyId="{ row }">
@@ -488,7 +486,12 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
 
-import { provinceJailLevelConfigsParamsName, prisonerInsideWhiteLists } from '@/common/constants/const'
+import {
+  provinceJailLevelConfigsParamsName,
+  prisonerInsideWhiteLists,
+  $likeName,
+  $likePrisonerNumber
+} from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -1223,7 +1226,13 @@ export default {
     tableCols() {
       const familiesCol = {
         label: '对应家属',
-        slotName: 'families'
+        prop: 'families',
+        ...$likeName,
+        desensitizationColsConfigs: {
+          keyWord: 'id',
+          prop: 'familyName',
+          desensitizationColSlotName: 'families'
+        }
       }
 
       const hasAllPrisonQueryAuthCols = [
@@ -1274,12 +1283,13 @@ export default {
           label: '罪犯姓名',
           prop: 'name',
           minWidth: 75,
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          ...$likePrisonerNumber
         },
         {
           label: '性别',
@@ -1295,7 +1305,8 @@ export default {
         {
           label: '罪犯虚拟编号',
           prop: 'ywtCriminalNumber',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          ...$likePrisonerNumber
         },
         {
           label: '监区',
@@ -1318,7 +1329,9 @@ export default {
           showOverflowTooltip: true,
           slotName: 'prisonerStatus'
         },
+
         familiesCol,
+
         {
           label: '家属可视电话告知书',
           minWidth: 125,
@@ -1336,7 +1349,7 @@ export default {
       ]
 
       if (this.isPrisonerTabVal) {
-        if (this.isSuperAdmin) prisonerCols.splice(5, 1)
+        if (this.isSuperAdmin) prisonerCols.splice(6, 1)
 
         else {
           const { tenantCode } = this.publicUserInfo
@@ -1345,7 +1358,7 @@ export default {
 
           if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
             prisonerCols.splice(4, 1)
-            prisonerCols.splice(5, 1)
+            prisonerCols.splice(6, 1)
           }
         }
 

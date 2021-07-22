@@ -3,7 +3,7 @@ export default {
     state.families = params
   },
   getFamilyDetail(state, params) {
-    if (params.families) state.family = params.families
-    else state.family = {}
+    if (params.families) state.familyInformationDetails = params.families
+    else state.familyInformationDetails = {}
   }
 }

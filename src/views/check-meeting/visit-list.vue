@@ -1,37 +1,40 @@
 <template>
-<el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
+      @search="onSearch"
+    >
       <m-excel-download
         slot="append"
         :path="excelDownloadUrl"
-        :params="excelFilter"/>
+        :params="excelFilter"
+      />
     </m-search>
+
     <el-col :span="24">
-      <el-tabs
-        v-model="tabs"
-        type="card">
+      <el-tabs v-model="tabs" type="card">
         <template v-for="(tab, index) in tabsItems">
           <el-tab-pane
             :key="index"
             :label="tab.label"
-            :name="tab.name" />
+            :name="tab.name"
+          />
         </template>
       </el-tabs>
+
       <m-table-new
         stripe
         :data="visits.contents"
         @sort-change="sortChange"
         :cols="tableCols"
-        ref="parentElTable">
+        ref="parentElTable"
+      >
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
+
         <template #families="{ row }">
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
@@ -43,6 +46,7 @@
               @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
           </div>
         </template>
+
         <template #content="{ row }">
           <span v-if="!row.content">
             <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
@@ -56,22 +60,28 @@
             <span v-else>{{ row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
+
         <template #operate="{ row }">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
          <el-button
             v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && ( !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor) || row.isCheck  ))"
             size="mini"
-            @click="handleAuthorization(row)">审核</el-button>
+            @click="handleAuthorization(row)"
+          >审核</el-button>
+
           <el-button
             v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
-            @click="handleWithdraw(row)">撤回</el-button>
+            @click="handleWithdraw(row)"
+          >撤回</el-button>
+
           <el-button
             v-if="row.status != 'PENDING' || ( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )|| row.isCheck==0"
             type="text"
             size="mini"
             class="button-detail"
-            @click="onDetail(row)">详情</el-button>
+            @click="onDetail(row)"
+          >详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -79,51 +89,57 @@
     <m-pagination
       ref="pagination"
       :total="visits.total"
-      @onPageChange="getDatas"/>
+      @onPageChange="getDatas"
+    />
     
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
       title="请选择探视时间段"
-      width="900px">
-      <div
-        v-if="show.agree"
-        class="button-box">
-          <el-table
-            :data="meetingAdjustment.terminals"
-            border
-            @cell-click="cellClick"
-            :row-class-name="tableRowClassName"
-            :cell-style="cellStyle"
-            class="tableBorder">
-            <el-table-column
-              v-if="meetingAdjustment.meetingQueue && meetingAdjustment.meetingQueue.length > 7"
-              fixed
-              prop="terminalNumber"
-              label="窗口序号"
-              min-width="80">
-            </el-table-column>
-            <el-table-column
-              v-else
-              prop="terminalNumber"
-              label="窗口序号"
-              min-width="80">
-            </el-table-column>
-            <el-table-column
-              v-for="(item,index) in meetingAdjustment.meetingQueue" :key="index"
-              :prop="item"
-              :label="item"
-              min-width="84">
-            </el-table-column>
-            <el-table-column
-              v-if="show.meetingQueue"
-              prop="noTimes"
-              label="当日没有可选时间段"
-              min-width="84">
-            </el-table-column>
-          </el-table>
+      width="900px"
+    >
+      <div v-if="show.agree" class="button-box">
+        <el-table
+          :data="meetingAdjustment.terminals"
+          border
+          @cell-click="cellClick"
+          :row-class-name="tableRowClassName"
+          :cell-style="cellStyle"
+          class="tableBorder"
+        >
+          <el-table-column
+            v-if="meetingAdjustment.meetingQueue && meetingAdjustment.meetingQueue.length > 7"
+            fixed
+            prop="terminalNumber"
+            label="窗口序号"
+            min-width="80"
+          />
+
+          <el-table-column
+            v-else
+            prop="terminalNumber"
+            label="窗口序号"
+            min-width="80"
+          />
+
+          <el-table-column
+            v-for="(item,index) in meetingAdjustment.meetingQueue"
+            :key="index"
+            :prop="item"
+            :label="item"
+            min-width="84"
+          />
+
+          <el-table-column
+            v-if="show.meetingQueue"
+            prop="noTimes"
+            label="当日没有可选时间段"
+            min-width="84" 
+          />
+        </el-table>
       </div>
+
       <span v-if="show.agree" slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
         <el-button @click="show.agree=false">取 消</el-button>
@@ -136,7 +152,8 @@
       @close="closeAuthorize"
       title="审核"
       :close-on-click-modal="false"
-      width="780px">
+      width="780px"
+    >
       <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
@@ -567,17 +584,25 @@
     mapMutations,
     mapGetters
   } from 'vuex'
+
   import Moment from 'moment'
+
   import validator, { helper } from '@/utils'
+
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
   import prisons from '@/common/constants/prisons'
+
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
-
-  import cloneDeep from 'lodash/cloneDeep'
-
+  import {
+    withdrawOrAnthorinputReason,
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -586,6 +611,7 @@
         {
           label: '现场探视申请',
           name: 'first'
+
         },
         {
           label: '审核已通过',
@@ -931,12 +957,14 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true
+              showOverflowTooltip: true,
+              ...$likeName
             },
             {
               label: '性别',
@@ -957,12 +985,19 @@
             },
             {
               label: '家属',
-              slotName: 'families',
-              minWidth: 115
+              prop: 'filterFamilies',
+              minWidth: 115,
+              ...$likeName,
+              desensitizationColsConfigs: {
+                keyWord: 'familyId',
+                prop: 'familyName',
+                desensitizationColSlotName: 'families'
+              }
             },
             {
               label: '家属电话',
-              prop: 'phone'
+              prop: 'phone',
+              ...$likePhone
             },
             {
               label: '关系',

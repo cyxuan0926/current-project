@@ -72,5 +72,9 @@ export default {
 
   setCurrentProcessTaskInformation: (state, currentProcessTaskInformation) => {
     state.currentProcessTaskInformation = Object.assign({}, currentProcessTaskInformation)
+  },
+
+  setCacheImageURLS: (state, cacheImageURLS) => {
+    state.cacheImageURLS = cacheImageURLS
   }
 }

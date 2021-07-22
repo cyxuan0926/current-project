@@ -33,7 +33,7 @@
     </el-col>
     <m-pagination
       ref="pagination"
-      :total="tatalPage"
+      :total="totalPage"
       @onPageChange="getDatas"
     />
   </el-row>
@@ -102,14 +102,14 @@ export default {
         }
       ],
       filterInit: { // 默认查询上一个月的，筛选框初始化
-        startDate: startDate,
-        endDate: endDate
+        startDate,
+        endDate
       }
     }
   },
   computed: {
     ...mapState(['prisonReportList', 'prisonReportDetail']),
-    tatalPage() {
+    totalPage() {
       if (this.activeComponentName === 'profile') {
         return this.prisonReportList.total
       } else {

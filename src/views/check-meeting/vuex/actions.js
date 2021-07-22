@@ -2,6 +2,8 @@ import http from '@/service'
 import repeatAPI from '@/service/modules/repeat'
 import { getUserStorage } from '@/utils/store'
 
+import { batchDownloadPublicImageURL } from '@/utils/helper'
+
 export default {
   getMeetings({ commit }, params) {
     return http.getMeetings(params).then(res => {
@@ -69,8 +71,44 @@ export default {
   getMeetingsDiplomatsDetail({ commit }, params) {
     return http.getMeetingsDiplomatsDetail(params).then(res => res)
   },
-  getMeetingsFamilyDetail({ commit }, params) {
-    return http.getMeetingsFamilyDetail(params).then(res => res)
+  async getMeetingsFamilyDetail(_, params) {
+    try {
+      const res = await http.getMeetingsFamilyDetail(params)
+
+      if (res) {
+        const {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        } = res.family
+
+        const urls = {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        }
+
+        const _key = `familyId_${ params['familyId'] }`
+
+        const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+        res.family = {
+          ...res.family,
+          ...URLS
+        }
+      }
+
+      return res
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
   getMeettingsChangelogDetail({ commit }, params) {
     return http.getMeettingsChangelogDetail(params).then(res => res)

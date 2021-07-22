@@ -68,41 +68,31 @@
           min-width="50"
         >
           <template #default="{ row }">
-            <span>{{row.name + (row.businessType === 3 ? '（附）' : '')}}</span>
+            <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.name + (row.businessType == 3 ? '（附）' : '')">
+              <span slot="reference">{{ row.name | asteriskDisplay('asterisk_name') }}</span>
+            </el-popover>
           </template>
         </el-table-column>
 
         <el-table-column
           v-if="isShowPhone"
-          label="家属电话"
           prop="phone"
           min-width="90"
-        />
-
-        <el-table-column width="148px" label="身份证件信息">
-          <template #default="{ row }">
-            <m-img-viewer
-              :url="row.idCardFront"
-              isRequired
-              :toolbar="{ prev: 1, next: 1 }"
-              title="身份证正面照"
-            />
-
-            <m-img-viewer
-              isRequired
-              :url="row.idCardBack"
-              :toolbar="{ prev: 1, next: 1 }"
-              title="身份证背面照"
-            />
-
-            <m-img-viewer
-              isRequired
-              class="img-viewer__hidden"
-              :url="row.avatarUrl"
-              :toolbar="{ prev: 1, next: 1 }"
-              title="头像"
-            />
-          </template>
+          label="家属电话"
+        >
+         <template #default="{ row }">
+           <el-popover
+            popper-class="is-asterisk_display"
+            placement="top-start"
+            trigger="hover"
+            :content="row.phone">
+            <span slot="reference">{{ row.phone | asteriskDisplay('asterisk_phone') }}</span>
+          </el-popover>
+         </template>
         </el-table-column>
 
         <el-table-column
@@ -122,28 +112,44 @@
           show-overflow-tooltip
           min-width="55"
           sortable="custom"
-        />
+        >
+          <template #default="{ row }">
+           <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.prisonerName">
+              <span slot="reference">{{ row.prisonerName | asteriskDisplay('asterisk_name') }}</span>
+          </el-popover>
+         </template>
+        </el-table-column>
 
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber"
           show-overflow-tooltip
           min-width="50"
-        />
+        >
+          <template #default="{ row }">
+           <el-popover
+              popper-class="is-asterisk_display"
+              placement="top-start"
+              trigger="hover"
+              :content="row.prisonerNumber">
+              <span slot="reference">{{ row.prisonerNumber | asteriskDisplay('asterisk_prisonerNumber') }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+
         <el-table-column label="管教级别" min-width="70">
           <template #default="{ row }">
-           <span v-if="row.level==1">
-              宽管级
-           </span>
-           <span v-if="row.level==2">
-              普管级
-           </span>
-           <span v-if="row.level==3">
-              考察级
-           </span>
-           <span v-if="row.level==4">
-              严管级
-           </span>
+            <span v-if="row.level === 1">宽管级</span>
+
+            <span v-if="row.level === 2">普管级</span>
+
+            <span v-if="row.level === 3">考察级</span>
+
+            <span v-if="row.level === 4">严管级</span>
           </template>
         </el-table-column>
 
@@ -459,10 +465,11 @@
           <div>
             <el-select
               v-model="remarks"
-              style="width:70%; margin-right:10px;"
               :multiple="true"
-              :multiple-limit="5"
-              collapse-tags @change="withdrawFormChange"
+              :multiple-limit='5'
+              collapse-tags
+              @change="withdrawFormChange"
+              style="width:70%;margin-right:10px"
             >
               <el-option
                 v-for="(remark,index) in content"
@@ -649,6 +656,7 @@ import { tokenExcel } from '@/utils/token-excel'
 import moment from 'moment'
 
 import { helper } from '@/utils'
+import { Message } from 'element-ui'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 export default {
@@ -1098,7 +1106,36 @@ export default {
 
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
 
-      if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+      if ( _authorizeDetData ) {
+        const {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        } = _authorizeDetData
+
+        const urls = {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        }
+
+        const _key = `registration_${ id }`
+
+        const URLS = await helper.batchDownloadPublicImageURL(urls, _key)
+
+        const input = {
+          ..._authorizeDetData,
+          ...URLS
+        }
+
+        result = this.set_relationalProofUrls(input)
+      }
 
       return result
     },

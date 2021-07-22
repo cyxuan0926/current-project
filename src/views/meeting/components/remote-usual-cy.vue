@@ -131,8 +131,8 @@
         type="date"
         :clearable="false"
         :value-format="'yyyy-MM-dd'"
-        placeholder="选择日期">
-      </el-date-picker>
+        placeholder="选择日期"
+      />
     </div>
     <div class="button-box">
       <el-button

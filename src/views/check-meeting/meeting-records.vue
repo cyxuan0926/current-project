@@ -39,6 +39,8 @@ import { mapActions, mapState } from 'vuex'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -97,17 +99,17 @@ export default {
         {
           label: '家属姓名',
           prop: 'familyName',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '警员姓名',
           prop: 'policeName',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '警员编号',
           prop: 'policeNumber',
-          showOverflowTooltip: true
+          ...$likePrisonerNumber
         },
         {
           label: '通话时间',
@@ -138,18 +140,18 @@ export default {
         {
           label: '家属姓名',
           prop: 'name',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true,
-          minWidth: 92
+          minWidth: 92,
+          ...$likePrisonerNumber
         },
         {
           label: '通话时间',

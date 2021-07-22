@@ -9,8 +9,9 @@
         <template #familyId="{ row }">
           <el-button
             type="text"
-            @click="showFamilyDetail(row.familyId, row.id)"
-          >{{ row.name }}</el-button>
+            @click="showFamilyDetail(row.familyId, row.id)">
+            {{ row.name | asteriskDisplay('asterisk_name') }}
+          </el-button>
         </template>
 
         <template #duration="{ row }">{{ row.duration | time }}</template>
@@ -124,6 +125,8 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   props: {
     hasAllPrisonQueryAuth: Boolean
@@ -158,15 +161,19 @@ export default {
         },
         {
           label: '家属姓名',
-          slotName: 'familyId'
+          prop: 'name',
+          ...$likeName,
+          desensitizationColSlotName: 'familyId'
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '总通话时间段',

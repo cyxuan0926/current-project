@@ -7,15 +7,24 @@
             class="mini-td-padding"
             style="width: 100%">
             <template #diplomatsName="{ row }">
-                <span v-for="(n, i) in row.diplomatsName" :key="n.id">
-                    <label v-if="isAdmin">{{n.name}}</label>
+              <template v-for="(n, i) in row.diplomatsName">
+                <el-popover
+                  :key="n.id"
+                  popper-class="is-asterisk_display"
+                  placement="top-start"
+                  trigger="hover"
+                  :content="n.name">
+                  <span slot="reference">
+                    <label v-if="isAdmin">{{n.name | asteriskDisplay('asterisk_name')}}</label>
                     <el-button
-                        v-else
-                        type="text"
-                        size="small"
-                        @click="handleShowInfo(n.id, row.meetingId)">{{ n.name }}</el-button>
+                      v-else
+                      type="text"
+                      size="small"
+                      @click="handleShowInfo(n.id, row.meetingId)">{{n.name | asteriskDisplay('asterisk_name')}}</el-button>
                     <em v-if="i != row.diplomatsName.length - 1">，</em>
-                </span>
+                  </span>
+                </el-popover>
+              </template>
             </template>
             <template #duration="{ row }">
                 <span>{{ row.duration | time }}</span>

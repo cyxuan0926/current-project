@@ -119,6 +119,13 @@ import { tokenExcel } from '@/utils/token-excel'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
 import http from '@/service'
+
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
+
 export default {
   name: 'FamilyPhone_Families',
 
@@ -200,19 +207,23 @@ export default {
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          ...$likeName
         },
         {
           label: '家属姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          ...$likeName
         },
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone'
+          prop: 'familyPhone',
+          ...$likePhone
         },{
           label: '总通话时间段',
           prop: 'totalTime',

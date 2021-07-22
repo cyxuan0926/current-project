@@ -33,36 +33,27 @@
         :data="meetings.contents"
         @sort-change="sortChange"
       >
-      
-       <template #level="{ row }">
-         <span v-if="row.level==1">
-              宽管级
-           </span>
-           <span v-if="row.level==2">
-              普管级
-           </span>
-           <span v-if="row.level==3">
-              考察级
-           </span>
-           <span v-if="row.level==4">
-              严管级
-           </span>
+        <template #level="{ row }">
+          <span v-if="row.level === 1">宽管级</span>
+
+          <span v-if="row.level === 2">普管级</span>
+
+          <span v-if="row.level === 3">考察级</span>
+
+          <span v-if="row.level === 4">严管级</span>
         </template>
+
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
 
-        <template #families="{ row }">
-          <div v-if="row.filterFamilies && row.filterFamilies.length">
-            <el-button
-              type="text"
-              size="small"
-              v-for="family in row.filterFamilies"
-              :key="family.familyId"
-              style="margin-left: 0px; margin-right: 8px;"
-              @click="showFamilyDetail(family.familyId, row.id)"
-            >{{ family.familyName }}</el-button>
-          </div>
+        <template #families="{ item, scope }">
+          <el-button
+            type="text"
+            size="small"
+            style="margin-left: 0px; margin-right: 8px;"
+            @click="showFamilyDetail(item.familyId, scope.row.id)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name')}}</el-button>
         </template>
 
         <template #content="{ row }">
@@ -74,10 +65,8 @@
           <el-tooltip
             v-else
             :content="row.content"
-            placement="top"
-          >
+            placement="top" >
             <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
-
             <span v-else>{{ row.status | applyStatus }}</span>
           </el-tooltip>
         </template>
@@ -87,19 +76,14 @@
           <el-button
             v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
             size="mini"
-            @click="handleAuthorization(row)"
-          >授权</el-button>
+            @click="handleAuthorization(row)">授权</el-button>
 
           <el-button
             v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             size="mini"
-            @click="handleWithdraw(row)"
-          >撤回</el-button>
+            @click="handleWithdraw(row)">撤回</el-button>
 
-          <el-button
-            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-            @click="handleWithdraw(row)"
-          >撤回</el-button>
+          <el-button v-if="tabs == 'UNUSUAL'&& row.unusualRemark" @click="handleWithdraw(row)">撤回</el-button>
 
           <el-button
             v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
@@ -749,7 +733,12 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+  import {
+    withdrawOrAnthorinputReason,
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -1115,12 +1104,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true
+              ...$likeName
             },
              {
               label: '管教级别',
@@ -1146,12 +1136,19 @@
             },
             {
               label: '家属',
-              slotName: 'families',
-              minWidth: 115
+              prop: 'filterFamilies',
+              minWidth: 115,
+              ...$likeName,
+              desensitizationColsConfigs: {
+                keyWord: 'familyId',
+                prop: 'familyName',
+                desensitizationColSlotName: 'families'
+              }
             },
             {
               label: '家属电话',
-              prop: 'phone'
+              prop: 'phone',
+              ...$likePhone
             },
             {
               label: '关系',
