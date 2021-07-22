@@ -1831,11 +1831,11 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
+        //当前角色是否选择时间 只有第一个审核人员能选择时间  为0走授权选择时间业务逻辑 为1直接走业务逻辑
         if (this.toShow.isChoiceTime&& !this.show.subTask) {
           this.show.agree = true
            this.buttonLoading = false
-        } else {
-           this.submitParams = {
+            this.submitParams = {
             meetingId: this.toShow.id,
             terminalId: this.toShow.terminalId ? this.toShow.terminalId : this.submitSuccessParams.terminalId,
             meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,

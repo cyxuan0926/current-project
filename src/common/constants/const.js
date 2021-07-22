@@ -22,6 +22,8 @@ export const responseURLWhiteLists = [
   '/download/exportVideoTelSummary',
   '/terminal/version/exportUpdateDetail',
   '/terminal/version/exportUpgradeStatistics',
+  '/meetingMembersStatistics/export',
+  '/meetingCallDetail/export',
   '/registrations/exportFamilyRegJails'
 ]
 

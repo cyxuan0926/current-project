@@ -131,9 +131,9 @@ export default {
           Object.values(res).forEach(val=>{
             val.forEach(item=>{
                if(params.dataType==1){
-              item.num=item.membersNum
+              item.num=item.familyCount
              }else{
-                item.num=item.familyCount
+                item.num=item.membersNum
              }
             })
           })
