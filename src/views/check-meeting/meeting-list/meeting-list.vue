@@ -745,10 +745,7 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason,
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone} from '@/common/constants/const'
+  import { withdrawOrAnthorinputReason} from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -1109,13 +1106,11 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              ...$likePrisonerNumber
+              prop: 'prisonerNumber'
             },
             {
               label: '罪犯姓名',
-              prop: 'prisonerName',
-              ...$likeName
+              prop: 'prisonerName'
             },
              {
               label: '管教级别',
@@ -1142,13 +1137,7 @@
            {
               label: '家属',
               prop: 'filterFamilies',
-              minWidth: 115,
-              ...$likeName,
-              desensitizationColsConfigs: {
-                keyWord: 'familyId',
-                prop: 'familyName',
-                desensitizationColSlotName: 'families'
-              }
+              minWidth: 115
             },
             {
               label: '家属电话',
