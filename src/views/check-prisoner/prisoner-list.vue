@@ -1297,33 +1297,40 @@ export default {
           prop: 'ywtCriminalNumber',
           showOverflowTooltip: true
         },
+
         {
           label: '监区',
           prop: 'prisonArea',
           showOverflowTooltip: true
         },
+
         {
           label: '通话次数/月',
           minWidth: 85,
           slotName: 'accessTime'
         },
+
         {
           label: '短信次数/月',
           minWidth: 85,
           slotName: 'smsNum'
         },
+
         {
           label: '服刑人员状态',
           minWidth: 90,
           showOverflowTooltip: true,
           slotName: 'prisonerStatus'
         },
+
         familiesCol,
+
         {
           label: '家属可视电话告知书',
           minWidth: 125,
           slotName: 'notifyId'
         },
+
         operationCol
       ]
 
