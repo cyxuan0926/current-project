@@ -59,9 +59,11 @@ const config = {
     bpmnApiHost: 'https://activiti-api.yuwugongkai.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
     // jailApiHost: 'http://192.168.100.1:8098/ywgk', // 会城监狱
-    jailApiHost: 'http://8.129.14.169:8088/ywgk', // 潍坊监狱
+    // jailApiHost: 'http://8.129.14.169:8088/ywgk', // 潍坊监狱
+    jailApiHost: 'http://192.168.7.254:8098/ywgk', // 河源监狱
     // apiHost: 'http://192.168.100.1:8098', // 会城监狱
-    apiHost: 'http://8.129.14.169:8088', // 潍坊监狱
+    // apiHost: 'http://8.129.14.169:8088', // 潍坊监狱
+    apiHost: 'http://192.168.7.254:8098', // 河源监狱
     financeApiHost: 'https://finance-api.yuwugongkai.com',
     monitoringApiHost: 'https://monitoring-api.yuwugongkai.com',
     apiPath: '/ywgk',
