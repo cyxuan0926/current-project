@@ -180,6 +180,17 @@
 
       <span slot="footer" class="dialog-footer">
         <div v-if="!show.agree && !show.disagree">
+          <label v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
+            <span style="padding-right: 12px;">选择流程节点:</span>
+            <el-select v-model="nextAuth" @change="selectTask" placeholder="请选择流程节点">
+              <el-option
+                v-for="item in selectProcessOption"
+                :key="item.taskCode"
+                :label="item.taskName"
+                :value="item.taskCode">
+              </el-option>
+            </el-select>
+          </label>
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
@@ -626,9 +637,9 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      const todayDate = this.$_dateNow
+      // const todayDate = this.$_dateNow
 
-      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
         visits: {
@@ -699,6 +710,7 @@
           }
         },
         show: {
+          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -791,7 +803,7 @@
 
         // todayDate,
 
-        oneMonthLater,
+        // oneMonthLater,
         submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
@@ -1087,10 +1099,11 @@
     },
 
     created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
-      })
+      // this.filterInit = Object.assign({}, this.filterInit, {
+      //   applicationStartDate: this.todayDate,
+      //   applicationEndDate: this.oneMonthLater
+      // })
+      console.log('created==', this.user)
     },
 
     async mounted() {
@@ -1321,6 +1334,7 @@
         let res = await http.getVisitsConfigMeetingtime(id)
         this.show.authorize = true
         this.meetingAdjustment = res || {}
+        // this.show.meetingQueue
       },
 
       // 表格操作-审核
@@ -1335,8 +1349,24 @@
         this.$message.closeAll()
         // 获取实地探监的配置信息
         this.getVisitTimeConfig(id)
-        this.show.authorize = true
+        // 获取并设置下一级节点
+        this.getSubtask(e)
         this.toShow = Object.assign({}, this.toShow, e)
+      },
+      selectTask(select){
+        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
+        this.submitSuccessParams.nextCheckRole=obj[0].taskName
+      },
+      async getSubtask(e){
+        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
+          if (!res) return
+          this.selectProcessOption =res
+          if(this.selectProcessOption.length){
+            this.show.process=true
+            this.nextAuth=this.selectProcessOption[0].taskCode
+          }else{
+             this.show.process=false
+          }
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1433,7 +1463,20 @@
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
         this.show.agree = true
-        this.buttonLoading = false
+        if (this.toShow.isChoiceTime && !this.show.subTask) {
+          this.show.agree = true
+          this.buttonLoading = false
+        } else {
+           this.submitParams = {
+            id: this.toShow.id,
+            window: this.toShow.window ? this.toShow.window : this.submitSuccessParams.window,
+            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextAuth: this.nextAuth
+          }
+          this.submitMeetingAuthorize()
+        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1506,9 +1549,11 @@
             this.submitParams.id = this.toAuthorize.id
             this.submitParams.window = this.submitSuccessParams.window
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
+            this.submitParams.processInstanceId = this.toShow.processInstanceId
+            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
             this.submitParams.nextAuth = this.nextAuth
-            this.show.agree = false;
-            this.submitMeetingAuthorize()
+          this.show.subTask = this.submitParams.meetingTime ? true : false
+          this.show.agree = false;
         }
       },
       submitMeetingAuthorize() {
@@ -1557,6 +1602,8 @@
         }
         this.remarks =[]
         this.submitParams=null
+        this.show.subTask=false
+        this.show.process=false
         this.nextAuth=''
       },
       closeWithdraw(e) {
