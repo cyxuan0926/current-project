@@ -311,24 +311,22 @@
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
-       <span slot="footer" class="dialog-footer">
       <div
         v-if="!show.agree && !show.disagree && !show.multistageExamine"
-      >
-          <label v-if="show.subTask&&show.process" style="display: inline-block;float: left; padding-left: 20px;">
-                  <span style="padding-right: 12px;">选择流程节点:</span>
-                    <el-select v-model="nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
-                    <el-option
-                      v-for="item in selectProcessOption"
-                      :key="item.taskCode"
-                      :label="item.taskName"
-                      :value="item.taskCode">
-                    </el-option>
-                  </el-select>
-                </label>
+       class="button-box">
+        <repetition-el-buttons  style="margin-top:20px" :buttonItems="authorizeButtons" />
+      </div>
 
+      <div v-if="show.multistageExamine" style="margin-top:20px" class="button-box more-button__box">
+        <div style="margin-bottom: 10px;">初审意见：</div>
+<m-form
+          class="multistage_examine-form"
+          ref="multistage_examine-form"
+          :items="localFirstLevelExamineFormItems"
+          @submit="onMultistageExamineCheck"
+        />
 
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
+        <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
       </div>
 
       <div
@@ -376,8 +374,6 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
- </span>
-
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
@@ -749,7 +745,10 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+  import { withdrawOrAnthorinputReason,
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone} from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -800,7 +799,7 @@
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
       const todayDate = this.$_dateNow
 
-      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+      const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -897,7 +896,6 @@
           }
         },
         show: {
-          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -919,8 +917,7 @@
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams: {},
-        nextCheckCode:'',
+        submitSuccessParams: null,
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -965,8 +962,6 @@
         ],
         meetingAdjustment: {},
 
-        selectProcessOption:[],
-
         meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
@@ -984,7 +979,6 @@
         todayDate,
 
         oneMonthLater,
-        submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -1115,12 +1109,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true
+              ...$likeName
             },
              {
               label: '管教级别',
@@ -1144,14 +1139,21 @@
               sortable: 'custom',
               minWidth: 135
             },
-            {
+           {
               label: '家属',
-              slotName: 'families',
-              minWidth: 115
+              prop: 'filterFamilies',
+              minWidth: 115,
+              ...$likeName,
+              desensitizationColsConfigs: {
+                keyWord: 'familyId',
+                prop: 'familyName',
+                desensitizationColSlotName: 'families'
+              }
             },
             {
               label: '家属电话',
-              prop: 'phone'
+              prop: 'phone',
+              ...$likePhone
             },
             {
               label: '关系',
@@ -1719,23 +1721,7 @@
         }
         this.getMeetTimeConfig()
         this.$message.closeAll()
-        this.getSubtask(e)
         this.toShow= Object.assign( {}, this.toShow, e )
-      },
-       selectTask(select){
-        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
-        this.submitSuccessParams.nextCheckRole=obj[0].taskName
-      },
-      async getSubtask(e){
-        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
-          if (!res) return
-          this.selectProcessOption =res
-          if(this.selectProcessOption.length){
-            this.show.process=true
-            this.nextCheckCode=this.selectProcessOption[0].taskCode
-          }else{
-             this.show.process=false
-          }
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1831,20 +1817,8 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
-        //当前角色是否选择时间 只有第一个审核人员能选择时间  为0走授权选择时间业务逻辑 为1直接走业务逻辑
-        if (this.toShow.isChoiceTime&& !this.show.subTask) {
           this.show.agree = true
            this.buttonLoading = false
-            this.submitParams = {
-            meetingId: this.toShow.id,
-            terminalId: this.toShow.terminalId ? this.toShow.terminalId : this.submitSuccessParams.terminalId,
-            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
-            processInstanceId: this.toShow.processInstanceId,
-            isChoiceTime: this.toShow.isChoiceTime,
-            nextCheckCode: this.nextCheckCode
-          }
-          this.submitMeetingAuthorize()
-        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1865,18 +1839,18 @@
       },
 
       // 覆盖mixin 高级审批提交情况下的提交操作
-      // onMultistageExamineGoSubmit() {
-      //   this.show.multistageExamine = true
+       onMultistageExamineGoSubmit() {
+         this.show.multistageExamine = true
 
-      //   this.buttonLoading = false
-      // },
+         this.buttonLoading = false
+       },
 
       // 覆盖mixin 高级审批提交情况下的返回操作
-      // onMultistageExamineGoBack() {
-      //   this.show.multistageExamine = false
+       onMultistageExamineGoBack() {
+         this.show.multistageExamine = false
 
-      //   this.$refs['multistage_examine-form'].handleResetField()
-      // },
+         this.$refs['multistage_examine-form'].handleResetField()
+       },
 
       // 覆盖mixin 高级审批提交情况下的确认操作
       onMultistageExamineSubmit() {
@@ -1960,14 +1934,13 @@
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-            this.submitParams.meetingId = this.toAuthorize.id
-            this.submitParams.terminalId = this.submitSuccessParams.terminalId
-            this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
-            this.submitParams.processInstanceId = this.toShow.processInstanceId
-            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
-            this.submitParams.nextCheckCode = this.nextCheckCode
+            let params = {
+            meetingId: this.toAuthorize.id,
+            terminalId: this.submitSuccessParams.terminalId,
+            meetingTime: this.submitSuccessParams.meetingTime
+          }
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
-             this.submitParams.area = this.isSpecial ? this.areaTypes : this.areaTabs
+             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
             if (this.checkInmeetings()) {
@@ -1975,21 +1948,18 @@
               this.isShowTips = true
               return
             }
-             this.submitParams.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+             params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
           }
-          this.show.subTask = this.submitParams.meetingTime ? true : false
-          this.show.agree = false;
-        }
-      },
-      submitMeetingAuthorize() {
-         http.meetingSelectAuthorize(this.submitParams).then(res => {
+          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
             this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
+            this.show.agree = false;
             this.getDatas('handleSubmit')
           })
+        }
       },
       onWithdraw(arg) {
        this.btnDisable = true
@@ -2026,10 +1996,6 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
-        this.submitParams=null
-        this.show.subTask=false
-        this.show.process=false
-        this.nextCheckCode=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
