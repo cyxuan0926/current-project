@@ -71,7 +71,7 @@ let check = [{
     component: 'check-meeting/visit-list',
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
     props: { hasPrisonAreaAuth: true },
-    meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
+    meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约管理' }
   }, {
     path: '/meeting/message',
     name: 'MeetingMessage',
