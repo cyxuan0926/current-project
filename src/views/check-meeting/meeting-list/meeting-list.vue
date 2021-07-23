@@ -1143,8 +1143,7 @@
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              ...$likePhone
+              prop: 'phone'
             },
             {
               label: '关系',

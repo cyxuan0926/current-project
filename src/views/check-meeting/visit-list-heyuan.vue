@@ -682,7 +682,7 @@
           status: {
             type: 'select',
             label: '申请状态',
-            options: this.$store.state.applyStatus,
+            options: this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON'),
             miss: true,
             correlation: "status",
             value: ''
@@ -1004,7 +1004,7 @@
               prop: 'provinceName'
             },
             ...allPrisonQueryAuthLeadingCols,
-            ...basicCols
+            ...basicCols.filter(c => c.prop != 'phone')
           ]
 
           if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
@@ -1085,7 +1085,7 @@
             this.toShow.changerType=true
             this.filter.changerType = '2'
           }else{
-            this.searchItems.status.options=this.$store.state.applyStatus
+            this.searchItems.status.options = this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON')
           }
         }
         this.onSearch()
@@ -1264,10 +1264,10 @@
         let { visits, total } = await http.getVisits(params)
         if (visits && visits.length) {
           visits.forEach(m => {
-            if (!m.families) {
-              m.families = [{
+            if (!m.filterFamilies) {
+              m.filterFamilies = [{
                 familyId: m.familyId,
-                familyName: m.name
+                familyName: m.familyName
               }]
             }
           })
@@ -1379,7 +1379,7 @@
 
         this.show.withdraw = true
       },
-      onDetail(e) {
+      async onDetail(e) {
         const constFamilyShows = [
             {
               label: '与囚犯关系',
@@ -1419,22 +1419,17 @@
               prop: 'content',
               style: { width: '100%' }
             }
-          ],
-          params = { meetingId: e.id }
-        this.getVisitsChangelog(params).then(res => {
-          if (!res) return
-          if(res.callLogs.length){
-              res.callLogs.forEach((item,index)=>{
-              item.status="CALL"
-              res.changeLogs.splice(1+index, 0, item)
-            })
-          }
-          this.toShow = Object.assign({}, res)
-          this.show.dialog = true
-          this.familyShows = this.toShow.status !== 'DENIED'
-            ? constFamilyShows.slice(0, constFamilyShows.length - 1)
-            : constFamilyShows
-        })
+          ]
+        let { data = {} } = await http.getVisitsChangelog(e.id)
+        // if(data.callLogs && data.callLogs.length) {
+        //   data.callLogs.forEach((item,index)=>{
+        //     item.status="CALL"
+        //     data.changeLogs.splice(1+index, 0, item)
+        //   })
+        // }
+        this.toShow = Object.assign({}, data)
+        this.show.dialog = true
+        this.familyShows = this.toShow.status !== 'DENIED' ? constFamilyShows.slice(0, constFamilyShows.length - 1) : constFamilyShows
       },
       isDevelop(val, key) {//判断结束原因是否存在多行
         this.$nextTick(() => {

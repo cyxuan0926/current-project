@@ -34,6 +34,9 @@ export default {
   getFreeMeetings(state, params) {
     state.freeMeetings = params
   },
+  setMeetingsData(state, payload) {
+    state.meetingAdjustment.meetings = payload
+  },
   meetingApplyDealing(state, params = []) {
     if (params && state.meetings.contents.length) {
       // if (state.meetings.contents.find(m => m.id === parseInt(params))) state.meetingRefresh = parseInt(params)

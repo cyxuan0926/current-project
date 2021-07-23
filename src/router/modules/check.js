@@ -68,10 +68,11 @@ let check = [{
     path: '/visit/list',
     name: 'visit-list',
     // component: helper.loadView('check-meeting/visit-list'),
-    component: 'check-meeting/visit-list',
+    component: 'check-meeting/visit-list', // 非河源
+    // component: 'check-meeting/visit-list-heyuan', // 河源监狱
     // component: resolve => require(['@/views/check-meeting/visit-list'], resolve),
     props: { hasPrisonAreaAuth: true },
-    meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约列表' }
+    meta: { permission: 'visit.field-visit.search', breadcrumbName: '现场探视预约管理' }
   }, {
     path: '/meeting/message',
     name: 'MeetingMessage',

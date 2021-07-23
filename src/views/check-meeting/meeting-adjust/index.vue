@@ -121,7 +121,7 @@ export default {
         // 通话调整
         await this.adjustMeeting(meetings);
       } catch (err) {
-        if (err === "close") {
+        if (err === "cancel" || err === 'close') {
           return next(false);
         }
       }
@@ -153,7 +153,8 @@ export default {
     ...mapActions([
       "getMeetingConfigs",
       "adjustMeeting",
-      "meetingAdjustDealing"
+      "meetingAdjustDealing",
+      'setMeetingsData'
     ]),
 
     // 拖拽完成
@@ -184,13 +185,23 @@ export default {
             cancelButtonText: "取消",
             type: "warning"
           });
-
           this.loading = true;
           await this.adjustMeeting(meetings);
           this.removePageunloadListener();
-
+          let _meetings = this.meetingAdjustment.meetings.map(om => {
+            let res = meetings.find(nm => nm.id == om.id)
+            if (res) {
+              om.meetingTime = res.meetingTime
+              om.terminalId = res.terminalId
+              om.terminalNumber = `${res.terminalNumber}`
+            }
+            return om
+          })
+          this.setMeetingsData(_meetings || [])
+          this.$refs.meetingTable.reSetMeetingsData()
           setTimeout(() => {
             this.loading = false;
+            // this.getConfigs()
           }, 300);
         } catch (err) {}
       } else {

@@ -1027,11 +1027,19 @@ export default {
           minWidth: 75,
           showOverflowTooltip: true
         },
+
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
           showOverflowTooltip: true
         },
+
+        {
+          label: '罪犯虚拟编号',
+          prop: 'ywtCriminalNumber',
+          showOverflowTooltip: true
+        },
+
         {
           label: '监区',
           prop: 'prisonArea',
@@ -1073,8 +1081,11 @@ export default {
           slotName: 'operations'
         }
       ]
+
       if (this.hasAllPrisonQueryAuth) allCols.splice(11, 2)
+
       else allCols.splice(1, 2)
+
       return allCols
     },
 
