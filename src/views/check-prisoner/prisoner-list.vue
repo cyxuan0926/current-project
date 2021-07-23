@@ -1759,7 +1759,7 @@ export default {
       if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
-          message: '提示：如果是转监，请使用转监功能，不要做离监操作！',
+          message: '提示：请选择要离监的数据！！',
           type: 'warning'
         })
       } else {
