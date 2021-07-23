@@ -795,7 +795,7 @@
         }
       ]
 
-      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      const AreaObj = [{label:"监舍区",value:1},{label:"会见楼",value:3}]
       const todayDate = this.$_dateNow
 
       const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
@@ -805,6 +805,7 @@
         isSeparateByArea: false,
         isUseMeetingFloor: false,
         selectRange: {},
+        AreaObj,
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
         userDefinedDuration: false,
@@ -1322,9 +1323,9 @@
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
-
+      this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
+      console.log(this.$store.state.areaOptions)
       await this.getDatas('mounted')
-
     },
     methods: {
       ...mapActions([
