@@ -336,6 +336,7 @@
       <div>
             <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
+            class="select_edit"
               v-for="(remark,index) in content"
               :value="remark"
               :label="(index+1)+'、'+remark"
@@ -387,6 +388,7 @@
           <div style="margin-bottom: 10px;">
             <el-select v-model="remarks" :multiple="true"  :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
             <el-option
+            class="select_edit"
               v-for="(remark,index) in content"
               :value="remark"
               :label="(index+1)+'、'+remark"
@@ -2125,13 +2127,13 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
-.logMgCls .el-select-dropdown{
+ .el-select-dropdown{
         max-width: 243px;
     }
-.logMgCls .el-select-dropdown__item{
+.select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-.logMgCls .el-select-dropdown__item span {
+.select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

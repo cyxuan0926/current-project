@@ -296,28 +296,6 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scope>
-.logMgCls .el-select__tags-text {
-  display: inline-block;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.logMgCls .el-select .el-tag__close.el-icon-close {
-  top: -7px;
-}
- .logMgCls .el-select-dropdown{
-        max-width: 243px;
-    }
-    .logMgCls .el-select-dropdown__item{
-        display: inline-block;
-    }
-    .logMgCls .el-select-dropdown__item span {
-        min-width: 400px;
-        display: inline-block;
-   }
-</style>
 
 
 <style lang="scss" scoped>

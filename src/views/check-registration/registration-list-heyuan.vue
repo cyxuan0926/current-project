@@ -379,6 +379,7 @@
               @change="refuseFormChange"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -439,6 +440,7 @@
               collapse-tags @change="withdrawFormChange"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -1402,13 +1404,13 @@ export default {
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .logMgCls .el-select-dropdown{
+  .el-select-dropdown{
         max-width: 243px;
     }
-    .logMgCls .el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .logMgCls .el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }
