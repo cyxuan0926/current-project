@@ -110,6 +110,21 @@
             >修改</el-button>
           </div>
         </template>
+        
+       <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
 
         <template #prisonTerm="{ row }">
           <span class="separate">{{ row.prisonTermStartedAt | dateFormate }}</span>
@@ -575,7 +590,18 @@ export default {
           type: 'input',
           label: '家属姓名',
           miss: false
-        }
+        },
+        level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
+          value: ''
+        },
       },
 
       formItems: {
@@ -1315,7 +1341,11 @@ export default {
           minWidth: 85,
           slotName: 'smsNum'
         },
-
+        {
+          label: '管教级别',
+          minWidth: 85,
+          slotName: 'level'
+        },
         {
           label: '服刑人员状态',
           minWidth: 90,
@@ -1352,7 +1382,7 @@ export default {
 
           if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
             prisonerCols.splice(4, 1)
-            prisonerCols.splice(5, 1)
+            prisonerCols.splice(6, 1)
           }
         }
 
