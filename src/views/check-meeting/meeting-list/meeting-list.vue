@@ -306,8 +306,6 @@
         </div> -->
       </div>
 
-
-
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
@@ -1169,7 +1167,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 180,
+              minWidth: 120,
               align: 'center'
             }
           ]

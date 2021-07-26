@@ -6,11 +6,15 @@
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
-      <m-excel-download
-        slot="append"
-        :path="excelDownloadUrl"
-        :params="excelFilter"/>
+      @search="onSearch"
+    >
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+      </template>  
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -28,7 +32,10 @@
         :data="visits.contents"
         @sort-change="sortChange"
         :cols="tableCols"
-        ref="parentElTable">
+        ref="parentElTable"
+      >
+        <template #createdAt="{ row }">{{ row.createdAt | momentDateFormate }}</template>
+
         <template #level="{ row }">
          <span v-if="row.level==1">
               宽管级
@@ -112,7 +119,8 @@
     <m-pagination
       ref="pagination"
       :total="visits.total"
-      @onPageChange="getDatas"/>
+      @onPageChange="getDatas"
+    />
     
     <el-dialog
       :close-on-click-modal="false"
@@ -167,11 +175,11 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">家属姓名</span>
-              <span class="family-nameDetail">{{toShow.names}}</span>
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">关系</span>
-              <span class="family-nameDetail">{{toShow.relationship}}</span>
+              <span class="family-nameDetail">{{toShow.relation}}</span>
             </p>
           </div>
           <div class="detail-content">
@@ -181,7 +189,7 @@
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">申请探视时间</span>
-              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+              <span class="family-nameDetail">{{ toShow.visitTime }}</span>
             </p>
           </div>
         </div>
@@ -299,7 +307,6 @@
           type="danger"
           plain
           @click="closeWithdraw('withdrawForm')">关闭</el-button>
-      </div>
     </el-dialog>
 
     <el-dialog
@@ -537,7 +544,7 @@
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="changeClose()"
+      @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
@@ -563,20 +570,20 @@
            type="primary"
           class="button-add"
           size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
+          @click="onRejectEditshow">编辑</el-button>
           <span v-else>
           <el-button
           v-if='content.length>0'
           type="primary"
           class="button-add"
           size="mini"
-          @click="onSubmitReject()">保存</el-button>
+          @click="onSubmitReject">保存</el-button>
            <el-button
           type="primary"
           class="button-add"
           size="mini"
           v-if='content.length<10'
-          @click="addReject()">新增</el-button>
+          @click="addReject">新增</el-button>
           </span>
       </el-row>
     </el-dialog>
@@ -601,6 +608,7 @@
 
   import cloneDeep from 'lodash/cloneDeep'
 
+  import { tokenExcel } from '@/utils/token-excel'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -858,6 +866,8 @@
         ]
       },
       remarks: [],
+
+      downloading: false
       }
     },
     computed: {
@@ -874,10 +884,6 @@
         'isShowPhone',
         'isSuperAdmin'
       ]),
-
-      excelDownloadUrl() {
-        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
-      },
 
       // excel的参数 需要添加当前标签页的label
       excelFilter() {
@@ -928,7 +934,8 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              showOverflowTooltip: true
             },
             {
               label: '罪犯姓名',
@@ -948,7 +955,8 @@
             {
               label: '申请时间',
               prop: 'createdAt',
-              minWidth: 130
+              minWidth: 130,
+              slotName: 'createdAt'
             },
             {
               label: '申请通话时间',
@@ -989,7 +997,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 180,
+              minWidth: 120,
               align: 'center'
             }
           ]
@@ -1180,8 +1188,8 @@
       this.updateer = updateEr
     },
 
-    onRejectshow(str,isform){
-      this.getRejectContent()
+    async onRejectshow(str,isform){
+      await this.getRejectContent()
       this.show.rejectEdit = str == 'PASSED'
     },
 
@@ -1197,10 +1205,10 @@
       this.show.editRebut=false
     },
 
-    changeClose(){
+    async changeClose(){
       this.remarks=[]
-      this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
+      await this.onRejectshow(false,this.isform)
+      this.show.editRebut=true
     },
 
     async onSubmitReject(){
@@ -1340,12 +1348,14 @@
       // },
 
       // 获取数据
-      async onGetDetailAndInitData(meetingId) {
-        const res = await this.getMeettingsDetail({ meetingId })
+      async onGetDetailAndInitData(visitId) {
+        const res = await await http.getVisitsChangelog(visitId)
 
-        if (!res) return
+        if (res && res['data'] && Array.isArray(res['data']['changeLogs'])) return res['data']
 
-        return res
+        return ({
+          changeLogs: []
+        })
       },
 
       // 获取实地探监预约配置
@@ -1358,21 +1368,24 @@
       // 表格操作-审核
       async handleAuthorization(e) {
         const { id } = e
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        const _details = await this.onGetDetailAndInitData(id)
+        this.toAuthorize = _details
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
-        this.onRejectshow(false,false)
+        await this.onRejectshow(false,false)
         this.isform = false
         this.$message.closeAll()
         // 获取实地探监的配置信息
-        this.getVisitTimeConfig(id)
+        await this.getVisitTimeConfig(id)
         this.show.authorize = true
-        this.toShow = Object.assign({}, this.toShow, e)
+        this.toShow = _details
       },
       async handleWithdraw(e) {
         const { id } = e
-        this.onRejectshow(false,true)
+
+        await this.onRejectshow(false,true)
+
         this.isform=true
 
         this.toAuthorize = await this.onGetDetailAndInitData(id)
@@ -1630,6 +1643,29 @@
           this.filter = Object.assign(this.filter, this.sortObj)
         }
         this.getDatas('sortChange')
+      },
+
+      async onDownloadExcel() {
+        this.downloading = true
+
+        const times = helper.DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+          tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+          TABName = tabItem[0]['label'],
+          actionName = 'exportVisitExcel',
+          params = {
+            url: '/prisoner_visits/exportPrisonerVisits',
+            params: { ...this.filter, tab: this.tabs }
+          }
+
+        await tokenExcel({
+          params,
+          actionName,
+          menuName: `现场探视预约管理-${ TABName }-${ times }`,
+        })
+
+        setTimeout(() => {
+          this.downloading = false
+        }, 300)
       }
     }
   }

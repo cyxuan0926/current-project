@@ -24,7 +24,8 @@ export const responseURLWhiteLists = [
   '/terminal/version/exportUpgradeStatistics',
   '/meetingMembersStatistics/export',
   '/meetingCallDetail/export',
-  '/registrations/exportFamilyRegJails'
+  '/registrations/exportFamilyRegJails',
+  '/prisoner_visits/exportPrisonerVisits'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。
