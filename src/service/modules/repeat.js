@@ -170,5 +170,16 @@ export default {
   // 家属信息管理 - 删除警员家属信息
   deletePoliceFamily: phoneNumber => {
     return service.get(`/police/delete/${ phoneNumber }`)
+  },
+
+  // 实地探视 - 导出excel
+  exportVisitExcel: inputs => {
+    const {
+      methods = 'post',
+      params,
+      url
+    } = inputs
+
+    return service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data)
   }
 }
