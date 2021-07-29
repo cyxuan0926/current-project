@@ -407,7 +407,8 @@ superAdmin = [{
         deep: true,
         permission: 'visit.other.terminal.add',
         breadcrumbName: '新增终端',
-        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+        componentsUnRemoveKeepAlive: ['OtherTerminalList'],
+        activeMenu: '/other-terminal/list'
       },
       component: 'sadmin-terminal/other-edit'
     }, {
@@ -417,7 +418,8 @@ superAdmin = [{
         deep: true,
         permission: 'visit.other.terminal.edit',
         breadcrumbName: '编辑终端',
-        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+        componentsUnRemoveKeepAlive: ['OtherTerminalList'],
+        activeMenu: '/other-terminal/list'
       },
       component: 'sadmin-terminal/other-edit'
     }]
