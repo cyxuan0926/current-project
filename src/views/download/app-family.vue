@@ -1,46 +1,44 @@
 <template>
-  <main>
-    <section class="blue-block">
-      <div class="blue-container">
-        <div class="img-box">
-          <img
-            class="img-user"
-            src="../../assets/images/phone.png"
-            alt="">
-        </div>
-        <div class="download-box">
-          <h3>国科服务</h3>
-          <div class="download android">
-            <a href="https://www.yuwugongkai.com/app/yuwutong_f.apk?from=wechat">
-              <el-button><i class="iconfont icon-android" />Android下载</el-button>
-            </a>
-            <img
-              src="../../assets/images/yuwutong_pro_download.png"
-              alt="">
-          </div>
-          <div class="download ios">
-            <a href="https://itunes.apple.com/cn/app/%E7%8B%B1%E5%8A%A1%E9%80%9A/id1102307635?mt=8">
-              <el-button><i class="iconfont icon-ios" />iPhone下载</el-button>
-            </a>
-            <img
-              src="../../assets/images/yuwutong_pro_download.png"
-              alt="">
-          </div>
-        </div>
-      </div>
-      <div
-        class="tips"
-        v-if="isMobile">
-        <p>请点击右上角选择“浏览器中打开”</p>
-        <i class="iconfont icon-aaa" />
-      </div>
+  <main class="app-download">
+    <section class="app-download-wrap">
+      <section class="app-download-container">
+        <section class="app-download-content">
+          <dl class="app-download-block">
+            <dt class="app-download-block-hd">
+              <h3>构建G2C商业生态新世界</h3>
+            </dt>
+            <dd class="app-download-block-bd">
+              <div class="app-download-btns">
+                <a href="https://itunes.apple.com/cn/app/%E7%8B%B1%E5%8A%A1%E9%80%9A/id1102307635?mt=8"><el-button class="btn-ios"><i class="iconfont icon-ios" />App Store 下载</el-button></a>
+                <a href="https://www.yuwugongkai.com/app/yuwutong_f.apk?from=wechat"><el-button class="btn-and"><i class="iconfont icon-android" />Android 下载</el-button></a>
+              </div>
+              <div class="app-download-qrcode">
+                <img src="../../assets/images/yuwutong_pro_download.png" alt="国科服务app下载">
+                <div class="app-download-qrcode-text">扫码下载国科服务App</div>
+              </div>
+            </dd>
+          </dl>
+        </section>
+        <section class="app-download-mobile">
+          <img src="../../assets/images/app-family-mobile-bg.png" alt="国科服务app">
+        </section>
+      </section>
     </section>
+    
+    
     <!-- <footer class="main-footer">
       <p><strong>Copyright © 2014-2018 <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a></strong> 版权所有.</p>
       <div>
         <b>版本</b> 1.0.0
       </div>
     </footer> -->
+
+    <!-- <div
+        class="tips"
+        v-if="isMobile">
+        <p>请点击右上角选择“浏览器中打开”</p>
+        <i class="iconfont icon-aaa" />
+      </div> -->
   </main>
 </template>
 <script>
@@ -91,51 +89,130 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/css/new.css";
-.img-box .img-user{
-  position: absolute;
-  left: -55%;
-  width: 109%;
-  margin-top: 1px;
-  margin-left: 62%
-}
-.blue-block{
-  background: #337AB7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0;
-  position: relative;
-}
-@media screen and (max-width: 376px) {
-  .img-box .img-user {
-    margin-top: 27px;
+  .app-download {
+    background-image: url('../../assets/images/app-family-download-bg.png');
+    background-position: center center;
+    background-repeat:  no-repeat;
+    background-size: auto 100%;
+    background-color: #2B6CFF;
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    &-wrap {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      bottom: 0;
+      margin-left: -422px;
+      width: 844px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    &-container {
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    &-mobile {
+      width: 246px;
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    &-content {
+      width: 530px;
+      margin-right: 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    &-block {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      // &-hd img {
+      //   display: block;
+      //   width: 100%;
+      //   height: auto;
+      //   margin-bottom: 76px;
+      // }
+      &-hd h3 {
+        display: block;
+        width: 100%;
+        font-size: 44px;
+        margin-top: 0;
+        margin-bottom: 70px;
+        color: #fff;
+        font-weight: 400;
+        text-align: center;
+      }
+      &-bd {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+      }
+    }
+
+    &-btns {
+      padding-top: 20px;
+      a {
+        display: block;
+        & + a {
+          margin-top: 20px;
+        }
+      }
+      /deep/ .el-button {
+        width: 217px;
+        height: 56px;
+        font-size: 16px;
+        display: block;
+        margin: 0;
+        padding: 0;
+        line-height: 56px;
+        border: none;
+        box-shadow: 6px 6px 15px #2c6bff;
+      }
+
+      .btn-ios {
+        background: #333;
+        color: #fff;
+      }
+
+      .btn-and {
+        background: #A5C846;
+        color: #fff;
+      }
+
+      /deep/ .iconfont {
+        font-size: 22px;
+        margin-right: 10px;
+      }
+    }
+
+    &-qrcode {
+      width: 174px;
+      color: #fff;
+      margin-left: 44px;
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+        box-shadow: 6px 6px 15px #2c6bff;
+      }
+      &-text {
+        font-size: 16px;
+        text-align: center;
+        padding-top: 10px;
+      }
+    }
   }
-}
-@media screen and (max-width: 563px) and (min-width: 320px) {
-  .img-box .img-user {
-    margin-left: 61%;
-    width: 102%;
-  }
-}
-@media screen and (max-width: 416px) and (min-width: 377px) {
-  .img-box .img-user {
-    width: 110%;
-  }
-}
-@media screen and (max-width: 605px) and (min-width: 564px) {
-  .img-box .img-user{
-    margin-top: 19px;
-  }
-}
-@media screen and (max-width: 720px) and (min-width: 605px) {
-  .img-box .img-user{
-    margin-top: 2px;
-  }
-}
-@media screen and (min-width: 720px) {
-  .img-box .img-user{
-    width: 107%;
-  }
-}
 </style>
