@@ -948,7 +948,7 @@ export default {
   }
 
   .effective__date {
-    padding-top: 10px;
+    padding: 10px 0px;
 
     .el-date-editor {
       width: 30%;
