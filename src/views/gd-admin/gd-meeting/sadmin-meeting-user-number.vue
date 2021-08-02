@@ -99,7 +99,7 @@ export default {
             label: '数据类型',
             options:[{label: '全量数据',value: 1},{label: '去重数据', value: 2}],
             canNotClear:true,
-            value: 0
+            value: 1
         },
 
       },
