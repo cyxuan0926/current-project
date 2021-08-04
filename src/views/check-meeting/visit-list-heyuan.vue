@@ -32,6 +32,21 @@
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
+         <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
+        
         <template #families="{ row }">
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
@@ -679,6 +694,18 @@
             value: ''
           },
 
+           level:{
+            type: 'select',
+            label: '管教级别',
+            options: [
+              { label: '宽管级', value: 1 },
+              { label: '普管级', value: 2 },
+              { label: '考察级', value: 3 },
+              { label: '严管级', value: 4 }
+            ],
+            value: ''
+          },
+
           status: {
             type: 'select',
             label: '申请状态',
@@ -921,6 +948,11 @@
               label: '罪犯姓名',
               prop: 'prisonerName',
               showOverflowTooltip: true
+            },
+            {
+              label: '管教级别',
+              slotName: 'level',
+              minWidth: 75
             },
             {
               label: '性别',
