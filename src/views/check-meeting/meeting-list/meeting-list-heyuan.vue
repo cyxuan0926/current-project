@@ -1033,9 +1033,7 @@
       ...mapState([
         'meetings',
         'frontRemarks',
-        'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData'
+        'meetingRefresh'
       ]),
 
       ...mapGetters([
@@ -1346,7 +1344,6 @@
         'withdrawMeeting',
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
-        'firstLevelAuthorize',
         'getMeettingsChangelogDetail',
         'getUnusualMeetingPage'
       ]),
@@ -1868,53 +1865,7 @@
         this.closeAuthorize('back')
       },
 
-      // 覆盖mixin 高级审批提交情况下的提交操作
-      // onMultistageExamineGoSubmit() {
-      //   this.show.multistageExamine = true
-
-      //   this.buttonLoading = false
-      // },
-
-      // 覆盖mixin 高级审批提交情况下的返回操作
-      // onMultistageExamineGoBack() {
-      //   this.show.multistageExamine = false
-
-      //   this.$refs['multistage_examine-form'].handleResetField()
-      // },
-
-      // 覆盖mixin 高级审批提交情况下的确认操作
-      onMultistageExamineSubmit() {
-        this.$refs['multistage_examine-form'].onSubmit()
-      },
-
-      async onMultistageExamineCheck(params) {
-        const { id } = this.toAuthorize
-
-        const { remark } = params
-
-        this.buttonLoading = true
-
-        await this.firstLevelAuthorize({
-          params: {
-            meetingId: id,
-            remark
-          },
-
-          url: '/meetings/submitMeeting',
-
-          mutationName: 'setIsSuccessFirstLevelSubmitMeeting'
-        })
-
-        this.buttonLoading = false
-
-        if (this.isSuccessFirstLevelSubmitMeeting) {
-          this.closeAuthorize()
-          this.toAuthorize = {}
-          this.getDatas('handleSubmit')
-        }
-      },
-
-        // 比较时间大小
+      // 比较时间大小
       compareDate(date1,date2) {
         let oDate1 = new Date(date1);
         let oDate2 = new Date(date2);

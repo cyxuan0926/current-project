@@ -345,7 +345,7 @@
             <p class="detail-message-family" style="border: none">
               <span class="family-name">窗口号</span>
 
-              <span class="family-nameDetail">{{toShow.window}}</span>
+              <span class="family-nameDetail">{{toShow.window}}号</span>
             </p>
           </div>
         </div>
@@ -655,7 +655,7 @@
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
-        visitsFlag: true, // 实地探视不需要多级审批
+        visitsFlag: true, // 实地探视不需要多级审批 只需再visit-list.vue中定义
         visits: {
           contents: [],
           total: 0
@@ -877,8 +877,6 @@
         // 'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData',
         'global'
       ]),
 
@@ -999,7 +997,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 120,
+              width: 150,
               align: 'center'
             }
           ]
@@ -1142,17 +1140,9 @@
 
     methods: {
       ...mapActions([
-        // 'getMeetings',
-        'getMeetingsAll',
         'authorizeMeeting',
-        'withdrawMeeting',
-        'getMeetingsFamilyDetail',
-        'getMeettingsDetail',
-        'firstLevelAuthorize',
-        'getMeettingsChangelogDetail'
+        'withdrawVisit'
       ]),
-
-      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
 
       refuseFormChange(e){
         let str=""
@@ -1292,14 +1282,12 @@
       },
 
       // 获取数据
-      async onGetDetailAndInitData(visitId) {
-        const res = await http.getVisitsChangelog(visitId)
-
-        if (res && res['data'] && Array.isArray(res['data']['changeLogs'])) return res['data']
-
-        return ({
-          changeLogs: []
-        })
+      async onGetDetailAndInitData(id) {
+        let { data = {} } = await http.getVisitsChangelog(id)
+        if (!data.changeLogs) {
+          data.changeLogs = []
+        }
+        this.toAuthorize = Object.assign({ id }, data)
       },
 
       // 获取实地探监预约配置
@@ -1326,9 +1314,7 @@
       // 表格操作-审核
       async handleAuthorization(e) {
         const { id } = e
-        const _details = await this.onGetDetailAndInitData(id)
-        _details.id = id
-        this.toAuthorize = _details
+        await this.onGetDetailAndInitData(id)
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
@@ -1338,7 +1324,7 @@
         // 获取实地探监的配置信息
         await this.getVisitTimeConfig(id)
         this.show.authorize = true
-        this.toShow = _details
+        this.toShow = JSON.parse(JSON.stringify(this.toAuthorize))
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1347,7 +1333,7 @@
 
         this.isform=true
 
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        await this.onGetDetailAndInitData(id)
 
         this.show.withdraw = true
       },
@@ -1488,7 +1474,6 @@
           this.btnDisable = false
           if (!res) return
           this.closeAuthorize()
-          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1518,7 +1503,6 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
-            // this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.getDatas('handleSubmit')
           })
@@ -1537,7 +1521,7 @@
             else this.btnDisable = false
           })
         if (this.btnDisable){
-          this.withdrawMeeting(params).then(res => {
+          this.withdrawVisit(params).then(res => {
                     if (!res) return
                     this.buttonLoading = false
                     this.btnDisable = false
@@ -1572,25 +1556,18 @@
         this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
         if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       },
-      showFamilyDetail(...args) {
-        const [ familyId, meetingId ] = args
-        this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
-          if (res.family) {
-            res.family.relationalProofUrls = []
-            for(let [key, value] of Object.entries(res.family)) {
-              const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
-              keys.includes(key) && value && res.family.relationalProofUrls.push({
-                url: value
-              })
-            }
-            // if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
-            //   url: ''
-            // })
-            this.family = Object.assign({}, res.family)
-          }
-          else this.family = {}
-          this.show.familiesDetialInform = true
-        })
+      async showFamilyDetail(familyId, visitId) {
+        let { data = {} } = await http.getVisitsFamilyDetail({ familyId, visitId })
+        data.family = data.family || {}
+        data.family.relationalProofUrls = []
+        for(let [key, value] of Object.entries(data.family)) {
+          const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
+          keys.includes(key) && value && data.family.relationalProofUrls.push({
+            url: value
+          })
+        }
+        this.family = Object.assign({}, data.family)
+        this.show.familiesDetialInform = true
       },
       sortChange({ column, prop, order }) {
         if (!prop || !order) {

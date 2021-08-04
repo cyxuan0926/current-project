@@ -1022,8 +1022,7 @@
         'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData'
+        'isSuccessFirstLevelSubmitMeeting'
       ]),
 
       ...mapGetters([
