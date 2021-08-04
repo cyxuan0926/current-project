@@ -133,8 +133,6 @@
             :data="meetingAdjustment.windows"
             border
             @cell-click="cellClick"
-            :row-class-name="tableRowClassName"
-            :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
               fixed
@@ -147,6 +145,9 @@
               :prop="item"
               :label="item"
               min-width="84">
+              <template #default>
+                <span class="meetingQueue-sp"></span>
+              </template>
             </el-table-column>
             <el-table-column
               v-if="show.meetingQueue"
@@ -654,6 +655,7 @@
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
+        visitsFlag: true, // 实地探视不需要多级审批
         visits: {
           contents: [],
           total: 0
@@ -1232,46 +1234,20 @@
         this.show.editRebut = true
       } catch (error) {}
     },
-
-      tableRowClassName ({row, rowIndex}) {
-        //把每一行的索引放进row
-        row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
-        return 'row-remarks'  //className(类名)
-      },
-      cellStyle ({ row, column, rowIndex, columnIndex }) {
-        // 状态列字体颜色
-        if(row[column.label]){
-          if(row[column.label]==this.toAuthorize.name){
-            return "background:#fae9db"
-          }else{
-            return  'background:#DCDFE6'
-          }
-        }
-      },
-      cellClick(row, column,cell,event){
-        let cellStr=cell.querySelector(".cell").textContent
-        if(cellStr){
-        }else{
-          if(column.label=='窗口序号'){
-            return false
-          }else if(column.label=='当日没有可选时间段'){
-            return false
-          }
-          else{
-            this.meetingAdjustment.windows.filter(item=>{
-              this.meetingAdjustment.meetingQueue.forEach(val=>{
-                if(item[val]==this.toAuthorize.name){
-                  item[val] = ""
-                }
-              })
-            } )
-            row[column.label]=this.toAuthorize.name
-            this.$set(this.meetingAdjustment.windows, row.index,row)
-          }
-          for (let index in row) {
-            if(row[index]==this.toAuthorize.name){
-              this.submitSuccessParams={ window: row.id, meetingTime: index }
-            }
+    clearCellText() {
+      let _spans = document.querySelectorAll('.meetingQueue-sp')
+      if (_spans.length) {
+        Array.from(_spans).forEach(sp => sp.innerText = '')
+      }
+    },
+      cellClick(row, column, cell, event){
+        let _cell = cell.querySelector(".meetingQueue-sp")
+        if (!_cell.textContent && column.label != '窗口序号' && column.label != '当日没有可选时间段') {
+          this.clearCellText()
+          _cell.innerText = this.toAuthorize.familyName
+          this.submitSuccessParams = {
+            window: parseInt(row.window),
+            meetingTime: column.label
           }
         }
       },
@@ -1315,41 +1291,9 @@
         await this.$refs.pagination.handleCurrentChange(1)
       },
 
-      // filterParams () {
-      //   //下载表格查询条件处理
-      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
-
-      //   const TABName = tabItem[0]['label']
-
-      //   if (this.toShow.changerType === true) this.filter.changerType = '2'
-
-      //   if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
-
-      //   else {
-      //     this.$refs.elTable && this.$refs.elTable.clearSort()
-      //     delete this.filter.sortDirection
-      //     delete this.filter.orderField
-      //   }
-
-      //   if (this.tabs !== 'first') {
-      //     if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
-      //       this.filter.status = this.tabs
-      //     }
-      //   }
-
-      //   const { jailId } = this.$store.state.global.user
-
-      //   jailId === -1 ? '' : ''
-
-      //   return {
-      //     ...this.filter,
-      //     TABName
-      //   }
-      // },
-
       // 获取数据
       async onGetDetailAndInitData(visitId) {
-        const res = await await http.getVisitsChangelog(visitId)
+        const res = await http.getVisitsChangelog(visitId)
 
         if (res && res['data'] && Array.isArray(res['data']['changeLogs'])) return res['data']
 
@@ -1360,15 +1304,30 @@
 
       // 获取实地探监预约配置
       async getVisitTimeConfig(id) {
-        let res = await http.getVisitsConfigMeetingtime(id)
-        this.show.authorize = true
-        this.meetingAdjustment = res || {}
+        let { data } = await http.getVisitsConfigMeetingtime(id)
+        if (data) {
+          let { windows = [], meetingQueue = [] } = data
+          windows = windows.map(w => {
+            let _w = {
+              window: w
+            }
+            meetingQueue.forEach(m => {
+              _w[m] = ''
+            })
+            return _w
+          })
+          this.meetingAdjustment = {
+            windows,
+            meetingQueue
+          }
+        }
       },
 
       // 表格操作-审核
       async handleAuthorization(e) {
         const { id } = e
         const _details = await this.onGetDetailAndInitData(id)
+        _details.id = id
         this.toAuthorize = _details
         this.show.agree = false
         this.show.disagree = false
@@ -1474,6 +1433,8 @@
       onAgreeAuthorize() {
         this.show.agree = true
         this.buttonLoading = false
+        this.submitSuccessParams = null
+        this.clearCellText()
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1546,8 +1507,9 @@
             this.submitParams.id = this.toAuthorize.id
             this.submitParams.window = this.submitSuccessParams.window
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
+            this.submitParams.status = 'PASSED'
             this.submitParams.nextAuth = this.nextAuth
-            this.show.agree = false;
+            this.show.agree = false
             this.submitMeetingAuthorize()
         }
       },
@@ -1556,7 +1518,7 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
-            this.setIsRefreshMultistageExamineMessageBell(true)
+            // this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.getDatas('handleSubmit')
           })
@@ -1744,6 +1706,9 @@
     padding-left: 120px;
     color: red;
     font-size: 12px;
+  }
+  .meetingQueue-sp {
+    color: #409EFF;
   }
 </style>
 
