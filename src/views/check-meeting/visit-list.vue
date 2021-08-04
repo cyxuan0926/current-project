@@ -1171,12 +1171,12 @@
 
     // 获取当前驳回原因列表
     async getRejectContent() {
-      let { content, contentId, updateEr } = await http.getRejectEdit({
+      let { content, id, updateEr } = await http.getRejectEdit({
         type: 3,
         jailId: this.user.jailId
       })
       this.content = content || []
-      this.contentId = contentId
+      this.contentId = id
       this.updateer = updateEr
     },
 
