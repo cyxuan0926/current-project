@@ -85,8 +85,9 @@ const prisonerDataImportExcelConfig = {
   filename: {
     value: filename_failed_data
   },
-  header: ['罪犯编号', '姓名', '性别', '罪名', '罚金', '起日', '止日', '队别', '分监区', '楼栋', '楼层', '原判刑期', '管教等级', '失败原因'],
+  header: ['错误序号', '罪犯编号', '姓名', '性别', '罪名', '罚金', '起日', '止日', '队别', '分监区', '楼栋', '楼层', '原判刑期', '管教等级', '失败原因'],
   filterFields: [
+    { key: 'rowNum' },
     { key: 'prisonerNumber' },
     { key: 'name' },
     {
