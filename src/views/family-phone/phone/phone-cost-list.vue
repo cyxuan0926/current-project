@@ -222,7 +222,7 @@ export default {
       const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
         actionName = 'familyPhone/exportFamilyPhone',
         params = {
-          url: "/settleAccounts/exportSettleAccounts",
+          url: "/msg/settleAccounts/exportSettleAccounts",
           methods:'get',
           params: { ...this.filter},
           isPrisonInternetGetUrlWay: "getHyUrl"

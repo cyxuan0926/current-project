@@ -9,11 +9,11 @@ export default {
     exportFamilyphoneSum: params => service.get('/familyphonesummary/export', params, { responseType: 'blob' }).then(res => res && res.data),
     // 查询亲情电话申请列表ywt-admin
     QAYWT_familyPhoneList: params => {
-        return service.get('/parse/familyphone/apply/page', params).then(res => res && res.data)
+        return service.get('/msg/parse/familyphone/apply/page', params).then(res => res && res.data)
     },
     // 查询亲情电话申请详情ywt-admin
     QAYWT_familyPhoneDetail: params => {
-        return service.get('/parse/familyphone/apply/detail', params).then(res => res && res.data)
+        return service.get('/msg/msg/familyphone/apply/detail', params).then(res => res && res.data)
     },
     // 查询亲情电话申请统计ywt-admin
     familyPhoneAccountList: params => {

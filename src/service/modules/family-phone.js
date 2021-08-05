@@ -40,7 +40,7 @@ export default {
 
   // 亲情电话申请 - 导入 - 验证数据
   validateUploaPhone: filepath => {
-    return service.post('/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)
+    return service.post('/msg/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)
   },
 
   // 亲情电话家属 - 详情
@@ -56,7 +56,7 @@ export default {
 
   // 亲情电话家属 - 审核
   authFamilyPhoneFamilies: params => {
-    return service.post(service['getHyUrl']('/familyPhoneManage/auth'), params)
+    return service.post(service['getHyUrl']('/msg/familyPhoneManage/auth'), params)
   },
 
   // 亲情电话通话费用详情 - 列表
@@ -83,12 +83,12 @@ export default {
 
   // 亲情电话通话费用详情 - 编辑是否出狱状态
   editFamilyPhoneSettleAccountsRelease: params => {
-    return service.post(service['getHyUrl']('/settleAccounts/editRelease'), params)
+    return service.post(service['getHyUrl']('/msg/settleAccounts/editRelease'), params)
   },
 
   // 亲情电话通话费用详情 - 结算
   settleFamilyPhoneSettleAccounts: params => {
-    return service.post(service['getHyUrl']('/settleAccounts/settlement'), params, { responseType: 'blob' }).then(response => response && response.data)
+    return service.post(service['getHyUrl']('/msg/settleAccounts/settlement'), params, { responseType: 'blob' }).then(response => response && response.data)
   },
 
   // 亲情电话通话费用详情 - 导出

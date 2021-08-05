@@ -994,7 +994,7 @@ export default {
         TABName = tabItem[0]['label'],
         actionName = 'familyPhone/exportFamilyPhone',
         params = {
-          url: "/parse/familyphone/apply/exportFamilyPhoneApply",
+          url: "/msg/parse/familyphone/apply/exportFamilyPhoneApply",
           methods:'post',
           params: { ...this.filter, tab: this.tabs },
           isPrisonInternetGetUrlWay: "getHyUrl"

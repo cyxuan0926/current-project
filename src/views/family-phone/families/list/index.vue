@@ -913,13 +913,13 @@ export default {
 
     apiUrls() {
       const urls = {
-        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/familyPhoneManage/page',
+        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/msg/familyPhoneManage/page',
 
         exportUrl: this.isSuperAdmin ? '/familyPhone/export' : '/parse/familyphone/exportFamilyPhone',
 
-        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save',
+        newOrEditUrl: this.familyInformationDialogOperationType ? '/msg/familyPhoneManage/edit' : '/msg/familyPhoneManage/save',
 
-        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/familyPhoneManage/detail'
+        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/msg/familyPhoneManage/detail'
       }
 
       return urls
