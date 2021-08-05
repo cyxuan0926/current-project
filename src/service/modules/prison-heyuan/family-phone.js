@@ -21,7 +21,7 @@ export default {
      },
    // 查询亲情电话申请详情
      familyPhoneDetail: params => {
-          return service.get(service.getHyUrl('/msg/familyphone/apply/detail'), params).then(res => res && res.data)
+          return service.get(service.getHyUrl('/msg/parse/familyphone/apply/detail'), params).then(res => res && res.data)
      },
     // 新增亲情电话申请
       familyPhoneAdd: data => {

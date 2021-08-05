@@ -13,7 +13,7 @@ export default {
     },
     // 查询亲情电话申请详情ywt-admin
     QAYWT_familyPhoneDetail: params => {
-        return service.get('/msg/familyphone/apply/detail', params).then(res => res && res.data)
+        return service.get('/msg/parse/familyphone/apply/detail', params).then(res => res && res.data)
     },
     // 查询亲情电话申请统计ywt-admin
     familyPhoneAccountList: params => {
