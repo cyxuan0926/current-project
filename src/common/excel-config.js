@@ -85,8 +85,9 @@ const prisonerDataImportExcelConfig = {
   filename: {
     value: filename_failed_data
   },
-  header: ['罪犯编号', '罪犯名字', '性别', '犯罪事实', '附加刑', '刑期起日', '刑期止日', '监区', '原判刑期', '失败原因'],
+  header: ['错误序号', '罪犯编号', '姓名', '性别', '罪名', '罚金', '起日', '止日', '队别', '分监区', '楼栋', '楼层', '原判刑期', '管教等级', '失败原因'],
   filterFields: [
+    { key: 'rowNum' },
     { key: 'prisonerNumber' },
     { key: 'name' },
     {
@@ -111,8 +112,18 @@ const prisonerDataImportExcelConfig = {
         return formatTime(prisonTermEndedAt, 'yyyy/MM/dd')
       }
     },
+    // 队别
     { key: 'prisonArea' },
+    // 分监区
+    { key: 'subPrisonArea' },
+    // 楼栋
+    { key: 'buildName' },
+    // 楼层
+    { key: 'floorName' },
+    // 原判刑期
     { key: 'originalSentence' },
+    // 管教级别
+    { key: 'level' },
     { key: 'reason' }
   ]
 }

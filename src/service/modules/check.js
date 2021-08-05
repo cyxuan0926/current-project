@@ -134,6 +134,9 @@ export default {
   // 实地探监管理-授权 有流程节点
   authorizeVisitByProcess: params => service.post('/prisoner_visits/authvisit', params),
 
+  // 实地探监管理-查询家属详情
+  getVisitsFamilyDetail: params => service.get('/prisoner_visits/familyDetail', params),
+
   // 实地探监管理-撤回
   withdrawVisit: params => {
     return service.post('/prisoner_visits/withdraw', params).then(res => res && res.code === 200)

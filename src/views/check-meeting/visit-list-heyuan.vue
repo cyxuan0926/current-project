@@ -6,11 +6,15 @@
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch">
-      <m-excel-download
-        slot="append"
-        :path="excelDownloadUrl"
-        :params="excelFilter"/>
+      @search="onSearch"
+    >
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+      </template>  
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -28,11 +32,11 @@
         :data="visits.contents"
         @sort-change="sortChange"
         :cols="tableCols"
-        ref="parentElTable">
-        <template #meetingTime="{ row }">
-          <span >{{ row.meetingTime || row.applicationDate }}</span>
-        </template>
-         <template #level="{ row }">
+        ref="parentElTable"
+      >
+        <template #createdAt="{ row }">{{ row.createdAt | momentDateFormate }}</template>
+
+        <template #level="{ row }">
          <span v-if="row.level==1">
               宽管级
            </span>
@@ -46,7 +50,9 @@
               严管级
            </span>
         </template>
-        
+        <template #meetingTime="{ row }">
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
+        </template>
         <template #families="{ row }">
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
@@ -89,11 +95,10 @@
               )
             )"
             size="mini"
-            @click="handleAuthorization(row)">审核</el-button>
+            @click="handleAuthorization(row)">授权</el-button>
           <el-button
             v-else-if="
               row.status === 'PASSED' && 
-              row.isWithdrawFlag === 1  && 
               operateQueryAuth === true && 
                 !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
@@ -114,7 +119,8 @@
     <m-pagination
       ref="pagination"
       :total="visits.total"
-      @onPageChange="getDatas"/>
+      @onPageChange="getDatas"
+    />
     
     <el-dialog
       :close-on-click-modal="false"
@@ -127,8 +133,6 @@
             :data="meetingAdjustment.windows"
             border
             @cell-click="cellClick"
-            :row-class-name="tableRowClassName"
-            :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
               fixed
@@ -141,6 +145,9 @@
               :prop="item"
               :label="item"
               min-width="84">
+              <template #default>
+                <span class="meetingQueue-sp"></span>
+              </template>
             </el-table-column>
             <el-table-column
               v-if="show.meetingQueue"
@@ -169,11 +176,11 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">家属姓名</span>
-              <span class="family-nameDetail">{{toShow.names}}</span>
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">关系</span>
-              <span class="family-nameDetail">{{toShow.relationship}}</span>
+              <span class="family-nameDetail">{{toShow.relation}}</span>
             </p>
           </div>
           <div class="detail-content">
@@ -183,7 +190,7 @@
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">申请探视时间</span>
-              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+              <span class="family-nameDetail">{{ toShow.visitTime }}</span>
             </p>
           </div>
         </div>
@@ -195,18 +202,18 @@
 
       <span slot="footer" class="dialog-footer">
         <div v-if="!show.agree && !show.disagree">
-          <label v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
-            <span style="padding-right: 12px;">选择流程节点:</span>
-            <el-select v-model="nextAuth" @change="selectTask" placeholder="请选择流程节点">
-              <el-option
-                v-for="item in selectProcessOption"
-                :key="item.taskCode"
-                :label="item.taskName"
-                :value="item.taskCode">
-              </el-option>
-            </el-select>
-          </label>
-          <repetition-el-buttons :buttonItems="authorizeButtons" />
+            <div v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
+                <span style="padding-right: 12px;">选择流程节点:</span>
+                <el-select v-model="nextAuth" @change="selectTask" placeholder="请选择流程节点">
+                    <el-option
+                        v-for="item in selectProcessOption"
+                        :key="item.taskCode"
+                        :label="item.taskName"
+                        :value="item.taskCode">
+                    </el-option>
+                </el-select>
+            </div>
+            <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
         <div v-if="show.disagree" class="button-box logMgCls">
@@ -312,7 +319,6 @@
           type="danger"
           plain
           @click="closeWithdraw('withdrawForm')">关闭</el-button>
-      </div>
     </el-dialog>
 
     <el-dialog
@@ -336,7 +342,7 @@
             <p class="detail-message-family" style="border: none">
               <span class="family-name">预约时间</span>
 
-              <span class="family-nameDetail">{{toShow.createTime}}</span>
+              <span class="family-nameDetail">{{toShow.visitTime}}</span>
             </p>
           </div>
 
@@ -348,9 +354,9 @@
             </p>
 
             <p class="detail-message-family" style="border: none">
-              <span class="family-name">终端号</span>
+              <span class="family-name">窗口号</span>
 
-              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+              <span class="family-nameDetail">{{toShow.window}}号</span>
             </p>
           </div>
         </div>
@@ -550,7 +556,7 @@
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="changeClose()"
+      @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
@@ -576,20 +582,20 @@
            type="primary"
           class="button-add"
           size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
+          @click="onRejectEditshow">编辑</el-button>
           <span v-else>
           <el-button
           v-if='content.length>0'
           type="primary"
           class="button-add"
           size="mini"
-          @click="onSubmitReject()">保存</el-button>
+          @click="onSubmitReject">保存</el-button>
            <el-button
           type="primary"
           class="button-add"
           size="mini"
           v-if='content.length<10'
-          @click="addReject()">新增</el-button>
+          @click="addReject">新增</el-button>
           </span>
       </el-row>
     </el-dialog>
@@ -614,6 +620,7 @@
 
   import cloneDeep from 'lodash/cloneDeep'
 
+  import { tokenExcel } from '@/utils/token-excel'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -654,11 +661,12 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      // const todayDate = this.$_dateNow
+      const todayDate = this.$_dateNow
 
-      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
+        visitsFlag: true, // 实地探视不需要多级审批
         visits: {
           contents: [],
           total: 0
@@ -694,7 +702,7 @@
             value: ''
           },
 
-           level:{
+          level:{
             type: 'select',
             label: '管教级别',
             options: [
@@ -739,18 +747,18 @@
           }
         },
         show: {
-          subTask:false,
-          authorize: false,
-          agree: false,
-          disagree: false,
-          withdraw: false,
-          detail: false,
-          dialog:false,
-          rejectEdit:false,
-          editRebut:true,
-          meetingQueue:false,
-          familiesDetialInform: false,
-          userRemarks:false
+            subTask: true,
+            authorize: false,
+            agree: false,
+            disagree: false,
+            withdraw: false,
+            detail: false,
+            dialog:false,
+            rejectEdit:false,
+            editRebut:true,
+            meetingQueue:false,
+            familiesDetialInform: false,
+            userRemarks:false
 
           // subTask: true,
           // authorize: true,
@@ -832,7 +840,7 @@
 
         // todayDate,
 
-        // oneMonthLater,
+        oneMonthLater,
         submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
@@ -872,6 +880,8 @@
         ]
       },
       remarks: [],
+
+      downloading: false
       }
     },
     computed: {
@@ -879,8 +889,6 @@
         // 'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData',
         'global'
       ]),
 
@@ -888,10 +896,6 @@
         'isShowPhone',
         'isSuperAdmin'
       ]),
-
-      excelDownloadUrl() {
-        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
-      },
 
       // excel的参数 需要添加当前标签页的label
       excelFilter() {
@@ -942,7 +946,8 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber'
+              prop: 'prisonerNumber',
+              showOverflowTooltip: true
             },
             {
               label: '罪犯姓名',
@@ -962,7 +967,8 @@
             {
               label: '申请时间',
               prop: 'createdAt',
-              minWidth: 130
+              minWidth: 130,
+              slotName: 'createdAt'
             },
             {
               label: '申请通话时间',
@@ -1003,7 +1009,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 180,
+              width: 150,
               align: 'center'
             }
           ]
@@ -1133,11 +1139,10 @@
     },
 
     created() {
-      // this.filterInit = Object.assign({}, this.filterInit, {
-      //   applicationStartDate: this.todayDate,
-      //   applicationEndDate: this.oneMonthLater
-      // })
-      console.log('created==', this.user)
+      this.filterInit = Object.assign({}, this.filterInit, {
+        applicationStartDate: this.todayDate,
+        applicationEndDate: this.oneMonthLater
+      })
     },
 
     async mounted() {
@@ -1147,17 +1152,9 @@
 
     methods: {
       ...mapActions([
-        // 'getMeetings',
-        'getMeetingsAll',
         'authorizeMeeting',
-        'withdrawMeeting',
-        'getMeetingsFamilyDetail',
-        'getMeettingsDetail',
-        'firstLevelAuthorize',
-        'getMeettingsChangelogDetail'
+        'withdrawVisit'
       ]),
-
-      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
 
       refuseFormChange(e){
         let str=""
@@ -1186,17 +1183,17 @@
 
     // 获取当前驳回原因列表
     async getRejectContent() {
-      let { content, contentId, updateEr } = await http.getRejectEdit({
+      let { content, id, updateEr } = await http.getRejectEdit({
         type: 3,
         jailId: this.user.jailId
       })
       this.content = content || []
-      this.contentId = contentId
+      this.contentId = id
       this.updateer = updateEr
     },
 
-    onRejectshow(str,isform){
-      this.getRejectContent()
+    async onRejectshow(str,isform){
+      await this.getRejectContent()
       this.show.rejectEdit = str == 'PASSED'
     },
 
@@ -1212,10 +1209,10 @@
       this.show.editRebut=false
     },
 
-    changeClose(){
+    async changeClose(){
       this.remarks=[]
-      this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
+      await this.onRejectshow(false,this.isform)
+      this.show.editRebut=true
     },
 
     async onSubmitReject(){
@@ -1239,46 +1236,20 @@
         this.show.editRebut = true
       } catch (error) {}
     },
-
-      tableRowClassName ({row, rowIndex}) {
-        //把每一行的索引放进row
-        row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
-        return 'row-remarks'  //className(类名)
-      },
-      cellStyle ({ row, column, rowIndex, columnIndex }) {
-        // 状态列字体颜色
-        if(row[column.label]){
-          if(row[column.label]==this.toAuthorize.name){
-            return "background:#fae9db"
-          }else{
-            return  'background:#DCDFE6'
-          }
-        }
-      },
-      cellClick(row, column,cell,event){
-        let cellStr=cell.querySelector(".cell").textContent
-        if(cellStr){
-        }else{
-          if(column.label=='窗口序号'){
-            return false
-          }else if(column.label=='当日没有可选时间段'){
-            return false
-          }
-          else{
-            this.meetingAdjustment.windows.filter(item=>{
-              this.meetingAdjustment.meetingQueue.forEach(val=>{
-                if(item[val]==this.toAuthorize.name){
-                  item[val] = ""
-                }
-              })
-            } )
-            row[column.label]=this.toAuthorize.name
-            this.$set(this.meetingAdjustment.windows, row.index,row)
-          }
-          for (let index in row) {
-            if(row[index]==this.toAuthorize.name){
-              this.submitSuccessParams={ window: row.id, meetingTime: index }
-            }
+    clearCellText() {
+      let _spans = document.querySelectorAll('.meetingQueue-sp')
+      if (_spans.length) {
+        Array.from(_spans).forEach(sp => sp.innerText = '')
+      }
+    },
+      cellClick(row, column, cell, event){
+        let _cell = cell.querySelector(".meetingQueue-sp")
+        if (!_cell.textContent && column.label != '窗口序号' && column.label != '当日没有可选时间段') {
+          this.clearCellText()
+          _cell.innerText = this.toAuthorize.familyName
+          this.submitSuccessParams = {
+            window: parseInt(row.window),
+            meetingTime: column.label
           }
         }
       },
@@ -1322,92 +1293,76 @@
         await this.$refs.pagination.handleCurrentChange(1)
       },
 
-      // filterParams () {
-      //   //下载表格查询条件处理
-      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
-
-      //   const TABName = tabItem[0]['label']
-
-      //   if (this.toShow.changerType === true) this.filter.changerType = '2'
-
-      //   if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
-
-      //   else {
-      //     this.$refs.elTable && this.$refs.elTable.clearSort()
-      //     delete this.filter.sortDirection
-      //     delete this.filter.orderField
-      //   }
-
-      //   if (this.tabs !== 'first') {
-      //     if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
-      //       this.filter.status = this.tabs
-      //     }
-      //   }
-
-      //   const { jailId } = this.$store.state.global.user
-
-      //   jailId === -1 ? '' : ''
-
-      //   return {
-      //     ...this.filter,
-      //     TABName
-      //   }
-      // },
-
       // 获取数据
-      async onGetDetailAndInitData(meetingId) {
-        const res = await this.getMeettingsDetail({ meetingId })
-
-        if (!res) return
-
-        return res
+      async onGetDetailAndInitData(id) {
+        let { data = {} } = await http.getVisitsChangelog(id)
+        if (!data.changeLogs) {
+          data.changeLogs = []
+        }
+        this.toAuthorize = Object.assign({ id }, data)
       },
 
       // 获取实地探监预约配置
       async getVisitTimeConfig(id) {
-        let res = await http.getVisitsConfigMeetingtime(id)
-        this.show.authorize = true
-        this.meetingAdjustment = res || {}
-        // this.show.meetingQueue
+        let { data } = await http.getVisitsConfigMeetingtime(id)
+        if (data) {
+          let { windows = [], meetingQueue = [] } = data
+          windows = windows.map(w => {
+            let _w = {
+              window: w
+            }
+            meetingQueue.forEach(m => {
+              _w[m] = ''
+            })
+            return _w
+          })
+          this.meetingAdjustment = {
+            windows,
+            meetingQueue
+          }
+        }
       },
 
-      // 表格操作-审核
-      async handleAuthorization(e) {
-        const { id } = e
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
-        this.show.agree = false
-        this.show.disagree = false
-        this.submitSuccessParams = null
-        this.onRejectshow(false,false)
-        this.isform = false
-        this.$message.closeAll()
-        // 获取实地探监的配置信息
-        this.getVisitTimeConfig(id)
-        // 获取并设置下一级节点
-        this.getSubtask(e)
-        this.toShow = Object.assign({}, this.toShow, e)
-      },
-      selectTask(select){
-        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
-        this.submitSuccessParams.nextCheckRole=obj[0].taskName
-      },
-      async getSubtask(e){
-        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
-          if (!res) return
-          this.selectProcessOption =res
-          if(this.selectProcessOption.length){
-            this.show.process=true
-            this.nextAuth=this.selectProcessOption[0].taskCode
-          }else{
-             this.show.process=false
-          }
-      },
+        // 表格操作-审核
+        async handleAuthorization(e) {
+            const { id } = e
+            await this.onGetDetailAndInitData(id)
+            this.show.agree = false
+            this.show.disagree = false
+            this.submitSuccessParams = null
+            await this.onRejectshow(false,false)
+            this.isform = false
+            this.$message.closeAll()
+            // 获取实地探监的配置信息
+            await this.getVisitTimeConfig(id)
+            this.show.authorize = true
+            // 获取并设置下一级节点
+            this.getSubtask(e)
+            this.toShow = JSON.parse(JSON.stringify(this.toAuthorize))
+        },
+        selectTask(select){
+            let obj = this.selectProcessOption.filter(item => item.taskCode == select)
+            this.submitSuccessParams.nextCheckRole = obj[0].taskName
+        },
+        async getSubtask(e){
+            let res = await http.getSubtaskPhone({ processInstanceId: e.processInstanceId })
+            if (!res) return
+            this.selectProcessOption = res
+            if (this.selectProcessOption.length){
+                this.show.process = true
+                this.nextAuth = this.selectProcessOption[0].taskCode
+            } else {
+                this.show.process = false
+            }
+        },
       async handleWithdraw(e) {
         const { id } = e
-        this.onRejectshow(false,true)
+
+        await this.onRejectshow(false,true)
+
         this.isform=true
 
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        await this.onGetDetailAndInitData(id)
 
         this.show.withdraw = true
       },
@@ -1423,8 +1378,8 @@
               prop: 'meetingTime'
             },
             {
-              label: '终端号',
-              prop: 'terminalNumber'
+              label: '窗口号',
+              prop: 'window'
             },
             {
               label: '审核人账号',
@@ -1492,20 +1447,9 @@
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
         this.show.agree = true
-        if (this.toShow.isChoiceTime && !this.show.subTask) {
-          this.show.agree = true
-          this.buttonLoading = false
-        } else {
-           this.submitParams = {
-            id: this.toShow.id,
-            window: this.toShow.window ? this.toShow.window : this.submitSuccessParams.window,
-            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
-            processInstanceId: this.toShow.processInstanceId,
-            isChoiceTime: this.toShow.isChoiceTime,
-            nextAuth: this.nextAuth
-          }
-          this.submitMeetingAuthorize()
-        }
+        this.buttonLoading = false
+        this.submitSuccessParams = null
+        this.clearCellText()
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1544,7 +1488,7 @@
             if(!this.refuseForm.anotherRemarks){
               this.refuseForm.anotherRemarks=""
             }
-            if (valid) params.remarks =this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+            if (valid) params.remarks = this.refuseForm.anotherRemarks.replace(/\s*/g, '')
             else this.btnDisable = false
           })
         }
@@ -1559,7 +1503,6 @@
           this.btnDisable = false
           if (!res) return
           this.closeAuthorize()
-          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1578,11 +1521,11 @@
             this.submitParams.id = this.toAuthorize.id
             this.submitParams.window = this.submitSuccessParams.window
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
-            this.submitParams.processInstanceId = this.toShow.processInstanceId
-            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+            this.submitParams.status = 'PASSED'
             this.submitParams.nextAuth = this.nextAuth
-          this.show.subTask = this.submitParams.meetingTime ? true : false
-          this.show.agree = false;
+            this.show.subTask = !!this.submitParams.meetingTime
+            this.show.agree = false
+            this.submitMeetingAuthorize()
         }
       },
       submitMeetingAuthorize() {
@@ -1590,7 +1533,6 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
-            this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.getDatas('handleSubmit')
           })
@@ -1609,7 +1551,7 @@
             else this.btnDisable = false
           })
         if (this.btnDisable){
-          this.withdrawMeeting(params).then(res => {
+          this.withdrawVisit(params).then(res => {
                     if (!res) return
                     this.buttonLoading = false
                     this.btnDisable = false
@@ -1629,11 +1571,11 @@
           this.show.authorize = false
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
-        this.remarks =[]
-        this.submitParams=null
-        this.show.subTask=false
-        this.show.process=false
-        this.nextAuth=''
+        this.remarks = []
+        this.submitParams = null
+        this.show.subTask = false
+        this.show.process = false
+        this.nextAuth = ''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
@@ -1646,25 +1588,18 @@
         this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
         if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       },
-      showFamilyDetail(...args) {
-        const [ familyId, meetingId ] = args
-        this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
-          if (res.family) {
-            res.family.relationalProofUrls = []
-            for(let [key, value] of Object.entries(res.family)) {
-              const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
-              keys.includes(key) && value && res.family.relationalProofUrls.push({
-                url: value
-              })
-            }
-            // if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
-            //   url: ''
-            // })
-            this.family = Object.assign({}, res.family)
-          }
-          else this.family = {}
-          this.show.familiesDetialInform = true
-        })
+      async showFamilyDetail(familyId, visitId) {
+        let { data = {} } = await http.getVisitsFamilyDetail({ familyId, visitId })
+        data.family = data.family || {}
+        data.family.relationalProofUrls = []
+        for(let [key, value] of Object.entries(data.family)) {
+          const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
+          keys.includes(key) && value && data.family.relationalProofUrls.push({
+            url: value
+          })
+        }
+        this.family = Object.assign({}, data.family)
+        this.show.familiesDetialInform = true
       },
       sortChange({ column, prop, order }) {
         if (!prop || !order) {
@@ -1679,6 +1614,29 @@
           this.filter = Object.assign(this.filter, this.sortObj)
         }
         this.getDatas('sortChange')
+      },
+
+      async onDownloadExcel() {
+        this.downloading = true
+
+        const times = helper.DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+          tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+          TABName = tabItem[0]['label'],
+          actionName = 'exportVisitExcel',
+          params = {
+            url: '/prisoner_visits/exportPrisonerVisits',
+            params: { ...this.filter, tab: this.tabs }
+          }
+
+        await tokenExcel({
+          params,
+          actionName,
+          menuName: `现场探视预约管理-${ TABName }-${ times }`,
+        })
+
+        setTimeout(() => {
+          this.downloading = false
+        }, 300)
       }
     }
   }
@@ -1758,6 +1716,9 @@
     color: red;
     font-size: 12px;
   }
+  .meetingQueue-sp {
+    color: #409EFF;
+  }
 </style>
 
 <style lang="stylus">
@@ -1774,7 +1735,7 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
-  .el-select-dropdown{
+ .el-select-dropdown{
         max-width: 243px;
     }
     .select_edit.el-select-dropdown__item{
