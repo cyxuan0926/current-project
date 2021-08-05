@@ -542,10 +542,6 @@ export default {
         value: 2
       },
       {
-        label: '已删除',
-        value: 3
-      },
-      {
         label: '已离监',
         value: 4
       },
