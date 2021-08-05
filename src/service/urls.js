@@ -30,7 +30,7 @@ const config = {
     bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
     ygApiHost: 'http://120.78.190.101:8113/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    jailApiHost: 'http://8.129.14.169:8098/ywgk', // 河源监狱-qa
+    jailApiHost: 'http://qa-ywgk.yuwugongkai.com/ywgk', // 河源监狱-qa
     // apiHost: 'http://8.129.14.169:8098', // 河源监狱
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
