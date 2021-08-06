@@ -1145,7 +1145,6 @@
 
     methods: {
       ...mapActions([
-        'authorizeMeeting',
         'withdrawVisit'
       ]),
 
@@ -1474,7 +1473,7 @@
       },
       handleSubmit(params) {
         this.buttonLoading = true
-        this.authorizeMeeting(params).then(res => {
+        http.authorizeVisitByProcess(params).then(res => {
           this.buttonLoading = false
           this.btnDisable = false
           if (!res) return
