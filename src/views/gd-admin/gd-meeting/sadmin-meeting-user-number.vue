@@ -89,7 +89,7 @@ export default {
       initFilter: {
         year,
         timeType:1,
-        dataType:0
+        dataType:1
       },
       downloading:false,
       searchItems: {
@@ -145,11 +145,11 @@ export default {
                     return
          }
          this.downloading = true
-         let params = { ...this.filter, jailId: this.searchItems.jailId.value }
+         let params = { ...this.filter, jailId: this.searchItems.jailId.value, type: this.filter.dataType  }
          try {
              let data = await http.exportMeetingStatis(params)
-             saveAs(data, `会见量和参会人数统计报表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
-             this.downloading = false
+             saveAs(data, `会见量和参会人数统计报表-${this.filter.dataType==1?'全量':'去重'}-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                     this.downloading = false
              } catch (error) {
               this.downloading = false
             }
