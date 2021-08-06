@@ -1,19 +1,23 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download
       v-if="activeName === 'prison'"
       path="/download/exportJails" 
-      :params="filter" />
+      :params="filter"
+    />
+
     <m-search
       ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    />
+
     <el-tabs
       v-model="activeName"
       type="card"
-      @tab-click="handleClick">
+      @tab-click="handleClick"
+    >
       <template v-for="item in tabMapOptions">
         <el-tab-pane
           :label="item.label"
@@ -22,7 +26,9 @@
         />
       </template>
     </el-tabs>
+
     <router-view />
+
     <m-pagination
       v-if="paginationShow"
       ref="pagination"
@@ -34,8 +40,10 @@
 <script>
 import { mapActions } from 'vuex'
 
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   name: 'PrisonTab',
+  mixins: [ prisonFilterCreator ],
   data () {
     const listTabs = ['prison', 'tenant']
 
@@ -56,16 +64,16 @@ export default {
       ],
       activeName: this.$route.path.slice(this.$route.path.indexOf('/')+1, this.$route.path.lastIndexOf('/')),
       searchItems: {
-        title: {
-          type: 'input',
-          label: '监狱名称',
-          miss: false
-        },
-        name: {
-          type: 'input',
-          label: '租户名称',
-          miss: true
-        }
+        // title: {
+        //   type: 'input',
+        //   label: '监狱名称',
+        //   miss: false
+        // },
+        // name: {
+        //   type: 'input',
+        //   label: '租户名称',
+        //   miss: true
+        // },
       },
       total: 0,
       filter: {},
@@ -161,18 +169,24 @@ export default {
 
       const tabsSearchItemsObject = {
         tenant: {
-          title: true,
-          name: false
+          // title: true,
+          // name: false,
+          provincesId: false,
+          jailId: false
         },
 
         prison: {
-          title: false,
-          name: true
+          // title: false,
+          // name: true,
+          provincesId: false,
+          jailId: false
         },
 
         'face-recognition': {
-          title: true,
-          name: true
+          // title: true,
+          // name: true,
+          provincesId: true,
+          jailId: true
         }
       }
 

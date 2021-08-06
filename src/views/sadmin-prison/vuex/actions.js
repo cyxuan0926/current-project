@@ -58,9 +58,19 @@ export default {
   // 获取人脸识别配置
   getFaceRecognitionConfigs: async({ commit }, params) => {
     try {
-      const { data } = await http.getFaceRecognitionConfigs(params)
+      const response = await http.getFaceRecognitionConfigs(params)
 
-      commit('setFaceRecognitionConfigs', data)
+      const afrIOSSetValue = response ? (response['afrIOSSetValue'] || '0.2') : '0.2'
+
+      const afrAndroidSetValue = response ? (response['afrAndroidSetValue'] || '0.4') : '0.4'
+
+      const afrInterval = response ? (response['afrInterval'] || '1500') : '1500'
+
+      commit('setFaceRecognitionConfigs', {
+        afrIOSSetValue,
+        afrAndroidSetValue,
+        afrInterval
+      })
 
       return true
     }

@@ -6,25 +6,75 @@ import {
 
 import Moment from 'moment'
 
-import roles from '@/common/constants/roles'
-
 import { weeks } from '@/common/constants/const'
 
+import { daysTransformWeeksParams, dayTransformProp } from '../utils'
+
+import {
+  mapGetters,
+  mapActions,
+  mapState
+} from 'vuex'
 export default {
   data() {
+    const interval = {
+      label: '间隔时间',
+      type: 'input',
+      append: '分钟',
+      rules: ['required', 'isNumber']
+    }
+
+    const durationIntervalormConfigs = {
+      labelWidth: '81px',
+      hideRequiredAsterisk: true
+    }
     return {
-      jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id
+      jailId: this.$route.meta.role === '3' ? JSON.parse(localStorage.getItem('user')).jailId : this.$route.params.id,
+
+      prisonBranch: '0',
+
+      interval,
+
+      durationIntervalormConfigs
     }
   },
 
   computed: {
     // 国科服务管理员
-    superAdmin() {
-      return this.$store.getters.role === roles.SUPER_ADMIN
+    ...mapGetters(['isSuperAdmin']),
+
+    ...mapState(['jailPrisonAreas']),
+
+    filterPrisonAreaOptions() {
+      if (!+this.prisonBranch) {
+        return [
+          {
+            id: -1,
+            name: '全监狱'
+          }
+        ]
+      }
+
+      else return this.jailPrisonAreas
+    },
+
+    prisonAreasItem() {
+      return {
+        label: '选择监区',
+        type: 'select',
+        placeholder: '请选择监区',
+        rules: ['required'],
+        options: this.filterPrisonAreaOptions,
+        props: { label: 'name', value: 'id' },
+        multiple: true,
+        collapseTags: true
+      }
     }
   },
 
   methods: {
+    ...mapActions(['getJailPrisonAreas']),
+
     // 数字转汉字
     convertToChinaNum(o) {
       return convertToChinaNum(o)
@@ -114,6 +164,77 @@ export default {
       }
 
       this.$set(noEqual[type], index, result)
+    },
+
+    // 日期监区配置过滤
+    daysAndPrisonAreaFilterParams(params, selfKeys = []) {
+      let result = []
+
+      params.forEach(config => {
+        const {
+          duration,
+          interval,
+          days,
+          queue,
+          timeperiodQueue
+        } = config
+
+        if (!config.days.length || !config.queue.length || !config.timeperiodQueue.length) return
+
+        let c = [], period = []
+
+        queue.forEach(q => c.push(q.join('-')))
+
+        timeperiodQueue.forEach(t => period.push(t.join('-')))
+
+        const weeksPrisonAreas = daysTransformWeeksParams(days, config)
+
+        const basic = { days, config: c, duration, interval, timeperiod: period, floorDetai: weeksPrisonAreas }
+
+        selfKeys.forEach(key => {
+          basic[key] = config[key]
+        })
+
+        result.push(basic)
+      })
+
+      return result
+    },
+
+    // 提交参数
+    filterSubmittingParams(
+      configs,
+      filterParams,
+      effectiveDate,
+      configurationsFloorDetailKey = 'configurationsFloorDetail',
+      complexNormalConfigKey = 'complexNormalConfig'
+    ) {
+      const { jailId = this.jailId, prisonBranch } = configs
+
+      return filterParams.reduce((accumulator, currentItem) => {
+        const { floorDetai, ...configAfter } = currentItem
+
+        const { days } = configAfter
+
+        let configurationsFloorDetailItem = days.map(day => {
+          const { key } = dayTransformProp(day)
+
+          let prisonConfigId = +prisonBranch ? floorDetai[key] : []
+
+          return {
+            days: day,
+            jailId: jailId || +this.jailId,
+            prisonConfigId,
+            effectiveDate
+          }
+        })
+
+        accumulator[configurationsFloorDetailKey] = [...accumulator[configurationsFloorDetailKey], ...configurationsFloorDetailItem]
+
+        accumulator[complexNormalConfigKey].configAfter.push(configAfter)
+
+        return accumulator
+      }, { [configurationsFloorDetailKey]: [], [complexNormalConfigKey]: { enabledAt: effectiveDate, jailId: jailId || +this.jailId, configAfter: [] } })
     }
   }
 }

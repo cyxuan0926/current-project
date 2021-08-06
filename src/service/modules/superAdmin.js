@@ -60,6 +60,8 @@ export default {
   getPrisonDetail: params => {
     return service.get('/jails/getJailsDetail', params).then(res => res && res.data)
   },
+  // 其他单位管理-列表
+  getOtherOrgs: params => service.get('/other/org/page', params),
   // 意见反馈-列表
   getFeedbacks: params => {
     return service.get('/feedbacks/page', params).then(res => res && res.data)
@@ -120,6 +122,20 @@ export default {
   updateTerminalName: params => {
     return service.postObj('/terminals/edit/terminalName', params).then(res => res)
   },
+  // 其他单位终端管理-列表
+  getOtherTerminal: params => service.get('/otherTerminals/page', params),
+  // 其他单位终端管理-详情
+  getOtherTerminalDetail: id => service.get(`/otherTerminals/getTerminalsDetail?id=${ id }`),
+  // 其他单位终端管理-新增 编辑
+  addOtherTerminal: data => service.postObj('/otherTerminals/addOrEdit', data),
+  // 其他单位终端管理-启用 停用
+  enableOtherTerminal: data => service.postObj('/otherTerminals/enabled', data),
+  // 终端呼叫终端详情-列表
+  getTerminalCallTerminal: params => service.get('/terminalCallTerminal/page', params),
+  // 根据单位类型查询单位名称
+  // 0-监狱、1-司法局、2-司法所、3-律师事务所、4-心理咨询机构
+  // 0-启用、1-禁用
+  getOrgNames: (type, status) => service.get(`/terminalCallTerminal/orgNames?orgType=${ type }${ typeof status === 'undefined' ? '' : '&orgStatus=0' }`),
   // 查询分配的终端
   getTerminal: params => {
     return service.get('/terminals/getUsableTerminals', params).then(res => res && res.data)
@@ -195,7 +211,7 @@ export default {
 
   // 监狱管理-人脸识别配置-获取
   getFaceRecognitionConfigs: params => {
-    return service.get('/dict', params)
+    return service.get('/dict', params).then(response => response && response.data)
   },
 
   // 监狱管理-人脸识别配置-更新

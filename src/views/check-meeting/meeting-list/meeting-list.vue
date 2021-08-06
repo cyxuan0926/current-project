@@ -1,7 +1,5 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
@@ -14,6 +12,7 @@
         :params="excelFilter"
       />
     </m-search>
+
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -26,91 +25,117 @@
           />
         </template>
       </el-tabs>
-    <m-table-new
-      stripe
-      :cols="tableCols"
-      ref="parentElTable"
-      :data="meetings.contents"
-      @sort-change="sortChange">
-      <template #meetingTime="{ row }">
-        <span >{{ row.meetingTime || row.applicationDate }}</span>
-      </template>
 
-      <template #families="{ row }">
-        <div v-if="row.filterFamilies && row.filterFamilies.length">
+      <m-table-new
+        stripe
+        :cols="tableCols"
+        ref="parentElTable"
+        :data="meetings.contents"
+        @sort-change="sortChange"
+      >
+      
+       <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
+        <template #meetingTime="{ row }">
+          <span >{{ row.meetingTime || row.applicationDate }}</span>
+        </template>
+
+        <template #families="{ row }">
+          <div v-if="row.filterFamilies && row.filterFamilies.length">
+            <el-button
+              type="text"
+              size="small"
+              v-for="family in row.filterFamilies"
+              :key="family.familyId"
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(family.familyId, row.id)"
+            >{{ family.familyName }}</el-button>
+          </div>
+        </template>
+
+        <template #content="{ row }">
+          <span v-if="!row.content">
+            <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
+            <template v-else>{{ row.status | applyStatus }}</template>
+          </span>
+
+          <el-tooltip
+            v-else
+            :content="row.content"
+            placement="top"
+          >
+            <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
+
+            <span v-else>{{ row.status | applyStatus }}</span>
+          </el-tooltip>
+        </template>
+
+        <template #operate="{ row }">
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
           <el-button
+            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
+            size="mini"
+            @click="handleAuthorization(row)"
+          >授权</el-button>
+
+          <el-button
+            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            size="mini"
+            @click="handleWithdraw(row)"
+          >撤回</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+            @click="handleWithdraw(row)"
+          >撤回</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="detailRemarks(row)"
+          >已备注</el-button>
+
+          <el-button
+            v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
+            size="mini"
+            class="button-detail"
+            @click="setRemarks(row)"
+          >备注</el-button>
+
+          <el-button
+            v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             type="text"
-            size="small"
-            v-for="family in row.filterFamilies"
-            :key="family.familyId"
-            style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
-        </div>
-      </template>
-
-      <template #content="{ row }">
-        <span v-if="!row.content">
-          <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
-          <template v-else>{{ row.status | applyStatus }}</template>
-        </span>
-
-        <el-tooltip
-          v-else
-          :content="row.content"
-          placement="top" >
-          <span v-if="row.status === 'PENDING' && row.isLock === 1">处理中</span>
-          <span v-else>{{ row.status | applyStatus }}</span>
-        </el-tooltip>
-      </template>
-
-      <template #operate="{ row }">
-        <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-        <el-button
-          v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
-          size="mini"
-          @click="handleAuthorization(row)">授权</el-button>
-
-        <el-button
-          v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-          size="mini"
-          @click="handleWithdraw(row)">撤回</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-          @click="handleWithdraw(row)">撤回</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-          size="mini"
-          class="button-detail"
-          @click="detailRemarks(row)">已备注</el-button>
-
-        <el-button
-          v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
-          size="mini"
-          class="button-detail"
-          @click="setRemarks(row)">备注</el-button>
-
-        <el-button
-          v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-          type="text"
-          size="mini"
-          class="button-detail"
-          @click="onDetail(row)">详情</el-button>
-      </template>
-    </m-table-new>
-  </el-col>
+            size="mini"
+            class="button-detail"
+            @click="onDetail(row)"
+          >详情</el-button>
+        </template>
+      </m-table-new>
+    </el-col>
 
     <m-pagination
       ref="pagination"
       :total="meetings.total"
       @onPageChange="getDatas"
     />
+
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
-      @close="closeAuthorize"
       title="请选择通话时间段"
       width="900px">
       <div
@@ -147,15 +172,15 @@
               format="HH:mm"
               :picker-options="selectRange"
               :clearable="false"
-              @change="handleTimepickerChange"
-            />
+              @change="handleTimepickerChange">
+            </el-time-picker>
             <label style="margin: 0 10px;">至</label>
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeEnd"
               format="HH:mm"
-              disabled
-            />
+              disabled>
+            </el-time-picker>
           </div>
           <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
         </section>
@@ -167,8 +192,7 @@
             <el-tab-pane v-for="t in areaOptions"
               :key="t.value"
               :label="t.label"
-              :name="t.value"
-            />
+              :name="t.value" />
           </el-tabs>
           <el-table
             :data="meetingAdjustmentCopy.terminals"
@@ -182,44 +206,39 @@
               fixed
               prop="terminalNumber"
               label="终端号"
-              min-width="80"
-            />
-
+              min-width="80">
+            </el-table-column>
             <el-table-column
               v-else
               prop="terminalNumber"
               label="终端号"
-              min-width="80"
-            />
-
+              min-width="80">
+            </el-table-column>
             <el-table-column
               v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
               prop="prisonConfigName"
               label="监区"
-              min-width="110"
-            />
-
+              min-width="110">
+            </el-table-column>
             <el-table-column
               v-else
               prop="prisonConfigName"
               label="监区"
-              min-width="110"
-            />
-
+              min-width="110">
+            </el-table-column>
             <el-table-column
               v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
               :prop="item"
               :label="item"
-              min-width="84"
-            />
-
+              min-width="84">
+            </el-table-column>
             <el-table-column
               v-if="show.meetingQueue"
               prop="noTimes"
               label="当日没有可选时间段"
-              min-width="84"
-            />
+              min-width="84">
+            </el-table-column>
           </el-table>
         </section>
       </div>
@@ -233,23 +252,72 @@
       :visible.sync="show.authorize"
       class="authorize-dialog"
       @close="closeAuthorize"
-      title="授权"
+      title="审核"
       :close-on-click-modal="false"
-      width="530px">
+      width="780px">
+        <div style="max-height:380px;overflow: auto">
+        <div style="display: flex;border: 1px solid #E4E7ED;">
+          <div class="family-detail">基本信息</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">家属姓名</span>
+              <span class="family-nameDetail">{{toShow.names}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">关系</span>
+              <span class="family-nameDetail">{{toShow.relationship}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family">
+              <span class="family-name">罪犯姓名</span>
+              <span class="family-nameDetail">{{toShow.prisonerName}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none">
+              <span class="family-name">申请探视时间</span>
+              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+            </p>
+          </div>
+        </div>
+         <!-- <div
+          v-for="(item,index) in toShow.logs"
+          :key='index'
+          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+1}}</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name">审核人员账号</span>
+              <span class="family-nameDetail">{{item.createUser}}</span>
+            </p>
+            <p class="detail-message-family">
+              <span class="family-name">审核时间</span>
+              <span class="family-nameDetail">{{item.createTime}}</span>
+            </p>
+          </div>
+          <div class="detail-content">
+            <p class="detail-message-family" >
+              <span class="family-name">审核人姓名</span>
+              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
+              <p class="detail-message-family" >
+              <span class="family-name">审核人意见</span>
+              <span class="family-nameDetail">{{item.remarks}}</span></p>
+          </div>
+        </div> -->
+      </div>
+
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
-
       <div
         v-if="!show.agree && !show.disagree && !show.multistageExamine"
-        class="button-box">
-        <repetition-el-buttons :buttonItems="authorizeButtons" />
+       class="button-box">
+        <repetition-el-buttons  style="margin-top:20px" :buttonItems="authorizeButtons" />
       </div>
 
-      <div v-if="show.multistageExamine" class="button-box more-button__box">
+      <div v-if="show.multistageExamine" style="margin-top:20px" class="button-box more-button__box">
         <div style="margin-bottom: 10px;">初审意见：</div>
-
-        <m-form
+<m-form
           class="multistage_examine-form"
           ref="multistage_examine-form"
           :items="localFirstLevelExamineFormItems"
@@ -264,28 +332,25 @@
         class="button-box logMgCls">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
       <div>
-        <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
+            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
+            class="select_edit"
               v-for="(remark,index) in content"
               :value="remark"
               :label="(index+1)+'、'+remark"
               :key="index"/>
           </el-select>
-
-        <el-button
-          type="primary"
-          :loading="btnDisable"
-          @click="onRejectshow('PASSED')"
-        >编辑驳回原因</el-button>
-      </div>
-
-      <el-form
-        :model="refuseForm"
-        :rules="withdrawRule"
-        ref="refuseForm"
-        class="withdraw-box"
-      >
-          <el-form-item prop="anotherRemarks"  >
+           <el-button
+            type="primary"
+            :loading="btnDisable"
+            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+          </div>
+          <el-form
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box">
+            <el-form-item prop="anotherRemarks"  >
                <el-input
                 :autosize="{ minRows: 6 ,maxRows:8 }"
                 type="textarea"
@@ -295,21 +360,19 @@
                 v-model="refuseForm.anotherRemarks"
               />
             </el-form-item>
-      </el-form>
-      <el-button
-        plain
-        :loading="btnDisable"
-        @click="onAuthorization('DENIED')"
-      >提交</el-button>
-
-      <el-button plain @click="show.disagree = false">返回</el-button>
-
-      <el-button
-        type="danger"
-        plain
-        @click="closeWithdraw('refuseForm')"
-      >关闭</el-button>
-    </div>
+          </el-form>
+          <el-button
+            plain
+            :loading="btnDisable"
+            @click="onAuthorization('DENIED')">提交</el-button>
+          <el-button
+            plain
+            @click="show.disagree = false">返回</el-button>
+          <el-button
+            type="danger"
+            plain
+            @click="closeWithdraw('refuseForm')">关闭</el-button>
+        </div>
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
@@ -318,10 +381,12 @@
       title="撤回"
       :close-on-click-modal="false"
       width="530px">
+
  <div style="margin-bottom: 10px;">请选择撤回原因</div>
           <div style="margin-bottom: 10px;">
             <el-select v-model="remarks" :multiple="true"  :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
             <el-option
+            class="select_edit"
               v-for="(remark,index) in content"
               :value="remark"
               :label="(index+1)+'、'+remark"
@@ -597,9 +662,9 @@
           <el-input type="textarea" v-model="getRemarks" :autosize="{ minRows: 6, maxRows: 8}" maxlength="300"  placeholder="请输入内容" show-word-limit></el-input>
         </el-form-item>
       </el-form>
-      <span  slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitRemarks()">提 交</el-button>
-      </span>
+       <span  slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitRemarks()">提 交</el-button>
+        </span>
     </el-dialog>
      <el-dialog
       :visible.sync="show.userRemarks"
@@ -680,7 +745,7 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
+  import { withdrawOrAnthorinputReason} from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -706,7 +771,7 @@
           name: 'UNUSUAL'
         },
         {
-          label: '未授权',
+          label: '未审核',
           name: 'PENDING'
         }
 
@@ -728,18 +793,17 @@
         }
       ]
 
-      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      const AreaObj = [{label:"监舍区",value:1},{label:"会见楼",value:3}]
       const todayDate = this.$_dateNow
 
-      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
-
-      const tenDaysLater = Moment().add(10, 'days').format('YYYY-MM-DD')
+      const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
         isSeparateByArea: false,
         isUseMeetingFloor: false,
         selectRange: {},
+        AreaObj,
         timeRangeStart: new Date(),
         timeRangeEnd: new Date(),
         userDefinedDuration: false,
@@ -764,19 +828,6 @@
             label: '罪犯编号'
           },
 
-          // prisonArea: {
-          //   type: 'select',
-          //   label: '监区',
-          //   options,
-          //   belong,
-          //   value: ''
-          // },
-          // applicationDate: {
-          //   type: 'date',
-          //   label: '申请通话时间',
-          //   miss: true,
-          //   value: ''
-          // },
           applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
@@ -787,14 +838,29 @@
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
-
+          area: {
+            type: 'select',
+            label: '通话区域',
+            options: this.$store.state.areaOptions,
+            value: ''
+          },
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
-
+           level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
+          value: ''
+        },
           status: {
             type: 'select',
             label: '申请状态',
@@ -910,8 +976,7 @@
 
         todayDate,
 
-        // oneMonthLater,
-
+        oneMonthLater,
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -950,8 +1015,6 @@
         ]
       },
       remarks: [],
-
-      tenDaysLater
       }
     },
     computed: {
@@ -959,8 +1022,7 @@
         'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData'
+        'isSuccessFirstLevelSubmitMeeting'
       ]),
 
       ...mapGetters([
@@ -1048,8 +1110,17 @@
             },
             {
               label: '罪犯姓名',
-              prop: 'prisonerName',
-              showOverflowTooltip: true
+              prop: 'prisonerName'
+            },
+             {
+              label: '管教级别',
+              slotName: 'level',
+              minWidth: 75
+            },
+            {
+              label: '性别',
+              prop: 'gender',
+              minWidth: 50
             },
             {
               label: '申请时间',
@@ -1063,7 +1134,7 @@
               sortable: 'custom',
               minWidth: 135
             },
-            {
+           {
               label: '家属',
               slotName: 'families',
               minWidth: 115
@@ -1095,7 +1166,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 180,
+              minWidth: 120,
               align: 'center'
             }
           ]
@@ -1167,7 +1238,7 @@
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
-        this.toShow.changerType = false
+        this.toShow.changerType=false
         if (val === 'PENDING') {
           this.searchItems.isFree.miss = true
           this.searchItems.status.miss = true
@@ -1232,15 +1303,10 @@
     },
 
     created() {
-      const dateInit = {
-        applicationStartDate: this.todayDate
-      }
-
-      if (this.isSuperAdmin) dateInit['applicationEndDate'] = this.todayDate
-
-      else dateInit['applicationEndDate'] = this.tenDaysLater
-
-      this.filterInit = Object.assign({}, this.filterInit, dateInit)
+      this.filterInit = Object.assign({}, this.filterInit, {
+        applicationStartDate: this.todayDate,
+        applicationEndDate: this.oneMonthLater
+      })
     },
 
     async mounted() {
@@ -1253,12 +1319,8 @@
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
-      let date = [this.todayDate, this.tenDaysLater]
-
-      if (this.isSuperAdmin) date = [this.todayDate, this.todayDate]
-
-      this.$set(this.searchItems.applicationDate, 'value', date)
-
+      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+      this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
       await this.getDatas('mounted')
     },
     methods: {
@@ -1277,7 +1339,7 @@
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
       setRemarks(row){
         this.show.setRemarks=true
-        this.getMeetingId=row.id
+         this.getMeetingId=row.id
       },
       submitRemarks(){
         if(this.getRemarks){
@@ -1413,9 +1475,8 @@
       },
       cellClick(row, column,cell,event){
         let cellStr=cell.querySelector(".cell").textContent
-
-        if(cellStr) {
-        } else {
+        if(cellStr){
+        }else{
           if(column.label=='监区'){
             return false
           }else if(column.label=='当日没有可选时间段'){
@@ -1647,8 +1708,8 @@
         }
         this.getMeetTimeConfig()
         this.$message.closeAll()
+        this.toShow= Object.assign( {}, this.toShow, e )
       },
-
       async handleWithdraw(e) {
         const { id } = e
         this.onRejectshow(false,true)
@@ -1743,8 +1804,8 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
-        this.show.agree = true
-        this.buttonLoading = false
+          this.show.agree = true
+           this.buttonLoading = false
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1765,18 +1826,18 @@
       },
 
       // 覆盖mixin 高级审批提交情况下的提交操作
-      onMultistageExamineGoSubmit() {
-        this.show.multistageExamine = true
+       onMultistageExamineGoSubmit() {
+         this.show.multistageExamine = true
 
-        this.buttonLoading = false
-      },
+         this.buttonLoading = false
+       },
 
       // 覆盖mixin 高级审批提交情况下的返回操作
-      onMultistageExamineGoBack() {
-        this.show.multistageExamine = false
+       onMultistageExamineGoBack() {
+         this.show.multistageExamine = false
 
-        this.$refs['multistage_examine-form'].handleResetField()
-      },
+         this.$refs['multistage_examine-form'].handleResetField()
+       },
 
       // 覆盖mixin 高级审批提交情况下的确认操作
       onMultistageExamineSubmit() {
@@ -1860,13 +1921,13 @@
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-          let params = {
+            let params = {
             meetingId: this.toAuthorize.id,
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
-            params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
           if (this.isSpecial) {
             if (this.checkInmeetings()) {
@@ -1874,7 +1935,7 @@
               this.isShowTips = true
               return
             }
-            params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+             params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
           }
           http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
             if (!res) return
@@ -2048,7 +2109,10 @@
   }
 </style>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
+.logMgCls {
+  text-align:left
+}
 .logMgCls .el-select__tags-text {
   display: inline-block;
   max-width: 220px;
@@ -2062,10 +2126,10 @@
  .el-select-dropdown{
         max-width: 243px;
     }
-    .el-select-dropdown__item{
+.select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .el-select-dropdown__item span {
+.select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }
@@ -2120,29 +2184,4 @@
     >>> .el-button
       &:first-of-type
         width: 31% !important;
-</style>
-<style lang="stylus">
-.logMgCls {
-  text-align:left
-}
-.logMgCls .el-select__tags-text {
-  display: inline-block;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.logMgCls .el-select .el-tag__close.el-icon-close {
-  top: -7px;
-}
- .el-select-dropdown{
-        max-width: 243px;
-    }
-    .el-select-dropdown__item{
-        display: inline-block;
-    }
-    .el-select-dropdown__item span {
-        min-width: 400px;
-        display: inline-block;
-   }
 </style>

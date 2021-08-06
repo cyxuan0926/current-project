@@ -112,9 +112,9 @@ export default {
     '$route.query': {
       handler(query) {
         // 为常规配置的时候
-        if (this.remoteVisitDayNames.includes(query.tag)) {
+        if (this.haveRemoteVisitDay) {
           // 获取可视电话申请需提前天数
-          this.getRemoteAdvanceDayLimits({ jailId: this.jailId })
+          this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId } })
         }
       }
     },
@@ -128,7 +128,7 @@ export default {
   },
   // 获取申请提前天数
   async created() {
-    await Promise.all([this.getRemoteAdvanceDayLimits({ jailId: this.jailId }), this.getJailsMeetingFloorStatus(this.jailId)])
+    await Promise.all([this.getRemoteAdvanceDayLimits({ params: { jailId: this.jailId } }), this.getJailsMeetingFloorStatus(this.jailId)])
   },
   // 渲染组件
   mounted() {
@@ -172,9 +172,11 @@ export default {
       const [advanceDayLimit, dayInLimit] = this.advanceDayLimit_
 
       const isSucess = await this.updateRemoteAdvanceDayLimit({
-        jailId: this.jailId,
-        advanceDayLimit,
-        dayInLimit
+        params: {
+          jailId: this.jailId,
+          advanceDayLimit,
+          dayInLimit
+        }
       })
 
       if (isSucess) this.setAdvanceDayLimits(this.advanceDayLimit_)

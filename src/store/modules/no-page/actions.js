@@ -166,5 +166,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async exportVisitExcel(_, inputs) {
+    try {
+      const response = await http.exportVisitExcel(inputs)
+
+      if (!response) return
+
+      return response
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

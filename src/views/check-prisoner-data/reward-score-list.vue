@@ -213,7 +213,7 @@
         fileList: [],
         visible: false,
         onProgress: false,
-        prisonerHref:`${ this.$urls.ygApiHost}/download/downloadfile?filepath=prisoner_score_template.xls`,
+        prisonerHref:`${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_score_template.xls`,
         active: 1,
         tabMapOptions: [
           { label: '读取excel' },

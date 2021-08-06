@@ -445,6 +445,7 @@
               style="width:70%; margin-right:10px"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark, index) in content"
                 :value="remark"
                 :label="(index + 1) + '、' + remark"
@@ -912,13 +913,13 @@ export default {
 
     apiUrls() {
       const urls = {
-        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/familyPhoneManage/page',
+        pagedUrl: this.isSuperAdmin ? '/familyPhone/findpage' : '/msg/familyPhoneManage/page',
 
         exportUrl: this.isSuperAdmin ? '/familyPhone/export' : '/parse/familyphone/exportFamilyPhone',
 
-        newOrEditUrl: this.familyInformationDialogOperationType ? '/familyPhoneManage/edit' : '/familyPhoneManage/save',
+        newOrEditUrl: this.familyInformationDialogOperationType ? '/msg/familyPhoneManage/edit' : '/msg/familyPhoneManage/save',
 
-        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/familyPhoneManage/detail'
+        detailUrl: this.isSuperAdmin ? '/familyPhone/getDetail' : '/msg/familyPhoneManage/detail'
       }
 
       return urls
@@ -1684,6 +1685,29 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.logMgCls .el-select__tags-text {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logMgCls .el-select .el-tag__close.el-icon-close {
+  top: -7px;
+}
+  .el-select-dropdown{
+        max-width: 243px;
+    }
+    .select_edit.el-select-dropdown__item{
+        display: inline-block;
+    }
+    .select_edit.el-select-dropdown__item span {
+        min-width: 400px;
+        display: inline-block;
+   }
+</style>
 
 <style lang="scss" scoped>
 $border-style: 1px solid #E4E7ED;

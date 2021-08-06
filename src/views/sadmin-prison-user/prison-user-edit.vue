@@ -148,4 +148,8 @@ export default {
 .page-edit {
   padding-top: 5%;
 }
+
+.el-cascader {
+  width: 100%;
+}
 </style>

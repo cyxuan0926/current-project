@@ -12,8 +12,18 @@
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
-      <template #append v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)">
-        <el-button type="primary" @click="onDownload('all')">下载关系证明</el-button>
+      <template #append >
+        <el-button
+          v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)"
+          type="primary"
+          @click="onDownload('all')"
+        >下载关系证明</el-button>
+
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="handleExportExcel"
+        >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -120,6 +130,22 @@
           show-overflow-tooltip
           min-width="50"
         />
+        <el-table-column label="管教级别" min-width="70">
+          <template #default="{ row }">
+           <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           label="监区"
@@ -379,6 +405,7 @@
               @change="refuseFormChange"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -439,6 +466,7 @@
               collapse-tags @change="withdrawFormChange"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -474,7 +502,7 @@
           <el-button
             plain
             :loading="buttonLoading"
-            @click="onAuthorization('WITHDRAW')"
+            @click="submitReject()"
           >提交</el-button>
 
           <el-button
@@ -611,7 +639,8 @@ import {
 } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
-
+import { saveAs } from 'file-saver'
+import { DateFormat } from '@/utils/helper'
 import registrationDetail from './registration-detail'
 import http from '@/service'
 
@@ -671,6 +700,17 @@ export default {
           label: '家属类型',
           options: this.$store.state['nationality'],
           value: ''
+        },
+        level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
+          value: ''
         }
       },
       toAuthorize: {},
@@ -715,7 +755,7 @@ export default {
         ]
       },
       remarks: [],
-
+      downloading: false,
       tabs: 'PENDING',
       notificationShow: false,
       dialogTitle: '',
@@ -890,48 +930,66 @@ export default {
       'getProcessTask'
     ]),
 
-    refuseFormChange(e) {
-        let str=""
-         if(!this.refuseForm.anotherRemarks){
-            this.refuseForm.anotherRemarks=""
-          }
-        e.forEach((item,index)=>{
-          if(!this.refuseForm.anotherRemarks.includes(item)){
-            str +=`${item}。\n`
-          }
-        })
-        this.refuseForm.anotherRemarks+=str
+    async handleExportExcel() {
+      if (this.downloading) {
+        return
+      }
+      this.downloading = true
+
+      const params = Object.assign( { status: this.tab }, { ...this.filter } )
+
+      try {
+        let data = await http.exportFamilyRegJails(params)
+
+        saveAs(data, `家属注册列表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+
+        this.downloading = false
+      } catch (error) {
+        this.downloading = false
+      }
     },
+
+    refuseFormChange(e) {
+      let str=""
+
+      if(!this.refuseForm.anotherRemarks) this.refuseForm.anotherRemarks = ""
+
+      e.forEach((item,index)=>{
+        if(!this.refuseForm.anotherRemarks.includes(item)) str += `${item}。\n`
+      })
+
+      this.refuseForm.anotherRemarks+=str
+    },
+
     withdrawFormChange(e){
       let str=""
-       if(!this.withdrawForm.withdrawReason){
-            this.withdrawForm.withdrawReason=""
-          }
-        e.forEach((item,index)=>{
-          if(!this.withdrawForm.withdrawReason.includes(item)){
-            str +=`${item}。\n`
-          }
-        })
-        this.withdrawForm.withdrawReason+=str
+
+      if(!this.withdrawForm.withdrawReason) this.withdrawForm.withdrawReason = ""
+
+      e.forEach((item,index)=>{
+        if(!this.withdrawForm.withdrawReason.includes(item)) str +=`${item}。\n`
+      })
+
+      this.withdrawForm.withdrawReason+=str
     },
+
     // 获取当前驳回原因列表
-  async onRejectshow(str,isform){
-      let params={}
-          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-          params.type=1
-      let res = await http.getRejectEdit( params )
-      if(res.content){
+    async onRejectshow(str,isform){
+      let params = {}
+          params.jailId = JSON.parse(localStorage.getItem('user')).jailId
+          params.type = 1
+
+      let res = await http.getRejectEdit(params)
+
+      if(res.content) {
         this.content = res.content
-        this.contentId=res.id
-        this.updateer=res.updateEr
-      }else{
-        this.content = []
-      }
-      if(str=='PASSED'){
-        this.show.rejectEdit=true
-      }else{
-        this.show.rejectEdit=false
-      }
+        this.contentId = res.id
+        this.updateer = res.updateEr
+      } else this.content = []
+
+      if(str=='PASSED') this.show.rejectEdit = true
+
+      else this.show.rejectEdit = false
     },
 
     addReject(){
@@ -952,37 +1010,41 @@ export default {
        this.show.editRebut=true
     },
 
-   async onSubmitReject(){
-      this.content=this.content.filter((res)=>res&&res.trim())
-      if(this.content.length<1){
-         this.$message({
-            message: '新增编辑内容不能为空',
-            type: 'error'
-          });
-          return false
-      }else{
+    async onSubmitReject(){
+      this.content=this.content.filter(res=> res&& res.trim())
+
+      if(this.content.length < 1) {
+        this.$message({
+          message: '新增编辑内容不能为空',
+          type: 'error'
+        });
+
+        return false
+      } else {
         let params={
-        id: this.contentId,
-        type:1,
-        content:this.content,
-        updateer:JSON.parse(localStorage.getItem('user')).realName,
-        jailId:JSON.parse(localStorage.getItem('user')).jailId
+          id: this.contentId,
+          type: 1,
+          content: this.content,
+          updateer: JSON.parse(localStorage.getItem('user')).realName,
+          jailId: JSON.parse(localStorage.getItem('user')).jailId
         }
+
         let res = await http.setRejectEdit(params)
-        if(res){
+
+        if(res) {
           let params={}
               params.jailId=JSON.parse(localStorage.getItem('user')).jailId
               params.type=1
-          let res = await http.getRejectEdit( params )
-          if(res.content){
+
+          let res = await http.getRejectEdit(params)
+
+          if(res.content) {
             this.content = res.content
-            this.contentId=res.id
-            this.updateer=res.updateEr
-          }else{
-            this.content = []
-          }
-      }
-       this.show.editRebut=true
+            this.contentId = res.id
+            this.updateer = res.updateEr
+          } else this.content = []
+        }
+        this.show.editRebut=true
       }
     },
 
@@ -1069,6 +1131,21 @@ export default {
       this.dialogTitle = '授权'
     },
 
+    submitReject() {
+      this.$confirm('撤回该家属认证后，该家属的所有预约均将取消，请问确认撤回吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+          this.onAuthorization('WITHDRAW')
+        }).catch(() => {
+          this.$message({
+          type: 'info',
+          message: '已取消撤回'
+        });
+      });
+    },
+
     onAuthorization(e, inputs = {}) {
       const { processInstanceId } = this.registrationRow
 
@@ -1089,9 +1166,10 @@ export default {
 
           this.$refs.refuseForm.validate(valid => {
             if(!this.refuseForm.anotherRemarks){
-              this.refuseForm.anotherRemarks=""
+              this.refuseForm.anotherRemarks = ""
             }
             if (valid) params.remarks =this.refuseForm.anotherRemarks.replace(/\s*/g, '')
+
             else this.buttonLoading = false
           })
         }
@@ -1402,13 +1480,13 @@ export default {
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .el-select-dropdown{
+  .el-select-dropdown{
         max-width: 243px;
     }
-    .el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

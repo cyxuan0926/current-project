@@ -30,13 +30,9 @@ const config = {
     bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
     ygApiHost: 'http://120.78.190.101:8113/sunjail',
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    // http://8.129.14.169:8098/ywgk
-    jailApiHost: 'http://8.129.14.169:8098/ywgk',
-    // apiHost: 'http://192.168.1.43:8022',
-    // apiHost: 'http://47.107.245.151:8021',
+    jailApiHost: 'http://qa-ywgk.yuwugongkai.com/ywgk', // 河源监狱-qa
+    // apiHost: 'http://8.129.14.169:8098', // 河源监狱
     apiHost: 'http://qa-ywgk.yuwugongkai.com',
-    // apiHost: 'http://8.129.14.169:8098',
-    // apiHost: 'http://120.78.190.101:8021',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     monitoringApiHost: 'http://qa-monitoring-api.yuwugongkai.com',
     apiPath: '/ywgk',
@@ -63,7 +59,12 @@ const config = {
   production: {
     bpmnApiHost: 'https://activiti-api.yuwugongkai.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
-    apiHost: 'https://www.yuwugongkai.com',
+    // jailApiHost: 'http://192.168.100.1:8098/ywgk', // 会城监狱
+    // jailApiHost: 'http://8.129.14.169:8088/ywgk', // 潍坊监狱
+    jailApiHost: 'https://www.yuwugongkai.com/ywgk', // 河源监狱
+    // apiHost: 'http://192.168.100.1:8098', // 会城监狱
+    // apiHost: 'http://8.129.14.169:8088', // 潍坊监狱
+    apiHost: 'https://www.yuwugongkai.com', // 河源监狱
     financeApiHost: 'https://finance-api.yuwugongkai.com',
     monitoringApiHost: 'https://monitoring-api.yuwugongkai.com',
     apiPath: '/ywgk',

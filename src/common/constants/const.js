@@ -9,19 +9,24 @@ export const responseURLWhiteLists = [
   '/registrations/getRelationshipFile',
   '/parse/familyphone/exportFamilyPhone',
   '/parse/familyphone/validateFpm',
-  '/parse/familyphone/apply/validateFpna',
-  '/parse/familyphone/apply/exportFamilyPhoneApply',
+  '/msg/parse/familyphone/apply/validateFpna',
+  '/msg/parse/familyphone/apply/exportFamilyPhoneApply',
   '/parse/familyphone/apply/export',
   '/processDefinition/showresource',
   '/familyPhone/export',
   '/export/exportSmsManage',
-  '/settleAccounts/exportDetailExcel',
-  '/settleAccounts/settlement',
+  '/msg/settleAccounts/exportDetailExcel',
+  '/msg/settleAccounts/settlement',
   '/settleAccounts/export',
   '/familyphonesummary/export',
   '/download/exportVideoTelSummary',
   '/terminal/version/exportUpdateDetail',
-  '/terminal/version/exportUpgradeStatistics'
+  '/terminal/version/exportUpgradeStatistics',
+  '/meetingMembersStatistics/export',
+  '/meetingCallDetail/export',
+  '/registrations/exportFamilyRegJails',
+  '/prisoner_visits/exportPrisonerVisits',
+  '/prisoner_visits/exportAdminPrisonerVisits'
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。

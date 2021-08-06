@@ -346,7 +346,8 @@ export default {
 
         this.closeButton
       ]
-      if (!(!this.isAdvancedAuditor && this.haveMultistageExamine)) items.splice(2, 1)
+      // 如果是实地探视没有多级审批
+      if (!(!this.isAdvancedAuditor && this.haveMultistageExamine) || this.visitsFlag) items.splice(2, 1)
 
       return items
      }

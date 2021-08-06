@@ -31,7 +31,7 @@
         <template v-if="config.timeperiodQueue.length">
           <!-- 通话时长/时间间隔 -->
 
-          <!-- <div v-if="!superAdmin" class="none_superAdmin">
+          <!-- <div v-if="!isSuperAdmin" class="none_superAdmin">
             <label >通话时长</label>
             <span>{{ config.duration }} 分钟</span>
           </div> -->
@@ -307,10 +307,8 @@
       // 通话时长和间隔时间
       durationIntervalItems() {
         const item = {
-          formConfigs: {
-            labelWidth: '81px',
-            hideRequiredAsterisk: true,
-          },
+          formConfigs: cloneDeep(this.durationIntervalormConfigs),
+
           duration: {
             label: '通话时长',
             type: 'select',
@@ -320,18 +318,14 @@
             options:this.durations,
             value: (this.durations.length && this.durations[0].value) || 25
           },
-          interval: {
-            label: '间隔时间',
-            type: 'input',
-            append: '分钟',
-            rules: ['required', 'isNumber']
-          }
+
+          interval: cloneDeep(this.interval)
         }
-        // if (!this.superAdmin) this.$delete(item, 'duration')
+        // if (!this.isSuperAdmin) this.$delete(item, 'duration')
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
             const cloneItem = cloneDeep(item)
-            // if (this.superAdmin ) {
+            // if (this.isSuperAdmin ) {
             //   this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
             // }
             this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)

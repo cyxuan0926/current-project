@@ -15,12 +15,15 @@
     <!-- <transition name="fade"> -->
     <m-charts :visible="chartVisible" :options="chartOptions" />
     <!-- </transition> -->
-
     <m-table-new
       stripe 
       :data="meetingCostSaving.meetingDistances"
-      :cols="tableCols"
-    />
+      :cols="tableCols">
+      <template #index="{ row, $index }">
+        <span v-if="$index ==  meetingCostSaving.meetingDistances.length - 1">总计：</span>
+        <span v-else>{{ $index + 1 + (pagination.page - 1) * pagination.rows }}</span>
+      </template>  
+    </m-table-new>
 
     <m-pagination-new
       v-model="pagination"
@@ -307,7 +310,12 @@ export default {
           }
         ],
         [dimensions.PRISON]: [
-          { type: 'index', label: '排名', index: this.rank, width: '150px' },
+          // { type: 'index', label: '排名', index: this.rank, width: '150px' },
+          {
+            label: '排名',
+            slotName: 'index',
+            width: '150px'
+          },
           { prop: 'jailName', label: '监狱名称' },
           {
             prop: 'distance',

@@ -1,6 +1,7 @@
 import { initStore } from '@/common/constants/prisons'
 // const _local = window.localStorage
 const _session = window.sessionStorage
+const _local = window.localStorage
 const getItem = (store, key, isParse) => {
     if (store) {
         let _data = store.getItem(key)
@@ -31,3 +32,6 @@ export const setGuideStorage = (val) => setItem(_session, 'APP_GUIDE_DATA', val)
 // 流程设计xml
 export const getXmlStorage = () => getItem(_session, 'APP_BPMN_DATA')
 export const setXmlStorage = (val) => setItem(_session, 'APP_BPMN_DATA', val)
+
+// 获取user
+export const getUserStorage = () => getItem(_local, 'user', true)

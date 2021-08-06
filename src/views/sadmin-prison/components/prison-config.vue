@@ -871,7 +871,7 @@ export default {
         options: {
           ...options,
 
-          callback: (action) => {
+          callback: action => {
             if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, item)
           }
         }
@@ -887,7 +887,7 @@ export default {
 
           showCancelButton: false,
 
-          callback: (action) => {
+          callback: action => {
             this.$refs['prison-config_form'].setFieldValue(value, prop, item)
           }
         }
@@ -933,7 +933,7 @@ export default {
 
             closeOnPressEscape: false,
 
-            callback: (action) => {
+            callback: action => {
               this.$refs['prison-config_form'].setFieldValue(value, prop, item)
             }
           })

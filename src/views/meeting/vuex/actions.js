@@ -2,35 +2,36 @@ import http from './service'
 
 import { weeks } from '@/common/constants/const'
 
+/* eslint-disable */
 export default {
-  getRemoteAdvanceDayLimits: async({ commit }, params) => {
+  getRemoteAdvanceDayLimits: async({ commit }, inputs) => {
     try {
-      const res = await http.getRemoteAdvanceDayLimit(params)
+      const res = await http.getRemoteAdvanceDayLimit(inputs)
 
-      let { advanceDayLimit, dayInLimit } = res
+      const advanceDayLimit = res ? (res['advanceDayLimit'] || res['startDay'] || 2) : 2
 
-      if (!advanceDayLimit) advanceDayLimit = 2
+      const dayInLimit = res ? (res['dayInLimit'] || res['endDay'] || 15) : 15
 
-      if (!dayInLimit) dayInLimit = 15
-      res && commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
+      commit('setAdvanceDayLimits', [advanceDayLimit, dayInLimit])
+
+      return res
     }
-    catch (err) { console.log(err) }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
 
-  getRemoteAdvanceDayLimit: async({ commit }, params) => {
-    try {
-      const res = await http.getRemoteAdvanceDayLimit(params)
-      res && commit('setAdvanceDayLimit', res)
-    }
-    catch (err) { console.log(err) }
-  },
   updateRemoteAdvanceDayLimit: async({ commit }, params) => {
     try {
       await http.updateRemoteAdvanceDayLimit(params)
+
       commit('setAdvanceDayLimit', params)
+
       return true
     }
-    catch (err) { console.log(err) }
+    catch (err) {
+      Promise.reject(err)
+    }
   },
   // v2.6.4 获取远程常规配置(hb)
   getRemoteNormalConfig: ({ commit }, params) => {
@@ -504,11 +505,351 @@ export default {
     }
   },
 
-  async saveComplexConfigFloorDetail({ commit }, params) {
+  async saveComplexConfigFloorDetail(_, params) {
     try {
-      const { code } = await http.saveComplexConfigFloorDetail(params)
+      const data = await http.saveComplexConfigFloorDetail(params)
 
-      return code === 200
+      return data && data['code'] === 200
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitNormalConfigs({ commit }, prisonId) {
+    try {
+      const response = await http.getVisitNormalConfigs(prisonId)
+
+      if (!response) return
+
+      const {
+        complexNormalConfig,
+        prisonBranch,
+        configurationsFloorDetailNow,
+        configurationsFloorDetailFuture
+      } = response
+
+      const {
+        configAfter,
+        configBefore,
+        enabledAt,
+        endDay,
+        id,
+        jailId,
+        updatedAt,
+        startDay
+      } = complexNormalConfig
+
+      // 时间配置
+      const allTimeConfigs = [configBefore, configAfter]
+
+      // 日期监区配置
+      const allPrisonWeekConfigs = [configurationsFloorDetailNow, configurationsFloorDetailFuture]
+
+      const filterAllTimeConfigs = allTimeConfigs.map((configs, index) => {
+        if (!configs || (Array.isArray(configs) && !configs.length)) {
+          return [
+            { days: [],
+              interval: 5,
+              duration: 25,
+              timeperiod: [],
+              config: [],
+              queue: [],
+              timeperiodQueue: [],
+              showError: [],
+              type: index,
+              Monday: [],
+              Wednesday: [],
+              Thursday: [],
+              Friday: [],
+              Tuesday: [],
+              Saturday: [],
+              Sunday: [],
+              window_size: '1',
+              checkForm: []
+            }
+          ]
+        }
+        else {
+          return configs.map(config => {
+            const { timeperiod } = config
+
+            const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+            config['showError'] = new Array(length).fill(false)
+
+            config['window_size'] = String(config['window_size']) || '1'
+
+            const filterParams = [
+              {
+                key: 'config',
+                value: 'queue'
+              },
+              {
+                key: 'timeperiod',
+                value: 'timeperiodQueue'
+              }
+            ]
+            filterParams.forEach(params => {
+              config[params['value']] = []
+              if (config[params['key']] && Array.isArray(config[params['key']]) && config[params['key']].length) {
+                config[params['key']].forEach(c => {
+                  config[params['value']].push(c.split('-'))
+                })
+              }
+              else config[params['key']] = []
+            })
+
+            let weekConfigs = {}, checkForm = []
+
+            allPrisonWeekConfigs[index].forEach(prisonWeekConfig => {
+              weeks.forEach(day => {
+                // 拥有的日期
+                if (+day.value === +prisonWeekConfig.days) {
+                  const { key } = day
+
+                  let { prisonConfigId } = prisonWeekConfig
+
+                  prisonConfigId = prisonConfigId && Array.isArray(prisonConfigId) ? prisonConfigId.map(item => +item) : []
+
+                  // 特殊处理 全监狱 id默认为 -1
+                  if (!+prisonBranch) prisonConfigId = [-1]
+
+                  weekConfigs = {
+                    ...weekConfigs,
+                    [key]: prisonConfigId
+                  }
+
+                  checkForm.push(key)
+                }
+              })
+            })
+
+            return { ...config, ...weekConfigs, checkForm }
+          })
+        }
+      })
+
+      commit('setVisitNormalConfigs', {
+        prisonBranch,
+        jailId,
+        id,
+        updatedAt,
+        startDay,
+        enabledAt,
+        endDay,
+        configBefore: filterAllTimeConfigs[0],
+        configAfter: filterAllTimeConfigs[1]
+      })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitNormalConfigs(_, params) {
+    try {
+      const result = await http.updateVisitNormalConfigs(params)
+
+      return result
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitNotice({ commit }, jailId) {
+    try {
+      let notice = await http.getVisitNotice(jailId)
+
+      if (!notice || Object.prototype.toString.call(notice) === '[object Object]') notice = `
+        根据疫情防控相关要求，现场会见实行预约办理。
+        会见当天，提供健康码、旅居史和7日内核酸检测报告，对体温超过37.3℃、有咳嗽、流涕、红眼、皮疹等可疑传染性疾病症状的人员，
+        以及到过中高风险地区疫情地区的和境外人员一律不允许进入监管区。具体情况请咨询各监狱。
+      `
+
+      commit('setVisitNotice', notice.replace(/\s*/g, ''))
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateTimeSwitch(_, params) {
+    try {
+      await http.updateTimeSwitch(params)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitSpecialConfigs({ commit }, jailId) {
+    try {
+      const response = await http.getVisitSpecialConfigs(jailId)
+
+      const { branch_prison = 0, confList = [] } = response || {}
+
+      let configs = []
+
+      if (!response || !confList || (Array.isArray(confList) && !confList.length)) {
+        configs = [
+          {
+            enabledMeeting: 1,
+            day: '',
+            config: [],
+            queue: [],
+            duration: 25,
+            interval: 5,
+            timeperiod: [],
+            timeperiodQueue: [],
+            showError: [],
+            window_size: '1',
+            jailId: +jailId,
+            status: 1,
+            prisonConfigIds: +branch_prison ? [] : [-1]
+          }
+        ]
+      } else {
+        configs = confList.map(config => {
+          const {
+            enabledMeeting,
+            day,
+            windowNum,
+            settings,
+            prisonConfigIds
+          } = config
+
+          const {
+            interval,
+            duration,
+            timeperiod
+          } = settings
+
+          const length = (timeperiod && Array.isArray(timeperiod) && timeperiod.length) || 1
+
+          config['window_size'] = String(windowNum) || '1'
+
+          config['showError'] = new Array(length).fill(false)
+
+          config['prisonConfigIds'] = branch_prison ? (prisonConfigIds ? prisonConfigIds.split(',').map(item => +item) : []) : [-1]
+
+          config['oldDay'] = day
+
+          config['old_window_size'] = String(windowNum) || '1'
+
+          config['oldEnabled'] = enabledMeeting || 0
+
+          config['oldPrisonConfigIds'] = branch_prison ? (prisonConfigIds ? prisonConfigIds.split(',').map(item => +item) : []) : [-1]
+
+          config['duration'] = duration || 25
+
+          config['interval'] = interval || 5
+
+          const filterParams = [
+            {
+              key: 'config',
+              value: 'queue'
+            },
+            {
+              key: 'timeperiod',
+              value: 'timeperiodQueue'
+            }
+          ]
+
+          filterParams.forEach(params => {
+            config[params['value']] = []
+
+            if (settings[params['key']] && Array.isArray(settings[params['key']]) && settings[params['key']].length) {
+              settings[params['key']].forEach(c => {
+                config[params['value']].push(c.split('-'))
+              })
+            } else config[params['key']] = []
+          })
+
+          config['config'] = settings['config']
+
+          delete config['settings']
+
+          return config
+        })
+      }
+
+      commit('setVisitSpecialConfigs', {
+        prisonBranch: branch_prison,
+        complexVisitSpecialConfigs: configs
+      })
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async addVisitSpecialConfig(_, parmas) {
+    try {
+      const response = await http.addVisitSpecialConfig(parmas)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async delVisitSpecialConfig(_, parmas) {
+    try {
+      const response = await http.delVisitSpecialConfig(parmas)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitSpecialConfig(_, parmas) {
+    try {
+      await http.updateVisitSpecialConfig(parmas)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getVisitTimeSwitch({ commit }, jailId) {
+    try {
+      const response = await http.getVisitTimeSwitch(jailId)
+
+      const timeSwitch = response ? response['data'] ? +response['data'] : 0 : 0
+
+      commit('setVisitTimeSwitch', timeSwitch)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async updateVisitNotice(_, params) {
+    try {
+      await http.updateVisitNotice(params)
+
+      return true
     }
     catch (err) {
       Promise.reject(err)

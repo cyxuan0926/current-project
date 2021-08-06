@@ -46,5 +46,21 @@ export default {
 
   setMeetingRoomConfigs(state, meetingRoomConfigs) {
     state.meetingRoomConfigs = Object.assign({}, meetingRoomConfigs)
+  },
+
+  setVisitNormalConfigs(state, visitNormalConfigs) {
+    state.visitNormalConfigs = Object.assign({}, visitNormalConfigs)
+  },
+
+  setVisitNotice(state, notice) {
+    state.visitNotice = Object.assign({}, { notice })
+  },
+
+  setVisitTimeSwitch(state, visitTimeSwitch) {
+    state.visitTimeSwitch = visitTimeSwitch
+  },
+
+  setVisitSpecialConfigs(state, visitSpecialConfigs) {
+    state.visitSpecialConfigs = Object.assign({}, visitSpecialConfigs)
   }
 }

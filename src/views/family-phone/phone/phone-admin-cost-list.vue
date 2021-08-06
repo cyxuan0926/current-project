@@ -300,28 +300,6 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-.logMgCls .el-select__tags-text {
-  display: inline-block;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.logMgCls .el-select .el-tag__close.el-icon-close {
-  top: -7px;
-}
- .el-select-dropdown{
-        max-width: 243px;
-    }
-    .el-select-dropdown__item{
-        display: inline-block;
-    }
-    .el-select-dropdown__item span {
-        min-width: 400px;
-        display: inline-block;
-   }
-</style>
 
 
 <style lang="scss" scoped>

@@ -401,6 +401,9 @@ export default {
   },
 
   methods: {
+    reSetMeetingsData() {
+      this.meetingsData = this.getMeetingsData()
+    },
     // 通话数据
     getMeetingsData(key = 'meetingQueue') {
       if (!this.hasQueue || !this.hasTerminal) {
@@ -414,12 +417,10 @@ export default {
               meeting.terminalNumber === terminal.terminalNumber
             );
           });
-
           meeting = meeting || {
             terminalNumber: terminal.terminalNumber,
             meetingTime: this.meetingDate + " " + timeCell
           };
-
           return { ...meeting, terminalId: terminal.id };
         });
       });
@@ -687,7 +688,6 @@ export default {
             this.hasMeetingChanged(meetingCell)
           ) {
             const newMeetingParams = this.getMeetingParams(meetingCell);
-
             result.push({
               name: meetingCell.__MEETING__.name,
               id: meetingCell.__MEETING__.id,
