@@ -53,6 +53,7 @@
         </template>
 
         <template #families="{ row }">
+          {{ row.families }}
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
               type="text"
@@ -1136,7 +1137,7 @@
             },
            {
               label: '家属',
-              prop: 'filterFamilies',
+              slotName: 'families',
               minWidth: 115
             },
             {
