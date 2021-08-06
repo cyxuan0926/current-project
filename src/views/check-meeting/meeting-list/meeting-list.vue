@@ -53,7 +53,6 @@
         </template>
 
         <template #families="{ row }">
-          {{ row.families }}
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
               type="text"
@@ -1322,7 +1321,6 @@
       // }
       this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
       this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
-      console.log(this.$store.state.areaOptions)
       await this.getDatas('mounted')
     },
     methods: {
