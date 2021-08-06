@@ -345,7 +345,7 @@
             <p class="detail-message-family" style="border: none">
               <span class="family-name">窗口号</span>
 
-              <span class="family-nameDetail">{{toShow.window}}号</span>
+              <span class="family-nameDetail">{{ toShow.window ? `${ toShow.window }号` : ''}}</span>
             </p>
           </div>
         </div>
