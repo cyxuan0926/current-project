@@ -22,6 +22,18 @@
                         {{val.month}}
               </p>
       </div>
+      <div style="min-width:160px;border-left:1px solid #e6e6e6">
+          <p style="height:60px">省份</p>
+              <p class="borderTop" v-for="(val,i) in tabledata['合计']" :key="i">
+                        {{val.provinceName}}
+              </p>
+      </div>
+      <div style="min-width:160px;border-left:1px solid #e6e6e6">
+          <p style="height:60px">监狱</p>
+              <p class="borderTop" v-for="(val,i) in tabledata['合计']" :key="i">
+                        {{val.jailName}}
+              </p>
+      </div>
         <div v-for="(item,index) in tabledata" :key="index" style="display:flex;flex-direction:column;min-width:160px; border-left:1px solid #e6e6e6">
                    <div >{{index}}</div>
                 <div  class="flex borderTop">
@@ -149,7 +161,7 @@ export default {
         if (!res) return this.noData=true
           Object.values(res).forEach(val=>{
             val.forEach(item=>{
-               if(params.dataType==1){
+              if(params.dataType==1){
               item.num=item.familyCount
              }else{
                 item.num=item.membersNum

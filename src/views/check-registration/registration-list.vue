@@ -18,12 +18,6 @@
           type="primary"
           @click="onDownload('all')"
         >下载关系证明</el-button>
-
-        <el-button
-          type="primary"
-          :loading="downloading"
-          @click="handleExportExcel"
-        >导出 Excel</el-button>
       </template>
     </m-search>
 
