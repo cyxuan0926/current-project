@@ -12,7 +12,7 @@
         <el-button
           type="primary"
           :loading="downloading"
-          @click="onDownloadExcel"
+          @click="handleExportExcel"
         >导出 Excel</el-button>
       </template>  
     </m-search>
@@ -604,12 +604,13 @@
   import prisons from '@/common/constants/prisons'
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
+  import { saveAs } from 'file-saver'
 
   import { withdrawOrAnthorinputReason } from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
-  import { tokenExcel } from '@/utils/token-excel'
+  // import { tokenExcel } from '@/utils/token-excel'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -879,6 +880,10 @@
         'meetingRefresh',
         'global'
       ]),
+
+      ...mapState({
+        isAdmin: state => state.global.user.role == '0'
+      }),
 
       ...mapGetters([
         'isShowPhone',
@@ -1252,7 +1257,7 @@
           ...this.filter,
           ...this.pagination
         }
-        let { visits, total } = await http.getVisits(params)
+        let { visits, total } = await http[ this.isAdmin ? 'getVisitsByAdmin' : 'getVisits' ](params)
         if (visits && visits.length) {
           visits.forEach(m => {
             if (!m.filterFamilies) {
@@ -1584,28 +1589,44 @@
         this.getDatas('sortChange')
       },
 
-      async onDownloadExcel() {
+      async handleExportExcel() {
+        if (this.downloading) {
+            return
+        }
         this.downloading = true
+        const params = { ...this.filter }
+        try {
+            let data = await http[ this.isAdmin ? 'exportVisitsByAdmin' : 'exportVisits' ](params)
+            let _tab = this.tabsItems.find(t => t.name == this.tabs)
+            saveAs(data, `现场探视预约管理列表-${ _tab && _tab.label }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+            this.downloading = false
+        } catch (error) {
+            this.downloading = false
+        }
+      },
 
-        const times = helper.DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-          tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
-          TABName = tabItem[0]['label'],
-          actionName = 'exportVisitExcel',
-          params = {
-            url: '/prisoner_visits/exportPrisonerVisits',
-            params: { ...this.filter, tab: this.tabs }
-          }
+      // async onDownloadExcel() {
+      //   this.downloading = true
 
-        await tokenExcel({
-          params,
-          actionName,
-          menuName: `现场探视预约管理-${ TABName }-${ times }`,
-        })
+      //   const times = helper.DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+      //     tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+      //     TABName = tabItem[0]['label'],
+      //     actionName = 'exportVisitExcel',
+      //     params = {
+      //       url: `/prisoner_visits/${ this.isAdmin ? 'exportAdminPrisonerVisits' : 'exportPrisonerVisits' }`,
+      //       params: { ...this.filter, tab: this.tabs }
+      //     }
 
-        setTimeout(() => {
-          this.downloading = false
-        }, 300)
-      }
+      //   await tokenExcel({
+      //     params,
+      //     actionName,
+      //     menuName: `现场探视预约管理-${ TABName }-${ times }`,
+      //   })
+
+      //   setTimeout(() => {
+      //     this.downloading = false
+      //   }, 300)
+      // }
     }
   }
 </script>

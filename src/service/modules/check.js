@@ -122,6 +122,12 @@ export default {
   getVisits: params => {
     return service.get('/prisoner_visits/page', params).then(res => res && res.data)
   },
+  // 实地探监管理-导出
+  exportVisits: params => service.get('/prisoner_visits/exportPrisonerVisits', params, { responseType: 'blob' }).then(res => res && res.data),
+  // 实地探监管理 admin-列表
+  getVisitsByAdmin: params => service.get('/prisoner_visits/findPage', params).then(res => res && res.data),
+  // 实地探监管理 admin-导出
+  exportVisitsByAdmin: params => service.get('/prisoner_visits/exportAdminPrisonerVisits', params, { responseType: 'blob' }).then(res => res && res.data),
   // 实地探监管理-已取消
   getCanceledVisit: params => {
     return service.get('/prisoner_visits/findCanceled', params).then(res => res && res.data)
