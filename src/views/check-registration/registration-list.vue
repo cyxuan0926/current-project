@@ -18,12 +18,6 @@
           type="primary"
           @click="onDownload('all')"
         >下载关系证明</el-button>
-
-        <el-button
-          type="primary"
-          :loading="downloading"
-          @click="handleExportExcel"
-        >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -143,13 +137,13 @@
 
         <el-table-column label="管教级别" min-width="70">
           <template #default="{ row }">
-            <span v-if="row.level === 1">宽管级</span>
+           <span v-if="row.level === 1">宽管级</span>
 
-            <span v-if="row.level === 2">普管级</span>
+           <span v-if="row.level === 2">普管级</span>
 
-            <span v-if="row.level === 3">考察级</span>
+           <span v-if="row.level === 3">考察级</span>
 
-            <span v-if="row.level === 4">严管级</span>
+           <span v-if="row.level === 4">严管级</span>
           </template>
         </el-table-column>
 
@@ -211,33 +205,32 @@
           <template #default="{ row }">
             <template v-if="!hasAllPrisonQueryAuth">
               <el-button
-                v-if="!!row.isCheck"
+                v-if="row.status == 'PENDING' && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
                 size="mini"
                 @click="handleAuthorization(row)"
               >授权</el-button>
 
-              <el-button
-                v-if="!!row.canWithdraw"
-                size="mini"
-                @click="handleCallback(row)"
-              >撤回</el-button>
-
               <template v-if="row.status == 'PASSED'">
+                <el-button
+                  v-if="!!row.canWithdraw"
+                  size="mini"
+                  @click="handleCallback(row)"
+                >撤回</el-button>
+
                 <el-button size="mini" @click="onDownload(row)">下载</el-button>
               </template>
 
               <el-button
-                v-if="!row.isCheck"
+                v-if="!!row.showDetail"
                 size="mini"
-                @click="handleAuthorDetail(row)"
-              >详情</el-button>
+                @click="handleAuthorDetail(row)">详情
+              </el-button>
             </template>
 
             <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
-              @click="handleAuthorDetail(row)"
-            >查看</el-button>
+              @click="handleAuthorDetail(row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -341,10 +334,17 @@
       />
 
       <template v-if="!hasAllPrisonQueryAuth">
-        <div v-if="!show.agree && !show.disagree && !show.callback" class="button-box">
-          <el-button plain  @click="onAgreeAuthorize">同意</el-button>
+        <div v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine" class="button-box">
+          <el-button plain  @click="show.agree = true">同意</el-button>
 
           <el-button plain @click="show.disagree = true">不同意</el-button>
+
+          <!-- 这个监狱开启多级审批并且是初级审核人员 -->
+          <el-button
+            v-if="!isAdvancedAuditor && haveMultistageExamine"
+            plain
+            @click="show.multistageExamine = true"
+          >提交</el-button>
 
           <el-button
             type="danger"
@@ -353,47 +353,59 @@
           >关闭</el-button>
         </div>
 
+        <!-- 提交到二级审批 -->
+        <div v-if="show.multistageExamine" class="button-box multistage-examine_button_box el-row_callback">
+          <div style="margin-bottom: 10px;">初审意见：</div>
+
+          <el-form
+            :model="multistageExamineForm"
+            :rules="multistageExamineRule"
+            ref="multistageExamineForm"
+            class="withdraw-box"
+          >
+            <el-form-item prop="remarks">
+              <el-input
+                :autosize="{ minRows: 2 }"
+                type="textarea"
+                show-word-limit
+                maxlength="50"
+                placeholder="请输入初审意见"
+                v-model="multistageExamineForm.remarks"
+              />
+            </el-form-item>
+          </el-form>
+
+          <el-button
+            plain
+            :loading="buttonLoading"
+            @click="onAuthorizeFirstLevel"
+          >确认提交二级审批吗？</el-button>
+
+          <el-button plain @click="onAuthorizeFirstLevelGoBack">返回</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="onFirstLevelClose"
+          >关闭</el-button>
+        </div>
+
         <!-- 同意 -->
         <template v-if="show.agree">
-          <div v-if="!isSubtask" class="button-box">
-            <repetition-el-buttons :buttonItems="showAgreeButtons" />
-          </div>
+          <div class="button-box">
+            <el-button
+              plain
+              :loading="buttonLoading"
+              @click="onAuthorization('PASSED')"
+            >确定申请通过？</el-button>
 
-          <div v-else class="button-box">
-            <m-form
-              ref="agreeHasSubTaskForm"
-              :items="agreeHasSubTaskFormItems"
-              :values="agreeHasSubTaskFormValues"
-              @submit="onAgreeHasSubTaskFormSubmit"
-            >
-              <template #nextCheckCodeAgreeButtons>
-                <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
-                  <template v-for="item in processInstanceIdSubtaskOptions">
-                    <el-option
-                      :key="item.taskCode"
-                      :label="item.taskName"
-                      :value="item.taskCode"
-                    />
-                  </template>
-                </el-select>
+            <el-button plain @click="show.agree = false">返回</el-button>
 
-                <el-row>
-                  <el-button
-                    plain
-                    :loading="buttonLoading"
-                    @click="onPassedAuthorize"
-                  >提交审核</el-button>
-
-                  <el-button plain @click="show.agree = false">返回</el-button>
-
-                  <el-button
-                    type="danger"
-                    plain
-                    @click="show.authorize = false"
-                  >关闭</el-button>
-                </el-row>
-              </template>
-            </m-form>   
+            <el-button
+              type="danger"
+              plain
+              @click="show.authorize = false"
+            >关闭</el-button>
           </div>
         </template>
 
@@ -411,18 +423,15 @@
               @change="refuseFormChange"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
-                :label="(index+1)+'、'+remark"
+                :label="(index + 1) + '、'+remark"
                 :key="index"
               />
             </el-select>
 
-            <el-button
-              type="primary"
-              :loading="buttonLoading"
-              @click="onRejectshow('PASSED')"
-            >编辑驳回原因</el-button>
+            <el-button type="primary" @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
           </div>
 
           <el-form
@@ -472,6 +481,7 @@
               style="width:70%;margin-right:10px"
             >
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -479,11 +489,7 @@
               />
             </el-select>
 
-            <el-button
-              type="primary"
-              :loading="buttonLoading"
-              @click="onRejectshow('PASSED')"
-            >编辑驳回原因</el-button>
+            <el-button type="primary" @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
           </div>
 
           <el-form
@@ -507,7 +513,7 @@
           <el-button
             plain
             :loading="buttonLoading"
-            @click="submitReject()"
+            @click="submitReject"
           >提交</el-button>
 
           <el-button
@@ -725,6 +731,7 @@ export default {
         agree: false,
         disagree: false,
         callback: false,
+        multistageExamine: false,
         rejectEdit:false,
         editRebut:true
       },
@@ -739,23 +746,20 @@ export default {
       withdrawRule: {
         anotherRemarks: [
           {
-            validator:(rule,value,callback)=>{
-              if(this.refuseForm.anotherRemarks){
-                  callback()
-              }else{
-                  callback(new Error('请填写驳回原因'))
-              }
+            validator: (rule,value,callback) => {
+              if (this.refuseForm.anotherRemarks) callback()
+
+              else callback(new Error('请填写驳回原因'))
             }
           }
         ],
+
         withdrawReason: [
           {
-            validator:(rule,value,callback)=>{
-              if(this.withdrawForm.withdrawReason){
-                  callback()
-              }else{
-                  callback(new Error('请填撤回原因'))
-              }
+            validator:(rule,value,callback) => {
+              if (this.withdrawForm.withdrawReason) callback()
+
+              else callback(new Error('请填撤回原因'))
             }
           }
         ]
@@ -771,16 +775,6 @@ export default {
       updateer:'',
       contentId:"",
       isform:false,
-
-      agreeText: '确定通过？',
-
-      agreeHasSubTaskFormValues: {},
-
-      agreeHasSubTaskFormFields: {},
-
-      agreeHasSubTaskFormData: {
-        nextCheckCode: ''
-      },
 
       multistageRecordsBasicValues: [],
 
@@ -826,9 +820,22 @@ export default {
         }
       ],
 
-      registrationRow: {}
+      multistageExamineForm: {
+        remarks: ''
+      },
+
+      multistageExamineRule: {
+        remarks: [
+          {
+            required: true,
+
+            message: '请输入初审意见'
+          }
+        ]
+      }
     }
   },
+
   watch: {
     tabs(val) {
       this.$refs.search.onSearch('tabs')
@@ -864,9 +871,11 @@ export default {
       this.onSearch()
     }
   },
-  mounted() {
-    this.getDatas()
+
+  async mounted() {
+    await this.getDatas()
   },
+
   computed: {
     ...mapState([
       'registrations',
@@ -875,14 +884,11 @@ export default {
       'isSuccessFirstLevelAuthorize'
     ]),
 
-    ...mapState({
-      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions,
-      currentProcessTaskInformation: state => state.global.currentProcessTaskInformation
-    }),
-
     ...mapGetters([
       'isInWhitelist',
       'isAuditor',
+      'isAdvancedAuditor',
+      'haveMultistageExamine',
       'isShowPhone'
     ]),
 
@@ -895,33 +901,6 @@ export default {
         4: '24%'
       }
       return widthConstent[this.toAuthorize.relationalProofUrls.length]
-    },
-
-    isSubtask() {
-      return !!(this.processInstanceIdSubtaskOptions && Array.isArray(this.processInstanceIdSubtaskOptions) && this.processInstanceIdSubtaskOptions.length)
-    },
-
-    agreeHasSubTaskFormItems() {
-      return {
-        formConfigs: {
-          labelWidth: '90px'
-        },
-
-        remarks: {
-          type: 'textarea',
-          noLabel: true,
-          placeholder: '请输入审核意见',
-          customClass: ['none_margin-left']
-        },
-
-        nextCheckCodeAgreeButtons: {
-          slotName: 'nextCheckCodeAgreeButtons',
-          customClass: ['el-from_item-nextCheckCodeAgreeButtons'],
-          attrs: {
-            label: '请选择审核人'
-          }
-        }
-      }
     }
   },
   methods: {
@@ -936,10 +915,11 @@ export default {
       'getProcessTask'
     ]),
 
+    ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
+
     async handleExportExcel() {
-      if (this.downloading) {
-        return
-      }
+      if (this.downloading) return
+
       this.downloading = true
 
       const params = Object.assign( { status: this.tab }, { ...this.filter } )
@@ -980,7 +960,7 @@ export default {
     },
 
     // 获取当前驳回原因列表
-    async onRejectshow(str,isform){
+    async onRejectshow(str, isform){
       let params = {}
           params.jailId = JSON.parse(localStorage.getItem('user')).jailId
           params.type = 1
@@ -993,7 +973,7 @@ export default {
         this.updateer = res.updateEr
       } else this.content = []
 
-      if(str=='PASSED') this.show.rejectEdit = true
+      if(str === 'PASSED') this.show.rejectEdit = true
 
       else this.show.rejectEdit = false
     },
@@ -1007,17 +987,19 @@ export default {
     },
 
     onRejectEditshow(){
-      this.show.editRebut=false
+      this.show.editRebut = false
     },
 
     async changeClose(){
-      this.remarks=[]
-      await this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
+      this.remarks = []
+
+      await this.onRejectshow(false, this.isform)
+
+      this.show.editRebut = true
     },
 
     async onSubmitReject(){
-      this.content=this.content.filter(res=> res&& res.trim())
+      this.content=this.content.filter(res=> res && res.trim())
 
       if(this.content.length < 1) {
         this.$message({
@@ -1027,7 +1009,7 @@ export default {
 
         return false
       } else {
-        let params={
+        let params= {
           id: this.contentId,
           type: 1,
           content: this.content,
@@ -1063,12 +1045,9 @@ export default {
 
       const params = { ...this.filter, ...this.pagination }
 
-      if (this.hasAllPrisonQueryAuth) {
-        await this.getRegistrationsAll(params)
-      }
-      else {
-        await this.getRegistrations(params)
-      }
+      if (this.hasAllPrisonQueryAuth) await this.getRegistrationsAll(params)
+
+      else await this.getRegistrations(params)
     },
 
     async onSearch() {
@@ -1142,19 +1121,15 @@ export default {
 
     // 点击授权按钮
      async handleAuthorization(e) {
-      const { processInstanceId } = e
-
-      this.registrationRow = Object.assign({}, e)
-
-      const promises = await Promise.all([this.onGetRegistrationDetail(e), this.getProcessTask(processInstanceId)])
-
-      this.toAuthorize = promises[0]
+      this.toAuthorize = await this.onGetRegistrationDetail(e)
 
       this.show.agree = false
 
       this.show.disagree = false
 
       this.show.callback = false
+
+      this.show.multistageExamine = false
 
       await this.onRejectshow(false,false)
 
@@ -1181,51 +1156,35 @@ export default {
       });
     },
 
-    onAuthorization(e, inputs = {}) {
-      const { processInstanceId } = this.registrationRow
-
+    onAuthorization(e) {
       this.buttonLoading = true
 
-      let params = { id: this.toAuthorize.id, processInstanceId, ...inputs }
+      let params = { id: this.toAuthorize.id, status: e }
 
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED') {
-          const { taskName } = this.currentProcessTaskInformation
-
-          // 不同意
-          params = {
-            ...params,
-            checkState: 2,
-            taskName
-          }
-
           this.$refs.refuseForm.validate(valid => {
-            if(!this.refuseForm.anotherRemarks){
-              this.refuseForm.anotherRemarks = ""
-            }
+            if(!this.refuseForm.anotherRemarks) this.refuseForm.anotherRemarks = ""
+
             if (valid) params.remarks =this.refuseForm.anotherRemarks.replace(/\s*/g, '')
 
             else this.buttonLoading = false
           })
         }
+
         if(e === 'WITHDRAW') {
-          params = {
-            ...params,
-            checkState: 4
-          }
-
-          params.status = e
-
           this.$refs.withdrawForm.validate(valid => {
-            if(!this.withdrawForm.withdrawReason){
-              this.withdrawForm.withdrawReason = ""
-            }
+            if(!this.withdrawForm.withdrawReason) this.withdrawForm.withdrawReason = ""
+
             if (valid) params.withdrawReason  =this.withdrawForm.withdrawReason.replace(/\s*/g, '')
+
             else this.buttonLoading = false
           })
         }
+
         if (this.buttonLoading) this.handleSubmit(params)
       }
+
       else this.handleSubmit(params)
     },
 
@@ -1234,6 +1193,8 @@ export default {
         this.buttonLoading = false
         if (res) {
           this.onCloseWithdrawDialog()
+
+          this.setIsRefreshMultistageExamineMessageBell(true)
         }
       })
     },
@@ -1276,8 +1237,6 @@ export default {
 
     // 点击撤回按钮
     async handleCallback(e) {
-      this.registrationRow = Object.assign({}, e)
-
       this.toAuthorize = await this.onGetRegistrationDetail(e)
 
       this.show.authorize = true
@@ -1300,12 +1259,14 @@ export default {
     closeWithdraw() {
       this.show.authorize = false
       this.remarks = []
-      this.withdrawForm.selectRemark=""
-      this.refuseForm.selectRemark=""
+      this.withdrawForm.selectRemark = ""
+      this.refuseForm.selectRemark = ""
+      this.$set(this.multistageExamineForm, 'remarks', '')
       this.withdrawForm.withdrawReason = this.registrationWithdrawOrAnthorinputReason
       this.refuseForm.anotherRemarks = this.registrationWithdrawOrAnthorinputReason
       if (this.$refs.refuseForm) this.$refs.refuseForm.clearValidate()
       if (this.$refs.withdrawForm) this.$refs.withdrawForm.clearValidate()
+      if (this.$refs.multistageExamineForm) this.$refs.multistageExamineForm.clearValidate()
     },
 
     showSign(row) {
@@ -1331,12 +1292,6 @@ export default {
           this.notificationShow = true
         })
       }
-    },
-
-    onView(e) {
-      this.toAuthorize = e
-      this.dialogTitle = '查看'
-      this.show.authorize = true
     },
 
     // 下载
@@ -1427,78 +1382,50 @@ export default {
       await this.getDatas()
     },
 
-    onAgreeHasSubTaskFormSubmit(value) {
-      this.agreeHasSubTaskFormFields = Object.assign({}, value)
-    },
+    // 提交到二级审批
+    async onAuthorizeFirstLevel() {
+      try {
+        const { id } = this.toAuthorize
 
-    onAgreeAuthorizeGoBack() {
-      this.$set(this.show, 'agree', false)
-    },
+        const { remarks } = this.multistageExamineForm
 
-    onCloseAuthorize() {
-      this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onClearValidate()
+        await this.$refs.multistageExamineForm.validate() &&  (this.buttonLoading = true) && await this.firstLevelAuthorize({
+          params: {
+            id,
+            remarks
+          },
 
-      this.$refs.refuseForm && this.$refs.refuseForm.clearValidate()
+          url: '/registrations/firstLevelAuthorize',
 
-      this.$set(this.show, 'authorize', false)
+          mutationName: 'setIsSuccessFirstLevelAuthorize'
+        })
 
-      setTimeout(() => {
-        this.$set(this.show, 'agree', false)
+        this.buttonLoading = false
 
-        this.$set(this.show, 'disAgree', false)
-
-        this.$set(this.show, 'callback', false)
-      }, 200)
-    },
-
-    async onAgreeAuthorize() {
-      const { processInstanceId } = this.registrationRow
-
-      await this.getSubtaskPhone({ processInstanceId })
-
-      if (this.isSubtask) {
-        this.agreeHasSubTaskFormValues = {
-          remarks: '同意',
-        }
-
-        this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
+        if (this.isSuccessFirstLevelAuthorize) this.onCloseWithdrawDialog()
+      } catch (err) {
+        Promise.reject(err)
       }
-
-      this.$set(this.show, 'agree', true)
     },
 
-    // 同意 提交审批：同意并结束
-    async onPassedAuthorize() {
-      const { taskName } = this.currentProcessTaskInformation
+    onAuthorizeFirstLevelGoBack() {
+      this.$refs['multistageExamineForm'].clearValidate()
 
-      let inputs = {
-        taskName
-      }
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
 
-      if (this.isSubtask) {
-        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+      this.show.multistageExamine = false
+    },
 
-        const { remarks } = this.agreeHasSubTaskFormFields
+    onFirstLevelClose() {
+      this.$nextTick(function() {
+        this.$set(this.multistageExamineForm, 'remarks', '')
+      })
 
-        const { nextCheckCode } = this.agreeHasSubTaskFormData
+      this.$refs['multistageExamineForm'].clearValidate()
 
-        const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
-
-        inputs = {
-          ...inputs,
-          remarks,
-          nextCheckRole: taskName,
-          nextCheckCode,
-          checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
-        }
-      } else {
-        inputs = {
-          ...inputs,
-          checkState: 1
-        }
-      }
-
-      await this.onAuthorization('PASSED', inputs)
+      this.show.authorize = false
     }
   }
 }
@@ -1515,13 +1442,13 @@ export default {
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .logMgCls .el-select-dropdown{
+  .el-select-dropdown{
         max-width: 243px;
     }
-    .logMgCls .el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .logMgCls .el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

@@ -73,7 +73,7 @@ export default {
       initFilter: {
         year,
         timeType:1,
-        dataType:0
+        dataType:1
       },
       downloading:false,
       searchItems: {
@@ -93,9 +93,9 @@ export default {
         dataType: {
             type: 'select',
             label: '数据类型',
-            options:[{label: '全量数据',value: 0},{label: '去重数据', value: 1}],
+            options:[{label: '全量数据',value: 1},{label: '去重数据', value: 2}],
             canNotClear:true,
-            value: 0
+            value: 1
         },
 
       },
@@ -117,7 +117,7 @@ export default {
                 const params = Object.assign( { ...this.filter, type: this.filter.dataType } )
                 try {
                     let data = await http.exportMeetingStatis(params)
-                    saveAs(data, `会见量和参会人数统计报表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                    saveAs(data, `会见量和参会人数统计报表-${this.filter.dataType==1?'全量':'去重'}-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
                     this.downloading = false
                 } catch (error) {
                     this.downloading = false

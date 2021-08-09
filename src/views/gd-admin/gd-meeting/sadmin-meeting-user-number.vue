@@ -22,6 +22,18 @@
                         {{val.month}}
               </p>
       </div>
+      <div style="min-width:160px;border-left:1px solid #e6e6e6">
+          <p style="height:60px">省份</p>
+              <p class="borderTop" v-for="(val,i) in tabledata['合计']" :key="i">
+                        {{val.provinceName}}
+              </p>
+      </div>
+      <div style="min-width:160px;border-left:1px solid #e6e6e6">
+          <p style="height:60px">监狱</p>
+              <p class="borderTop" v-for="(val,i) in tabledata['合计']" :key="i">
+                        {{val.jailName}}
+              </p>
+      </div>
         <div v-for="(item,index) in tabledata" :key="index" style="display:flex;flex-direction:column;min-width:160px; border-left:1px solid #e6e6e6">
                    <div >{{index}}</div>
                 <div  class="flex borderTop">
@@ -77,7 +89,7 @@ export default {
       initFilter: {
         year,
         timeType:1,
-        dataType:0
+        dataType:1
       },
       downloading:false,
       searchItems: {
@@ -97,9 +109,9 @@ export default {
         dataType: {
             type: 'select',
             label: '数据类型',
-            options:[{label: '全量数据',value: 0},{label: '去重数据', value: 1}],
+            options:[{label: '全量数据',value: 1},{label: '去重数据', value: 2}],
             canNotClear:true,
-            value: 0
+            value: 1
         },
 
       },
@@ -133,11 +145,11 @@ export default {
                     return
          }
          this.downloading = true
-         let params = { ...this.filter, jailId: this.searchItems.jailId.value }
+         let params = { ...this.filter, jailId: this.searchItems.jailId.value, type: this.filter.dataType  }
          try {
              let data = await http.exportMeetingStatis(params)
-             saveAs(data, `会见量和参会人数统计报表-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
-             this.downloading = false
+             saveAs(data, `会见量和参会人数统计报表-${this.filter.dataType==1?'全量':'去重'}-${ DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+                     this.downloading = false
              } catch (error) {
               this.downloading = false
             }
@@ -149,10 +161,10 @@ export default {
         if (!res) return this.noData=true
           Object.values(res).forEach(val=>{
             val.forEach(item=>{
-               if(params.dataType==1){
-              item.num=item.membersNum
+              if(params.dataType==1){
+              item.num=item.familyCount
              }else{
-                item.num=item.familyCount
+                item.num=item.membersNum
              }
             })
           })

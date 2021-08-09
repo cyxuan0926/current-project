@@ -26,6 +26,7 @@
           :label="pane.label"
           :name="pane.name"/>
       </el-tabs>
+
       <m-table-new
         stripe
         :data="tabledate.messages"
@@ -123,6 +124,7 @@
             style="width:70%; margin-right:10px"
           >
             <el-option
+            class="select_edit"
               v-for="(remark, index) in content"
               :value="remark"
               :label="(index + 1) + '、' + remark"
@@ -362,7 +364,7 @@ export default {
   mixins: [prisonFilterCreator],
   data() {
     const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+    const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     const stateAll = [
@@ -598,12 +600,12 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
+        startTime:  this.oneMonthLater,
+        endTime:this.todayDate
       })
     },
   mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+     this.$set(this.searchItems.applicationDate, 'value', [ this.oneMonthLater, this.todayDate])
     this.getDatas()
   },
   methods: {
@@ -871,13 +873,13 @@ export default {
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
-.logMgCls .el-select-dropdown{
+ .el-select-dropdown{
         max-width: 243px;
     }
-    .logMgCls .el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .logMgCls .el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

@@ -501,9 +501,9 @@ export default {
 
     apiUrls() {
       const urls = {
-        pagedUrl: this.isSuperAdmin ? '/settleAccounts/findpage' : '/settleAccounts/findDetailPage',
+        pagedUrl: this.isSuperAdmin ? '/msg/settleAccounts/findPage' : '/msg/settleAccounts/findDetailPage',
 
-        exportUrl: this.isSuperAdmin ? '/settleAccounts/export' : '/settleAccounts/exportDetailExcel'
+        exportUrl: this.isSuperAdmin ? '/settleAccounts/export' : '/msg/settleAccounts/exportDetailExcel'
       }
 
       return urls
@@ -672,7 +672,7 @@ export default {
           familyName,
           criminalName
         } = row, inputs = {
-        url: '/settleAccounts/callDetail',
+        url: '/msg/settleAccounts/callDetail',
 
         params: {
           id

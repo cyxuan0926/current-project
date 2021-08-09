@@ -6,11 +6,13 @@
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
-      <m-excel-download
-        slot="append"
-        :path="excelDownloadUrl"
-        :params="excelFilter"
-      />
+      <template slot="append">
+        <el-button
+          type="primary"
+          :loading="downloading"
+          @click="handleExportExcel"
+        >导出 Excel</el-button>
+      </template>
     </m-search>
 
     <el-col :span="24">
@@ -31,6 +33,22 @@
         :cols="tableCols"
         ref="parentElTable"
       >
+        <template #createdAt="{ row }">{{ row.createdAt | momentDateFormate }}</template>
+
+        <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
@@ -77,13 +95,10 @@
               )
             )"
             size="mini"
-            @click="handleAuthorization(row)"
-          >审核</el-button>
-
+            @click="handleAuthorization(row)">授权</el-button>
           <el-button
             v-else-if="
               row.status === 'PASSED' && 
-              row.isWithdrawFlag === 1  && 
               operateQueryAuth === true && 
                 !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
@@ -121,8 +136,6 @@
             :data="meetingAdjustment.windows"
             border
             @cell-click="cellClick"
-            :row-class-name="tableRowClassName"
-            :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
               fixed
@@ -135,6 +148,9 @@
               :prop="item"
               :label="item"
               min-width="84">
+              <template #default>
+                <span class="meetingQueue-sp"></span>
+              </template>
             </el-table-column>
             <el-table-column
               v-if="show.meetingQueue"
@@ -164,11 +180,11 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">家属姓名</span>
-              <span class="family-nameDetail">{{toShow.names}}</span>
+              <span class="family-nameDetail">{{toShow.familyName}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">关系</span>
-              <span class="family-nameDetail">{{toShow.relationship}}</span>
+              <span class="family-nameDetail">{{toShow.relation}}</span>
             </p>
           </div>
           <div class="detail-content">
@@ -178,7 +194,7 @@
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">申请探视时间</span>
-              <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
+              <span class="family-nameDetail">{{ toShow.visitTime }}</span>
             </p>
           </div>
         </div>
@@ -190,17 +206,6 @@
 
       <span slot="footer" class="dialog-footer">
         <div v-if="!show.agree && !show.disagree">
-          <label v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
-            <span style="padding-right: 12px;">选择流程节点:</span>
-            <el-select v-model="nextAuth" @change="selectTask" placeholder="请选择流程节点">
-              <el-option
-                v-for="item in selectProcessOption"
-                :key="item.taskCode"
-                :label="item.taskName"
-                :value="item.taskCode">
-              </el-option>
-            </el-select>
-          </label>
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
@@ -215,6 +220,7 @@
               @change="refuseFormChange"
               collapse-tags>
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -272,6 +278,7 @@
             @change="withdrawFormChange"
             style="width:70%;margin-right:10px">
               <el-option
+              class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -305,7 +312,6 @@
           type="danger"
           plain
           @click="closeWithdraw('withdrawForm')">关闭</el-button>
-      </div>
     </el-dialog>
 
     <el-dialog
@@ -329,7 +335,7 @@
             <p class="detail-message-family" style="border: none">
               <span class="family-name">预约时间</span>
 
-              <span class="family-nameDetail">{{toShow.createTime}}</span>
+              <span class="family-nameDetail">{{toShow.visitTime}}</span>
             </p>
           </div>
 
@@ -341,9 +347,9 @@
             </p>
 
             <p class="detail-message-family" style="border: none">
-              <span class="family-name">终端号</span>
+              <span class="family-name">窗口号</span>
 
-              <span class="family-nameDetail">{{toShow.terminalNumber}}</span>
+              <span class="family-nameDetail">{{ toShow.window ? `${ toShow.window }号` : ''}}</span>
             </p>
           </div>
         </div>
@@ -543,7 +549,7 @@
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
-      @close="changeClose()"
+      @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
         <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
@@ -569,20 +575,20 @@
            type="primary"
           class="button-add"
           size="mini"
-          @click="onRejectEditshow()">编辑</el-button>
+          @click="onRejectEditshow">编辑</el-button>
           <span v-else>
           <el-button
           v-if='content.length>0'
           type="primary"
           class="button-add"
           size="mini"
-          @click="onSubmitReject()">保存</el-button>
+          @click="onSubmitReject">保存</el-button>
            <el-button
           type="primary"
           class="button-add"
           size="mini"
           v-if='content.length<10'
-          @click="addReject()">新增</el-button>
+          @click="addReject">新增</el-button>
           </span>
       </el-row>
     </el-dialog>
@@ -604,11 +610,9 @@
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
   import prisons from '@/common/constants/prisons'
-
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-
   import http from '@/service'
-
+  import { saveAs } from 'file-saver'
   import {
     withdrawOrAnthorinputReason,
     $likeName,
@@ -656,11 +660,12 @@
       ]
 
       // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      // const todayDate = this.$_dateNow
+      const todayDate = this.$_dateNow
 
-      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
+      const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
+        visitsFlag: true, // 实地探视不需要多级审批 只需再visit-list.vue中定义
         visits: {
           contents: [],
           total: 0
@@ -696,10 +701,22 @@
             value: ''
           },
 
+          level:{
+            type: 'select',
+            label: '管教级别',
+            options: [
+              { label: '宽管级', value: 1 },
+              { label: '普管级', value: 2 },
+              { label: '考察级', value: 3 },
+              { label: '严管级', value: 4 }
+            ],
+            value: ''
+          },
+
           status: {
             type: 'select',
             label: '申请状态',
-            options: this.$store.state.applyStatus,
+            options: this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON'),
             miss: true,
             correlation: "status",
             value: ''
@@ -729,7 +746,6 @@
           }
         },
         show: {
-          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -822,7 +838,7 @@
 
         // todayDate,
 
-        // oneMonthLater,
+        oneMonthLater,
         submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
@@ -862,6 +878,8 @@
         ]
       },
       remarks: [],
+
+      downloading: false
       }
     },
     computed: {
@@ -869,19 +887,17 @@
         // 'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting',
-        'unusualMeetingPageData',
         'global'
       ]),
+
+      ...mapState({
+        isAdmin: state => state.global.user.role == '0'
+      }),
 
       ...mapGetters([
         'isShowPhone',
         'isSuperAdmin'
       ]),
-
-      excelDownloadUrl() {
-        return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
-      },
 
       // excel的参数 需要添加当前标签页的label
       excelFilter() {
@@ -942,6 +958,11 @@
               ...$likeName
             },
             {
+              label: '管教级别',
+              slotName: 'level',
+              minWidth: 75
+            },
+            {
               label: '性别',
               prop: 'gender',
               minWidth: 50
@@ -949,7 +970,8 @@
             {
               label: '申请时间',
               prop: 'createdAt',
-              minWidth: 130
+              minWidth: 130,
+              slotName: 'createdAt'
             },
             {
               label: '申请通话时间',
@@ -997,7 +1019,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 180,
+              width: 150,
               align: 'center'
             }
           ]
@@ -1030,7 +1052,7 @@
               prop: 'provinceName'
             },
             ...allPrisonQueryAuthLeadingCols,
-            ...basicCols
+            ...basicCols.filter(c => c.prop != 'phone')
           ]
 
           if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
@@ -1111,7 +1133,7 @@
             this.toShow.changerType=true
             this.filter.changerType = '2'
           }else{
-            this.searchItems.status.options=this.$store.state.applyStatus
+            this.searchItems.status.options = this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON')
           }
         }
         this.onSearch()
@@ -1127,11 +1149,10 @@
     },
 
     created() {
-      // this.filterInit = Object.assign({}, this.filterInit, {
-      //   applicationStartDate: this.todayDate,
-      //   applicationEndDate: this.oneMonthLater
-      // })
-      console.log('created==', this.user)
+      this.filterInit = Object.assign({}, this.filterInit, {
+        applicationStartDate: this.todayDate,
+        applicationEndDate: this.oneMonthLater
+      })
     },
 
     async mounted() {
@@ -1141,17 +1162,8 @@
 
     methods: {
       ...mapActions([
-        // 'getMeetings',
-        'getMeetingsAll',
-        'authorizeMeeting',
-        'withdrawMeeting',
-        'getMeetingsFamilyDetail',
-        'getMeettingsDetail',
-        'firstLevelAuthorize',
-        'getMeettingsChangelogDetail'
+        'withdrawVisit'
       ]),
-
-      ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
 
       refuseFormChange(e){
         let str=""
@@ -1180,17 +1192,17 @@
 
     // 获取当前驳回原因列表
     async getRejectContent() {
-      let { content, contentId, updateEr } = await http.getRejectEdit({
+      let { content, id, updateEr } = await http.getRejectEdit({
         type: 3,
         jailId: this.user.jailId
       })
       this.content = content || []
-      this.contentId = contentId
+      this.contentId = id
       this.updateer = updateEr
     },
 
-    onRejectshow(str,isform){
-      this.getRejectContent()
+    async onRejectshow(str,isform){
+      await this.getRejectContent()
       this.show.rejectEdit = str == 'PASSED'
     },
 
@@ -1206,10 +1218,10 @@
       this.show.editRebut=false
     },
 
-    changeClose(){
+    async changeClose(){
       this.remarks=[]
-      this.onRejectshow(false,this.isform)
-       this.show.editRebut=true
+      await this.onRejectshow(false,this.isform)
+      this.show.editRebut=true
     },
 
     async onSubmitReject(){
@@ -1233,46 +1245,20 @@
         this.show.editRebut = true
       } catch (error) {}
     },
-
-      tableRowClassName ({row, rowIndex}) {
-        //把每一行的索引放进row
-        row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
-        return 'row-remarks'  //className(类名)
-      },
-      cellStyle ({ row, column, rowIndex, columnIndex }) {
-        // 状态列字体颜色
-        if(row[column.label]){
-          if(row[column.label]==this.toAuthorize.name){
-            return "background:#fae9db"
-          }else{
-            return  'background:#DCDFE6'
-          }
-        }
-      },
-      cellClick(row, column,cell,event){
-        let cellStr=cell.querySelector(".cell").textContent
-        if(cellStr){
-        }else{
-          if(column.label=='窗口序号'){
-            return false
-          }else if(column.label=='当日没有可选时间段'){
-            return false
-          }
-          else{
-            this.meetingAdjustment.windows.filter(item=>{
-              this.meetingAdjustment.meetingQueue.forEach(val=>{
-                if(item[val]==this.toAuthorize.name){
-                  item[val] = ""
-                }
-              })
-            } )
-            row[column.label]=this.toAuthorize.name
-            this.$set(this.meetingAdjustment.windows, row.index,row)
-          }
-          for (let index in row) {
-            if(row[index]==this.toAuthorize.name){
-              this.submitSuccessParams={ window: row.id, meetingTime: index }
-            }
+    clearCellText() {
+      let _spans = document.querySelectorAll('.meetingQueue-sp')
+      if (_spans.length) {
+        Array.from(_spans).forEach(sp => sp.innerText = '')
+      }
+    },
+      cellClick(row, column, cell, event){
+        let _cell = cell.querySelector(".meetingQueue-sp")
+        if (!_cell.textContent && column.label != '窗口序号' && column.label != '当日没有可选时间段') {
+          this.clearCellText()
+          _cell.innerText = this.toAuthorize.familyName
+          this.submitSuccessParams = {
+            window: parseInt(row.window),
+            meetingTime: column.label
           }
         }
       },
@@ -1287,13 +1273,13 @@
           ...this.filter,
           ...this.pagination
         }
-        let { visits, total } = await http.getVisits(params)
+        let { visits, total } = await http[ this.isAdmin ? 'getVisitsByAdmin' : 'getVisits' ](params)
         if (visits && visits.length) {
           visits.forEach(m => {
-            if (!m.families) {
-              m.families = [{
+            if (!m.filterFamilies) {
+              m.filterFamilies = [{
                 familyId: m.familyId,
-                familyName: m.name
+                familyName: m.familyName
               }]
             }
           })
@@ -1316,96 +1302,63 @@
         await this.$refs.pagination.handleCurrentChange(1)
       },
 
-      // filterParams () {
-      //   //下载表格查询条件处理
-      //   const tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs)
-
-      //   const TABName = tabItem[0]['label']
-
-      //   if (this.toShow.changerType === true) this.filter.changerType = '2'
-
-      //   if (helper.isEmptyObject(this.sortObj)) this.filter = Object.assign(this.filter, this.sortObj)
-
-      //   else {
-      //     this.$refs.elTable && this.$refs.elTable.clearSort()
-      //     delete this.filter.sortDirection
-      //     delete this.filter.orderField
-      //   }
-
-      //   if (this.tabs !== 'first') {
-      //     if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
-      //       this.filter.status = this.tabs
-      //     }
-      //   }
-
-      //   const { jailId } = this.$store.state.global.user
-
-      //   jailId === -1 ? '' : ''
-
-      //   return {
-      //     ...this.filter,
-      //     TABName
-      //   }
-      // },
-
       // 获取数据
-      async onGetDetailAndInitData(meetingId) {
-        const res = await this.getMeettingsDetail({ meetingId })
-
-        if (!res) return
-
-        return res
+      async onGetDetailAndInitData(id) {
+        let { data = {} } = await http.getVisitsChangelog(id)
+        if (!data.changeLogs) {
+          data.changeLogs = []
+        }
+        this.toAuthorize = Object.assign({ id }, data)
       },
 
       // 获取实地探监预约配置
       async getVisitTimeConfig(id) {
-        let res = await http.getVisitsConfigMeetingtime(id)
-        this.show.authorize = true
-        this.meetingAdjustment = res || {}
-        // this.show.meetingQueue
+        let { data } = await http.getVisitsConfigMeetingtime(id)
+        if (data) {
+          let { windows = [], meetingQueue = [] } = data
+          windows = windows.map(w => {
+            let _w = {
+              window: w
+            }
+            meetingQueue.forEach(m => {
+              _w[m] = ''
+            })
+            return _w
+          })
+          this.meetingAdjustment = {
+            windows,
+            meetingQueue
+          }
+        }
       },
 
       // 表格操作-审核
       async handleAuthorization(e) {
         const { id } = e
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        await this.onGetDetailAndInitData(id)
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
-        this.onRejectshow(false,false)
+        await this.onRejectshow(false,false)
         this.isform = false
         this.$message.closeAll()
         // 获取实地探监的配置信息
-        this.getVisitTimeConfig(id)
-        // 获取并设置下一级节点
-        this.getSubtask(e)
-        this.toShow = Object.assign({}, this.toShow, e)
-      },
-      selectTask(select){
-        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
-        this.submitSuccessParams.nextCheckRole=obj[0].taskName
-      },
-      async getSubtask(e){
-        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
-          if (!res) return
-          this.selectProcessOption =res
-          if(this.selectProcessOption.length){
-            this.show.process=true
-            this.nextAuth=this.selectProcessOption[0].taskCode
-          }else{
-             this.show.process=false
-          }
+        await this.getVisitTimeConfig(id)
+        this.show.authorize = true
+        this.toShow = JSON.parse(JSON.stringify(this.toAuthorize))
       },
       async handleWithdraw(e) {
         const { id } = e
-        this.onRejectshow(false,true)
+
+        await this.onRejectshow(false,true)
+
         this.isform=true
 
-        this.toAuthorize = await this.onGetDetailAndInitData(id)
+        await this.onGetDetailAndInitData(id)
 
         this.show.withdraw = true
       },
-      onDetail(e) {
+      async onDetail(e) {
         const constFamilyShows = [
             {
               label: '与囚犯关系',
@@ -1417,8 +1370,8 @@
               prop: 'meetingTime'
             },
             {
-              label: '终端号',
-              prop: 'terminalNumber'
+              label: '窗口号',
+              prop: 'window'
             },
             {
               label: '审核人账号',
@@ -1445,22 +1398,17 @@
               prop: 'content',
               style: { width: '100%' }
             }
-          ],
-          params = { meetingId: e.id }
-        this.getVisitsChangelog(params).then(res => {
-          if (!res) return
-          if(res.callLogs.length){
-              res.callLogs.forEach((item,index)=>{
-              item.status="CALL"
-              res.changeLogs.splice(1+index, 0, item)
-            })
-          }
-          this.toShow = Object.assign({}, res)
-          this.show.dialog = true
-          this.familyShows = this.toShow.status !== 'DENIED'
-            ? constFamilyShows.slice(0, constFamilyShows.length - 1)
-            : constFamilyShows
-        })
+          ]
+        let { data = {} } = await http.getVisitsChangelog(e.id)
+        // if(data.callLogs && data.callLogs.length) {
+        //   data.callLogs.forEach((item,index)=>{
+        //     item.status="CALL"
+        //     data.changeLogs.splice(1+index, 0, item)
+        //   })
+        // }
+        this.toShow = Object.assign({}, data)
+        this.show.dialog = true
+        this.familyShows = this.toShow.status !== 'DENIED' ? constFamilyShows.slice(0, constFamilyShows.length - 1) : constFamilyShows
       },
       isDevelop(val, key) {//判断结束原因是否存在多行
         this.$nextTick(() => {
@@ -1491,20 +1439,9 @@
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
         this.show.agree = true
-        if (this.toShow.isChoiceTime && !this.show.subTask) {
-          this.show.agree = true
-          this.buttonLoading = false
-        } else {
-           this.submitParams = {
-            id: this.toShow.id,
-            window: this.toShow.window ? this.toShow.window : this.submitSuccessParams.window,
-            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
-            processInstanceId: this.toShow.processInstanceId,
-            isChoiceTime: this.toShow.isChoiceTime,
-            nextAuth: this.nextAuth
-          }
-          this.submitMeetingAuthorize()
-        }
+        this.buttonLoading = false
+        this.submitSuccessParams = null
+        this.clearCellText()
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1553,12 +1490,11 @@
       },
       handleSubmit(params) {
         this.buttonLoading = true
-        this.authorizeMeeting(params).then(res => {
+        http.authorizeVisitByProcess(params).then(res => {
           this.buttonLoading = false
           this.btnDisable = false
           if (!res) return
           this.closeAuthorize()
-          this.setIsRefreshMultistageExamineMessageBell(true)
           this.toAuthorize = {}
           this.getDatas('handleSubmit')
         })
@@ -1577,11 +1513,10 @@
             this.submitParams.id = this.toAuthorize.id
             this.submitParams.window = this.submitSuccessParams.window
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
-            this.submitParams.processInstanceId = this.toShow.processInstanceId
-            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+            this.submitParams.status = 'PASSED'
             this.submitParams.nextAuth = this.nextAuth
-          this.show.subTask = this.submitParams.meetingTime ? true : false
-          this.show.agree = false;
+            this.show.agree = false
+            this.submitMeetingAuthorize()
         }
       },
       submitMeetingAuthorize() {
@@ -1589,7 +1524,6 @@
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
-            this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
             this.getDatas('handleSubmit')
           })
@@ -1608,7 +1542,7 @@
             else this.btnDisable = false
           })
         if (this.btnDisable){
-          this.withdrawMeeting(params).then(res => {
+          this.withdrawVisit(params).then(res => {
                     if (!res) return
                     this.buttonLoading = false
                     this.btnDisable = false
@@ -1630,8 +1564,6 @@
         }
         this.remarks =[]
         this.submitParams=null
-        this.show.subTask=false
-        this.show.process=false
         this.nextAuth=''
       },
       closeWithdraw(e) {
@@ -1645,25 +1577,18 @@
         this.$refs.dialogForm && this.$refs.dialogForm.onCancel()
         if (e !== true && this.meetingRefresh) this.getDatas('closeWithdraw')
       },
-      showFamilyDetail(...args) {
-        const [ familyId, meetingId ] = args
-        this.getMeetingsFamilyDetail({ meetingId, familyId }).then(res => {
-          if (res.family) {
-            res.family.relationalProofUrls = []
-            for(let [key, value] of Object.entries(res.family)) {
-              const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
-              keys.includes(key) && value && res.family.relationalProofUrls.push({
-                url: value
-              })
-            }
-            // if (!res.family.relationalProofUrls.length) res.family.relationalProofUrls.push({
-            //   url: ''
-            // })
-            this.family = Object.assign({}, res.family)
-          }
-          else this.family = {}
-          this.show.familiesDetialInform = true
-        })
+      async showFamilyDetail(familyId, visitId) {
+        let { data = {} } = await http.getVisitsFamilyDetail({ familyId, visitId })
+        data.family = data.family || {}
+        data.family.relationalProofUrls = []
+        for(let [key, value] of Object.entries(data.family)) {
+          const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
+          keys.includes(key) && value && data.family.relationalProofUrls.push({
+            url: value
+          })
+        }
+        this.family = Object.assign({}, data.family)
+        this.show.familiesDetialInform = true
       },
       sortChange({ column, prop, order }) {
         if (!prop || !order) {
@@ -1678,7 +1603,46 @@
           this.filter = Object.assign(this.filter, this.sortObj)
         }
         this.getDatas('sortChange')
-      }
+      },
+
+      async handleExportExcel() {
+        if (this.downloading) {
+            return
+        }
+        this.downloading = true
+        const params = { ...this.filter }
+        try {
+            let data = await http[ this.isAdmin ? 'exportVisitsByAdmin' : 'exportVisits' ](params)
+            let _tab = this.tabsItems.find(t => t.name == this.tabs)
+            saveAs(data, `现场探视预约管理列表-${ _tab && _tab.label }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+            this.downloading = false
+        } catch (error) {
+            this.downloading = false
+        }
+      },
+
+      // async onDownloadExcel() {
+      //   this.downloading = true
+
+      //   const times = helper.DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+      //     tabItem = this.tabsItems.filter(tabItem => tabItem.name === this.tabs),
+      //     TABName = tabItem[0]['label'],
+      //     actionName = 'exportVisitExcel',
+      //     params = {
+      //       url: `/prisoner_visits/${ this.isAdmin ? 'exportAdminPrisonerVisits' : 'exportPrisonerVisits' }`,
+      //       params: { ...this.filter, tab: this.tabs }
+      //     }
+
+      //   await tokenExcel({
+      //     params,
+      //     actionName,
+      //     menuName: `现场探视预约管理-${ TABName }-${ times }`,
+      //   })
+
+      //   setTimeout(() => {
+      //     this.downloading = false
+      //   }, 300)
+      // }
     }
   }
 </script>
@@ -1757,6 +1721,9 @@
     color: red;
     font-size: 12px;
   }
+  .meetingQueue-sp {
+    color: #409EFF;
+  }
 </style>
 
 <style lang="stylus">
@@ -1773,13 +1740,13 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .logMgCls .el-select-dropdown{
+ .el-select-dropdown{
         max-width: 243px;
     }
-    .logMgCls .el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-    .logMgCls .el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

@@ -407,7 +407,8 @@ superAdmin = [{
         deep: true,
         permission: 'visit.other.terminal.add',
         breadcrumbName: '新增终端',
-        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+        componentsUnRemoveKeepAlive: ['OtherTerminalList'],
+        activeMenu: '/other-terminal/list'
       },
       component: 'sadmin-terminal/other-edit'
     }, {
@@ -417,7 +418,8 @@ superAdmin = [{
         deep: true,
         permission: 'visit.other.terminal.edit',
         breadcrumbName: '编辑终端',
-        componentsUnRemoveKeepAlive: ['OtherTerminalList']
+        componentsUnRemoveKeepAlive: ['OtherTerminalList'],
+        activeMenu: '/other-terminal/list'
       },
       component: 'sadmin-terminal/other-edit'
     }]
@@ -479,6 +481,17 @@ superAdmin = [{
       },
       // component: 'check-meeting/meeting-list'
       component: 'check-meeting/meeting-list/meeting-list'
+      // component: helper.loadView('check-meeting/meeting-list')
+    }, {
+      path: '/prison-data/visit-applications',
+      name: 'prison-data_visit-applications',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.visit-statistic.all-prison.visit.search',
+        breadcrumbName: '现场探视预约列表'
+      },
+      // component: 'check-meeting/meeting-list'
+      component: 'check-meeting/visit-list'
       // component: helper.loadView('check-meeting/meeting-list')
     }, {
       path: '/prison-data/meeting-statistics',

@@ -110,6 +110,21 @@
             >修改</el-button>
           </div>
         </template>
+        
+       <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
 
         <template #prisonTerm="{ row }">
           <span class="separate">{{ row.prisonTermStartedAt | dateFormate }}</span>
@@ -530,10 +545,6 @@ export default {
         value: 2
       },
       {
-        label: '已删除',
-        value: 3
-      },
-      {
         label: '已离监',
         value: 4
       },
@@ -578,7 +589,18 @@ export default {
           type: 'input',
           label: '家属姓名',
           miss: false
-        }
+        },
+        level:{
+          type: 'select',
+          label: '管教级别',
+          options: [
+            { label: '宽管级', value: 1 },
+            { label: '普管级', value: 2 },
+            { label: '考察级', value: 3 },
+            { label: '严管级', value: 4 }
+          ],
+          value: ''
+        },
       },
 
       formItems: {
@@ -1308,20 +1330,28 @@ export default {
           showOverflowTooltip: true,
           ...$likePrisonerNumber
         },
+
         {
           label: '监区',
           prop: 'prisonArea',
           showOverflowTooltip: true
         },
+
         {
           label: '通话次数/月',
           minWidth: 85,
           slotName: 'accessTime'
         },
+
         {
           label: '短信次数/月',
           minWidth: 85,
           slotName: 'smsNum'
+        },
+        {
+          label: '管教级别',
+          minWidth: 85,
+          slotName: 'level'
         },
         {
           label: '服刑人员状态',
@@ -1337,6 +1367,7 @@ export default {
           minWidth: 125,
           slotName: 'notifyId'
         },
+
         operationCol
       ]
 
@@ -1765,7 +1796,7 @@ export default {
       if(!this.selectPrisoners.length) {
         this.$message({
           showClose: true,
-          message: '提示：如果是转监，请使用转监功能，不要做离监操作！',
+          message: '提示：请选择要离监的数据！！',
           type: 'warning'
         })
       } else {

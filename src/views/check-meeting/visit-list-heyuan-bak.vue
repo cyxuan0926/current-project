@@ -1,18 +1,17 @@
 <template>
-  <el-row class="row-container" :gutter="0">
+  <el-row
+    class="row-container"
+    :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch"
-    >
+      @search="onSearch">
       <m-excel-download
         slot="append"
         :path="excelDownloadUrl"
-        :params="excelFilter"
-      />
+        :params="excelFilter"/>
     </m-search>
-
     <el-col :span="24">
       <el-tabs
         v-model="tabs"
@@ -21,39 +20,43 @@
           <el-tab-pane
             :key="index"
             :label="tab.label"
-            :name="tab.name"
-          />
+            :name="tab.name" />
         </template>
       </el-tabs>
-
       <m-table-new
         stripe
-        :cols="tableCols"
-        ref="parentElTable"
-        :data="meetings.contents"
+        :data="visits.contents"
         @sort-change="sortChange"
-      >
-        <template #level="{ row }">
-          <span v-if="row.level === 1">宽管级</span>
-
-          <span v-if="row.level === 2">普管级</span>
-
-          <span v-if="row.level === 3">考察级</span>
-
-          <span v-if="row.level === 4">严管级</span>
-        </template>
-
+        :cols="tableCols"
+        ref="parentElTable">
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
-
-        <template #families="{ item, scope }">
-          <el-button
-            type="text"
-            size="small"
-            style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(item.familyId, scope.row.id)"
-          >{{ item.familyName | asteriskDisplay('asterisk_name')}}</el-button>
+         <template #level="{ row }">
+         <span v-if="row.level==1">
+              宽管级
+           </span>
+           <span v-if="row.level==2">
+              普管级
+           </span>
+           <span v-if="row.level==3">
+              考察级
+           </span>
+           <span v-if="row.level==4">
+              严管级
+           </span>
+        </template>
+        
+        <template #families="{ row }">
+          <div v-if="row.filterFamilies && row.filterFamilies.length">
+            <el-button
+              type="text"
+              size="small"
+              v-for="family in row.filterFamilies"
+              :key="family.familyId"
+              style="margin-left: 0px; margin-right: 8px;"
+              @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
+          </div>
         </template>
 
         <template #content="{ row }">
@@ -61,7 +64,6 @@
             <template v-if="row.status === 'PENDING' && row.isLock === 1">处理中</template>
             <template v-else>{{ row.status | applyStatus }}</template>
           </span>
-
           <el-tooltip
             v-else
             :content="row.content"
@@ -72,147 +74,70 @@
         </template>
 
         <template #operate="{ row }">
-          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
-          <el-button
-            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor))"
+          <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了 && scope.row.isCheck==1 -->
+         <el-button
+            v-if="(
+              row.status == 'PENDING' && 
+              row.isLock !== 1 && 
+              operateQueryAuth === true && 
+              ( 
+                !( 
+                  haveMultistageExamine && 
+                  row.authorizeLevel === 1 && 
+                  !isAdvancedAuditor
+                ) || row.isCheck  
+              )
+            )"
             size="mini"
-            @click="handleAuthorization(row)">授权</el-button>
-
+            @click="handleAuthorization(row)">审核</el-button>
           <el-button
-            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            v-else-if="
+              row.status === 'PASSED' && 
+              row.isWithdrawFlag === 1  && 
+              operateQueryAuth === true && 
+                !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(row)">撤回</el-button>
-
-          <el-button v-if="tabs == 'UNUSUAL'&& row.unusualRemark" @click="handleWithdraw(row)">撤回</el-button>
-
           <el-button
-            v-if="tabs == 'UNUSUAL'&& row.unusualRemark"
-            size="mini"
-            class="button-detail"
-            @click="detailRemarks(row)"
-          >已备注</el-button>
-
-          <el-button
-            v-if="tabs == 'UNUSUAL'&& !row.unusualRemark"
-            size="mini"
-            class="button-detail"
-            @click="setRemarks(row)"
-          >备注</el-button>
-
-          <el-button
-            v-if="row.status != 'PENDING' || (haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            v-if="
+              row.status != 'PENDING' || 
+              ( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor ) || 
+              row.isCheck==0"
             type="text"
             size="mini"
             class="button-detail"
-            @click="onDetail(row)"
-          >详情</el-button>
+            @click="onDetail(row)">详情</el-button>
         </template>
       </m-table-new>
     </el-col>
 
     <m-pagination
       ref="pagination"
-      :total="meetings.total"
-      @onPageChange="getDatas"
-    />
-
+      :total="visits.total"
+      @onPageChange="getDatas"/>
+    
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="show.agree"
       class="authorize-dialog"
-      title="请选择通话时间段"
+      title="请选择探视时间段"
       width="900px">
-      <div
-        v-if="show.agree"
-        class="button-box">
-        <section v-show="isSpecial">
-          <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
-            <label class="filter__label special">选择区域</label>
-            <el-select style="width: 200px" v-model="areaTypes" placeholder="请选择区域">
-              <el-option
-                v-for="item in areaOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-          <div class="across-filter">
-            <label class="filter__label special">通话时长</label>
-            <el-select style="width: 200px" v-model="crossDuration" placeholder="请选择通话时长" @change="handleDurationChange">
-              <el-option
-                v-for="d in durationOptions"
-                :key="d.value"
-                :label="d.label"
-                :value="d.value">
-              </el-option>
-            </el-select>
-          </div>
-          <div class="across-filter">
-            <label class="filter__label special">可视电话通话时间</label>
-            <el-time-picker
-              style="width: 150px;"
-              v-model="timeRangeStart"
-              format="HH:mm"
-              :picker-options="selectRange"
-              :clearable="false"
-              @change="handleTimepickerChange">
-            </el-time-picker>
-            <label style="margin: 0 10px;">至</label>
-            <el-time-picker
-              style="width: 150px;"
-              v-model="timeRangeEnd"
-              format="HH:mm"
-              disabled>
-            </el-time-picker>
-          </div>
-          <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
-        </section>
-        <section v-show="!isSpecial">
-          <el-tabs
-            v-if="isSeparateByArea || isUseMeetingFloor"
-            v-model="areaTabs"
-            type="card">
-            <el-tab-pane v-for="t in areaOptions"
-              :key="t.value"
-              :label="t.label"
-              :name="t.value" />
-          </el-tabs>
+      <div class="button-box">
           <el-table
-            :data="meetingAdjustmentCopy.terminals"
+            :data="meetingAdjustment.windows"
             border
             @cell-click="cellClick"
             :row-class-name="tableRowClassName"
             :cell-style="cellStyle"
             class="tableBorder">
             <el-table-column
-              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
               fixed
-              prop="terminalNumber"
-              label="终端号"
+              prop="window"
+              label="窗口序号"
               min-width="80">
             </el-table-column>
             <el-table-column
-              v-else
-              prop="terminalNumber"
-              label="终端号"
-              min-width="80">
-            </el-table-column>
-            <el-table-column
-              v-if="meetingAdjustmentCopy.meetingQueue && meetingAdjustmentCopy.meetingQueue.length > 7"
-              fixed
-              prop="prisonConfigName"
-              label="监区"
-              min-width="110">
-            </el-table-column>
-            <el-table-column
-              v-else
-              prop="prisonConfigName"
-              label="监区"
-              min-width="110">
-            </el-table-column>
-            <el-table-column
-              v-for="(item,index) in meetingAdjustmentCopy.meetingQueue" :key="index"
+              v-for="(item,index) in meetingAdjustment.meetingQueue" :key="index"
               :prop="item"
               :label="item"
               min-width="84">
@@ -224,14 +149,13 @@
               min-width="84">
             </el-table-column>
           </el-table>
-        </section>
       </div>
-      <span v-if="show.agree" slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
-          <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
-          <el-button @click="show.agree=false">取 消</el-button>
-        </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
+        <el-button @click="show.agree=false">取 消</el-button>
+      </span>
     </el-dialog>
+    
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
@@ -239,7 +163,7 @@
       title="审核"
       :close-on-click-modal="false"
       width="780px">
-        <div style="max-height:380px;overflow: auto">
+      <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
           <div class="detail-message">
@@ -263,86 +187,63 @@
             </p>
           </div>
         </div>
-         <!-- <div
-          v-for="(item,index) in toShow.logs"
-          :key='index'
-          style="display: flex;border: 1px solid #E4E7ED;border-top: none"
-        >
-          <div class="family-detail">{{index+1}}</div>
-          <div class="detail-message">
-            <p class="detail-message-family">
-              <span class="family-name">审核人员账号</span>
-              <span class="family-nameDetail">{{item.createUser}}</span>
-            </p>
-            <p class="detail-message-family">
-              <span class="family-name">审核时间</span>
-              <span class="family-nameDetail">{{item.createTime}}</span>
-            </p>
-          </div>
-          <div class="detail-content">
-            <p class="detail-message-family" >
-              <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.nextCheckRole}}</span></p>
-              <p class="detail-message-family" >
-              <span class="family-name">审核人意见</span>
-              <span class="family-nameDetail">{{item.remarks}}</span></p>
-          </div>
-        </div> -->
       </div>
-
-      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
+      
+      <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
-      <div
-        v-if="!show.agree && !show.disagree && !show.multistageExamine"
-       class="button-box">
-        <repetition-el-buttons  style="margin-top:20px" :buttonItems="authorizeButtons" />
-      </div>
 
-      <div v-if="show.multistageExamine" style="margin-top:20px" class="button-box more-button__box">
-        <div style="margin-bottom: 10px;">初审意见：</div>
-<m-form
-          class="multistage_examine-form"
-          ref="multistage_examine-form"
-          :items="localFirstLevelExamineFormItems"
-          @submit="onMultistageExamineCheck"
-        />
+      <span slot="footer" class="dialog-footer">
+        <div v-if="!show.agree && !show.disagree">
+          <label v-if="show.subTask && show.process" style="display: inline-block;float: left; padding-left: 20px;">
+            <span style="padding-right: 12px;">选择流程节点:</span>
+            <el-select v-model="nextAuth" @change="selectTask" placeholder="请选择流程节点">
+              <el-option
+                v-for="item in selectProcessOption"
+                :key="item.taskCode"
+                :label="item.taskName"
+                :value="item.taskCode">
+              </el-option>
+            </el-select>
+          </label>
+          <repetition-el-buttons :buttonItems="authorizeButtons" />
+        </div>
 
-        <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
-      </div>
-
-      <div
-        v-if="show.disagree"
-        class="button-box logMgCls">
-        <div style="margin-bottom: 10px;">请选择驳回原因</div>
-      <div>
-            <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
-            <el-option
-            class="select_edit"
-              v-for="(remark,index) in content"
-              :value="remark"
-              :label="(index+1)+'、'+remark"
-              :key="index"/>
-          </el-select>
-           <el-button
-            type="primary"
-            :loading="btnDisable"
-            @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
+        <div v-if="show.disagree" class="button-box logMgCls">
+          <div style="margin-bottom: 10px;">请选择驳回原因</div>
+          <div>
+            <el-select 
+              style="width:70%; margin-right:10px"
+              v-model="remarks"
+              :multiple="true"
+              :multiple-limit="5"
+              @change="refuseFormChange"
+              collapse-tags>
+              <el-option
+              class="select_edit"
+                v-for="(remark,index) in content"
+                :value="remark"
+                :label="(index+1)+'、'+remark"
+                :key="index"/>
+            </el-select>
+            <el-button
+              type="primary"
+              :loading="btnDisable"
+              @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
           </div>
           <el-form
             :model="refuseForm"
             :rules="withdrawRule"
             ref="refuseForm"
             class="withdraw-box">
-            <el-form-item prop="anotherRemarks"  >
-               <el-input
+            <el-form-item prop="anotherRemarks">
+              <el-input
                 :autosize="{ minRows: 6 ,maxRows:8 }"
                 type="textarea"
                 show-word-limit
                 maxlength="1000"
                 placeholder="请输入驳回原因..."
-                v-model="refuseForm.anotherRemarks"
-              />
+                v-model="refuseForm.anotherRemarks"/>
             </el-form-item>
           </el-form>
           <el-button
@@ -357,7 +258,9 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
+      </span>
     </el-dialog>
+    
     <el-dialog
       :visible.sync="show.withdraw"
       @close="closeWithdraw"
@@ -365,46 +268,53 @@
       title="撤回"
       :close-on-click-modal="false"
       width="530px">
-
- <div style="margin-bottom: 10px;">请选择撤回原因</div>
-          <div style="margin-bottom: 10px;">
-            <el-select v-model="remarks" :multiple="true"  :multiple-limit='5'  collapse-tags @change="withdrawFormChange" style="width:70%;margin-right:10px">
-            <el-option
-            class="select_edit"
-              v-for="(remark,index) in content"
-              :value="remark"
-              :label="(index+1)+'、'+remark"
-              :key="index"/>
+      <div style="margin-bottom: 10px;">请选择撤回原因</div>
+        <div style="margin-bottom: 10px;">
+          <el-select
+            v-model="remarks"
+            :multiple="true"
+            :multiple-limit='5'
+            collapse-tags
+            @change="withdrawFormChange"
+            style="width:70%;margin-right:10px">
+              <el-option
+              class="select_edit"
+                v-for="(remark,index) in content"
+                :value="remark"
+                :label="(index+1)+'、'+remark"
+                :key="index"/>
           </el-select>
-           <el-button
+          <el-button
             type="primary"
             :loading="btnDisable"
             @click="onRejectshow('PASSED')">编辑驳回原因</el-button>
-          </div>
-          <el-form
-            :model="withdrawForm"
-            :rules="withdrawRule"
-            ref="withdrawForm"
-            class="withdraw-box">
-            <el-form-item prop="withdrawReason" >
-             <el-input
-                type="textarea"
-                show-word-limit
-                maxlength="1000"
-                :autosize="{ minRows: 6,maxRows:8 }"
-                placeholder="请输入撤回理由..."
-                v-model="withdrawForm.withdrawReason" />
-            </el-form-item>
-          </el-form>
-          <el-button
-            plain
-            :loading="btnDisable"
-            @click="onWithdraw('WITHDRAW')">提交</el-button>
-          <el-button
-            type="danger"
-            plain
-            @click="closeWithdraw('withdrawForm')">关闭</el-button>
+        </div>
+        <el-form
+          :model="withdrawForm"
+          :rules="withdrawRule"
+          ref="withdrawForm"
+          class="withdraw-box">
+          <el-form-item prop="withdrawReason" >
+            <el-input
+              type="textarea"
+              show-word-limit
+              maxlength="1000"
+              :autosize="{ minRows: 6,maxRows:8 }"
+              placeholder="请输入撤回理由..."
+              v-model="withdrawForm.withdrawReason" />
+          </el-form-item>
+        </el-form>
+        <el-button
+          plain
+          :loading="btnDisable"
+          @click="onWithdraw('WITHDRAW')">提交</el-button>
+        <el-button
+          type="danger"
+          plain
+          @click="closeWithdraw('withdrawForm')">关闭</el-button>
+      </div>
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
@@ -586,6 +496,7 @@
 
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
+
     <el-dialog
       title="家属信息"
       class="family-dialog"
@@ -635,36 +546,6 @@
       </family-detail-information>
     </el-dialog>
 
-    <el-dialog
-      :visible.sync="show.setRemarks"
-      class="authorize-dialog"
-      width="600px"
-      @close="closeAuthorize"
-      title="备注信息">
-      <el-form label-width="80px" class="demo-ruleForm">
-        <el-form-item label="备注" prop="desc">
-          <el-input type="textarea" v-model="getRemarks" :autosize="{ minRows: 6, maxRows: 8}" maxlength="300"  placeholder="请输入内容" show-word-limit></el-input>
-        </el-form-item>
-      </el-form>
-       <span  slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitRemarks()">提 交</el-button>
-        </span>
-    </el-dialog>
-     <el-dialog
-      :visible.sync="show.userRemarks"
-      class="authorize-dialog"
-      width="600px"
-      @close="closeAuthorize"
-      title="备注信息">
-      <el-form label-width="130px" style="max-height:400px" class="demo-ruleForm">
-        <el-form-item label="增加备注用户:" prop="desc">
-          <span >{{optionsRemarks.unusualRemarkUser}}</span>
-        </el-form-item>
-        <el-form-item label="增加备注内容:" prop="desc">
-          <span >{{optionsRemarks.unusualRemark}}</span>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
      <el-dialog
       :visible.sync="show.rejectEdit"
       title="编辑"
@@ -728,12 +609,8 @@
   import prisons from '@/common/constants/prisons'
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
-  import {
-    withdrawOrAnthorinputReason,
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
-  } from '@/common/constants/const'
+
+  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
 
   import cloneDeep from 'lodash/cloneDeep'
 
@@ -743,7 +620,7 @@
       // 标签元素
       const tabsItems = [
         {
-          label: '可视电话申请',
+          label: '现场探视申请',
           name: 'first'
         },
         {
@@ -755,14 +632,9 @@
           name: 'DENIED,CANCELED'
         },
         {
-          label: '通话异常统计',
-          name: 'UNUSUAL'
-        },
-        {
           label: '未审核',
           name: 'PENDING'
         }
-
       ]
       // 证件照片class
       // const idCardClassName = 'img-idCard'
@@ -781,27 +653,16 @@
         }
       ]
 
-      const AreaObj = [{label:"监舍区",value:1},{label:"会见楼",value:3}]
-      const todayDate = this.$_dateNow
+      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
+      // const todayDate = this.$_dateNow
 
-      const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
+      // const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
-        showTips: '',
-        isShowTips: false,
-        isSeparateByArea: false,
-        isUseMeetingFloor: false,
-        selectRange: {},
-        AreaObj,
-        timeRangeStart: new Date(),
-        timeRangeEnd: new Date(),
-        userDefinedDuration: false,
-        durationOptions: [],
-        crossDuration: '',
-        isSpecial: false,
-        areaTabs: '1',
-        areaTypes: '1',
-        areaOptions: Array.from(this.$store.state.areaOptions),
-        getMeetingId: '',
+        user: this.$store.state.global.user,
+        visits: {
+          contents: [],
+          total: 0
+        },
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
@@ -822,37 +683,33 @@
             start: 'applicationStartDate',
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
-            endPlaceholder: '通话结束时间'
-            // miss: true,
-            // value: [yesterdayDate, yesterdayDate]
+            endPlaceholder: '通话结束时间',
+            value: [ this.$_dateNow, Moment().add(1, 'months').format('YYYY-MM-DD') ]
           },
-          area: {
-            type: 'select',
-            label: '通话区域',
-            options: this.$store.state.areaOptions,
-            value: ''
-          },
+
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
+
            level:{
-          type: 'select',
-          label: '管教级别',
-          options: [
-            { label: '宽管级', value: 1 },
-            { label: '普管级', value: 2 },
-            { label: '考察级', value: 3 },
-            { label: '严管级', value: 4 }
-          ],
-          value: ''
-        },
+            type: 'select',
+            label: '管教级别',
+            options: [
+              { label: '宽管级', value: 1 },
+              { label: '普管级', value: 2 },
+              { label: '考察级', value: 3 },
+              { label: '严管级', value: 4 }
+            ],
+            value: ''
+          },
+
           status: {
             type: 'select',
             label: '申请状态',
-            options: this.$store.state.applyStatus,
+            options: this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON'),
             miss: true,
             correlation: "status",
             value: ''
@@ -882,6 +739,7 @@
           }
         },
         show: {
+          subTask:false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -892,18 +750,28 @@
           editRebut:true,
           meetingQueue:false,
           familiesDetialInform: false,
-          multistageExamine: false,
-          setRemarks:false,
           userRemarks:false
+
+          // subTask: true,
+          // authorize: true,
+          // agree: false,
+          // disagree: false,
+          // withdraw: false,
+          // detail: false,
+          // dialog:false,
+          // rejectEdit:false,
+          // editRebut: false,
+          // meetingQueue: false,
+          // familiesDetialInform: false,
+          // userRemarks: false
         },
-        getRemarks:'',
-        optionsRemarks:{},
         operateQueryAuth:false,
         toAuthorize: {},
         toShow: {},
         family: {},
         sortObj: {},
-        submitSuccessParams: null,
+        submitSuccessParams: {},
+        nextAuth:'',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -948,7 +816,7 @@
         ],
         meetingAdjustment: {},
 
-        meetingAdjustmentCopy: {},
+        selectProcessOption:[],
 
         multistageExamineKeys: {
           userName: 'operateName',
@@ -962,9 +830,10 @@
 
         // yesterdayDate,
 
-        todayDate,
+        // todayDate,
 
-        oneMonthLater,
+        // oneMonthLater,
+        submitParams:{},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -1007,10 +876,11 @@
     },
     computed: {
       ...mapState([
-        'meetings',
+        // 'meetings',
         'frontRemarks',
         'meetingRefresh',
-        'isSuccessFirstLevelSubmitMeeting'
+        'unusualMeetingPageData',
+        'global'
       ]),
 
       ...mapGetters([
@@ -1020,14 +890,6 @@
 
       excelDownloadUrl() {
         return this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth ? '/download/exportMettings' : '/download/exportMettingsJail'
-      },
-
-      localFirstLevelExamineFormItems() {
-        const { remarks } = this.firstLevelExamineFormItems
-
-        return {
-          remark: remarks
-        }
       },
 
       // excel的参数 需要添加当前标签页的label
@@ -1046,7 +908,7 @@
           delete this.filter.orderField
         }
 
-        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
+        if (this.tabs !== 'first') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
@@ -1069,21 +931,6 @@
         }
       },
 
-      // 本地实例化的授权表单组件元素
-      localAuthorizeFormItems() {
-        const { refuseRemark } = this.authorizeFormItems
-
-        return ({
-          refuseRemark: {
-            ...refuseRemark,
-            autosize: {
-              minRows: 4
-            },
-            value: this.withdrawOrAnthorinputReason
-          }
-        })
-      },
-
       tableCols() {
         // const { applicationStartDate, applicationEndDate } = this.filter
         const basicCols = [
@@ -1094,15 +941,14 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              ...$likePrisonerNumber
+              prop: 'prisonerNumber'
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              ...$likeName
+              showOverflowTooltip: true
             },
-             {
+            {
               label: '管教级别',
               slotName: 'level',
               minWidth: 75
@@ -1124,21 +970,14 @@
               sortable: 'custom',
               minWidth: 135
             },
-           {
+            {
               label: '家属',
-              prop: 'filterFamilies',
-              minWidth: 115,
-              ...$likeName,
-              desensitizationColsConfigs: {
-                keyWord: 'familyId',
-                prop: 'familyName',
-                desensitizationColSlotName: 'families'
-              }
+              slotName: 'families',
+              minWidth: 115
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              ...$likePhone
+              prop: 'phone'
             },
             {
               label: '关系',
@@ -1163,7 +1002,7 @@
             {
               label: '操作',
               slotName: 'operate',
-              minWidth: 120,
+              minWidth: 180,
               align: 'center'
             }
           ]
@@ -1196,7 +1035,7 @@
               prop: 'provinceName'
             },
             ...allPrisonQueryAuthLeadingCols,
-            ...basicCols
+            ...basicCols.filter(c => c.prop != 'phone')
           ]
 
           if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
@@ -1219,11 +1058,6 @@
       }
     },
     watch: {
-      areaTabs() {
-        this.submitSuccessParams = null
-        this.getMeetTimeConfig()
-      },
-
       meetingRefresh(val) {
         if (val) {
           if (!this.show.authorize && !this.show.withdraw && !this.toShow.id && !this.show.familiesDetialInform) this.getDatas('meetingRefresh')
@@ -1281,10 +1115,8 @@
             this.searchItems.status.options=this.$store.state.deniedStatus
             this.toShow.changerType=true
             this.filter.changerType = '2'
-          }else if(val === 'UNUSUAL') {
-            this.searchItems.status.options=this.$store.state.unusualStatus
           }else{
-            this.searchItems.status.options=this.$store.state.applyStatus
+            this.searchItems.status.options = this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON')
           }
         }
         this.onSearch()
@@ -1300,72 +1132,33 @@
     },
 
     created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
-      })
+      // this.filterInit = Object.assign({}, this.filterInit, {
+      //   applicationStartDate: this.todayDate,
+      //   applicationEndDate: this.oneMonthLater
+      // })
+      console.log('created==', this.user)
     },
 
     async mounted() {
-      // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
-      //   // this.$set(this.searchItems.applicationDate, 'miss', true)
-      //   // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      // }
-      // else {
-        // this.$set(this.searchItems.applicationDate, 'miss', false)
-        // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
-      // }
-      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
-      this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
-      await this.getDatas('mounted')
+      this.$refs.search.onGetFilter()
+      this.getDatas()
     },
+
     methods: {
       ...mapActions([
-        'getMeetings',
+        // 'getMeetings',
         'getMeetingsAll',
         'authorizeMeeting',
         'withdrawMeeting',
         'getMeetingsFamilyDetail',
         'getMeettingsDetail',
         'firstLevelAuthorize',
-        'getMeettingsChangelogDetail',
-        'getUnusualMeetingPage'
+        'getMeettingsChangelogDetail'
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-      setRemarks(row){
-        this.show.setRemarks=true
-         this.getMeetingId=row.id
-      },
-      submitRemarks(){
-        if(this.getRemarks){
-           http.addUnusualRemark({
-            id: this.getMeetingId,
-            unusualRemark: this.getRemarks
-          }).then(res=>{
-            this.show.setRemarks=false
-            this.getRemarks=''
-            if (this.tabs === 'UNUSUAL') {
-              delete this.filter.status
-               const params = {
-                    ...this.filter,
-                    ...this.pagination
-                  }
-            let url = '/meetings/findUnusualPage'
-            if (this.hasAllPrisonQueryAuth) url = '/meetings/findUnusualAdminPage'
-             this.getUnusualMeetingPage({ url, params })
-            }
-          })
-        }else{
-           this.$message.error('请输入备注内容');
-        }
-      },
-      detailRemarks(row){
-        this.optionsRemarks=row
-        this.show.userRemarks=true
-      },
-        refuseFormChange(e){
+
+      refuseFormChange(e){
         let str=""
          if(!this.refuseForm.anotherRemarks){
             this.refuseForm.anotherRemarks=""
@@ -1376,7 +1169,7 @@
           }
         })
         this.refuseForm.anotherRemarks+=str
-    },
+      },
     withdrawFormChange(e){
       let str=""
        if(!this.withdrawForm.withdrawReason){
@@ -1389,72 +1182,63 @@
         })
         this.withdrawForm.withdrawReason+=str
     },
+
     // 获取当前驳回原因列表
-  async onRejectshow(str,isform){
-       let params={}
-          params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-          params.type=2
-      let res = await http.getRejectEdit( params )
-      if(res.content){
-        this.content = res.content
-        this.contentId=res.id
-        this.updateer=res.updateEr
-      }else{
-        this.content = []
-      }
-      if(str=='PASSED'){
-        this.show.rejectEdit=true
-      }else{
-        this.show.rejectEdit=false
-      }
+    async getRejectContent() {
+      let { content, contentId, updateEr } = await http.getRejectEdit({
+        type: 3,
+        jailId: this.user.jailId
+      })
+      this.content = content || []
+      this.contentId = contentId
+      this.updateer = updateEr
     },
+
+    onRejectshow(str,isform){
+      this.getRejectContent()
+      this.show.rejectEdit = str == 'PASSED'
+    },
+
     addReject(){
       this.content.push('')
     },
+
     removeReject(index){
       this.content.splice(index,1)
     },
+
     onRejectEditshow(){
       this.show.editRebut=false
     },
-     changeClose(){
+
+    changeClose(){
       this.remarks=[]
       this.onRejectshow(false,this.isform)
        this.show.editRebut=true
     },
-     async onSubmitReject(){
-      this.content=this.content.filter((res)=>res&&res.trim())
-       if(this.content.length<1){
-         this.$message({
-            message: '新增编辑内容不能为空',
-            type: 'error'
-          });
-          return false
-      }else{
-        let params={
-        id: this.contentId,
-        type:2,
-        content:this.content,
-        updateer:JSON.parse(localStorage.getItem('user')).realName,
-        jailId:JSON.parse(localStorage.getItem('user')).jailId
-        }
-        let res = await http.setRejectEdit(params)
-        if(res){
-          let params={}
-              params.jailId=JSON.parse(localStorage.getItem('user')).jailId
-              params.type=2
-          let res = await http.getRejectEdit( params )
-          if(res.content){
-            this.content = res.content
-            this.contentId=res.id
-            this.updateer=res.updateEr
-          }else{
-            this.content = []
-          }
+
+    async onSubmitReject(){
+      this.content = this.content.filter(c => c && c.trim() )
+      if (!this.content.length) {
+        this.$message({
+          message: '新增编辑内容不能为空',
+          type: 'error'
+        })
+        return
       }
-       this.show.editRebut=true
-      }
+      try {
+        await http.setRejectEdit({
+          id: this.contentId,
+          type: 3,
+          content: this.content,
+          updateer: this.user.realName,
+          jailId: this.user.jailId
+        })
+        await this.getRejectContent()
+        this.show.editRebut = true
+      } catch (error) {}
     },
+
       tableRowClassName ({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;  //拿到的索引赋值给row的index,在这个表格中能拿到row的里面都会包含index
@@ -1474,71 +1258,53 @@
         let cellStr=cell.querySelector(".cell").textContent
         if(cellStr){
         }else{
-          if(column.label=='监区'){
+          if(column.label=='窗口序号'){
             return false
           }else if(column.label=='当日没有可选时间段'){
             return false
           }
           else{
-            this.meetingAdjustmentCopy.terminals.filter(item=>{
-              this.meetingAdjustmentCopy.meetingQueue.forEach(val=>{
+            this.meetingAdjustment.windows.filter(item=>{
+              this.meetingAdjustment.meetingQueue.forEach(val=>{
                 if(item[val]==this.toAuthorize.name){
                   item[val] = ""
                 }
               })
             } )
             row[column.label]=this.toAuthorize.name
-            this.$set(this.meetingAdjustmentCopy.terminals, row.index,row)
+            this.$set(this.meetingAdjustment.windows, row.index,row)
           }
           for (let index in row) {
             if(row[index]==this.toAuthorize.name){
-              this.submitSuccessParams={terminalId:row.id,meetingTime:index}
+              this.submitSuccessParams={ window: row.id, meetingTime: index }
             }
           }
         }
       },
-      setMeetingAdjustment({meetingQueue,meetings,terminals}){
-        terminals.filter(item=>{
-          meetings.forEach(val=>{
-            if(item.terminalNumber==val.terminalNumber){
-              item[val.meetingTime.slice(-11)]= val.name
-            }
-          })
-          item.noTimes='已没有可安排的通话时间段'
-        })
-      },
 
-      async getDatas(e) {
-        if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
+      async getDatas() {
+        if (this.tabs !== 'first') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
           }
         }
-
-        const params = {
+        let params = {
           ...this.filter,
           ...this.pagination
         }
-
-        if (this.tabs === 'UNUSUAL') {
-          let url = '/meetings/findUnusualPage'
-
-          if (this.hasAllPrisonQueryAuth) url = '/meetings/findUnusualAdminPage'
-
-          await this.getUnusualMeetingPage({ url, params })
+        let { visits, total } = await http.getVisits(params)
+        if (visits && visits.length) {
+          visits.forEach(m => {
+            if (!m.filterFamilies) {
+              m.filterFamilies = [{
+                familyId: m.familyId,
+                familyName: m.familyName
+              }]
+            }
+          })
         }
-
-        else {
-          if (this.hasAllPrisonQueryAuth) await this.getMeetingsAll(params)
-
-          else {
-            const res = await this.getMeetings(params)
-
-            if (!res) return
-
-            if (this.meetingRefresh) this.meetingApplyDealing()
-          }
-        }
+        this.visits.contents = visits || []
+        this.visits.total = total
       },
 
       async onSearch() {
@@ -1596,116 +1362,44 @@
         return res
       },
 
-      setSelectRange() {
-        let _now = new Date()
-        this.selectRange = {
-          selectableRange: `${ this.toAuthorize && this.toAuthorize.applicationDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
-          format: 'HH:mm'
-        }
+      // 获取实地探监预约配置
+      async getVisitTimeConfig(id) {
+        let res = await http.getVisitsConfigMeetingtime(id)
+        this.show.authorize = true
+        this.meetingAdjustment = res || {}
+        // this.show.meetingQueue
       },
 
-      getMeetTimeConfig() {
-        http.getMeetTimeConfig({
-          id: this.getMeetingId,
-          area: this.isSeparateByArea || this.isUseMeetingFloor ? this.areaTabs : ''
-        }).then(res=>{
-          this.show.authorize = true
-          this.meetingAdjustment=res
-          this.show.meetingQueue=this.meetingAdjustment.meetingQueue.length>0?false:true
-          this.meetingAdjustmentCopy=JSON.parse(JSON.stringify(this.meetingAdjustment))
-          this.setMeetingAdjustment(this.meetingAdjustmentCopy)
-          this.userDefinedDuration = this.meetingAdjustment.userDefinedDuration
-          this.durationOptions = this.meetingAdjustment.meetingChargeTemplates && this.meetingAdjustment.meetingChargeTemplates.map(c => {
-            return {
-              label: c.duration,
-              value: c.duration
-            }
-          })
-          if (this.durationOptions && this.durationOptions.length) {
-            this.crossDuration = this.durationOptions[0].value
-          }
-        })
-      },
-
-      handleShowOther() {
-        this.isSpecial = !this.isSpecial
-        if( this.isSpecial ) {
-          this.setSelectRange()
-          this.setTimeRange(new Date())
-        }
-      },
-
-      handleDurationChange(val) {
-        this.crossDuration = val
-        this.setTimeRange(this.timeRangeStart.toDate())
-      },
-
-      handleTimepickerChange(val) {
-        this.isShowTips = false
-        this.setTimeRange(val)
-      },
-
-      checkInmeetings() {
-        return this.meetingAdjustmentCopy.meetingQueue.some(m => {
-          let {sm, em} = this.getStartandEndTime(m)
-          return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
-        })
-      },
-
-      getStartandEndTime(time) {
-        let _timeRange = time.split('-')
-        let sm = _timeRange[0].split(':')
-        sm = Moment({ hour: sm[0], minute: sm[1] })
-        let em = _timeRange[1].split(':')
-        em = Moment({ hour: em[0], minute: em[1] })
-        return {
-          sm,
-          em
-        }
-      },
-
-      setTimeRange(dateObj) {
-        let _start = Moment(dateObj)
-        let _end = Moment(dateObj).add(this.crossDuration, 'm')
-        let _last = Moment({ hour: '23', minute: '59' })
-        this.timeRangeStart = _start
-        this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
-      },
-
+      // 表格操作-审核
       async handleAuthorization(e) {
         const { id } = e
-        this.getMeetingId = id
         this.toAuthorize = await this.onGetDetailAndInitData(id)
         this.show.agree = false
         this.show.disagree = false
-        this.show.multistageExamine = false
         this.submitSuccessParams = null
-        this.isSpecial = false
-        this.showTips = ''
-        this.isShowTips = false
-        this.areaTabs = '1'
-        this.areaTypes = '1'
         this.onRejectshow(false,false)
-        this.isform=false
-        // this.areaOptions = Array.from(this.$store.state.areaOptions)
-        let { data } = await http.getMeetingSeparateArea({
-          inputDate: this.toAuthorize && this.toAuthorize.applicationDate
-        })
-        // 是否分监舍区和生产区
-        this.isSeparateByArea = data && data.separateByArea
-        // 是否打开会见楼开关
-        this.isUseMeetingFloor = data && !!data.useMeetingFloor
-        // 分监舍区和生产区 关闭会见楼开关
-        if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
-          this.areaOptions = this.areaOptions.filter(item => item.value != '3')
-        }
-        // 不分监舍区和生产区 打开会见楼开关
-        if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
-          this.areaOptions = this.areaOptions.filter(item => item.value != '2')
-        }
-        this.getMeetTimeConfig()
+        this.isform = false
         this.$message.closeAll()
-        this.toShow= Object.assign( {}, this.toShow, e )
+        // 获取实地探监的配置信息
+        this.getVisitTimeConfig(id)
+        // 获取并设置下一级节点
+        this.getSubtask(e)
+        this.toShow = Object.assign({}, this.toShow, e)
+      },
+      selectTask(select){
+        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
+        this.submitSuccessParams.nextCheckRole=obj[0].taskName
+      },
+      async getSubtask(e){
+        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
+          if (!res) return
+          this.selectProcessOption =res
+          if(this.selectProcessOption.length){
+            this.show.process=true
+            this.nextAuth=this.selectProcessOption[0].taskCode
+          }else{
+             this.show.process=false
+          }
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1716,7 +1410,7 @@
 
         this.show.withdraw = true
       },
-      onDetail(e) {
+      async onDetail(e) {
         const constFamilyShows = [
             {
               label: '与囚犯关系',
@@ -1756,22 +1450,17 @@
               prop: 'content',
               style: { width: '100%' }
             }
-          ],
-          params = { meetingId: e.id }
-        this.getMeettingsChangelogDetail(params).then(res => {
-          if (!res) return
-          if(res.callLogs.length){
-              res.callLogs.forEach((item,index)=>{
-              item.status="CALL"
-              res.changeLogs.splice(1+index, 0, item)
-            })
-          }
-          this.toShow = Object.assign({}, res)
-          this.show.dialog = true
-          this.familyShows = this.toShow.status !== 'DENIED'
-            ? constFamilyShows.slice(0, constFamilyShows.length - 1)
-            : constFamilyShows
-        })
+          ]
+        let { data = {} } = await http.getVisitsChangelog(e.id)
+        // if(data.callLogs && data.callLogs.length) {
+        //   data.callLogs.forEach((item,index)=>{
+        //     item.status="CALL"
+        //     data.changeLogs.splice(1+index, 0, item)
+        //   })
+        // }
+        this.toShow = Object.assign({}, data)
+        this.show.dialog = true
+        this.familyShows = this.toShow.status !== 'DENIED' ? constFamilyShows.slice(0, constFamilyShows.length - 1) : constFamilyShows
       },
       isDevelop(val, key) {//判断结束原因是否存在多行
         this.$nextTick(() => {
@@ -1801,8 +1490,21 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
+        this.show.agree = true
+        if (this.toShow.isChoiceTime && !this.show.subTask) {
           this.show.agree = true
-           this.buttonLoading = false
+          this.buttonLoading = false
+        } else {
+           this.submitParams = {
+            id: this.toShow.id,
+            window: this.toShow.window ? this.toShow.window : this.submitSuccessParams.window,
+            meetingTime: this.toShow.meetingTime ? this.toShow.meetingTime : this.submitSuccessParams.meetingTime,
+            processInstanceId: this.toShow.processInstanceId,
+            isChoiceTime: this.toShow.isChoiceTime,
+            nextAuth: this.nextAuth
+          }
+          this.submitMeetingAuthorize()
+        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1820,52 +1522,6 @@
       //覆盖mixin 授权对话框不同意情况下的返回操作
       onDisagreeAuthorizeGoBack() {
         this.closeAuthorize('back')
-      },
-
-      // 覆盖mixin 高级审批提交情况下的提交操作
-       onMultistageExamineGoSubmit() {
-         this.show.multistageExamine = true
-
-         this.buttonLoading = false
-       },
-
-      // 覆盖mixin 高级审批提交情况下的返回操作
-       onMultistageExamineGoBack() {
-         this.show.multistageExamine = false
-
-         this.$refs['multistage_examine-form'].handleResetField()
-       },
-
-      // 覆盖mixin 高级审批提交情况下的确认操作
-      onMultistageExamineSubmit() {
-        this.$refs['multistage_examine-form'].onSubmit()
-      },
-
-      async onMultistageExamineCheck(params) {
-        const { id } = this.toAuthorize
-
-        const { remark } = params
-
-        this.buttonLoading = true
-
-        await this.firstLevelAuthorize({
-          params: {
-            meetingId: id,
-            remark
-          },
-
-          url: '/meetings/submitMeeting',
-
-          mutationName: 'setIsSuccessFirstLevelSubmitMeeting'
-        })
-
-        this.buttonLoading = false
-
-        if (this.isSuccessFirstLevelSubmitMeeting) {
-          this.closeAuthorize()
-          this.toAuthorize = {}
-          this.getDatas('handleSubmit')
-        }
       },
 
         // 比较时间大小
@@ -1907,43 +1563,36 @@
           this.getDatas('handleSubmit')
         })
       },
-      submitSuccess: function () {
+      submitSuccess() {
         //第一个是当前系统时间，第二个提交时间
         if (this.compareDate(new Date(), `${this.toAuthorize.meetingTime || this.toAuthorize.applicationDate} ` + this.submitSuccessParams.meetingTime.toString().substring(0, 5))) {
           this.$message.closeAll()
           this.$message({
             showClose: true,
-            message: '请选择其他通话时间段',
+            message: '请选择其他探视时间段',
             type: 'error'
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-            let params = {
-            meetingId: this.toAuthorize.id,
-            terminalId: this.submitSuccessParams.terminalId,
-            meetingTime: this.submitSuccessParams.meetingTime
-          }
-          if (this.isSeparateByArea || this.isUseMeetingFloor) {
-             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
-          }
-          if (this.isSpecial) {
-            if (this.checkInmeetings()) {
-              this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
-              this.isShowTips = true
-              return
-            }
-             params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
-          }
-          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
+            this.submitParams.id = this.toAuthorize.id
+            this.submitParams.window = this.submitSuccessParams.window
+            this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
+            this.submitParams.processInstanceId = this.toShow.processInstanceId
+            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+            this.submitParams.nextAuth = this.nextAuth
+          this.show.subTask = this.submitParams.meetingTime ? true : false
+          this.show.agree = false;
+        }
+      },
+      submitMeetingAuthorize() {
+         http.authorizeVisitByProcess(this.submitParams).then(res => {
             if (!res) return
             this.closeAuthorize()
             this.toAuthorize = {}
             this.setIsRefreshMultistageExamineMessageBell(true)
             this.submitSuccessParams = null
-            this.show.agree = false;
             this.getDatas('handleSubmit')
           })
-        }
       },
       onWithdraw(arg) {
        this.btnDisable = true
@@ -1980,6 +1629,10 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
+        this.submitParams=null
+        this.show.subTask=false
+        this.show.process=false
+        this.nextAuth=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
@@ -2030,7 +1683,7 @@
   }
 </script>
 <style lang="scss" scoped>
-  @import "../../../assets/css/list";
+  @import "../../assets/css/list";
   .el-table /deep/ {
     th {
       padding: 5px 0 3px !important;
@@ -2120,13 +1773,13 @@
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
- .el-select-dropdown{
+  .el-select-dropdown{
         max-width: 243px;
     }
-.select_edit.el-select-dropdown__item{
+    .select_edit.el-select-dropdown__item{
         display: inline-block;
     }
-.select_edit.el-select-dropdown__item span {
+    .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
    }

@@ -62,6 +62,9 @@ export default {
       throw err
     }
   },
+  setMeetingsData({ commit }, params) {
+    commit('setMeetingsData', params)
+  },
   adjustMeeting({ commit }, params) {
     return http.adjustMeeting(params).then(res => res)
   },
