@@ -18,6 +18,12 @@
           type="primary"
           @click="onDownload('all')"
         >下载关系证明</el-button>
+         <el-button
+         v-if="!isSuperAdmin"
+          type="primary"
+          :loading="downloading"
+          @click="handleExportExcel"
+        >导出 Excel</el-button>
       </template>
     </m-search>
 
@@ -878,7 +884,8 @@ export default {
       'isAuditor',
       'isAdvancedAuditor',
       'haveMultistageExamine',
-      'isShowPhone'
+      'isShowPhone',
+      'isSuperAdmin'
     ]),
 
     relationalWidth() {
