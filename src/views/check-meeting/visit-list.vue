@@ -53,7 +53,7 @@
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
 
-        <template #families="{ row }">
+        <!-- <template #families="{ row }">
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
               type="text"
@@ -63,6 +63,15 @@
               style="margin-left: 0px; margin-right: 8px;"
               @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
           </div>
+        </template> -->
+
+        <template #families="{ item, scope }">
+          <el-button
+            type="text"
+            size="small"
+            style="margin-left: 0px; margin-right: 8px;"
+            @click="showFamilyDetail(item.familyId, scope.row.id)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name')}}</el-button>
         </template>
 
         <template #content="{ row }">
