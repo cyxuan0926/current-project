@@ -286,6 +286,7 @@
             class="relation_img"
             :url="family.familyRelationalProofUrl"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -293,6 +294,7 @@
             class="relation_img"
             :url="family.familyRelationalProofUrl2"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -300,6 +302,7 @@
             class="relation_img"
             :url="family.familyRelationalProofUrl3"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -307,6 +310,7 @@
             class="relation_img"
             :url="family.familyRelationalProofUrl4"
             title="关系证明图"
+            :isLazy="false"
           />
         </div>
       </template>

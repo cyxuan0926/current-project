@@ -91,6 +91,7 @@
             <m-img-viewer
               :url="family.approvalImageUrl"
               title="审批单"
+              :isLazy="false"
             />
           </div>
         </div>

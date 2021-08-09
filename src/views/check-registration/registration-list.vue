@@ -288,11 +288,11 @@
         />
       </div>
 
-      <template v-if="toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length" >
+      <template v-if="toAuthorize.relationalProofUrls && toAuthorize.relationalProofUrls.length">
         <div style="margin-bottom: 10px;">请核对关系证明:</div>
 
         <div class="img-box">
-          <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls" >
+          <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls">
             <m-img-viewer
               :style="{ width: relationalWidth }"
               :class="relationalProofUrl.className"
@@ -300,6 +300,7 @@
               :url="relationalProofUrl.url"
               :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
               title="关系证明图"
+              :isLazy="false"
             />
           </template>
         </div>
@@ -313,6 +314,7 @@
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
             title="可视电话通知单"
+            :isLazy="false"
           />
         </div>
       </template>
@@ -1075,6 +1077,8 @@ export default {
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
 
       if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+
+      console.log(result)
 
       return result
     },

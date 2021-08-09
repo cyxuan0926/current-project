@@ -187,6 +187,7 @@
           <m-img-viewer
             :url="scope.familyRelationalProofUrl"
             title="关系证明图"
+            :isLazy="false"
           />
         </template>
       </family-detial-information>
