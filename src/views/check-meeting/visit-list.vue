@@ -628,6 +628,8 @@
     $likePrisonerNumber,
     $likePhone
   } from '@/common/constants/const'
+
+  import { batchDownloadPublicImageURL } from '@/utils/helper'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -1588,8 +1590,38 @@
       },
       async showFamilyDetail(familyId, visitId) {
         let { data = {} } = await http.getVisitsFamilyDetail({ familyId, visitId })
+
         data.family = data.family || {}
+
+        const {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        } = data.family
+
+        const urls = {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        }
+
+        const _key = `familyId_${ familyId }`
+
+        const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+        data.family = {
+          ...data.family,
+          ...URLS
+        }
+
         data.family.relationalProofUrls = []
+
         for(let [key, value] of Object.entries(data.family)) {
           const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
           keys.includes(key) && value && data.family.relationalProofUrls.push({

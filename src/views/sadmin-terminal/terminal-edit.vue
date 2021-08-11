@@ -131,10 +131,7 @@ import validate from '@/utils'
 
 import prisonAreaLevel from '@/mixins/prison-area-level'
 
-import index from '../../components/multistage_examine-records/index.vue'
-
 export default {
-  components: { index },
   mixins: [prisonAreaLevel],
 
   data() {

@@ -58,7 +58,7 @@
         :cols="tableCols"
         :data="familiesPaged.content"
       >
-        <template #familyName="{ row }">
+        <template #family="{ row }">
           <el-button
             v-if="!!row.status"
             type="text"
@@ -575,7 +575,7 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { DateFormat } from '@/utils/helper'
+import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
@@ -852,7 +852,9 @@ export default {
       const cols = [
         {
           label: '家属姓名',
-          slotName: 'familyName'
+          ...$likeName,
+          prop: 'familyName',
+          desensitizationColSlotName: 'family'
         },
         {
           label: '家属电话',
@@ -1379,9 +1381,38 @@ export default {
         relationship
       } = familyInformation
 
-      const data = await http.getRegistrationsDetail({ id: registrationsId })
+      let data = await http.getRegistrationsDetail({ id: registrationsId })
 
-      this.authorizeFamilyDetail = Object.assign({}, data, { familyName, relationship })
+      if (data) {
+        const {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        } = data
+
+        const urls = {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        }
+
+        const _key = `registration_${ registrationsId }`
+
+        const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+        data = {
+          ...data,
+          ...URLS
+        }
+      }
+
+      this.authorizeFamilyDetail = Object.assign({}, data || {}, { familyName, relationship })
 
       this.authorizeDialogVisible = true
     },

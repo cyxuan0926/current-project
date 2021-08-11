@@ -515,6 +515,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import { Message } from 'element-ui'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
+import { batchDownloadPublicImageURL } from '@/utils/helper'
 export default {
   mixins: [prisonFilterCreator],
 
@@ -1634,8 +1635,34 @@ export default {
       })
     },
 
-    showFamilyDetail(family) {
-      this.family = family
+    async showFamilyDetail(family) {
+      const {
+        familyIdCardBack,
+        familyIdCardFront,
+        familyRelationalProofUrl,
+        familyRelationalProofUrl2,
+        familyRelationalProofUrl3,
+        familyRelationalProofUrl4
+      } = family
+
+      const urls = {
+        familyIdCardBack,
+        familyIdCardFront,
+        familyRelationalProofUrl,
+        familyRelationalProofUrl2,
+        familyRelationalProofUrl3,
+        familyRelationalProofUrl4
+      }
+
+      const _key = `familyId_${ family.id }`
+
+      const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+      this.family = {
+        ...family,
+        ...URLS
+      }
+
       this.dialogTableVisible = true
     },
 

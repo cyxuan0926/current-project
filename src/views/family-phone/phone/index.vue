@@ -38,17 +38,16 @@
       <m-table-new stripe
          :data="tabledate.list"
          :cols="tableCols">
-          <template #familyName="{ row }">
-                    <template v-if="!row.isReg">
-                        <span v-for="f in row.families" :key="f.familyId">{{ f.familyName }}</span>
+          <template #familyName="{ item, scope }">
+                    <template v-if="!scope.row.isReg">
+                      <span>{{ item.familyName }}</span>
                     </template>
-                    <template v-if="row.isReg">
-                        <el-button
-                            v-for="f in row.families"
-                            :key="f.familyId"
-                            type="text"
-                            size="mini"
-                            @click="handleQueryFamilyDet(row, f.familyId)">{{ f.familyName }}</el-button>
+                    <template v-if="scope.row.isReg">
+                      <el-button
+                        type="text"
+                        size="mini"
+                        @click="handleQueryFamilyDet(scope.row, item.familyId)"
+                      >{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
                     </template>
                 </template>
 
@@ -446,7 +445,7 @@
 
 <script>
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { DateFormat } from '@/utils/helper'
+import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
 import { mapActions, mapState } from 'vuex'
 import familyDetailModal from '@/components/family/family-detail-modal.vue'
@@ -454,6 +453,12 @@ import familyDetailModal from '@/components/family/family-detail-modal.vue'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import Moment from 'moment'
 import http from '@/service'
+
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -671,10 +676,12 @@ export default {
         {
           label: '罪犯编号',
           prop: 'criminalNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName'
+          prop: 'criminalName',
+          ...$likeName
         },
         {
           label: '申请时间',
@@ -687,12 +694,19 @@ export default {
         },
         {
           label: '家属姓名',
-          slotName: 'familyName'
+          prop: 'families',
+          ...$likeName,
+          desensitizationColsConfigs: {
+            keyWord: 'familyId',
+            prop: 'familyName',
+            desensitizationColSlotName: 'familyName'
+          }
         },
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone'
+          prop: 'familyPhone',
+          ...$likePhone
         },
         {
           label: '关系',
@@ -752,7 +766,36 @@ export default {
                     familyId
                 }
                     let { data } = await http.getIntraFamilyInfo(_params)
-                    this.familyData = data.family
+
+                    if (data && data.family) {
+                      const {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      } = data.family
+
+                      const urls = {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      }
+
+                      const _key = `familyId_${ familyId }`
+
+                      const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+                      data.family = {
+                        ...data.family,
+                        ...URLS
+                      }
+                    }
+                    this.familyData = data.family || {}
                     this.show.familyModalVisible = true
             },
       refuseFormChange(e){

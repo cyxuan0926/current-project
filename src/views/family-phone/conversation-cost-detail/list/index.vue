@@ -448,7 +448,7 @@ export default {
         {
           label: '总通话时间段',
           slotName: 'time',
-          minWidth: 185
+          minWidth: 220
         },
         {
           label: '详情',

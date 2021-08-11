@@ -204,33 +204,62 @@
         <el-table-column label="操作" min-width="60">
           <template #default="{ row }">
             <template v-if="!hasAllPrisonQueryAuth">
-              <el-button
-                v-if="row.status == 'PENDING' && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
-                size="mini"
-                @click="handleAuthorization(row)"
-              >授权</el-button>
+              <!-- 以前的操作控制逻辑 -->
+              <template v-if="!row.processInstanceId">
+                <el-button
+                  v-if="row.status === 'PENDING' && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+                  size="mini"
+                  @click="handleAuthorization(row)"
+                >授权</el-button>
 
-              <template v-if="row.status == 'PASSED'">
+                <template v-if="row.status === 'PASSED'">
+                  <el-button
+                    v-if="!!row.canWithdraw"
+                    size="mini"
+                    @click="handleCallback(row)"
+                  >撤回</el-button>
+
+                  <el-button size="mini" @click="onDownload(row)">下载</el-button>
+                </template>
+
+                <el-button
+                  v-if="!!row.showDetail"
+                  size="mini"
+                  @click="handleAuthorDetail(row)">详情
+                </el-button>
+              </template>
+
+              <!-- 审批流操作控制逻辑 -->
+              <template v-else>
+                <el-button
+                  v-if="!!row.isCheck"
+                  size="mini"
+                  @click="handleAuthorization(row)"
+                >授权</el-button>
+
                 <el-button
                   v-if="!!row.canWithdraw"
                   size="mini"
                   @click="handleCallback(row)"
                 >撤回</el-button>
 
-                <el-button size="mini" @click="onDownload(row)">下载</el-button>
-              </template>
+                <template v-if="row.status == 'PASSED'">
+                  <el-button size="mini" @click="onDownload(row)">下载</el-button>
+                </template>
 
-              <el-button
-                v-if="!!row.showDetail"
-                size="mini"
-                @click="handleAuthorDetail(row)">详情
-              </el-button>
+                <el-button
+                  v-if="!row.isCheck"
+                  size="mini"
+                  @click="handleAuthorDetail(row)"
+                >详情</el-button>
+              </template>
             </template>
 
             <el-button
               v-if="hasProvinceQueryAuth"
               size="mini"
-              @click="handleAuthorDetail(row)">查看</el-button>
+              @click="handleAuthorDetail(row)"
+            >查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -335,7 +364,15 @@
 
       <template v-if="!hasAllPrisonQueryAuth">
         <div v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine" class="button-box">
-          <el-button plain  @click="show.agree = true">同意</el-button>
+          <!-- 非审批流的逻辑 -->
+          <template v-if="!isProcessInstance">
+            <el-button plain @click="show.agree = true">同意</el-button>
+          </template>
+
+          <!-- 审批流的逻辑 -->
+          <template v-else>
+            <el-button plain @click="onAgreeAuthorize">同意</el-button>
+          </template>
 
           <el-button plain @click="show.disagree = true">不同意</el-button>
 
@@ -392,28 +429,73 @@
 
         <!-- 同意 -->
         <template v-if="show.agree">
-          <div class="button-box">
-            <el-button
-              plain
-              :loading="buttonLoading"
-              @click="onAuthorization('PASSED')"
-            >确定申请通过？</el-button>
+          <template v-if="!isProcessInstance">
+            <div class="button-box">
+              <el-button
+                plain
+                :loading="buttonLoading"
+                @click="onAuthorization('PASSED')"
+              >确定申请通过？</el-button>
 
-            <el-button plain @click="show.agree = false">返回</el-button>
+              <el-button plain @click="show.agree = false">返回</el-button>
 
-            <el-button
-              type="danger"
-              plain
-              @click="show.authorize = false"
-            >关闭</el-button>
-          </div>
+              <el-button
+                type="danger"
+                plain
+                @click="show.authorize = false"
+              >关闭</el-button>
+            </div>
+          </template>
+
+          <template v-else>
+            <div v-if="!isSubtask" class="button-box">
+              <repetition-el-buttons :buttonItems="showAgreeButtons" />
+            </div>
+
+            <div v-else class="button-box">
+              <m-form
+                ref="agreeHasSubTaskForm"
+                :items="agreeHasSubTaskFormItems"
+                :values="agreeHasSubTaskFormValues"
+                @submit="onAgreeHasSubTaskFormSubmit"
+              >
+                <template #nextCheckCodeAgreeButtons>
+                  <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
+                    <template v-for="item in processInstanceIdSubtaskOptions">
+                      <el-option
+                        :key="item.taskCode"
+                        :label="item.taskName"
+                        :value="item.taskCode"
+                      />
+                    </template>
+                  </el-select>
+
+                  <el-row class="el-form__buttons">
+                    <el-button
+                      plain
+                      :loading="buttonLoading"
+                      @click="onPassedAuthorize"
+                    >提交审核</el-button>
+
+                    <el-button plain @click="show.agree = false">返回</el-button>
+
+                    <el-button
+                      type="danger"
+                      plain
+                      @click="show.authorize = false"
+                    >关闭</el-button>
+                  </el-row>
+                </template>
+              </m-form>   
+            </div>
+          </template>
         </template>
 
         <!-- 不同意 -->
         <div v-if="show.disagree" class="button-box logMgCls el-row_callback">
           <div style="margin-bottom: 10px;">请选择驳回原因</div>
 
-          <div>
+          <div class="disagree__div">
             <el-select
               v-model="remarks"
               style="width:70%; margin-right:10px;"
@@ -471,7 +553,7 @@
         <div v-if="show.callback" class="button-box logMgCls el-row_callback">
           <div style="margin-bottom: 10px;">请选择撤回原因</div>
 
-          <div>
+          <div class="callback__div">
             <el-select
               v-model="remarks"
               :multiple="true"
@@ -481,7 +563,7 @@
               style="width:70%;margin-right:10px"
             >
               <el-option
-              class="select_edit"
+                class="select_edit"
                 v-for="(remark,index) in content"
                 :value="remark"
                 :label="(index+1)+'、'+remark"
@@ -832,7 +914,19 @@ export default {
             message: '请输入初审意见'
           }
         ]
-      }
+      },
+
+      registrationRow: {},
+
+      agreeHasSubTaskFormValues: {},
+
+      agreeHasSubTaskFormData: {
+        nextCheckCode: ''
+      },
+
+      agreeHasSubTaskFormFields: {},
+
+      agreeText: '确定通过？'
     }
   },
 
@@ -884,6 +978,11 @@ export default {
       'isSuccessFirstLevelAuthorize'
     ]),
 
+    ...mapState({
+      processInstanceIdSubtaskOptions: state => state.global.processInstanceIdSubtaskOptions,
+      currentProcessTaskInformation: state => state.global.currentProcessTaskInformation
+    }),
+
     ...mapGetters([
       'isInWhitelist',
       'isAuditor',
@@ -901,8 +1000,40 @@ export default {
         4: '24%'
       }
       return widthConstent[this.toAuthorize.relationalProofUrls.length]
+    },
+
+    isSubtask() {
+      return !!(this.processInstanceIdSubtaskOptions && Array.isArray(this.processInstanceIdSubtaskOptions) && this.processInstanceIdSubtaskOptions.length)
+    },
+
+    agreeHasSubTaskFormItems() {
+      return {
+        formConfigs: {
+          labelWidth: '90px'
+        },
+
+        remarks: {
+          type: 'textarea',
+          noLabel: true,
+          placeholder: '请输入审核意见',
+          customClass: ['none_margin-left']
+        },
+
+        nextCheckCodeAgreeButtons: {
+          slotName: 'nextCheckCodeAgreeButtons',
+          customClass: ['el-from_item-nextCheckCodeAgreeButtons'],
+          attrs: {
+            label: '请选择审核人'
+          }
+        }
+      }
+    },
+
+    isProcessInstance() {
+      return !!this.registrationRow.processInstanceId
     }
   },
+
   methods: {
     ...mapActions([
       'getRegistrations',
@@ -948,11 +1079,11 @@ export default {
     },
 
     withdrawFormChange(e){
-      let str=""
+      let str = ""
 
       if(!this.withdrawForm.withdrawReason) this.withdrawForm.withdrawReason = ""
 
-      e.forEach((item,index)=>{
+      e.forEach((item, index)=>{
         if(!this.withdrawForm.withdrawReason.includes(item)) str +=`${item}。\n`
       })
 
@@ -1085,7 +1216,7 @@ export default {
 
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
 
-      if ( _authorizeDetData ) {
+      if (_authorizeDetData) {
         const {
           idCardBack,
           idCardFront,
@@ -1120,8 +1251,14 @@ export default {
     },
 
     // 点击授权按钮
-     async handleAuthorization(e) {
+    async handleAuthorization(e) {
+      const { processInstanceId } = e
+
+      this.registrationRow = Object.assign({}, e)
+
       this.toAuthorize = await this.onGetRegistrationDetail(e)
+
+      if (processInstanceId) await this.getProcessTask(processInstanceId)
 
       this.show.agree = false
 
@@ -1146,23 +1283,47 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-          this.onAuthorization('WITHDRAW')
-        }).catch(() => {
-          this.$message({
-          type: 'info',
-          message: '已取消撤回'
-        });
+      }).then(async () => {
+        await this.onAuthorization('WITHDRAW')
+      }).catch(() => {
+        this.$message({
+        type: 'info',
+        message: '已取消撤回'
+      });
       });
     },
 
-    onAuthorization(e) {
+    // 兼容审核流和历史逻辑
+    async onAuthorization(e, inputs = {}) {
+      const { processInstanceId } = this.registrationRow
+
       this.buttonLoading = true
 
-      let params = { id: this.toAuthorize.id, status: e }
+      let params = { id: this.toAuthorize.id, ...inputs }
+
+      if (!this.isProcessInstance) params = {
+        ...params,
+        status: e
+      }
+
+      else params = {
+        ...params,
+        processInstanceId
+      }
 
       if ((e === 'DENIED' || e === 'WITHDRAW')) {
         if(e === 'DENIED') {
+          if (this.isProcessInstance) {
+            const { taskName } = this.currentProcessTaskInformation
+
+            // 不同意
+            params = {
+              ...params,
+              checkState: 2,
+              taskName
+            }
+          }
+
           this.$refs.refuseForm.validate(valid => {
             if(!this.refuseForm.anotherRemarks) this.refuseForm.anotherRemarks = ""
 
@@ -1173,28 +1334,38 @@ export default {
         }
 
         if(e === 'WITHDRAW') {
+          if (this.isProcessInstance) {
+            params = {
+              ...params,
+              checkState: 4
+            }
+
+            params.status = e
+          }
+
           this.$refs.withdrawForm.validate(valid => {
             if(!this.withdrawForm.withdrawReason) this.withdrawForm.withdrawReason = ""
 
-            if (valid) params.withdrawReason  =this.withdrawForm.withdrawReason.replace(/\s*/g, '')
+            if (valid) params.withdrawReason = this.withdrawForm.withdrawReason.replace(/\s*/g, '')
 
             else this.buttonLoading = false
           })
         }
 
-        if (this.buttonLoading) this.handleSubmit(params)
+        if (this.buttonLoading) await this.handleSubmit(params)
       }
 
-      else this.handleSubmit(params)
+      else await this.handleSubmit(params)
     },
 
     handleSubmit(params) {
       this.authorizeRegistrations(params).then(res => {
         this.buttonLoading = false
+
         if (res) {
           this.onCloseWithdrawDialog()
 
-          this.setIsRefreshMultistageExamineMessageBell(true)
+          if (this.haveMultistageExamine) this.setIsRefreshMultistageExamineMessageBell(true)
         }
       })
     },
@@ -1237,6 +1408,8 @@ export default {
 
     // 点击撤回按钮
     async handleCallback(e) {
+      this.registrationRow = Object.assign({}, e)
+
       this.toAuthorize = await this.onGetRegistrationDetail(e)
 
       this.show.authorize = true
@@ -1245,11 +1418,13 @@ export default {
 
       this.show.disagree = false
 
+      this.show.multistageExamine = false
+
       this.show.callback = true
 
       await this.onRejectshow(false, true)
 
-      this.isform=true
+      this.isform = true
 
       this.dialogTitle = '撤回'
 
@@ -1426,6 +1601,83 @@ export default {
       this.$refs['multistageExamineForm'].clearValidate()
 
       this.show.authorize = false
+    },
+
+    // 审批流逻辑 同意按钮 事件
+    async onAgreeAuthorize() {
+      const { processInstanceId } = this.registrationRow
+
+      await this.getSubtaskPhone({ processInstanceId })
+
+      if (this.isSubtask) {
+        this.agreeHasSubTaskFormValues = {
+          remarks: '同意',
+        }
+
+        this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
+      }
+
+      this.$set(this.show, 'agree', true)
+    },
+
+    onAgreeHasSubTaskFormSubmit(value) {
+      this.agreeHasSubTaskFormFields = Object.assign({}, value)
+    },
+
+    // 同意 提交审批：同意并结束
+    async onPassedAuthorize() {
+      const { taskName } = this.currentProcessTaskInformation
+
+      let inputs = {
+        taskName
+      }
+
+      if (this.isSubtask) {
+        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
+        const { remarks } = this.agreeHasSubTaskFormFields
+
+        const { nextCheckCode } = this.agreeHasSubTaskFormData
+
+        const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
+
+        inputs = {
+          ...inputs,
+          remarks,
+          nextCheckRole: taskName,
+          nextCheckCode,
+          checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
+        }
+      } else {
+        inputs = {
+          ...inputs,
+          checkState: 1
+        }
+      }
+
+      await this.onAuthorization('PASSED', inputs)
+    },
+
+    onAgreeAuthorizeGoBack() {
+      this.$set(this.show, 'agree', false)
+    },
+
+    onCloseAuthorize() {
+      this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onClearValidate()
+
+      this.$refs.refuseForm && this.$refs.refuseForm.clearValidate()
+
+      this.$set(this.show, 'authorize', false)
+
+      setTimeout(() => {
+        this.$set(this.show, 'agree', false)
+
+        this.$set(this.show, 'disAgree', false)
+
+        this.$set(this.show, 'callback', false)
+
+        this.$set(this.show, 'multistageExamine', false)
+      }, 200)
     }
   }
 }

@@ -44,15 +44,12 @@
           />
         </template> -->
 
-        <template #prisoners="{ row }">
-          <template v-for="prisoner in row.prisonerList">
-            <el-button   
-              :key="prisoner.prisonerId"
-              type="text"
-              size="small"
-              @click="showPrisonerDetail(prisoner)"
-            >{{ prisoner.name | asteriskDisplay('asterisk_name') }}</el-button>
-          </template>
+        <template #prisoners="{ item }">
+          <el-button   
+            type="text"
+            size="small"
+            @click="showPrisonerDetail(item)"
+          >{{ item.name | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
         <template #operate="{ row }">
@@ -433,7 +430,6 @@ export default {
         {
           label: '对应罪犯',
           minWidth: '180px',
-          slotName: 'prisoners',
           prop: 'prisonerList',
           ...$likeName,
           desensitizationColsConfigs: {

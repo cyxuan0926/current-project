@@ -83,7 +83,7 @@
     import http from '@/service'
     import router from '@/router'
     import { saveAs } from 'file-saver'
-    import { DateFormat } from '@/utils/helper'
+    import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
     import {
         $likeName,
@@ -242,7 +242,37 @@
 
                 if( !this.isAdmin ) {
                     let { data } = await http[ this.tab == '1' ? 'getIntraFamilyInfo' : 'getIntraMeetingInfo' ](_params)
-                    this.familyData = data.family
+
+                    if (data && data.family) {
+                      const {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      } = data.family
+
+                      const urls = {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      }
+
+                      const _key = `familyId_${ familyId }`
+
+                      const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+                      data.family = {
+                        ...data.family,
+                        ...URLS
+                      }
+                    }
+
+                    this.familyData = data.family || {}
                     this.familyModalVisible = true
                 }
             },

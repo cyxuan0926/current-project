@@ -39,7 +39,8 @@
                   popper-class="is-asterisk_display"
                   placement="top-start"
                   trigger="hover"
-                  :content="scope.row[col['prop']]">
+                  :content="scope.row[col['prop']]"
+                >
                   <span slot="reference">
                     <slot :name="col.desensitizationColSlotName || 'defalut'" v-bind="scope">{{ scope.row[col['prop']] | asteriskDisplay(col.asteriskProp) }}</slot>
                   </span>

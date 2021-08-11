@@ -29,7 +29,7 @@
 
       <m-table-new
         ref="m-table"
-        :cols=tableCols
+        :cols="tableCols"
         :data="pageData.content"
       >
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
@@ -208,7 +208,7 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import { mapState, mapActions } from 'vuex'
 
-import { $likeName } from '@/common/constants/const'
+import { $likeName, $likeIdCard } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
@@ -399,7 +399,8 @@ export default {
         {
           label: '证件号',
           prop: 'uuid',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          ...$likeIdCard
         },
         {
           label: '身份证件有效期至',
