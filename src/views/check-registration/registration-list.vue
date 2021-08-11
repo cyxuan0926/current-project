@@ -104,7 +104,7 @@
           label="罪犯姓名"
           prop="prisonerName"
           show-overflow-tooltip
-          min-width="55"
+          min-width="80"
           sortable="custom"
         >
           <template #default="{ row }">
