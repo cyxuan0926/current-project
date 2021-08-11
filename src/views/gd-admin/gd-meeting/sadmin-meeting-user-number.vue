@@ -160,11 +160,11 @@ export default {
        let res = await http.getMettinMemberStatis(params)
         if (!res) return this.noData=true
           Object.values(res).forEach(val=>{
-            val.forEach(item=>{
-              if(params.dataType==1){
-              item.num=item.familyCount
+               val.forEach(item=>{
+               if(params.dataType==1){
+              item.num=item.membersNum
              }else{
-                item.num=item.membersNum
+                item.num=item.familyCount
              }
             })
           })
