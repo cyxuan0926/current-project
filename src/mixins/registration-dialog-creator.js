@@ -346,8 +346,14 @@ export default {
 
         this.closeButton
       ]
-      // 如果是实地探视没有多级审批
-      if (!(!this.isAdvancedAuditor && this.haveMultistageExamine) || this.visitsFlag) items.splice(2, 1)
+      // 高级审核人员 or 多级审批开关关闭 or 现场探视 or 有审批流 则无需提交按钮
+      if (this.isAdvancedAuditor || !this.haveMultistageExamine || this.visitsFlag || (this.toShow && this.toShow.processInstanceId)) {
+        items.splice(2, 1)
+      }
+      // 有流程审批的情况
+      if (this.toShow && this.toShow.processInstanceId) {
+        items[0].text = `${ this.show && this.show.subTask ? '提交审核' : '同意' }`
+      }
 
       return items
      }

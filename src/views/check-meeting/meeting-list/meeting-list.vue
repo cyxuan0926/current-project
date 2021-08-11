@@ -293,21 +293,33 @@
       <template v-if="isAdvancedAuditor && toAuthorize.changeLogs && Array.isArray(toAuthorize.changeLogs) && toAuthorize.changeLogs.length">
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
-      <div
-        v-if="!show.agree && !show.disagree && !show.multistageExamine"
-       class="button-box">
-        <repetition-el-buttons  style="margin-top:20px" :buttonItems="authorizeButtons" />
+
+      <div v-if="!show.agree && !show.disagree" class="button-box">
+        <!-- 审批流 -->
+        <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
+          <span style="padding-right: 12px;">选择流程节点:</span>
+            <el-select v-model="nextCheckCode" placeholder="请选择流程节点">
+            <el-option
+              v-for="item in selectProcessOption"
+              :key="item.taskCode"
+              :label="item.taskName"
+              :value="item.taskCode">
+            </el-option>
+          </el-select>
+        </label>
+        <!-- show.multistageExamine 审批流：一直是false  非审批流：根据是否有二级审批   -->
+        <repetition-el-buttons v-if="!show.multistageExamine"  style="margin-top:20px" :buttonItems="authorizeButtons" />
       </div>
 
+      <!-- 非审批流-二级审批 -->
       <div v-if="show.multistageExamine" style="margin-top:20px" class="button-box more-button__box">
         <div style="margin-bottom: 10px;">初审意见：</div>
-<m-form
+        <m-form
           class="multistage_examine-form"
           ref="multistage_examine-form"
           :items="localFirstLevelExamineFormItems"
           @submit="onMultistageExamineCheck"
         />
-
         <repetition-el-buttons :buttonItems="showMultistageExamineButtons" />
       </div>
 
@@ -882,19 +894,20 @@
           }
         },
         show: {
+          subTask: false,
           authorize: false,
           agree: false,
           disagree: false,
           withdraw: false,
           detail: false,
-          dialog:false,
-          rejectEdit:false,
-          editRebut:true,
-          meetingQueue:false,
+          dialog: false,
+          rejectEdit: false,
+          editRebut: true,
+          meetingQueue: false,
           familiesDetialInform: false,
           multistageExamine: false,
-          setRemarks:false,
-          userRemarks:false
+          setRemarks: false,
+          userRemarks: false
         },
         getRemarks:'',
         optionsRemarks:{},
@@ -904,6 +917,7 @@
         family: {},
         sortObj: {},
         submitSuccessParams: null,
+        nextCheckCode: '',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -948,6 +962,8 @@
         ],
         meetingAdjustment: {},
 
+        selectProcessOption:[],
+
         meetingAdjustmentCopy: {},
 
         multistageExamineKeys: {
@@ -965,6 +981,7 @@
         todayDate,
 
         oneMonthLater,
+        submitParams: {},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
@@ -1671,11 +1688,13 @@
         this.timeRangeStart = _start
         this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
       },
-
+      // 授权
       async handleAuthorization(e) {
         const { id } = e
         this.getMeetingId = id
         this.toAuthorize = await this.onGetDetailAndInitData(id)
+        this.submitParams = {}
+        this.show.subTask = false
         this.show.agree = false
         this.show.disagree = false
         this.show.multistageExamine = false
@@ -1703,9 +1722,20 @@
         if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
           this.areaOptions = this.areaOptions.filter(item => item.value != '2')
         }
+        // 审批流数据
+        if( e.processInstanceId ) {
+          this.getSubtask(e)
+        }
         this.getMeetTimeConfig()
         this.$message.closeAll()
-        this.toShow= Object.assign( {}, this.toShow, e )
+        this.toShow = Object.assign( {}, this.toShow, e )
+      },
+      // 获取下一级节点
+      async getSubtask({ processInstanceId }){
+        let _data = await http.getSubtaskPhone({ processInstanceId })
+        this.selectProcessOption = _data || []
+        this.show.process = !!this.selectProcessOption.length
+        this.nextCheckCode = !this.selectProcessOption.length ? '' : this.selectProcessOption[0].taskCode
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1801,8 +1831,23 @@
       },
       //覆盖mixin 授权对话框的同意操作
       onAgreeAuthorize() {
+        // 1. 非审批流
+        // 2. 审批流 只有第一级审核人员可以选择申请时间 未选时间先选择时间 选完时间后可以提交给下一级
+        if (!this.toShow.processInstanceId || this.toShow.isChoiceTime && !this.show.subTask) {
           this.show.agree = true
-           this.buttonLoading = false
+          this.buttonLoading = false
+        } else {
+          let { id, terminalId, meetingTime, processInstanceId, isChoiceTime } = this.toShow
+          this.submitParams = {
+            meetingId: id,
+            terminalId: terminalId || this.submitSuccessParams.terminalId,
+            meetingTime: meetingTime || this.submitSuccessParams.meetingTime,
+            processInstanceId,
+            isChoiceTime,
+            nextCheckCode: this.nextCheckCode
+          }
+          this.submitMeetingAuthorize()
+        }
       },
       //覆盖mixin 授权对话框的不同意操作
       onDisagreeAuthorize() {
@@ -1907,6 +1952,7 @@
           this.getDatas('handleSubmit')
         })
       },
+      // 选择时间段提交审核
       submitSuccess: function () {
         //第一个是当前系统时间，第二个提交时间
         if (this.compareDate(new Date(), `${this.toAuthorize.meetingTime || this.toAuthorize.applicationDate} ` + this.submitSuccessParams.meetingTime.toString().substring(0, 5))) {
@@ -1918,31 +1964,48 @@
           });
           this.handleAuthorization(this.toAuthorize)
         } else {
-            let params = {
+          this.submitParams = {
             meetingId: this.toAuthorize.id,
             terminalId: this.submitSuccessParams.terminalId,
             meetingTime: this.submitSuccessParams.meetingTime
           }
+          // 是否分监舍区生产区或者会见楼
           if (this.isSeparateByArea || this.isUseMeetingFloor) {
-             params.area = this.isSpecial ? this.areaTypes : this.areaTabs
+            this.submitParams.area = this.isSpecial ? this.areaTypes : this.areaTabs
           }
+          // 是否选择特殊时间段
           if (this.isSpecial) {
             if (this.checkInmeetings()) {
               this.showTips = '（通话时间与常规配置中的通话时间冲突，请重新选择！）'
               this.isShowTips = true
               return
             }
-             params.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
+            this.submitParams.meetingTime = `${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`
           }
-          http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](params).then(res => {
-            if (!res) return
-            this.closeAuthorize()
-            this.toAuthorize = {}
-            this.setIsRefreshMultistageExamineMessageBell(true)
-            this.submitSuccessParams = null
-            this.show.agree = false;
-            this.getDatas('handleSubmit')
-          })
+          // 非审批流 选择完时间则直接提交审核
+          if ( !this.toShow.processInstanceId ) {
+            this.submitMeetingAuthorize()
+          // 审批流
+          } else {
+            this.submitParams.processInstanceId = this.toShow.processInstanceId
+            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+            this.submitParams.nextCheckCode = this.nextCheckCode
+            this.show.subTask = !!this.submitParams.meetingTime
+          }
+          // 关闭选择时间弹窗
+          this.show.agree = false
+        }
+      },
+      // 1. 非审批流 正常审核
+      // 2. 审批流 最后一级审核人员提交审核
+      async submitMeetingAuthorize() {
+        // true 选择自定义特殊时间段  false 选择指定时间段
+        let res =  http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](this.submitParams)
+        if (res) {
+          this.closeAuthorize()
+          this.toAuthorize = {}
+          this.setIsRefreshMultistageExamineMessageBell(true)
+          this.getDatas('handleSubmit')
         }
       },
       onWithdraw(arg) {
