@@ -268,7 +268,7 @@ const actions = {
     try {
       let res = await getCaptcha()
 
-      res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
+      if (res) res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
 
       commit('setCaptchaConfigs', res)
 
