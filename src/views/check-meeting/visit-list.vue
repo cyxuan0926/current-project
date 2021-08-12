@@ -213,8 +213,20 @@
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
 
-      <span slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer">
         <div v-if="!show.agree && !show.disagree">
+          <!-- 审批流 -->
+          <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
+            <span style="padding-right: 12px;">选择流程节点:</span>
+              <el-select v-model="nextAuth" placeholder="请选择流程节点">
+              <el-option
+                v-for="item in selectProcessOption"
+                :key="item.taskCode"
+                :label="item.taskName"
+                :value="item.taskCode">
+              </el-option>
+            </el-select>
+          </label>
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
@@ -267,7 +279,7 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
-      </span>
+      </div>
     </el-dialog>
     
     <el-dialog
@@ -757,6 +769,8 @@
           }
         },
         show: {
+          subTask: false,
+          process: false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -788,7 +802,7 @@
         family: {},
         sortObj: {},
         submitSuccessParams: {},
-        nextAuth:'',
+        nextAuth: '',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -1343,20 +1357,35 @@
         }
       },
 
-      // 表格操作-审核
+      // 授权
       async handleAuthorization(e) {
-        const { id } = e
+        const { id, processInstanceId } = e
         await this.onGetDetailAndInitData(id)
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
+        this.submitParams = null
+        this.show.subTask = false
+        this.show.process = false
+        this.nextAuth = ''
         await this.onRejectshow(false,false)
         this.isform = false
         this.$message.closeAll()
         // 获取实地探监的配置信息
         await this.getVisitTimeConfig(id)
+        // 如果配置了审批流
+        if( e.processInstanceId ) {
+          this.getSubtask(e)
+        }
+        this.toShow = Object.assign({}, e, this.toAuthorize) // JSON.parse(JSON.stringify(this.toAuthorize))
         this.show.authorize = true
-        this.toShow = JSON.parse(JSON.stringify(this.toAuthorize))
+      },
+      // 获取下一级节点
+      async getSubtask({ processInstanceId }){
+        let _data = await http.getSubtaskPhone({ processInstanceId })
+        this.selectProcessOption = _data || []
+        this.show.process = !!this.selectProcessOption.length
+        this.nextAuth = !this.selectProcessOption.length ? '' : this.selectProcessOption[0].taskCode
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1451,7 +1480,6 @@
       onAgreeAuthorize() {
         this.show.agree = true
         this.buttonLoading = false
-        this.submitSuccessParams = null
         this.clearCellText()
       },
       //覆盖mixin 授权对话框的不同意操作
@@ -1526,6 +1554,7 @@
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
             this.submitParams.status = 'PASSED'
             this.submitParams.nextAuth = this.nextAuth
+            this.show.subTask = !!this.submitParams.meetingTime
             this.show.agree = false
             this.submitMeetingAuthorize()
         }
@@ -1574,8 +1603,6 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
-        this.submitParams=null
-        this.nextAuth=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false

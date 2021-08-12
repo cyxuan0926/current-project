@@ -895,6 +895,7 @@
         },
         show: {
           subTask: false,
+          process: false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -1722,7 +1723,7 @@
         if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
           this.areaOptions = this.areaOptions.filter(item => item.value != '2')
         }
-        // 审批流数据
+        // 如果配置了审批流
         if( e.processInstanceId ) {
           this.getSubtask(e)
         }
