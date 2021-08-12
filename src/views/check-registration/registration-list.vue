@@ -1299,14 +1299,9 @@ export default {
 
       this.buttonLoading = true
 
-      let params = { id: this.toAuthorize.id, ...inputs }
+      let params = { id: this.toAuthorize.id, status: e, ...inputs }
 
-      if (!this.isProcessInstance) params = {
-        ...params,
-        status: e
-      }
-
-      else params = {
+      if (this.isProcessInstance) params = {
         ...params,
         processInstanceId
       }
@@ -1339,8 +1334,6 @@ export default {
               ...params,
               checkState: 4
             }
-
-            params.status = e
           }
 
           this.$refs.withdrawForm.validate(valid => {

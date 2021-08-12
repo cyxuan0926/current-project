@@ -125,8 +125,8 @@ export default {
     ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor'])
   },
 
-  created() {
-    this.getCaptcha()
+  async created() {
+    await this.getCaptcha()
 
     if (localStorage.getItem('accountInfo')) {
       if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
