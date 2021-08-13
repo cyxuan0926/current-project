@@ -294,7 +294,7 @@
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
 
-      <div v-if="!show.agree && !show.disagree" class="button-box">
+      <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
         <!-- 审批流 -->
         <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
           <span style="padding-right: 12px;">选择流程节点:</span>
@@ -308,7 +308,7 @@
           </el-select>
         </label>
         <!-- show.multistageExamine 审批流：一直是false  非审批流：根据是否有二级审批   -->
-        <repetition-el-buttons v-if="!show.multistageExamine"  style="margin-top:20px" :buttonItems="authorizeButtons" />
+        <repetition-el-buttons v-if="!show.multistageExamine"  style="float: right" :buttonItems="authorizeButtons" />
       </div>
 
       <!-- 非审批流-二级审批 -->
@@ -2167,6 +2167,9 @@
     padding-left: 120px;
     color: red;
     font-size: 12px;
+  }
+  .process-select-block {
+    padding: 20px 0 10px;
   }
 </style>
 

@@ -214,7 +214,7 @@
       </template>
 
       <div slot="footer" class="dialog-footer">
-        <div v-if="!show.agree && !show.disagree">
+        <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
           <!-- 审批流 -->
           <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
             <span style="padding-right: 12px;">选择流程节点:</span>
@@ -227,7 +227,7 @@
               </el-option>
             </el-select>
           </label>
-          <repetition-el-buttons :buttonItems="authorizeButtons" />
+          <repetition-el-buttons style="float: right" :buttonItems="authorizeButtons" />
         </div>
 
         <div v-if="show.disagree" class="button-box logMgCls">
@@ -1791,6 +1791,9 @@
   }
   .meetingQueue-sp {
     color: #409EFF;
+  }
+  .process-select-block {
+    padding: 20px 0 10px;
   }
 </style>
 
