@@ -226,11 +226,11 @@
           </el-table>
         </section>
       </div>
-      <span v-if="show.agree" slot="footer" class="dialog-footer">
+      <div v-if="show.agree" slot="footer" class="dialog-footer" style="margin-top: 20px; text-align: right;">
           <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
           <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
-        </span>
+        </div>
     </el-dialog>
     <el-dialog
       :visible.sync="show.authorize"
@@ -294,7 +294,8 @@
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
 
-      <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
+      <div slot="footer" class="dialog-footer">
+        <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
         <!-- 审批流 -->
         <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
           <span style="padding-right: 12px;">选择流程节点:</span>
@@ -327,7 +328,7 @@
         v-if="show.disagree"
         class="button-box logMgCls">
         <div style="margin-bottom: 10px;">请选择驳回原因</div>
-      <div>
+          <div>
             <el-select v-model="remarks" :multiple="true" :multiple-limit='5'  collapse-tags @change="refuseFormChange" style="width:70%;margin-right:10px">
             <el-option
             class="select_edit"
@@ -369,6 +370,7 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
+      </div>
     </el-dialog>
     <el-dialog
       :visible.sync="show.withdraw"
@@ -1988,10 +1990,16 @@
             this.submitMeetingAuthorize()
           // 审批流
           } else {
-            this.submitParams.processInstanceId = this.toShow.processInstanceId
-            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
-            this.submitParams.nextCheckCode = this.nextCheckCode
-            this.show.subTask = !!this.submitParams.meetingTime
+            // 如果有下一级审核
+            if (this.nextCheckCode) {
+              this.submitParams.processInstanceId = this.toShow.processInstanceId
+              this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+              this.submitParams.nextCheckCode = this.nextCheckCode
+              this.show.subTask = !!this.submitParams.meetingTime
+            // 如果没有下一级审核 则直接提交
+            }else {
+              this.submitMeetingAuthorize()
+            }
           }
           // 关闭选择时间弹窗
           this.show.agree = false

@@ -352,7 +352,7 @@ export default {
       }
       // 有流程审批的情况
       if (this.toShow && this.toShow.processInstanceId) {
-        items[0].text = `${ this.show && this.show.subTask ? '提交审核' : '同意' }`
+        items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
       }
 
       return items
