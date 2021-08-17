@@ -2007,7 +2007,7 @@
       // 2. 审批流 最后一级审核人员提交审核
       async submitMeetingAuthorize() {
         // true 选择自定义特殊时间段  false 选择指定时间段
-        let res =  http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](this.submitParams)
+        let res = await http[ this.isSpecial ? 'meetingSelectOtherAuthorize' : 'meetingSelectAuthorize' ](this.submitParams)
         if (res) {
           this.closeAuthorize()
           this.toAuthorize = {}
