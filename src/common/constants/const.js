@@ -228,3 +228,4 @@ export const $likeIdCard = {
   asteriskProp: 'asterisk_idCard'
 }
 
+
