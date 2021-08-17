@@ -1990,14 +1990,12 @@
             this.submitMeetingAuthorize()
           // 审批流
           } else {
-            // 如果有下一级审核
-            if (this.nextCheckCode) {
-              this.submitParams.processInstanceId = this.toShow.processInstanceId
-              this.submitParams.isChoiceTime = this.toShow.isChoiceTime
-              this.submitParams.nextCheckCode = this.nextCheckCode
-              this.show.subTask = !!this.submitParams.meetingTime
+            this.submitParams.processInstanceId = this.toShow.processInstanceId
+            this.submitParams.isChoiceTime = this.toShow.isChoiceTime
+            this.submitParams.nextCheckCode = this.nextCheckCode
+            this.show.subTask = !!this.submitParams.meetingTime
             // 如果没有下一级审核 则直接提交
-            }else {
+            if (!this.nextCheckCode) {
               this.submitMeetingAuthorize()
             }
           }
