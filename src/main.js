@@ -7,7 +7,6 @@ import filters from './filters'
 import components from '@/components'
 import urls from '@/service/urls'
 import fullscreen from 'vue-fullscreen'
-import dragDialog from '@/components/modules/dialog'
 // 原来的icons丢失
 import '@/assets/fonts/iconfont.css'
 // 项目新增的icon
@@ -63,9 +62,6 @@ Object.keys(components).forEach((key) => {
   let name = key.replace(/(\w)/, (v) => v.toUpperCase())
   Vue.component(`m${ name }`, components[key])
 })
-
-// 使el-dialog弹出框可拖动 需放在ElementUI注册和自定义组件注册之后执行
-Vue.use(dragDialog)
 
 window.router = router
 /* eslint-disable no-new */
