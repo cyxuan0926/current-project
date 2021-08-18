@@ -30,13 +30,15 @@ import prisonBase from './components/prison-base'
 
 import prisonConfig from './components/prison-config'
 
-import prisonChargeConfig from './components/prison-charge-config'
+import prisonPhoneChargeConfig from './components/prison-charge-config'
+import prisonFamilyChargeConfig from './components/prison-family-charge-config'
 
 export default {
   components: {
     prisonBase,
     prisonConfig,
-    prisonChargeConfig
+    prisonPhoneChargeConfig,
+    prisonFamilyChargeConfig
   },
 
   data() {
@@ -52,8 +54,12 @@ export default {
           key: 'prisonConfig'
         },
         {
-          label: '收费配置',
-          key: 'prisonChargeConfig'
+          label: '可视电话收费配置',
+          key: 'prisonPhoneChargeConfig'
+        },
+        {
+          label: '亲情电话收费配置',
+          key: 'prisonFamilyChargeConfig'
         }
       ]
     }

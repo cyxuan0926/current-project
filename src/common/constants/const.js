@@ -228,3 +228,12 @@ export const $likeIdCard = {
   asteriskProp: 'asterisk_idCard'
 }
 
+export const terminalUsersBasicAuths = [
+  'terminal.meeting',
+  'terminal.family-phone',
+  'terminal.family-message',
+  'terminal.realtime-monitor',
+  'terminal.surveillance-video',
+  'terminal-videoconference',
+  'terminal.terminal-to-termianl'
+]
