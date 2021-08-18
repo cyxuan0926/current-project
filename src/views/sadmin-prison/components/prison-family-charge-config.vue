@@ -34,7 +34,7 @@
           width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input type="number" v-model="scope.row.duration" size="mini" :placeholder="scope.row.duration" />
+              <el-input-number controls-position="right" :min="0" :max="600" @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" :placeholder="scope.row.duration" />
             </span>
             <span v-else>{{ scope.row.duration }}</span>
           </template>
@@ -44,7 +44,7 @@
           label="通话次数(次/月)">
            <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input type="number" v-model="scope.row.number" size="mini" :placeholder="scope.row.number" />
+             <el-input-number controls-position="right" :min="0" :max="600" @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini" :placeholder="scope.row.number" />
             </span>
             <span v-else>{{ scope.row.number }}</span>
           </template>
@@ -70,11 +70,6 @@
       border
       style="width: 100%; margin-top: 20px;">
       <el-table-column
-        prop="id"
-        label="id"
-        width="100">
-      </el-table-column>
-      <el-table-column
         prop="destinationName"
         label="目的地"
         width="160">
@@ -82,19 +77,10 @@
       <el-table-column
         prop="startMinutesVoice"
         label="基础通话时长(分钟)">
-        <template slot-scope="scope">
-            <span v-if="scope.row.isEditConfigShow">
-              <el-input v-model="scope.row.startMinutesVoice" size="mini" :placeholder="scope.row.startMinutesVoice" />
-            </span>
-            <span v-else>{{ scope.row.startMinutesVoice }}</span>
-        </template>
       </el-table-column>
       <el-table-column
         prop="startMoneyVoice"
         label="基础通话收费(元)">
-        <template slot-scope="scope">
-            <span>{{ scope.row.startMoneyVoice }}</span>
-        </template>
       </el-table-column>
       <el-table-column
         prop="fixedMoneyVoice"
@@ -132,13 +118,12 @@
       title="收费配置信息"
       width="800px"
       class="authorize-dialog">
-      <div class="flex-dialog">
-      <div  style="margin-top:20px">
+      <div  style="margin:20px 0">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
                 <el-form-item label="目的地" required prop="destinationCode">
                   <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                        <el-select v-model="ruleForm.destinationCode" @change="selectaddr" placeholder="请选择地区">
+                        <el-select v-model="ruleForm.destinationCode"  :disabled="show.disabled" @change="selectaddr" placeholder="请选择地区">
                           <template v-for="code of phoneCodes">
                                                     <el-option
                                                         :key="code.english_name"
@@ -161,7 +146,7 @@
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                        <el-input placeholder="分钟" type="number" v-model="ruleForm.startMinutesVoice">
+                        <el-input placeholder="分钟" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMinutesVoice,2)" v-model="ruleForm.startMinutesVoice">
                             <template slot="append">/分钟</template>
                           </el-input>
                       </el-form-item>
@@ -169,7 +154,7 @@
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                     <el-col :span="10">     
                           <el-form-item   prop="startMoneyVoice">
-                          <el-input placeholder="费用" type="number" v-model="ruleForm.startMoneyVoice">
+                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMoneyVoice,2)"  v-model="ruleForm.startMoneyVoice">
                               <template slot="append">/元</template>
                             </el-input>
                           </el-form-item>
@@ -178,7 +163,7 @@
                 <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="delivery2">
                   <el-col :span="10">     
                           <el-form-item   prop="fixedMoneyVoice">
-                          <el-input placeholder="费用" type="number" v-model="ruleForm.fixedMoneyVoice">
+                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.fixedMoneyVoice,2)"  v-model="ruleForm.fixedMoneyVoice">
                               <template slot="append">/元</template>
                             </el-input>
                           </el-form-item>
@@ -189,7 +174,7 @@
                 <el-form-item label="可视电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVisual">
-                        <el-input placeholder="分钟" type="number" v-model="ruleForm.startMinutesVisual">
+                        <el-input placeholder="分钟" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMinutesVisual,2)"  v-model="ruleForm.startMinutesVisual">
                             <template slot="append">/分钟</template>
                           </el-input>
                       </el-form-item>
@@ -197,27 +182,26 @@
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                       <el-col :span="10">     
                           <el-form-item   prop="startMoneyVisual">
-                          <el-input placeholder="费用" type="number" v-model="ruleForm.startMoneyVisual ">
+                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMoneyVisual,2)"  v-model="ruleForm.startMoneyVisual">
                               <template slot="append">/元</template>
                             </el-input>
                           </el-form-item>
                       </el-col>
                 </el-form-item>
-                          <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="fixedMoneyVisual">
+                          <el-form-item  label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
                           <el-col :span="10"> 
-                            <el-input placeholder="费用" type="number" v-model="ruleForm.fixedMoneyVisual">
+                            <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(fixedMoneyVisual,2)"  v-model="ruleForm.fixedMoneyVisual">
                               <template slot="append">/元</template>
                             </el-input>
                             </el-col>
                           </el-form-item>
                   <p class="fontMargin"><span>宽管级总费用{{broadCostVisual }}元</span><span>普管级总费用{{commonCostVisual }}元</span><span>考察级总费用{{inspectCostVisual }}元</span><span>严管级总费用{{strictCostVisual }}元</span><span>特殊级总费用{{otherCostVisual }}元</span></p>
               </el-form>
-              </div>
-    </div>
-     <span slot="footer" class="dialog-footer">
-    <el-button type="primary"  @click="submitForm('ruleForm')">新 增</el-button>
-    <el-button @click="cloneAdd()">取 消</el-button>
-  </span>
+      </div>
+     <span slot="footer" class="dialog-footer" style="padding-bottom:10px;float:right" >
+      <el-button type="primary"  @click="submitForm('ruleForm')">提 交</el-button>
+      <el-button @click="cloneAdd()">取 消</el-button>
+    </span>
  </el-dialog>
       </div>
   </div>
@@ -253,6 +237,7 @@ export default {
         }
       return {
         phoneCodes : phoneCodesJson,
+        addrname:"",
         tableData: {
           configurationsFamilyPhoneList:[],
           familyPhoneChargeTemplateList:[]
@@ -424,19 +409,34 @@ export default {
       }
     },
     methods: {
+      changeTimes(row,type){
+        if(type==2){
+          if(row<0){
+            row=0
+            }
+        }else{
+          if(row.duration<0){
+            row.duration=0
+            }
+        }
+      },
       selectaddr(a){
         this.ruleForm.destinationName=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
+        this.addrname=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
         console.log(this.ruleForm.destinationName)
       },
       cloneAdd(){
         this.resetForm("ruleForm")
         this.ruleForm=this.oldForm
         this.show.addConfig=false
+        this.show.disabled=false
       },
        submitForm(formName) {
         this.$refs[formName].validate( async (valid) => {
           if (valid) {
             if(this.ruleForm.id){
+              this.ruleForm.destinationName=this.addrname
+              console.log( this.ruleForm)
               let res = await http.editTemplate({...this.ruleForm})
                 if(res){
                   this.getdata()
@@ -458,7 +458,7 @@ export default {
         this.$refs[formName].resetFields();
       },
       objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-        if (columnIndex === 10 || columnIndex ===0) {
+        if (columnIndex === 9) {
           if (rowIndex % 2 === 0) {
             return {
               rowspan: 2,
@@ -477,6 +477,7 @@ export default {
       if(type==2){
          this.show.addConfig=true
          this.ruleForm=row
+         this.show.disabled=true
       }else{
         this.show.addConfigButton=true
         // 我这边是表格数据都是前端处理，需要把旧值存起来，用户点击修改之后修改了原来的数据，但是又点了取消的情况，还需要获取到原来的值
@@ -527,7 +528,7 @@ export default {
        res.data.familyPhoneChargeTemplateList.forEach((item,key)=>{
            let obj={}
              obj.id=item.id
-              obj.destinationName=item.destinationName+"(可视电话)"
+             obj.destinationName=item.destinationName+"(可视电话)"
              item.destinationName=item.destinationName+"(语音电话)"
              obj.destinationCode=item.destinationCode
              obj.startMinutesVoice=item.startMinutesVisual
@@ -554,9 +555,14 @@ export default {
 #body .el-table.border th, #body .el-table td{
  border-bottom: 1px solid #e6e6e6
 }
+
+input::webkit-textfield-decoration-container {
+    height:100%!important;
+}
 </style>
 
 <style lang="scss" scoped>
+
 .fontMargin{
   font-size: 12px;
   margin-left: 50px;

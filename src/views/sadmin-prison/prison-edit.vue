@@ -29,7 +29,6 @@
 import prisonBase from './components/prison-base'
 
 import prisonConfig from './components/prison-config'
-
 import prisonPhoneChargeConfig from './components/prison-charge-config'
 import prisonFamilyChargeConfig from './components/prison-family-charge-config'
 
@@ -42,8 +41,10 @@ export default {
   },
 
   data() {
+    let _isAdmin = this.$store.state.global.user.role == '0'
     return {
       activeName: '',
+      isAdmin:_isAdmin,
       tabMapOptions: [
         {
           label: '基本信息',
@@ -56,10 +57,6 @@ export default {
         {
           label: '可视电话收费配置',
           key: 'prisonPhoneChargeConfig'
-        },
-        {
-          label: '亲情电话收费配置',
-          key: 'prisonFamilyChargeConfig'
         }
       ]
     }
@@ -68,6 +65,9 @@ export default {
     '$route': 'render'
   },
   mounted() {
+       if( this.isAdmin ) {
+          this.tabMapOptions.push({label: '亲情电话收费配置',key: 'prisonFamilyChargeConfig'})
+         }
     this.render()
   },
   methods: {

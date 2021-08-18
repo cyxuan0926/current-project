@@ -1,7 +1,7 @@
 <template>
   <el-row class="row-container" :gutter="0">
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
+      v-if="!hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
       :params="filter"
     />
