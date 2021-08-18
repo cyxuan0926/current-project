@@ -32,8 +32,7 @@ const config = {
     publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
     jailApiHost: 'http://qa-ywgk.yuwugongkai.com/ywgk', // 河源监狱-qa
     // apiHost: 'http://8.129.14.169:8098', // 河源监狱
-    qaUpdate: 'http://120.78.190.101:8081/ywgk',
-    apiHost: 'http://120.78.190.101:8081',
+    apiHost: 'http://qa-ywgk.yuwugongkai.com',
     financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
     monitoringApiHost: 'http://qa-monitoring-api.yuwugongkai.com',
     apiPath: '/ywgk',
