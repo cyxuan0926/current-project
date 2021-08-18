@@ -147,7 +147,9 @@ export default {
     }
 
     return {
-      terminal: {},
+      terminal: {
+        businessType: 0
+      },
 
       rule: {
         terminalNumber: [{
