@@ -21,6 +21,9 @@ export const getBpmnUrl = url => getUrl(url, 'bpmnApiHost')
 export const getYgUrl = url => getUrl(url, 'ygApiHost')
 // 河源监狱
 export const getHyUrl = url => getUrl(url, 'jailApiHost')
+
+// 新需求
+export const getUpdate = url => getUrl(url, 'qaUpdate')
 // 终端设备升级表
 export const getTerminalUrl = url => getUrl(url, 'monitoringApiHost')
 

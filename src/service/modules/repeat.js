@@ -179,7 +179,6 @@ export default {
       params,
       url
     } = inputs
-
     return service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data)
   }
 }
