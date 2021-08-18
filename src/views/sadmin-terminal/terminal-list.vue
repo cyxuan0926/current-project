@@ -1,6 +1,10 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-search :items="searchItems" @search="onSearch">
+    <m-search
+      :items="searchItems"
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    >
       <template #append>
         <el-button
           size="small"
