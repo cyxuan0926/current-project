@@ -60,7 +60,7 @@ export default function(Vue) {
                     on: this.$listeners
                 }, [
                     ...(this.$slots.default || []),
-                    ...(this.$slots.footer || [])
+                    ...(this.$slots.footer || []).map(f => h('span', { staticClass: 'dialog-footer', slot: 'footer' }, f.children))
                 ])
             ])
         }

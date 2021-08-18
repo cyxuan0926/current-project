@@ -226,7 +226,7 @@
           </el-table>
         </section>
       </div>
-      <div v-if="show.agree" slot="footer" class="dialog-footer" style="margin-top: 20px; text-align: right;">
+      <div v-if="show.agree" slot="footer" class="dialog-footer">
           <el-button type="primary" @click="handleShowOther" v-if="submitSuccessParams && userDefinedDuration">{{ `选择${ !isSpecial ? '其他' : '常规' }时间段` }}</el-button>
           <el-button type="primary" @click="submitSuccess" :disabled="!submitSuccessParams">确 定</el-button>
           <el-button @click="show.agree=false">取 消</el-button>
