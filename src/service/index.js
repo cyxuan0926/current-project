@@ -11,7 +11,6 @@ import terminalApis from './modules/monitoring/terminal-api'
 import yangguangApis from './modules/prison-yangguang/yangguang-api'
 import heyuanApis from './modules/prison-heyuan'
 import ywgkApis from './modules/ywgk-internet'
-import qaUpdate from './modules/qa-update/update-api'
 
 export default Object.assign(
   admin,
@@ -26,6 +25,5 @@ export default Object.assign(
   yangguangApis,
   heyuanApis,
   ywgkApis,
-  terminalApis,
-  qaUpdate
+  terminalApis
 )
