@@ -21,6 +21,7 @@
           v-if="item.append"
           slot="append">{{ item.append }}</template>
       </el-input>
+
       <el-input
         v-if="(item.type === 'input' || item.type === 'textarea') && item.isTrim"
         :ref="prop + item.type"
@@ -36,6 +37,7 @@
           v-if="item.append"
           slot="append">{{ item.append }}</template>
       </el-input>
+
       <el-select
         v-if="item.type === 'select'"
         :ref="prop + item.type"
@@ -54,6 +56,7 @@
           :value="item.props && item.props.value ? option[item.props.value] : option.value"
         />
       </el-select>
+
       <el-radio-group
         :ref="prop + item.type"
         v-if="item.type === 'radio'"
@@ -68,6 +71,7 @@
           {{ item.props.value ? option[item.props.value] : option.value }}
         </el-radio>
       </el-radio-group>
+
       <el-date-picker
         v-if="item.type === 'date'"
         :ref="prop + item.type"
@@ -76,7 +80,9 @@
         :disabled="item.disabled"
         value-format="yyyy-MM-dd"
         :picker-options="item.pickerOptions"
-        :placeholder="'请选择' + item.label"/>
+        :placeholder="'请选择' + item.label"
+      />
+
       <el-switch
         v-if="item.type === 'switch'"
         :ref="prop"
@@ -87,34 +93,47 @@
         :inactive-value="0"
         :disabled="item.disabled"
         @change="(item.func && item.func($event, prop, item)) || resetFieldValue($event, prop, item) "
-        :width="60" />
+        :width="60"
+      />
+
       <el-checkbox-group
         v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
         :ref="prop + item.type"
         v-model="fields[prop]"
+        v-bind="item.attrs || {}"
+        v-on="item.events || {}"
       >
         <el-checkbox
           v-for="box in item.group"
           :key="box.value"
-          :label="box.value">{{ box.label }}</el-checkbox>
+          :label="box.value"
+        >{{ box.label }}</el-checkbox>
       </el-checkbox-group>
+
       <span
         v-if="item.type === 'switch' && item.tips && fields[prop]"
         style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
+
       <m-upload-img
         v-if="item.type === 'uploadImg'"
         v-model="fields[prop]"
-        @success="onSuccess" />
+        @success="onSuccess"
+      />
+
       <m-upload-audio
         v-if="item.type === 'uploadAudio'"
         ref="audio"
         v-model="fields[prop]"
-        @success="onSuccess" />
+        @success="onSuccess"
+      />
+
       <m-upload-video
         v-if="item.type === 'uploadVideo'"
         ref="video"
         v-model="fields[prop]"
-        @success="onSuccess" />
+        @success="onSuccess"
+      />
+
       <!-- <m-quill-editor
         v-if="item.type === 'editor'"
         :contents="fields[prop]"
@@ -123,7 +142,8 @@
         v-if="item.type === 'jaileditor'"
         :value="fields[prop]"
         tools="allTools"
-        @editorChange="tinymceChange" />
+        @editorChange="tinymceChange"
+      />
     </slot>
   </el-form-item>
 </template>

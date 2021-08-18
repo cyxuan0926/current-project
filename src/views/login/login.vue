@@ -81,7 +81,7 @@ export default {
       isRememberAccount: false,
       formData: {
         username: '',
-        password: '',
+        password: ''
         // code: ''
       },
 

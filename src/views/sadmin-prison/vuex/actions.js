@@ -18,9 +18,25 @@ export default {
   getPrisonDetail: ({ commit }, params) => {
     return http.getPrisonDetail(params).then(res => {
       if (!res) return
+
       const regs = res.jails || {}
+
+      if (!regs.familyPhoneScope) regs.familyPhoneScope = [2]
+
+      else {
+        const _temp = {
+          0: [2],
+          1: [1],
+          2: [1, 2]
+        }
+
+        regs.familyPhoneScope = _temp[(+regs.familyPhoneScope)]
+      }
+
       commit('getPrisonDetail', regs)
+
       commit('getBranchStatus', res.branchStatus)
+
       return true
     })
   },
