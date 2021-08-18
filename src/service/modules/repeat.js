@@ -180,5 +180,10 @@ export default {
       url
     } = inputs
     return service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data)
+  },
+
+  // 根据监狱/监区/权限 查询终端用户
+  getTerminalUsersByPrisonConfigId: params => {
+    return service.get('/jails/getUserListByPrisonConfigId', params)
   }
 }

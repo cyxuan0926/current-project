@@ -311,6 +311,30 @@ let switches = {
     { label: '星期五', value: 'Friday' },
     { label: '星期六', value: 'Saturday' },
     { label: '星期日', value: 'Sunday' }
+  ],
+
+  isEnabledOptions: [
+    {
+      label: '停用',
+      value: 0
+    },
+
+    {
+      label: '启用',
+      value: 1
+    }
+  ],
+
+  terminalBusinessTypeOptions: [
+    {
+      label: '可视电话',
+      value: 0
+    },
+
+    {
+      label: '其他业务',
+      value: 1
+    }
   ]
 }
 

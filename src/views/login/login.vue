@@ -29,7 +29,7 @@
             />
           </el-form-item>
 
-          <el-form-item class="el-form__code" prop="code">
+          <!-- <el-form-item class="el-form__code" prop="code">
             <el-input
               clearable
               v-model.trim="formData.code"
@@ -37,7 +37,7 @@
             </el-input>
 
             <img :src="captchaConfigs.imageCode" @click.self.prevent="getCaptcha" />
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item class="keep-password">
             <el-checkbox v-model="isRememberAccount">
@@ -81,8 +81,8 @@ export default {
       isRememberAccount: false,
       formData: {
         username: '',
-        password: '',
-        code: ''
+        password: ''
+        // code: ''
       },
 
       rules: {
@@ -91,19 +91,19 @@ export default {
           message: '请输入密码',
           trigger: 'blur'
         }],
+
         username: [{
           required: true,
           message: '请输入用户名',
           trigger: 'blur'
-        }],
-
-        code: [
-          {
-            required: true,
-            message: '请输入验证码',
-            trigger: 'blur'
-          }
-        ]
+        }]
+        // code: [
+        //   {
+        //     required: true,
+        //     message: '请输入验证码',
+        //     trigger: 'blur'
+        //   }
+        // ]
       },
 
       year: _thisYear
@@ -115,8 +115,8 @@ export default {
       accountInfo: state => state.accountInfo,
       menus: state => state. menus,
       publicUserInfo: state => state.publicUserInfo,
-      authorities: state => state.authorities,
-      captchaConfigs: state => state.captchaConfigs
+      authorities: state => state.authorities
+      // captchaConfigs: state => state.captchaConfigs
     }),
     ...mapState({
       user: state => state.global.user
@@ -126,8 +126,7 @@ export default {
   },
 
   async created() {
-    await this.getCaptcha()
-
+    // await this.getCaptcha()
     if (localStorage.getItem('accountInfo')) {
       if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
 
@@ -143,7 +142,7 @@ export default {
     ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
-    ...mapActions('account', ['login', 'getCaptcha']),
+    ...mapActions('account', ['login']), // 'getCaptcha'
 
     handlePasswordTips(title) {
       return this.$confirm(
@@ -165,21 +164,20 @@ export default {
         if (!valid) return
 
         try {
-          const { key } = this.captchaConfigs
-
+          // const { key } = this.captchaConfigs
           const {
             username,
-            password,
-            code
+            password
+            // code
           } = this.formData
 
           this.loading = true
 
           const res = await this.login({
             username,
-            password,
-            code,
-            codeKey: key
+            password
+            // code,
+            // codeKey: key
           })
 
           if( res.code === 'user.PasswordNotMatched' ) {

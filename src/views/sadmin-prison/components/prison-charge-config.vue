@@ -1009,6 +1009,8 @@ export default {
       this.tableCols = tableCols
 
       this.tableData = tableData
+
+      if (this.radio) this.onHideChargeConfigsItems()
     },
 
     // 收费方式选项切换

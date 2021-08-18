@@ -188,6 +188,8 @@ import cloneDeep from 'lodash/cloneDeep'
 import { Message } from 'element-ui'
 
 import { faceRecognitionValues } from '@/common/constants/const'
+
+import isEqual from 'lodash/isEqual'
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -521,6 +523,30 @@ export default {
           append: '秒',
 
           value: '60'
+        },
+
+        familyPhoneScope: {
+          label: '亲情电话通话范围',
+
+          type: 'checkboxgroup',
+
+          group: [
+            {
+              label: '认证家属',
+              value: 1
+            },
+
+            {
+              label: '亲情电话导入家属',
+              value: 2
+            }
+          ],
+
+          attrs: {
+            min: 1
+          },
+
+          value: []
         }
       }, formButton),
       values: {},
@@ -600,85 +626,11 @@ export default {
     //   } else return 48
     // }
   },
-  activated() {
-    if (this.permission === 'edit') {
-      this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
-        if (!res) return
-        const {
-          abnormalCallduration,
-          abnormalCalldurationSwitch,
-          afrIOSSetValue,
-          afrAndroidSetValue
-        } = cloneDeep(this.prison)
 
-        this.values = cloneDeep(this.prison)
-
-        this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
-
-        this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
-
-        this.$set(this.slotFormData, 'afrIOSSetValue', +afrIOSSetValue)
-
-        this.$set(this.slotFormData, 'afrAndroidSetValue', +afrAndroidSetValue)
-
-        // if(this.values.prisonAreaList && this.values.prisonAreaList.length) {
-        //   const prisonAreaList = (this.values.prisonAreaList.map(val => val.name)).join(',')
-        //   this.$set(this.values, 'prisonAreaList', prisonAreaList)
-        // }
-        // if (this.$store.getters.role !== roles.INFORMATION_ADMIN) {
-        //   if (!this.branchStatus) {
-        //     this.$set(this.formItems['branchPrison'], 'disabled', true)
-        //     this.$set(this.formItems['prisonAreaList'], 'disabled', true)
-        //   }
-        // }
-        // delete this.formItems.dissMissConfigs
-        // // 判断是什么收费情况 来初始化
-        // if (this.values.chargeType === 2) {
-        //   const { startMinutes = 5, startMoney = 15, fixedMoney = 2.2 } = this.values
-        //   this.$set(this.formItems, 'dissMissConfigs', ['onceMoney'])
-        //   this.$set(this.formItems['chargeType']['configs'][1], 'itemConfigs', { basicConfigs: 0, fixedMoney: 0, totalCost: 0 })
-        //   this.$set(this.formData, 'startMinutes', startMinutes)
-        //   this.$set(this.formData, 'startMoney', startMoney)
-        //   this.$set(this.formData, 'fixedMoney', fixedMoney)
-        // }
-        // if (this.values.chargeType === 1) {
-        //   const { onceMoney = 0 } = this.values
-        //   this.$set(this.formItems, 'dissMissConfigs', ['basicConfigs', 'fixedMoney', 'totalCost'])
-        //   this.$set(this.formItems['chargeType']['configs'][0], 'itemConfigs', { onceMoney })
-        // }
-        // if (this.values.diplomatistCharge === 1) {
-        //   const { diplomatistStartMinutes = 5, diplomatistStartMoney = 12, diplomatistFixedMoney = 1.8 } = this.values
-        //   this.$set(this.formItems['diplomatistCharge']['configs'][1], 'itemConfigs', { diplomaticConsulOfficialBasicConfigs: 0, diplomaticConsulOfficialFixedMoney: 0 })
-        //   this.$set(this.formData, 'diplomatistStartMinutes', diplomatistStartMinutes)
-        //   this.$set(this.formData, 'diplomatistStartMoney', diplomatistStartMoney)
-        //   this.$set(this.formData, 'diplomatistFixedMoney', diplomatistFixedMoney)
-        // }
-        // if (!this.values.diplomatistCharge) {
-        //   this.formItems['dissMissConfigs'] = [
-        //     ...this.formItems['dissMissConfigs'],
-        //     'diplomaticConsulOfficialBasicConfigs',
-        //     'diplomaticConsulOfficialFixedMoney'
-        //   ]
-        //   this.$set(this.formItems['diplomatistCharge']['configs'][0], 'itemConfigs', {})
-        // }
-        // if (this.$store.getters.role !== roles.INFORMATION_ADMIN ) {
-        //   (async() => {
-        //     const res = await this.getBranchStatus(this.prison)
-        //     Message.closeAll()
-        //     Message({
-        //       showClose: true,
-        //       message: '查询监狱基本信息成功',
-        //       duration: 2000,
-        //       type: 'success'
-        //     })
-        //     if (!res) {
-        //       this.$set(this.formItems['branchPrison'], 'disabled', true)
-        //       this.$set(this.formItems['prisonAreaList'], 'disabled', true)
-        //     }
-        // }
-      })
-    }
+  async activated() {
+    if (this.permission === 'edit') await this.onInitPrisonConfigDetails()
   },
+
   mounted() {
     if (this.$route.meta.role === '3') this.formItems.branchPrison.tips = ''
     if (this.permission === 'edit') return
@@ -686,6 +638,7 @@ export default {
       this.$router.push({ query: Object.assign({}, { tag: 'prisonBase' }) })
     }
   },
+
   methods: {
     ...mapActions([
       'getPrisonDetail',
@@ -711,6 +664,14 @@ export default {
         //   e.prisonAreaList = uniquePrisonAreas.map(val => val && ({name: helper.trimString(val)}))
         // }
         // else e.prisonAreaList = []
+
+        const { familyPhoneScope } = e
+
+        if (isEqual([1], familyPhoneScope)) e.familyPhoneScope = 0
+
+        if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 1
+
+        if (isEqual([1, 2], familyPhoneScope) || isEqual([2, 1], familyPhoneScope)) e.familyPhoneScope = 2
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
@@ -771,15 +732,18 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-
-       this.updatePrison(params).then(res => {
+        this.updatePrison(params).then(async res => {
           if (!res) return
-          this.getPrisonDetail({ id: this.$route.params.id })
+
+          await this.onInitPrisonConfigDetails()
+
+          this.$forceUpdate()
           // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
           // else this.$router.push('/jails/detail')
         })
       }
     },
+
     onBack() {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
 
@@ -939,6 +903,29 @@ export default {
           })
         }
       }
+    },
+
+    async onInitPrisonConfigDetails() {
+      const res = await this.getPrisonDetail({ id: this.$route.params.id })
+
+      if (!res) return
+
+      const {
+        abnormalCallduration,
+        abnormalCalldurationSwitch,
+        afrIOSSetValue,
+        afrAndroidSetValue
+      } = cloneDeep(this.prison)
+
+      this.values = cloneDeep(this.prison)
+
+      this.$set(this.slotFormData, 'abnormalCalldurationSwitch', abnormalCalldurationSwitch)
+
+      this.$set(this.slotFormData, 'abnormalCallduration', abnormalCallduration)
+
+      this.$set(this.slotFormData, 'afrIOSSetValue', +afrIOSSetValue)
+
+      this.$set(this.slotFormData, 'afrAndroidSetValue', +afrAndroidSetValue)
     }
   }
 }
