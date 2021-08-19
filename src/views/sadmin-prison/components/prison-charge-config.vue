@@ -550,35 +550,35 @@ export default {
         },
 
         // 亲情电话收费设置
-        familyPhoneCharge: {
-          type: 'switch',
+        // familyPhoneCharge: {
+        //   type: 'switch',
 
-          label: '亲情电话收费设置',
+        //   label: '亲情电话收费设置',
 
-          disabled,
+        //   disabled,
 
-          func: this.onDiplomatistOrFamilyPhoneChargeChange,
+        //   func: this.onDiplomatistOrFamilyPhoneChargeChange,
 
-          value: 0,
+        //   value: 0,
 
-          relativeProps: ['diplomatistCharge'],
+        //   relativeProps: ['diplomatistCharge'],
 
-          configs: [
-            // 关闭亲情电话收费设置
-            {
-              value: 0,
+        //   configs: [
+        //     // 关闭亲情电话收费设置
+        //     {
+        //       value: 0,
 
-              itemConfigs: cloneDeep(familyPhoneChargeObject[0]['itemConfigs'])
-            },
+        //       itemConfigs: cloneDeep(familyPhoneChargeObject[0]['itemConfigs'])
+        //     },
 
-            // 打开亲情电话收费设置
-            {
-              value: 1,
+        //     // 打开亲情电话收费设置
+        //     {
+        //       value: 1,
 
-              itemConfigs: cloneDeep(familyPhoneChargeObject[1]['itemConfigs'])
-            }
-          ]
-        },
+        //       itemConfigs: cloneDeep(familyPhoneChargeObject[1]['itemConfigs'])
+        //     }
+        //   ]
+        // },
 
         familyPhoneDuration: {
           type: 'input',

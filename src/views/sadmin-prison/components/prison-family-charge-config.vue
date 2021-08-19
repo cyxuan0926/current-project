@@ -156,7 +156,7 @@
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                       <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVoice,2)" v-model="ruleForm.startMinutesVoice">
+                       <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVoice',2)" v-model="ruleForm.startMinutesVoice">
                             <template slot="append">/分钟</template>
                        </el-input>
                       </el-form-item>
@@ -164,7 +164,7 @@
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                     <el-col :span="10">     
                           <el-form-item   prop="startMoneyVoice">
-                        <el-input  type="number"  step="0.01"  placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVoice,2)"  v-model="ruleForm.startMoneyVoice">
+                        <el-input  type="number"  step="0.01"  placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVoice',2)"  v-model="ruleForm.startMoneyVoice">
                               <template slot="append">/元</template>
                         </el-input>
                           </el-form-item>
@@ -173,7 +173,7 @@
                 <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="delivery2">
                   <el-col :span="10">     
                           <el-form-item   prop="fixedMoneyVoice">
-                         <el-input  type="number" step="0.01" placeholder="费用" :min="0"  @blur="changeTimes(ruleForm.fixedMoneyVoice,2)"  v-model="ruleForm.fixedMoneyVoice">
+                         <el-input  type="number" step="0.01" placeholder="费用" :min="0"  @blur="changeTimes('fixedMoneyVoice',2)"  v-model="ruleForm.fixedMoneyVoice">
                               <template slot="append">/元</template>
                           </el-input>
                           </el-form-item>
@@ -184,7 +184,7 @@
                 <el-form-item label="可视电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVisual">
-                       <el-input  type="number"   placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVisual,2)"  v-model="ruleForm.startMinutesVisual">
+                       <el-input  type="number"   placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVisual',2)"  v-model="ruleForm.startMinutesVisual">
                             <template slot="append">/分钟</template>
                        </el-input>
                       </el-form-item>
@@ -192,15 +192,15 @@
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                       <el-col :span="10">     
                           <el-form-item   prop="startMoneyVisual">
-                         <el-input  type="number"  step="0.01" placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVisual,2)"  v-model="ruleForm.startMoneyVisual">
+                         <el-input  type="number"  step="0.01" placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVisual',2)"  v-model="ruleForm.startMoneyVisual">
                               <template slot="append">/元</template>
                          </el-input>
                           </el-form-item>
                       </el-col>
                 </el-form-item>
-                          <el-form-item  label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
+                          <el-form-item label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
                           <el-col :span="10"> 
-                           <el-input  type="number"  min="0"  @blur="changeTimes(ruleForm.fixedMoneyVisual,2)"  v-model="ruleForm.fixedMoneyVisual">
+                           <el-input  type="number"  min="0"  @change="changeTimes('fixedMoneyVisual',2)"  v-model="ruleForm.fixedMoneyVisual">
                               <template slot="append">/元</template>
                            </el-input>
                             </el-col>
@@ -446,13 +446,13 @@ export default {
     methods: {
       changeTimes(row,type){
         if(type==2){
-          if(row<0){
-            row=0
-            // this.$nextTick(() => {
-            //    row=0
-            //   })
-               console.log(this.ruleForm.fixedMoneyVisual)
-            }
+          if(parseFloat(this.ruleForm[row])<0){
+           this.$set(this.ruleForm,row,0)
+          }
+          if(parseFloat(this.ruleForm[row])>parseFloat(this.maxDuration)){
+           this.$set(this.ruleForm,row,this.maxDuration)
+           this.$message.error('填写通话时长分钟数不能大于管教级别分钟数！！');
+          }
         }else{
           if(row.duration<0){
             row.duration=0
