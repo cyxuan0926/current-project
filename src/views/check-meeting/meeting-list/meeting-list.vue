@@ -258,7 +258,7 @@
               <span class="family-nameDetail">{{toShow.prisonerName}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
-              <span class="family-name">申请探视时间</span>
+              <span class="family-name">申请通话时间</span>
               <span class="family-nameDetail">{{ toShow.meetingTime || toShow.applicationDate }}</span>
             </p>
           </div>
