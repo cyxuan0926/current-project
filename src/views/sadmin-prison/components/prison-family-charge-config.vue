@@ -24,7 +24,7 @@
               严管级别
             </span>
             <span v-if="scope.row.type==5">
-              特殊级别
+              其它级别
             </span>
           </template>
         </el-table-column>
@@ -34,7 +34,7 @@
           width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input-number controls-position="right" :min="0" :max="600" @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" :placeholder="scope.row.duration" />
+              <el-input-number controls-position="right"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" />
             </span>
             <span v-else>{{ scope.row.duration }}</span>
           </template>
@@ -44,7 +44,7 @@
           label="通话次数(次/月)">
            <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-             <el-input-number controls-position="right" :min="0" :max="600" @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini" :placeholder="scope.row.number" />
+             <el-input-number controls-position="right"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini"  />
             </span>
             <span v-else>{{ scope.row.number }}</span>
           </template>
@@ -62,7 +62,7 @@
 
       </div>
       <div style="margin:50px 0"> 
-        <div class="el-form-item__content">亲情电话收费配置 <el-button style="margin-left:20px" v-if="show.addConfigButton==false"  type="primary"   size="mini" @click="show.addConfig=true">新增亲情电话收费配置</el-button>
+        <div class="el-form-item__content">亲情电话收费配置 <el-button style="margin-left:20px" v-if="show.addConfigButton==false"  type="primary"   size="mini" @click="addConfigMessage()">新增亲情电话收费配置</el-button>
          </div>
        <el-table
       :data="tableData.familyPhoneChargeTemplateList"
@@ -104,7 +104,11 @@
         </el-table-column>
         <el-table-column
         prop="otherCostVoice"
-        label="特殊级总费用(元)">
+        label="其它级总费用(元)">
+        </el-table-column>
+         <el-table-column
+        prop="startDay"
+        label="生效时间">
         </el-table-column>
        <el-table-column label="操作" width="100" fixed="right">
             <template slot-scope="scope">
@@ -123,7 +127,7 @@
                 <el-form-item label="目的地" required prop="destinationCode">
                   <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                        <el-select v-model="ruleForm.destinationCode"  :disabled="show.disabled" @change="selectaddr" placeholder="请选择地区">
+                      <el-select v-if="!show.disabled" v-model="ruleForm.destinationCode" filterable  @change="selectaddr" placeholder="请选择地区">
                           <template v-for="code of phoneCodes">
                                                     <el-option
                                                         :key="code.english_name"
@@ -132,12 +136,14 @@
                                                     />
                                                 </template>
                       </el-select>
+                       <el-input  readonly v-if="show.disabled" v-model="ruleForm.destinationName">
+                       </el-input>
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col> 
                     <el-col :span="10"> 
                       <el-form-item label="生效时间" required prop="startDay" label-width="80px">
-                      <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.startDay" style="width: 100%;"></el-date-picker>
+                      <el-date-picker type="date"  placeholder="选择日期" v-model="ruleForm.startDay" style="width: 100%;"></el-date-picker>
                   </el-form-item>
                     </el-col>
                 </el-form-item>
@@ -146,26 +152,26 @@
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                        <el-input placeholder="分钟" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMinutesVoice,2)" v-model="ruleForm.startMinutesVoice">
+                       <el-input-number controls-position="right" placeholder="分钟"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVoice,2)" v-model="ruleForm.startMinutesVoice">
                             <template slot="append">/分钟</template>
-                          </el-input>
+                       </el-input-number>
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                     <el-col :span="10">     
                           <el-form-item   prop="startMoneyVoice">
-                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMoneyVoice,2)"  v-model="ruleForm.startMoneyVoice">
+                          <el-input-number controls-position="right" :precision="2" placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVoice,2)"  v-model="ruleForm.startMoneyVoice">
                               <template slot="append">/元</template>
-                            </el-input>
+                          </el-input-number>
                           </el-form-item>
                     </el-col> 
                 </el-form-item>
                 <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="delivery2">
                   <el-col :span="10">     
                           <el-form-item   prop="fixedMoneyVoice">
-                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.fixedMoneyVoice,2)"  v-model="ruleForm.fixedMoneyVoice">
+                          <el-input-number controls-position="right" :precision="2"  placeholder="费用" :min="0"  @blur="changeTimes(ruleForm.fixedMoneyVoice,2)"  v-model="ruleForm.fixedMoneyVoice">
                               <template slot="append">/元</template>
-                            </el-input>
+                          </el-input-number>
                           </el-form-item>
                     </el-col>  
                   </el-form-item>
@@ -174,28 +180,28 @@
                 <el-form-item label="可视电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVisual">
-                        <el-input placeholder="分钟" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMinutesVisual,2)"  v-model="ruleForm.startMinutesVisual">
+                       <el-input-number controls-position="right"  placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVisual,2)"  v-model="ruleForm.startMinutesVisual">
                             <template slot="append">/分钟</template>
-                          </el-input>
+                       </el-input-number>
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                       <el-col :span="10">     
                           <el-form-item   prop="startMoneyVisual">
-                          <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(ruleForm.startMoneyVisual,2)"  v-model="ruleForm.startMoneyVisual">
+                         <el-input-number controls-position="right" :precision="2" placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVisual,2)"  v-model="ruleForm.startMoneyVisual">
                               <template slot="append">/元</template>
-                            </el-input>
+                         </el-input-number>
                           </el-form-item>
                       </el-col>
                 </el-form-item>
                           <el-form-item  label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
                           <el-col :span="10"> 
-                            <el-input placeholder="费用" type="number" :min="0" :max="600" @blur="changeTimes(fixedMoneyVisual,2)"  v-model="ruleForm.fixedMoneyVisual">
+                           <el-input-number controls-position="right" :precision="2" placeholder="费用" :min="0"  @blur="changeTimes(fixedMoneyVisual,2)"  v-model="ruleForm.fixedMoneyVisual">
                               <template slot="append">/元</template>
-                            </el-input>
+                           </el-input-number>
                             </el-col>
                           </el-form-item>
-                  <p class="fontMargin"><span>宽管级总费用{{broadCostVisual }}元</span><span>普管级总费用{{commonCostVisual }}元</span><span>考察级总费用{{inspectCostVisual }}元</span><span>严管级总费用{{strictCostVisual }}元</span><span>特殊级总费用{{otherCostVisual }}元</span></p>
+                  <p class="fontMargin"><span>宽管级总费用{{broadCostVisual }}元</span><span>普管级总费用{{commonCostVisual }}元</span><span>考察级总费用{{inspectCostVisual }}元</span><span>严管级总费用{{strictCostVisual }}元</span><span>其它级总费用{{otherCostVisual }}元</span></p>
               </el-form>
       </div>
      <span slot="footer" class="dialog-footer" style="padding-bottom:10px;float:right" >
@@ -210,14 +216,16 @@
 <script>
 
 import http from '@/service'
+import Moment from 'moment'
 import phoneCodesJson from '@/common/constants/index.json'
 
 export default {
    data() {
+     const   oneTimeDay = Moment().add(1, "day").format("YYYY-MM-DD")
      const   ruleForm = {
           destinationName: '',
           destinationCode : '',
-          startDay: '',
+          startDay:"",
           startMinutesVoice : 0,
           fixedMoneyVoice  : 0,
           commonCostVoice  : 0,
@@ -237,6 +245,8 @@ export default {
         }
       return {
         phoneCodes : phoneCodesJson,
+        maxDuration:0,
+        oneTimeDay,
         addrname:"",
         tableData: {
           configurationsFamilyPhoneList:[],
@@ -247,7 +257,28 @@ export default {
           addConfigButton:false,
         },
         ruleForm,
-        oldForm: ruleForm,
+        newForm: {
+          destinationName: '',
+          destinationCode : '',
+          startDay:oneTimeDay,
+          startMinutesVoice : 0,
+          fixedMoneyVoice  : 0,
+          commonCostVoice  : 0,
+          broadCostVoice  : 0,
+          inspectCostVoice  : 0,
+          otherCostVoice  : 0,
+          startMoneyVoice  : 0,
+          inspectCostVoice  : 0,
+          broadCostVisual  : 0,
+          commonCostVisual   :0,
+          fixedMoneyVisual   : 0,
+          inspectCostVisual   : 0,
+          otherCostVisual   : 0,
+          startMinutesVisual   : 0,
+          startMoneyVisual   : 0,
+          strictCostVisual    : 0,
+        },
+        oldForm:{},
         rules: {
           destinationCode: [
             { required: true, message: '请选择目的地', trigger: 'change' }
@@ -409,7 +440,7 @@ export default {
       }
     },
     methods: {
-      changeTimes(row,type){
+      changeTimes(row,type,int){
         if(type==2){
           if(row<0){
             row=0
@@ -423,20 +454,23 @@ export default {
       selectaddr(a){
         this.ruleForm.destinationName=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
         this.addrname=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
-        console.log(this.ruleForm.destinationName)
+      },
+      addConfigMessage(){
+       this.show.addConfig=true
+       this.ruleForm=  Object.assign({}, this.newForm);
       },
       cloneAdd(){
         this.resetForm("ruleForm")
-        this.ruleForm=this.oldForm
         this.show.addConfig=false
         this.show.disabled=false
+        this.ruleForm=Object.assign({}, this.oldForm)
       },
        submitForm(formName) {
         this.$refs[formName].validate( async (valid) => {
           if (valid) {
+            this.ruleForm.startDay=  Moment(this.ruleForm.startDay).format("YYYY-MM-DD")
             if(this.ruleForm.id){
               this.ruleForm.destinationName=this.addrname
-              console.log( this.ruleForm)
               let res = await http.editTemplate({...this.ruleForm})
                 if(res){
                   this.getdata()
@@ -449,7 +483,6 @@ export default {
             }
             this.cloneAdd()
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -458,7 +491,7 @@ export default {
         this.$refs[formName].resetFields();
       },
       objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-        if (columnIndex === 9) {
+        if (columnIndex === 9 ||columnIndex === 10) {
           if (rowIndex % 2 === 0) {
             return {
               rowspan: 2,
@@ -476,15 +509,15 @@ export default {
     editProperty(row, index,type) {
       if(type==2){
          this.show.addConfig=true
-         this.ruleForm=row
          this.show.disabled=true
+         this.ruleForm=Object.assign({}, row)
+         this.oldForm= Object.assign({}, row)
       }else{
         this.show.addConfigButton=true
         // 我这边是表格数据都是前端处理，需要把旧值存起来，用户点击修改之后修改了原来的数据，但是又点了取消的情况，还需要获取到原来的值
         localStorage.setItem(`oldPropertValue${index}`, JSON.stringify(row))
         // isEditPropertyShow为ture展示输入框
         this.$set(this.tableData.configurationsFamilyPhoneList[index], 'isEditPropertyShow', true)
-
       }
     },
     // 保存修改参数配置
@@ -524,10 +557,12 @@ export default {
     },
     async getdata(){
        let res=  await  http.getConfiguractionAndtemplate({jailId: this.$route.params.id})
+       this.maxDuration=Math.min.apply(Math, res.data.configurationsFamilyPhoneList.map(function(o) {return o.duration}))
        let _res = []
        res.data.familyPhoneChargeTemplateList.forEach((item,key)=>{
            let obj={}
              obj.id=item.id
+             this.addrname=item.destinationName
              obj.destinationName=item.destinationName+"(可视电话)"
              item.destinationName=item.destinationName+"(语音电话)"
              obj.destinationCode=item.destinationCode
