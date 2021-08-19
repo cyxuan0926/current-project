@@ -13,6 +13,7 @@ export default function(Vue) {
             return {
                 dragOptions: {
                     group: 'dialog',
+                    handle: '.el-dialog__header',
                     // 拖拽开始
                     onStart({ item, originalEvent }) {
                         let dialog = item.querySelector('.el-dialog')
@@ -56,6 +57,7 @@ export default function(Vue) {
                 }
             }, [
                 h('my-el-dialog', {
+                    staticClass: 'gk-draggable-dialog',
                     props: this.$attrs,
                     on: this.$listeners
                 }, [
