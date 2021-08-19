@@ -209,10 +209,10 @@ export default {
     ])
   },
 
-  mounted() {
-    this.getPrisonAllWithBranchPrison().then(() => {
-      this.gettingPrison = false
-    })
+  async mounted() {
+    await this.getPrisonAllWithBranchPrison()
+
+    this.gettingPrison = false
   },
 
   methods: {

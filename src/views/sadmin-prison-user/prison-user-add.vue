@@ -85,9 +85,13 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import validator from '@/utils'
+import {
+  mapState,
+  mapActions,
+  mapGetters
+} from 'vuex'
 
+import validator from '@/utils'
 export default {
   data() {
     return {
@@ -97,7 +101,7 @@ export default {
         username: [{ validator: validator.containerLetter }],
         roleIds: [{ required: true, message: '请选择角色' }]
       },
-      hasPrisonArea: true,
+
       prisonUser: { prisonConfigIds: [], roleIds: [] }
       // prisonConfigIdsProps: {
       //   label: 'name',
@@ -117,6 +121,8 @@ export default {
       'allChildPrisonConfigs'
     ]),
 
+    ...mapGetters(['isSuperAdmin', 'hasPrisonArea']),
+
     prisonConfigIdsProps() {
       return ({
         multiple: true,
@@ -135,7 +141,7 @@ export default {
           } = node
 
           if (!isLeaf) {
-            if (root) await this.getChildPrisonConfigs()
+            if (root && this.hasPrisonArea) await this.getChildPrisonConfigs()
 
             else await this.getChildPrisonConfigs({ parentId: value })
 
@@ -159,8 +165,10 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addPrisonUser', 'getChildPrisonConfigs', 'getAllChildPrisonConfigs']),
+    ...mapActions(['addPrisonUser', 'getChildPrisonConfigs']),
+
     ...mapActions('account', ['estimateUsername', 'getRolesList']),
+
     onSubmit() {
       this.$refs.prisonUser.validate(async valid => {
         if (valid) {
