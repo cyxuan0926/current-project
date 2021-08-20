@@ -1265,14 +1265,21 @@ export default {
       if (processInstanceId) await this.getProcessTask(processInstanceId)
 
       this.show.agree = false
+
       this.show.disagree = false
+
       this.show.callback = false
+
       this.show.multistageExamine = false
-      this.dialogTitle = '授权'
-      this.toAuthorize = await this.onGetRegistrationDetail(e)
+
       await this.onRejectshow(false,false)
+
       this.isform = false
      // this.remarks = this.content[0]
+
+      this.show.authorize = true
+
+      this.dialogTitle = '授权'
     },
 
     submitReject() {
