@@ -1884,7 +1884,7 @@ export default {
           if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonAreaId))[0].name
 
           // 其他角色就是本身
-          else prisonArea = (JSON.parse(localStorage.getItem('user')).prisonConfigList.filter(value => value.prisonConfigId === val.prisonAreaId))[0].prisonConfigName
+          else prisonArea = (this.jailPrisonAreas.filter(value => value.id === val.prisonAreaId))[0].name
 
           temp = { jailId, prisonArea }
         }
