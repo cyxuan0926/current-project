@@ -40,7 +40,7 @@
          :cols="tableCols">
           <template #familyName="{ item, scope }">
                     <template v-if="!scope.row.isReg">
-                      <span>{{ item.familyName }}</span>
+                      <span>{{ item.familyName | asteriskDisplay('asterisk_name') }}</span>
                     </template>
                     <template v-if="scope.row.isReg">
                       <el-button
