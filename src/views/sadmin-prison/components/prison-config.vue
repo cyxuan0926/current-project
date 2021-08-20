@@ -667,9 +667,9 @@ export default {
 
         const { familyPhoneScope } = e
 
-        if (isEqual([1], familyPhoneScope)) e.familyPhoneScope = 0
+        if (isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1
 
-        if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 1
+        if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0
 
         if (isEqual([1, 2], familyPhoneScope) || isEqual([2, 1], familyPhoneScope)) e.familyPhoneScope = 2
 
@@ -809,7 +809,7 @@ export default {
 
         closeOnPressEscape: false,
 
-        callback: (action) => {
+        callback: action => {
           if (action === 'cancel') this.$refs['prison-config_form'].setFieldValue(value, prop, this.formItems['branchPrison'])
         }
       })
