@@ -38,6 +38,8 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import { toCurrencyString } from '@/utils/helper'
 import roles from '@/common/constants/roles'
 
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 const chartTypes = {
   // 折线图
   LINE: 'line',
@@ -264,19 +266,19 @@ export default {
             prop: 'familyName',
             label: '家属姓名',
             minWidth: '70px',
-            showOverflowTooltip: true
+            ...$likeName
           },
           {
             prop: 'prisonerName',
             label: '服刑人员姓名',
             minWidth: '86px',
-            showOverflowTooltip: true
+            ...$likeName
           },
           {
             prop: 'prisonerNumber',
             label: '服刑人员编号',
             minWidth: '100px',
-            showOverflowTooltip: true
+            ...$likePrisonerNumber
           },
           { prop: 'meetingTime', label: '通话日期', minWidth: '110px' },
           { prop: 'duration', label: '通话时长', minWidth: '70px' },

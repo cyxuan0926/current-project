@@ -138,15 +138,13 @@
           <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
         </template>
 
-        <template #families="{ row }">
+        <template #families="{ item }">
           <el-button
             type="text"
             size="small"
-            v-for="family in row.families"
-            :key="family.id"
             style="margin-left: 0px; margin-right: 8px;"
-            @click="showFamilyDetail(family)"
-          >{{ family.familyName }}</el-button>
+            @click="showFamilyDetail(item)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
         <template #notifyId="{ row }">
@@ -277,20 +275,22 @@
           />
         </el-form-item>
       </el-form>
-
-      <template slot="footer">
-        <el-button
+       <template >
+        <el-row :gutter="0">
+         <el-button
           class="button-add"
           size="mini"
           type="danger"
           @click="onTimeClose"
         >取消</el-button>
 
-        <el-button
+          <el-button
           class="button-add"
           size="mini"
+          type="primary" 
           @click="onTime">
         确定</el-button>
+        </el-row>
       </template>
     </el-dialog>
 
@@ -443,6 +443,7 @@
             class="button-add"
             :loading="submitting"
             size="mini"
+             type="primary" 
             @click="handleSureSign"
           >确定</el-button>
         </el-row>
@@ -503,7 +504,12 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
 
-import { provinceJailLevelConfigsParamsName, prisonerInsideWhiteLists } from '@/common/constants/const'
+import {
+  provinceJailLevelConfigsParamsName,
+  prisonerInsideWhiteLists,
+  $likeName,
+  $likePrisonerNumber
+} from '@/common/constants/const'
 
 import moment from 'moment'
 
@@ -512,6 +518,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import { Message } from 'element-ui'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
+import { batchDownloadPublicImageURL } from '@/utils/helper'
 export default {
   mixins: [prisonFilterCreator],
 
@@ -679,7 +686,8 @@ export default {
       'notification',
       'notificationFamilies',
       'prisonConfigs',
-      'prisonConfigsMaxLevel'
+      'prisonConfigsMaxLevel',
+      'jailPrisonAreas'
     ]),
 
     ...mapGetters(['isSuperAdmin', 'hasPrisonArea']),
@@ -1245,7 +1253,13 @@ export default {
     tableCols() {
       const familiesCol = {
         label: '对应家属',
-        slotName: 'families'
+        prop: 'families',
+        ...$likeName,
+        desensitizationColsConfigs: {
+          keyWord: 'id',
+          prop: 'familyName',
+          desensitizationColSlotName: 'families'
+        }
       }
 
       const hasAllPrisonQueryAuthCols = [
@@ -1296,12 +1310,12 @@ export default {
           label: '罪犯姓名',
           prop: 'name',
           minWidth: 75,
-          showOverflowTooltip: true
+          ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true
+          ...$likePrisonerNumber
         },
         {
           label: '性别',
@@ -1313,12 +1327,6 @@ export default {
         ...hasAllPrisonQueryAuthCols,
 
         ...commonCols,
-
-        {
-          label: '罪犯虚拟编号',
-          prop: 'ywtCriminalNumber',
-          showOverflowTooltip: true
-        },
 
         {
           label: '监区',
@@ -1369,18 +1377,7 @@ export default {
       ]
 
       if (this.isPrisonerTabVal) {
-        if (this.isSuperAdmin) prisonerCols.splice(5, 1)
-
-        else {
-          const { tenantCode } = this.publicUserInfo
-
-          prisonerCols.splice(1, 2)
-
-          if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
-            prisonerCols.splice(4, 1)
-            prisonerCols.splice(6, 1)
-          }
-        }
+        if (!this.isSuperAdmin) prisonerCols.splice(1, 2)
 
         return prisonerCols
       } else {
@@ -1542,7 +1539,8 @@ export default {
       'changePrisonJailOrBatch',
       'acceptPrisoners',
       'abortChangePrisoners',
-      'getTransferOutPrisonersPagedData'
+      'getTransferOutPrisonersPagedData',
+      'getJailPrisonAreas'
     ]),
 
     async getDatas() {
@@ -1623,8 +1621,34 @@ export default {
       })
     },
 
-    showFamilyDetail(family) {
-      this.family = family
+    async showFamilyDetail(family) {
+      const {
+        familyIdCardBack,
+        familyIdCardFront,
+        familyRelationalProofUrl,
+        familyRelationalProofUrl2,
+        familyRelationalProofUrl3,
+        familyRelationalProofUrl4
+      } = family
+
+      const urls = {
+        familyIdCardBack,
+        familyIdCardFront,
+        familyRelationalProofUrl,
+        familyRelationalProofUrl2,
+        familyRelationalProofUrl3,
+        familyRelationalProofUrl4
+      }
+
+      const _key = `familyId_${ family.id }`
+
+      const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+      this.family = {
+        ...family,
+        ...URLS
+      }
+
       this.dialogTableVisible = true
     },
 
@@ -2159,9 +2183,11 @@ export default {
         this.$set(element[prop], type, options)
       } else {
         // 其他角色
-        const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
+        const options = { value: 'id', label: 'name' }
 
-        this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
+        await this.getJailPrisonAreas({ url: '/prison_config/getAuthChildPrisonConfigs' })
+
+        this.$set(element[prop], 'options', (this.jailPrisonAreas || []))
 
         this.$set(element[prop], type, options)
       }

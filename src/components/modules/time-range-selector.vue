@@ -5,7 +5,7 @@
     :class="[{ 'm-disabled-range': next.length > 0 || disabled }]"
     @click="onClick">
     <el-time-picker
-      v-model="startTime"
+      v-model.trim="startTime"
       ref="start"
       class="startClass"
       :clearable="false"
@@ -20,7 +20,7 @@
       @change="onStartChange" />
     <span>至</span>
     <el-time-picker
-      v-model="endTime"
+      v-model.trim="endTime"
       ref="end"
       v-bind="configs['next'] && configs['next']['attrs']"
       class="endClass"

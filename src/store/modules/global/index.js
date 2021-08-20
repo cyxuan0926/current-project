@@ -34,7 +34,10 @@ let state = {
 
   processInstanceIdSubtaskOptions: [],
 
-  currentProcessTaskInformation: {}
+  currentProcessTaskInformation: {},
+
+  // 家属/罪犯 type 为protected privated的文件
+  cacheImageURLS: {}
 }
 
 export default {

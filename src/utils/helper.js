@@ -6,6 +6,12 @@ import { parseInt } from 'lodash'
 
 import store from '@/store'
 
+import pickBy from 'lodash/pickBy'
+
+import identity from 'lodash/identity'
+
+import { Message } from 'element-ui'
+
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -63,12 +69,12 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
 }
 
 // 简单克隆
-export const deepCopy = (obj) => {
+export const deepCopy = obj => {
   return JSON.parse(JSON.stringify(obj))
 }
 
 // 角色名称转化角色信息对象(理想的情况下)
-export const transitionRolesList = (val) => {
+export const transitionRolesList = val => {
   let { name, id } = val, result = { value: id }, data = {},
     isOwn = store.state['role'].some(role => {
       if (role.label === name) {
@@ -92,7 +98,7 @@ export const transitionRolesList = (val) => {
  * arr 角色数组 roles 角色列表对应的角色id
  * controlArg
  */
-export const transitionRoleId = (val) => {
+export const transitionRoleId = val => {
   if (!val.length) return { role: '-1' } // 租户管理员
   let arr = [], result = {}, roles = [
       { roleList: [0], role: '0' },
@@ -400,7 +406,7 @@ export function convertToChinaNum(num) {
     return result
 }
 
-export const getMonthTime = (m) => {
+export const getMonthTime = m => {
   let res = [],
       _cur = Moment()
   res.push(_cur.format('YYYY-MM-DD'))
@@ -411,4 +417,40 @@ export const getMonthTime = (m) => {
       res.unshift(_cur.subtract(Math.abs(m), 'M').format('YYYY-MM-DD'))
   }
   return res
+}
+
+/**
+ *
+ * @param {*} URLS 需要请求的图片的路径
+ * @param {*} _key 需要全局缓存的图片对象
+ */
+export const batchDownloadPublicImageURL = async(URLS = {}, _key = '') => {
+  if (store.state.global.cacheImageURLS.hasOwnProperty(_key)) return store.state.global.cacheImageURLS[_key]
+
+  else {
+    const pickByURLS = pickBy(URLS, identity)
+
+    const promises = Object.values(pickByURLS).reduce((accumulator, url) => {
+      accumulator.push(store.dispatch('files/downloadPublicServiceFile', { url }))
+
+      return accumulator
+    }, [])
+    const _URLS = await Promise.all(promises)
+
+    Message.closeAll()
+
+    const _publicServiceImageUrl = Object.entries(pickByURLS).reduce((accumulator, [key], index) => {
+      accumulator = {
+        ...accumulator,
+        [key]: _URLS[index]
+      }
+
+      return accumulator
+    }, {})
+    const _temp = Object.assign({}, store.state.global.cacheImageURLS, { [_key]: _publicServiceImageUrl })
+
+    store.commit('setCacheImageURLS', _temp)
+
+    return _publicServiceImageUrl
+  }
 }

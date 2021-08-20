@@ -46,8 +46,11 @@ import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
 
+
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 const endDate = Moment().format('YYYY-MM-DD')
+
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -115,11 +118,13 @@ export default {
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '监区',

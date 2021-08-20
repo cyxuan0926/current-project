@@ -27,7 +27,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-import Moment from 'moment'
+import { $likePhone } from '@/common/constants/const'
+
 export default {
   data() {
     return {
@@ -42,7 +43,8 @@ export default {
       tableCols: [
         {
           label: '账号',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         },
         {
           label: 'app版本',

@@ -19,6 +19,7 @@
               :key="key"
               :prop="key"
               :rule="item.rule"
+              :miss='items.miss'
               :item="item"
               :fields="fields"
               :select-change-event="selectChangeEvent"
@@ -179,9 +180,9 @@ export default {
   },
 
   methods: {
-    onClearValidate() {
+    onClearValidate(props) {
       this.$nextTick(function() {
-        this.$refs.form.clearValidate()
+        this.$refs.form.clearValidate(props)
       })
     },
 

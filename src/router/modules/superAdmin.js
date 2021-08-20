@@ -364,7 +364,8 @@ superAdmin = [{
         breadcrumbName: '监狱终端管理',
         componentsToKeepAlive: ['TerminalList']
       },
-      component: 'sadmin-terminal/terminal-list'
+      component: 'sadmin-terminal/terminal-list',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true }
       // component: resolve => require(['@/views/sadmin-terminal/terminal-list'], resolve)
       // component: helper.loadView('sadmin-terminal/terminal-list')
     }, {

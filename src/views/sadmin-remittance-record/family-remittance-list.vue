@@ -15,15 +15,9 @@
         stripe
         :data="familyRemittanceRecords.contents"
         :cols="tableCols">
-        <template
-          slot="money"
-          slot-scope="scope">{{ scope.row.money | fixedNumber }}</template>
-        <template
-          slot="createdAt"
-          slot-scope="scope">{{ scope.row.createdAt | Date }}</template>
-        <template
-          slot="status"
-          slot-scope="scope">{{ scope.row.status | payStatus }}</template>
+        <template #money="{ row }">{{ row.money | fixedNumber }}</template>
+        <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+        <template #status="{ row }">{{ row.status | payStatus }}</template>
       </m-table-new>
     </el-col>
     <m-pagination
@@ -35,6 +29,9 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 export default {
   data() {
     return {
@@ -78,15 +75,18 @@ export default {
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName'
+          prop: 'prisonerName',
+          ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber'
+          prop: 'prisonerNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '汇款家属',
-          prop: 'familyName'
+          prop: 'familyName',
+          showOverflowTooltip: true
         },
         {
           label: '汇款金额(元)',

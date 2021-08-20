@@ -1,29 +1,25 @@
 <template>
   <el-row class="page-edit">
-    <el-col
-      :span="10"
-      :offset="7">
+    <el-col :span="10" :offset="7">
       <el-form
         :model="terminal"
         ref="terminal"
         :rules="rule"
         label-position="left"
-        label-width="100px">
-        <el-form-item
-          label="终端号"
-          prop="terminalNumber">
-          <el-input
-            v-model="terminal.terminalNumber"
-            placeholder="请填写终端号" />
+        label-width="115px"
+      >
+        <el-form-item label="终端号" prop="terminalNumber">
+          <el-input v-model="terminal.terminalNumber" placeholder="请填写终端号" />
         </el-form-item>
-        <el-form-item
-          label="终端别名"
-          prop="terminalName">
+
+        <el-form-item label="终端别名" prop="terminalName">
           <el-input
             v-model="terminal.terminalName"
             maxlength="10"
-            placeholder="请填写终端别名" />
+            placeholder="请填写终端别名"
+          />
         </el-form-item>
+
         <el-form-item label="终端类型" prop="terminalType">
           <el-select v-model="terminal.terminalType" placeholder="请选择终端类型">
             <el-option
@@ -34,30 +30,25 @@
             />
           </el-select>
         </el-form-item>
+
         <el-form-item label="终端唯一标识" prop="terminalSn">
           <el-input v-model="terminal.terminalSn" placeholder="请填写终端唯一标识" />
         </el-form-item>
-        <el-form-item
-          label="会议室号"
-          prop="roomNumber">
-          <el-input
-            v-model.number="terminal.roomNumber"
-            placeholder="请填写会议室号" />
-        </el-form-item>
-        <el-form-item
-          label="所属监狱"
-          prop="jailId">
+
+        <el-form-item label="所属监狱" prop="jailId">
           <el-select
             v-model="terminal.jailId"
             filterable
             :loading="gettingPrison"
             placeholder="请选择监狱"
-            @change="onPrisonChange">
+            @change="onPrisonChange"
+          >
             <el-option
               v-for="prison in prisonAllWithBranchPrison"
               :key="prison.id"
               :label="prison.title"
-              :value="prison.id"/>
+              :value="prison.id"
+            />
           </el-select>
         </el-form-item>
 
@@ -86,23 +77,31 @@
           </el-form-item>
         </template>
 
-        <el-form-item
-          label="主持人密码"
-          prop="hostPassword">
-          <el-input
-            v-model="terminal.hostPassword"
-            placeholder="请填写主持人密码" />
+        <el-form-item label="对应权限的用户名" prop="username">
+          <el-select v-model="terminal.username" placeholder="请选择对应权限的用户名">
+            <template v-for="user in terminalUserListsByPrisonConfigId">
+              <el-option
+                :key="user.prisonConfigId + user.username"
+                :label="user.username"
+                :value="user.username"
+              />
+            </template>
+          </el-select>
         </el-form-item>
-        <el-form-item
-          label="参会密码"
-          prop="mettingPassword">
-          <el-input
-            v-model="terminal.mettingPassword"
-            placeholder="请填写参会密码" />
+
+        <el-form-item label="所属业务" prop="businessType">
+          <el-select v-model="terminal.businessType" placeholder="请选择所属业务">
+            <template v-for="item of terminalBusinessTypeOptions">
+              <el-option
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </template>
+          </el-select>
         </el-form-item>
-        <el-form-item
-          label="狱警通话开关"
-          prop="meetingEnabled">
+
+        <el-form-item label="狱警通话开关" prop="meetingEnabled">
           <el-switch
             v-model="terminal.meetingEnabled"
             active-color="#13ce66"
@@ -113,16 +112,20 @@
           />
         </el-form-item>
       </el-form>
+
       <el-button
         class="submit"
         type="primary"
         size="small"
-        @click="onSubmit">新增</el-button>
+        @click="onSubmit"
+      >新增</el-button>
+
       <el-button
         class="submit"
         plain
         size="small"
-        @click="onGoBack">返回</el-button>
+        @click="onGoBack"
+      >返回</el-button>
     </el-col>
   </el-row>
 </template>
@@ -133,7 +136,6 @@ import { mapState, mapActions } from 'vuex'
 import validate from '@/utils'
 
 import prisonAreaLevel from '@/mixins/prison-area-level'
-
 export default {
   mixins: [prisonAreaLevel],
 
@@ -143,51 +145,52 @@ export default {
         callback(new Error('请选择监区'))
       } else callback()
     }
+
     return {
-      terminal: {},
+      terminal: {
+        businessType: 0
+      },
+
       rule: {
         terminalNumber: [{
           required: true,
           message: '请填写终端号',
           trigger: 'blur'
         }],
+
         jailId: [{
           required: true,
           message: '请选择监狱'
         }],
+
         areaId: [{ validator: checkAreaId }],
+
         branchId: [{
           required: true,
           message: '请选择分监区'
         }],
+
         buildingId: [{
           required: true,
           message: '请选择楼栋'
         }],
+
         layerId: [{
           required: true,
           message: '请选择楼层'
         }],
-        // hostPassword: [{
-        //   required: true,
-        //   message: '请填写主持人密码',
-        //   trigger: 'blur'
-        // }],
-        // mettingPassword: [{
-        //   required: true,
-        //   message: '请填写参会密码',
-        //   trigger: 'blur'
-        // }],
-        // roomNumber: [{
-        //   validator: validate.isPositiveIntegers,
-        //   required: true,
-        //   ownMessage: '请填写会议室号',
-        //   trigger: 'blur'
-        // }],
+
         terminalType: [
           {
             required: true,
             message: '请选择终端类型'
+          }
+        ],
+
+        businessType: [
+          {
+            required: true,
+            message: '请选择所属业务'
           }
         ]
       },
@@ -199,13 +202,17 @@ export default {
   },
 
   computed: {
-    ...mapState(['prisonAllWithBranchPrison', 'jailPrisonAreas'])
+    ...mapState([
+      'prisonAllWithBranchPrison',
+      'jailPrisonAreas',
+      'terminalBusinessTypeOptions'
+    ])
   },
 
-  mounted() {
-    this.getPrisonAllWithBranchPrison().then(() => {
-      this.gettingPrison = false
-    })
+  async mounted() {
+    await this.getPrisonAllWithBranchPrison()
+
+    this.gettingPrison = false
   },
 
   methods: {
@@ -227,7 +234,8 @@ export default {
             hostPassword,
             jailId,
             mettingPassword,
-            meetingEnabled
+            meetingEnabled,
+            username
           } = this.terminal
 
           let params = {
@@ -239,7 +247,8 @@ export default {
             hostPassword,
             jailId,
             mettingPassword,
-            meetingEnabled
+            meetingEnabled,
+            username
           }
 
           const prisonConfigId = this.prisonConfigIdKey ? this.terminal[this.localPrisonAreaLevelObject[this.prisonConfigIdKey]['prop']] : null
@@ -257,22 +266,18 @@ export default {
       })
     },
 
-    onPrisonChange(e) {
+    async onPrisonChange(jailId) {
       this.prisonConfigIdKey = ''
 
       this.clearSubPrisonArea('prisonArea', this.terminal)
 
       this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', true)
 
-      this.getJailPrisonAreas({ url: '/prison_config/getTerminalsPrisonConfigs', params: { jailId: e } }).then(res => {
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
+      const response = await Promise.all([this.getJailPrisonAreas({ url: '/prison_config/getTerminalsPrisonConfigs', params: { jailId } }), this.onGetPrisonAreaUsersData({ jailId })])
 
-        if (!res) return
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'gettingData', false)
 
-        this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
-
-        // if (this.jailPrisonAreas.length === 0) this.$message.warning('请先导入罪犯数据')
-      })
+      this.$set(this.localPrisonAreaLevelObject['prisonArea'], 'options', this.jailPrisonAreas)
     },
 
     onGoBack() {

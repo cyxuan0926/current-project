@@ -109,6 +109,21 @@ export default {
     return service.postObj('/jails/setMeetingChargeTemplate', params)
   },
 
+  // 监狱配置 - 亲情电话收费配置
+  getConfiguractionAndtemplate: params => {
+    return service.get('/familyPhoneCharge/getConfigurationsAndTemplate', params)
+  },
+  // 监狱配置 - 亲情电话收费配置 - 修改收费配置模板
+  editTemplate: params => {
+    return service.postObj('/familyPhoneCharge/editTemplate', params)
+  },
+  // 监狱配置 - 亲情电话收费配置 - 新增收费配置模板
+  addTemplate: params => {
+    return service.postObj('/familyPhoneCharge/addTemplate', params)
+  },
+  // 监狱配置 - 亲情电话收费配置 - 修改参数配置
+  editConfigurations: params => service.postObj('/familyPhoneCharge/editConfigurations', params),
+
   // 监区管理 - 获取监狱最大层级数
   getPrisonAreaMaxLevel: () => {
     return service.get('/prison_config/getMaxLevel')
@@ -179,7 +194,11 @@ export default {
       params,
       url
     } = inputs
-
     return service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data)
+  },
+
+  // 根据监狱/监区/权限 查询终端用户
+  getTerminalUsersByPrisonConfigId: params => {
+    return service.get('/jails/getUserListByPrisonConfigId', params)
   }
 }

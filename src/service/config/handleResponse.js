@@ -54,8 +54,11 @@ const codes = {
   401: {
     next: params => {
       tips(params.msg || '身份验证失败，请重新登录')
-      logout()
-      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+
+      if (router.currentRoute.path !== '/login') {
+        logout()
+        router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+      }
     }
   },
   403: {

@@ -27,14 +27,14 @@
         />
       </el-tabs>
 
-      <m-table
+      <m-table-new
         ref="m-table"
-        :cols=tableCols
+        :cols="tableCols"
         :data="pageData.content"
       >
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
 
-        <template #idCards="{ row }">
+        <!-- <template #idCards="{ row }">
           <template v-for="(item, index) in row.diplomaticConsulOfficialUrls">
             <m-img-viewer 
               :key="index"
@@ -48,7 +48,7 @@
               ]"
             />
           </template>
-        </template>
+        </template> -->
 
         <template #status="{ row }">{{ row.status | diplomaticConsulOfficialStatus }}</template>
 
@@ -71,7 +71,7 @@
             size="mini"
             @click="onShow(row, 'callback')">撤回</el-button>
         </template>
-      </m-table>
+      </m-table-new>
     </el-col>
 
     <m-pagination
@@ -208,6 +208,7 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import { mapState, mapActions } from 'vuex'
 
+import { $likeName, $likeIdCard } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
@@ -388,17 +389,18 @@ export default {
         {
           label: '姓名',
           prop: 'name',
-          showOverflowTooltip: true
+          ...$likeName
         },
-        {
-          label: '身份证件信息',
-          slotName: 'idCards',
-          minWidth: 148
-        },
+        // {
+        //   label: '身份证件信息',
+        //   slotName: 'idCards',
+        //   minWidth: 148
+        // },
         {
           label: '证件号',
           prop: 'uuid',
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          ...$likeIdCard
         },
         {
           label: '身份证件有效期至',

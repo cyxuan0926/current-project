@@ -1,34 +1,44 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <el-button
-      size="small"
-      class="button-add button-shift-down"
-      type="primary"
-      plain
-      @click="onAdd">添加终端信息</el-button>
+  <el-row class="row-container" :gutter="0">
     <m-search
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+      @searchSelectChange="searchSelectChange"
+    >
+      <template #append>
+        <el-button
+          size="small"
+          type="primary"
+          plain
+          @click="onAdd"
+        >添加终端信息</el-button>
+      </template>
+    </m-search>
+
     <el-col :span="24">
       <m-table-new
         stripe
         :data="terminals.contents"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #meetingEnabled="{ row }">{{ row.meetingEnabled | isOpened}}</template>
+
         <template #terminalType="{ row }">{{ row.terminalType | terminalTypes }}</template>
-        <template
-          slot="operation"
-          slot-scope="scope">
+
+        <template #businessType="{ row }">{{ row.businessType | terminalBusinessTypeOptions }}</template>
+
+        <template #operation="{ row }">
           <el-button
             type="primary"
             size="mini"
-            @click="onEdit(scope.row.id)">编辑</el-button>
+            @click="onEdit(row.id)"
+          >编辑</el-button>
+
           <el-button
-            :type="scope.row.isEnabled ? 'danger': 'primary'"
+            :type="row.isEnabled ? 'danger': 'primary'"
             size="mini"
-            @click="onEnable(scope.row)">{{ scope.row.isEnabled ? '停用' : '启用' }}</el-button>  
+            @click="onEnable(row)"
+          >{{ row.isEnabled ? '停用' : '启用' }}</el-button>  
         </template>
       </m-table-new>
     </el-col>
@@ -42,115 +52,142 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
 export default {
   name: 'TerminalList',
+
+  mixins: [prisonFilterCreator],
 
   data() {
     return {
       searchItems: {
-        jailId: {
+        isEnabled: {
           type: 'select',
-          label: '监狱名称',
-          getting: true,
-          belong: { value: 'id', label: 'title' },
-          filterable: true
+          label: '设备状态',
+          options: this.$store.state.isEnabledOptions
         },
+
         meetingEnabled: {
           type: 'select',
           label: '狱警通话开关',
           options: this.$store.state.isOpened
         },
+
         terminalType: {
           type: 'select',
           label: '终端类型',
           options: this.$store.state.terminalTypes
+        },
+
+        businessType: {
+          type: 'select',
+          label: '所属业务',
+          options: this.$store.state.terminalBusinessTypeOptions
+        },
+
+        terminalNumber: {
+          type: 'input',
+          label: '终端号'
         }
       },
+
       tableCols: [
         {
-          label: '终端号',
-          prop: 'terminalNumber'
+          label: '省份',
+          prop: 'provinceName',
+          showOverflowTooltip: true
         },
+
+        {
+          label: '所属监狱',
+          prop: 'jailName',
+          showOverflowTooltip: true
+        },
+
+        {
+          label: '监区',
+          prop: 'fullname',
+          showOverflowTooltip: true
+        },
+
+        {
+          label: '所属业务',
+          slotName: 'businessType'
+        },
+
+        {
+          label: '终端号',
+          prop: 'terminalNumber',
+          showOverflowTooltip: true
+        },
+
         {
           label: '终端别名',
           prop: 'terminalName',
-          showOverflowTooltip: true,
-          minWidth: 70
+          showOverflowTooltip: true
         },
+
         {
           label: '终端类型',
           slotName: 'terminalType',
           minWidth: 70
         },
+
         {
           label: '终端唯一标识',
           prop: 'terminalSn',
-          minWidth: 100
-        },
-        {
-          label: '会议室号',
-          prop: 'roomNumber'
-        },
-        {
-          label: '所属监狱',
-          prop: 'jailName',
-          showOverflowTooltip: true,
-          minWidth: 90
-        },
-        {
-          label: '监区',
-          prop: 'fullname',
-          minWidth: 55,
           showOverflowTooltip: true
         },
+
         {
-          label: '主持人密码',
-          prop: 'hostPassword'
+          label: '对应权限的用户名',
+          prop: 'username',
+          showOverflowTooltip: true,
+          minWidth: 100
         },
-        {
-          label: '参会密码',
-          prop: 'mettingPassword'
-        },
+
         {
           label: '狱警通话开关',
           prop: 'meetingEnabled',
-          slotName: 'meetingEnabled',
-          minWidth: 95
+          slotName: 'meetingEnabled'
         },
+
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 120
+          minWidth: 110
         }
       ]
     }
   },
   computed: {
-    ...mapState(['terminals', 'prisonAll'])
+    ...mapState(['terminals'])
   },
 
-  activated() {
-    this.getPrisonAll().then(() => {
-      this.searchItems.jailId.options = this.prisonAll
-      this.searchItems.jailId.getting = false
-      this.getDatas()
-    })
+  async activated() {
+    await this.getDatas()
   },
 
   methods: {
-    ...mapActions(['getTerminals', 'getPrisonAll', 'updateTerminal', 'enableTerminal']),
+    ...mapActions(['getTerminals', 'updateTerminal', 'enableTerminal']),
+
     getDatas() {
       this.getTerminals({ ...this.filter, ...this.pagination })
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     onAdd() {
       this.$router.push('/terminal/add')
     },
+
     onEdit(id) {
       this.$router.push(`/terminal/edit/${ id }`)
     },
+
     onEnable(row) {
       const { id, isEnabled, terminalNumber } = row
       const message = isEnabled ? '停用后终端不可用，确认停用吗？' : '确定启用吗？'
@@ -168,6 +205,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

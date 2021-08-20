@@ -59,8 +59,12 @@ const responseHandlers = {
   // 未授权
   401: res => {
     tip('请求未授权')
-    logout()
-    router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+
+    if (router.currentRoute.path !== '/login') {
+      logout()
+      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+    }
+
     return false
   },
   // 请求被拒绝

@@ -175,3 +175,8 @@ a{
     }
   }
 }
+
+/* class为 gk-draggable-dialog 的 el-dialog 可拖动 */
+.gk-draggable-dialog .el-dialog__header {
+  cursor: move
+}

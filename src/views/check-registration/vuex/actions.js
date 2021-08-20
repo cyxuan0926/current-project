@@ -7,7 +7,7 @@ export default {
   getRegistrationsAll: ({ commit }, params) => {
     http.getRegistrationsAll(params).then(res => res && commit('getRegistrations', res))
   },
-  authorizeRegistrations: ({ commit }, params) => {
+  authorizeRegistrations: (_, params) => {
     return http.authorizeRegistrations(params).then(res => res)
   },
   getRegistrationNotificationDetail: ({ commit }, params) => {

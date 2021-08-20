@@ -5,7 +5,7 @@ export default {
     http.getFamilies(params).then(res => res && commit('getFamilies', { contents: res.families, total: res.familiesSize }))
   },
   getFamilyDetail({ commit }, params) {
-    http.getFamilyDetail(params).then(res => res && commit('getFamilyDetail', res))
+    return http.getFamilyDetail(params).then(res => res && commit('getFamilyDetail', res))
   },
   addFamilyBlacklist({ commit }, params) {
     return http.addFamilyBlacklist(params).then(res => res)
