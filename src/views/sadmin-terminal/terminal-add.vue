@@ -235,7 +235,8 @@ export default {
             jailId,
             mettingPassword,
             meetingEnabled,
-            username
+            username,
+            businessType
           } = this.terminal
 
           let params = {
@@ -248,7 +249,8 @@ export default {
             jailId,
             mettingPassword,
             meetingEnabled,
-            username
+            username,
+            businessType
           }
 
           const prisonConfigId = this.prisonConfigIdKey ? this.terminal[this.localPrisonAreaLevelObject[this.prisonConfigIdKey]['prop']] : null
