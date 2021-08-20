@@ -1,10 +1,10 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-excel-download
+    <!-- <m-excel-download
       v-if="!hasAllPrisonQueryAuth"
       path="/download/exportRegistrations"
       :params="filter"
-    />
+    /> -->
 
     <m-search
       :items="searchItems"
