@@ -683,7 +683,8 @@ export default {
       'notification',
       'notificationFamilies',
       'prisonConfigs',
-      'prisonConfigsMaxLevel'
+      'prisonConfigsMaxLevel',
+      'jailPrisonAreas'
     ]),
 
     ...mapGetters(['isSuperAdmin', 'hasPrisonArea']),
@@ -1311,7 +1312,6 @@ export default {
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          showOverflowTooltip: true,
           ...$likePrisonerNumber
         },
         {
@@ -1324,13 +1324,6 @@ export default {
         ...hasAllPrisonQueryAuthCols,
 
         ...commonCols,
-
-        {
-          label: '罪犯虚拟编号',
-          prop: 'ywtCriminalNumber',
-          showOverflowTooltip: true,
-          ...$likePrisonerNumber
-        },
 
         {
           label: '监区',
@@ -1381,18 +1374,7 @@ export default {
       ]
 
       if (this.isPrisonerTabVal) {
-        if (this.isSuperAdmin) prisonerCols.splice(6, 1)
-
-        else {
-          const { tenantCode } = this.publicUserInfo
-
-          prisonerCols.splice(1, 2)
-
-          if (!prisonerInsideWhiteLists.includes(String(tenantCode))) {
-            prisonerCols.splice(4, 1)
-            prisonerCols.splice(6, 1)
-          }
-        }
+        if (!this.isSuperAdmin) prisonerCols.splice(1, 2)
 
         return prisonerCols
       } else {
@@ -1554,7 +1536,8 @@ export default {
       'changePrisonJailOrBatch',
       'acceptPrisoners',
       'abortChangePrisoners',
-      'getTransferOutPrisonersPagedData'
+      'getTransferOutPrisonersPagedData',
+      'getJailPrisonAreas'
     ]),
 
     async getDatas() {
@@ -2197,9 +2180,11 @@ export default {
         this.$set(element[prop], type, options)
       } else {
         // 其他角色
-        const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
+        const options = { value: 'id', label: 'name' }
 
-        this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
+        await this.getJailPrisonAreas({ url: '/prison_config/getAuthChildPrisonConfigs' })
+
+        this.$set(element[prop], 'options', (this.jailPrisonAreas || []))
 
         this.$set(element[prop], type, options)
       }

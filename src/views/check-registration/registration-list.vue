@@ -58,7 +58,6 @@
 
         <el-table-column
           label="家属姓名"
-          show-overflow-tooltip
           min-width="50"
         >
           <template #default="{ row }">
@@ -103,7 +102,6 @@
         <el-table-column
           label="罪犯姓名"
           prop="prisonerName"
-          show-overflow-tooltip
           min-width="80"
           sortable="custom"
         >
@@ -121,7 +119,6 @@
         <el-table-column
           label="罪犯编号"
           prop="prisonerNumber"
-          show-overflow-tooltip
           min-width="50"
         >
           <template #default="{ row }">

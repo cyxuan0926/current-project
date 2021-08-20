@@ -425,19 +425,16 @@ export default {
         {
           label: '罪犯编号',
           prop: 'criminalNumber',
-          showOverflowTooltip: true,
           ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
           prop: 'criminalName',
-          showOverflowTooltip: true,
           ...$likeName
         },
         {
           label: '家属姓名',
           prop: 'familyName',
-          showOverflowTooltip: true,
           ...$likeName
         },
         {

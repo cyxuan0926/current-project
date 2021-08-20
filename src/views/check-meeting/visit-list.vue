@@ -979,7 +979,6 @@
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true,
               ...$likeName
             },
             {

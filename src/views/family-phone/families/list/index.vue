@@ -641,7 +641,7 @@ export default {
           type: 'select',
           label: '审核状态',
           options: this.$store.state.familyPhoneCheckType,
-          miss: false
+          miss: true
         },
 
         isPhoneSms: {
@@ -649,7 +649,7 @@ export default {
           label: '可否接听亲情电话',
           noPlaceholder: true,
           options: this.$store.state.isTrue,
-          miss: false
+          miss: true
         },
 
         isMore: {
@@ -657,7 +657,7 @@ export default {
           label: '是否超3位家属',
           noPlaceholder: true,
           options: this.$store.state.isTrue,
-          miss: false
+          miss: true
         }
       },
 
