@@ -1182,7 +1182,7 @@ export default {
     onReplaceFamilyChange(e, prop, item) {
       this.$set(this.familyInformationDialogFormItems['replaceName'],  'disabled', !e)
 
-      this.$refs.familyInformationDialogForm.resetFieldValue(e, prop, item)
+      this.$refs.familyInformationDialogForm.reclearValidate(e, prop, item)
     },
 
     // 关闭对话框

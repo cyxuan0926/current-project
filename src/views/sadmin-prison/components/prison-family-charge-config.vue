@@ -47,7 +47,7 @@
            <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
               <el-input  type="number" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
-              <template slot="append">/分钟</template>
+              <template slot="append">/次</template>
                 </el-input>
             </span>
             <span v-else>{{ scope.row.number }}</span>
