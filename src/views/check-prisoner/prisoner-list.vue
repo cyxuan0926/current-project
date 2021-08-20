@@ -1311,6 +1311,7 @@ export default {
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
+          minWidth: 100,
           showOverflowTooltip: true,
           ...$likePrisonerNumber
         },

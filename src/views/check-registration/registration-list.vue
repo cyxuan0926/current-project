@@ -122,7 +122,7 @@
           label="罪犯编号"
           prop="prisonerNumber"
           show-overflow-tooltip
-          min-width="50"
+          min-width="100"
         >
           <template #default="{ row }">
            <el-popover
