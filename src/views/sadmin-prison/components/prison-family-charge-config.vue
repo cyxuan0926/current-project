@@ -1,5 +1,5 @@
 <template>
-  <div class="prison-charge-config">
+  <div class="prison-charge-config inputHeight">
       <div > 
         <div class="el-form-item__content">亲情电话参数配置</div>
         <el-table
@@ -34,7 +34,9 @@
           width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input-number controls-position="right"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" />
+              <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" >
+               <template slot="append">/分钟</template>
+              </el-input>
             </span>
             <span v-else>{{ scope.row.duration }}</span>
           </template>
@@ -44,7 +46,9 @@
           label="通话次数(次/月)">
            <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-             <el-input-number controls-position="right"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini"  />
+              <el-input  type="number" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
+              <template slot="append">/分钟</template>
+                </el-input>
             </span>
             <span v-else>{{ scope.row.number }}</span>
           </template>
@@ -134,7 +138,7 @@
                                                         :label="code.chinese_name"
                                                         :value="code.phone_code"
                                                     />
-                                                </template>
+                          </template>
                       </el-select>
                        <el-input  readonly v-if="show.disabled" v-model="ruleForm.destinationName">
                        </el-input>
@@ -152,26 +156,26 @@
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                       <el-input-number controls-position="right" placeholder="分钟"  onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVoice,2)" v-model="ruleForm.startMinutesVoice">
+                       <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVoice',2)" v-model="ruleForm.startMinutesVoice">
                             <template slot="append">/分钟</template>
-                       </el-input-number>
+                       </el-input>
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                     <el-col :span="10">     
                           <el-form-item   prop="startMoneyVoice">
-                          <el-input-number controls-position="right" :precision="2" placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVoice,2)"  v-model="ruleForm.startMoneyVoice">
+                        <el-input  type="number"  step="0.01"  placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVoice',2)"  v-model="ruleForm.startMoneyVoice">
                               <template slot="append">/元</template>
-                          </el-input-number>
+                        </el-input>
                           </el-form-item>
                     </el-col> 
                 </el-form-item>
                 <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="delivery2">
                   <el-col :span="10">     
                           <el-form-item   prop="fixedMoneyVoice">
-                          <el-input-number controls-position="right" :precision="2"  placeholder="费用" :min="0"  @blur="changeTimes(ruleForm.fixedMoneyVoice,2)"  v-model="ruleForm.fixedMoneyVoice">
+                         <el-input  type="number" step="0.01" placeholder="费用" :min="0"  @blur="changeTimes('fixedMoneyVoice',2)"  v-model="ruleForm.fixedMoneyVoice">
                               <template slot="append">/元</template>
-                          </el-input-number>
+                          </el-input>
                           </el-form-item>
                     </el-col>  
                   </el-form-item>
@@ -180,25 +184,25 @@
                 <el-form-item label="可视电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVisual">
-                       <el-input-number controls-position="right"  placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes(ruleForm.startMinutesVisual,2)"  v-model="ruleForm.startMinutesVisual">
+                       <el-input  type="number"   placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVisual',2)"  v-model="ruleForm.startMinutesVisual">
                             <template slot="append">/分钟</template>
-                       </el-input-number>
+                       </el-input>
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
                       <el-col :span="10">     
                           <el-form-item   prop="startMoneyVisual">
-                         <el-input-number controls-position="right" :precision="2" placeholder="费用"  :min="0"  @blur="changeTimes(ruleForm.startMoneyVisual,2)"  v-model="ruleForm.startMoneyVisual">
+                         <el-input  type="number"  step="0.01" placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVisual',2)"  v-model="ruleForm.startMoneyVisual">
                               <template slot="append">/元</template>
-                         </el-input-number>
+                         </el-input>
                           </el-form-item>
                       </el-col>
                 </el-form-item>
-                          <el-form-item  label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
+                          <el-form-item label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
                           <el-col :span="10"> 
-                           <el-input-number controls-position="right" :precision="2" placeholder="费用" :min="0"  @blur="changeTimes(fixedMoneyVisual,2)"  v-model="ruleForm.fixedMoneyVisual">
+                           <el-input  type="number"  min="0"  @change="changeTimes('fixedMoneyVisual',2)"  v-model="ruleForm.fixedMoneyVisual">
                               <template slot="append">/元</template>
-                           </el-input-number>
+                           </el-input>
                             </el-col>
                           </el-form-item>
                   <p class="fontMargin"><span>宽管级总费用{{broadCostVisual }}元</span><span>普管级总费用{{commonCostVisual }}元</span><span>考察级总费用{{inspectCostVisual }}元</span><span>严管级总费用{{strictCostVisual }}元</span><span>其它级总费用{{otherCostVisual }}元</span></p>
@@ -313,10 +317,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==1)[0]
            if(duration && duration.duration>this.ruleForm.startMinutesVoice){
-             cost=parseInt((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseInt(this.ruleForm.startMoneyVoice))
+             cost=parseFloat((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseFloat(this.ruleForm.startMoneyVoice)).toFixed(2)
              this.ruleForm.broadCostVoice=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVoice)
+             cost=parseFloat(this.ruleForm.startMoneyVoice).toFixed(2)
             this.ruleForm.broadCostVoice=cost
            }
         return cost
@@ -326,10 +330,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==2)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVoice){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseInt(this.ruleForm.startMoneyVoice))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseFloat(this.ruleForm.startMoneyVoice)).toFixed(2)
            this.ruleForm.commonCostVoice=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVoice)
+             cost=parseFloat(this.ruleForm.startMoneyVoice).toFixed(2)
              this.ruleForm.commonCostVoice=cost
            }
         return cost
@@ -339,10 +343,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==3)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVoice){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseInt(this.ruleForm.startMoneyVoice))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseFloat(this.ruleForm.startMoneyVoice)).toFixed(2)
            this.ruleForm.inspectCostVoice=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVoice)
+             cost=parseFloat(this.ruleForm.startMoneyVoice).toFixed(2)
              this.ruleForm.inspectCostVoice=cost
            }
         return cost
@@ -352,10 +356,10 @@ export default {
          let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==4)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVoice){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseInt(this.ruleForm.startMoneyVoice))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseFloat(this.ruleForm.startMoneyVoice)).toFixed(2)
            this.ruleForm.strictCostVoice=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVoice)
+             cost=parseFloat(this.ruleForm.startMoneyVoice).toFixed(2)
              this.ruleForm.strictCostVoice=cost
            }
         return cost
@@ -365,10 +369,10 @@ export default {
         let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==5)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVoice){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseInt(this.ruleForm.startMoneyVoice))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVoice)*this.ruleForm.fixedMoneyVoice+parseFloat(this.ruleForm.startMoneyVoice)).toFixed(2)
            this.ruleForm.otherCostVoice=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVoice)
+             cost=parseFloat(this.ruleForm.startMoneyVoice).toFixed(2)
              this.ruleForm.otherCostVoice=cost
            }
         return cost
@@ -378,10 +382,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==1)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVisual){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseFloat(this.ruleForm.startMoneyVisual)).toFixed(2)
            this.ruleForm.broadCostVisual=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVisual)
+             cost=parseFloat(this.ruleForm.startMoneyVisual).toFixed(2)
               this.ruleForm.broadCostVisual=cost
            }
         return cost
@@ -391,10 +395,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==2)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVisual){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseFloat(this.ruleForm.startMoneyVisual)).toFixed(2)
            this.ruleForm.commonCostVisual=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVisual)
+             cost=parseFloat(this.ruleForm.startMoneyVisual).toFixed(2)
               this.ruleForm.commonCostVisual=cost
            }
         return cost
@@ -404,10 +408,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==3)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVisual){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseFloat(this.ruleForm.startMoneyVisual)).toFixed(2)
            this.ruleForm.inspectCostVisual=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVisual)
+             cost=parseFloat(this.ruleForm.startMoneyVisual).toFixed(2)
             this.ruleForm.inspectCostVisual=cost
            }
         return cost
@@ -417,10 +421,10 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==4)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVisual){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual))
+            cost=parseFloat((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseFloat(this.ruleForm.startMoneyVisual)).toFixed(2)
            this.ruleForm.strictCostVisual=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVisual)
+             cost=parseFloat(this.ruleForm.startMoneyVisual).toFixed(2)
              this.ruleForm.strictCostVisual=cost
            }
         return cost
@@ -430,21 +434,25 @@ export default {
           let cost=0
            const duration=this.tableData.configurationsFamilyPhoneList.filter(item=>item.type==5)[0]
            if(duration&& duration.duration>this.ruleForm.startMinutesVisual){
-            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual))
+            cost=parseInt((duration.duration-this.ruleForm.startMinutesVisual)*this.ruleForm.fixedMoneyVisual+parseInt(this.ruleForm.startMoneyVisual)).toFixed(2)
            this.ruleForm.otherCostVisual=cost
            }else{
-             cost=parseInt(this.ruleForm.startMoneyVisual)
+             cost=parseInt(this.ruleForm.startMoneyVisual).toFixed(2)
             this.ruleForm.otherCostVisual=cost
            }
         return cost
       }
     },
     methods: {
-      changeTimes(row,type,int){
+      changeTimes(row,type){
         if(type==2){
-          if(row<0){
-            row=0
-            }
+          if(parseFloat(this.ruleForm[row])<0){
+           this.$set(this.ruleForm,row,0)
+          }
+          if(parseFloat(this.ruleForm[row])>parseFloat(this.maxDuration)){
+           this.$set(this.ruleForm,row,this.maxDuration)
+           this.$message.error('填写通话时长分钟数不能大于管教级别分钟数！！');
+          }
         }else{
           if(row.duration<0){
             row.duration=0
@@ -591,8 +599,9 @@ export default {
  border-bottom: 1px solid #e6e6e6
 }
 
-input::webkit-textfield-decoration-container {
-    height:100%!important;
+.inputHeight .el-input--mini .el-input__inner {
+    height: 28px;
+    line-height: inherit;
 }
 </style>
 

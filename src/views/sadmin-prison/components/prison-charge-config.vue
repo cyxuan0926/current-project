@@ -555,8 +555,8 @@ export default {
 
           label: '亲情电话收费设置',
 
-          disabled,
-
+          disabled:true,
+          miss :true,
           func: this.onDiplomatistOrFamilyPhoneChargeChange,
 
           value: 0,

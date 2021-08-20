@@ -19,6 +19,7 @@
               :key="key"
               :prop="key"
               :rule="item.rule"
+              :miss='items.miss'
               :item="item"
               :fields="fields"
               :select-change-event="selectChangeEvent"

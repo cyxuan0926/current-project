@@ -275,20 +275,22 @@
           />
         </el-form-item>
       </el-form>
-
-      <template slot="footer">
-        <el-button
+       <template >
+        <el-row :gutter="0">
+         <el-button
           class="button-add"
           size="mini"
           type="danger"
           @click="onTimeClose"
         >取消</el-button>
 
-        <el-button
+          <el-button
           class="button-add"
           size="mini"
+          type="primary" 
           @click="onTime">
         确定</el-button>
+        </el-row>
       </template>
     </el-dialog>
 
@@ -441,6 +443,7 @@
             class="button-add"
             :loading="submitting"
             size="mini"
+             type="primary" 
             @click="handleSureSign"
           >确定</el-button>
         </el-row>
