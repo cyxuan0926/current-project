@@ -87,6 +87,7 @@
           <m-img-viewer
             :url="family.familyRelationalProofUrl"
             title="关系证明图"
+            :isLazy="false"
           />
         </el-col>
       </el-row>

@@ -43,7 +43,9 @@
                         :key="i"
                         title="关系证明图"
                         :class="{ 'relation_img': familyDetData.relationalProofUrls.length !== 1 }"
-                        :url="u" />
+                        :url="u"
+                        :isLazy="false"
+                    />
                 </div>
             </el-col>
         </el-row>
@@ -53,7 +55,9 @@
                 <div class="img-items">
                     <m-img-viewer
                         :url="familyDetData.meetNoticeUrl"
-                        title="可视电话通知单" />
+                        title="可视电话通知单"
+                        :isLazy="false"
+                    />
                 </div>
             </el-col>
         </el-row>

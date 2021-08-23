@@ -190,6 +190,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -197,6 +198,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl2"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -204,6 +206,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl3"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -211,6 +214,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl4"
             title="关系证明图"
+            :isLazy="false"
           />
         </div>
       </template>
@@ -219,7 +223,11 @@
         <div style="margin-bottom: 10px;">可视电话通知单:</div>
 
         <div class="img-box">
-          <m-img-viewer :url="authorizeFamilyDetail.meetNoticeUrl" title="可视电话通知单" />
+          <m-img-viewer
+            :url="authorizeFamilyDetail.meetNoticeUrl"
+            title="可视电话通知单"
+            :isLazy="false"
+          />
         </div>
       </template>
     </el-dialog>

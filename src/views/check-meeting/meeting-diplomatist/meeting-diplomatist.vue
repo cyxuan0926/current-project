@@ -91,6 +91,7 @@
           <m-img-viewer
             :url="toShow.approvalImageUrl"
             title="审批单"
+            :isLazy="false"
           />
         </div>
       </div>
@@ -262,6 +263,7 @@
           <m-img-viewer 
             :url="scope.approvalImageUrl"
             title="审批单"
+            :isLazy="false"
           />
           </div>
         </template>
