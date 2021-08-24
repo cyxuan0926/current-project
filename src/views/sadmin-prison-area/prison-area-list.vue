@@ -1,24 +1,26 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <el-button
       v-if="user.branch_prison"
       size="small"
       type="primary"
       plain
       class="button-add"
-      @click="handleAdd">新增监区</el-button>
+      @click="handleAdd"
+    >新增监区</el-button>
+
     <m-excel-download
       v-if="isSuperAdmin"
       path="/download/exportPrison"
       :params="filter"
     />
+
     <m-search
       :items="user.role !== '4' && user.role !=='-1' ? searchItems : null "
       @search="onSearch"
       @searchSelectChange="searchSelectChange"
     />
+
     <el-col :span="24">
       <m-table-new
         stripe
@@ -41,16 +43,20 @@
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="prisonAreas.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="dialogVisible"
       class="authorize-dialog"
       :title="showContent['title']"
       :close-on-click-modal="false"
-      width="530px">
+      width="530px"
+    >
       <el-input
         class="prisonAreas-inp"
         v-if="checkIsShow(1)"
@@ -88,13 +94,15 @@
       />
       
       <div class="el-input-div__error" v-if="!!errTips">（{{ errTips }}）</div>
-      <template slot="footer">
+
+      <div slot="footer">
         <el-button
           type="primary"
           size="mini"
           class="button-add"
-          @click="handleOperate">{{ showContent['text'] }}</el-button>
-      </template>
+          @click="handleOperate"
+        >{{ showContent['text'] }}</el-button>
+      </div>
     </el-dialog>
   </el-row>
 </template>
@@ -160,7 +168,7 @@ export default {
       let cols = [
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provincesName'
         },
         {
           label: '监狱名称',
