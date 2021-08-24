@@ -540,7 +540,7 @@ export default {
           type: 'select',
           label: '审核状态',
           options:[{label: '待审核', value: '0'},{label: '已通过', value: '1'},{label: '未通过', value: '2'}],
-          miss: false,
+          miss: true,
           value:"",
         },
       },
