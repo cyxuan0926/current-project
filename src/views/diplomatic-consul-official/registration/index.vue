@@ -391,11 +391,6 @@ export default {
           prop: 'name',
           ...$likeName
         },
-        // {
-        //   label: '身份证件信息',
-        //   slotName: 'idCards',
-        //   minWidth: 148
-        // },
         {
           label: '证件号',
           prop: 'uuid',
@@ -441,12 +436,10 @@ export default {
         }
       ]
 
-      if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-        allCols.splice(-1, 1)
-        allCols.splice(3, 1)
-      } else {
-        allCols.splice(0, 2)
-      }
+      if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) allCols.splice(-1, 1)
+
+      else allCols.splice(0, 2)
+
       return allCols
     }
   },
