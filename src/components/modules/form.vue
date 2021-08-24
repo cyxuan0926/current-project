@@ -393,6 +393,18 @@ export default {
 
     handleFormMethods(prop, method) {
       this.$refs[prop] && this.$refs[prop][0].handleFormItemMethods(prop, method)
+    },
+
+    reclearValidate(...arg) {
+      const [status, prop, { controlTheOther }] = arg
+
+      if (!controlTheOther) return
+
+      const fields = this.$refs.form.fields
+
+      for(let [key, value] of Object.entries(this.items)) {
+        if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.clearValidate())
+      }
     }
   }
 }

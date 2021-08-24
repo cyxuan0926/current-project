@@ -29,12 +29,13 @@
             <div class="img-box">
             <template v-for="relationalProofUrl in toAuthorize.relationalProofUrls" >
                 <m-img-viewer
-                :style="{ width: relationalWidth }"
-                :class="relationalProofUrl.className"
-                :key="relationalProofUrl.url"
-                :url="relationalProofUrl.url"
-                :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
-                title="关系证明图"
+                    :style="{ width: relationalWidth }"
+                    :class="relationalProofUrl.className"
+                    :key="relationalProofUrl.url"
+                    :url="relationalProofUrl.url"
+                    :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
+                    title="关系证明图"
+                    :isLazy="false"
                 />
             </template>
             </div>
@@ -46,6 +47,7 @@
                 :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
                 :url="toAuthorize.meetNoticeUrl"
                 title="可视电话通知单"
+                :isLazy="false"
             />
             </div>
         </template>

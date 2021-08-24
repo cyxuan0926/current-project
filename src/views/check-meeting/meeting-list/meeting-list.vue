@@ -635,6 +635,7 @@
               title="关系证明图"
               :class="{ 'relation_img': scope.relationalProofUrls.length !== 1 }"
               :url="item.url"
+              :isLazy="false"
             />
           </div>
         </template>
@@ -643,6 +644,7 @@
             <m-img-viewer
               :url="scope.meetNoticeUrl"
               title="可视电话通知单"
+              :isLazy="false"
             />
           </div>
         </template>
