@@ -31,18 +31,19 @@
             <m-table-new
                 stripe
                 :data="tableDatas"
-                :cols="tableCols">
-                <template #familyName="{ row }">
-                    <template v-if="tab == '1' && row.isReg == '0'">
-                        <span v-for="f in row.families" :key="f.familyId">{{ f.familyName }}</span>
+                :cols="tableCols"
+            >
+                <template #familyName="{ item, scope }">
+                    <template v-if="tab == '1' && scope.row.isReg == '0'">
+                        <span>{{ item.familyName | asteriskDisplay('asterisk_name') }}</span>
                     </template>
-                    <template v-if="tab == '1' && row.isReg == '1' || tab == '2'">
+
+                    <template v-if="tab == '1' && scope.row.isReg == '1' || tab == '2'">
                         <el-button
-                            v-for="f in row.families"
-                            :key="f.familyId"
                             type="text"
                             size="mini"
-                            @click="handleQueryFamilyDet(row, f.familyId)">{{ f.familyName }}</el-button>
+                            @click="handleQueryFamilyDet(scope.row, item.familyId)"
+                        >{{ item.familyName | asteriskDisplay('asterisk_name') }}</el-button>
                     </template>
                 </template>
                 <template #operation="{ row }">
@@ -82,7 +83,14 @@
     import http from '@/service'
     import router from '@/router'
     import { saveAs } from 'file-saver'
-    import { DateFormat } from '@/utils/helper'
+    import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
+
+    import {
+        $likeName,
+        $likePrisonerNumber,
+        $likePhone
+    } from '@/common/constants/const'
+
     export default {
         components: {
             familyDetailModal,
@@ -98,19 +106,28 @@
                 },
                 {
                     label: '罪犯编号',
-                    prop: 'criminalNumber'
+                    prop: 'criminalNumber',
+                    ...$likePrisonerNumber
                 },
                 {
                     label: '罪犯姓名',
-                    prop: 'criminalName'
+                    prop: 'criminalName',
+                    ...$likeName
                 },
                 {
                     label: '家属姓名',
-                    slotName: 'familyName'
+                    prop: 'families',
+                    ...$likeName,
+                    desensitizationColsConfigs: {
+                        keyWord: 'familyId',
+                        prop: 'familyName',
+                        desensitizationColSlotName: 'familyName'
+                    }
                 },
                 {
                     label: '家属电话',
-                    prop: 'familyPhone'
+                    prop: 'familyPhone',
+                    ...$likePhone
                 },
                 {
                     label: '通话开始时间',
@@ -222,9 +239,40 @@
                     criminalNumber,
                     familyId
                 }
+
                 if( !this.isAdmin ) {
                     let { data } = await http[ this.tab == '1' ? 'getIntraFamilyInfo' : 'getIntraMeetingInfo' ](_params)
-                    this.familyData = data.family
+
+                    if (data && data.family) {
+                      const {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      } = data.family
+
+                      const urls = {
+                        familyIdCardBack,
+                        familyIdCardFront,
+                        familyRelationalProofUrl,
+                        familyRelationalProofUrl2,
+                        familyRelationalProofUrl3,
+                        familyRelationalProofUrl4
+                      }
+
+                      const _key = `familyId_${ familyId }`
+
+                      const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+                      data.family = {
+                        ...data.family,
+                        ...URLS
+                      }
+                    }
+
+                    this.familyData = data.family || {}
                     this.familyModalVisible = true
                 }
             },

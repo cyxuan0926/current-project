@@ -120,6 +120,11 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import { helper } from '@/utils'
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
 export default {
   data () {
     return {
@@ -242,12 +247,13 @@ export default {
             },
             {
               label: '账户',
-              prop: 'accountName'
-
+              prop: 'accountName',
+              ...$likePhone
             },
             {
               label: '真实姓名',
-              prop: 'realName'
+              prop: 'realName',
+              ...$likeName
             },
             {
               label: '笔名',
@@ -255,7 +261,8 @@ export default {
             },
             {
               label: '狱警号',
-              prop: 'policeNumber'
+              prop: 'policeNumber',
+              ...$likePrisonerNumber
             },
             {
               label: '性别',
@@ -287,7 +294,8 @@ export default {
             },
             {
               label: '账户',
-              prop: 'accountName'
+              prop: 'accountName',
+              ...$likePhone
             },
             {
               label: '笔名',

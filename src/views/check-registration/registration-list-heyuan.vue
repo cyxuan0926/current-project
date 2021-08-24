@@ -311,6 +311,7 @@
               :url="relationalProofUrl.url"
               :toolbar="toAuthorize.relationalProofUrls.length === 1 ? {} : { prev: 1, next: 1 }"
               title="关系证明图"
+              :isLazy="false"
             />
           </template>
         </div>
@@ -324,6 +325,7 @@
             :class="[{'el-image__no-box_shadow': !toAuthorize.meetNoticeUrl}]"
             :url="toAuthorize.meetNoticeUrl"
             title="可视电话通知单"
+            :isLazy="false"
           />
         </div>
       </template>
@@ -1100,7 +1102,36 @@ export default {
 
       let _authorizeDetData = await http.getRegistrationsDetail({ id })
 
-      if ( _authorizeDetData ) result = this.set_relationalProofUrls(_authorizeDetData)
+      if (_authorizeDetData) {
+        const {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        } = _authorizeDetData
+
+        const urls = {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        }
+
+        const _key = `registration_${ id }`
+
+        const URLS = await helper.batchDownloadPublicImageURL(urls, _key)
+
+        const input = {
+          ..._authorizeDetData,
+          ...URLS
+        }
+
+        result = this.set_relationalProofUrls(input)
+      }
 
       return result
     },

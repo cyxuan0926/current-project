@@ -9,6 +9,9 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+
+import { $likePhone } from '@/common/constants/const'
+
 export default {
   computed: {
     ...mapState({
@@ -20,7 +23,8 @@ export default {
       tableCols: [
         {
           label: '手机号码',
-          prop: 'phone'
+          prop: 'phone',
+          ...$likePhone
         },
         {
           label: '订单编号',

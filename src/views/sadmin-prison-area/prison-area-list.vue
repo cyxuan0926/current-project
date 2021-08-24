@@ -1,22 +1,26 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <el-button
       v-if="user.branch_prison"
       size="small"
       type="primary"
       plain
       class="button-add"
-      @click="handleAdd">新增监区</el-button>
+      @click="handleAdd"
+    >新增监区</el-button>
+
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
+      v-if="isSuperAdmin"
       path="/download/exportPrison"
-      :params="filter" />
+      :params="filter"
+    />
+
     <m-search
-      :items="user.role !== '4' && user.role !=='-1' ? searchItems: null "
+      :items="user.role !== '4' && user.role !=='-1' ? searchItems : null "
       @search="onSearch"
-      @searchSelectChange="searchSelectChange" />
+      @searchSelectChange="searchSelectChange"
+    />
+
     <el-col :span="24">
       <m-table-new
         stripe
@@ -39,16 +43,20 @@
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="prisonAreas.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="dialogVisible"
       class="authorize-dialog"
       :title="showContent['title']"
       :close-on-click-modal="false"
-      width="530px">
+      width="530px"
+    >
       <el-input
         class="prisonAreas-inp"
         v-if="checkIsShow(1)"
@@ -86,29 +94,30 @@
       />
       
       <div class="el-input-div__error" v-if="!!errTips">（{{ errTips }}）</div>
-      <template slot="footer">
+
+      <div slot="footer">
         <el-button
           type="primary"
           size="mini"
           class="button-add"
-          @click="handleOperate">{{ showContent['text'] }}</el-button>
-      </template>
+          @click="handleOperate"
+        >{{ showContent['text'] }}</el-button>
+      </div>
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
-import { getUserStorage } from '@/utils/store'
-const _role = getUserStorage().role
+
 export default {
   // props: {
   //   // 是否有权限查看所有监狱的数据（在路由的 props 中定义）
   //   hasAllPrisonQueryAuth: Boolean
   // },
-  mixins: [ _role != '4' && _role != '-1' ? prisonFilterCreator : {} ],
+  mixins: [prisonFilterCreator],
   data() {
     return {
       searchItems: {},
@@ -159,7 +168,7 @@ export default {
       let cols = [
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provincesName'
         },
         {
           label: '监狱名称',
@@ -188,7 +197,9 @@ export default {
       ]
       if (this.user.role === '0') cols.splice(-1, 1)
       return cols
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
   async mounted() {
     this.getDatas()
@@ -335,7 +346,9 @@ export default {
           return this.allPrisonAreas.some(val => val.fullname === fullname)
         }
       }
-    }
+    },
+
+    // searchSelectChange() {}
   }
 }
 </script>

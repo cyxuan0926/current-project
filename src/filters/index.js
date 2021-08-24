@@ -5,6 +5,8 @@ import storage from './modules/storage'
 import numberFixed from './modules/numberFixed'
 import termChangeYearMonthDay from './modules/termChangeYearMonthDay'
 
+import { asteriskDisplay } from './modules/asterisk-display'
+
 let filterObj = Object.assign({}, switches), filters = {}
 
 Object.keys(filterObj).forEach(k => {
@@ -25,5 +27,6 @@ export default {
   ...time,
   ...storage,
   ...numberFixed,
-  ...termChangeYearMonthDay
+  ...termChangeYearMonthDay,
+  asteriskDisplay
 }

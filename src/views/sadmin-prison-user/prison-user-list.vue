@@ -9,7 +9,7 @@
       class="button-add button-shift-down"
       @click="onAdd">添加账户</el-button>
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
+      v-if="isSuperAdmin"
       path="/download/exportPrisonuser"
       :params="filter"
     />
@@ -59,10 +59,10 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { getUserStorage } from '@/utils/store'
-const _role = getUserStorage().role
+
+import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 
 export default {
   name: 'AccountList',
@@ -72,7 +72,7 @@ export default {
   //   hasAllPrisonQueryAuth: Boolean
   // },
 
-  mixins: [ _role == '0' ? prisonFilterCreator : {} ],
+  mixins: [prisonFilterCreator],
 
   data() {
     // let options = {
@@ -118,7 +118,8 @@ export default {
         {
           label: '角色',
           prop: 'roles',
-          minWidth: 85
+          minWidth: 85,
+          showOverflowTooltip: true
         },
         {
           label: '监狱名称',
@@ -133,11 +134,13 @@ export default {
         {
           label: '狱警号',
           prop: 'policeNumber',
-          minWidth: 90
+          minWidth: 90,
+          ...$likePrisonerNumber
         },
         {
           label: '真实姓名',
-          prop: 'realName'
+          prop: 'realName',
+          ...$likeName
         },
         {
           label: '操作',
@@ -147,7 +150,9 @@ export default {
       ]
       if (this.user.role !== '-1') cols.splice(-1, 1)
       return cols
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
   async mounted() {
     // if (this.routeRole === '0') {
@@ -209,6 +214,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

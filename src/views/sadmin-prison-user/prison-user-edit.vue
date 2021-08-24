@@ -78,7 +78,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import {
+  mapState,
+  mapActions,
+  mapGetters
+} from 'vuex'
+
 
 export default {
   data() {
@@ -89,7 +94,7 @@ export default {
         username: [{ required: true, message: '请填写用户名' }],
         roleIds: [{ required: true, message: '请选择角色' }]
       },
-      hasPrisonArea: false,
+
       prisonConfigIdsProps: {
         label: 'name',
         value: 'id',
@@ -99,25 +104,30 @@ export default {
   },
   computed: {
     ...mapState(['prisonUser', 'allChildPrisonConfigs']),
+
     ...mapState({
       rolesList: state => state.account.rolesList
-    })
+    }),
+
+     ...mapGetters(['isSuperAdmin', 'hasPrisonArea'])
   },
+
   async mounted() {
-    await this.getRolesList()
-    this.getAllChildPrisonConfigs().then(res => {
-      if (!res) return
-      this.getPrisonUserDetail(this.$route.params.id).then(res => {
-        if (!res) return
-        if (this.allChildPrisonConfigs.length !== 0) {
-          this.hasPrisonArea = true
-        }
-      })
-    })
+    let promises = [this.getRolesList(), this.getPrisonUserDetail(this.$route.params.id)]
+
+    if (this.hasPrisonArea) promises.push(this.getAllChildPrisonConfigs())
+
+    await Promise.all([promises])
   },
   methods: {
-    ...mapActions(['updatePrisonUser', 'getAllChildPrisonConfigs', 'getPrisonUserDetail', 'getChildPrisonConfigs']),
+    ...mapActions([
+      'updatePrisonUser',
+      'getAllChildPrisonConfigs',
+      'getPrisonUserDetail'
+    ]),
+
     ...mapActions('account', ['getRolesList']),
+
     onSubmit() {
       this.$refs.prisonUser.validate(valid => {
         if (valid) {

@@ -2,7 +2,7 @@
   <!-- <div> -->
   <!-- <p v-if="label">{{title}}</p> -->
   <el-image
-    :src="publicUrl || url+'?token=' + $urls.token"
+    :src="publicUrl || url"
     :alt="title"
     :lazy="isLazy"
     class="img-viewer__overflow-unset"
@@ -64,6 +64,7 @@ export default {
     //   default: false
     // }
   },
+
   methods: {
     showImg() {
       const commonToolbar = {
@@ -80,6 +81,7 @@ export default {
           flipVertical: 1
       }
       const toolbar = Object.assign({}, commonToolbar, this.toolbar)
+
       return new Viewer(this.$el.parentNode, {
         title: false,
         navbar: false,

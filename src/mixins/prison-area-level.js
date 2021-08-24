@@ -1,8 +1,10 @@
-import { prisonAreaLevelObject } from '@/common/constants/const'
+import { prisonAreaLevelObject, terminalUsersBasicAuths } from '@/common/constants/const'
 
 import cloneDeep from 'lodash/cloneDeep'
 
 import { Message } from 'element-ui'
+
+import { mapState } from 'vuex'
 
 export default {
   data() {
@@ -10,6 +12,10 @@ export default {
       localPrisonAreaLevelObject: cloneDeep(prisonAreaLevelObject),
       prisonConfigIdKey: ''
     }
+  },
+
+  computed: {
+    ...mapState(['terminalUserListsByPrisonConfigId'])
   },
 
   methods: {
@@ -45,9 +51,31 @@ export default {
 
       if (childNode) this.clearSubPrisonArea(childNode, budingObject)
 
+      // 监区-用户权限
+      if (['prisonArea'].includes(key)) {
+        const { jailId, areaId } = budingObject
+
+        await this.onGetPrisonAreaUsersData({ jailId, prisonConfigId: areaId }, budingObject)
+      }
+
       if (isLast) return
 
       if (!(parentId < 0 || !parentId)) await this.onInitPrisonAreaLevelData({ parentId, childNode })
+    },
+
+    // 监区-用户数据
+    // 分监区-正常监区： 监区权限下的用户
+    // 其他监狱层级的用户
+    async onGetPrisonAreaUsersData(params = {}, modelValue = this.terminal, inputPermission = []) {
+      const permission = ([...inputPermission, ...terminalUsersBasicAuths]).join(',')
+
+      if (!params['prisonConfigId'] || params['prisonConfigId'] < 0) delete params['prisonConfigId']
+
+      if (this.$store.state.terminalUserListsByPrisonConfigId.length) this.$store.commit('setTerminalUsersByPrisonConfigId', [])
+
+      if (modelValue['username']) this.$set(modelValue, 'username', '')
+
+      await this.$store.dispatch('getTerminalUsersByPrisonConfigId', { permission, ...params })
     }
   }
 }

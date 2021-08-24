@@ -299,14 +299,10 @@ export default {
   authorizeSingleMeeting: params => {
     return service.post('/meetings/singleAuthorize', params)
   },
-  // 情亲会见申请管理-审核通过
-  meetingSelectAuthorize: params => {
-    return service.post('/meetings/selectAuthorize', params)
-  },
-  // 情亲会见申请管理-审核通过
-  meetingSelectOtherAuthorize: params => {
-    return service.post('/meetings/allotOtherMeetingTime', params)
-  },
+  // 会见申请管理 - 审核通过 - 选择时间段
+  meetingSelectAuthorize: params => service.post('/meetings/selectAuthorize', params),
+  // 会见申请管理 - 审核通过 - 自定义特殊时间段
+  meetingSelectOtherAuthorize: params => service.post('/meetings/allotOtherMeetingTime', params),
   // 情亲会见申请管理-终端会见配置时间列表
   getMeetTimeConfig: params => {
     return service.get('/meetings/query-meettime-config', params).then(res => res && res.data)

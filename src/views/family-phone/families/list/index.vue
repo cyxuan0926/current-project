@@ -58,14 +58,14 @@
         :cols="tableCols"
         :data="familiesPaged.content"
       >
-        <template #familyName="{ row }">
+        <template #family="{ row }">
           <el-button
             v-if="!!row.status"
             type="text"
             @click="onViewAuthorizeFamily(row)"
-          >{{ row.familyName }}</el-button>
+          >{{ row.familyName | asteriskDisplay('asterisk_name') }}</el-button>
 
-          <span v-else>{{ row.familyName }}</span>
+          <span v-else>{{ row.familyName | asteriskDisplay('asterisk_name') }}</span>
         </template>
 
         <template #status="{ row }">
@@ -190,6 +190,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -197,6 +198,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl2"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -204,6 +206,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl3"
             title="关系证明图"
+            :isLazy="false"
           />
 
           <m-img-viewer
@@ -211,6 +214,7 @@
             class="relation_img"
             :url="authorizeFamilyDetail.relationalProofUrl4"
             title="关系证明图"
+            :isLazy="false"
           />
         </div>
       </template>
@@ -219,7 +223,11 @@
         <div style="margin-bottom: 10px;">可视电话通知单:</div>
 
         <div class="img-box">
-          <m-img-viewer :url="authorizeFamilyDetail.meetNoticeUrl" title="可视电话通知单" />
+          <m-img-viewer
+            :url="authorizeFamilyDetail.meetNoticeUrl"
+            title="可视电话通知单"
+            :isLazy="false"
+          />
         </div>
       </template>
     </el-dialog>
@@ -575,9 +583,15 @@ import http from '@/service'
 
 import { tokenExcel } from '@/utils/token-excel'
 
-import { DateFormat } from '@/utils/helper'
+import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
+import {
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -635,7 +649,7 @@ export default {
           type: 'select',
           label: '审核状态',
           options: this.$store.state.familyPhoneCheckType,
-          miss: false
+          miss: true
         },
 
         isPhoneSms: {
@@ -643,7 +657,7 @@ export default {
           label: '可否接听亲情电话',
           noPlaceholder: true,
           options: this.$store.state.isTrue,
-          miss: false
+          miss: true
         },
 
         isMore: {
@@ -651,7 +665,7 @@ export default {
           label: '是否超3位家属',
           noPlaceholder: true,
           options: this.$store.state.isTrue,
-          miss: false
+          miss: true
         }
       },
 
@@ -846,23 +860,29 @@ export default {
       const cols = [
         {
           label: '家属姓名',
-          slotName: 'familyName'
+          ...$likeName,
+          prop: 'familyName',
+          desensitizationColSlotName: 'family'
         },
         {
           label: '家属电话',
-          prop: 'familyPhone'
+          prop: 'familyPhone',
+          ...$likePhone
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName'
+          prop: 'criminalName',
+          ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber'
+          prop: 'criminalNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '关系',
@@ -1170,7 +1190,7 @@ export default {
     onReplaceFamilyChange(e, prop, item) {
       this.$set(this.familyInformationDialogFormItems['replaceName'],  'disabled', !e)
 
-      this.$refs.familyInformationDialogForm.resetFieldValue(e, prop, item)
+      this.$refs.familyInformationDialogForm.reclearValidate(e, prop, item)
     },
 
     // 关闭对话框
@@ -1370,9 +1390,38 @@ export default {
         relationship
       } = familyInformation
 
-      const data = await http.getRegistrationsDetail({ id: registrationsId })
+      let data = await http.getRegistrationsDetail({ id: registrationsId })
 
-      this.authorizeFamilyDetail = Object.assign({}, data, { familyName, relationship })
+      if (data) {
+        const {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        } = data
+
+        const urls = {
+          idCardBack,
+          idCardFront,
+          relationalProofUrl,
+          relationalProofUrl2,
+          relationalProofUrl3,
+          relationalProofUrl4
+        }
+
+        const _key = `registration_${ registrationsId }`
+
+        const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+        data = {
+          ...data,
+          ...URLS
+        }
+      }
+
+      this.authorizeFamilyDetail = Object.assign({}, data || {}, { familyName, relationship })
 
       this.authorizeDialogVisible = true
     },

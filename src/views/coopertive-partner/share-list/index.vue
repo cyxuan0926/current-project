@@ -27,8 +27,7 @@
         <el-tab-pane label="终端分成明细" name="terminalSharedDetails" />
       </el-tabs>
 
-      <m-table
-        stripe
+      <m-table-new
         :data="pageData.content"
         :cols="tableCols"
       />
@@ -49,6 +48,8 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import Moment from 'moment'
 
+import { $likePhone } from '@/common/constants/const'
+
 export default {
   name: 'coopertivePartnerSharedList',
 
@@ -67,7 +68,8 @@ export default {
     const phoneItem = {
       label: '手机号码(合作商)',
       prop: 'partnerPhone',
-      minWidth: 105
+      minWidth: 105,
+      ...$likePhone
     }
 
     const terminaUniquelIdItem = {

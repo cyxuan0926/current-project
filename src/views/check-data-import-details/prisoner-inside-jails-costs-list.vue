@@ -14,17 +14,17 @@
         stripe
         :data="prisonersInsideJailsCosts.contents"
         :cols="tableCols">
-        <template slot="consume" slot-scope="scope">
-          {{ scope.row.consume | fixedNumber }}
+        <template #consume="{ row }">
+          {{ row.consume | fixedNumber }}
         </template>
-        <template slot="balance" slot-scope="scope">
-          {{ scope.row.balance | fixedNumber }}
+        <template #balance="{ row }">
+          {{ row.balance | fixedNumber }}
         </template>
-        <template slot="consumeAt" slot-scope="scope">
-          {{ scope.row.consumeAt | Date }}
+        <template #consumeAt="{ row }">
+          {{ row.consumeAt | Date }}
         </template>
-        <template slot="createdAt" slot-scope="scope">
-          {{ scope.row.createdAt | Date }}
+        <template #createdAt="{ row }">
+          {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>

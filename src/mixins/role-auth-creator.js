@@ -13,13 +13,20 @@ export default {
     async handleRolePrisonArea(element, prop, type = 'props', operation = 'search', role = this.user.role) {
       if (this.isTenantAdmin) {
         const options = operation === 'search' ? { value: 'name', label: 'name' } : { value: 'id', label: 'name' }
+
         await this.$store.dispatch('getPrisonConfigs', { jailId: JSON.parse(localStorage.getItem('user')).jailId })
-        this.$set(element[prop], 'options', this.prisonConfigs)
+
+        this.$set(element[prop], 'options', this.$store.state.prisonConfigs)
+
         this.$set(element[prop], type, options)
       }
       else {
-        const options = operation === 'search' ? { label: 'prisonConfigName', value: 'prisonConfigName' } : { value: 'prisonConfigId', label: 'prisonConfigName' }
-        this.$set(element[prop], 'options', (JSON.parse(localStorage.getItem('user')).prisonConfigList || []))
+        const options = { value: 'id', label: 'name' }
+
+        await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
+
+        this.$set(element[prop], 'options', (this.$store.state.jailPrisonAreas || []))
+
         this.$set(element[prop], type, options)
       }
     }

@@ -555,8 +555,8 @@ export default {
 
           label: '亲情电话收费设置',
 
-          disabled,
-
+          disabled:true,
+          miss :true,
           func: this.onDiplomatistOrFamilyPhoneChargeChange,
 
           value: 0,
@@ -1009,6 +1009,8 @@ export default {
       this.tableCols = tableCols
 
       this.tableData = tableData
+
+      if (this.radio) this.onHideChargeConfigsItems()
     },
 
     // 收费方式选项切换

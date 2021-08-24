@@ -1,7 +1,5 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
@@ -14,19 +12,20 @@
           :loading="downloading"
           @click="handleExportExcel"
         >导出 Excel</el-button>
-      </template>  
+      </template>
     </m-search>
+
     <el-col :span="24">
-      <el-tabs
-        v-model="tabs"
-        type="card">
+      <el-tabs v-model="tabs" type="card">
         <template v-for="(tab, index) in tabsItems">
           <el-tab-pane
             :key="index"
             :label="tab.label"
-            :name="tab.name" />
+            :name="tab.name"
+          />
         </template>
       </el-tabs>
+
       <m-table-new
         stripe
         :data="visits.contents"
@@ -53,7 +52,8 @@
         <template #meetingTime="{ row }">
           <span >{{ row.meetingTime || row.applicationDate }}</span>
         </template>
-        <template #families="{ row }">
+
+        <!-- <template #families="{ row }">
           <div v-if="row.filterFamilies && row.filterFamilies.length">
             <el-button
               type="text"
@@ -63,6 +63,15 @@
               style="margin-left: 0px; margin-right: 8px;"
               @click="showFamilyDetail(family.familyId, row.id)">{{ family.familyName }}</el-button>
           </div>
+        </template> -->
+
+        <template #families="{ item, scope }">
+          <el-button
+            type="text"
+            size="small"
+            style="margin-left: 0px; margin-right: 8px;"
+            @click="showFamilyDetail(item.familyId, scope.row.id)"
+          >{{ item.familyName | asteriskDisplay('asterisk_name')}}</el-button>
         </template>
 
         <template #content="{ row }">
@@ -102,7 +111,9 @@
               operateQueryAuth === true && 
                 !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
-            @click="handleWithdraw(row)">撤回</el-button>
+            @click="handleWithdraw(row)"
+          >撤回</el-button>
+
           <el-button
             v-if="
               row.status != 'PENDING' || 
@@ -111,7 +122,8 @@
             type="text"
             size="mini"
             class="button-detail"
-            @click="onDetail(row)">详情</el-button>
+            @click="onDetail(row)"
+          >详情</el-button>
         </template>
       </m-table-new>
     </el-col>
@@ -169,7 +181,8 @@
       @close="closeAuthorize"
       title="审核"
       :close-on-click-modal="false"
-      width="780px">
+      width="780px"
+    >
       <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
@@ -200,9 +213,21 @@
         <m-multistage-records :values="toAuthorize.changeLogs" :keys="multistageExamineKeys" />
       </template>
 
-      <span slot="footer" class="dialog-footer">
-        <div v-if="!show.agree && !show.disagree">
-          <repetition-el-buttons :buttonItems="authorizeButtons" />
+      <div slot="footer" class="dialog-footer">
+        <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
+          <!-- 审批流 -->
+          <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
+            <span style="padding-right: 12px;">选择流程节点:</span>
+              <el-select v-model="nextAuth" placeholder="请选择流程节点">
+              <el-option
+                v-for="item in selectProcessOption"
+                :key="item.taskCode"
+                :label="item.taskName"
+                :value="item.taskCode">
+              </el-option>
+            </el-select>
+          </label>
+          <repetition-el-buttons style="float: right" :buttonItems="authorizeButtons" />
         </div>
 
         <div v-if="show.disagree" class="button-box logMgCls">
@@ -254,7 +279,7 @@
             plain
             @click="closeWithdraw('refuseForm')">关闭</el-button>
         </div>
-      </span>
+      </div>
     </el-dialog>
     
     <el-dialog
@@ -527,6 +552,7 @@
               title="关系证明图"
               :class="{ 'relation_img': scope.relationalProofUrls.length !== 1 }"
               :url="item.url"
+              :isLazy="false"
             />
           </div>
         </template>
@@ -535,6 +561,7 @@
             <m-img-viewer
               :url="scope.meetNoticeUrl"
               title="可视电话通知单"
+              :isLazy="false"
             />
           </div>
         </template>
@@ -598,19 +625,25 @@
     mapMutations,
     mapGetters
   } from 'vuex'
+
   import Moment from 'moment'
+
   import validator, { helper } from '@/utils'
+
   import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
   import prisons from '@/common/constants/prisons'
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
   import { saveAs } from 'file-saver'
+  import {
+    withdrawOrAnthorinputReason,
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+  } from '@/common/constants/const'
 
-  import { withdrawOrAnthorinputReason } from '@/common/constants/const'
-
-  import cloneDeep from 'lodash/cloneDeep'
-
-  // import { tokenExcel } from '@/utils/token-excel'
+  import { batchDownloadPublicImageURL } from '@/utils/helper'
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
@@ -619,6 +652,7 @@
         {
           label: '现场探视申请',
           name: 'first'
+
         },
         {
           label: '审核已通过',
@@ -737,6 +771,8 @@
           }
         },
         show: {
+          subTask: false,
+          process: false,
           authorize: false,
           agree: false,
           disagree: false,
@@ -768,7 +804,7 @@
         family: {},
         sortObj: {},
         submitSuccessParams: {},
-        nextAuth:'',
+        nextAuth: '',
         familyShows: [],
         // 家属详情信息组件
         familyDetailInformationItems: [
@@ -940,12 +976,12 @@
             {
               label: '罪犯编号',
               prop: 'prisonerNumber',
-              showOverflowTooltip: true
+              ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
               prop: 'prisonerName',
-              showOverflowTooltip: true
+              ...$likeName
             },
             {
               label: '管教级别',
@@ -972,12 +1008,19 @@
             },
             {
               label: '家属',
-              slotName: 'families',
-              minWidth: 115
+              prop: 'filterFamilies',
+              minWidth: 115,
+              ...$likeName,
+              desensitizationColsConfigs: {
+                keyWord: 'familyId',
+                prop: 'familyName',
+                desensitizationColSlotName: 'families'
+              }
             },
             {
               label: '家属电话',
-              prop: 'phone'
+              prop: 'phone',
+              ...$likePhone
             },
             {
               label: '关系',
@@ -1315,20 +1358,35 @@
         }
       },
 
-      // 表格操作-审核
+      // 授权
       async handleAuthorization(e) {
-        const { id } = e
+        const { id, processInstanceId } = e
         await this.onGetDetailAndInitData(id)
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
+        this.submitParams = null
+        this.show.subTask = false
+        this.show.process = false
+        this.nextAuth = ''
         await this.onRejectshow(false,false)
         this.isform = false
         this.$message.closeAll()
         // 获取实地探监的配置信息
         await this.getVisitTimeConfig(id)
+        // 如果配置了审批流
+        if( e.processInstanceId ) {
+          this.getSubtask(e)
+        }
+        this.toShow = Object.assign({}, e, this.toAuthorize) // JSON.parse(JSON.stringify(this.toAuthorize))
         this.show.authorize = true
-        this.toShow = JSON.parse(JSON.stringify(this.toAuthorize))
+      },
+      // 获取下一级节点
+      async getSubtask({ processInstanceId }){
+        let _data = await http.getSubtaskPhone({ processInstanceId })
+        this.selectProcessOption = _data || []
+        this.show.process = !!this.selectProcessOption.length
+        this.nextAuth = !this.selectProcessOption.length ? '' : this.selectProcessOption[0].taskCode
       },
       async handleWithdraw(e) {
         const { id } = e
@@ -1423,7 +1481,6 @@
       onAgreeAuthorize() {
         this.show.agree = true
         this.buttonLoading = false
-        this.submitSuccessParams = null
         this.clearCellText()
       },
       //覆盖mixin 授权对话框的不同意操作
@@ -1498,6 +1555,7 @@
             this.submitParams.meetingTime = this.submitSuccessParams.meetingTime
             this.submitParams.status = 'PASSED'
             this.submitParams.nextAuth = this.nextAuth
+            this.show.subTask = !!this.submitParams.meetingTime
             this.show.agree = false
             this.submitMeetingAuthorize()
         }
@@ -1546,8 +1604,6 @@
           if (this.meetingRefresh) this.getDatas('closeAuthorize')
         }
         this.remarks =[]
-        this.submitParams=null
-        this.nextAuth=''
       },
       closeWithdraw(e) {
         this.show.withdraw=false
@@ -1562,8 +1618,38 @@
       },
       async showFamilyDetail(familyId, visitId) {
         let { data = {} } = await http.getVisitsFamilyDetail({ familyId, visitId })
+
         data.family = data.family || {}
+
+        const {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        } = data.family
+
+        const urls = {
+          familyIdCardBack,
+          familyIdCardFront,
+          familyRelationalProofUrl,
+          familyRelationalProofUrl2,
+          familyRelationalProofUrl3,
+          familyRelationalProofUrl4
+        }
+
+        const _key = `familyId_${ familyId }`
+
+        const URLS = await batchDownloadPublicImageURL(urls, _key)
+
+        data.family = {
+          ...data.family,
+          ...URLS
+        }
+
         data.family.relationalProofUrls = []
+
         for(let [key, value] of Object.entries(data.family)) {
           const keys = ['familyRelationalProofUrl', 'familyRelationalProofUrl2', 'familyRelationalProofUrl3', 'familyRelationalProofUrl4']
           keys.includes(key) && value && data.family.relationalProofUrls.push({
@@ -1706,6 +1792,9 @@
   }
   .meetingQueue-sp {
     color: #409EFF;
+  }
+  .process-select-block {
+    padding: 20px 0 10px;
   }
 </style>
 

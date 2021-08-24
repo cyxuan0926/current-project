@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <el-row class="el-row__time">
     <m-table-new
       border
       stripe
@@ -8,8 +8,8 @@
       :cell-style="cellStyle"
       @cell-click="onGetTime"
       :cols="tableCols"
-      :data="meetingConfigs.tableData">
-    </m-table-new>
+      :data="meetingConfigs.tableData"
+    />
   </el-row>
 </template>
 <script>
