@@ -250,7 +250,8 @@
                         familyRelationalProofUrl,
                         familyRelationalProofUrl2,
                         familyRelationalProofUrl3,
-                        familyRelationalProofUrl4
+                        familyRelationalProofUrl4,
+                        meetNoticeUrl
                       } = data.family
 
                       const urls = {
@@ -259,7 +260,8 @@
                         familyRelationalProofUrl,
                         familyRelationalProofUrl2,
                         familyRelationalProofUrl3,
-                        familyRelationalProofUrl4
+                        familyRelationalProofUrl4,
+                        meetNoticeUrl
                       }
 
                       const _key = `familyId_${ familyId }`

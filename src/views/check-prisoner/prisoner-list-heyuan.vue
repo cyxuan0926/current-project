@@ -1258,7 +1258,8 @@ export default {
         familyRelationalProofUrl,
         familyRelationalProofUrl2,
         familyRelationalProofUrl3,
-        familyRelationalProofUrl4
+        familyRelationalProofUrl4,
+        meetNoticeUrl
       } = family
 
       const urls = {
@@ -1267,7 +1268,8 @@ export default {
         familyRelationalProofUrl,
         familyRelationalProofUrl2,
         familyRelationalProofUrl3,
-        familyRelationalProofUrl4
+        familyRelationalProofUrl4,
+        meetNoticeUrl
       }
 
       const _key = `familyId_${ family.id }`
