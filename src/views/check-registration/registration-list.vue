@@ -1253,8 +1253,6 @@ export default {
         result = this.set_relationalProofUrls(input)
       }
 
-      console.log(result)
-
       return result
     },
 
