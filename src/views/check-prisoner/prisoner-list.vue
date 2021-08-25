@@ -1003,7 +1003,7 @@ export default {
                       }
                     ],
               props: genderProps,
-              value: ''
+              value: '2'
             },
           }, { dissMissConfigs }, formButton)
           break
