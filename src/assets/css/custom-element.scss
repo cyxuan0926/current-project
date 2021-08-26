@@ -122,6 +122,12 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
       border-bottom: none;
     }
 
+    &.el-table__has__border-bottom {
+      th, td {
+        border-bottom: 1px solid #e6e6e6;
+      }
+    }
+
     th {
       font-weight: normal;
     }
