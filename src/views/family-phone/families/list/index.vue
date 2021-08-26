@@ -1399,7 +1399,8 @@ export default {
           relationalProofUrl,
           relationalProofUrl2,
           relationalProofUrl3,
-          relationalProofUrl4
+          relationalProofUrl4,
+          meetNoticeUrl
         } = data
 
         const urls = {
@@ -1408,7 +1409,8 @@ export default {
           relationalProofUrl,
           relationalProofUrl2,
           relationalProofUrl3,
-          relationalProofUrl4
+          relationalProofUrl4,
+          meetNoticeUrl
         }
 
         const _key = `registration_${ registrationsId }`

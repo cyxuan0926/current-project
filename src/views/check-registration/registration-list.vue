@@ -1229,7 +1229,8 @@ export default {
           relationalProofUrl,
           relationalProofUrl2,
           relationalProofUrl3,
-          relationalProofUrl4
+          relationalProofUrl4,
+          meetNoticeUrl
         } = _authorizeDetData
 
         const urls = {
@@ -1238,7 +1239,8 @@ export default {
           relationalProofUrl,
           relationalProofUrl2,
           relationalProofUrl3,
-          relationalProofUrl4
+          relationalProofUrl4,
+          meetNoticeUrl
         }
 
         const _key = `registration_${ id }`
