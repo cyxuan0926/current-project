@@ -104,7 +104,13 @@ export default {
     else if (!integerNumbers || value <= 0) callback(new Error('请输入正整数'))
     else callback()
   },
-
+  // 正整数>0
+  ispositiveNumber: (rule, value, callback) => {
+    const integerNumbers = Number.isInteger(+value)
+    if (isEmpty(value)) callback(new Error(rule.ownMessage))
+    else if (!integerNumbers || value < 0) callback(new Error('请输入正整数'))
+    else callback()
+  },
   password(rule, value, callback) {
     if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[#_@!~%^&\\$\\+\\(\\)\\*])[a-zA-Z\d#_@!~%^&\\$\\+\\(\\)\\*]{8,16}/.test(value)) {
       callback(new Error('密码长度必须为8到16位，由数字、大小写字母、特殊字符组成'))

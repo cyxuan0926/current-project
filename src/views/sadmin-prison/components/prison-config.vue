@@ -547,7 +547,18 @@ export default {
           },
 
           value: []
-        }
+        },
+          accessTimes: {
+          label: '可视电话免费剩余次数',
+
+          type: 'input',
+
+          rules: ['required', 'ispositiveNumber',"isNumber"],
+
+          append: '次',
+
+          value: '1'
+        },
       }, formButton),
       values: {},
 
