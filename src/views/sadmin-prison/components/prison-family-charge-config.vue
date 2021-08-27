@@ -1,6 +1,6 @@
 <template>
   <div class="prison-charge-config inputHeight">
-      <div > 
+      <div >
         <div class="el-form-item__content">亲情电话参数配置</div>
         <el-table
         class="el-table__has__border-bottom"
@@ -66,7 +66,7 @@
       </el-table>
 
       </div>
-      <div style="margin:50px 0"> 
+      <div style="margin:50px 0">
         <div class="el-form-item__content">亲情电话收费配置 <el-button style="margin-left:20px" v-if="show.addConfigButton==false"  type="primary"   size="mini" @click="addConfigMessage()">新增亲情电话收费配置</el-button>
          </div>
        <el-table
@@ -145,15 +145,15 @@
                        </el-input>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="2"><div>&nbsp;</div></el-col> 
-                    <el-col :span="10"> 
+                    <el-col :span="2"><div>&nbsp;</div></el-col>
+                    <el-col :span="10">
                       <el-form-item label="生效时间" required prop="startDay" label-width="80px">
-                      <el-date-picker type="date"  placeholder="选择日期" v-model="ruleForm.startDay" style="width: 100%;"></el-date-picker>
+                      <el-date-picker type="date" :picker-options="pickerOptions"  placeholder="选择日期" v-model="ruleForm.startDay" style="width: 100%;"></el-date-picker>
                   </el-form-item>
                     </el-col>
                 </el-form-item>
                  <el-divider></el-divider>
-          
+
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
@@ -163,22 +163,22 @@
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
-                    <el-col :span="10">     
+                    <el-col :span="10">
                           <el-form-item   prop="startMoneyVoice">
                         <el-input  type="number"  step="0.01"  placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVoice',2)"  v-model="ruleForm.startMoneyVoice">
                               <template slot="append">/元</template>
                         </el-input>
                           </el-form-item>
-                    </el-col> 
+                    </el-col>
                 </el-form-item>
                 <el-form-item  label="基础时长后每分钟费用" label-width="160px" prop="delivery2">
-                  <el-col :span="10">     
+                  <el-col :span="10">
                           <el-form-item   prop="fixedMoneyVoice">
                          <el-input  type="number" step="0.01" placeholder="费用" :min="0"  @blur="changeTimes('fixedMoneyVoice',2)"  v-model="ruleForm.fixedMoneyVoice">
                               <template slot="append">/元</template>
                           </el-input>
                           </el-form-item>
-                    </el-col>  
+                    </el-col>
                   </el-form-item>
                   <p class="fontMargin"><span>宽管级总费用{{broadCostVoice }}元</span><span>普管级总费用{{commonCostVoice }}元</span><span>考察级总费用{{inspectCostVoice }}元</span><span>严管级总费用{{strictCostVoice}}元</span><span>其它级总费用{{otherCostVoice }}元</span></p>
                 <el-divider></el-divider>
@@ -191,7 +191,7 @@
                       </el-form-item>
                     </el-col>
                     <el-col :span="2"><div>&nbsp;</div></el-col>
-                      <el-col :span="10">     
+                      <el-col :span="10">
                           <el-form-item   prop="startMoneyVisual">
                          <el-input  type="number"  step="0.01" placeholder="费用"  :min="0"  @blur="changeTimes('startMoneyVisual',2)"  v-model="ruleForm.startMoneyVisual">
                               <template slot="append">/元</template>
@@ -200,7 +200,7 @@
                       </el-col>
                 </el-form-item>
                           <el-form-item label="基础时长后每分钟费用"  label-width="160px" prop="fixedMoneyVisual">
-                          <el-col :span="10"> 
+                          <el-col :span="10">
                            <el-input  type="number"  min="0"  @change="changeTimes('fixedMoneyVisual',2)"  v-model="ruleForm.fixedMoneyVisual">
                               <template slot="append">/元</template>
                            </el-input>
@@ -252,7 +252,6 @@ export default {
         phoneCodes : phoneCodesJson,
         maxDuration:0,
         oneTimeDay,
-        addrname:"",
         tableData: {
           configurationsFamilyPhoneList:[],
           familyPhoneChargeTemplateList:[]
@@ -309,6 +308,11 @@ export default {
           startMinutesVisual: [
             { required: true, message: '请选填写分钟', trigger: 'blur' }
           ]
+        },
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() < Date.now();
+          }
         }
       };
     },
@@ -462,7 +466,7 @@ export default {
       },
       selectaddr(a){
         this.ruleForm.destinationName=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
-        this.addrname=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
+        this.ruleForm.addrname=this.phoneCodes.filter(item=>item.phone_code ==a)[0].chinese_name
       },
       addConfigMessage(){
        this.show.addConfig=true
@@ -479,7 +483,7 @@ export default {
           if (valid) {
             this.ruleForm.startDay=  Moment(this.ruleForm.startDay).format("YYYY-MM-DD")
             if(this.ruleForm.id){
-              this.ruleForm.destinationName=this.addrname
+              this.ruleForm.destinationName=this.ruleForm.addrname
               let res = await http.editTemplate({...this.ruleForm})
                 if(res){
                   this.getdata()
@@ -571,7 +575,7 @@ export default {
        res.data.familyPhoneChargeTemplateList.forEach((item,key)=>{
            let obj={}
              obj.id=item.id
-             this.addrname=item.destinationName
+             obj.addrname=item.destinationName
              obj.destinationName=item.destinationName+"(可视电话)"
              item.destinationName=item.destinationName+"(语音电话)"
              obj.destinationCode=item.destinationCode
