@@ -3,6 +3,7 @@
       <div > 
         <div class="el-form-item__content">亲情电话参数配置</div>
         <el-table
+        class="el-table__has__border-bottom"
         :data="tableData.configurationsFamilyPhoneList"
         border
         style="width: 100%">
@@ -595,10 +596,6 @@ export default {
 }
 </script>
 <style lang="stylus">
-#body .el-table.border th, #body .el-table td{
- border-bottom: 1px solid #e6e6e6
-}
-
 .inputHeight .el-input--mini .el-input__inner {
     height: 28px;
     line-height: inherit;

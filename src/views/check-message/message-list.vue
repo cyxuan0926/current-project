@@ -309,15 +309,18 @@ export default {
       tableCols: [
         {
           label: '省份名称',
-          prop: 'provincesName'
+          prop: 'provincesName',
+          showOverflowTooltip: true
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
@@ -485,7 +488,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 #body .el-table.mini-td-padding td{
   padding: 8px 0;
 }

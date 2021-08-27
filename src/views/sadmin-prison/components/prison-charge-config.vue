@@ -531,24 +531,6 @@ export default {
           }
         },
 
-        messageCost: {
-          type: 'input',
-
-          label: '短信收费设置',
-
-          placeholder: '请输入短信收费',
-
-          rules: ['isFee'],
-
-          disabled,
-
-          append: '元/条',
-
-          customClass: ['el-form-item__message-set'],
-
-          value: 0
-        },
-
         // 亲情电话收费设置
         familyPhoneCharge: {
           type: 'switch',
@@ -935,8 +917,7 @@ export default {
           familyPhoneStartMoney: 0,
           familyPhoneFixedMoney: 0
         },
-        familyPhoneCharge = 0,
-        messageCost = 0
+        familyPhoneCharge = 0
       } = clonePrisonChargeConfigs
 
 
@@ -948,8 +929,7 @@ export default {
       this.diplomaticConsulOfficialFormValues = Object.assign({}, {
         diplomatistCharge,
         familyPhoneCharge,
-        familyPhoneDuration: hasValue(familyPhoneMct['duration']) ? familyPhoneMct['duration'] : 10,
-        messageCost
+        familyPhoneDuration: hasValue(familyPhoneMct['duration']) ? familyPhoneMct['duration'] : 10
       })
 
       for (let key of Object.keys(this.basicFormChargeObject)) {
@@ -1125,7 +1105,6 @@ export default {
 
       const {
         diplomatistCharge,
-        messageCost,
         familyPhoneCharge,
         familyPhoneDuration
       } = values
@@ -1141,7 +1120,6 @@ export default {
         jailId,
         prisonMctList,
         chargeType: this.localChargeType,
-        messageCost: +messageCost,
         familyPhoneCharge
       }
 
@@ -1252,12 +1230,6 @@ export default {
 
   &_diplomaticConsulOfficial-form {
     /deep/ .el-form-item {
-      &__message-set {
-        .el-form-item__content {
-          width: 36.5%;
-        }
-      }
-
       &_once-monney {
         .el-input {
           width: 45.83333%;

@@ -510,7 +510,8 @@ export default {
       tableCols: [
         {
           label: '监区',
-          prop: 'prisonAreaName'
+          prop: 'prisonAreaName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
@@ -804,12 +805,6 @@ export default {
 }
 </style>
 
-<style lang="scss" >
-#body .el-table.mini-td-padding td{
-  padding: 8px 0;
-}
-</style>
-
 <style type="text/stylus" lang="stylus" scoped>
  .family-detail{
     width: 100px;
@@ -857,7 +852,8 @@ export default {
   cursor: pointer;
 .withdraw-box
   margin-bottom 20px;
-
+.el-table.mini-td-padding td
+  padding: 8px 0;
 </style>
 <style lang="stylus">
 .logMgCls {
