@@ -1,4 +1,5 @@
 import dateFormate from '@/filters/modules/date'
+import { isArray, isEqual } from 'lodash'
 import * as helper from './helper'
 
 const isEmpty = (val) => {
@@ -115,6 +116,22 @@ export default {
     if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[#_@!~%^&\\$\\+\\(\\)\\*])[a-zA-Z\d#_@!~%^&\\$\\+\\(\\)\\*]{8,16}/.test(value)) {
       callback(new Error('密码长度必须为8到16位，由数字、大小写字母、特殊字符组成'))
     }
+    callback()
+  },
+
+  isRepeatValidate: (rule, value, callback) => {
+    if (!value) callback()
+
+    if (rule.repeatArray && isArray(rule.repeatArray)) {
+      const filterValue = rule.filterFun ? rule.filterFun(value) : value
+
+      const exist = rule.repeatArray.find(item => isEqual(item[rule['valueKey']], filterValue))
+
+      if (exist) callback(new Error(rule.message))
+
+      callback()
+    }
+
     callback()
   }
 }
