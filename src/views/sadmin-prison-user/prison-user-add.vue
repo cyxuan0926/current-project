@@ -145,8 +145,6 @@ export default {
 
             else await this.getChildPrisonConfigs({ parentId: value })
 
-            this.hasPrisonArea = !!this.multiPrisonConfigs.length
-
             temp = this.multiPrisonConfigs.map(item => ({
               label: item.name,
               value: item.id,
