@@ -548,7 +548,7 @@ export default {
 
           value: []
         },
-          accessTimes: {
+        accessTimes: {
           label: '可视电话免费剩余次数',
 
           type: 'input',
@@ -559,6 +559,40 @@ export default {
 
           value: '1'
         },
+
+        familyMsgScope: {
+          label: '亲情短信发送范围',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '认证家属',
+              value: 0
+            },
+
+            {
+              label: '亲情电话导入家属',
+              value: 1
+            }
+          ],
+          value: [1]
+        },
+
+        familyMsgCheckConf: {
+          label: '亲情短信审核配置',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '家属发送需审核',
+              value: 0
+            },
+
+            {
+              label: '服刑人员发送需审核',
+              value: 1
+            }
+          ],
+          value: [0, 1]
+        }
       }, formButton),
       values: {},
 
