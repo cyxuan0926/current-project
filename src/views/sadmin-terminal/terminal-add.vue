@@ -78,7 +78,11 @@
         </template>
 
         <el-form-item label="对应权限的用户名" prop="username">
-          <el-select v-model="terminal.username" placeholder="请选择对应权限的用户名">
+          <el-select
+            v-model="terminal.username"
+            placeholder="请选择对应权限的用户名"
+            clearable
+          >
             <template v-for="user in terminalUserListsByPrisonConfigId">
               <el-option
                 :key="user.prisonConfigId + user.username"
