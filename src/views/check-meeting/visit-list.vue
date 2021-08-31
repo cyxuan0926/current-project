@@ -1366,7 +1366,7 @@
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
-        this.submitParams = null
+        this.submitParams = {}
         this.show.subTask = false
         this.show.process = false
         this.nextAuth = ''
