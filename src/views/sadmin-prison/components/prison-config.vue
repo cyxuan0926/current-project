@@ -61,7 +61,7 @@
             label-width="65px"
           >
             <el-select v-model="slotFormData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
-              <el-option 
+              <el-option
                 v-for="configs in faceRecognitionValues"
                 :key="configs"
                 :label="configs"
@@ -78,7 +78,7 @@
             label-width="65px"
           >
             <el-select v-model="slotFormData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
-              <el-option 
+              <el-option
                 v-for="configs in faceRecognitionValues"
                 :key="configs"
                 :label="configs"
@@ -176,7 +176,7 @@
           </el-form-item>
         </el-col>
       </template> -->
-     
+
   </div>
 </template>
 
@@ -553,12 +553,46 @@ export default {
 
           type: 'input',
 
-          rules: ['required', 'isPositiveNumber',"isNumber"],
+          rules: ['required', 'ispositiveNumber',"isNumber"],
 
           append: '次',
 
           value: '1'
         },
+
+        familyMsgScope: {
+          label: '亲情短信发送范围',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '认证家属',
+              value: 0
+            },
+
+            {
+              label: '亲情电话导入家属',
+              value: 1
+            }
+          ],
+          value: [1]
+        },
+
+        familyMsgCheckConf: {
+          label: '亲情短信审核配置',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '家属发送需审核',
+              value: 0
+            },
+
+            {
+              label: '服刑人员发送需审核',
+              value: 1
+            }
+          ],
+          value: [0, 1]
+        }
           meetingEnabled: {
           type: 'switch',
           label: '狱警通话开关',

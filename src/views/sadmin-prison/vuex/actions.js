@@ -33,6 +33,10 @@ export default {
         regs.familyPhoneScope = _temp[(+regs.familyPhoneScope)]
       }
 
+      if (!regs.familyMsgScope || !Array.isArray(regs.familyMsgScope)) regs.familyMsgScope = [1]
+
+      if (!regs.familyMsgCheckConf || !Array.isArray(regs.familyMsgCheckConf)) regs.familyMsgCheckConf = [0, 1]
+
       commit('getPrisonDetail', regs)
 
       commit('getBranchStatus', res.branchStatus)

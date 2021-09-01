@@ -8,25 +8,15 @@
       :values="basicFormValues"
       @response="onBasicFormSyncData"
     >
-      <template #pre>
-        <el-button
-          v-if="localChargeType === 2"
-          class="el-button_float-right"
-          size="small"
-          type="primary"
-          @click="onNewDuration"
-        >新增通话时长</el-button>
-      </template>
-
       <template #elTableSlot>
         <m-table-new :cols="tableCols" :data="tableData">
           <template #selectElement="{ row }">
             <el-radio-group v-model="radio" @change="onShowChargeConfigsItems">
-              <template v-for="item in tableData">
+              <template v-for="duration in meetingChargeConfigDurations">
                 <el-radio
-                  v-if="item.duration === row.duration"
-                  :key="item.duration"
-                  :label="item.duration"
+                  v-if="duration === row.duration"
+                  :key="duration"
+                  :label="duration"
                 >&nbsp;</el-radio>
               </template>            
             </el-radio-group>
@@ -90,7 +80,7 @@
     </m-form>
 
     <!-- 预保存 -->
-    <el-row v-if="isShowSave" class="prison-charge-config-button_box">
+    <el-row v-if="radio" class="prison-charge-config-button_box">
       <el-button
         size="small"
         type="primary"
@@ -209,7 +199,7 @@
     <!-- 操作 -->
     <el-row class="prison-charge-config-button_box">
       <el-button
-        :disabled="!!isShowSave"
+        :disabled="!!radio"
         size="small"
         type="primary"
         @click="onPrediplomaticConsulOfficialFormCheck">更新</el-button>
@@ -222,6 +212,8 @@
 </template>
 
 <script>
+
+import { meetingChargeConfigDurations } from '@/common/constants/const'
 
 import roles from '@/common/constants/roles'
 
@@ -237,7 +229,6 @@ import { Message } from 'element-ui'
 
 import { hasValue } from '@/utils/helper'
 
-import validator from '@/utils'
 export default {
   data() {
     const id = this.$route.params.id
@@ -447,14 +438,6 @@ export default {
     const basicStartMoney = { validator: validateMoney, trigger: 'blur' }
 
     const basicFixedMoney = { validator: validateFixedMoney, trigger: 'blur' }
-
-    const originalNewTableData = {
-      startMinutes: 0, // 5,
-
-      startMoney: 0, // 15,
-
-      fixedMoney: 0, // 2.2
-    }
     return {
       id,
 
@@ -478,13 +461,21 @@ export default {
 
       radio: null,
 
+      meetingChargeConfigDurations,
+
       basicFormChargeObject,
 
       tableCols: [],
 
       tableData: [],
 
-      basicFormData: cloneDeep(originalNewTableData),
+      basicFormData: {
+        startMinutes: 5,
+
+        startMoney: 15,
+
+        fixedMoney: 2.2
+      },
 
       diplomaticConsulOfficialFormItems: {
         formConfigs,
@@ -547,10 +538,8 @@ export default {
 
           label: '亲情电话收费设置',
 
-          disabled: true,
-
-          miss: true,
-
+          disabled:true,
+          miss :true,
           func: this.onDiplomatistOrFamilyPhoneChargeChange,
 
           value: 0,
@@ -674,7 +663,9 @@ export default {
 
           label: '通话时长',
 
-          rules: ['required', { validator: validator.isRepeatValidate, message: '该通话时长已存在，请重新输入！', repeatArray: [], valueKey: 'duration', filterFun: Number }],
+          disabled: true,
+
+          rules: ['required'],
 
           append: '分钟',
 
@@ -731,13 +722,7 @@ export default {
 
       basicFormSyncData: {},
 
-      diplomaticConsulOfficialFormSyncData: {},
-
-      originalNewTableData,
-
-      isNewStatus: false,
-
-      minutesTypeOriginalTableLength: 4
+      diplomaticConsulOfficialFormSyncData: {}
     }
   },
 
@@ -791,20 +776,19 @@ export default {
         startMoney,
         startMinutes,
         fixedMoney
-      } = this.basicFormData, { duration } = this.basicFormSyncData
+      } = this.basicFormData
 
       if (
+        !hasValue(this.radio) ||
         !hasValue(startMoney) ||
         !hasValue(startMinutes) ||
         !hasValue(fixedMoney) ||
         this.localChargeType === 1 ||
-        (this.localChargeType === 2 && +duration < +startMinutes)
+        +this.radio < +startMinutes
       ) return 0
 
       else {
-        const inputTime = this.radio || +duration
-
-        const cost = new BigNumber(startMoney).plus(new BigNumber(inputTime - startMinutes).times(fixedMoney)).toNumber()
+        const cost = new BigNumber(startMoney).plus(new BigNumber(this.radio - startMinutes).times(fixedMoney)).toNumber()
 
         return cost
       }
@@ -833,10 +817,6 @@ export default {
 
         return cost
       }
-    },
-
-    isShowSave() {
-      return this.radio || (this.localChargeType === 2 && this.isNewStatus)
     }
   },
 
@@ -956,8 +936,6 @@ export default {
       for (let key of Object.keys(this.basicFormChargeObject)) {
         const temp = prisonMctList.filter(meetingDurationConfigs => meetingDurationConfigs.type === +key)
 
-        if (+key === 2) this.minutesTypeOriginalTableLength = temp.length
-
         this.$set(this.basicFormChargeObject[key], 'tableData', temp)
       }
 
@@ -1031,8 +1009,6 @@ export default {
 
     // 显示form组件收费配置items 并且初始数据
     onShowChargeConfigsItems(duration) {
-      const { tableData, fields } = this.currentChargeTypeConfigs
-
       const prop = 'elTableSlot'
 
       const chargeTypeProp = 'chargeType'
@@ -1043,24 +1019,11 @@ export default {
 
       this.$set(this.basicFormItems[chargeTypeProp]['configs'], [this.localChargeType - 1], cloneDeep(formItemconfigs))
 
-      this.$set(this.basicFormItems['duration']['rule'][1], 'repeatArray', [])
-
-      if (this.localChargeType === 2) {
-        this.$set(this.basicFormItems['duration'], 'disabled', !!this.radio)
-
-        if (!this.radio) this.$set(this.basicFormItems['duration']['rule'][1], 'repeatArray', tableData)
-      }
-
       this.$refs['prison-charge-config_basic-form'].radioChangeEvent(this.localChargeType, prop, item)
 
-      const data = this.radio ? tableData.filter(item => item.duration === this.radio) : [{
-        ...this.originalNewTableData,
-        duration: '',
-        jailId: +this.id,
-        type: 2,
-        version: 0,
-        onceMoney: this.typeTotalCost
-      }]
+      const { tableData, fields } = this.currentChargeTypeConfigs
+
+      const data = tableData.filter(item => item.duration === this.radio)
 
       const [ values ] = data
 
@@ -1069,7 +1032,7 @@ export default {
       fields.forEach(field => {
         const value = values[field]
 
-        this.$set(this.basicFormData, field, +value)
+        this.$set(this.basicFormData, field, value)
       })
 
       this.$refs['prison-charge-config_basic-form'] && this.$refs['prison-charge-config_basic-form'].onClearValidate()
@@ -1098,8 +1061,6 @@ export default {
       })
 
       this.$refs['prison-charge-config_basic-form'].radioChangeEvent(this.localChargeType, prop, item)
-
-      this.isNewStatus = false
     },
 
     // form组件响应的数据
@@ -1116,21 +1077,13 @@ export default {
       const isChecked = await this.$refs['prison-charge-config_basic-form'].onCheck()
 
       if (isChecked) {
-        const { duration } = this.basicFormSyncData
-
         const { tableData } = this.currentChargeTypeConfigs
 
-        // 新增就是在最后加入一条数据
-        const $index = tableData.find(item => item.duration === this.radio) ? tableData.findIndex(item => item.duration === this.radio) : tableData.length
+        const $index = tableData.findIndex(item => item.duration === this.radio)
 
-        const minutesTypeValues = { ...this.basicFormData, onceMoney: this.typeTotalCost }
+        const temp = this.localChargeType === 1 ? this.basicFormSyncData : { ...this.basicFormData, onceMoney: this.typeTotalCost }
 
-        const temp = this.localChargeType === 1 ? this.basicFormSyncData : (this.radio ? minutesTypeValues : { ...minutesTypeValues, duration: +duration, jailId: +this.id, type: 2, version: 0 })
-
-        // 现在这里初始化的值 是否需要 初始化别的需要后端那边的配合来决定
-        const originalTableData = tableData[$index] || {}
-
-        const values = { ...originalTableData, ...temp }
+        const values = { ...tableData[$index], ...temp }
 
         this.$set(tableData, $index, values)
 
@@ -1161,9 +1114,7 @@ export default {
 
       const { tableData } = this.currentChargeTypeConfigs
 
-      const isNewMeetingChargeTemplateReqVoList = this.localChargeType === 2 && this.minutesTypeOriginalTableLength !== tableData.length
-
-      const prisonMctList = !isNewMeetingChargeTemplateReqVoList ? tableData : tableData.slice(0, this.minutesTypeOriginalTableLength)
+      const prisonMctList = tableData
 
       let params = {
         diplomatistCharge,
@@ -1171,15 +1122,6 @@ export default {
         prisonMctList,
         chargeType: this.localChargeType,
         familyPhoneCharge
-      }
-
-      if (isNewMeetingChargeTemplateReqVoList) {
-        const newMeetingChargeTemplateReqVoList = tableData.slice(this.minutesTypeOriginalTableLength)
-
-        params = {
-          ...params,
-          newMeetingChargeTemplateReqVoList
-        }
       }
 
       if (diplomatistCharge) {
@@ -1242,15 +1184,6 @@ export default {
     // 更新按钮预处理判断
     onPrediplomaticConsulOfficialFormCheck(values) {
       this.$refs['prison-charge-config_diplomaticConsulOfficial-form'].onSubmit()
-    },
-
-    // 新增通话时长
-    onNewDuration() {
-      this.isNewStatus = true
-
-      if (this.radio) this.radio = null
-
-      this.onShowChargeConfigsItems()
     }
   },
 
@@ -1293,13 +1226,6 @@ export default {
 
     /deep/ .el-table {
       margin-bottom: 22px !important;
-    }
-
-    /deep/ .el-button_float-right {
-      // 为了解决浮动之后 响应事件有效
-      float: right !important;
-      z-index: 100;
-      position: relative;
     }
   }
 
