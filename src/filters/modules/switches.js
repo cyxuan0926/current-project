@@ -335,6 +335,25 @@ let switches = {
       label: '其他业务',
       value: 1
     }
+  ],
+
+  level: [
+    {
+      label: '宽管级',
+      value: 1
+    },
+    {
+      label: '普管级',
+      value: 2
+    },
+    {
+      label: '考察级',
+      value: 3
+    },
+    {
+      label: '严管级',
+      value: 4
+    }
   ]
 }
 
