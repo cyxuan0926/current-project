@@ -592,7 +592,7 @@ export default {
             }
           ],
           value: [0, 1]
-        }
+        },
           meetingEnabled: {
           type: 'switch',
           label: '狱警通话开关',
