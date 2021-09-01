@@ -125,6 +125,12 @@ import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
 import http from '@/service'
+
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -194,24 +200,29 @@ export default {
       const cols = [
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
           prop: 'criminalNumber',
+          ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName'
+          prop: 'criminalName',
+          ...$likeName
         },
         {
           label: '家属姓名',
-          prop: 'familyName'
+          prop: 'familyName',
+          ...$likeName
         },
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone'
+          prop: 'familyPhone',
+          ...$likePhone
         },
          {
           label: '总通话时间段',
@@ -291,9 +302,9 @@ export default {
         endTime: this.todayDate
       })
     },
-  mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
-    this.getDatas()
+  async mounted() {
+    this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
+    await this.getDatas()
   }
 }
 </script>

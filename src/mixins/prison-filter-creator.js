@@ -38,19 +38,19 @@ export default {
     }
   },
 
-  created() {
-    if (this.hasDiplomatQueryAuth) this.createDiplomatFilter()
+  async created() {
+    if (this.hasDiplomatQueryAuth) await this.createDiplomatFilter()
 
-    if (this.hasOnlyAllPrisonQueryAuth) this.createPrisonFilter()
+    if (this.hasOnlyAllPrisonQueryAuth) await this.createPrisonFilter()
 
     if (this.hasAllPrisonQueryAuth) {
-      this.createPrisonAreaFilter()
-      this.createPrisonFilter()
+      await this.createPrisonAreaFilter()
+      await this.createPrisonFilter()
     }
 
-    if (this.hasPrisonAreaAuth) this.createPrisonAreaFilter()
+    if (this.hasPrisonAreaAuth) await this.createPrisonAreaFilter()
 
-    if (this.hasProvinceQueryAuth) this.createProvinceFilter()
+    if (this.hasProvinceQueryAuth) await this.createProvinceFilter()
   },
 
   methods: {
