@@ -698,6 +698,7 @@
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
+        vistitApplyStatus: this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON' && s.value != 'FINISHED' && s.value != 'ENDED'),
         searchItems: {
           name: {
             type: 'input',
@@ -741,7 +742,7 @@
           status: {
             type: 'select',
             label: '申请状态',
-            options: this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON'),
+            options: this.vistitApplyStatus,
             miss: true,
             correlation: "status",
             value: ''
@@ -1159,7 +1160,7 @@
             this.toShow.changerType=true
             this.filter.changerType = '2'
           }else{
-            this.searchItems.status.options = this.$store.state.applyStatus.filter(s => s.value != 'MEETING_ON')
+            this.searchItems.status.options = this.vistitApplyStatus
           }
         }
         this.onSearch()
@@ -1365,7 +1366,7 @@
         this.show.agree = false
         this.show.disagree = false
         this.submitSuccessParams = null
-        this.submitParams = null
+        this.submitParams = {}
         this.show.subTask = false
         this.show.process = false
         this.nextAuth = ''
