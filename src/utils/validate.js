@@ -99,13 +99,15 @@ export default {
   },
   // 正整数
   isPositiveIntegers: (rule, value, callback) => {
+    console.log(value)
     const integerNumbers = Number.isInteger(+value)
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
     else if (!integerNumbers || value <= 0) callback(new Error('请输入正整数'))
     else callback()
   },
   // 正整数>0
-  ispositiveNumber: (rule, value, callback) => {
+  isPositiveNumber: (rule, value, callback) => {
+    console.log(value)
     const integerNumbers = Number.isInteger(+value)
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
     else if (!integerNumbers || value < 0) callback(new Error('请输入正整数'))

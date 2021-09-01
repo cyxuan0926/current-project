@@ -553,11 +553,18 @@ export default {
 
           type: 'input',
 
-          rules: ['required', 'ispositiveNumber',"isNumber"],
+          rules: ['required', 'isPositiveNumber',"isNumber"],
 
           append: '次',
 
           value: '1'
+        },
+          meetingEnabled: {
+          type: 'switch',
+          label: '狱警通话开关',
+          disabled,
+          rules: ['required'],
+          value: 0
         },
       }, formButton),
       values: {},

@@ -310,6 +310,8 @@ export default {
           return { validator: validator.tempNumber }
         case 'isPositiveIntegers':
           return { validator: validator.isPositiveIntegers }
+        case 'isPositiveNumber':
+          return { validator: validator.isPositiveNumber }
         default:
           return {}
       }

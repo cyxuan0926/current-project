@@ -200,5 +200,13 @@ export default {
   // 根据监狱/监区/权限 查询终端用户
   getTerminalUsersByPrisonConfigId: params => {
     return service.get('/jails/getUserListByPrisonConfigId', params)
+  },
+  // 亲情短信收费配置
+  getConfigMessageList: params => {
+    return service.get('/configurationsFamilyMessage/messageList', params).then(res => res && res.data)
+  },
+  //  亲情短信收费配置更新
+  editMessageList: params => {
+    return service.postObj('/configurationsFamilyMessage/editMessage', params)
   }
 }
