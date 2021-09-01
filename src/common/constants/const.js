@@ -2,6 +2,8 @@ import Moment from 'moment'
 
 const isDesensitizationCol = true
 
+const className = 'el-form-item--ellipsis'
+
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
@@ -210,22 +212,26 @@ export const asteriskDisplayConst = {
 // table 脱敏列基本配置
 export const $likeName = {
   isDesensitizationCol,
-  asteriskProp: 'asterisk_name'
+  asteriskProp: 'asterisk_name',
+  className
 }
 
 export const $likePrisonerNumber = {
   isDesensitizationCol,
-  asteriskProp: 'asterisk_prisonerNumber'
+  asteriskProp: 'asterisk_prisonerNumber',
+  className
 }
 
 export const $likePhone = {
   isDesensitizationCol,
-  asteriskProp: 'asterisk_phone'
+  asteriskProp: 'asterisk_phone',
+  className
 }
 
 export const $likeIdCard = {
   isDesensitizationCol,
-  asteriskProp: 'asterisk_idCard'
+  asteriskProp: 'asterisk_idCard',
+  className
 }
 
 export const terminalUsersBasicAuths = [

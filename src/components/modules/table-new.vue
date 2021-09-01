@@ -104,3 +104,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.el-table {
+  /deep/ .el-form-item--ellipsis {
+    .cell {
+      white-space: nowrap;
+    }
+  }
+}
+</style>
+
