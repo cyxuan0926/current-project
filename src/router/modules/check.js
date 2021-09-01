@@ -203,7 +203,6 @@ let check = [{
     path: '/family/list',
     name: 'family-list',
     // component: helper.loadView('check-family/family-list'),
-    props: { hasPrisonAreaAuth: true },
     component: 'check-family/family-list',
     // component: resolve => require(['@/views/check-family/family-list'], resolve),
     meta: { permission: 'visit.family.search', breadcrumbName: '家属列表' }

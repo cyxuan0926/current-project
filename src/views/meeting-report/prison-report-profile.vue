@@ -40,41 +40,69 @@ export default {
           label: '省份',
           prop: 'provinceName'
         },
+
         {
           label: '监狱名称',
           prop: 'jailName',
           showOverflowTooltip: true
         },
+
         {
           label: '监区',
-          prop: 'fullname'
+          prop: 'fullname',
+          showOverflowTooltip: true
         },
+
         {
           label: '申请次数',
           prop: 'total',
           slotName: 'total'
         },
+
         {
-          label: '通话成功次数',
+          label: '未授权次数',
+          prop: ''
+        },
+
+        {
+          label: '待通话次数',
+          prop: ''
+        },
+
+        {
+          label: '已完成次数',
           prop: 'finishedTotal',
           slotName: 'finishedTotal'
         },
+
         {
-          label: '取消次数',
-          prop: 'canceledTotal',
-          slotName: 'canceledTotal'
-        },
-        {
-          label: '过期次数',
+          label: '已过期次数',
           prop: 'expiredTotal',
           slotName: 'expiredTotal'
         },
+
         {
-          label: '拒绝/撤回次数',
+          label: '已拒绝/撤回次数',
           prop: 'deniedTotal',
           slotName: 'deniedTotal'
+        },
+
+        {
+          label: '已取消次数',
+          prop: 'canceledTotal',
+          slotName: 'canceledTotal'
+        },
+
+        {
+          label: '已结束次数',
+          prop: ''
+        },
+
+        {
+          label: '通话中次数'
         }
       ]
+
       if (!this.hasAllPrisonQueryAuth) {
         cols.splice(0, 2)
 

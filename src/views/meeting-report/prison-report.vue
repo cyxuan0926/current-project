@@ -1,36 +1,34 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
       :path="excelDownloadPath"
       :params="filter"
     />
+
     <m-search
       ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
+
     <el-col :span="24">
-      <el-tabs
-        v-model="activeComponentName"
-        type="card">
+      <el-tabs v-model="activeComponentName" type="card">
         <template v-for="item in tabOptions">
           <el-tab-pane
             :label="item.label"
             :name="item.name"
-            :key="item.name">
+            :key="item.name"
+          >
             <keep-alive>
-              <component
-                :is="activeComponentName"
-                :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth" />
+              <component :is="activeComponentName" :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth" />
             </keep-alive>
           </el-tab-pane>
         </template>
       </el-tabs>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="totalPage"
@@ -52,7 +50,9 @@ const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 
 export default {
   mixins: [prisonFilterCreator],
+
   components: { profile, detail },
+
   data() {
     return {
       activeComponentName: 'profile',
