@@ -838,7 +838,8 @@
             start: 'applicationStartDate',
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
-            endPlaceholder: '通话结束时间'
+            endPlaceholder: '通话结束时间',
+            canNotClear: true,
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
