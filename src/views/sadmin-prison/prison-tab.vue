@@ -165,7 +165,6 @@ export default {
     },
 
     async getSearchItem(e) {
-      console.log(this.searchItems)
       if (this.loading) return
 
       const tabsSearchItemsObject = {
