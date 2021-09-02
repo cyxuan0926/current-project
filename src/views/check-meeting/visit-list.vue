@@ -1001,7 +1001,7 @@
               slotName: 'createdAt'
             },
             {
-              label: '申请通话时间',
+              label: '申请探视时间',
               prop: 'meetingTime',
               slotName: 'meetingTime',
               sortable: 'custom',
