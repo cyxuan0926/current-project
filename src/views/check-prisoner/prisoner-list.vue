@@ -112,18 +112,7 @@
         </template>
         
        <template #level="{ row }">
-         <span v-if="row.level==1">
-              宽管级
-           </span>
-           <span v-if="row.level==2">
-              普管级
-           </span>
-           <span v-if="row.level==3">
-              考察级
-           </span>
-           <span v-if="row.level==4">
-              严管级
-           </span>
+         {{ row.level | level }}
         </template>
 
         <template #prisonTerm="{ row }">
@@ -168,6 +157,14 @@
         <template #operations="{ row }">
           <template v-if="isPrisonerTabVal">
             <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!row.sysFlag"
+                v-if="!row.isBlacklist"
+                @click="showPrisonerDet(row)"
+              >详情
+              </el-button>
               <el-button
                 type="text"
                 size="small"
@@ -494,6 +491,8 @@
 
       <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
+
+    <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData" />
   </el-row>
 </template>
 
@@ -503,7 +502,7 @@ import {
   mapState,
   mapGetters
 } from 'vuex'
-
+import prisonerDetailModal from './components/prisoner-detail-modal.vue'
 import validator from '@/utils'
 
 import { prisonerExcelConfig } from '@/common/excel-config'
@@ -529,6 +528,10 @@ import { Message } from 'element-ui'
 import { batchDownloadPublicImageURL } from '@/utils/helper'
 export default {
   mixins: [prisonFilterCreator],
+
+  components: {
+    prisonerDetailModal
+  },
 
   beforeRouteLeave(to, from, next) {
     this.$store.commit('setLoginHavePrisonerIn', false)
@@ -573,6 +576,8 @@ export default {
     ]
     const { belong } = prisons.PRISONAREA
     return {
+      detailDetVisible: false, // 详情弹窗
+      prisonerDetData: {},
       searchItems: {
         prisonerNumber: {
           type: 'input',
@@ -1310,7 +1315,9 @@ export default {
 
       const operationCol = {
         label: '操作',
-        slotName: 'operations'
+        slotName: 'operations',
+        minWidth: 150,
+        align: 'center'
       }
 
       const commonCols = [
@@ -1660,6 +1667,19 @@ export default {
       }
 
       this.dialogTableVisible = true
+    },
+
+    // 打开详情弹窗
+    async showPrisonerDet(data) {
+      let { faceUrl, id } = data
+      if (faceUrl) {
+        const URLS = await batchDownloadPublicImageURL({
+          faceUrl
+        }, `prisonId_${ id }`)
+        data.faceUrl = URLS.faceUrl
+      }
+      this.prisonerDetData = Object.assign({}, data)
+      this.detailDetVisible = true
     },
 
     // 展示黑名单对话框

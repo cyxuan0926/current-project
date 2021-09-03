@@ -203,7 +203,6 @@ let check = [{
     path: '/family/list',
     name: 'family-list',
     // component: helper.loadView('check-family/family-list'),
-    props: { hasPrisonAreaAuth: true },
     component: 'check-family/family-list',
     // component: resolve => require(['@/views/check-family/family-list'], resolve),
     meta: { permission: 'visit.family.search', breadcrumbName: '家属列表' }
@@ -312,6 +311,28 @@ let check = [{
     // component: resolve => require(['@/views/check-data-import-details/prisoner-inside-jails-costs-list'], resolve),
     meta: { permission: 'visit.data-search.prison-consumption.search', breadcrumbName: '服刑人员狱内消费详情表' }
   }]
+}, {
+  path: '/family-sms',
+  name: 'family-sms',
+  meta: {
+    breadcrumbName: '亲情短信管理',
+    hidden: true
+  },
+  children: [
+    {
+      path: '/family-sms/send',
+      name: 'sms-send',
+      props: { hasPrisonAreaAuth: true },
+      meta: { permission: 'visit.family-sms.send', breadcrumbName: '发送亲情短信' },
+      component: 'family-sms/sms-send'
+    }, {
+      path: '/family-sms/list',
+      name: 'sms-list',
+      props: { hasPrisonAreaAuth: true },
+      meta: { permission: 'visit.family-sms.list', breadcrumbName: '亲情短信申请管理' },
+      component: 'family-sms/sms-list'
+    }
+  ]
 }]
 
 // frame

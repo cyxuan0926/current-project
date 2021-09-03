@@ -463,16 +463,6 @@ superAdmin = [{
         breadcrumbName: '可视电话节约成本统计表'
       }
     }, {
-      path: '/prison-data/registrations',
-      name: 'prison-data_registrations',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
-      meta: {
-        permission: 'visit.family-registration.all-prison.search',
-        breadcrumbName: '家属注册信息'
-      },
-      component: 'check-registration/registration-list'
-      // component: helper.loadView('check-registration/registration-list')
-    }, {
       path: '/prison-data/meeting-applications',
       name: 'prison-data_meeting-applications',
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
@@ -726,6 +716,39 @@ superAdmin = [{
       },
       component: 'family-phone/phone/phone-admin-cost-list'
     }]
+  }, {
+    path: '/family-information',
+    name: 'SuperAdminFamilyInformation',
+    redirect: { path: '/family-information/manage/list' },
+    children: [
+      {
+        path: '/family-information/manage/list',
+        name: 'FamilyInformationManageList',
+        props: {
+          hasProvinceQueryAuth: true,
+          hasOnlyAllPrisonQueryAuth: true
+        },
+        meta: {
+          permission: 'visit.family-information-manage.all-prison.search',
+          breadcrumbName: '家属信息管理列表'
+        },
+        component: 'check-family/family-list'
+      },
+
+      {
+        path: '/family-information/registrations/list',
+        name: 'FamilyInformationRegistrationsList',
+        props: {
+          hasAllPrisonQueryAuth: true,
+          hasProvinceQueryAuth: true
+        },
+        meta: {
+          permission: 'visit.family-registration.all-prison.search',
+          breadcrumbName: '家属注册信息'
+        },
+        component: 'check-registration/registration-list'
+      }
+    ]
   }]
 superAdmin.forEach(item => {
   item.component = 'layout/the-frame'
