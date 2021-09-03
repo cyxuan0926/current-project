@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueCompositionAPI from '@vue/composition-api'
 import App from '@/app'
 import router from './router'
 import ElementUI from 'element-ui'
@@ -29,6 +30,8 @@ import {
   _timeOneWeekAgo,
   _operationAuthorizations
 } from '@/common/constants/const'
+
+Vue.use(VueCompositionAPI)
 
 Vue.use(ElementUI)
 
