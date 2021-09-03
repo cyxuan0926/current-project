@@ -289,17 +289,33 @@ export default {
           type: 'warning'
         }).then(async () => {
           const { jailId, day } = config
-
           const params = {
             jailId: +jailId,
-            day
+            day,
+            confirm: 0
           }
-
           const isSucess = await this.delVisitSpecialConfig(params)
-
-          if (isSucess) this.splice(index)
-        })
-      } else this.splice(index)
+          console.log(isSucess)
+          if(isSucess.secondConfirmation){
+                  this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                      const { jailId, day } = config
+                      const params = {
+                        jailId: +jailId,
+                        day,
+                        confirm: 1
+                      }
+                      const isSucess = await this.delVisitSpecialConfig(params)
+                      if(isSucess){
+                            this.splice(index)
+                      }
+                    })
+        } else this.splice(index)
+      })
+      }else this.splice(index)
     },
 
     // 切换是否支持会见
@@ -371,7 +387,8 @@ export default {
           if (id) {
             params = {
               ...params,
-              id
+              id,
+              confirm: 0
             }
 
             isSucess = await this.updateVisitSpecialConfig(params)
@@ -381,6 +398,7 @@ export default {
                 ...params,
                 windowNum: -1,
                 prisonConfigIds: '-1',
+                confirm: 0,
                 settings: {}
               }
             }

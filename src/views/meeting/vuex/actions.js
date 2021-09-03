@@ -808,10 +808,7 @@ export default {
 
   async delVisitSpecialConfig(_, parmas) {
     try {
-      const response = await http.delVisitSpecialConfig(parmas)
-
-      const isSucess = response && response['code'] === 200
-
+      const isSucess = await http.delVisitSpecialConfig(parmas)
       return isSucess
     }
     catch (err) {
