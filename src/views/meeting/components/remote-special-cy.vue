@@ -102,7 +102,7 @@
               style="margin-top:8px;margin-left:15px"
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
-                  </label>
+            </label>
           </el-form>
            <el-form v-if="!config.separateByArea">
             <el-form-item label="生产区设备:" style="width:450px">
@@ -128,7 +128,7 @@
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
           </el-form>
-              <div v-if="config.area==='2'">
+              <div v-if="config.area=='2'">
                 <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
                   <div class="none_superAdmin">
                     <label >通话时长</label>
@@ -208,6 +208,7 @@
             />
             <!-- 通常规时间配置 -->
             <el-button
+             v-if="config.flagConfig &&canSave(config) && permission === 'edit'"
               size="mini"
               class="button-float"
               :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -352,6 +353,7 @@
             />
             <!-- 通常规时间配置 -->
             <el-button
+              v-if="config.flagConfig &&canSave(config) && permission === 'edit'"
               size="mini"
               class="button-float"
               :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -462,22 +464,6 @@
           </template>
 
         </div>
-      <!-- 选择的日期 -->
-      <!-- <div class="config-days__selected">
-        <label >配置日期</label>
-        <el-select
-          ref="test"
-          v-model="a"
-          multiple
-          placeholder="配置日期">
-          <el-option
-            v-for="item in array"
-            :key="item"
-            :label="item"
-            :value="item"/>
-        </el-select>
-      </div> -->
-     
     </div>
     <div
       class="button-box"
@@ -528,7 +514,8 @@ export default {
         disabledDate: (time) => {
           const { unMeetingDays } = this.specialConfigs
           let t = Moment(new Date(time)).format('YYYY-MM-DD')
-          return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day.applicationDate === t ))
+          return time.getTime() < Date.now()
+         // return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day.applicationDate === t ))
         }
       },
       // 页面权限
@@ -800,8 +787,10 @@ export default {
       let params = {
         day,
         duration,
+        ...
         interval,
         area,
+        confirm:0,
         enabledMeeting,
         terminals: _terminals,
         jailId: Number(this.jailId),
@@ -885,14 +874,36 @@ export default {
           type: 'warning'
         }).then(() => {
               if(config.show){
-                this.deleteSpecialConfigById({id: config.id }).then(res => {
-                  if (!res) return
-                  this.splice(index)
+                this.deleteSpecialConfigById({id: config.id, confirm:0}).then(res => {
+                  if (res.secondConfirmation){
+                       this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                       this.deleteSpecialConfigById({id: config.id, confirm:1}).then(req => {
+                         if(!req) return
+                          this.splice(index)
+                       })
+
+                    })
+                  } else this.splice(index)
                 })
               }else{
-                   this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
-                if (!res) return
-                this.splice(index)
+                   this.deleteSpecialConfig({ jailId: config.jailId, confirm:0,day: config.oldDay }).then(res => {
+                      if (res.secondConfirmation){
+                       this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                       this.deleteSpecialConfig({ jailId: config.jailId, confirm:1,day: config.oldDay}).then(req => {
+                         if(!req) return
+                          this.splice(index)
+                       })
+
+                    })
+                  } else this.splice(index)
               })
               }
         }).catch(() => {})

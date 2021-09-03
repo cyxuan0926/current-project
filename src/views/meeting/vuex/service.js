@@ -36,7 +36,7 @@ export default {
   },
   // 监狱特殊日期配置-删除
   deleteSpecialConfig: params => {
-    return service.post('/complex_config/deleteComplexSpecialConfig', params).then(res => res && res.code === 200)
+    return service.post('/complex_config/deleteComplexSpecialConfig', params).then(res => res && res.data)
   },
   // 监狱特殊日期配置-新增
   addSpecialConfig: params => {
@@ -86,7 +86,7 @@ export default {
     return service.get('/complex_config/getTerminalsByArea', params).then(res => res && res.data)
   }, // 监狱特殊日期配置-删除
   deleteSpecialConfigById: (params) => {
-    return service.post('/complex_config/deleteComplexSpecialConfigById', params).then(res => res && res.code === 200)
+    return service.post('/complex_config/deleteComplexSpecialConfigById', params).then(res => res && res.data)
   },
 
   // 查询会见楼配置
@@ -131,7 +131,7 @@ export default {
 
   // 实地会见 - 删除特殊日期配置
   delVisitSpecialConfig: params => {
-    return service.postObj('/visit/config/deleteSpecialConfig', params)
+    return service.postObj('/visit/config/deleteSpecialConfig', params).then(res => res && res.data)
   },
 
   // 实地会见 - 更新特殊日期配置
