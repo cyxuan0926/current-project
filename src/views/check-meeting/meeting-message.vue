@@ -61,6 +61,7 @@
               size="mini"
               @click="handleAuthorization(scope.row)">审核</el-button>
               <span v-else style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
+               <span style="color:#409EFF;cursor: pointer;margin-left:15px" @click="onDetail(scope.row)">打印</span>
           </template>
         </template>
       </m-table-new>
@@ -562,7 +563,7 @@ export default {
         },
         {
           label: '操作',
-          minWidth: 100,
+          minWidth: 150,
           slotName: 'lastCoiumn',
           showOverflowTooltip: true
         }
