@@ -32,20 +32,6 @@
         :cols="tableCols"
         class="mini-td-padding"
       >
-        <!-- <template #idCard="{ row }">
-          <m-img-viewer
-            :url="row.idCardFront"
-            title="身份证正面照"
-            isRequired
-          />
-
-          <m-img-viewer
-            :url="row.idCardBack"
-            title="身份证背面照"
-            isRequired
-          />
-        </template> -->
-
         <template #prisoners="{ item }">
           <el-button   
             type="text"
@@ -53,6 +39,8 @@
             @click="showPrisonerDetail(item)"
           >{{ item.name | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
+
+        <template #isMsg="{ row }">{{ row.isMsg | isTrue }}</template>
 
         <template #operate="{ row }">
           <el-button
@@ -450,12 +438,13 @@ export default {
 
         {
           label: '短信服务是否开通',
-
+          slotName: 'isMsg'
         },
 
         {
           label: '短信服务开通时间',
-          minWidth: '100px'
+          minWidth: '100px',
+          prop: 'startTime'
         },
 
         {
@@ -560,16 +549,22 @@ export default {
       'getFamilyDetail'
     ]),
 
-    getDatas() {
+    async getDatas() {
       if (this.tabs === this.tabOptions.FAMILY) {
-        this.getFamilies({
-          ...this.filter,
-          ...this.pagination
-        })
+        const inputs = {
+          params: {
+            ...this.filter,
+            ...this.pagination
+          },
+
+          url: this.$store.getters.isSuperAdmin ? '/families/page/admin' : '/families/page'
+        }
+
+        await this.getFamilies(inputs)
       }
 
       else {
-        this.getPoliceFamilies({
+        await this.getPoliceFamilies({
           ...this.filter,
           ...this.pagination
         })

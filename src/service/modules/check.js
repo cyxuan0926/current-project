@@ -205,8 +205,8 @@ export default {
   },
 
   // 家属信息管理-列表
-  getFamilies: params => {
-    return service.get('/families/page', params).then(res => res && res.data)
+  getFamilies: ({ url = '/families/page', params }) => {
+    return service.get(url, params).then(res => res && res.data)
   },
   // 家属信息管理-详情
   getFamilyDetail: params => {
