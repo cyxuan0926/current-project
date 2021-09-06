@@ -61,7 +61,7 @@
               size="mini"
               @click="handleAuthorization(scope.row)">审核</el-button>
               <span v-else style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
-               <span style="color:#409EFF;cursor: pointer;margin-left:15px" @click="onDetail(scope.row)">打印</span>
+               <span style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(scope.row)">打印</span>
           </template>
         </template>
       </m-table-new>
@@ -76,7 +76,7 @@
       @close="closeAuthorize()"
       title="审核"
       width="530px">
-      <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%">
+      <div class="infinite-list"  style="margin-left:10px;min-height:200px;width:100%">
         <p>请审核短信内容：</p>
         <div v-html="messageContent" style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
           {{ messageContent }}
@@ -175,11 +175,22 @@
       title="短信内容"
       width="530px"
       class="authorize-dialog">
-      <div class="flex-dialog">
-        <div  v-html="messageContent" class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
+      <div class="flex-dialog" ref="print">
+          <p>家属姓名：孙悟空</p>
+          <p>家属电话：1881232321</p>
+          <p>发送时间：2020-3-21</p>
+        <div  v-html="messageContent"  class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
           {{ messageContent }}
         </div>
       </div>
+        <el-row :gutter="0">
+          <el-button
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="print()"
+          >打印</el-button>
+      </el-row>
     </el-dialog>
       <el-dialog
       :visible.sync="show.rejectEdit"
@@ -616,6 +627,10 @@ export default {
       'getCanceledVisit',
       'authorizeVisit',
       'withdrawVisit' ]),
+      print(){
+        console.log(this.$refs.print)
+        this.$print(this.$refs.print)
+      },
       onDetail(row){
         this.toShow=row
         this.show.dialog=true
@@ -879,5 +894,12 @@ export default {
     .select_edit.el-select-dropdown__item span {
         min-width: 400px;
         display: inline-block;
+   }
+   .flex-dialog {
+     width: 150px;
+     height: 100px;
+     font-size: 16px;
+     border: 1px solid #333;
+
    }
 </style>

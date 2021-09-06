@@ -19,6 +19,7 @@ import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'
 import '@/assets/css/index.scss'
 
+
 import ActiveMonitor from '@/utils/ActiveMonitor'
 
 import directives from '@/plugin/directives'
@@ -30,6 +31,10 @@ import {
   _timeOneWeekAgo,
   _operationAuthorizations
 } from '@/common/constants/const'
+
+// 打印机
+import Print from '@/common/constants/print'
+Vue.use(Print) // 注册
 
 Vue.use(VueCompositionAPI)
 
