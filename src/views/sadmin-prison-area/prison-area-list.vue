@@ -26,20 +26,26 @@
         stripe
         :data="prisonAreas.contents"
         style="width: 100%"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #createdAt="{ row }">{{ row.createdAt | Date }}</template>
+
         <template #updatedAt="{ row }">{{ row.updatedAt | Date }}</template>
+
         <template #operation="{ row, $index }">
           <el-button
             :disabled=" row.id === '-1' || row.prisonerNum !== 0 "
             size="mini"
             :type=" row.id === '-1' || row.prisonerNum !== 0  ? 'info' : 'danger' "
-            @click="onDelete(row.id)">删除</el-button>
+            @click="onDelete(row.id)"
+          >删除</el-button>
+
           <el-button
             :disabled="row.id === '-1'"
             :type=" row.id === '-1' ? 'info' : 'primary' "
             size="mini"
-            @click="handleEdit(row.id, $index)">编辑</el-button>
+            @click="handleEdit(row.id, $index)"
+          >编辑</el-button>
         </template>
       </m-table-new>
     </el-col>

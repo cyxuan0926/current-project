@@ -394,7 +394,6 @@ export default {
         {
           label: '证件号',
           prop: 'uuid',
-          showOverflowTooltip: true,
           ...$likeIdCard
         },
         {

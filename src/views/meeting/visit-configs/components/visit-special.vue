@@ -518,9 +518,7 @@ export default {
       if (this.configs.length > 1) this.configs.splice(index, 1)
 
       else this.configs = cloneDeep([this.basicConfig])
-    },
-
-    onFilterInputs() {}
+    }
   },
 
   async activated() {
