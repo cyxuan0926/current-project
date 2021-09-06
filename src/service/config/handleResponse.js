@@ -104,6 +104,19 @@ const codes = {
       tips('请检查服务是否启动！')
     }
   },
+  // 跨越调整会见增加提示
+  10002: {
+    next: params => {
+      let errors = params.errorArrays,
+          msg = params.msg
+      if (errors && errors.length) {
+        msg = `${ errors.map((err, i) => {
+          return `${ err.name }${ i === errors.length - 1 ? '' : '、' }`
+        }) }${ msg }`
+      }
+      tips(msg)
+    }
+  },
   10006: {
     next: params => {
       tips(params.msg || '账号不存在，请确认用户名或密码错误')
