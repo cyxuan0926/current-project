@@ -465,7 +465,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-applications',
       name: 'prison-data_meeting-applications',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, provincesId: '1' },
       meta: {
         permission: 'visit.visit-statistic.all-prison.remote-visit.search',
         breadcrumbName: '可视电话申请'
@@ -740,7 +740,8 @@ superAdmin = [{
         name: 'FamilyInformationRegistrationsList',
         props: {
           hasAllPrisonQueryAuth: true,
-          hasProvinceQueryAuth: true
+          hasProvinceQueryAuth: true,
+          provincesId: '1'
         },
         meta: {
           permission: 'visit.family-registration.all-prison.search',
