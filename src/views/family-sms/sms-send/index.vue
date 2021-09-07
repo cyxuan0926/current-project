@@ -67,7 +67,6 @@ export default {
                 ...pagination.value
             }
             let { data } = await http.getSendMessageList(params)
-            console.log(data)
         }
 
         // 生命周期 mounted

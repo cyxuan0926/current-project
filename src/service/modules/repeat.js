@@ -35,7 +35,7 @@ export default {
   },
   // 会见统计-监狱会见
   getPrisonReportList: params => {
-    return service.get('/report/prisonReportPage', params).then(res => res && res.data)
+    return service.get('/report/newPrisonReportPage', params).then(res => res && res.data)
   },
   // 查询监区会见统计-监狱会见
   getPrisonReportListJails: params => {

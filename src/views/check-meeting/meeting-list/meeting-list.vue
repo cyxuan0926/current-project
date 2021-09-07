@@ -799,7 +799,6 @@
 
       const AreaObj = [{label:"监舍区",value:1},{label:"会见楼",value:3}]
       // const todayDate = this.$_dateNow
-      console.log('data====', this.$store.state.areaOptions )
 
       // const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
@@ -1535,7 +1534,6 @@
       },
 
       async getDatas(e) {
-        console.log('this.filter===', this.filter)
         if (this.tabs !== 'first' && this.tabs !== 'UNUSUAL') {
           if (this.tabs !== 'DENIED,CANCELED' || !this.filter.status) {
             this.filter.status = this.tabs
@@ -1546,8 +1544,6 @@
           ...this.filter,
           ...this.pagination
         }
-
-        console.log('getDatas==', e,  params)
 
         if (this.tabs === 'UNUSUAL') {
           let url = '/meetings/findUnusualPage'
