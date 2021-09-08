@@ -1,7 +1,7 @@
 <template>
   <fullscreen class="fullscreen-layout" ref="fullscreen" @change="handleFullscreenChange">
     <el-container class="gd-home">
-      <el-header class="gd-home-title" v-show="isFullscreen"><h3>广东省可视电话数据分析</h3></el-header>
+      <el-header class="gd-home-title" v-show="isFullscreen"><h3>{{ mapData.label }}可视电话数据分析</h3></el-header>
       <el-container>
         <section class="gd-home__left">
           <section class="gd-home-map">
@@ -28,8 +28,8 @@
                   <el-table-column
                     prop="status"
                     label="设备状态">
-                    <template slot-scope="scope">
-                      <span>{{ jailStatusEm[scope.row.status] }}</span>
+                    <template #default="{ row }">
+                      <span>{{ jailStatusEm[row.status] }}</span>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -42,7 +42,7 @@
         <section class="gd-home__right"> 
             <section class="gd-home-top8-layout">
                 <m-chart-block>
-                    <template v-slot:content>
+                    <template #content>
                         <div class="gd-home-top8">
                             <el-date-picker
                                 class="gd-home-top8-datepicker"
@@ -68,13 +68,19 @@
                             <div class="gd-home-top8-block" id="top8-complete"></div> -->
                         </div>
                     </template>
+                    <template #empty v-if="isEmptyBarChart">
+                      <p>暂无通话次数</p>
+                    </template>
                 </m-chart-block>
             </section>
             <section class="gd-home-statistics">
                 <m-chart-block>
-                    <template v-slot:content>
-                        <h3 class="gd-home-block-title"><span>广东省可视电话统计曲线</span></h3>
+                    <template #content>
+                        <h3 class="gd-home-block-title"><span>{{ mapData.label }}可视电话统计曲线</span></h3>
                         <div class="gd-home-statistics-linechart" id="gd-home-statistics-charts"></div>
+                    </template>
+                    <template #empty v-if="isEmptyLineChart">
+                      <p>暂无可视电话统计</p>
                     </template>
                 </m-chart-block>
             </section> 
@@ -84,11 +90,13 @@
   </fullscreen>
 </template>
 <script>
-  import guangdongJson from '@/assets/map/guangdong.json'
   import { getRankBarChart, getSolidCircleLineChart } from '@/utils/chartOptions'
   import http from '@/service'
   import debounce from 'lodash/debounce'
   export default {
+    props: {
+      mapData: Object
+    },
     data() {
       return {
         isFullscreen: false,
@@ -105,10 +113,12 @@
         isShowDevice: false,
         barTabSelected: 0,
         barChart: null,
+        isEmptyBarChart: true,
         totalTop: [],
         finishedTotalTop: [],
         barChartOptions: {},
         lineChart: null,
+        isEmptyLineChart: true,
         lineChartOptions: {},
         lineChartStatus: [
           {
@@ -185,7 +195,7 @@
           top: top + 'px'
         }
       },
-
+      // 可视电话统计曲线 设置x轴月份
       getMonthAxis(i) {
         const date = new Date()
         let y = date.getFullYear()
@@ -220,34 +230,36 @@
         this.finishedTotalTop = finishedTotalTop.reverse()
         this.drawTop8()
       },
-
+      // 切换top8的tab
       handleTabBarSelected(flag) {
           this.barTabSelected = flag;
           this.drawTop8()
       },
-
+      // 绘制通话次数top8
       drawTop8() {
+        let _isTabApplySelected = this.barTabSelected == 0
         this.barChartOptions = getRankBarChart({
           itemColor: new echarts.graphic.LinearGradient(
             0, 0, 1, 1,
             [
-              {offset: 0, color: this.barTabSelected == 0 ? '#0043F4' : '#80C654'},
-              {offset: 1, color: this.barTabSelected == 0 ? '#48AEF8' : '#B8E2C0'}
+              {offset: 0, color: _isTabApplySelected ? '#0043F4' : '#80C654'},
+              {offset: 1, color: _isTabApplySelected ? '#48AEF8' : '#B8E2C0'}
             ]
           ),
-          labelColor: this.barTabSelected == 0 ? '#4FA5E4' : '#B7E1BF',
+          labelColor: _isTabApplySelected ? '#4FA5E4' : '#B7E1BF',
           formatter: '{c}次'
         })
-        this.barChartOptions.yAxis.data = ( this.barTabSelected == 0 ? this.totalTop : this.finishedTotalTop ).map(t => t.jailName)
-        this.barChartOptions.series[0].data = ( this.barTabSelected == 0 ? this.totalTop : this.finishedTotalTop ).map(t => t.total)
+        this.isEmptyBarChart = _isTabApplySelected ? !this.totalTop.length : !this.finishedTotalTop.length
+        this.barChartOptions.yAxis.data = ( _isTabApplySelected ? this.totalTop : this.finishedTotalTop ).map(t => t.jailName)
+        this.barChartOptions.series[0].data = ( _isTabApplySelected ? this.totalTop : this.finishedTotalTop ).map(t => t.total)
         this.barChart.setOption(this.barChartOptions)
       },
-
+      // echart初始化 top8
       initTop8() {
         this.barChart = echarts.init(document.getElementById('top8-apply'))
         this.handleDateChange()
       },
-
+      // 绘制可是电话统计曲线
       async drawLineChart() {
         const { monthList } = await http.getTotalMonthReport({
           nums: document.documentElement.clientWidth > 1440 ? 12 : 6
@@ -264,7 +276,7 @@
           deniedTotal.push( d.deniedTotal )
           finishedTotal.push( d.finishedTotal )
         })
-
+        this.isEmptyLineChart = !monthList.length
         this.lineChartOptions.xAxis.data = xaxis
         this.lineChartOptions.series.push(
           Object.assign({ data: total }, getSolidCircleLineChart({
@@ -371,7 +383,7 @@
           this.mapEffectIndex++
         }, 3000)
       },
-
+      // 绘制地图
       async drawMap() {
         if( this.isDrawMap ) {
           return
@@ -407,8 +419,9 @@
         }, 2000)
       },
 
-      initMap() {
-        echarts.registerMap('guangdong', guangdongJson)
+      async initMap() {
+        let { data = {} } = await http.getMapJson(this.mapData.adcode)
+        echarts.registerMap('guangdong', data)
         this.mapChart = echarts.init(document.getElementById('gd-home-map-container'))
         this.mapChartOptions = {
           tooltip: {

@@ -211,7 +211,7 @@
 </template>
 <script>
 
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
@@ -414,10 +414,10 @@ export default {
       this.filterBarData()
     },
     getDatas: async function () {
-      const {page, rows} = this.pagination
-      this.filter.provincesId = `20`
+      const { page, rows } = this.pagination
       this.filter.orderField = 'createTime'
       const total = await this.gdGetFamilyMeetingDetail({
+        provincesId: chartRole.provincesId,
         ...this.filter,
         ...this.pagination
       })
@@ -429,16 +429,14 @@ export default {
     await this.getDatas()
     this.filterBarData()
   },
-  created(){
-    this.provincesIdQuery=20
-  },
   computed: {
     ...mapState([
       'meetingRefresh',
       'getFamilyMeetingDetail',
       'gdmeetingStatisticTotalItem'
-    ])
-    },
+    ]),
+    ...mapGetters(['chartRole'])
+  },
   watch: {
     meetingRefresh(val) {
       if (val) {

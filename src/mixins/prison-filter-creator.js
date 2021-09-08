@@ -33,9 +33,8 @@ export default {
   },
 
   data() {
-    return {
-      filter: {}
-    }
+    const _filter = this.filter || {}
+    return _filter
   },
 
   created() {
