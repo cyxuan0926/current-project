@@ -99,7 +99,6 @@ export default {
           effectTime: [
               { required: true, message: '请选生效日期', trigger: 'blur' },
             { validator:(rule, value, callback) => {
-                console.log(Moment(value).isBefore(new Date()))
                 if(Moment(value).isBefore(new Date())){
                    callback(new Error('生效日期不得小于明天'));
                 }else{

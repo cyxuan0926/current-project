@@ -295,7 +295,7 @@ export default {
             confirm: 0
           }
           const isSucess = await this.delVisitSpecialConfig(params)
-          console.log(isSucess)
+
           if(isSucess.secondConfirmation){
                   this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
                       confirmButtonText: '确定',

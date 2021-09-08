@@ -555,7 +555,7 @@ export default {
 
           type: 'input',
 
-          rules: ['required', 'ispositiveNumber',"isNumber"],
+          rules: ['required', 'isPositiveNumber',"isNumber"],
 
           append: '次',
 
