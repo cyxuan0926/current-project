@@ -56,7 +56,7 @@ superAdmin = [{
   }, {
     path: '/family-meeting-statistics',
     component: 'gd-admin/family-statistics',
-    props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' },
+    props: { hasOnlyAllPrisonQueryAuth: true, isChartQuery: true },
     meta: {
       permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视电话统计报表'
@@ -68,7 +68,7 @@ superAdmin = [{
       permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视电话申请详情'
     },
-     props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' }
+     props: { hasOnlyAllPrisonQueryAuth: true, isChartQuery: true }
   }]
 }, {
   path: '/other-units',

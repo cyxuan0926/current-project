@@ -242,7 +242,7 @@ export default {
       //   this.filter.endDate = this.currentDate(false)
       // }
       const { data }  = await http.getFamilyStatistics({
-        provincesId: chartRole.provincesId,
+        provincesId: this.chartRole.provincesId,
         ...this.filter,
         ...this.pagination
       })

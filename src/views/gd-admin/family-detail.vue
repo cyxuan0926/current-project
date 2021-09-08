@@ -417,7 +417,7 @@ export default {
       const { page, rows } = this.pagination
       this.filter.orderField = 'createTime'
       const total = await this.gdGetFamilyMeetingDetail({
-        provincesId: chartRole.provincesId,
+        provincesId: this.chartRole.provincesId,
         ...this.filter,
         ...this.pagination
       })

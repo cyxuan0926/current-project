@@ -25,6 +25,7 @@ export default {
     hasAllPrisonQueryAuth: Boolean,
     hasOnlyAllPrisonQueryAuth: Boolean,
     hasProvinceQueryAuth: Boolean,
+    isChartQuery: Boolean,
     provincesId: String,
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
@@ -94,7 +95,7 @@ export default {
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
-      const provincesId = this.provincesId
+      const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.provincesId
 
       await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
