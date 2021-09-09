@@ -34,8 +34,10 @@ export default {
   },
 
   data() {
-    const _filter = this.filter || {}
-    return _filter
+    // this.filter 有值 说明是vue3的写法 在setup中返回了 在生命周期initData()之前
+    return this.filter || {
+      filter: {}
+    }
   },
 
   created() {
