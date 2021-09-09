@@ -15,15 +15,10 @@
                 :cols="tableData.cols">
                 <template #operation="{ row }">
                     <el-button
+                        :disabled="row.status == 4"
                         type="text"
-                        size="mini">发送短信</el-button>
-                        <!-- 发送提醒短信 短信已达上线 -->
-                </template>
-                <template #operation="{ row }">
-                    <el-button
-                        type="text"
-                        size="mini">发送短信</el-button>
-                        <!-- 发送提醒短信 短信已达上线 -->
+                        size="mini"
+                        @click="handleClick(row)">{{ row.status | sendSms }}</el-button>
                 </template>
             </m-table-new>
         </el-col>
@@ -31,16 +26,22 @@
             ref="$pagination"
             :total="tableData.total"
             @onPageChange="getData" />
+        <smsSendModal v-model="showModal" :modalData="modalData" :queryMethod="getData" />
     </el-row>
 </template>
 
 <script>
 import { ref, reactive, onMounted } from '@vue/composition-api'
+import smsSendModal from './components/sms-send-modal.vue'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
 import { _searchItems, _tableCols } from './constants'
 
 export default {
+    components: {
+        smsSendModal
+    },
+
     mixins: [ prisonFilterCreator ],
 
     setup (props, context) {
@@ -48,6 +49,11 @@ export default {
         const $search = ref(null)
         // ref pagination
         const $pagination = ref(null)
+
+        // 发送短信弹窗
+        const showModal = ref(false)
+        // 发送短信弹窗数据
+        const modalData = ref({})
 
         // 搜索条件项
         const searchItems = reactive(_searchItems())
@@ -70,6 +76,11 @@ export default {
             $pagination.value.currentPage = 1
             pagination.value = { page: 1, rows }
             getData()
+        }
+        // 点击发送短信按钮
+        const handleClick = (row) => {
+            modalData.value = row
+            showModal.value = true
         }
 
         // 查询列表
@@ -94,12 +105,15 @@ export default {
         return {
             $search,
             $pagination,
+            showModal,
+            modalData,
             searchItems,
             tableData,
             filter,
             pagination,
+            getData,
             handleSearch,
-            getData
+            handleClick
         }
     }
 }

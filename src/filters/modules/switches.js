@@ -354,6 +354,25 @@ let switches = {
       label: '严管级',
       value: 4
     }
+  ],
+
+  sendSms: [
+    {
+      label: '发送短信',
+      value: 1
+    },
+    {
+      label: '发送提醒短信',
+      value: 2
+    },
+    {
+      label: '发送提醒短信',
+      value: 3
+    },
+    {
+      label: '短信已达上限',
+      value: 4
+    }
   ]
 }
 
