@@ -89,7 +89,7 @@ const codes = {
   },
   500: {
     next: params => {
-      tips(params.msg || '服务器内部错误！')
+      tips(params.msg || params.message || '服务器内部错误！')
     }
   },
   502: {

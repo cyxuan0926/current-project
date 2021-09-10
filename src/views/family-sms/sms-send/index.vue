@@ -56,7 +56,7 @@ export default {
         const modalData = ref({})
 
         // 搜索条件项
-        const searchItems = reactive(_searchItems())
+        const searchItems = ref(_searchItems())
 
         // 表格数据
         const tableData = reactive({

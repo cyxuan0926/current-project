@@ -3,6 +3,7 @@
   <!-- <p v-if="label">{{title}}</p> -->
   <el-image
     :src="publicUrl || url"
+    :fit="fit"
     :alt="title"
     :lazy="isLazy"
     class="img-viewer__overflow-unset"
@@ -57,6 +58,10 @@ export default {
     isLazy: {
       type: Boolean,
       default: true
+    },
+    fit: {
+      type: String,
+      default: 'fill'
     }
     // 图片类型是不是必传的
     // isRequired: {

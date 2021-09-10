@@ -28,11 +28,9 @@
                         {{ smsContent }}
                     </template>
                     <template v-if="modalData.status == 1">
-                        <m-form
-                            ref="form"
-                            :items="formItems"
-                            @submit="handleSubmit"
-                            :values="formValues" />
+                        <m-upload-img 
+                            v-model="imgUrl"
+                            :imgStyle="{'width': '300px', 'height': '400px'}" />
                     </template>
                 </dd>
             </dl>
@@ -48,6 +46,7 @@
 import { toRefs, ref, reactive, watch } from '@vue/composition-api'
 import http from '@/service'
 import { smsSendTemplate } from '@/common/constants/const'
+import { Message } from 'element-ui';
 export default {
     props: {
         value: Boolean,
@@ -55,21 +54,14 @@ export default {
         modalData: Object,
         queryMethod: Function
     },
-    setup (props, { emit }) {
+    setup (props, { emit, root }) {
         const smsVisible = ref(false)
         const { value, modalData } = toRefs(props)
         const smsContent = ref('')
-        // 上传图片表单
-        const formItems = reactive({
-            imageUrl: {
-                type: 'uploadImg',
-                label: ''
-            }
-        })
-        // 图片表单值
-        const formValues = ref({})
+        const imgUrl = ref('')
 
         watch(value, val => {
+            val && ( imgUrl.value = '' )
             smsVisible.value = val
         })
 
@@ -83,30 +75,42 @@ export default {
         const handleClose = () => {
             emit('input', false)
         }
+
         // status 1发送普通短信 2发送开通亲情提醒短信 3发送缴费提醒短信 4短信已达上限
         // messageType 1文字 2图片 3开通提醒短信 4余额不足提醒
         const handleSmsSend = async () => {
             let { prisonerId, criminalNumber, prisonerName, familyId, familyPhone, familyName, relationship, status } = modalData.value
-            let res = await http.sendMessage({
-                prisonerId,
-                criminalNumber,
-                sendName: prisonerName,
-                familyId,
-                familyPhone,
-                receiveName: familyName,
-                relationship,
-                message: status == 1 ? 'https://bkimg.cdn.bcebos.com/pic/574e9258d109b3de0c72c7e5ccbf6c81810a4c69?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UxMTY=,g_7,xp_5,yp_5/format,f_auto' : smsContent.value,
-                messageType: status == 1 ? 2 : ( status == 2 ? 3 : (status == 3 ? 4 : 1) ),
-                isPrisonerSend: 1
-            })
-            console.log('handleSmsSend====', res)
+            if ( status == 1 && !imgUrl.value ) {
+                Message.error('请上传短信内容')
+                return
+            }
+            try {
+                let res = await http.sendMessage({
+                    prisonerId,
+                    criminalNumber,
+                    sendName: prisonerName,
+                    familyId,
+                    familyPhone,
+                    receiveName: familyName,
+                    relationship,
+                    message: status == 1 ? imgUrl.value : smsContent.value,
+                    messageType: status == 1 ? 2 : ( status == 2 ? 3 : (status == 3 ? 4 : 1) ),
+                    isPrisonerSend: 1
+                })
+                console.log('handleSmsSend====', res)
+                if (res) {
+                    handleClose()
+                    props.queryMethod()
+                }
+            } catch (error) {
+                this.$message.error('上传短信内容失败，请重试')
+            }
         }
 
         return {
             smsVisible,
-            formItems,
-            formValues,
             smsContent,
+            imgUrl,
             handleSmsSend,
             handleClose
         }

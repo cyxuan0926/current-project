@@ -1,3 +1,9 @@
+import {
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+} from '@/common/constants/const'
+
 export const _searchItems = () => ({
     prisonerName: {
         type: 'input',
@@ -28,15 +34,18 @@ export const _tableCols = () => [
     },
     {
         label: '罪犯姓名',
-        prop: 'prisonerName'
+        prop: 'prisonerName',
+        ...$likeName
     },
     {
         label: '罪犯编号',
-        prop: 'criminalNumber'
+        prop: 'criminalNumber',
+        ...$likePrisonerNumber
     },
     {
         label: '家属姓名',
-        prop: 'familyName'
+        prop: 'familyName',
+        ...$likeName
     },
     {
         label: '关系',
@@ -44,7 +53,8 @@ export const _tableCols = () => [
     },
     {
         label: '家属电话号码',
-        prop: 'familyPhone'
+        prop: 'familyPhone',
+        ...$likePhone
     },
     {
         label: '操作',
