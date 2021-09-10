@@ -204,6 +204,9 @@ export default {
       },{
         label: '已取消',
         value: 'CANCELED'
+      },{
+        label: '已打印',
+        value: '6'
       }
     ]
     const state = [

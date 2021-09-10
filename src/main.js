@@ -34,6 +34,7 @@ import {
 
 // 打印机
 import Print from '@/common/constants/print'
+// import Print from 'vue-print-nb'
 Vue.use(Print) // 注册
 
 Vue.use(VueCompositionAPI)

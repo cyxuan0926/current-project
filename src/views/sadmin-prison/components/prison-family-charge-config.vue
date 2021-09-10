@@ -288,7 +288,16 @@ export default {
             { required: true, message: '请选择目的地', trigger: 'change' }
           ],
           startDay: [
-            { required: true, message: '请选择日期', trigger: 'change' }
+              { required: true, message: '请选生效日期', trigger: 'blur' },
+            { validator:(rule, value, callback) => {
+                if(Moment(value).isBefore(new Date())){
+                   callback(new Error('生效日期不得小于明天'));
+                }else{
+                   callback();
+                }
+              },
+              trigger: 'blur'
+            }
           ],
           startMinutesVoice: [
             { required: true, message: '请选填写分钟', trigger: 'blur' }

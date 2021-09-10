@@ -18,7 +18,11 @@ const Print = function (dom, options) {
   };
   Print.prototype = {
     init: function () {
-      var content = this.getStyle() + this.getHtml();
+      var content = this.options.isUseTemplate ?  this.getPrintTemplate() : this.getHtml()
+         content+= this.options.isUseTemplate ?  this.getPrintStyle() + this.getScript() : this.getStyle()
+      // var content = this.getHtml()
+      // console.log('writeIframe====',content)
+    //  var content = this.getStyle() + this.getHtml();
       this.writeIframe(content);
     },
     extend: function (obj, obj2) {
@@ -27,7 +31,23 @@ const Print = function (dom, options) {
       }
       return obj;
     },
+
+    getPrintTemplate: function(content) {
+      let HTML = this.dom.outerHTML
+      console.log(HTML)
+      //HTML.replace('style="margin-top: 15vh;"',"")
+      return HTML;
+    },
   
+    getPrintStyle: function () {
+      var str = "<style>* { margin: 0 ;font-size: 10px;word-break:break-all;}.wapText{font-size: 12px;}.textContentTime{display:block;text-align:center;font-size: 22px;line-height: 30px;margin-bottom:30px}.textContentTime.time{font-size:12px;text-align:left;text-indent:24px;}.textContent{text-align: left;margin:0px 5px;line-height: 30px}.familyname{font-size:14px;text-overflow: ellipsis;}.phone{font-size:12px;text-overflow: ellipsis;}.messageText{text-indent:24px;margin:10px;line-height: 30px;font-size:18px;}.flex-dialog{padding-top: 100px;}</style>"
+      return str;
+    },
+    getScript: function () {
+      var str = ""
+      str += "<script>window.onafterprint =  () => top.postMessage('true', '*')</script>";
+      return str;
+    },
     getStyle: function () {
       var str = "",
         styles = document.querySelectorAll('style,link');
@@ -160,4 +180,5 @@ const Print = function (dom, options) {
     // 4. 添加实例方法
     Vue.prototype.$print = Print
   }
+
   export default MyPlugin
