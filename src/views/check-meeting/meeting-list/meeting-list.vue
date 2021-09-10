@@ -798,9 +798,9 @@
       ]
 
       const AreaObj = [{label:"监舍区",value:1},{label:"会见楼",value:3}]
-      const todayDate = this.$_dateNow
+      // const todayDate = this.$_dateNow
 
-      const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
+      // const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
       return {
         showTips: '',
         isShowTips: false,
@@ -838,7 +838,9 @@
             start: 'applicationStartDate',
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
-            endPlaceholder: '通话结束时间'
+            endPlaceholder: '通话结束时间',
+            canNotClear: this.$store.state.global.user.role == '0',
+            value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')]
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
@@ -983,9 +985,9 @@
 
         // yesterdayDate,
 
-        todayDate,
+        // todayDate,
 
-        oneMonthLater,
+        // oneMonthLater,
         submitParams: {},
         filterInit: {},
         btnDisable: false, // 按钮禁用与启用
@@ -1321,12 +1323,12 @@
       }
     },
 
-    created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
-      })
-    },
+    // created() {
+    //   this.filterInit = Object.assign({}, this.filterInit, {
+    //     applicationStartDate: this.todayDate,
+    //     applicationEndDate: this.oneMonthLater
+    //   })
+    // },
 
     async mounted() {
       // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
@@ -1338,8 +1340,9 @@
         // this.$set(this.searchItems.applicationDate, 'miss', false)
         // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
       // }
-      this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
+      // this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
       this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
+      this.$refs.search.onGetFilter()
       await this.getDatas('mounted')
     },
     methods: {

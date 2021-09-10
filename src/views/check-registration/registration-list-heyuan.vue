@@ -1123,7 +1123,7 @@ export default {
           meetNoticeUrl
         }
 
-        const _key = `registration_${ id }`
+        const _key = `registrationId_${ id }`
 
         const URLS = await helper.batchDownloadPublicImageURL(urls, _key)
 

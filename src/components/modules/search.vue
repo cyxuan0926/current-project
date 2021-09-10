@@ -93,7 +93,7 @@
           :key="index"
           v-if="item.type === 'dateRange' && !item.miss"
           v-model="item.value"
-          :clearable="item.clearable?false:true"
+          :clearable="!item.canNotClear"
           type="daterange"
           :disabled="item.disabled || false"
           :unlink-panels="item.unlinkPanels"

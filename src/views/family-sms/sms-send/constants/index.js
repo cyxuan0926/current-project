@@ -1,46 +1,60 @@
-export const searItems = () => ({
+import {
+    $likeName,
+    $likePrisonerNumber,
+    $likePhone
+} from '@/common/constants/const'
+
+export const _searchItems = () => ({
+    prisonerName: {
+        type: 'input',
+        label: '罪犯姓名',
+        value: ''
+    },
+    criminalNumber: {
+        type: 'input',
+        label: '罪犯编号',
+        value: ''
+    },
     familyName: {
         type: 'input',
-        label: '罪犯姓名'
+        label: '家属姓名',
+        value: ''
     },
-    familyName1: {
+    familyPhone: {
         type: 'input',
-        label: '罪犯编号'
-    },
-    familyName2: {
-        type: 'input',
-        label: '家属姓名'
-    },
-    familyName3: {
-        type: 'input',
-        label: '家属电话号码'
+        label: '家属电话号码',
+        value: ''
     }
 })
 
-export const tableCols = () => [
+export const _tableCols = () => [
     {
         label: '监区',
-        prop: 'prisonArea'
+        prop: 'prisonConfigName'
     },
     {
         label: '罪犯姓名',
-        prop: 'prisonArea'
+        prop: 'prisonerName',
+        ...$likeName
     },
     {
         label: '罪犯编号',
-        prop: 'prisonArea'
+        prop: 'criminalNumber',
+        ...$likePrisonerNumber
     },
     {
         label: '家属姓名',
-        prop: 'prisonArea'
+        prop: 'familyName',
+        ...$likeName
     },
     {
         label: '关系',
-        prop: 'prisonArea'
+        prop: 'relationship'
     },
     {
         label: '家属电话号码',
-        prop: 'prisonArea'
+        prop: 'familyPhone',
+        ...$likePhone
     },
     {
         label: '操作',

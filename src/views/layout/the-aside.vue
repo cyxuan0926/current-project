@@ -10,9 +10,12 @@
           class="bold ellipsis"
           >{{ publicUserInfo.tenantName }}</span>
         <div class="ellipsis">
+          <!-- <span
+            class="bold1"
+            v-if="user.role !== '-1'">{{ publicUserInfo.userRoles[0].roleName }}</span> -->
           <span
             class="bold1"
-            v-if="user.role !== '-1'">{{ publicUserInfo.userRoles[0].roleName }}</span>
+            v-if="user.role !== '-1'">{{ publicUserInfo.nickname }}</span>
           <el-popover
             placement="bottom"
             width="260"

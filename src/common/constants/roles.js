@@ -21,5 +21,20 @@ export default {
   JAIL_WHITELIST: ['4411'],
 
   // 高级审核人员
-  ADVANCED_AUDITOR: 'advanced_auditor'
+  ADVANCED_AUDITOR: 'advanced_auditor',
+
+  // 匹配 /static/dist/map 省地图
+  // 地图数据来源 https://datav.aliyun.com/tools/atlas/index.html
+  CHART_ROLES: {
+    'gd_admin': {
+      adcode: 440000,
+      label: '广东省',
+      provincesId: '20'
+    },
+    'gs_admin': {
+      adcode: 620000,
+      label: '甘肃省',
+      provincesId: '21'
+    }
+  }
 }

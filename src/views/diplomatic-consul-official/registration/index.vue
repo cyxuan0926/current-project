@@ -209,6 +209,8 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import { mapState, mapActions } from 'vuex'
 
 import { $likeName, $likeIdCard } from '@/common/constants/const'
+
+import { batchDownloadPublicImageURL } from '@/utils/helper'
 export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
@@ -394,7 +396,6 @@ export default {
         {
           label: '证件号',
           prop: 'uuid',
-          showOverflowTooltip: true,
           ...$likeIdCard
         },
         {
@@ -474,8 +475,22 @@ export default {
     },
 
     // 授权/撤回 操作显示对话框
-    onShow(registrant, status) {
-      this.registrant = registrant
+    async onShow(registrant, status) {
+      const {
+        idCardBack,
+        idCardFront,
+        meetNoticeUrl,
+        id
+      } = registrant,
+      URLS = { idCardBack, idCardFront, meetNoticeUrl },
+      _key = `diplomatsRegistrationId_${ id }`
+
+      const urls = await batchDownloadPublicImageURL(URLS, _key)
+
+      this.registrant = {
+        ...registrant,
+        ...urls
+      }
 
       this.show.disagree = false
 

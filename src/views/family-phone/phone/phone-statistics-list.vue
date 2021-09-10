@@ -76,23 +76,24 @@
         >
           <div class="family-detail">{{index+1}}</div>
           <div class="detail-message">
-            <p class="detail-message-family" v-if="item.status!=='FINISHED'">
+            <p class="detail-message-family">
               <span class="family-name">呼叫时间</span>
-              <span class="family-nameDetail">{{item.optionTime}}</span>
+              <span class="family-nameDetail">{{item.startTime}}</span>
             </p>
-            <p class="detail-message-family" v-if="item.status=='FINISHED'">
+            <p class="detail-message-family">
               <span class="family-name">通话时间</span>
               <span class="family-nameDetail">{{item.optionTime}}</span>
             </p>
           </div>
           <div class="detail-content">
-            <p class="detail-message-family"  v-if="item.status!=='FINISHED'">
+            <p class="detail-message-family">
               <span class="family-name">呼叫状态</span>
               <span class="family-nameDetail">
                 <template v-if="item.status=='MEETING_ON'">会见中</template>
                 <template v-if="item.status=='CALLFAIL'">未接通</template>
+                <template v-if="item.status=='FINISHED'">结束会见</template>
                 </span></p>
-              <p class="detail-message-family"  v-if="item.status=='FINISHED'">
+              <p class="detail-message-family">
               <span class="family-name">
                 <template v-if="item.phoneType=='1'">语音通话时长</template>
                 <template v-if="item.phoneType=='2'">视频通话时长</template>
@@ -130,7 +131,6 @@ import {
   $likePrisonerNumber,
   $likePhone
 } from '@/common/constants/const'
-
 export default {
   name: 'FamilyPhone_Families',
 
@@ -200,7 +200,8 @@ export default {
       const cols = [
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
@@ -301,12 +302,34 @@ export default {
         endTime: this.todayDate
       })
     },
-  mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
-    this.getDatas()
+  async mounted() {
+    this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
+    await this.getDatas()
   }
 }
 </script>
+<style lang="stylus" scope>
+.logMgCls .el-select__tags-text {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.logMgCls .el-select .el-tag__close.el-icon-close {
+  top: -7px;
+}
+ .el-select-dropdown{
+        max-width: 243px;
+    }
+    .el-select-dropdown__item{
+        display: inline-block;
+    }
+    .el-select-dropdown__item span {
+        min-width: 400px;
+        display: inline-block;
+   }
+</style>
 
 
 <style lang="scss" scoped>

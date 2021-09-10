@@ -74,7 +74,7 @@
                     prev: {
                       attrs: {
                         prefixIcon: 'ower-cssName'
-                      } 
+                      }
                     }
                   }"
                   :disabled="!!config.queue.length"
@@ -118,7 +118,7 @@
 
               <div class="el-row_queue-configs">
                 <template v-for="(queue, o) in config.queue">
-                  <m-time-range-selector 
+                  <m-time-range-selector
                     :key="o"
                     :val="queue"
                     :disabled="true"
@@ -517,9 +517,7 @@ export default {
       if (this.configs.length > 1) this.configs.splice(index, 1)
 
       else this.configs = cloneDeep([this.basicConfig])
-    },
-
-    onFilterInputs() {}
+    }
   },
 
   async activated() {
@@ -624,14 +622,14 @@ export default {
     & ~ button {
       margin-bottom: 15px;
     }
-  }  
+  }
 }
 
 .el-row_queue {
   display: flex;
   overflow: hidden;
   margin-bottom: 10px;
-    
+
   label {
     float: none !important;
     width: 98px !important;

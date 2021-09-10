@@ -1,39 +1,50 @@
 <template>
   <el-row :gutter="0">
     <el-col :span="24">
-      <!--         show-summary
-        :summary-method="summaryMethod" -->
+      <!-- show-summary :summary-method="summaryMethod" -->
       <m-table-new
         stripe
         :data="prisonReportList.contents"
-        :cols="tableCols">
-        <template #total="{ row }">{{ row.total }} 次</template>
-        <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
-        <template #canceledTotal="{ row }">{{ row.canceledTotal }} 次</template>
-        <template #expiredTotal="{ row }">{{ row.expiredTotal }} 次</template>
-        <template #deniedTotal="{ row }"> {{ row.deniedTotal }} 次</template>
+        :cols="tableCols"
+      >
+        <template #num="{ row }">{{ row.num || 0 }} 次</template>
+
+        <template #pending="{ row }">{{ row.pending || 0 }} 次</template>
+
+        <template #finished="{ row }">{{ row.finished || 0 }} 次</template>
+
+        <template #canceled="{ row }">{{ row.canceled || 0 }} 次</template>
+
+        <template #expired="{ row }">{{ row.expired || 0 }} 次</template>
+
+        <template #denied="{ row }"> {{ row.denied || 0 }} 次</template>
+
+        <template #passed="{ row }"> {{ row.passed || 0 }} 次</template>
+
+        <template #meetingOn="{ row }"> {{ row.meetingOn || 0 }} 次</template>
+
+        <template #ended="{ row }"> {{ row.ended || 0 }} 次</template>
       </m-table-new>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  props: {
-    hasAllPrisonQueryAuth: Boolean
-  },
   computed: {
     ...mapState({
       prisonReportList: state => state.prisonReportList,
       user: state => state.global.user
     }),
+
     summaryMethod() {
-      return this.hasAllPrisonQueryAuth
+      return this.isSuperAdmin
         ? this.getSummariesAll
         : this.getSummaries
     },
+
     tableCols() {
       let cols = [
         {
@@ -49,61 +60,66 @@ export default {
 
         {
           label: '监区',
-          prop: 'fullname',
+          prop: 'prisonArea',
           showOverflowTooltip: true
         },
 
         {
           label: '申请次数',
-          prop: 'total',
-          slotName: 'total'
+          prop: 'num',
+          slotName: 'num'
         },
 
         {
           label: '未授权次数',
-          prop: ''
+          prop: 'pending',
+          slotName: 'pending'
         },
 
         {
           label: '待通话次数',
-          prop: ''
+          prop: 'passed',
+          slotName: 'passed'
         },
 
         {
           label: '已完成次数',
-          prop: 'finishedTotal',
-          slotName: 'finishedTotal'
+          prop: 'finished',
+          slotName: 'finished'
         },
 
         {
           label: '已过期次数',
-          prop: 'expiredTotal',
-          slotName: 'expiredTotal'
+          prop: 'expired',
+          slotName: 'expired'
         },
 
         {
           label: '已拒绝/撤回次数',
-          prop: 'deniedTotal',
-          slotName: 'deniedTotal'
+          prop: 'denied',
+          slotName: 'denied'
         },
 
         {
           label: '已取消次数',
-          prop: 'canceledTotal',
-          slotName: 'canceledTotal'
+          prop: 'canceled',
+          slotName: 'canceled'
         },
 
         {
           label: '已结束次数',
-          prop: ''
+          prop: 'ended',
+          slotName: 'ended'
         },
 
         {
-          label: '通话中次数'
+          label: '通话中次数',
+          prop: 'meetingOn',
+          slotName: 'meetingOn'
         }
       ]
 
-      if (!this.hasAllPrisonQueryAuth) {
+      if (!this.isSuperAdmin) {
         cols.splice(0, 2)
 
         const index = cols.findIndex(col => col.label === '监区')
@@ -111,8 +127,11 @@ export default {
         this.$set(cols[index], 'prop', 'prisonArea')
       }
       return cols
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
+
   methods: {
     getSummaries(params) {
       const { columns, data } = params
@@ -141,6 +160,7 @@ export default {
       })
       return sums
     },
+
     getSummariesAll(params) {
       const { columns, data } = params
       const sums = []

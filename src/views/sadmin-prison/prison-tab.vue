@@ -93,12 +93,12 @@ export default {
     }
   },
 
-  created() {
-    this.getSearchItem()
+  async created() {
+    await this.getSearchItem()
   },
 
-  activated() {
-    this.getSearchItem()
+  async activated() {
+    await this.getSearchItem()
   },
 
   methods: {
