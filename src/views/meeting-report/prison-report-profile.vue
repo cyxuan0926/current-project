@@ -7,36 +7,32 @@
         :data="prisonReportList.contents"
         :cols="tableCols"
       >
-        <template #num="{ row }">{{ row.num }} 次</template>
+        <template #num="{ row }">{{ row.num || 0 }} 次</template>
 
-        <template #pending="{ row }">{{ row.pending }} 次</template>
+        <template #pending="{ row }">{{ row.pending || 0 }} 次</template>
 
-        <template #finished="{ row }">{{ row.finished }} 次</template>
+        <template #finished="{ row }">{{ row.finished || 0 }} 次</template>
 
-        <template #canceled="{ row }">{{ row.canceled }} 次</template>
+        <template #canceled="{ row }">{{ row.canceled || 0 }} 次</template>
 
-        <template #expired="{ row }">{{ row.expired }} 次</template>
+        <template #expired="{ row }">{{ row.expired || 0 }} 次</template>
 
-        <template #denied="{ row }"> {{ row.denied }} 次</template>
+        <template #denied="{ row }"> {{ row.denied || 0 }} 次</template>
 
-        <template #passed="{ row }"> {{ row.passed }} 次</template>
+        <template #passed="{ row }"> {{ row.passed || 0 }} 次</template>
 
-        <template #meeting_on="{ row }"> {{ row.meeting_on }} 次</template>
+        <template #meetingOn="{ row }"> {{ row.meetingOn || 0 }} 次</template>
 
-        <template #ended="{ row }"> {{ row.ended }} 次</template>
+        <template #ended="{ row }"> {{ row.ended || 0 }} 次</template>
       </m-table-new>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  props: {
-    hasAllPrisonQueryAuth: Boolean
-  },
-
   computed: {
     ...mapState({
       prisonReportList: state => state.prisonReportList,
@@ -44,7 +40,7 @@ export default {
     }),
 
     summaryMethod() {
-      return this.hasAllPrisonQueryAuth
+      return this.isSuperAdmin
         ? this.getSummariesAll
         : this.getSummaries
     },
@@ -64,7 +60,7 @@ export default {
 
         {
           label: '监区',
-          prop: 'fullname',
+          prop: 'prisonArea',
           showOverflowTooltip: true
         },
 
@@ -118,12 +114,12 @@ export default {
 
         {
           label: '通话中次数',
-          prop: 'meeting_on',
-          slotName: 'meeting_on'
+          prop: 'meetingOn',
+          slotName: 'meetingOn'
         }
       ]
 
-      if (!this.hasAllPrisonQueryAuth) {
+      if (!this.isSuperAdmin) {
         cols.splice(0, 2)
 
         const index = cols.findIndex(col => col.label === '监区')
@@ -131,8 +127,11 @@ export default {
         this.$set(cols[index], 'prop', 'prisonArea')
       }
       return cols
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
+
   methods: {
     getSummaries(params) {
       const { columns, data } = params

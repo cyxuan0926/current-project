@@ -487,7 +487,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics',
       name: 'prison-data_meeting-statistics',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: { hasProvinceQueryAuth: true, hasOnlyAllPrisonQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison.search',
         breadcrumbName: '监狱可视电话统计'

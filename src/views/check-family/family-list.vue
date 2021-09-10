@@ -578,7 +578,7 @@ export default {
     async onShowFamilyDetail(row) {
       const { id, idCardBack, idCardFront } = row
 
-      const URLS = { idCardBack, idCardFront }, _key = `family_${ id }`
+      const URLS = { idCardBack, idCardFront }, _key = `familyId_${ id }`
 
       const result = await Promise.all([this.getFamilyDetail({ id }), batchDownloadPublicImageURL(URLS, _key)])
 

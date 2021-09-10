@@ -1,7 +1,7 @@
 <template>
   <el-row class="row-container" :gutter="0">
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
+      v-if="isSuperAdmin"
       :path="excelDownloadPath"
       :params="filter"
     />
@@ -22,7 +22,7 @@
             :key="item.name"
           >
             <keep-alive>
-              <component :is="activeComponentName" :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth" />
+              <component :is="activeComponentName" />
             </keep-alive>
           </el-tab-pane>
         </template>
@@ -38,7 +38,11 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters
+} from 'vuex'
 import Moment from 'moment'
 import profile from './prison-report-profile'
 import detail from './prison-report-detail'
@@ -69,6 +73,15 @@ export default {
         //     maxMonthRange: 24
         //   }
         // },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options: [],
+          filterable: true,
+          belong: { value: 'id', label: 'name' },
+          value: ''
+        },
+
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,
@@ -78,17 +91,20 @@ export default {
           endPlaceholder: '通话结束时间',
           value: [startDate, endDate]
         },
+
         name: {
           type: 'input',
           label: '家属姓名',
           miss: true
         },
+
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号',
           miss: true
         }
       },
+
       tabOptions: [
         {
           label: '监狱可视电话统计',
@@ -101,6 +117,7 @@ export default {
           excelDownloadPath: '/download/exportDetailsStatical'
         }
       ],
+
       filterInit: { // 默认查询上一个月的，筛选框初始化
         startDate,
         endDate
@@ -122,7 +139,9 @@ export default {
       })
 
       return activeTab && activeTab.excelDownloadPath
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
   watch: {
     activeComponentName(val) {
@@ -157,19 +176,22 @@ export default {
       const params = { ...this.filter, ...this.pagination }
 
       if (this.activeComponentName === 'profile') {
-        if (this.hasAllPrisonQueryAuth) {
-          this.getPrisonReportListAll(params)
-        } else {
-          this.getPrisonReportList(params)
-        }
+        const { startDate, endDate } = this.filter
+
+        if (startDate) params['startDate'] = `${ startDate } 00:00:00`
+
+        if (endDate) params['endDate'] = `${ endDate } 23:59:59`
+
+        if (this.isSuperAdmin) this.getPrisonReportListAll(params)
+
+        else this.getPrisonReportList(params)
       } else {
-        if (this.hasAllPrisonQueryAuth) {
-          this.getPrisonReportDetailAll(params)
-        } else {
-          this.getPrisonReportDetail(params)
-        }
+        if (this.isSuperAdmin) this.getPrisonReportDetailAll(params)
+
+        else this.getPrisonReportDetail(params)
       }
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }
