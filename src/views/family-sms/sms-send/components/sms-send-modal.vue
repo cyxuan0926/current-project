@@ -78,8 +78,6 @@ export default {
             if (tmp && tmp.template) {
                 smsContent.value = tmp.template.replace('$prisonerName', val.prisonerName)
             }
-        }, {
-            immediate: true
         })
 
         const handleClose = () => {
@@ -88,20 +86,20 @@ export default {
         // status 1发送普通短信 2发送开通亲情提醒短信 3发送缴费提醒短信 4短信已达上限
         // messageType 1文字 2图片 3开通提醒短信 4余额不足提醒
         const handleSmsSend = async () => {
-            let { prisonerId, criminalNumber, sendName, familyId, familyPhone, receiveName, relationship, status } = modalData.value
+            let { prisonerId, criminalNumber, prisonerName, familyId, familyPhone, familyName, relationship, status } = modalData.value
             let res = await http.sendMessage({
                 prisonerId,
                 criminalNumber,
-                sendName,
+                sendName: prisonerName,
                 familyId,
                 familyPhone,
-                receiveName,
+                receiveName: familyName,
                 relationship,
-                message: smsContent.value,
+                message: status == 1 ? 'https://bkimg.cdn.bcebos.com/pic/574e9258d109b3de0c72c7e5ccbf6c81810a4c69?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UxMTY=,g_7,xp_5,yp_5/format,f_auto' : smsContent.value,
                 messageType: status == 1 ? 2 : ( status == 2 ? 3 : (status == 3 ? 4 : 1) ),
                 isPrisonerSend: 1
             })
-            console.log('handleSmsSend====')
+            console.log('handleSmsSend====', res)
         }
 
         return {

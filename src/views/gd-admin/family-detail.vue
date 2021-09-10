@@ -245,7 +245,6 @@ export default {
           unlinkPanels: true,
           start: 'createStartDate',
           end: 'createEndDate',
-          clearable:"true",
           value: [createStartDate, createEndDate],
           // miss: true,
           // value: ''
