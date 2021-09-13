@@ -32,7 +32,7 @@
     <!-- $route.meta.deep ? getActiveMenu() : $route.path -->
     <el-menu
       id="aside"
-      :default-active=" active "
+      :default-active="active"
       background-color="#222d32"
       text-color="#b8c7ce"
       active-text-color="#fff"

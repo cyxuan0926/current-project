@@ -161,6 +161,8 @@ export default {
   },
 
   async mounted() {
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
   },
 

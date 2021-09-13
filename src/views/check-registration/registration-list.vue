@@ -65,6 +65,7 @@
         <el-table-column
           label="家属姓名"
           min-width="50"
+          class-name="el-form-item--ellipsis"
         >
           <template #default="{ row }">
             <el-popover
@@ -972,6 +973,8 @@ export default {
   },
 
   async mounted() {
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
   },
 
