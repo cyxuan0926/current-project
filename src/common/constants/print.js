@@ -34,7 +34,6 @@ const Print = function (dom, options) {
 
     getPrintTemplate: function(content) {
       let HTML = this.dom.outerHTML
-      console.log(HTML)
       //HTML.replace('style="margin-top: 15vh;"',"")
       return HTML;
     },
@@ -45,7 +44,7 @@ const Print = function (dom, options) {
     },
     getScript: function () {
       var str = ""
-      str += "<script>window.onafterprint =  () => top.postMessage('true', '*')</script>";
+      str += "<script>window.onafterprint =  () => top.postMessage({type: false}, '*')</script>";
       return str;
     },
     getStyle: function () {

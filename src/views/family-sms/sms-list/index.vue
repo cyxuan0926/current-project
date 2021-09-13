@@ -725,7 +725,7 @@ export default {
                 let gkMessageIdList=[]
                 //判断是单独打印还是批量打印
                 if(this.show.isMessageList){
-                  gkMessageIdList= this.messagePrintList
+                  this.messagePrintList.forEach(item=>gkMessageIdList.push(item.uid))
                 }else{
                   gkMessageIdList.push(this.messageContent.uid)
                 }
