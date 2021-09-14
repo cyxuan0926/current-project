@@ -53,7 +53,7 @@
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
            <el-button
-          v-if="!config.show&&(canSave(config) && permission === 'edit')"
+          v-if="(canSave(config) && permission === 'edit')"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>       
@@ -93,7 +93,7 @@
                 </template>
                 </label>
               </div>
-              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+              <el-button  v-if="config.enabledMeeting&&(config.area===1|| config.type || !(config.enabledMeeting && flag)) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="config.area=='2' &&config.flagConfig &&canSave(config) && permission === 'edit'"
@@ -118,7 +118,7 @@
                 </template>
                 </label>
               </div>
-              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+              <el-button  v-if="config.enabledMeeting&&(config.area===1|| config.type || !(config.enabledMeeting && flag) )"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="config.area=='2' &&config.flagConfig &&canSave(config)&& permission === 'edit'"
@@ -239,7 +239,7 @@
                 </template>
                 </label>
               </div>
-             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.enabledMeeting&&(config.area===2||!(config.enabledMeeting && flag) || config.type)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&config.flagConfig &&canSave(config) && permission === 'edit'"
               type="primary"
@@ -263,7 +263,7 @@
                 </template>
                 </label>
               </div>
-             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.enabledMeeting&&(config.area===2||!(config.enabledMeeting && flag) || config.type)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&config.flagConfig &&canSave(config)&& permission === 'edit'"
               type="primary"
@@ -583,7 +583,8 @@ export default {
 
       this.configs.forEach((item,i)=>{
         if(i==0){
-          if(item.config.length>0){
+          console.log(item)
+          if(item.day){
             item.disabledMeeting=true
           }else{
             item.disabledMeeting=false
@@ -842,17 +843,37 @@ export default {
           }
 
         this.addSpecialConfig(params).then(async res => {
-          if (!res) return
+          if (res.secondConfirmation){
+                     this.$confirm('该日期设置为不可会见日后，系统会取消该日期已有的申请，确定保存吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                      this.addSpecialConfig({...params, confirm:1}).then(async req => {
+                         if(!req) return
+                          await this.initData()
+                          // config.oldDay = params.day
+                          // config.jailId = params.jailId
+                          // config.config = params.config || []
+                          // config.timeperiod = params.timeperiod || []
+                          // config.id = res.id
+                          // this.$forceUpdate()
+                          this.show = false
+                          this.show = true
+                       })
 
-          await this.initData()
-          // config.oldDay = params.day
-          // config.jailId = params.jailId
-          // config.config = params.config || []
-          // config.timeperiod = params.timeperiod || []
-          // config.id = res.id
-          // this.$forceUpdate()
-          this.show = false
-          this.show = true
+                    })
+            }else{
+               await this.initData()
+                 // config.oldDay = params.day
+                // config.jailId = params.jailId
+                // config.config = params.config || []
+                // config.timeperiod = params.timeperiod || []
+                // config.id = res.id
+                // this.$forceUpdate()
+                this.show = false
+                this.show = true
+            }
         })
       }
     },

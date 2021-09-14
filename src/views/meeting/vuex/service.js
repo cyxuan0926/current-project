@@ -126,7 +126,7 @@ export default {
 
   // 实地会见 - 新增特殊日期配置
   addVisitSpecialConfig: params => {
-    return service.postObj('/visit/config/addSpecialConfig', params)
+    return service.postObj('/visit/config/addSpecialConfig', params).then(res => res && res.data)
   },
 
   // 实地会见 - 删除特殊日期配置
