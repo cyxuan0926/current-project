@@ -62,7 +62,11 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
 
 export default {
   name: 'AccountList',
@@ -113,42 +117,60 @@ export default {
         {
           label: '用户名',
           prop: 'username',
-          minWidth: 85
+          minWidth: 85,
+          showOverflowTooltip: true
         },
+
         {
           label: '角色',
           prop: 'roles',
           minWidth: 85,
           showOverflowTooltip: true
         },
+
         {
           label: '监狱名称',
           prop: 'jailName',
           minWidth: 110
         },
+
         {
           label: '监区',
           prop: 'prisonAreas',
           showOverflowTooltip: true
         },
+
         {
           label: '狱警号',
           prop: 'policeNumber',
           minWidth: 90,
           ...$likePrisonerNumber
         },
+
         {
           label: '真实姓名',
           prop: 'realName',
           ...$likeName
         },
+
+        {
+          label: '电话号码',
+          prop: 'phoneNumber',
+          ...$likePhone,
+          // 不是ywt_admin 下面的列表列
+          isNotSuperAdminCol: true
+        },
+
         {
           label: '操作',
           slotName: 'operation',
-          minWidth: 130
+          minWidth: 130,
+          isNotSuperAdminCol: true
         }
       ]
-      if (this.user.role !== '-1') cols.splice(-1, 1)
+
+      if (this.user.role !== '-1')  return cols.filter(item => !item.isNotSuperAdminCol)
+
       return cols
     },
 

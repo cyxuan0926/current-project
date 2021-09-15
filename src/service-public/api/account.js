@@ -83,3 +83,8 @@ export function getProcessRoles(id) {
 export const getCaptcha = () => {
   return get('/captcha')
 }
+
+// 发送短信验证码
+export const sendSmsVerificationCodes = username => {
+  return post('/sms/verification-codes', { username })
+}

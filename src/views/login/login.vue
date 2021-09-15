@@ -276,9 +276,12 @@ export default {
 
     handleGoPasswordRetrieve() {
       const { username } = this.formData
+
       this.setFindPasswordUsername(username)
+
       localStorage.setItem('findPasswordUsername', JSON.stringify(username))
-      this.$router.push({ path: `/password_retrieve/step_one` })
+
+      this.$router.push({ path: '/password_retrieve/byPhone' })
     }
     // handleLogin() {
     //   if (this.loginState.loged || this.loginState.loading) return false

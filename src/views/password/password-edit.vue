@@ -1,86 +1,80 @@
 <template>
-<el-container :class="['height100', { 'no-login': $route.meta.notLogin }]">
+  <el-container :class="['height100', { 'no-login': $route.meta.notLogin }]">
     <el-header height="46px">
       <the-header />
     </el-header>
+
     <el-container class="main-container">
-        <el-main>
-          <div id="login">
-            <el-row
-              :gutter="0"
-              class="loginBackground">
-              <el-col
-                :span="10"
-                :offset="7">
-                <el-col :span="24">
-                  <p class="projectName">修改密码</p>
-                </el-col>
-                <el-form
-                  :model="ruleForm2"
-                  status-icon
-                  :rules="rules2"
-                  ref="ruleForm2"
-                  label-width="120px"
-                  class="demo-ruleForm">
-                  <el-form-item
-                    label-width="0"
-                    prop="password">
-                    <el-input
-                      show-password
-                      type="password"
-                      v-model="ruleForm2.password"
-                      :maxlength="16"
-                      auto-complete="off"
-                      placeholder="原密码"/>
-                  </el-form-item>
-                  <el-form-item
-                    label-width="0"
-                    prop="new_password">
-                    <el-input
-                      show-password
-                      type="password"
-                      v-model="ruleForm2.new_password"
-                      :maxlength="16"
-                      auto-complete="off"
-                      placeholder="新密码"/>
-                  </el-form-item>
-                  <el-form-item
-                    label-width="0"
-                    prop="passwordReview">
-                    <el-input
-                      show-password
-                      type="password"
-                      v-model="ruleForm2.passwordReview"
-                      :maxlength="16"
-                      auto-complete="off"
-                      placeholder="重新输入密码"/>
-                  </el-form-item>
-                  <el-form-item
-                    label-width="0"
-                    class="btn-box">
-                    <!-- `checked` 为 true 或 false -->
-                    <el-button
-                      type=""
-                      @click="submitForm('ruleForm2')">提交</el-button>
-                    <el-button
-                      style="margin-right: 15px;"
-                      v-if="!($route.query && $route.query.isNoback)"
-                      type=""
-                      @click="toHome()">返回首页</el-button>
-                  </el-form-item>
-                </el-form>
+      <el-main>
+        <div id="login">
+          <el-row :gutter="0" class="loginBackground">
+            <el-col :span="10" :offset="7">
+              <el-col :span="24">
+                <p class="projectName">修改密码</p>
               </el-col>
-            </el-row>
-          </div>
-        </el-main>
-        <el-footer
-          height="36px" style="text-align: center">
-          <the-footer />
-        </el-footer>
-      </el-container>
+
+              <el-form
+                :model="ruleForm2"
+                status-icon
+                :rules="rules2"
+                ref="ruleForm2"
+                label-width="120px"
+                class="demo-ruleForm"
+              >
+                <el-form-item label-width="0" prop="password">
+                  <el-input
+                    show-password
+                    type="password"
+                    v-model="ruleForm2.password"
+                    :maxlength="16"
+                    auto-complete="off"
+                    placeholder="原密码"
+                  />
+                </el-form-item>
+
+                <el-form-item label-width="0" prop="new_password">
+                  <el-input
+                    show-password
+                    type="password"
+                    v-model="ruleForm2.new_password"
+                    :maxlength="16"
+                    auto-complete="off"
+                    placeholder="新密码"
+                  />
+                </el-form-item>
+
+                <el-form-item label-width="0" prop="passwordReview">
+                  <el-input
+                    show-password
+                    type="password"
+                    v-model="ruleForm2.passwordReview"
+                    :maxlength="16"
+                    auto-complete="off"
+                    placeholder="重新输入密码"
+                  />
+                </el-form-item>
+
+                <el-form-item label-width="0" class="btn-box">
+                    <!-- `checked` 为 true 或 false -->
+                  <el-button @click="submitForm('ruleForm2')">提交</el-button>
+
+                  <el-button
+                    style="margin-right: 15px;"
+                    v-if="!($route.query && $route.query.isNoback)"
+                    @click="toHome"
+                  >返回首页</el-button>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
+        </div>
+      </el-main>
+
+      <el-footer height="36px" style="text-align: center">
+        <the-footer />
+      </el-footer>
     </el-container>
   </el-container>
-  
 </template>
 
 <script>
@@ -162,7 +156,6 @@ export default {
           this.$router.replace('/login')
         }
         else {
-          console.log('error submit!!')
           return false
         }
       })

@@ -40,7 +40,8 @@ module.exports = {
     }
   },
   externals: {
-    echarts: 'echarts'
+    echarts: 'echarts',
+    JSEncrypt: 'JSEncrypt'
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('common.js'),

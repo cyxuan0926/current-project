@@ -1,6 +1,8 @@
-import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
+import {
+  login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken, getPublicUsers, getCaptcha } from '@/service-public/api/account'
+  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsVerificationCodes
+} from '@/service-public/api/account'
 
 import { helper } from '@/utils'
 
@@ -273,6 +275,15 @@ const actions = {
       commit('setCaptchaConfigs', res)
 
       return res
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async sendSmsVerificationCodes(_, username) {
+    try {
+      await sendSmsVerificationCodes(username)
     }
     catch (err) {
       Promise.reject(err)

@@ -1,18 +1,18 @@
 <template>
   <el-row class="page-edit">
-    <el-col
-      :span="10"
-      :offset="7">
+    <el-col :span="10" :offset="7">
       <el-form
         :model="prisonUser"
         :rules="rules"
         ref="prisonUser"
         label-position="right"
-        label-width="100px">
+        label-width="100px"
+      >
         <el-form-item
           v-if="hasPrisonArea"
           label="监区"
-          prop="prisonConfigIds">
+          prop="prisonConfigIds"
+        >
           <el-cascader
             v-model="prisonUser.prisonConfigIds"
             :options="allChildPrisonConfigs"
@@ -23,56 +23,64 @@
             separator="-"
           />
         </el-form-item>
-        <el-form-item
-          label="狱警号"
-          prop="policeNumber">
+
+        <el-form-item label="狱警号" prop="policeNumber">
           <el-input
             clearable
             v-model.trim="prisonUser.policeNumber"
-            placeholder="请填写狱警号"/>
+            placeholder="请填写狱警号"
+          />
         </el-form-item>
-        <el-form-item
-          label="真实姓名"
-          prop="realName">
+
+        <el-form-item label="真实姓名" prop="realName">
           <el-input
             clearable
             v-model.trim="prisonUser.realName"
-            placeholder="请填写真实姓名"/>
+            placeholder="请填写真实姓名"
+          />
         </el-form-item>
-        <el-form-item
-          label="角色"
-          prop="roleIds">
+
+        <el-form-item label="角色" prop="roleIds">
           <el-select
             v-model="prisonUser.roleIds"
             placeholder="请选择角色"
             multiple
-            clearable>
+            clearable
+          >
             <template v-for="item in rolesList">
               <el-option            
                 :key="item.value"
                 :label="item.label"
-                :value="item.value"/>
+                :value="item.value"
+              />
               </template>
           </el-select>
         </el-form-item>
-        <el-form-item
-          label="用户名"
-          prop="username">
+
+        <el-form-item label="用户名" prop="username">
           <el-input
             disabled
             v-model.trim="prisonUser.username"
-            placeholder="请填写用户名"/>
+            placeholder="请填写用户名"
+          />
+        </el-form-item>
+
+        <el-form-item label="手机号码" prop="phoneNumber">
+          <el-input
+            clearable
+            v-model.trim="prisonUser.phoneNumber"
+            placeholder="请填写手机号码"
+          />
         </el-form-item>
       </el-form>
-      <el-button
-        class="submit"
-        @click="onGoBack"
-        >返回</el-button>
+
+      <el-button class="submit" @click="onGoBack">返回</el-button>
+
       <el-button
         class="submit"
         type="primary"
         @click="onSubmit"
-        >更新</el-button>
+      >更新</el-button>
     </el-col>
   </el-row>
 </template>
@@ -84,7 +92,7 @@ import {
   mapGetters
 } from 'vuex'
 
-
+import validator from '@/utils'
 export default {
   data() {
     return {
@@ -92,7 +100,11 @@ export default {
         policeNumber: [{ required: true, message: '请填写狱警号' }],
         realName: [{ required: true, message: '请填写真实姓名' }],
         username: [{ required: true, message: '请填写用户名' }],
-        roleIds: [{ required: true, message: '请选择角色' }]
+        roleIds: [{ required: true, message: '请选择角色' }],
+        phoneNumber: [
+          { required: true, message: '请填写手机号码'},
+          { validator: validator.phone }
+        ]
       },
 
       prisonConfigIdsProps: {
@@ -131,13 +143,28 @@ export default {
     onSubmit() {
       this.$refs.prisonUser.validate(valid => {
         if (valid) {
-          let {id, policeNumber, prisonConfigIds, realName, roleIds, username} = this.prisonUser, params = { id, policeNumber, prisonConfigIds, realName, roleIds, username}
-          if (!this.hasPrisonArea || !params.prisonConfigIds.length) params.prisonConfigIds = null
-          else {
-            params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => {
-              return prisonConfigId[prisonConfigId.length - 1]
-            })
+          let {
+            id,
+            policeNumber,
+            prisonConfigIds,
+            realName,
+            roleIds,
+            username,
+            phoneNumber
+          } = this.prisonUser,
+          params = {
+            id,
+            policeNumber,
+            prisonConfigIds,
+            realName,
+            roleIds,
+            username,
+            phoneNumber
           }
+
+          if (!this.hasPrisonArea || !params.prisonConfigIds.length) params.prisonConfigIds = null
+
+          else params.prisonConfigIds = params.prisonConfigIds.map(prisonConfigId => prisonConfigId[prisonConfigId.length - 1])
 
           this.updatePrisonUser(params).then(res => {
             if (!res) return
