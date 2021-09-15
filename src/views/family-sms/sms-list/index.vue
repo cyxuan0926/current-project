@@ -191,17 +191,18 @@
       <hr class="messageNone" />
       <div class="flex-dialog" ref="print">
         <div class="wapText"> 
-          <p class="textContentTime">发送时间：<span class="textContentTime time" >{{messageContent.createTime}}</span></p>
-           <p class="textContent">家属姓名：<span class="familyname">{{messageContent.sendName}}</span></p>
-          <p class="textContent">家属电话：<span class="phone">{{messageContent.familyPhone}}</span></p>
-          <p class="textContent">罪犯姓名：<span class="phone">{{messageContent.receiveName}}</span></p>
-          <p class="textContent">罪犯编号：<span class="phone">{{messageContent.criminalNumber}}</span></p>
-          
+          <p class="textContentTime">{{messageContent.receiveName}}</p>
+          <p class="textContent">编号：<span class="phone">{{messageContent.criminalNumber}}</span></p>
+          <p class="textContent">家属：<span class="familyname">{{messageContent.sendName}}</span></p>
+          <p class="textContent">电话：<span class="phone">{{messageContent.familyPhone}}</span></p>
+          <p class="textContent">时间：<span class="phone">{{messageContent.createTime}}</span></p>
         </div>
-          <p class="textcontent">信息内容如下:</p>
+          <p class="textcontent">信息：</p>
         <div  v-html="messageContent.message"  class="infinite-list messageText" >
           {{ messageContent.message }}
         </div>
+        <div>&nbsp;&nbsp;</div>
+        <div>&nbsp;&nbsp;</div>
         <hr  class="messageNone"/>
       </div>
         <el-row :gutter="0">
@@ -412,16 +413,18 @@
      <hr />
     <div class="flex-dialog" v-for="(item,index) in messagePrintList" :key="index">
          <div class="wapText"> 
-          <p class="textContentTime">发送时间：<span class="textContentTime time" >{{item.createTime}}</span></p>
-           <p class="textContent">家属姓名：<span class="familyname">{{item.sendName}}</span></p>
-          <p class="textContent">家属电话：<span class="phone">{{item.familyPhone}}</span></p>
-          <p class="textContent">罪犯姓名：<span class="phone">{{item.receiveName}}</span></p>
-          <p class="textContent">罪犯编号：<span class="phone">{{item.criminalNumber}}</span></p>
+           <p class="textContentTime">{{item.receiveName}}</p>
+           <p class="textContent">编号：<span class="phone">{{item.criminalNumber}}</span></p>
+           <p class="textContent">家属：<span class="familyname">{{item.sendName}}</span></p>
+          <p class="textContent">电话：<span class="phone">{{item.familyPhone}}</span></p>
+          <p class="textContent">时间：<span class="phone">{{item.createTime}}</span></p>
         </div>
-          <p class="textcontent">信息内容如下:</p>
+          <p class="textcontent">信息：</p>
         <div  v-html="item.message"  class="infinite-list messageText" >
           {{ item.message }}
         </div>
+         <div>&nbsp;&nbsp;</div>
+         <div>&nbsp;&nbsp;</div>
         <hr />
       </div>
         
@@ -735,7 +738,6 @@ export default {
                    this.messageContent={}
                    this.getDatas()
                   }
-              }).catch(() => {
               })
       }
     }, false);
@@ -964,13 +966,12 @@ export default {
   }
 .flex-dialog{
   .wapText{
-  column-count:2;
   line-height:30px;
   margin-bottom:20px;
   }
   .messageText{
     padding:0 20px;
-    min-height:320px;
+    min-height:200px;
     width:100%;
     text-align:justify;
   }

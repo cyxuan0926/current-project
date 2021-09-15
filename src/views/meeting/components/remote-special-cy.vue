@@ -53,7 +53,7 @@
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
            <el-button
-          v-if="(canSave(config) && permission === 'edit')"
+          v-if="(!config.show&&(canSave(config) && permission === 'edit'))||!config.enabledMeeting"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>       
@@ -717,13 +717,13 @@ export default {
     // 选择日期后 初始化时间段
     handleDate(config, currentDuration) {
 
-        if(config.show){
-          if(config.enabledMeeting==0){
-              this.$set(config, 'show', false)
-          }else{
-            this.$set(config, 'show', true)
-          }
-        }
+        // if(config.show){
+        //   if(config.enabledMeeting==0){
+        //       this.$set(config, 'show', false)
+        //   }else{
+        //     this.$set(config, 'show', true)
+        //   }
+        // }
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
       this.$set(config, 'duration', currentDuration)
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
