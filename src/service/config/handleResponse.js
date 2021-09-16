@@ -87,6 +87,10 @@ const codes = {
       tips('提交的数据格式错误！')
     }
   },
+  // 用户名未绑定手机号
+  417: {
+    resData: true
+  },
   500: {
     next: params => {
       tips(params.msg || params.message || '服务器内部错误！')

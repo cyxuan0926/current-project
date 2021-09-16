@@ -11,7 +11,7 @@
           :model="formData"
           :rules="rules"
           @keyup.enter.native="handleLogin">
-          <el-form-item prop="username">
+          <el-form-item prop="username" ref="usernameItem">
             <el-input
               clearable
               v-model.trim="formData.username"
@@ -28,6 +28,16 @@
               placeholder="密码"
             />
           </el-form-item>
+
+          <el-form-item prop="code">
+            <el-input
+                clearable
+                v-model.trim="formData.code"
+                :maxlength="4"
+                placeholder="请输入验证码">
+                <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
+            </el-input>
+        </el-form-item>
 
           <!-- <el-form-item class="el-form__code" prop="code">
             <el-input
@@ -63,47 +73,86 @@
       <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
       <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
     </div>
+    <bind-phone-modal v-model="showBindModal" :username="formData.username"/>
   </div>
 </template>
 
 <script>
 import { _thisYear } from '@/common/constants/const'
-
+import bindPhoneModal from './components/bind-phone-modal.vue'
 import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
+import http from '@/service'
 
 export default {
+  components: {
+    bindPhoneModal
+  },
   data() {
     return {
+      showBindModal: false,
       loading: false,
       isRememberAccount: false,
+      isGetSmscode: false,
+      smsCountdown: 60,
+      smsInterval: null,
+      smsCodeText: '获取验证码',
+
       formData: {
         username: '',
-        password: ''
-        // code: ''
+        password: '',
+        code: ''
       },
 
       rules: {
-        password: [{
-          required: true,
-          message: '请输入密码',
-          trigger: 'blur'
-        }],
+        username: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'blur'
+          },
+          // {
+          //   validator: async (rule, value, callback) => {
+          //     let res = await this.sendSmsVerificationCodes(value)
+          //     if (res) {
+          //       callback()
+          //       if (!res.data) {
+          //         callback(new Error(''))
+          //         this.showBindModal = true
+          //       }
+          //     }
+          //     else {
+          //       callback(new Error('用户名不存在'))
+          //     }
+          //   },
+          //   trigger: 'send'
+          // }
+        ],
 
-        username: [{
-          required: true,
-          message: '请输入用户名',
-          trigger: 'blur'
-        }]
-        // code: [
-        //   {
-        //     required: true,
-        //     message: '请输入验证码',
-        //     trigger: 'blur'
-        //   }
-        // ]
+        password: [
+          {
+            required: true,
+            message: '请输入密码',
+            trigger: 'blur'
+          }
+        ],
+
+        code: [
+          {
+            required: true,
+            validator(rule, value, callback) {
+              if ( /^\d{4}$/.test(value) ) {
+                callback()
+              }
+              else {
+                callback(new Error('请输入正确验证码'))
+              }
+            },
+            trigger: 'blur'
+          }
+        ]
       },
 
       year: _thisYear
@@ -142,7 +191,7 @@ export default {
     ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
-    ...mapActions('account', ['login']), // 'getCaptcha'
+    ...mapActions('account', ['login', 'sendSmsVerificationCodes']), // 'getCaptcha'
 
     handlePasswordTips(title) {
       return this.$confirm(
@@ -155,6 +204,44 @@ export default {
           showCancelButton: false
         }
       )
+    },
+
+    // 设置验证码按钮文本
+    setSmsText() {
+      this.smsCodeText = `${ !this.smsCountdown ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
+    },
+
+    // 获取验证码倒计时
+    setSmsCountdown() {
+        if (!this.smsInterval) {
+            this.setSmsText()
+            this.smsInterval = setInterval(() => {
+                this.smsCountdown--
+                this.setSmsText()
+                if (!this.smsCountdown) {
+                    this.smsCountdown = 60
+                    this.isGetSmscode = false
+                    clearInterval(this.smsInterval)
+                    this.smsInterval = null
+                }
+            }, 1000)
+        }
+    },
+
+    // 获取验证码
+    handleSmscode() {
+      this.$refs.form.validateField('username', async err => {
+        if (!err) {
+          // 用户名是否存在 用户名是否绑定手机号
+          let res = await this.sendSmsVerificationCodes(this.formData.username)
+          if ( res ) {
+            this.isGetSmscode = true
+            this.setSmsCountdown()
+          } else {
+            this.showBindModal = true
+          }
+        }
+      })
     },
 
     handleLogin() {
