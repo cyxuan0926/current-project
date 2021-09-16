@@ -10,10 +10,18 @@ export default {
   authorizeRegistrations: (_, params) => {
     return http.authorizeRegistrations(params).then(res => res)
   },
-  getRegistrationNotificationDetail: ({ commit }, params) => {
-    return http.getRegistrationNotificationDetail(params).then(res => {
+  getRegistrationNotificationDetail: ({ commit, dispatch }, params) => {
+    return http.getRegistrationNotificationDetail(params).then(async res => {
       if (!res) return
+
+      const { notify } = res
+
+      const { meetingNotificationUrl } = notify
+
+      if (meetingNotificationUrl) res['notify']['meetingNotificationUrl'] = await dispatch('files/downloadPublicServiceFile', { url: meetingNotificationUrl })
+
       commit('getNotification', res)
+
       return true
     })
   },
