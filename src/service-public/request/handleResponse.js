@@ -43,15 +43,24 @@ const responseHandlers = {
       tip('密码重置成功，请登录国科服务系统！', 'success')
       return true
     }
+
     else if (url.includes('/sms/verification-codes')) {
       tip('短信验证码发送成功', 'success')
       return 'SMS_SEND_OK'
     }
+
     else if (url.includes('/users/updatephone')) {
       tip('手机号绑定成功', 'success')
       return 'SMS_BIND_OK'
     }
+
+    else if (url.includes('/users/password/username/by-code')) {
+      tip('密码重置成功，请登录国科服务系统！', 'success')
+
+      return true
+    }
   },
+
   // 请求失败 有错误返回体
   400: res => {
     const { url } = res.config
@@ -63,6 +72,11 @@ const responseHandlers = {
     }
     else if (url.includes('/sms/verification-codes/username')) {
       return 'SMS_NO_ACCOUNT'
+    }
+    else if (url.includes('/users/password/username/by-code')) {
+      tip(res.data)
+
+      return false
     }
     else {
       if (res.data) {
@@ -81,6 +95,7 @@ const responseHandlers = {
       if (res.data) {
         tip(res.data.message)
       }
+
       return res.data
     }
   },

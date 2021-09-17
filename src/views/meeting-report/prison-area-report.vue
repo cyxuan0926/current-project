@@ -2,33 +2,41 @@
   <el-row class="row-container" :gutter="0">
     <m-excel-download
       v-if="hasAllPrisonQueryAuth"
-      path="/download/exportPrisonStatical"
+      path="/download/newExportPrisonStatical"
       :params="filter"
     />
 
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
 
     <el-col :span="24">
-      <!--  show-summary
-        :summary-method="summaryMethod" -->
+      <!--  show-summary :summary-method="summaryMethod" -->
       <m-table-new
         stripe
         :data="prisonAreaReportList.contents"
         :cols="tableCols"
       >
-        <template #total="{ row }">{{ row.total }} 次</template>
+        <template #num="{ row }">{{ row.num || 0 }} 次</template>
 
-        <template #finishedTotal="{ row }">{{ row.finishedTotal }} 次</template>
+        <template #pending="{ row }">{{ row.pending || 0 }} 次</template>
 
-        <template #canceledTotal="{ row }">{{ row.canceledTotal }} 次</template>
+        <template #passed="{ row }"> {{ row.passed || 0 }} 次</template>
 
-        <template #expiredTotal="{ row }">{{ row.expiredTotal }} 次</template>
+        <template #finished="{ row }">{{ row.finished || 0 }} 次</template>
 
-        <template #deniedTotal="{ row }">{{ row.deniedTotal }} 次</template>
+        <template #canceled="{ row }">{{ row.canceled || 0 }} 次</template>
+
+        <template #expired="{ row }">{{ row.expired || 0 }} 次</template>
+
+        <template #denied="{ row }">{{ row.denied || 0 }} 次</template>
+
+        <template #meetingOn="{ row }"> {{ row.meetingOn || 0 }} 次</template>
+
+        <template #ended="{ row }"> {{ row.ended || 0 }} 次</template>
       </m-table-new>
     </el-col>
 
@@ -56,10 +64,12 @@ export default {
   data() {
     return {
       show: false,
+
       filterInit: { // 默认查询上一个月的，筛选框初始化
         startDate: startDate,
         endDate: endDate
       },
+
       searchItems: {
         prisonAreaId: {
           type: 'select',
@@ -73,6 +83,7 @@ export default {
           filterable: true,
           options: []
         },
+
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,
@@ -82,18 +93,22 @@ export default {
           endPlaceholder: '通话结束时间',
           value: [startDate, endDate]
         },
+
         prisonerName: {
           type: 'input',
           label: '罪犯姓名'
         },
+
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
         }
       },
+
       prisonArea: {}
     }
   },
+
   computed: {
     ...mapState([
       'prisonAreaReportList',
@@ -132,56 +147,62 @@ export default {
 
         {
           label: '监区',
-          prop: 'fullname',
+          prop: 'prisonArea',
           showOverflowTooltip: true
         },
 
         {
           label: '申请次数',
-          prop: 'total',
-          slotName: 'total'
+          prop: 'num',
+          slotName: 'num'
         },
 
         {
           label: '未授权次数',
-          prop: ''
+          prop: 'pending',
+          slotName: 'pending'
         },
 
         {
-          label: '待通话次数'
+          label: '待通话次数',
+          prop: 'passed',
+          slotName: 'passed'
         },
 
         {
           label: '已完成次数',
-          prop: 'finishedTotal',
-          slotName: 'finishedTotal'
+          prop: 'finished',
+          slotName: 'finished'
         },
 
         {
           label: '已过期次数',
-          prop: 'expiredTotal',
-          slotName: 'expiredTotal'
+          prop: 'expired',
+          slotName: 'expired'
         },
 
         {
           label: '已拒绝/撤回次数',
-          prop: 'deniedTotal',
-          slotName: 'deniedTotal'
+          prop: 'denied',
+          slotName: 'denied'
         },
 
         {
           label: '已取消次数',
-          prop: 'canceledTotal',
-          slotName: 'canceledTotal'
+          prop: 'canceled',
+          slotName: 'canceled'
         },
 
         {
           label: '已结束次数',
-          prop: 'endedTotal'
+          prop: 'ended',
+          slotName: 'ended'
         },
 
         {
-          label: '通话中次数'
+          label: '通话中次数',
+          prop: 'meetingOn',
+          slotName: 'meetingOn'
         }
       ]
 
@@ -195,21 +216,31 @@ export default {
       return allCols
     }
   },
-  mounted() {
+
+  async mounted() {
+    this.$refs.search.onGetFilter()
+
     if (this.hasAllPrisonQueryAuth) {
       this.searchItems.prisonAreaId.getting = false
-      this.getDatas()
+
+      await this.getDatas()
     } else {
-      this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } }).then(res => {
-        this.searchItems.prisonAreaId.options = this.jailPrisonAreas
-        this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
-        this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
-        this.filter.prisonAreaId = this.searchItems.prisonAreaId.options[0].id
-        this.searchItems.prisonAreaId.getting = false
-        this.getDatas()
-      })
+      await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } })
+
+      this.searchItems.prisonAreaId.options = this.jailPrisonAreas
+
+      this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
+
+      this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
+
+      this.filter.prisonAreaId = this.searchItems.prisonAreaId.options[0].id
+
+      this.searchItems.prisonAreaId.getting = false
+
+      await this.getDatas()
     }
   },
+
   methods: {
     ...mapActions([
       'getPrisonAreaReportList',
@@ -217,25 +248,34 @@ export default {
       'getJailPrisonAreas'
     ]),
 
-    getDatas() {
+    async getDatas() {
+      let res
+
+      const { startDate, endDate } = this.filter
+
+      if (startDate) this.filter['startDate'] = `${ startDate } 00:00:00`
+
+      if (endDate) this.filter['endDate'] = `${ endDate } 23:59:59`
+
       this.prisonArea = this.searchItems.prisonAreaId.options.find(o => o.id === this.filter.prisonAreaId)
+
       if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length === 1) delete this.filter.prisonAreaId
+
       else if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length > 1) this.filter.prisonAreaId = ''
-      if (this.hasAllPrisonQueryAuth) {
-        this.getPrisonAreaReportListAll({ ...this.filter, ...this.pagination }).then(res => {
-          if (!res) return
-          this.show = true
-        })
-      } else {
-        this.getPrisonAreaReportList({ ...this.filter, ...this.pagination }).then(res => {
-          if (!res) return
-          this.show = true
-        })
-      }
+
+      if (this.hasAllPrisonQueryAuth) res = await this.getPrisonAreaReportListAll({ ...this.filter, ...this.pagination })
+
+      else res = await this.getPrisonAreaReportList({ ...this.filter, ...this.pagination })
+
+      if (!res) return
+
+      this.show = true
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     getSummaries(params) {
       if (!this.show) return ''
       const { columns, data } = params
@@ -269,6 +309,7 @@ export default {
       })
       return sums
     },
+
     getSummariesAll(params) {
       if (!this.show) return ''
       const { columns, data } = params
@@ -298,8 +339,10 @@ export default {
       })
       return sums
     },
+
     // 覆盖 prison-filter-creator mixin
     createPrisonAreaFilter() {},
+
     // 覆盖 prison-filter-creator mixin
     async searchSelectChange(selectKey, value) {
       if (selectKey === 'provincesId') {
@@ -337,6 +380,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

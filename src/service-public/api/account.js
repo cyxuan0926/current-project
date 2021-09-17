@@ -84,11 +84,6 @@ export const getCaptcha = () => {
   return get('/captcha')
 }
 
-// 发送短信验证码
-export const sendSmsVerificationCodes = username => {
-  return post('/sms/verification-codes', { username })
-}
-
 // 通过账号 发送短信验证码
 export const sendSmsByAccount = username => post('/sms/verification-codes/username', { username })
 
@@ -97,3 +92,6 @@ export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { p
 
 // 账户绑定手机号
 export const userBindByPhone = data => post('/users/updatephone', data)
+
+// 根据短信验证码重置我的密码
+export const modifyMyPasswordByCode = params => post('/users/password/username/by-code', params)

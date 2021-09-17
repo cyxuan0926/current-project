@@ -124,8 +124,10 @@ export default {
       }
     }
   },
+
   computed: {
     ...mapState(['prisonReportList', 'prisonReportDetail']),
+
     totalPage() {
       if (this.activeComponentName === 'profile') {
         return this.prisonReportList.total
@@ -133,6 +135,7 @@ export default {
         return this.prisonReportDetail.total
       }
     },
+
     excelDownloadPath() {
       const activeTab = this.tabOptions.find(tab => {
         return tab.name === this.activeComponentName
@@ -143,19 +146,25 @@ export default {
 
     ...mapGetters(['isSuperAdmin'])
   },
+
   watch: {
     activeComponentName(val) {
       if (this.activeComponentName === 'profile') {
         this.searchItems.name.miss = true
+
         this.searchItems.prisonerNumber.miss = true
 
         delete this.filter.name
+
         delete this.filter.prisonerNumber
       } else {
         this.searchItems.name.miss = false
+
         this.searchItems.prisonerNumber.miss = false
       }
+
       this.$refs.search.onSearch('tabs')
+
       this.onSearch()
     }
   },

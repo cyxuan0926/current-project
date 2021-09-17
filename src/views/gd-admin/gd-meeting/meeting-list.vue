@@ -57,22 +57,22 @@ export default {
         },
         {
           label: '申请次数(次)',
-          prop: 'total',
+          prop: 'num',
           minWidth: '8.2%'
         },
         {
           label: '未授权次数(次)',
-          prop: 'unPendTotal',
+          prop: 'pending',
           minWidth: '8.2%'
         },
         {
           label: '待通话次数(次)',
-          prop: 'passedTotal',
+          prop: 'passed',
           minWidth: '8.2%'
         },
         {
           label: '审核被拒绝次数(次)',
-          prop: 'deniedTotal',
+          prop: 'denied',
           minWidth: '8.2%'
         },
         {
@@ -82,12 +82,12 @@ export default {
         },
         {
           label: '未审核过期次数(次)',
-          prop: 'pendingExpiredTotal',
+          prop: 'expired',
           minWidth: '8.2%'
         },
         {
           label: '未审核过期比例',
-          prop: 'pendingExpiredScale',
+          prop: 'expiredScale',
           minWidth: '8.2%'
         },
         {
@@ -102,7 +102,7 @@ export default {
         },
         {
           label: '通话完成次数(次)',
-          prop: 'finishedTotal',
+          prop: 'finished',
           minWidth: '8.2%'
         },
         {
@@ -112,7 +112,7 @@ export default {
         },
         {
           label: '通话结束次数(次)',
-          prop: 'endedTotal',
+          prop: 'ended',
           minWidth: '8.2%'
         },
         {
@@ -122,9 +122,10 @@ export default {
         },
         {
           label: '警官取消次数(次)',
-          prop: 'canceledTotal',
+          prop: 'canceled',
           minWidth: '8.2%'
-        },{
+        },
+        {
           label: '家属取消次数(次)',
           prop: 'familyCanceledTotal',
           minWidth: '8.2%'
