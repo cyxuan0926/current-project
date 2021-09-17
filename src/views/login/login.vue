@@ -84,7 +84,7 @@ import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
-import http from '@/service'
+import { sendSmsByAccount } from '@/service-public/api/account'
 
 export default {
   components: {
@@ -191,7 +191,7 @@ export default {
     ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
     ...mapActions(['getWebsocketResult']),
-    ...mapActions('account', ['login', 'sendSmsVerificationCodes']), // 'getCaptcha'
+    ...mapActions('account', ['login']), // 'getCaptcha'
 
     handlePasswordTips(title) {
       return this.$confirm(
@@ -230,15 +230,25 @@ export default {
 
     // 获取验证码
     handleSmscode() {
+      if (this.isGetSmscode) {
+        return
+      }
       this.$refs.form.validateField('username', async err => {
         if (!err) {
+          this.isGetSmscode = true
           // 用户名是否存在 用户名是否绑定手机号
-          let res = await this.sendSmsVerificationCodes(this.formData.username)
-          if ( res ) {
-            this.isGetSmscode = true
-            this.setSmsCountdown()
-          } else {
+          let res = await sendSmsByAccount(this.formData.username)
+          if (res == 'SMS_NO_ACCOUNT') {
+            this.$message.error('用户名不存在')
+            this.isGetSmscode = false
+          }
+          else if (res == 'SMS_NO_BIND') {
             this.showBindModal = true
+            this.isGetSmscode = false
+          }
+          else if (res == 'SMS_SEND_OK') {
+            this.$message.success('短信验证码发送成功')
+            this.setSmsCountdown()
           }
         }
       })

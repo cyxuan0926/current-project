@@ -88,3 +88,9 @@ export const getCaptcha = () => {
 export const sendSmsVerificationCodes = username => {
   return post('/sms/verification-codes', { username })
 }
+
+// 通过账号 发送短信验证码
+export const sendSmsByAccount = username => post('/sms/verification-codes/username', { username })
+
+// 通过手机号 发送短信验证码
+export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { phoneNumber })

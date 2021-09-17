@@ -12,6 +12,10 @@ const responseHandlers = {
   200: res => {
     const { url } = res.config
     if (url.includes('/oauth/token')) {}
+    else if (url.includes('/sms/verification-codes/username')) {
+      tip('短信验证码发送成功', 'success')
+      return 'SMS_SEND_OK'
+    }
     return res.data
   },
   // 有些接口正向成功是201
@@ -39,6 +43,10 @@ const responseHandlers = {
       tip('密码重置成功，请登录国科服务系统！', 'success')
       return true
     }
+    else if (url.includes('/sms/verification-codes')) {
+      tip('短信验证码发送成功', 'success')
+      return 'SMS_SEND_OK'
+    }
   },
   // 请求失败 有错误返回体
   400: res => {
@@ -48,6 +56,22 @@ const responseHandlers = {
     }
     else if (url.includes('/users/security-question-answers/verification')) {
       return false
+    }
+    else if (url.includes('/sms/verification-codes/username')) {
+      return 'SMS_NO_ACCOUNT'
+    }
+    else {
+      if (res.data) {
+        tip(res.data.message)
+      }
+      return res.data
+    }
+  },
+  // 根据账号发送短信验证码 未绑定手机号
+  417: res => {
+    const { url } = res.config
+    if (url.includes('/sms/verification-codes/username')) {
+      return 'SMS_NO_BIND'
     }
     else {
       if (res.data) {

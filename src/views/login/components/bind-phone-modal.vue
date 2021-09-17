@@ -30,7 +30,7 @@
         <template #footer>
             <span class="dialog-footer">
             <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="handleSubmit">确 定</el-button>
+            <el-button type="primary" @click="handleSubmit" :loading="loading">确 定</el-button>
             </span>
         </template>
     </el-dialog>
@@ -40,11 +40,13 @@
     import http from '@/service'
     import validate from '@/utils/validate'
     import { mapActions } from 'vuex'
+    import { sendSmsByPhone } from '@/service-public/api/account'
     export default {
         props: {
             value: Boolean,
             input: Function,
             username: String,
+            loading: false
         },
         data() {
             return {
@@ -88,9 +90,9 @@
             }
         },
         methods: {
-            ...mapActions('account', ['sendSmsVerificationCodes']),
             handleClose() {
                 this.$emit('input', false)
+                this.loading = false
                 this.$refs.bindForm.resetFields()
             },
             // 设置倒计时文案
@@ -122,12 +124,12 @@
                     if (!err) {
                         this.isGetSmscode = true
                         try {
-                            let { data } = await this.sendSmsVerificationCodes(this.loginData.phoneNumber)
-                            if (data) {
+                            let res = await sendSmsByPhone(this.loginData.phoneNumber)
+                            if (res == 'SMS_SEND_OK') {
                                 this.setSmsCountdown()
                             }
                         } catch (error) {
-                            tips('获取验证码失败，请重试！')
+                            this.$message.error('获取验证码失败，请重试！')
                             this.isGetSmscode = false
                         }
                     }
@@ -135,18 +137,25 @@
             },
             // 绑定手机号
             handleSubmit() {
-                if ( !this.username ) {
-                    this.$message.error('请输入用户名')
+                if (this.loading) {
+                    return
+                }
+                if (!this.username) {
                     return
                 }
                 this.$refs.bindForm.validate(async valid => {
                     let { phoneNumber, code } = this.loginData
                     if (valid) {
+                        this.loading = true
                         let res = http.updatePrisonUserPhone({
                             username: this.username,
                             phoneNumber,
                             code
                         })
+                        if (res) {
+                            this.handleClose()
+                        }
+                        this.loading = false
                     }
                 })
             }
