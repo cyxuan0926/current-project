@@ -13,7 +13,7 @@ const responseHandlers = {
     const { url } = res.config
     if (url.includes('/oauth/token')) {}
     else if (url.includes('/sms/verification-codes/username')) {
-      tip('短信验证码发送成功', 'success')
+      tip(res.data, 'success')
       return 'SMS_SEND_OK'
     }
     return res.data
