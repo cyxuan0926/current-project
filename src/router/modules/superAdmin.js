@@ -501,7 +501,11 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics/prison-area',
       name: 'prison-data_meeting-statistics_prison-area',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: {
+        hasAllPrisonQueryAuth: true,
+        hasProvinceQueryAuth: true,
+        provincesId: '1'
+      },
       meta: {
         permission: 'visit.visit-statistic.all-prison-area.search',
         breadcrumbName: '监区可视电话统计'

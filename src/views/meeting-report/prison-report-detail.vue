@@ -221,6 +221,7 @@ export default {
 
   methods: {
     ...mapActions(['getMeetingsFamilyDetail']),
+
     async showFamilyDetail(...args) {
       const [ familyId, meetingId ] = args
       try {

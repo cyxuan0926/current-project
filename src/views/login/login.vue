@@ -238,7 +238,6 @@ export default {
           this.isGetSmscode = true
           // 用户名是否存在 用户名是否绑定手机号
           let res = await sendSmsByAccount(this.formData.username)
-          console.log('res=-===', res)
           if (res == 'SMS_NO_ACCOUNT') {
             this.$message.error('用户名不存在')
             this.isGetSmscode = false
