@@ -401,6 +401,14 @@ export default {
           : constFamilyShows
       })
     },
+    isDevelop(val, key) {//判断结束原因是否存在多行
+        this.$nextTick(() => {
+          if(this.$refs[`itemHeigh+${key}`]){
+            this.$set(val,'itemHeigh', this.$refs[`itemHeigh+${key}`][0].clientHeight)
+          }
+        })
+        return val.remark
+      },
     onCloseShow() {
       this.toShow.id = ''
       if (this.meetingRefresh) this.getDatas('onCloseShow')

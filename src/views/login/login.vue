@@ -236,16 +236,18 @@ export default {
       this.$refs.form.validateField('username', async err => {
         if (!err) {
           this.isGetSmscode = true
-          // 用户名是否存在 用户名是否绑定手机号
           let res = await sendSmsByAccount(this.formData.username)
+          // 用户名是否存在
           if (res == 'SMS_NO_ACCOUNT') {
             this.$message.error('用户名不存在')
             this.isGetSmscode = false
           }
+          // 用户名是否绑定手机号
           else if (res == 'SMS_NO_BIND') {
             this.showBindModal = true
             this.isGetSmscode = false
           }
+          // 提示
           else if (res == 'SMS_SEND_OK') {
             this.setSmsCountdown()
           }
