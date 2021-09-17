@@ -265,17 +265,17 @@ export default {
           // const { key } = this.captchaConfigs
           const {
             username,
-            password
-            // code
+            password,
+            code
           } = this.formData
 
           this.loading = true
 
           const res = await this.login({
             username,
-            password
-            // code,
-            // codeKey: key
+            password,
+            code,
+            codeKey: username
           })
 
           if( res.code === 'user.PasswordNotMatched' ) {
