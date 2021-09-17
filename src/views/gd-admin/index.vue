@@ -390,7 +390,8 @@
         }
         this.isDrawMap = true
         clearInterval(this.mapEffectInterval)
-        const { jailList = [] } = await http.getJailstatus()
+        let { jailList } = await http.getJailstatus()
+        jailList = jailList || []
         this.jailList = []
         jailList.forEach((d) => {
           this.jailList.push(Object.assign({
