@@ -47,6 +47,10 @@ const responseHandlers = {
       tip('短信验证码发送成功', 'success')
       return 'SMS_SEND_OK'
     }
+    else if (url.includes('/users/updatephone')) {
+      tip('手机号绑定成功', 'success')
+      return 'SMS_BIND_OK'
+    }
   },
   // 请求失败 有错误返回体
   400: res => {

@@ -94,3 +94,6 @@ export const sendSmsByAccount = username => post('/sms/verification-codes/userna
 
 // 通过手机号 发送短信验证码
 export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { phoneNumber })
+
+// 账户绑定手机号
+export const userBindByPhone = data => post('/users/updatephone', data)

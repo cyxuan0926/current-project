@@ -15,6 +15,7 @@
                 <el-input
                     clearable
                     v-model.trim="loginData.phoneNumber"
+                    :maxlength="11"
                     placeholder="请输入手机号">
                 </el-input>
             </el-form-item>
@@ -23,7 +24,7 @@
                     v-model.trim="loginData.code"
                     :maxlength="4"
                     placeholder="请输入验证码">
-                    <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
+                    <el-button slot="append" @click="handleSmscode">{{ smsCodeText }}</el-button>
                 </el-input>
             </el-form-item>
         </el-form>
@@ -40,16 +41,16 @@
     import http from '@/service'
     import validate from '@/utils/validate'
     import { mapActions } from 'vuex'
-    import { sendSmsByPhone } from '@/service-public/api/account'
+    import { sendSmsByPhone, userBindByPhone } from '@/service-public/api/account'
     export default {
         props: {
             value: Boolean,
             input: Function,
-            username: String,
-            loading: false
+            username: String
         },
         data() {
             return {
+                loading: false,
                 dialogVisible: false,
                 isGetSmscode: false,
                 smsCountdown: 60,
@@ -147,12 +148,12 @@
                     let { phoneNumber, code } = this.loginData
                     if (valid) {
                         this.loading = true
-                        let res = http.updatePrisonUserPhone({
+                        let res = userBindByPhone({
                             username: this.username,
                             phoneNumber,
                             code
                         })
-                        if (res) {
+                        if (res == 'SMS_BIND_OK') {
                             this.handleClose()
                         }
                         this.loading = false
