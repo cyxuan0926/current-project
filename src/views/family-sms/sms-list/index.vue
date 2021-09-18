@@ -17,6 +17,7 @@
         </el-button>
          <el-button
           slot="append"
+          v-if="tabs==0 ||tabs==1"
             type="primary"
             class="button-add"
              @click="printList()"
@@ -561,7 +562,7 @@ export default {
         isSensitive: {
           type: 'select',
           label: '是否有敏感词',
-          options: [{label:"无",value:"0"},{label:"有",value:"1"}]
+          options: [{label:"否",value:"0"},{label:"是",value:"1"}]
         },
       },
       show: {
