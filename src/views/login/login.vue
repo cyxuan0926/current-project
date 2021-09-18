@@ -272,7 +272,7 @@ export default {
           this.loading = true
           const res = await this.login({
             username,
-            password: JSEncryptEncrypt(password),
+            password,
             code,
             codeKey: username
           })
