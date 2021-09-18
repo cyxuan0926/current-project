@@ -34,12 +34,12 @@ const Print = function (dom, options) {
 
     getPrintTemplate: function(content) {
       let HTML = this.dom.outerHTML
-      //HTML.replace('style="margin-top: 15vh;"',"")
+      //HTML.replace('style="margin-top: 15vh;"',""y)
       return HTML;
     },
   
     getPrintStyle: function () {
-      var str = "<style>* { margin: 0 ;font-size: 10px;word-break:break-all;}.wapText{font-size: 12px;}.textContentTime{display:block;text-align:center;font-size: 22px;line-height:18px;margin-bottom:10px}.textContent{text-align: left;margin:0px;line-height: 18px}.familyname{font-size:14px;text-overflow: ellipsis;}.phone{font-size:12px;text-overflow: ellipsis;}.messageText{text-indent:24px;padding-right:5px;text-align: justify;line-height: 30px;font-size:14px;}.flex-dialog{padding-top: 100px;}</style>"
+      var str = "<style>* { margin: 0 ;font-size: 10px;word-break:break-all;}.wapText{font-size: 12px;}.textContentTime{display:block;text-align:center;font-size: 22px;line-height:18px;margin-bottom:10px}.textContent{text-align: left;margin:0px;line-height: 18px}.familyname{font-size:14px;text-overflow: ellipsis;}.phone{font-size:12px;text-overflow: ellipsis;}.messageText{text-indent:24px;width:160px;line-height: 28px;font-size:13px;letter-spacing:1px;marginRight:5px;text-align:justify}.flex-dialog{padding-top: 100px;}</style>"
       return str;
     },
     getScript: function () {
