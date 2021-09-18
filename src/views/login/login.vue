@@ -85,6 +85,7 @@ import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
 import { sendSmsByAccount } from '@/service-public/api/account'
+import { JSEncryptEncrypt } from '@/common/constants/rsa'
 
 export default {
   components: {
@@ -257,7 +258,7 @@ export default {
 
     handleLogin() {
       if (this.loading) return
-
+      this.$message.closeAll();
       this.$refs.form.validate(async valid => {
         if (!valid) return
 
@@ -268,12 +269,10 @@ export default {
             password,
             code
           } = this.formData
-
           this.loading = true
-
           const res = await this.login({
             username,
-            password,
+            password: JSEncryptEncrypt(password),
             code,
             codeKey: username
           })

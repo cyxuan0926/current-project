@@ -2,9 +2,9 @@ import { Message } from 'element-ui'
 import logout from '@/utils/logout'
 import router from '@/router'
 
-const tip = (message = '操作失败！', type = 'error') => {
+const tip = (message = '操作失败！', type = 'error', duration = 3000) => {
   Message.closeAll()
-  Message({ type, message, duration: 3000, showClose: true })
+  Message({ type, message, duration, showClose: true })
 }
 
 const responseHandlers = {
@@ -13,7 +13,7 @@ const responseHandlers = {
     const { url } = res.config
     if (url.includes('/oauth/token')) {}
     else if (url.includes('/sms/verification-codes/username')) {
-      tip(res.data, 'success')
+      tip(res.data, 'success', 0)
       return 'SMS_SEND_OK'
     }
     return res.data

@@ -148,7 +148,7 @@
                     let { phoneNumber, code } = this.loginData
                     if (valid) {
                         this.loading = true
-                        let res = userBindByPhone({
+                        let res = await userBindByPhone({
                             username: this.username,
                             phoneNumber,
                             code

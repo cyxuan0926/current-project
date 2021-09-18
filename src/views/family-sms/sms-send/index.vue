@@ -86,6 +86,7 @@ export default {
         // 查询列表
         const getData = async () => {
             const params = {
+                jailId: this.$store.state.global.user.jailId,
                 ...pagination.value,
                 ...filter.value
             }
