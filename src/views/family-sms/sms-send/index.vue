@@ -84,7 +84,6 @@ export default {
         }
 
         // 查询列表
-        console.log(context)
         const getData = async () => {
             const params = {
                 jailId: JSON.parse(localStorage.getItem('user')).jailId,

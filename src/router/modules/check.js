@@ -325,7 +325,8 @@ let check = [{
       props: { hasPrisonAreaAuth: true },
       meta: { permission: 'visit.family-sms.send', breadcrumbName: '发送亲情短信' },
       component: 'family-sms/sms-send/index'
-    }, {
+    },
+    {
       path: '/family-sms/list',
       name: 'sms-list',
       props: { hasPrisonAreaAuth: true },
