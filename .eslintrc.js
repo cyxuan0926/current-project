@@ -18,7 +18,8 @@ module.exports = {
     'standard'
   ],
   globals: {
-    'JSEncrypt': 'readonly'
+    'JSEncrypt': 'readonly',
+    'BUILD_ENV': 'readonly'
   },
   // required to lint *.vue files
   plugins: ['vue', 'html'],
