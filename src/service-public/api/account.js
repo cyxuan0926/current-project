@@ -1,5 +1,7 @@
 import { get, postForm, put, post } from '../request'
 
+import { JSEncryptEncrypt } from '@/common/constants/rsa'
+
 export function login({
   username,
   password,
@@ -10,7 +12,7 @@ export function login({
     codeKey,
     code,
     username,
-    password,
+    password: JSEncryptEncrypt(password),
     grant_type: 'password',
     mode: 'account_password'
   }, {
@@ -30,7 +32,7 @@ export function getMenus() {
 }
 
 export function modifyMyPassword({ oldPassword, newPassword }) {
-  return put('/users/me/password/by-old-password', { oldPassword, newPassword })
+  return put('/users/me/password/by-old-password', { oldPassword: JSEncryptEncrypt(oldPassword), newPassword: JSEncryptEncrypt(newPassword) })
 }
 
 export function getRoles() {
@@ -94,4 +96,8 @@ export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { p
 export const userBindByPhone = data => post('/users/updatephone', data)
 
 // 根据短信验证码重置我的密码
-export const modifyMyPasswordByCode = params => post('/users/password/username/by-code', params)
+export const modifyMyPasswordByCode = params => {
+  const { newPassword } = params
+
+  return post('/users/password/username/by-code', Object.assign({}, params, { newPassword: JSEncryptEncrypt(newPassword) }))
+}

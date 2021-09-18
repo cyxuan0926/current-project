@@ -101,8 +101,6 @@
 import { mapState, mapActions } from 'vuex'
 
 import validate from '@/utils/validate'
-
-// import { JSEncryptEncrypt } from '@/common/constants/rsa'
 export default {
   data() {
     let validateNewPassword = (rule, value, callback) => {
