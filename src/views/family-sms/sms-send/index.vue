@@ -84,9 +84,10 @@ export default {
         }
 
         // 查询列表
+        console.log(context)
         const getData = async () => {
             const params = {
-                jailId: this.$store.state.global.user.jailId,
+                jailId: JSON.parse(localStorage.getItem('user')).jailId,
                 ...pagination.value,
                 ...filter.value
             }
