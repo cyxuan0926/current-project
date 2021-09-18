@@ -101,8 +101,6 @@
 import { mapState, mapActions } from 'vuex'
 
 import validate from '@/utils/validate'
-
-// import { JSEncryptEncrypt } from '@/common/constants/rsa'
 export default {
   data() {
     let validateNewPassword = (rule, value, callback) => {
@@ -126,14 +124,6 @@ export default {
         else if (this.codeResult === 'SMS_NO_ACCOUNT') callback(new Error('用户名不存在'))
 
         else callback()
-      }, validateCheckVerificationCode = (rule, value, callback) => {
-        if (!value) callback(new Error('请输入验证码'))
-
-        else if (this.codeResult === 'SMS_NO_BIND') callback(new Error('用户未配置手机号码'))
-
-        else if (this.codeResult === 'SMS_NO_ACCOUNT') callback(new Error('用户名不存在'))
-
-        else callback()
       }
     return {
       formData: {
@@ -146,7 +136,7 @@ export default {
       rules: {
         username: [{ validator: validateCheckUsername, trigger: 'blur', required: true }],
 
-        verificationCode: [{ validator: validateCheckVerificationCode, trigger: 'blur', required: true }],
+        verificationCode: [{ message: '请输入验证码', trigger: 'blur', required: true }],
 
         newPassword: [
           { validator: validateNewPassword, trigger: 'blur', required: true },

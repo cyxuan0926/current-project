@@ -28,7 +28,7 @@ export default {
 
 
   // 下载电子关系证明
-  downloadRelationshipFile: async({ commit }, params) => {
+  downloadRelationshipFile: async(_, params) => {
     try {
       const { data } = await http.downloadRelationshipFile(params)
 
