@@ -10,21 +10,45 @@
                       <el-radio :label="2">包月</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                 <el-form-item v-if="ruleForm.type ==2"  label="短信每月收费"  prop="startMinutesVisual">
-                       <el-input   :disabled="show.editDisabled" type="number"  step="0.01"  placeholder="元/条"  :min="0" @change="changeTimes('charge')"  v-model="ruleForm.charge">
+                 <el-form-item v-if="ruleForm.type ==2"  label="短信每月收费"  prop="charge">
+                       <el-input   :disabled="show.editDisabled" type="number"  step="0.01"  placeholder="元/条"  :min="0" @change="changeTimes('charge')"  v-model="ruleForm.charge" size="mini">
                             <template slot="append">元/月</template>
                        </el-input>
                   </el-form-item>
-                  <el-form-item  v-if="ruleForm.type ==1"  label="短信每条收费"  prop="startMinutesVisual">
-                       <el-input  type="number"  step="0.01"  :disabled="show.editDisabled"  placeholder="元/条"  :min="0" @change="changeTimes('charge')"  v-model="ruleForm.charge">
+                  <el-form-item  v-if="ruleForm.type ==1"  label="短信每条收费"  prop="charge">
+                       <el-input  type="number"  step="0.01"  :disabled="show.editDisabled"  placeholder="元/条"  :min="0" @change="changeTimes('charge')"  v-model="ruleForm.charge" size="mini">
                             <template slot="append">元/条</template>
                        </el-input>
                   </el-form-item>
                   
-                <el-form-item  label="每月发短信上限条数"  prop="limitNum">
-                       <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('limitNum')"  v-model="ruleForm.limitNum">
+                <el-form-item  label="每月发短信上限条数" >
+                  <p class="fontMargin">
+                      <el-form-item  label="宽管级别" label-width="110px"   prop="broadNum">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('broadNum')"  v-model="ruleForm.broadNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
+                     </el-form-item>
+                      <el-form-item  label="普管级别" label-width="110px" prop="commonNum">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('commonNum')"  v-model="ruleForm.commonNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                      <el-form-item  label="考察级别" label-width="110px" prop="inspectNum">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('inspectNum')"  v-model="ruleForm.inspectNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                      <el-form-item  label="严管级别" label-width="110px" prop="strictNum">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('strictNum')"  v-model="ruleForm.strictNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                     <el-form-item  label="其他级别" label-width="110px" prop="otherNum">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('otherNum')"  v-model="ruleForm.otherNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                  </p>
                 </el-form-item>
                  
                 <el-form-item  label="国科短信服务条款"  prop="termsService">
@@ -66,9 +90,35 @@
                        </el-input>
                   </el-form-item>
                 <el-form-item  label="每月发短信上限条数"  >
-                       <el-input  type="number" disabled   v-model="newForm.limitNum">
+                   <p class="fontMargin">
+                      <el-form-item  label="宽管级别" label-width="110px"   prop="broadNum">
+                        <el-input  type="number"  disabled v-model="newForm.broadNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
+                     </el-form-item>
+                      <el-form-item  label="普管级别" label-width="110px" prop="commonNum">
+                        <el-input  type="number" disabled  v-model="newForm.commonNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                      <el-form-item  label="考察级别" label-width="110px" prop="inspectNum">
+                        <el-input  type="number" disabled v-model="newForm.inspectNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                      <el-form-item  label="严管级别" label-width="110px" prop="strictNum">
+                        <el-input  type="number" disabled  v-model="newForm.strictNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                     <el-form-item  label="其他级别" label-width="110px" prop="otherNum">
+                        <el-input  type="number" disabled  v-model="newForm.otherNum" size="mini">
+                            <template slot="append">/条</template>
+                       </el-input>
+                     </el-form-item>
+                  </p>
+
+
                 </el-form-item>
                 <el-form-item  label="国科短信服务条款" >
                        <el-input   placeholder="分钟" disabled  v-model="newForm.termsService">
@@ -111,8 +161,23 @@ export default {
           termsService: [
             { required: true, type: 'url', message: `请输入正确的url`, trigger: 'blur' }
           ],
-          startMoneyVoice: [
+          charge: [
             { required: true, message: '请选填写金额', trigger: 'blur' }
+          ],
+          commonNum: [
+            { required: true, message: '请填写条数', trigger: 'blur' }
+          ],
+          broadNum: [
+            { required: true, message: '请填写条数', trigger: 'blur' }
+          ],
+          inspectNum: [
+            { required: true, message: '请填写条数', trigger: 'blur' }
+          ],
+          strictNum: [
+            { required: true, message: '请填写条数', trigger: 'blur' }
+          ],
+          otherNum: [
+            { required: true, message: '请填写条数', trigger: 'blur' }
           ]
         },
         pickerOptions: {
@@ -167,12 +232,18 @@ export default {
   }
 }
 </script>
+<style lang="stylus">
+.inputHeight .el-input--mini .el-input__inner {
+    height: 28px;
+    line-height: inherit;
+}
+</style>
 
 <style lang="scss" scoped>
 
 .fontMargin{
   font-size: 12px;
-  margin-left: 50px;
+  margin-left: 20px;
   span{
     margin-left: 20px;
   }
