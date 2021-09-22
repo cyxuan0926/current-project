@@ -29,7 +29,7 @@ instance.interceptors.request.use(
   config => {
     /* eslint-disable camelcase */
     const { access_token, token_type } = store.state.account.accountInfo
-    // eslint-disable-next-line
+
     if (BUILD_ENV === 'production') {
       config.headers['appVersion'] = '3'
     }

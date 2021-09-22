@@ -3,7 +3,6 @@
 // const env = 'auth' // 认证授权
 // const env = 'master' // 正式环境
 
-// eslint-disable-next-line
 const env = BUILD_ENV // 打包时通过 cross-env 设置的变量
 
 const nodeUrl = env === 'test' ? 'http://qa-ywgk.yuwugongkai.com' : 'http://192.168.0.180:1339'
