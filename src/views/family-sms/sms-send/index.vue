@@ -15,7 +15,7 @@
                 :cols="tableData.cols">
                 <template #operation="{ row }">
                     <el-button
-                        :disabled="row.status == 4"
+                        :disabled="row.status == 4 || row.status == 5"
                         type="text"
                         size="mini"
                         @click="handleClick(row)">{{ row.status | sendSms }}</el-button>

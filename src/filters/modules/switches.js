@@ -372,6 +372,10 @@ let switches = {
     {
       label: '短信已达上限',
       value: 4
+    },
+    {
+      label: '已加入黑名单',
+      value: 5
     }
   ]
 }
