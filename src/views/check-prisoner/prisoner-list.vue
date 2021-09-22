@@ -258,7 +258,7 @@
           />
         </el-form-item>
 
-        <el-form-item
+        <!-- <el-form-item
           v-if="timesDialogType === 'smsNum'"
           label="短信次数"
           :rules="[{ required: true, message: '请输入短信次数' }]"
@@ -270,7 +270,7 @@
             controls-position="right"
             @change="onTimesChange"
           />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
        <template >
         <el-row :gutter="0">
@@ -1355,11 +1355,11 @@ export default {
           slotName: 'accessTime'
         },
 
-        {
-          label: '短信次数/月',
-          minWidth: 85,
-          slotName: 'smsNum'
-        },
+        // {
+        //   label: '短信次数/月',
+        //   minWidth: 85,
+        //   slotName: 'smsNum'
+        // },
         {
           label: '管教级别',
           minWidth: 85,
