@@ -60,7 +60,7 @@ Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 Vue.prototype.$_operationAuthorizations = _operationAuthorizations
 
 // 只在生产环境启用等保
-if (process.env.NODE_ENV === 'production') {
+if (BUILD_ENV === 'production') {
   new ActiveMonitor().start()
 }
 
