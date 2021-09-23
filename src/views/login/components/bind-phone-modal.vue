@@ -55,7 +55,6 @@
                 isGetSmscode: false,
                 smsCountdown: 60,
                 smsInterval: null,
-                smsCodeText: '获取验证码',
                 loginData: {
                     phoneNumber: '',
                     code: ''
@@ -85,10 +84,22 @@
                 }
             }
         },
+        computed: {
+            // 倒计时文本
+            smsCodeText() {
+                return `${ !this.smsInterval ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
+            }
+        },
         watch: {
             value(v) {
                 this.dialogVisible = v
+                if (!v) {
+                    this.clearSmsCountdown()
+                }
             }
+        },
+        destroyed() {
+            this.clearSmsCountdown()
         },
         methods: {
             handleClose() {
@@ -96,22 +107,22 @@
                 this.loading = false
                 this.$refs.bindForm.resetFields()
             },
-            // 设置倒计时文案
-            setSmsText() {
-                this.smsCodeText = `${ !this.smsCountdown ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
+            // 清除定时器
+            clearSmsCountdown() {
+                if ( this.smsInterval ) {
+                    clearInterval(this.smsInterval)
+                    this.smsInterval = null
+                    this.smsCountdown = 60
+                }
             },
             // 倒计时
             setSmsCountdown() {
                 if (!this.smsInterval) {
-                    this.setSmsText()
                     this.smsInterval = setInterval(() => {
                         this.smsCountdown--
-                        this.setSmsText()
                         if (!this.smsCountdown) {
-                            this.smsCountdown = 60
+                            this.clearSmsCountdown()
                             this.isGetSmscode = false
-                            clearInterval(this.smsInterval)
-                            this.smsInterval = null
                         }
                     }, 1000)
                 }
@@ -126,7 +137,7 @@
                         this.isGetSmscode = true
                         try {
                             let res = await sendSmsByPhone(this.loginData.phoneNumber)
-                            if (res == 'SMS_SEND_OK') {
+                            if (res && res.code == 'SMS_SEND_OK') {
                                 this.setSmsCountdown()
                             }
                         } catch (error) {
@@ -153,7 +164,7 @@
                             phoneNumber,
                             code
                         })
-                        if (res == 'SMS_BIND_OK') {
+                        if (res && res.code == 'SMS_BIND_OK') {
                             this.handleClose()
                         }
                         this.loading = false

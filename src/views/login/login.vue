@@ -99,7 +99,6 @@ export default {
       isGetSmscode: false,
       smsCountdown: 60,
       smsInterval: null,
-      smsCodeText: '获取验证码',
 
       formData: {
         username: '',
@@ -172,7 +171,12 @@ export default {
       user: state => state.global.user
     }),
 
-    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor'])
+    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor']),
+
+    // 倒计时文本
+    smsCodeText() {
+        return `${ !this.smsInterval ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
+    }
   },
 
   async created() {
@@ -186,6 +190,13 @@ export default {
     }
 
     this.resolveAccount()
+  },
+
+  destroyed() {
+    if (this.smsInterval) {
+      clearInterval(this.smsInterval)
+      this.smsInterval = null
+    }
   },
 
   methods: {
@@ -207,18 +218,11 @@ export default {
       )
     },
 
-    // 设置验证码按钮文本
-    setSmsText() {
-      this.smsCodeText = `${ !this.smsCountdown ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
-    },
-
     // 获取验证码倒计时
     setSmsCountdown() {
         if (!this.smsInterval) {
-            this.setSmsText()
             this.smsInterval = setInterval(() => {
                 this.smsCountdown--
-                this.setSmsText()
                 if (!this.smsCountdown) {
                     this.smsCountdown = 60
                     this.isGetSmscode = false
@@ -234,23 +238,26 @@ export default {
       if (this.isGetSmscode) {
         return
       }
+      this.$message.closeAll();
       this.$refs.form.validateField('username', async err => {
         if (!err) {
           this.isGetSmscode = true
           let res = await sendSmsByAccount(this.formData.username)
-          // 用户名是否存在
-          if (res == 'SMS_NO_ACCOUNT') {
-            this.$message.error('用户名不存在')
-            this.isGetSmscode = false
-          }
-          // 用户名是否绑定手机号
-          else if (res == 'SMS_NO_BIND') {
-            this.showBindModal = true
-            this.isGetSmscode = false
-          }
-          // 提示
-          else if (res == 'SMS_SEND_OK') {
-            this.setSmsCountdown()
+          if (res) {
+            let { code } = res
+            // 发送短信验证码失败 用户名不存在 ｜ 操作频繁 ｜ 短信次数达上限
+            if (code == 'SMS_SEND_ERR') {
+              this.isGetSmscode = false
+            }
+            // 用户名是否绑定手机号
+            else if (code == 'SMS_NO_BIND') {
+              this.showBindModal = true
+              this.isGetSmscode = false
+            }
+            // 提示
+            else if (code == 'SMS_SEND_OK') {
+              this.setSmsCountdown()
+            }
           }
         }
       })

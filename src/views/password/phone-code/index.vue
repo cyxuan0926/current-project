@@ -119,9 +119,7 @@ export default {
       }, validateCheckUsername = (rule, value, callback) => {
         if (!value) callback(new Error('请输入用户名'))
 
-        else if (this.codeResult === 'SMS_NO_BIND') callback(new Error('用户未配置手机号码'))
-
-        else if (this.codeResult === 'SMS_NO_ACCOUNT') callback(new Error('用户名不存在'))
+        else if (this.codeResult && (this.codeResult.code === 'SMS_SEND_ERR' || this.codeResult.code === 'SMS_NO_BIND')) callback(new Error(this.codeResult.msg))
 
         else callback()
       }
@@ -165,7 +163,7 @@ export default {
 
       loginNumber: 5,
 
-      codeResult: ''
+      codeResult: {}
     }
   },
 
@@ -255,7 +253,7 @@ export default {
 
       this.loginNumber = 5
 
-      this.codeResult = ''
+      this.codeResult = {}
     },
 
     onSubmitModifyPassowrd() {

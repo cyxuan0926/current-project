@@ -14,7 +14,7 @@ const responseHandlers = {
     if (url.includes('/oauth/token')) {}
     else if (url.includes('/sms/verification-codes/username')) {
       tip(res.data, 'success', 0)
-      return 'SMS_SEND_OK'
+      return { code: 'SMS_SEND_OK' }
     }
     return res.data
   },
@@ -46,12 +46,12 @@ const responseHandlers = {
 
     else if (url.includes('/sms/verification-codes')) {
       tip('短信验证码发送成功', 'success')
-      return 'SMS_SEND_OK'
+      return { code: 'SMS_SEND_OK' }
     }
 
     else if (url.includes('/users/updatephone')) {
       tip('手机号绑定成功', 'success')
-      return 'SMS_BIND_OK'
+      return { code: 'SMS_BIND_OK' }
     }
 
     else if (url.includes('/users/password/username/by-code')) {
@@ -71,7 +71,8 @@ const responseHandlers = {
       return false
     }
     else if (url.includes('/sms/verification-codes/username')) {
-      return 'SMS_NO_ACCOUNT'
+      tip(res.data)
+      return { code: 'SMS_SEND_ERR', msg: res.data }
     }
     else if (url.includes('/users/password/username/by-code')) {
       tip(res.data)
@@ -80,7 +81,7 @@ const responseHandlers = {
     }
     else {
       if (res.data) {
-        tip(res.data.message)
+        tip(res.data.message || res.data)
       }
       return res.data
     }
@@ -89,7 +90,7 @@ const responseHandlers = {
   417: res => {
     const { url } = res.config
     if (url.includes('/sms/verification-codes/username')) {
-      return 'SMS_NO_BIND'
+      return { code: 'SMS_NO_BIND', msg: '用户未配置手机号码' }
     }
     else {
       if (res.data) {
