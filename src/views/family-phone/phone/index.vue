@@ -696,6 +696,7 @@ export default {
           label: '家属姓名',
           prop: 'families',
           ...$likeName,
+          className: '',
           desensitizationColsConfigs: {
             keyWord: 'familyId',
             prop: 'familyName',

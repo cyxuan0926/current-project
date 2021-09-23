@@ -861,6 +861,7 @@ export default {
         {
           label: '家属姓名',
           ...$likeName,
+          className: '',
           prop: 'familyName',
           desensitizationColSlotName: 'family'
         },

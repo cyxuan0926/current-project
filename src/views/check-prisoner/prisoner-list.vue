@@ -1268,6 +1268,7 @@ export default {
         label: '对应家属',
         prop: 'families',
         ...$likeName,
+        className: '',
         desensitizationColsConfigs: {
           keyWord: 'id',
           prop: 'familyName',

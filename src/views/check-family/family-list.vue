@@ -422,6 +422,7 @@ export default {
           minWidth: '140px',
           prop: 'prisonerList',
           ...$likeName,
+          className: '',
           desensitizationColsConfigs: {
             keyWord: 'prisonerId',
             prop: 'name',

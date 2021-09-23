@@ -604,6 +604,7 @@ export default {
             label: '姓名',
             prop: 'filterFamilies',
             ...$likeName,
+            className: '',
             desensitizationColsConfigs: {
               keyWord: 'familyId',
               prop: 'familyName',
