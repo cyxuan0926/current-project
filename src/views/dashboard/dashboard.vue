@@ -1,17 +1,16 @@
 <template>
-  <gdAdmin v-if="isGdadmin" />
+  <gdAdmin v-if="!!chartRole" :mapData="chartRole" />
   <p v-else>欢迎来到国科服务管理平台</p>
 </template>
 <script>
   import gdAdmin from '@/views/gd-admin/index.vue'
+  import { mapGetters } from 'vuex'
   export default {
     components: {
       gdAdmin
     },
     computed: {
-      isGdadmin() {
-        return this.$store.state.account.accountInfo.role == '广东省管理员'
-      }
+      ...mapGetters(['chartRole'])
     }
   }
 </script>

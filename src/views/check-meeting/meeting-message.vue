@@ -15,6 +15,12 @@
         >
         导出 Excel
         </el-button>
+         <el-button
+          slot="append"
+            type="primary"
+            class="button-add"
+             @click="printList()"
+          >批量打印</el-button>
     </m-search>
     <el-col :span="24">
       <el-tabs
@@ -30,8 +36,13 @@
       <m-table-new
         stripe
         :data="tabledate.messages"
+        @selection-change="handleSelectionChange"
         class="mini-td-padding td"
         :cols="tableCols">
+         <el-table-column
+          type="selection"
+          width="55">
+          </el-table-column>
           <template
           slot="message"
           slot-scope="scope">
@@ -44,6 +55,7 @@
           <span v-if="scope.row.state == '1'">已发送</span>
           <span v-if="scope.row.state == '2'">已拒绝</span>
           <span v-if="scope.row.state == '5'">已取消</span>
+          <span v-if="scope.row.state == '6'">已打印</span>
         </template>
           <template
           slot="isSensitive"
@@ -61,6 +73,8 @@
               size="mini"
               @click="handleAuthorization(scope.row)">审核</el-button>
               <span v-else style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
+               <span v-if="scope.row.state == '1' && !scope.row.isPrisonerSend" style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(scope.row)">打印</span>
+                <span v-if="scope.row.state == '6' && !scope.row.isPrisonerSend" style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(scope.row)">已打印</span>
           </template>
         </template>
       </m-table-new>
@@ -75,10 +89,10 @@
       @close="closeAuthorize()"
       title="审核"
       width="530px">
-      <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%">
+      <div class="infinite-list"  style="margin-left:10px;min-height:200px;width:100%">
         <p>请审核短信内容：</p>
-        <div v-html="messageContent" style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
-          {{ messageContent }}
+        <div v-html="toAuthorize.message" style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
+          {{ toAuthorize.message }}
         </div>
         </div>
       <div style="margin-top:10px"
@@ -171,14 +185,35 @@
     </el-dialog>
      <el-dialog
       :visible.sync="show.message"
+       class="authorize-dialog"
       title="短信内容"
-      width="530px"
-      class="authorize-dialog">
-      <div class="flex-dialog">
-        <div  v-html="messageContent" class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
-          {{ messageContent }}
+      >
+      <hr class="messageNone" />
+      <div class="flex-dialog" ref="print">
+        <div class="wapText"> 
+          <p class="textContentTime">发送时间：<span class="textContentTime time" >{{messageContent.createTime}}</span></p>
+           <p class="textContent">家属姓名：<span class="familyname">{{messageContent.sendName}}</span></p>
+          <p class="textContent">家属电话：<span class="phone">{{messageContent.familyPhone}}</span></p>
+          <p class="textContent">罪犯姓名：<span class="phone">{{messageContent.receiveName}}</span></p>
+          <p class="textContent">罪犯编号：<span class="phone">{{messageContent.criminalNumber}}</span></p>
+          
         </div>
+          <p class="textcontent">信息内容如下:</p>
+        <div  v-html="messageContent.message"  class="infinite-list messageText" >
+          {{ messageContent.message }}
+        </div>
+        <hr  class="messageNone"/>
       </div>
+        <el-row :gutter="0">
+           <!-- v-if="messageContent.state == '1' && !messageContent.isPrisonerSend" -->
+          <el-button
+           v-if="(messageContent.state == '1' || messageContent.state == '6') && !messageContent.isPrisonerSend"
+            type="primary"
+            class="button-add"
+             @click="print"
+            size="mini"
+          >打印</el-button>
+      </el-row>
     </el-dialog>
       <el-dialog
       :visible.sync="show.rejectEdit"
@@ -332,17 +367,65 @@
             <p class="detail-message-family">
                  <span class="family-name">申请状态</span>
                   <span class="family-nameDetail">
-                      <span v-if="toShow.state == '1'">已发送</span>
+                      <span v-if="toShow.state == '1' || toShow.state == '6'">已发送</span>
                       <span v-if="toShow.state == '2'">已拒绝</span>
                       <span v-if="toShow.state == '5'">已取消</span>
                   </span>
             </p>
           </div>
         </div>
+        <template v-if="toShow.printLogs">
+        <div v-for="(item,index) in toShow.printLogs" :key="index" style="display: flex;border: 1px solid #E4E7ED;border-top: none"
+        >
+          <div class="family-detail">{{index+2}}</div>
+          <div class="detail-message">
+            <p class="detail-message-family">
+              <span class="family-name" >打印账号</span>
+              <span class="family-nameDetail">{{item.printAccount}}</span>
+            </p>
+            <p class="detail-message-family" style="border: none" >
+              <span class="family-name">打印姓名</span>
+                 <span class="family-nameDetail">{{item.printName}}</span>
+            </p>
+          </div>
+
+          <div class="detail-content">
+            <p class="detail-message-family" >
+              <span class="family-name" >打印时间</span>
+              <span class="family-nameDetail">{{item.printTime}}</span>
+            </p>
+
+            <p class="detail-message-family">
+                 <span class="family-name">申请状态</span>
+                  <span class="family-nameDetail">
+                      <span>已打印</span>
+                  </span>
+            </p>
+          </div>
+        </div>
+        </template>
       </div>
 
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
+      <span  ref="printList"  class="messageNone" >
+     <hr />
+    <div class="flex-dialog" v-for="(item,index) in messagePrintList" :key="index">
+         <div class="wapText"> 
+          <p class="textContentTime">发送时间：<span class="textContentTime time" >{{item.createTime}}</span></p>
+           <p class="textContent">家属姓名：<span class="familyname">{{item.sendName}}</span></p>
+          <p class="textContent">家属电话：<span class="phone">{{item.familyPhone}}</span></p>
+          <p class="textContent">罪犯姓名：<span class="phone">{{item.receiveName}}</span></p>
+          <p class="textContent">罪犯编号：<span class="phone">{{item.criminalNumber}}</span></p>
+        </div>
+          <p class="textcontent">信息内容如下:</p>
+        <div  v-html="item.message"  class="infinite-list messageText" >
+          {{ item.message }}
+        </div>
+        <hr />
+      </div>
+        
+      </span>
   </el-row>
 </template>
 
@@ -375,13 +458,27 @@ export default {
       {
         label: '已发送',
         value: '1'
+      }, {
+        label: '已打印',
+        value: '6'
       },
       {
         label: '已拒绝',
         value: '2'
-      },{
+      },
+      {
         label: '已取消',
         value: '5'
+      }
+    ]
+   const printState = [
+      {
+        label: '已打印',
+        value: '6'
+      },
+      {
+        label: '已发送',
+        value: '1'
       }
     ]
     const state = [
@@ -412,13 +509,15 @@ export default {
       }
     ]
     return {
+      printPlugin: null,
       tabs: '3',
       stateAll,
+      printState,
       state,
       toShow:{},
-      messageContent:'',
+      messageContent:{},
+      messagePrintList:[],
       searchItems: {
-        // prisonerNumber: { type: 'input', label: '罪犯编号' },
         familyName: {
           type: 'input',
           label: '家属姓名'
@@ -470,6 +569,7 @@ export default {
         rejectEdit:false,
         editRebut:true,
         message:false,
+        isMessageList:false,
         withdraw: false
       },
       toAuthorize: {},
@@ -504,13 +604,19 @@ export default {
       disArgeeRemarks: "",
       tabPanes,
       todayDate,
+      mediaQueryList:null,
       oneMonthLater,
       filterInit: {},
       tabledate:{},
       tableCols: [
+          {
+          type: 'selection',
+          selectable: this.handleControlSelect
+        },
         {
           label: '监区',
-          prop: 'prisonAreaName'
+          prop: 'prisonAreaName',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
@@ -561,7 +667,7 @@ export default {
         },
         {
           label: '操作',
-          minWidth: 100,
+          minWidth: 150,
           slotName: 'lastCoiumn',
           showOverflowTooltip: true
         }
@@ -581,8 +687,12 @@ export default {
   watch: {
     tabs(val) {
       delete this.filter.state
-      if(val=="3" || val=="1"){
+      if(val=="3"){
         this.searchItems.state.miss = true
+      }else if( val=='1') {
+          this.searchItems.state.miss = false
+          this.searchItems.state.value= ''
+          this.searchItems.state.options=this.printState
       }else if( val=='0') {
           this.searchItems.state.miss = false
           this.searchItems.state.value= ''
@@ -605,6 +715,30 @@ export default {
       })
     },
   mounted() {
+     window.addEventListener("message",  e => {
+      if(!e.data.type){
+               this.$confirm('确认打印机是否正常工作, 正常出票?', '提示', {
+                confirmButtonText: '正常出票',
+                cancelButtonText: '没有出票',
+                type: 'warning'
+              }).then(async () => {
+                let gkMessageIdList=[]
+                //判断是单独打印还是批量打印
+                if(this.show.isMessageList){
+                  gkMessageIdList= this.messagePrintList
+                }else{
+                  gkMessageIdList.push(this.messageContent.uid)
+                }
+                 let res = await http.messagePrint({gkMessageIdList:gkMessageIdList})
+                  if(res){
+                   this.show.message=false
+                   this.messageContent={}
+                   this.getDatas()
+                  }
+              }).catch(() => {
+              })
+      }
+    }, false);
      this.$set(this.searchItems.applicationDate, 'value', [ this.oneMonthLater, this.todayDate])
     this.getDatas()
   },
@@ -614,27 +748,48 @@ export default {
       'getCanceledVisit',
       'authorizeVisit',
       'withdrawVisit' ]),
+      // 选择要打印的批量数据
+    handleSelectionChange(val) {
+      this.messagePrintList = val
+    },
+    printList(){
+      if( this.messagePrintList.length==0){
+          this.$message({
+            message: '请选择需要打印的记录！',
+            type: 'error'
+          });
+          return false
+      }else{
+         this.show.isMessageList=true
+        this.$print(this.$refs.printList, { isUseTemplate :true})
+      }
+    },
+       // 筛选不可打印的数据
+    handleControlSelect(row) {
+      return (row.state == 1 || row.state == 6) && !row.isPrisonerSend? true : false
+    },
+      print(){
+        this.show.isMessageList=false
+        this.$print(this.$refs.print, { isUseTemplate :true})
+      },
       onDetail(row){
         this.toShow=row
         this.show.dialog=true
       },
       messageDetail(row){
-        this.messageContent=row.message
+        this.messageContent=row
         this.show.message=true
       },
       refuseFormChange(e) {
        let str = ""
-
       if (!this.refuseForm.anotherRemarks) {
         this.refuseForm.anotherRemarks = ""
       }
-
       e.forEach((item,index) => {
         if(!this.refuseForm.anotherRemarks.includes(item)) {
           str +=`${item}。\n`
         }
       })
-
       this.refuseForm.anotherRemarks += str
     },
     // 获取当前驳回原因列表
@@ -743,7 +898,6 @@ export default {
       this.show.agree = false
       this.show.disagree = false
       this.show.authorize = true
-      this.messageContent=e.message
       this.disArgeeRemarks=''
       this.refuseForm.anotherRemarks=''
       this.onRejectshow(false,false)
@@ -804,13 +958,24 @@ export default {
 }
 </style>
 
-<style lang="scss" >
-#body .el-table.mini-td-padding td{
-  padding: 8px 0;
-}
-</style>
-
 <style type="text/stylus" lang="stylus" scoped>
+.messageNone{
+    display:none
+  }
+.flex-dialog{
+  .wapText{
+  column-count:2;
+  line-height:30px;
+  margin-bottom:20px;
+  }
+  .messageText{
+    padding:0 20px;
+    min-height:320px;
+    width:100%;
+    text-align:justify;
+  }
+
+}
  .family-detail{
     width: 100px;
     display: flex;
@@ -857,7 +1022,8 @@ export default {
   cursor: pointer;
 .withdraw-box
   margin-bottom 20px;
-
+.el-table.mini-td-padding td
+  padding: 8px 0;
 </style>
 <style lang="stylus">
 .logMgCls {

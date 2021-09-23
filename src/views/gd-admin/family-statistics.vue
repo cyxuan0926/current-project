@@ -47,11 +47,10 @@
 </template>
 <script>
 
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
 import { tokenExcel } from '@/utils/token-excel'
-
 import Moment from 'moment'
 
 const chartTypes = {
@@ -63,7 +62,6 @@ export default {
   mixins: [prisonFilterCreator],
   data () {
     const endDate = this.$_dateNow
-
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
       totalCount: 0,
@@ -83,7 +81,7 @@ export default {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
-          clearable:"true",
+          canNotClear: true,
           value: [startDate, endDate],
           unlinkPanels: true
         }
@@ -236,7 +234,6 @@ export default {
     },
     async getDatas() {
       const { page, rows } = this.pagination
-      this.filter.provincesId=`20`
       // if ( !this.filter.startDate ) {
       //   this.filter.startDate = this.currentDate(true)
       //   this.searchItems.time.value=[this.currentDate(true),this.currentDate(false)]
@@ -245,6 +242,7 @@ export default {
       //   this.filter.endDate = this.currentDate(false)
       // }
       const { data }  = await http.getFamilyStatistics({
+        provincesId: this.chartRole.provincesId,
         ...this.filter,
         ...this.pagination
       })
@@ -278,6 +276,7 @@ export default {
     this.filterBarData()
   },
   computed: {
+    ...mapGetters(['chartRole']),
     pieArr: function () {
       let arr = []
       arr.push( {name:'总和' ,vals: this.meetingStatisticTotalItem.cnt} )

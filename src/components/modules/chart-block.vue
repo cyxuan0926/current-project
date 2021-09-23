@@ -21,6 +21,9 @@
             <span class="border__right__down"></span>
             <span class="border__right__up"></span>
         </div>
+        <div class="m-chart-block-empty">
+            <slot name="empty"></slot>
+        </div>
     </div>
 </template>
 
@@ -44,6 +47,17 @@
                 overflow: hidden;
                 border-left: 1px solid #366C9D;
                 border-right: 1px solid #366C9D;
+            }
+
+            &-empty {
+                position: absolute;
+                bottom: 40%;
+                width: 100%;
+                left: 0;
+                overflow: hidden;
+                z-index: 9;
+                text-align: center;
+                color: #6CDFF5;
             }
 
             &__top__border {

@@ -1012,6 +1012,7 @@
               prop: 'filterFamilies',
               minWidth: 115,
               ...$likeName,
+              className: '',
               desensitizationColsConfigs: {
                 keyWord: 'familyId',
                 prop: 'familyName',

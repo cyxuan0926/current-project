@@ -1,20 +1,20 @@
 <template>
-  <div>
+  <div class="prison_container">
     <div class="form-container">
       <el-tabs
         v-model="activeName"
         type="border-card"
         class="no-bottom-padding"
-        @tab-click="handleClick">
+        @tab-click="handleClick"
+      >
         <template v-for="item in tabMapOptions">
           <el-tab-pane
             :label="item.label"
             :key='item.key'
-            :name="item.key">
+            :name="item.key"
+          >
             <keep-alive>
-              <component
-                v-if='activeName == item.key'
-                :is="activeName"/>
+              <component v-if='activeName === item.key' :is="activeName" />
             </keep-alive>
           </el-tab-pane>
         </template>
@@ -31,13 +31,15 @@ import prisonBase from './components/prison-base'
 import prisonConfig from './components/prison-config'
 import prisonPhoneChargeConfig from './components/prison-charge-config'
 import prisonFamilyChargeConfig from './components/prison-family-charge-config'
+import prisonMessageChargeConfig from './components/prison-message-charge-config'
 
 export default {
   components: {
     prisonBase,
     prisonConfig,
     prisonPhoneChargeConfig,
-    prisonFamilyChargeConfig
+    prisonFamilyChargeConfig,
+    prisonMessageChargeConfig
   },
 
   data() {
@@ -67,6 +69,7 @@ export default {
   mounted() {
        if( this.isAdmin ) {
           this.tabMapOptions.push({label: '亲情电话收费配置',key: 'prisonFamilyChargeConfig'})
+          this.tabMapOptions.push({label: '亲情短信收费配置',key: 'prisonMessageChargeConfig'})
          }
     this.render()
   },

@@ -3,6 +3,7 @@
       <div >
         <div class="el-form-item__content">亲情电话参数配置</div>
         <el-table
+        class="el-table__has__border-bottom"
         :data="tableData.configurationsFamilyPhoneList"
         border
         style="width: 100%">
@@ -287,7 +288,16 @@ export default {
             { required: true, message: '请选择目的地', trigger: 'change' }
           ],
           startDay: [
-            { required: true, message: '请选择日期', trigger: 'change' }
+              { required: true, message: '请选生效日期', trigger: 'blur' },
+            { validator:(rule, value, callback) => {
+                if(Moment(value).isBefore(new Date())){
+                   callback(new Error('生效日期不得小于明天'));
+                }else{
+                   callback();
+                }
+              },
+              trigger: 'blur'
+            }
           ],
           startMinutesVoice: [
             { required: true, message: '请选填写分钟', trigger: 'blur' }
@@ -599,10 +609,6 @@ export default {
 }
 </script>
 <style lang="stylus">
-#body .el-table.border th, #body .el-table td{
- border-bottom: 1px solid #e6e6e6
-}
-
 .inputHeight .el-input--mini .el-input__inner {
     height: 28px;
     line-height: inherit;

@@ -1,6 +1,8 @@
-import { login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
+import {
+  login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken, getPublicUsers, getCaptcha } from '@/service-public/api/account'
+  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByAccount, modifyMyPasswordByCode
+} from '@/service-public/api/account'
 
 import { helper } from '@/utils'
 
@@ -99,144 +101,178 @@ const actions = {
       }
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
   // 获取用户信息
-  async getPublicUserInfo({ commit, dispatch }) {
+  async getPublicUserInfo({ commit }) {
     try {
       const res = await getPublicUserInfo()
+
       if (res) commit('setPublicUserInfo', res)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取菜单
-  async getMenus({ commit, dispatch }) {
+  async getMenus({ commit }) {
     try {
       const res = await getMenus()
+
       if (res) commit('setMenus', res)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 修改密码
-  async modifyMyPassword({ commit, dispatch }, { oldPassword, newPassword }) {
+  async modifyMyPassword({ commit }, { oldPassword, newPassword }) {
     try {
       const res = await modifyMyPassword({ oldPassword, newPassword })
+
       if (res) commit('setModifyMyPasswordResult', res)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取角色列表
-  async getRolesList({ commit, dispatch }) {
+  async getRolesList({ commit }) {
     try {
       let result = []
+
       const res = await getRoles()
+
       if (res && res.content && res.content.length) {
         for (let val of res.content.values()) {
           result.push(helper.transitionRolesList(val))
         }
       }
+
       commit('setRolesList', result)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 根据用户判断用户是否已经存在
-  async estimateUsername({ commit, dispatch }, { username }) {
+  async estimateUsername(_, { username }) {
     try {
       const res = await estimateUsername({ username })
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取所有租户列表(不分页)
   async getAllTenants({ commit }) {
     try {
       const res = await getAllTenants()
+
       if (res && res.content) commit('setAllTenants', res.content)
+
       return res && res.content && res.content.length
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取所有的安全问题
   async getSecurityQuestions({ commit }) {
     try {
       const res = await getSecurityQuestions()
+
       res.unshift({ name: '请选择', id: '' })
+
       if (res) commit('setSecurityQuestions', res)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取用户的安全问题
-  async getUserSecurityQuestions({ commit }, { username }) {
+  async getUserSecurityQuestions(_, { username }) {
     try {
       const res = await getUserSecurityQuestions({ username })
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 设置用户的安全问题答案
-  async setUserSecurityQuestionAnswers({ commit }, questionAnswers) {
+  async setUserSecurityQuestionAnswers(_, questionAnswers) {
     try {
       const res = await setUserSecurityQuestionAnswers(questionAnswers)
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 获取用户安全问题答案
-  async getUserSecurityQuestionAnswers({ commit }) {
+  async getUserSecurityQuestionAnswers() {
     try {
       const res = await getUserSecurityQuestionAnswers()
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 检验用户安全问题答案
   async verificateSecurityQuestionAnswers({ commit }, { username, questionAnswers }) {
     try {
       const res = await verificateSecurityQuestionAnswers({ username, questionAnswers })
+
       if (res && res.token) {
         commit('setPasswordToken', res.token)
+
         localStorage.setItem('passwordToken', JSON.stringify(res.token))
       }
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
+
   // 根据用户安全问题校验码重置用户密码
-  async modifyMyPasswordByToken({ commit }, { token, newPassword }) {
+  async modifyMyPasswordByToken(_, { token, newPassword }) {
     try {
       const res = await modifyMyPasswordByToken({ token, newPassword })
+
       return res
     }
     catch (err) {
-      throw err
+      Promise.reject(err)
     }
   },
 
@@ -271,6 +307,30 @@ const actions = {
       if (res) res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
 
       commit('setCaptchaConfigs', res)
+
+      return res
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 发送验证码
+  async sendSmsVerificationCodes(_, username) {
+    try {
+      const res = await sendSmsByAccount(username)
+
+      return res
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 根据短信验证码重置我的密码
+  async modifyMyPasswordByCode(_, params) {
+    try {
+      const res = await modifyMyPasswordByCode(params)
 
       return res
     }

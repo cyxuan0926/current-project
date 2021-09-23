@@ -87,9 +87,13 @@ const codes = {
       tips('提交的数据格式错误！')
     }
   },
+  // 用户名未绑定手机号
+  417: {
+    resData: true
+  },
   500: {
     next: params => {
-      tips(params.msg || '服务器内部错误！')
+      tips(params.msg || params.message || '服务器内部错误！')
     }
   },
   502: {
@@ -102,6 +106,19 @@ const codes = {
   504: {
     next: params => {
       tips('请检查服务是否启动！')
+    }
+  },
+  // 跨越调整会见增加提示
+  10002: {
+    next: params => {
+      let errors = params.errorArrays,
+          msg = params.msg
+      if (errors && errors.length) {
+        msg = `${ errors.map((err, i) => {
+          return `${ err.name }${ i === errors.length - 1 ? '' : '、' }`
+        }) }${ msg }`
+      }
+      tips(msg)
     }
   },
   10006: {

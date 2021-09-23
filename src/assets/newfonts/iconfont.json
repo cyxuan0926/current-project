@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3960941",
+      "name": "短信发送日志",
+      "font_class": "fpsms",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
       "icon_id": "22556857",
       "name": "终端设备升级表",
       "font_class": "terminal-upgrade",

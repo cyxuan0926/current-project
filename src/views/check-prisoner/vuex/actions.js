@@ -13,10 +13,18 @@ export default {
   addPrisonerBlacklist({ commit }, params) {
     return http.addPrisonerBlacklist(params).then(res => res)
   },
-  getNotification({ commit }, params) {
-    return http.getNotification(params).then(res => {
+  getNotification({ commit, dispatch }, params) {
+    return http.getNotification(params).then(async res => {
       if (!res) return
+
+      const { notify } = res
+
+      const { meetingNotificationUrl } = notify
+
+      if (meetingNotificationUrl) res['notify']['meetingNotificationUrl'] = await dispatch('files/downloadPublicServiceFile', { url: meetingNotificationUrl })
+
       commit('getNotification', res)
+
       return true
     })
   },

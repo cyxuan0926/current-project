@@ -1,15 +1,9 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-excel-download
-      path="/download/exportFamilyRemit"
-      :params="filter"
-    />
+  <el-row class="row-container" :gutter="0">
+    <m-excel-download path="/download/exportFamilyRemit" :params="filter" />
 
-    <m-search
-      :items="searchItems"
-      @search="onSearch" />
+    <m-search :items="searchItems" @search="onSearch" />
+
     <el-col :span="24">
       <m-table-new
         stripe
@@ -20,10 +14,12 @@
         <template #status="{ row }">{{ row.status | payStatus }}</template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="familyRemittanceRecords.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -111,6 +107,7 @@ export default {
       'prisonAll'
     ])
   },
+
   mounted() {
     this.getPrisonAll().then(res => {
       if (!res) return
@@ -121,21 +118,20 @@ export default {
       this.getDatas()
     })
   },
+
   methods: {
     ...mapActions([
       'getPrisonAll',
       'getFamilyRemittance'
     ]),
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     getDatas() {
       this.getFamilyRemittance({ ...this.filter, ...this.pagination })
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -2,9 +2,9 @@ import { Message } from 'element-ui'
 import logout from '@/utils/logout'
 import router from '@/router'
 
-const tip = (message = '操作失败！', type = 'error') => {
+const tip = (message = '操作失败！', type = 'error', duration = 3000) => {
   Message.closeAll()
-  Message({ type, message, duration: 3000, showClose: true })
+  Message({ type, message, duration, showClose: true })
 }
 
 const responseHandlers = {
@@ -12,6 +12,10 @@ const responseHandlers = {
   200: res => {
     const { url } = res.config
     if (url.includes('/oauth/token')) {}
+    else if (url.includes('/sms/verification-codes/username')) {
+      tip(res.data, 'success', 0)
+      return { code: 'SMS_SEND_OK' }
+    }
     return res.data
   },
   // 有些接口正向成功是201
@@ -39,7 +43,24 @@ const responseHandlers = {
       tip('密码重置成功，请登录国科服务系统！', 'success')
       return true
     }
+
+    else if (url.includes('/sms/verification-codes')) {
+      tip('短信验证码发送成功', 'success')
+      return { code: 'SMS_SEND_OK' }
+    }
+
+    else if (url.includes('/users/updatephone')) {
+      tip('手机号绑定成功', 'success')
+      return { code: 'SMS_BIND_OK' }
+    }
+
+    else if (url.includes('/users/password/username/by-code')) {
+      tip('密码重置成功，请登录国科服务系统！', 'success')
+
+      return true
+    }
   },
+
   // 请求失败 有错误返回体
   400: res => {
     const { url } = res.config
@@ -49,10 +70,33 @@ const responseHandlers = {
     else if (url.includes('/users/security-question-answers/verification')) {
       return false
     }
+    else if (url.includes('/sms/verification-codes/username')) {
+      tip(res.data)
+      return { code: 'SMS_SEND_ERR', msg: res.data }
+    }
+    else if (url.includes('/users/password/username/by-code')) {
+      tip(res.data)
+
+      return false
+    }
+    else {
+      if (res.data) {
+        tip(res.data.message || res.data)
+      }
+      return res.data
+    }
+  },
+  // 根据账号发送短信验证码 未绑定手机号
+  417: res => {
+    const { url } = res.config
+    if (url.includes('/sms/verification-codes/username')) {
+      return { code: 'SMS_NO_BIND', msg: '用户未配置手机号码' }
+    }
     else {
       if (res.data) {
         tip(res.data.message)
       }
+
       return res.data
     }
   },

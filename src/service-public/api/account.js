@@ -1,5 +1,7 @@
 import { get, postForm, put, post } from '../request'
 
+import { JSEncryptEncrypt } from '@/common/constants/rsa'
+
 export function login({
   username,
   password,
@@ -10,7 +12,7 @@ export function login({
     codeKey,
     code,
     username,
-    password,
+    password: JSEncryptEncrypt(password),
     grant_type: 'password',
     mode: 'account_password'
   }, {
@@ -30,7 +32,7 @@ export function getMenus() {
 }
 
 export function modifyMyPassword({ oldPassword, newPassword }) {
-  return put('/users/me/password/by-old-password', { oldPassword, newPassword })
+  return put('/users/me/password/by-old-password', { oldPassword: JSEncryptEncrypt(oldPassword), newPassword: JSEncryptEncrypt(newPassword) })
 }
 
 export function getRoles() {
@@ -82,4 +84,20 @@ export function getProcessRoles(id) {
 // 获取验证码
 export const getCaptcha = () => {
   return get('/captcha')
+}
+
+// 通过账号 发送短信验证码
+export const sendSmsByAccount = username => post('/sms/verification-codes/username', { username })
+
+// 通过手机号 发送短信验证码
+export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { phoneNumber })
+
+// 账户绑定手机号
+export const userBindByPhone = data => post('/users/updatephone', data)
+
+// 根据短信验证码重置我的密码
+export const modifyMyPasswordByCode = params => {
+  const { newPassword } = params
+
+  return post('/users/password/username/by-code', Object.assign({}, params, { newPassword: JSEncryptEncrypt(newPassword) }))
 }

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueCompositionAPI from '@vue/composition-api'
 import App from '@/app'
 import router from './router'
 import ElementUI from 'element-ui'
@@ -18,6 +19,7 @@ import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'
 import '@/assets/css/index.scss'
 
+
 import ActiveMonitor from '@/utils/ActiveMonitor'
 
 import directives from '@/plugin/directives'
@@ -29,6 +31,13 @@ import {
   _timeOneWeekAgo,
   _operationAuthorizations
 } from '@/common/constants/const'
+
+// 打印机
+import Print from '@/common/constants/print'
+// import Print from 'vue-print-nb'
+Vue.use(Print) // 注册
+
+Vue.use(VueCompositionAPI)
 
 Vue.use(ElementUI)
 
@@ -51,7 +60,7 @@ Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 Vue.prototype.$_operationAuthorizations = _operationAuthorizations
 
 // 只在生产环境启用等保
-if (process.env.NODE_ENV === 'production') {
+if (BUILD_ENV === 'production') {
   new ActiveMonitor().start()
 }
 

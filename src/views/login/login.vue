@@ -11,7 +11,7 @@
           :model="formData"
           :rules="rules"
           @keyup.enter.native="handleLogin">
-          <el-form-item prop="username">
+          <el-form-item prop="username" ref="usernameItem">
             <el-input
               clearable
               v-model.trim="formData.username"
@@ -28,6 +28,16 @@
               placeholder="密码"
             />
           </el-form-item>
+
+          <el-form-item prop="code">
+            <el-input
+                clearable
+                v-model.trim="formData.code"
+                :maxlength="4"
+                placeholder="请输入验证码">
+                <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
+            </el-input>
+        </el-form-item>
 
           <!-- <el-form-item class="el-form__code" prop="code">
             <el-input
@@ -63,47 +73,86 @@
       <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
       <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
     </div>
+    <bind-phone-modal v-model="showBindModal" :username="formData.username"/>
   </div>
 </template>
 
 <script>
 import { _thisYear } from '@/common/constants/const'
-
+import bindPhoneModal from './components/bind-phone-modal.vue'
 import Cookies from 'js-cookie'
 import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
+import { sendSmsByAccount } from '@/service-public/api/account'
+import { JSEncryptEncrypt } from '@/common/constants/rsa'
 
 export default {
+  components: {
+    bindPhoneModal
+  },
   data() {
     return {
+      showBindModal: false,
       loading: false,
       isRememberAccount: false,
+      isGetSmscode: false,
+      smsCountdown: 60,
+      smsInterval: null,
+
       formData: {
         username: '',
-        password: ''
-        // code: ''
+        password: '',
+        code: ''
       },
 
       rules: {
-        password: [{
-          required: true,
-          message: '请输入密码',
-          trigger: 'blur'
-        }],
+        username: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'blur'
+          },
+          // {
+          //   validator: async (rule, value, callback) => {
+          //     let res = await this.sendSmsVerificationCodes(value)
+          //     if (res) {
+          //       callback()
+          //       if (!res.data) {
+          //         callback(new Error(''))
+          //         this.showBindModal = true
+          //       }
+          //     }
+          //     else {
+          //       callback(new Error('用户名不存在'))
+          //     }
+          //   },
+          //   trigger: 'send'
+          // }
+        ],
 
-        username: [{
-          required: true,
-          message: '请输入用户名',
-          trigger: 'blur'
-        }]
-        // code: [
-        //   {
-        //     required: true,
-        //     message: '请输入验证码',
-        //     trigger: 'blur'
-        //   }
-        // ]
+        password: [
+          {
+            required: true,
+            message: '请输入密码',
+            trigger: 'blur'
+          }
+        ],
+
+        code: [
+          {
+            required: true,
+            validator(rule, value, callback) {
+              if ( /^\d{4}$/.test(value) ) {
+                callback()
+              }
+              else {
+                callback(new Error('请输入正确验证码'))
+              }
+            },
+            trigger: 'blur'
+          }
+        ]
       },
 
       year: _thisYear
@@ -122,7 +171,12 @@ export default {
       user: state => state.global.user
     }),
 
-    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor'])
+    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor']),
+
+    // 倒计时文本
+    smsCodeText() {
+        return `${ !this.smsInterval ? '获取验证码' : `重发(${ this.smsCountdown }s)` }`
+    }
   },
 
   async created() {
@@ -136,6 +190,13 @@ export default {
     }
 
     this.resolveAccount()
+  },
+
+  destroyed() {
+    if (this.smsInterval) {
+      clearInterval(this.smsInterval)
+      this.smsInterval = null
+    }
   },
 
   methods: {
@@ -157,9 +218,54 @@ export default {
       )
     },
 
+    // 获取验证码倒计时
+    setSmsCountdown() {
+        if (!this.smsInterval) {
+            this.smsInterval = setInterval(() => {
+                this.smsCountdown--
+                if (!this.smsCountdown) {
+                    this.smsCountdown = 60
+                    this.isGetSmscode = false
+                    clearInterval(this.smsInterval)
+                    this.smsInterval = null
+                }
+            }, 1000)
+        }
+    },
+
+    // 获取验证码
+    handleSmscode() {
+      if (this.isGetSmscode) {
+        return
+      }
+      this.$message.closeAll();
+      this.$refs.form.validateField('username', async err => {
+        if (!err) {
+          this.isGetSmscode = true
+          let res = await sendSmsByAccount(this.formData.username)
+          if (res) {
+            let { code } = res
+            // 发送短信验证码失败 用户名不存在 ｜ 操作频繁 ｜ 短信次数达上限
+            if (code == 'SMS_SEND_ERR') {
+              this.isGetSmscode = false
+            }
+            // 用户名是否绑定手机号
+            else if (code == 'SMS_NO_BIND') {
+              this.showBindModal = true
+              this.isGetSmscode = false
+            }
+            // 提示
+            else if (code == 'SMS_SEND_OK') {
+              this.setSmsCountdown()
+            }
+          }
+        }
+      })
+    },
+
     handleLogin() {
       if (this.loading) return
-
+      this.$message.closeAll();
       this.$refs.form.validate(async valid => {
         if (!valid) return
 
@@ -167,17 +273,15 @@ export default {
           // const { key } = this.captchaConfigs
           const {
             username,
-            password
-            // code
+            password,
+            code
           } = this.formData
-
           this.loading = true
-
           const res = await this.login({
             username,
-            password
-            // code,
-            // codeKey: key
+            password,
+            code,
+            codeKey: username
           })
 
           if( res.code === 'user.PasswordNotMatched' ) {
@@ -276,9 +380,12 @@ export default {
 
     handleGoPasswordRetrieve() {
       const { username } = this.formData
+
       this.setFindPasswordUsername(username)
+
       localStorage.setItem('findPasswordUsername', JSON.stringify(username))
-      this.$router.push({ path: `/password_retrieve/step_one` })
+
+      this.$router.push({ path: '/password_retrieve/byPhone' })
     }
     // handleLogin() {
     //   if (this.loginState.loged || this.loginState.loading) return false

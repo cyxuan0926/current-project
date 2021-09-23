@@ -25,7 +25,8 @@
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="{ path: '/password/edit' }">修改用户密码</el-dropdown-item>
-            <el-dropdown-item :command="'setSecurityQuestions'">设置安全问题</el-dropdown-item>
+            <!-- 用安全问题找回密码的逻辑的入口 -->
+            <!-- <el-dropdown-item :command="'setSecurityQuestions'">设置安全问题</el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
 
@@ -66,9 +67,7 @@
           </el-dropdown-menu>
         </el-dropdown>
 
-        <i
-          class="iconfont icon-tuichu"
-          @click="handleLogout" />
+        <i class="iconfont icon-tuichu" @click="handleLogout" />
       </div>
     </div>
     <el-dialog

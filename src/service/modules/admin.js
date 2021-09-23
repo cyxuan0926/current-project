@@ -1,6 +1,8 @@
 import * as service from '../config/service'
+import axios from 'axios'
 
 export default {
+  getMapJson: code => axios.get(`/static/dist/map/${ code }_full.json`),
   // 获取囚犯账户信息列表
   getAccounts: pagination =>
     service.get('/accounts/page', pagination).then(res => res),

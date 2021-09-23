@@ -358,8 +358,8 @@ export default {
   },
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
-        startDate: this.oneMonthLater,
-        endDate: this.todayDate
+        startTime: this.oneMonthLater,
+        endTime: this.todayDate
       })
     },
   mounted() {

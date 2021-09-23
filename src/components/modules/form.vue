@@ -11,6 +11,8 @@
       :inline-message="items.formConfigs && items.formConfigs.inlineMessage"
       :hide-required-asterisk="items.formConfigs && items.formConfigs.hideRequiredAsterisk"
     >
+      <slot name="pre" />
+
       <template v-for="(item, key) in items">
         <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
           <slot :name="key">
@@ -26,9 +28,11 @@
               :radio-change-event="radioChangeEvent"
               :reset-field-value="resetFieldValue"
               :set-field-value="setFieldValue"
-              @validateField="validateField" />
+              @validateField="validateField"
+            />
           </slot>
         </template>
+
         <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
           <el-form-item 
             :key="key"
@@ -39,8 +43,10 @@
           </el-form-item>
         </template>
       </template>
-      <slot />
+
+      <slot name="append" />
     </el-form>
+
     <div
       v-if="items.buttons && Object.keys(items.buttons).length"
       class="button-box">
@@ -310,6 +316,8 @@ export default {
           return { validator: validator.tempNumber }
         case 'isPositiveIntegers':
           return { validator: validator.isPositiveIntegers }
+        case 'isPositiveNumber':
+          return { validator: validator.isPositiveNumber }
         default:
           return {}
       }

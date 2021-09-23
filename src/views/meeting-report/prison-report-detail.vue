@@ -124,14 +124,15 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import {
+  mapState,
+  mapActions,
+  mapGetters
+} from 'vuex'
 
 import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 
 export default {
-  props: {
-    hasAllPrisonQueryAuth: Boolean
-  },
   data(){
     return {
       family: {},
@@ -140,15 +141,18 @@ export default {
       callRecordsVisible: false
     }
   },
+
   computed: {
     ...mapState({
       prisonReportDetail: state => state.prisonReportDetail,
       jailName: state => state.global.user.jailName
     }),
+
     showSummary() {
       const rows = this.prisonReportDetail.meetingDetails
       return rows && rows.length
     },
+
     tableCols() {
       let cols = [
         {
@@ -207,12 +211,17 @@ export default {
           ]
         }
       ]
-      if (!this.hasAllPrisonQueryAuth) cols.splice(0, 2)
+      if (!this.isSuperAdmin) cols.splice(0, 2)
+
       return cols
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
+
   methods: {
     ...mapActions(['getMeetingsFamilyDetail']),
+
     async showFamilyDetail(...args) {
       const [ familyId, meetingId ] = args
       try {
@@ -227,10 +236,12 @@ export default {
       }
       catch (err) {}
     },
+
     showCallRecords(records) {
       this.callRecordsVisible = true
       this.callRecords = records
     },
+
     clearFamilyData() {
       this.family = {}
     },

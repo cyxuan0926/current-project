@@ -17,6 +17,10 @@ module.exports = {
     // https://github.com/standard/standard/blob/master/docs/RULES-en.md
     'standard'
   ],
+  globals: {
+    'JSEncrypt': 'readonly',
+    'BUILD_ENV': 'readonly'
+  },
   // required to lint *.vue files
   plugins: ['vue', 'html'],
   // add your custom rules here

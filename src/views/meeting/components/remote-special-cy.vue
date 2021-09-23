@@ -53,7 +53,7 @@
           v-if="(config.enabledMeeting === 0 || config.queue.length)"
           @click="handleDeleteConfig(config, index)">删除当前日期配置</el-button>
            <el-button
-          v-if="!config.show&&(canSave(config) && permission === 'edit')"
+          v-if="(!config.show&&(canSave(config) && permission === 'edit'))||!config.enabledMeeting"
           type="primary"
           size="mini"
           @click="onSubmit(config, index)">保存</el-button>       
@@ -93,7 +93,7 @@
                 </template>
                 </label>
               </div>
-              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+              <el-button  v-if="config.enabledMeeting&&(config.area===1|| config.type || !(config.enabledMeeting && flag)) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="config.area=='2' &&config.flagConfig &&canSave(config) && permission === 'edit'"
@@ -102,7 +102,7 @@
               style="margin-top:8px;margin-left:15px"
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
-                  </label>
+            </label>
           </el-form>
            <el-form v-if="!config.separateByArea">
             <el-form-item label="生产区设备:" style="width:450px">
@@ -118,7 +118,7 @@
                 </template>
                 </label>
               </div>
-              <el-button  v-if="config.area===1|| config.type || !(config.enabledMeeting && flag) "  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
+              <el-button  v-if="config.enabledMeeting&&(config.area===1|| config.type || !(config.enabledMeeting && flag) )"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`2`)">配置时间段</el-button>
                <!--可保存状态并且是国科服务管理员并且是编辑状态-->
             <el-button
               v-if="config.area=='2' &&config.flagConfig &&canSave(config)&& permission === 'edit'"
@@ -128,7 +128,7 @@
               @click="onSubmit(config, index)">保存</el-button>
                   </el-form-item>
           </el-form>
-              <div v-if="config.area==='2'">
+              <div v-if="config.area=='2'">
                 <template v-if="config.timeperiodQueue.length && config.enabledMeeting">
                   <div class="none_superAdmin">
                     <label >通话时长</label>
@@ -208,6 +208,7 @@
             />
             <!-- 通常规时间配置 -->
             <el-button
+             v-if="config.flagConfig &&canSave(config) && permission === 'edit'"
               size="mini"
               class="button-float"
               :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -238,7 +239,7 @@
                 </template>
                 </label>
               </div>
-             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.enabledMeeting&&(config.area===2||!(config.enabledMeeting && flag) || config.type)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&config.flagConfig &&canSave(config) && permission === 'edit'"
               type="primary"
@@ -262,7 +263,7 @@
                 </template>
                 </label>
               </div>
-             <el-button  v-if="config.area===2||!(config.enabledMeeting && flag) || config.type"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
+             <el-button  v-if="config.enabledMeeting&&(config.area===2||!(config.enabledMeeting && flag) || config.type)"  type="primary" size="mini" style="margin-left: 10px;float: left;margin-top: 8px" @click="onSureDates(false, config, index,`1`)">配置时间段</el-button>
               <el-button
               v-if="config.area=='1'&&config.flagConfig &&canSave(config)&& permission === 'edit'"
               type="primary"
@@ -352,6 +353,7 @@
             />
             <!-- 通常规时间配置 -->
             <el-button
+              v-if="config.flagConfig &&canSave(config) && permission === 'edit'"
               size="mini"
               class="button-float"
               :style="index === configs.length - 1 ? 'margin-right: 10px;' : ''"
@@ -462,22 +464,6 @@
           </template>
 
         </div>
-      <!-- 选择的日期 -->
-      <!-- <div class="config-days__selected">
-        <label >配置日期</label>
-        <el-select
-          ref="test"
-          v-model="a"
-          multiple
-          placeholder="配置日期">
-          <el-option
-            v-for="item in array"
-            :key="item"
-            :label="item"
-            :value="item"/>
-        </el-select>
-      </div> -->
-     
     </div>
     <div
       class="button-box"
@@ -528,7 +514,8 @@ export default {
         disabledDate: (time) => {
           const { unMeetingDays } = this.specialConfigs
           let t = Moment(new Date(time)).format('YYYY-MM-DD')
-          return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day.applicationDate === t ))
+          return time.getTime() < Date.now()
+         // return ( time.getTime() < Date.now()) || (this.configs.find(item => item.day === t) || unMeetingDays.find(day => day.applicationDate === t ))
         }
       },
       // 页面权限
@@ -596,7 +583,8 @@ export default {
 
       this.configs.forEach((item,i)=>{
         if(i==0){
-          if(item.config.length>0){
+          console.log(item)
+          if(item.day){
             item.disabledMeeting=true
           }else{
             item.disabledMeeting=false
@@ -729,13 +717,13 @@ export default {
     // 选择日期后 初始化时间段
     handleDate(config, currentDuration) {
 
-        if(config.show){
-          if(config.enabledMeeting==0){
-              this.$set(config, 'show', false)
-          }else{
-            this.$set(config, 'show', true)
-          }
-        }
+        // if(config.show){
+        //   if(config.enabledMeeting==0){
+        //       this.$set(config, 'show', false)
+        //   }else{
+        //     this.$set(config, 'show', true)
+        //   }
+        // }
       // 选择了日子 并且 是支持通话申请 并且 没有通话配置通话时间段的
       this.$set(config, 'duration', currentDuration)
       if (config.day && config.enabledMeeting && config.queue.length < 1) {
@@ -800,8 +788,10 @@ export default {
       let params = {
         day,
         duration,
+        ...
         interval,
         area,
+        confirm:0,
         enabledMeeting,
         terminals: _terminals,
         jailId: Number(this.jailId),
@@ -853,17 +843,37 @@ export default {
           }
 
         this.addSpecialConfig(params).then(async res => {
-          if (!res) return
+          if (res.secondConfirmation){
+                     this.$confirm('该日期设置为不可会见日后，系统会取消该日期已有的申请，确定保存吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                      this.addSpecialConfig({...params, confirm:1}).then(async req => {
+                         if(!req) return
+                          await this.initData()
+                          // config.oldDay = params.day
+                          // config.jailId = params.jailId
+                          // config.config = params.config || []
+                          // config.timeperiod = params.timeperiod || []
+                          // config.id = res.id
+                          // this.$forceUpdate()
+                          this.show = false
+                          this.show = true
+                       })
 
-          await this.initData()
-          // config.oldDay = params.day
-          // config.jailId = params.jailId
-          // config.config = params.config || []
-          // config.timeperiod = params.timeperiod || []
-          // config.id = res.id
-          // this.$forceUpdate()
-          this.show = false
-          this.show = true
+                    })
+            }else{
+               await this.initData()
+                 // config.oldDay = params.day
+                // config.jailId = params.jailId
+                // config.config = params.config || []
+                // config.timeperiod = params.timeperiod || []
+                // config.id = res.id
+                // this.$forceUpdate()
+                this.show = false
+                this.show = true
+            }
         })
       }
     },
@@ -885,14 +895,36 @@ export default {
           type: 'warning'
         }).then(() => {
               if(config.show){
-                this.deleteSpecialConfigById({id: config.id }).then(res => {
-                  if (!res) return
-                  this.splice(index)
+                this.deleteSpecialConfigById({id: config.id, confirm:0}).then(res => {
+                  if (res.secondConfirmation){
+                       this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                       this.deleteSpecialConfigById({id: config.id, confirm:1}).then(req => {
+                         if(!req) return
+                          this.splice(index)
+                       })
+
+                    })
+                  } else this.splice(index)
                 })
               }else{
-                   this.deleteSpecialConfig({ jailId: config.jailId, day: config.oldDay }).then(res => {
-                if (!res) return
-                this.splice(index)
+                   this.deleteSpecialConfig({ jailId: config.jailId, confirm:0,day: config.oldDay }).then(res => {
+                      if (res.secondConfirmation){
+                       this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                       this.deleteSpecialConfig({ jailId: config.jailId, confirm:1,day: config.oldDay}).then(req => {
+                         if(!req) return
+                          this.splice(index)
+                       })
+
+                    })
+                  } else this.splice(index)
               })
               }
         }).catch(() => {})

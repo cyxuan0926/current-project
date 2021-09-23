@@ -17,8 +17,11 @@ export default {
   async getPoliceFamilies({ commit }, params) {
     try {
       const policeFamilies = await http.getPoliceFamilies(params)
-      const { familiesSize, families } = policeFamilies.data
+
+      const { familiesSize = 0, families = [] } = policeFamilies ? policeFamilies.data : {}
+
       commit('getFamilies', { contents: families, total: familiesSize })
+
       return true
     }
     catch (err) {

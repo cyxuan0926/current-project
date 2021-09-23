@@ -1,25 +1,25 @@
 <template>
-  <el-card
-    class="password-retrieve__card"
-    shadow="hover">
+  <el-card class="password-retrieve__card" shadow="hover">
     <div slot="header">
-      <el-button
-        type="text"
-        @click="handleSetStepAndRouter({ path: '/login' })">国科服务</el-button>
+      <el-button type="text" @click="handleSetStepAndRouter({ path: '/login' })">国科服务</el-button>
+
       <span>{{ $route.meta.step === 3 ? '设置新密码' : '找回密码' }}</span>
     </div>
+
     <router-view />
   </el-card>
 </template>
 <script>
+
 import passwordMixins from './mixins/password-mixins'
+
 export default {
   mixins: [passwordMixins]
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
 .password-retrieve__card {
   width: 60%;
   margin: 4% auto;

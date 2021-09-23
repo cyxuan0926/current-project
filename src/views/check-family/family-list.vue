@@ -21,7 +21,9 @@
       <el-tabs v-model="tabs" type="card">
         <el-tab-pane label="家属信息管理" name="families" />
 
-        <el-tab-pane label="警员家属信息管理" name="jailerFamilies" />
+        <template v-if="!$store.getters.isSuperAdmin">
+          <el-tab-pane label="警员家属信息管理" name="jailerFamilies" />
+        </template>
       </el-tabs>
 
       <m-table-new
@@ -30,20 +32,6 @@
         :cols="tableCols"
         class="mini-td-padding"
       >
-        <!-- <template #idCard="{ row }">
-          <m-img-viewer
-            :url="row.idCardFront"
-            title="身份证正面照"
-            isRequired
-          />
-
-          <m-img-viewer
-            :url="row.idCardBack"
-            title="身份证背面照"
-            isRequired
-          />
-        </template> -->
-
         <template #prisoners="{ item }">
           <el-button   
             type="text"
@@ -52,6 +40,8 @@
           >{{ item.name | asteriskDisplay('asterisk_name') }}</el-button>
         </template>
 
+        <template #isMsg="{ row }">{{ row.isMsg | isTrue }}</template>
+
         <template #operate="{ row }">
           <el-button
             type="text"
@@ -59,20 +49,22 @@
             @click="onShowFamilyDetail(row)"
           >账号信息</el-button>
 
-          <el-button
-            v-if="!row.isBlacklist"
-            type="text"
-            size="small"
-            @click="showBlackList(row)"
-          >加入黑名单</el-button>
+          <template v-if="!$store.getters.isSuperAdmin">
+            <el-button
+              v-if="!row.isBlacklist"
+              type="text"
+              size="small"
+              @click="showBlackList(row)"
+            >加入黑名单</el-button>
 
-          <el-button
-            v-else
-            type="text"
-            size="small"          
-            @click="removeBlackList(row)"
-          >移出黑名单
-          </el-button>
+            <el-button
+              v-else
+              type="text"
+              size="small"          
+              @click="removeBlackList(row)"
+            >移出黑名单
+            </el-button>
+          </template>
         </template>
 
         <template #operation="{ row }">
@@ -297,11 +289,20 @@ export default {
       tabOptions,
       uploadResults: {},
       searchItems: {
+        // 罪犯姓名
+        prisonerName: {
+          type: 'input',
+          label: '罪犯姓名',
+          miss: false
+        },
+
+        // 家属姓名
         name: {
           type: 'input',
           label: '家属姓名',
           miss: false
         },
+
         isBlacklist: {
           type: 'select',
           label: '黑名单',
@@ -312,46 +313,31 @@ export default {
           },
           miss: false
         },
+
         familyName: {
           type: 'input',
           label: '家属姓名',
           miss: true
         },
+
         policeName: {
           type: 'input',
           label: '警员姓名',
           miss: true
+        },
+
+        // 短信服务是否开通
+        isMsg: {
+          type: 'select',
+          noPlaceholder: true,
+          label: '短信服务是否开通',
+          options: isBlacklistOptions,
+          belong: {
+            value: 'value',
+            label: 'label'
+          },
+          miss: false
         }
-        // 罪犯姓名
-        // prisonerName: {
-        //   type: 'input',
-        //   label: '罪犯姓名',
-        //   miss: false
-        // },
-        // 是否超3位家属
-        // isMoreThanThree: {
-        //   type: 'select',
-        //   noPlaceholder: true,
-        //   label: '是否超过3位家属',
-        //   options: isBlacklistOptions,
-        //   belong: {
-        //     value: 'value',
-        //     label: 'label'
-        //   },
-        //   miss: false
-        // },
-        // 是否发送短信
-        // isSendMessage: {
-        //   type: 'select',
-        //   noPlaceholder: true,
-        //   label: '是否发送短信',
-        //   options: isBlacklistOptions,
-        //   belong: {
-        //     value: 'value',
-        //     label: 'label'
-        //   },
-        //   miss: false
-        // }
       },
       filter: {},
       excelReason: '',
@@ -410,34 +396,58 @@ export default {
     },
 
     tableCols() {
+      const superAdminFamilyTableCols = [
+        {
+          label: '省份',
+          prop: 'provinceName',
+          showOverflowtooltip: true
+        },
+
+        {
+          label: '监狱名称',
+          prop: 'jailName',
+          showOverflowtooltip: true
+        }
+      ]
+
       const familyTableCols = [
         {
           label: '家属姓名',
           prop: 'name',
           ...$likeName
         },
-        // {
-        //   label: '身份证信息',
-        //   width: '148px',
-        //   slotName: 'idCard'
-        // },
-        {
-          label: '黑名单原因',
-          prop: 'reason',
-          minWidth: '160px',
-          showOverflowtooltip: true
-        },
+
         {
           label: '对应罪犯',
-          minWidth: '180px',
+          minWidth: '140px',
           prop: 'prisonerList',
           ...$likeName,
+          className: '',
           desensitizationColsConfigs: {
             keyWord: 'prisonerId',
             prop: 'name',
             desensitizationColSlotName: 'prisoners'
           }
         },
+
+        {
+          label: '黑名单原因',
+          prop: 'reason',
+          minWidth: '100px',
+          showOverflowtooltip: true
+        },
+
+        {
+          label: '短信服务是否开通',
+          slotName: 'isMsg'
+        },
+
+        {
+          label: '短信服务开通时间',
+          minWidth: '100px',
+          prop: 'startTime'
+        },
+
         {
           label: '操作',
           slotName: 'operate'
@@ -450,28 +460,36 @@ export default {
           prop: 'policeName',
           ...$likeName
         },
+
         {
           label: '警员编号',
           prop: 'policeNumber',
           ...$likePrisonerNumber
         },
+
         {
           label: '家属姓名',
           prop: 'familyName',
           ...$likeName
         },
+
         {
           label: '家属手机号码',
           prop: 'phone',
           ...$likePhone
         },
+
         {
           label: '操作',
           slotName: 'operation'
         }
       ]
 
-      if (this.tabs === this.tabOptions.FAMILY) return familyTableCols
+      if (this.tabs === this.tabOptions.FAMILY) {
+        if (this.$store.getters.isSuperAdmin) return [...superAdminFamilyTableCols ,...familyTableCols]
+
+        else return familyTableCols
+      }
 
       else return jailerFamiliesTableCols
     }
@@ -481,23 +499,36 @@ export default {
     tabs(val) {
       if (val === this.tabOptions.FAMILY) {
         this.resetSearchFilters(['familyName', 'policeName'])
+
         this.$set(this.searchItems.name, 'miss', false)
-        this.$set(this.searchItems.prisonArea, 'miss', false)
+
         this.$set(this.searchItems.isBlacklist, 'miss', false)
-        // this.$set(this.searchItems.prisonerName, 'miss', false)
-        // this.$set(this.searchItems.isMoreThanThree, 'miss', false)
-        // this.$set(this.searchItems.isSendMessage, 'miss', false)
+
+        this.$set(this.searchItems.prisonerName, 'miss', false)
+
+        this.$set(this.searchItems.isMsg, 'miss', false)
+
         this.$set(this.searchItems.familyName, 'miss', true)
+
         this.$set(this.searchItems.policeName, 'miss', true)
       } else {
-        this.resetSearchFilters(['name', 'prisonArea', 'isBlacklist'])
+        this.resetSearchFilters([
+          'name',
+          'isBlacklist',
+          'prisonerName',
+          'isMsg'
+        ])
+
         this.$set(this.searchItems.name, 'miss', true)
-        this.$set(this.searchItems.prisonArea, 'miss', true)
+
         this.$set(this.searchItems.isBlacklist, 'miss', true)
-        // this.$set(this.searchItems.prisonerName, 'miss', true)
-        // this.$set(this.searchItems.isMoreThanThree, 'miss', true)
-        // this.$set(this.searchItems.isSendMessage, 'miss', true)
+
+        this.$set(this.searchItems.prisonerName, 'miss', true)
+
+        this.$set(this.searchItems.isMsg, 'miss', true)
+
         this.$set(this.searchItems.familyName, 'miss', false)
+
         this.$set(this.searchItems.policeName, 'miss', false)
       }
 
@@ -519,16 +550,22 @@ export default {
       'getFamilyDetail'
     ]),
 
-    getDatas() {
+    async getDatas() {
       if (this.tabs === this.tabOptions.FAMILY) {
-        this.getFamilies({
-          ...this.filter,
-          ...this.pagination
-        })
+        const inputs = {
+          params: {
+            ...this.filter,
+            ...this.pagination
+          },
+
+          url: this.$store.getters.isSuperAdmin ? '/families/page/admin' : '/families/page'
+        }
+
+        await this.getFamilies(inputs)
       }
 
       else {
-        this.getPoliceFamilies({
+        await this.getPoliceFamilies({
           ...this.filter,
           ...this.pagination
         })
@@ -542,7 +579,7 @@ export default {
     async onShowFamilyDetail(row) {
       const { id, idCardBack, idCardFront } = row
 
-      const URLS = { idCardBack, idCardFront }, _key = `family_${ id }`
+      const URLS = { idCardBack, idCardFront }, _key = `familyId_${ id }`
 
       const result = await Promise.all([this.getFamilyDetail({ id }), batchDownloadPublicImageURL(URLS, _key)])
 

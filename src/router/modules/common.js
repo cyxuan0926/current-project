@@ -63,6 +63,7 @@ let common = [{
     component: 'download/operation'
   }]
 }, {
+  // 账号加安全问题找回密码的逻辑
   path: '/password_retrieve',
   name: 'password-retrieve',
   meta: { hidden: true },
@@ -84,6 +85,11 @@ let common = [{
     meta: { notLogin: true, step: 3 },
     component: 'password/password-retrieve-step-three'
   }]
+}, {
+  path: '/password_retrieve/byPhone',
+  name: 'passwordRetrieveByPhone',
+  meta: { notLogin: true },
+  component: 'password/phone-code'
 }, {
   path: '*',
   redirect: '/dashboard'

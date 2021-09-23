@@ -74,7 +74,7 @@
                     prev: {
                       attrs: {
                         prefixIcon: 'ower-cssName'
-                      } 
+                      }
                     }
                   }"
                   :disabled="!!config.queue.length"
@@ -118,7 +118,7 @@
 
               <div class="el-row_queue-configs">
                 <template v-for="(queue, o) in config.queue">
-                  <m-time-range-selector 
+                  <m-time-range-selector
                     :key="o"
                     :val="queue"
                     :disabled="true"
@@ -289,17 +289,32 @@ export default {
           type: 'warning'
         }).then(async () => {
           const { jailId, day } = config
-
           const params = {
             jailId: +jailId,
-            day
+            day,
+            confirm: 0
           }
-
           const isSucess = await this.delVisitSpecialConfig(params)
-
-          if (isSucess) this.splice(index)
-        })
-      } else this.splice(index)
+          if(isSucess.secondConfirmation){
+                  this.$confirm('当前日期有会见申请记录，删除后系统会取消申请，确定删除吗？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(async () => {
+                      const { jailId, day } = config
+                      const params = {
+                        jailId: +jailId,
+                        day,
+                        confirm: 1
+                      }
+                      const isSucess = await this.delVisitSpecialConfig(params)
+                      if(isSucess){
+                            this.splice(index)
+                      }
+                    })
+        } else this.splice(index)
+      })
+      }else this.splice(index)
     },
 
     // 切换是否支持会见
@@ -371,7 +386,8 @@ export default {
           if (id) {
             params = {
               ...params,
-              id
+              id,
+              confirm: 0
             }
 
             isSucess = await this.updateVisitSpecialConfig(params)
@@ -381,6 +397,7 @@ export default {
                 ...params,
                 windowNum: -1,
                 prisonConfigIds: '-1',
+                confirm: 0,
                 settings: {}
               }
             }
@@ -500,9 +517,7 @@ export default {
       if (this.configs.length > 1) this.configs.splice(index, 1)
 
       else this.configs = cloneDeep([this.basicConfig])
-    },
-
-    onFilterInputs() {}
+    }
   },
 
   async activated() {
@@ -607,14 +622,14 @@ export default {
     & ~ button {
       margin-bottom: 15px;
     }
-  }  
+  }
 }
 
 .el-row_queue {
   display: flex;
   overflow: hidden;
   margin-bottom: 10px;
-    
+
   label {
     float: none !important;
     width: 98px !important;

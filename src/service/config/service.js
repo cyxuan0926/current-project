@@ -29,9 +29,9 @@ instance.interceptors.request.use(
   config => {
     /* eslint-disable camelcase */
     const { access_token, token_type } = store.state.account.accountInfo
-    // eslint-disable-next-line
+
     if (BUILD_ENV === 'production') {
-      config.headers['appVersion'] = '3'
+      config.headers['appVersion'] = '306'
     }
     if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
     state = history.state

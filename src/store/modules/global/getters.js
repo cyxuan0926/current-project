@@ -15,6 +15,10 @@ export default {
     return rolesMap[parseInt(state.user.role)]
   },
 
+  chartRole(state) {
+    return roles.CHART_ROLES[ state.user.username ]
+  },
+
   hasPrisonArea(state) {
     return state.user.branch_prison === 1
   },

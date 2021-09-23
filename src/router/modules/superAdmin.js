@@ -56,7 +56,7 @@ superAdmin = [{
   }, {
     path: '/family-meeting-statistics',
     component: 'gd-admin/family-statistics',
-    props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' },
+    props: { hasOnlyAllPrisonQueryAuth: true, isChartQuery: true },
     meta: {
       permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视电话统计报表'
@@ -68,7 +68,7 @@ superAdmin = [{
       permission: 'visit.visit-statistic.province.search',
       breadcrumbName: '可视电话申请详情'
     },
-     props: { hasOnlyAllPrisonQueryAuth: true, provincesId: '20' }
+     props: { hasOnlyAllPrisonQueryAuth: true, isChartQuery: true }
   }]
 }, {
   path: '/other-units',
@@ -463,16 +463,6 @@ superAdmin = [{
         breadcrumbName: '可视电话节约成本统计表'
       }
     }, {
-      path: '/prison-data/registrations',
-      name: 'prison-data_registrations',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, provincesId: '1' },
-      meta: {
-        permission: 'visit.family-registration.all-prison.search',
-        breadcrumbName: '家属注册信息'
-      },
-      component: 'check-registration/registration-list'
-      // component: helper.loadView('check-registration/registration-list')
-    }, {
       path: '/prison-data/meeting-applications',
       name: 'prison-data_meeting-applications',
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, provincesId: '1' },
@@ -497,7 +487,11 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics',
       name: 'prison-data_meeting-statistics',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true,
+        provincesId: '1'
+      },
       meta: {
         permission: 'visit.visit-statistic.all-prison.search',
         breadcrumbName: '监狱可视电话统计'
@@ -507,7 +501,11 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics/prison-area',
       name: 'prison-data_meeting-statistics_prison-area',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: {
+        hasAllPrisonQueryAuth: true,
+        hasProvinceQueryAuth: true,
+        provincesId: '1'
+      },
       meta: {
         permission: 'visit.visit-statistic.all-prison-area.search',
         breadcrumbName: '监区可视电话统计'
@@ -726,6 +724,40 @@ superAdmin = [{
       },
       component: 'family-phone/phone/phone-admin-cost-list'
     }]
+  }, {
+    path: '/family-information',
+    name: 'SuperAdminFamilyInformation',
+    meta: { breadcrumbName: '家属信息管理', hidden: true },
+    children: [
+      {
+        path: '/family-information/manage/list',
+        name: 'FamilyInformationManageList',
+        props: {
+          hasProvinceQueryAuth: true,
+          hasOnlyAllPrisonQueryAuth: true
+        },
+        meta: {
+          permission: 'visit.family-information-manage.all-prison.search',
+          breadcrumbName: '家属信息管理列表'
+        },
+        component: 'check-family/family-list'
+      },
+
+      {
+        path: '/family-information/registrations/list',
+        name: 'FamilyInformationRegistrationsList',
+        props: {
+          hasAllPrisonQueryAuth: true,
+          hasProvinceQueryAuth: true,
+          provincesId: '1'
+        },
+        meta: {
+          permission: 'visit.family-registration.all-prison.search',
+          breadcrumbName: '家属注册信息'
+        },
+        component: 'check-registration/registration-list'
+      }
+    ]
   }]
 superAdmin.forEach(item => {
   item.component = 'layout/the-frame'

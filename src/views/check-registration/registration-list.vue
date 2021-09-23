@@ -65,6 +65,7 @@
         <el-table-column
           label="家属姓名"
           min-width="50"
+          class-name="el-form-item--ellipsis"
         >
           <template #default="{ row }">
             <el-popover
@@ -972,6 +973,8 @@ export default {
   },
 
   async mounted() {
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
   },
 
@@ -1243,7 +1246,7 @@ export default {
           meetNoticeUrl
         }
 
-        const _key = `registration_${ id }`
+        const _key = `registrationId_${ id }`
 
         const URLS = await helper.batchDownloadPublicImageURL(urls, _key)
 

@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
+    "@vue/composition-api": "^1.1.4",
     "bignumber.js": "^8.1.1",
     "bpmn-js": "^8.2.2",
     "bpmn-js-properties-panel": "^0.43.0",
@@ -40,6 +41,7 @@
     "viewerjs": "^1.2.0",
     "vue": "^2.6.11",
     "vue-fullscreen": "^2.1.6",
+    "vue-print-nb": "^1.7.5",
     "vue-quill-editor": "^3.0.4",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",

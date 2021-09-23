@@ -189,30 +189,44 @@ export default {
   data() {
     const todayDate = Moment().format('YYYY-MM-DD')
     const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
-    const stateAll = [
+   const stateAll = [
       {
-        label: '未授权',
-        value: 'PENDING'
+        label: '未审核',
+        value: '0'
       },
       {
         label: '已发送',
-        value: 'PASSED'
+        value: '1'
+      }, {
+        label: '已打印',
+        value: '6'
       },
       {
         label: '已拒绝',
-        value: 'DENIED'
-      },{
+        value: '2'
+      },
+      {
         label: '已取消',
-        value: 'CANCELED'
+        value: '5'
+      }
+    ]
+   const printState = [
+      {
+        label: '已打印',
+        value: '6'
+      },
+      {
+        label: '已发送',
+        value: '1'
       }
     ]
     const state = [
       {
         label: '已拒绝',
-        value: 'DENIED'
+        value: '2'
       },{
         label: '已取消',
-        value: 'CANCELED'
+        value: '5'
       }
     ]
     const tabPanes = [
@@ -222,19 +236,19 @@ export default {
       },
       {
         label: '已发送',
-        name: 'PASSED'
+        name: '1'
       },
       {
         label: '已拒绝',
-        name: 'DENIED,CANCELED'
+        name: '2'
       },
       {
         label: '未审核',
-        name: 'PENDING'
+        name: '3'
       }
     ]
     return {
-      tabs: 'PENDING',
+      tabs: '3',
       stateAll,
       state,
       toShow:{},
@@ -309,15 +323,18 @@ export default {
       tableCols: [
         {
           label: '省份名称',
-          prop: 'provincesName'
+          prop: 'provincesName',
+          showOverflowTooltip: true
         },
         {
           label: '监狱名称',
-          prop: 'jailName'
+          prop: 'jailName',
+          showOverflowTooltip: true
         },
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
@@ -376,18 +393,22 @@ export default {
     }
   },
   watch: {
-    tabs(val) {
-      delete this.filter.status
-      if(val=="PENDING" || val=="PASSED"){
-        this.searchItems.status.miss = true
+      tabs(val) {
+      delete this.filter.state
+      if(val=="3"){
+        this.searchItems.state.miss = true
+      }else if( val=='1') {
+          this.searchItems.state.miss = false
+          this.searchItems.state.value= ''
+          this.searchItems.state.options=this.printState
       }else if( val=='0') {
-          this.searchItems.status.miss = false
-          this.searchItems.status.value= ''
-          this.searchItems.status.options=this.stateAll
+          this.searchItems.state.miss = false
+          this.searchItems.state.value= ''
+          this.searchItems.state.options=this.stateAll
       }else{
-        this.searchItems.status.miss = false
-        this.searchItems.status.value= ''
-        this.searchItems.status.options=this.state
+        this.searchItems.state.miss = false
+        this.searchItems.state.value= ''
+        this.searchItems.state.options=this.state
       }
       this.onSearch()
     }
@@ -485,7 +506,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 #body .el-table.mini-td-padding td{
   padding: 8px 0;
 }

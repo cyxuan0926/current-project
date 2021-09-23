@@ -35,7 +35,7 @@ export default {
   },
   // 会见统计-监狱会见
   getPrisonReportList: params => {
-    return service.get('/report/prisonReportPage', params).then(res => res && res.data)
+    return service.get('/report/newPrisonReportPage', params).then(res => res && res.data)
   },
   // 查询监区会见统计-监狱会见
   getPrisonReportListJails: params => {
@@ -63,7 +63,7 @@ export default {
   },
   // 会见统计-监区会见-所有监狱
   getPrisonAreaReportListAll: params => {
-    return service.get('/report/findReportPage', params).then(res => res && res.data)
+    return service.get('/report/newFindReportPage', params).then(res => res && res.data)
   },
   // 会见节约成本统计-个人维度
   getMeetingCostSavingIndividual: params => {
@@ -200,5 +200,13 @@ export default {
   // 根据监狱/监区/权限 查询终端用户
   getTerminalUsersByPrisonConfigId: params => {
     return service.get('/jails/getUserListByPrisonConfigId', params)
+  },
+  // 亲情短信收费配置
+  getConfigMessageList: params => {
+    return service.get('/configurationsFamilyMessage/messageList', params).then(res => res && res.data)
+  },
+  //  亲情短信收费配置更新
+  editMessageList: params => {
+    return service.postObj('/configurationsFamilyMessage/editMessage', params)
   }
 }

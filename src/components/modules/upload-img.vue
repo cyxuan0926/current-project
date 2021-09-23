@@ -3,14 +3,21 @@
     <div class="component-img__box">
       <div
         v-if="!value"
-        class="no-video">
+        class="no-video"
+        :style="imgStyle">
         <i class="iconfont icon-image" />
       </div>
-      <img
+      <m-img-viewer 
+        v-else
+        :style="imgStyle"
+        :url="`${ value }?token=${ $urls.token }`"
+        :lazy="false"
+        fit="contain" />
+      <!-- <img
         v-else
         :src="value + '?token=' + $urls.token"
-        style="width: 108px; height: 108px;"
-        @click="handlePictureCardPreview">
+        :style="imgStyle"
+        @click="handlePictureCardPreview"> -->
     </div>
 
     <div class="upload-buttons">
@@ -118,6 +125,13 @@ export default {
           { slotName: 'default', type: 'trigger' }
         ]
       })
+    },
+    imgStyle: {
+      type: Object,
+      default: () => ({
+        'width': '108px',
+        'height': '108px'
+      })
     }
   },
   data() {
@@ -223,16 +237,22 @@ export default {
     display: inline-flex;
     flex-direction: column;
     margin-right: 10px;
-    width: 108px;
+    /* width: 108px; */
   }
   .component-img__box .no-video{
-    height: 108px;
-    width: 100%;
+    /* height: 108px;
+    width: 100%; */
+    display: flex;
     background: #E5E5E5;
     line-height: 108px;
     text-align: center;
     color: #8C8080;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+  }
+  .component-img__box .el-image {
+    background-color: #F5F7FA;
   }
   .component-img__box .no-video .iconfont{
     font-size: 28px;

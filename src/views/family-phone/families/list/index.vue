@@ -861,6 +861,7 @@ export default {
         {
           label: '家属姓名',
           ...$likeName,
+          className: '',
           prop: 'familyName',
           desensitizationColSlotName: 'family'
         },
@@ -1413,7 +1414,7 @@ export default {
           meetNoticeUrl
         }
 
-        const _key = `registration_${ registrationsId }`
+        const _key = `registrationId_${ registrationsId }`
 
         const URLS = await batchDownloadPublicImageURL(urls, _key)
 

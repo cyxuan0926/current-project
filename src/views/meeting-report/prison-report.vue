@@ -1,36 +1,34 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-excel-download
-      v-if="hasAllPrisonQueryAuth"
+      v-if="isSuperAdmin"
       :path="excelDownloadPath"
       :params="filter"
     />
+
     <m-search
       ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     />
+
     <el-col :span="24">
-      <el-tabs
-        v-model="activeComponentName"
-        type="card">
+      <el-tabs v-model="activeComponentName" type="card">
         <template v-for="item in tabOptions">
           <el-tab-pane
             :label="item.label"
             :name="item.name"
-            :key="item.name">
+            :key="item.name"
+          >
             <keep-alive>
-              <component
-                :is="activeComponentName"
-                :hasAllPrisonQueryAuth="hasAllPrisonQueryAuth" />
+              <component :is="activeComponentName" />
             </keep-alive>
           </el-tab-pane>
         </template>
       </el-tabs>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="totalPage"
@@ -40,7 +38,11 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import {
+  mapActions,
+  mapState,
+  mapGetters
+} from 'vuex'
 import Moment from 'moment'
 import profile from './prison-report-profile'
 import detail from './prison-report-detail'
@@ -52,7 +54,9 @@ const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 
 export default {
   mixins: [prisonFilterCreator],
+
   components: { profile, detail },
+
   data() {
     return {
       activeComponentName: 'profile',
@@ -69,6 +73,15 @@ export default {
         //     maxMonthRange: 24
         //   }
         // },
+        prisonArea: {
+          type: 'select',
+          label: '监区',
+          options: [],
+          filterable: true,
+          belong: { value: 'id', label: 'name' },
+          value: ''
+        },
+
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,
@@ -78,17 +91,20 @@ export default {
           endPlaceholder: '通话结束时间',
           value: [startDate, endDate]
         },
+
         name: {
           type: 'input',
           label: '家属姓名',
           miss: true
         },
+
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号',
           miss: true
         }
       },
+
       tabOptions: [
         {
           label: '监狱可视电话统计',
@@ -101,14 +117,17 @@ export default {
           excelDownloadPath: '/download/exportDetailsStatical'
         }
       ],
+
       filterInit: { // 默认查询上一个月的，筛选框初始化
         startDate,
         endDate
       }
     }
   },
+
   computed: {
     ...mapState(['prisonReportList', 'prisonReportDetail']),
+
     totalPage() {
       if (this.activeComponentName === 'profile') {
         return this.prisonReportList.total
@@ -116,32 +135,43 @@ export default {
         return this.prisonReportDetail.total
       }
     },
+
     excelDownloadPath() {
       const activeTab = this.tabOptions.find(tab => {
         return tab.name === this.activeComponentName
       })
 
       return activeTab && activeTab.excelDownloadPath
-    }
+    },
+
+    ...mapGetters(['isSuperAdmin'])
   },
+
   watch: {
     activeComponentName(val) {
       if (this.activeComponentName === 'profile') {
         this.searchItems.name.miss = true
+
         this.searchItems.prisonerNumber.miss = true
 
         delete this.filter.name
+
         delete this.filter.prisonerNumber
       } else {
         this.searchItems.name.miss = false
+
         this.searchItems.prisonerNumber.miss = false
       }
+
       this.$refs.search.onSearch('tabs')
+
       this.onSearch()
     }
   },
 
   async mounted() {
+    this.$refs.search.onGetFilter()
+
     await this.getDatas()
   },
 
@@ -157,19 +187,22 @@ export default {
       const params = { ...this.filter, ...this.pagination }
 
       if (this.activeComponentName === 'profile') {
-        if (this.hasAllPrisonQueryAuth) {
-          this.getPrisonReportListAll(params)
-        } else {
-          this.getPrisonReportList(params)
-        }
+        const { startDate, endDate } = this.filter
+
+        if (startDate) params['startDate'] = `${ startDate } 00:00:00`
+
+        if (endDate) params['endDate'] = `${ endDate } 23:59:59`
+
+        if (this.isSuperAdmin) this.getPrisonReportListAll(params)
+
+        else this.getPrisonReportList(params)
       } else {
-        if (this.hasAllPrisonQueryAuth) {
-          this.getPrisonReportDetailAll(params)
-        } else {
-          this.getPrisonReportDetail(params)
-        }
+        if (this.isSuperAdmin) this.getPrisonReportDetailAll(params)
+
+        else this.getPrisonReportDetail(params)
       }
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     }

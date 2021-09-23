@@ -36,6 +36,8 @@ export default {
   updatePrisonUser: params => {
     return service.putObj('/users/update', params).then(res => res && res.code === 200)
   },
+  // 监狱用户绑定手机号
+  updatePrisonUserPhone: data => service.putObj('/users/updatephone', data),
   // 监狱管理-监狱列表
   getPrisons: params => {
     return service.get('/jails/page', params).then(res => res && res.data)

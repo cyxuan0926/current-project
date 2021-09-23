@@ -61,7 +61,7 @@
             label-width="65px"
           >
             <el-select v-model="slotFormData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
-              <el-option 
+              <el-option
                 v-for="configs in faceRecognitionValues"
                 :key="configs"
                 :label="configs"
@@ -78,7 +78,7 @@
             label-width="65px"
           >
             <el-select v-model="slotFormData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
-              <el-option 
+              <el-option
                 v-for="configs in faceRecognitionValues"
                 :key="configs"
                 :label="configs"
@@ -176,7 +176,7 @@
           </el-form-item>
         </el-col>
       </template> -->
-     
+
   </div>
 </template>
 
@@ -190,6 +190,8 @@ import { Message } from 'element-ui'
 import { faceRecognitionValues } from '@/common/constants/const'
 
 import isEqual from 'lodash/isEqual'
+
+import Difference from 'lodash/difference'
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -547,7 +549,59 @@ export default {
           },
 
           value: []
-        }
+        },
+          accessTimes: {
+          label: '可视电话免费剩余次数',
+
+          type: 'input',
+
+          rules: ['required', 'isPositiveNumber',"isNumber"],
+
+          append: '次',
+
+          value: '1'
+        },
+
+        familyMsgScope: {
+          label: '亲情短信发送范围',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '认证家属',
+              value: 0
+            },
+
+            {
+              label: '亲情电话导入家属',
+              value: 1
+            }
+          ],
+          value: [1]
+        },
+
+        familyMsgCheckConf: {
+          label: '亲情短信审核配置',
+          type: 'checkboxgroup',
+          group: [
+            {
+              label: '家属发送需审核',
+              value: 0
+            },
+
+            {
+              label: '服刑人员发送需审核',
+              value: 1
+            }
+          ],
+          value: [0, 1]
+        },
+          meetingEnabled: {
+          type: 'switch',
+          label: '狱警通话开关',
+          disabled,
+          rules: ['required'],
+          value: 0
+        },
       }, formButton),
       values: {},
 
@@ -671,7 +725,7 @@ export default {
 
         if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0
 
-        if (isEqual([1, 2], familyPhoneScope) || isEqual([2, 1], familyPhoneScope)) e.familyPhoneScope = 2
+        if (!Difference([1, 2], familyPhoneScope).length) e.familyPhoneScope = 2
 
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
 
