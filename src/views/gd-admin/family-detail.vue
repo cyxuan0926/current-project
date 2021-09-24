@@ -424,8 +424,8 @@ export default {
     getDatas: async function () {
       const { page, rows } = this.pagination
       this.filter.orderField = 'createTime'
+      this.filter.provincesId = this.chartRole.provincesId
       const total = await this.gdGetFamilyMeetingDetail({
-        provincesId: this.chartRole.provincesId,
         ...this.filter,
         ...this.pagination
       })
