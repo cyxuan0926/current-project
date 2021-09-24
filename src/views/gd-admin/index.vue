@@ -1,7 +1,7 @@
 <template>
   <fullscreen class="fullscreen-layout" ref="fullscreen" @change="handleFullscreenChange">
     <el-container class="gd-home">
-      <el-header class="gd-home-title" v-show="isFullscreen"><h3>{{ mapData.label }}可视电话数据分析</h3></el-header>
+      <el-header class="gd-home-title" v-show="isFullscreen"><h3 :style="{ backgroundImage: 'url(' + mapData.titleUrl + ')'}">{{ mapData.label }}可视电话数据分析</h3></el-header>
       <el-container>
         <section class="gd-home__left">
           <section class="gd-home-map">
@@ -421,15 +421,16 @@
       },
 
       async initMap() {
+        const { adname } = this.mapData
         let { data = {} } = await http.getMapJson(this.mapData.adcode)
-        echarts.registerMap('guangdong', data)
+        echarts.registerMap(adname, data)
         this.mapChart = echarts.init(document.getElementById('gd-home-map-container'))
         this.mapChartOptions = {
           tooltip: {
             show: false
           },
           geo: {
-            map: 'guangdong',
+            map: adname,
             emphasis: {
               label: {
                 show: false
@@ -576,7 +577,7 @@
         text-indent: -99px;
         overflow: hidden;
         height: 47px;
-        background: #000A26 url('../../assets/images/gd-admin-title.png') no-repeat center top;
+        background: #000A26 url('') no-repeat center top;
       }
       
     }

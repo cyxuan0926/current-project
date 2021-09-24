@@ -1,3 +1,7 @@
+import gdAdminUrl from '../../assets/images/gd-admin-title.png'
+
+import gsAdminUrl from '../../assets/images/gs-admin-title.png'
+
 export default {
   // 超级管理员
   SUPER_ADMIN: 'super_admin',
@@ -29,12 +33,16 @@ export default {
     'gd_admin': {
       adcode: 440000,
       label: '广东省',
-      provincesId: '20'
+      provincesId: '20',
+      titleUrl: gdAdminUrl,
+      adname: 'guangdong'
     },
     'gs_admin': {
       adcode: 620000,
       label: '甘肃省',
-      provincesId: '21'
+      provincesId: '21',
+      titleUrl: gsAdminUrl,
+      adname: 'gansu'
     }
   }
 }
