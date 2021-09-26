@@ -259,6 +259,9 @@ export default {
               this.setSmsCountdown()
             }
           }
+          else {
+            this.isGetSmscode = false
+          }
         }
       })
     },
