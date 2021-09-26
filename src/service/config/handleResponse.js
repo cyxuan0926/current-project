@@ -116,7 +116,7 @@ const codes = {
       if (errors && errors.length) {
         msg = `${ errors.map((err, i) => {
           return `${ err.name }${ i === errors.length - 1 ? '' : '、' }`
-        }) }${ msg }`
+        }) }${ err.msg }`
       }
       tips(msg)
     }
