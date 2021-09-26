@@ -95,16 +95,18 @@ import {
 import validator from '@/utils'
 export default {
   data() {
+    const validatePhone = (rule, value, callback) => {
+      const pattern = /^[1][3456789][0-9]{9}$/
+      if (value && !pattern.test(value)) callback(new Error('手机号格式错误'))
+      else callback()
+    }
     return {
       rules: {
         policeNumber: [{ required: true, message: '请填写狱警号' }],
         realName: [{ required: true, message: '请填写真实姓名' }],
         username: [{ required: true, message: '请填写用户名' }],
         roleIds: [{ required: true, message: '请选择角色' }],
-        phoneNumber: [
-          { required: true, message: '请填写手机号码'},
-          { validator: validator.phone }
-        ]
+        phoneNumber: [{ validator: validatePhone }]
       },
 
       prisonConfigIdsProps: {
