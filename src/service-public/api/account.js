@@ -87,7 +87,7 @@ export const getCaptcha = () => {
 }
 
 // 通过账号 发送短信验证码
-export const sendSmsByAccount = username => post('/sms/verification-codes/username', { username })
+export const sendSmsByAccount = (username, password) => post('/sms/verification-codes/username', { username, password: password ? JSEncryptEncrypt(password) : '' })
 
 // 通过手机号 发送短信验证码
 export const sendSmsByPhone = phoneNumber => post('/sms/verification-codes', { phoneNumber })
