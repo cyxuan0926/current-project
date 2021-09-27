@@ -602,6 +602,12 @@ export default {
           rules: ['required'],
           value: 0
         },
+        loginAuthCode: {
+          type: 'switch',
+          label: '快捷登录验证码',
+          disabled,
+          value: 0
+        },
       }, formButton),
       values: {},
 
