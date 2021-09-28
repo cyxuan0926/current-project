@@ -239,13 +239,18 @@ export default {
         return
       }
       this.$message.closeAll();
-      this.$refs.form.validateField('username', async err => {
-        if (!err) {
+      let valid = true
+      let count = 0;
+      this.$refs.form.validateField(['username', 'password'], async err => {
+        if (err) {
+          valid = false
+        }
+        if (++count == 2 && valid) {
           this.isGetSmscode = true
-          let res = await sendSmsByAccount(this.formData.username)
+          let res = await sendSmsByAccount(this.formData.username, this.formData.password)
           if (res) {
             let { code } = res
-            // 发送短信验证码失败 用户名不存在 ｜ 操作频繁 ｜ 短信次数达上限
+            // 发送短信验证码失败 用户名不存在 ｜ 密码不正确 | 操作频繁 ｜ 短信次数达上限
             if (code == 'SMS_SEND_ERR') {
               this.isGetSmscode = false
             }
@@ -258,6 +263,9 @@ export default {
             else if (code == 'SMS_SEND_OK') {
               this.setSmsCountdown()
             }
+          }
+          else {
+            this.isGetSmscode = false
           }
         }
       })

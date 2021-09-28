@@ -114,9 +114,9 @@ const codes = {
       let errors = params.errorArrays,
           msg = params.msg
       if (errors && errors.length) {
-        msg = `${ errors.map((err, i) => {
-          return `${ err.name }${ i === errors.length - 1 ? '' : '、' }`
-        }) }${ msg }`
+        msg = `${ errors.reduce((msgs, err, i) => {
+          return `${ msgs }${ err.name }${ err.msg }${ i === errors.length - 1 ? '' : '、' }`
+        }, '') }`
       }
       tips(msg)
     }
