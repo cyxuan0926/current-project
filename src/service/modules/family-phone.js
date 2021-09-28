@@ -101,5 +101,15 @@ export default {
     } = inputs
 
     return service[methods](isPrisonInternetGetUrlWay ? service[isPrisonInternetGetUrlWay](url) : url, params, { responseType: 'blob' }).then(response => response && response.data)
+  },
+
+  // 亲情电话家属 - 批量审核
+  batchAuthFamilyPhone: params => {
+    return service.postObj('/msg/familyPhoneManage/authBatch', params)
+  },
+
+  // 亲情电话家属 - 批量作废
+  batchInvalidFamilyPhone: params => {
+    return service.putObj('/msg/familyPhoneManage/batchInvalid', params)
   }
 }

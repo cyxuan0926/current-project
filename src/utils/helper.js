@@ -110,7 +110,7 @@ export const transitionRoleId = val => {
       { roleList: [7], role: '7' }
     ], controlArg = true
   for (let value of val) {
-    let { roleName } = value, roleId, isOwn = store.state['role'].filter(roles => {
+    let { roleName } = value, roleId, isOwn = store.state['role'].some(roles => {
       if (roles.label === roleName) {
         roleId = roles.role
         return true
@@ -127,7 +127,7 @@ export const transitionRoleId = val => {
     else {
       controlArg = true
       for (let value of roles[index].roleList) {
-        if (arr.some(item => value === item)) continue
+        if (arr.some(item => +value === +item)) continue
         else {
           controlArg = false
           break
@@ -453,4 +453,16 @@ export const batchDownloadPublicImageURL = async(URLS = {}, _key = '') => {
 
     return _publicServiceImageUrl
   }
+}
+
+/**
+ *
+ * @param {*} array 目标数组
+ * @param {*} target 需要提出的标示
+ * @param {*} attr 比对的属性
+ */
+export const arrayRemove = (array, target, attr) => {
+  const index = array.findIndex(item => item[attr] === target)
+
+  if (index > -1) array.splice(index, 1)
 }

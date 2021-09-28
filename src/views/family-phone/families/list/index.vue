@@ -29,16 +29,24 @@
             v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             ref="mExcelUpload"
             :configs="excelUploadConfigs"
-          />   
+          />
         </template>
       </template>
 
       <template slot="append">
+        <template v-if="!isSuperAdmin && tabs === '1'">
+          <el-button type="primary" @click="onInvalid">作废</el-button>
+        </template>
+
         <el-button
           type="primary"
           :loading="downloading"
           @click="onDownloadExcel"
         >导出 Excel</el-button>
+
+        <template v-if="!isSuperAdmin && tabs === '0'">
+          <el-button type="primary" @click="onBatchAuth">审核</el-button>
+        </template>
       </template>
     </m-search>
 
@@ -57,6 +65,7 @@
         stripe
         :cols="tableCols"
         :data="familiesPaged.content"
+        @selection-change="onSelectionChange"
       >
         <template #family="{ row }">
           <el-button
@@ -308,101 +317,135 @@
       ref="detailOrAuthDialog"
       :visible.sync="detailOrAuthDialog.dialogVisible"
       :title="detailOrAuthDialogTitle"
-      :close-on-click-modal="!!detailOrAuthDialogType"
+      :close-on-click-modal="[1].includes(detailOrAuthDialogType)"
       @close="onCloseAuthorize"
     >
-      <m-multistage-records :basicValues="multistageRecordsBasicValues" :hasSlot="!!multistageRecordsValues.length">
-        <template v-if="multistageRecordsValues.length" #append>
-          <template v-for="(item, index) in multistageRecordsValues">
-            <div class="multistage_examine-item" :key="item.id">
-            <div :class="['detail-index', { 'border-bottom': index + 1 !== multistageRecordsValues.length }]">{{ index + 1 }}</div>
+      <template v-if="!([2].includes(detailOrAuthDialogType))">
+        <m-multistage-records :basicValues="multistageRecordsBasicValues" :hasSlot="!!multistageRecordsValues.length">
+          <template v-if="multistageRecordsValues.length" #append>
+            <template v-for="(item, index) in multistageRecordsValues">
+              <div class="multistage_examine-item" :key="item.id">
+                <div :class="['detail-index', { 'border-bottom': index + 1 !== multistageRecordsValues.length }]">{{ index + 1 }}</div>
 
-            <div class="detail-content">
-              <p class="detail-message-family detail-audit">
-                <template v-if="item.logType === 1">
-                  <span class="family-name audit-label label">审核员账号</span>
+                <!-- logType: 日志类型 1、审核(作废) 2、修改编辑 -->
+                <div class="detail-content">
+                  <p class="detail-message-family detail-audit">
+                    <template v-if="item.logType === 1">
+                      <span class="family-name audit-label label">审核员账号</span>
 
-                  <span class="family-nameDetail audit-value">{{ item['createRole'] }}</span>
-                </template>
+                      <span class="family-nameDetail audit-value">{{ item['createRole'] }}</span>
+                    </template>
 
-                <template v-else>
-                  <span class="family-name audit-label label">操作人姓名</span>
+                    <template v-else>
+                      <span class="family-name audit-label label">操作人姓名</span>
 
-                  <span class="family-nameDetail audit-value">{{ item['createUser'] }}</span>
-                </template>
-              </p>
+                      <span class="family-nameDetail audit-value">{{ item['createUser'] }}</span>
+                    </template>
+                  </p>
 
-              <p :class="[
-                'detail-message-family',
-                'detail-advices',
-                { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
-              ]">
-                <template v-if="item.logType === 1">
-                  <span class="family-name advices-label">审核意见</span>
+                  <p :class="[
+                    'detail-message-family',
+                    'detail-advices',
+                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                  ]">
+                    <template v-if="item.logType === 1">
+                      <template v-if="[1, 2].includes(item.checkState)">
+                        <span class="family-name advices-label">审核意见</span>
 
-                  <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
-                </template>
+                        <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
+                      </template>
 
-                <template v-else>
-                  <span class="family-name advices-label">修改内容</span>
+                      <template v-else>
+                        <span class="family-name advices-label">审核时间</span>
 
-                  <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
-                </template>
-              </p>
+                        <span class="family-nameDetail advices-value">{{ item['createAt'] }}</span>
+                      </template>
+                    </template>
 
-              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="['detail-message-family', {'item-no-bottom': index + 1 ===multistageRecordsValues.length }, 'detail-audit']">
-                <span class="family-name audit-label label">审核状态</span>
+                    <template v-else>
+                      <span class="family-name advices-label">修改内容</span>
 
-                <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
-              </p>
-            </div>
+                      <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
+                    </template>
+                  </p>
 
-            <div class="detail-content time-status">
-              <p class="detail-message-family detail-audit-time">
-                <template v-if="item.logType === 1">
-                  <span class="family-name audit-time-label">审核人姓名</span>
+                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                    [
+                      'detail-message-family',
+                      {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
+                      'detail-audit'
+                    ]"
+                  >
+                    <span class="family-name audit-label label">审核状态</span>
 
-                  <span class="family-nameDetail audit-time-value">{{ item['createUser'] }}</span>
-                </template>
+                    <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
+                  </p>
+                </div>
 
-                <template v-else>
-                  <span class="family-name audit-time-label">修改时间</span>
+                <div class="detail-content time-status">
+                  <p class="detail-message-family detail-audit-time">
+                    <template v-if="item.logType === 1">
+                      <span class="family-name audit-time-label">审核人姓名</span>
 
-                  <span class="family-nameDetail audit-time-value">{{ item['createAt'] }}</span>
-                </template>
-              </p>
+                      <span class="family-nameDetail audit-time-value">{{ item['createUser'] }}</span>
+                    </template>
 
-              <p :class="[
-                'detail-message-family',
-                'detail-status',
-                { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
-              ]">
-                <template v-if="item.logType === 1">
-                  <span class="family-name status-label">审核时间</span>
+                    <template v-else>
+                      <span class="family-name audit-time-label">修改时间</span>
 
-                  <span class="family-nameDetail status-value">{{ item['createAt'] }}</span>
-                </template>
+                      <span class="family-nameDetail audit-time-value">{{ item['createAt'] }}</span>
+                    </template>
+                  </p>
 
-                <template v-else>
-                  <span class="family-name status-label">&nbsp;</span>
+                  <p :class="[
+                    'detail-message-family',
+                    'detail-status',
+                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                  ]">
+                    <template v-if="item.logType === 1">
+                      <template v-if="[1, 2].includes(item.checkState)">
+                        <span class="family-name status-label">审核时间</span>
 
-                  <span class="family-nameDetail status-value" />
-                </template>
-              </p>
+                        <span class="family-nameDetail status-value">{{ item['createAt'] }}</span>
+                      </template>
 
-              <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="['detail-message-family', {'item-no-bottom': index + 1 ===multistageRecordsValues.length }, 'detail-advices']">
-                <span class="family-name advices-label">&nbsp;</span>
+                      <template v-else>
+                        <span class="family-name status-label">审核状态</span>
 
-                <span class="family-nameDetail advices-value" />
-              </p>
-            </div>
-          </div>
+                        <span class="family-nameDetail status-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
+                      </template>
+                    </template>
+
+                    <template v-else>
+                      <span class="family-name status-label">&nbsp;</span>
+
+                      <span class="family-nameDetail status-value" />
+                    </template>
+                  </p>
+
+                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                    [
+                      'detail-message-family',
+                      {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
+                      'detail-advices',
+                      'detail-logType_one'
+                    ]"
+                  >
+                    <span class="family-name advices-label">&nbsp;</span>
+
+                    <span class="family-nameDetail advices-value" />
+                  </p>
+                </div>
+              </div>
+            </template>
           </template>
-        </template>
-      </m-multistage-records>
+        </m-multistage-records>
+      </template>
 
       <!-- 审核 -->
-      <template v-if="!detailOrAuthDialogType">
+      <!-- 批量审核: 1.选择的数据是相同的审批流 和直接审核一样的交互 2.不同的审核流 就是后端根据该数据申请时候的审批流 去处理 交互不同 -->
+      <!-- 直接审核: 审批逻辑保持不变 -->
+      <template v-if="!([1].includes(detailOrAuthDialogType))">
         <div v-if="!detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
@@ -410,11 +453,16 @@
         <!-- 同意的情况 -->
         <template v-if="detailOrAuthDialog.agree">
           <!-- 审批结束 -->
+          <!-- 这个交互 -->
+          <!-- 单条审批 没有子流程 -->
+          <!-- 批量审核 相同审批流数据 没有子流程-->
           <div v-if="!isSubtask" class="button-box">
             <repetition-el-buttons :buttonItems="showAgreeButtons" />
           </div>
 
           <!-- 审批流程中 -->
+          <!-- 单条审核/批量审核 相同审批流 -->
+          <!-- 批量审批 不同审批流数据 -->
           <div v-else class="button-box">
             <m-form
               ref="agreeHasSubTaskForm"
@@ -422,6 +470,7 @@
               :values="agreeHasSubTaskFormValues"
               @submit="onAgreeHasSubTaskFormSubmit"
             >
+              
               <template #nextCheckCodeAgreeButtons>
                 <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
                   <template v-for="item in processInstanceIdSubtaskOptions">
@@ -453,7 +502,7 @@
               style="width:70%; margin-right:10px"
             >
               <el-option
-              class="select_edit"
+                class="select_edit"
                 v-for="(remark, index) in content"
                 :value="remark"
                 :label="(index + 1) + '、' + remark"
@@ -816,27 +865,29 @@ export default {
       contentId: "",
       btnDisable: false, // 按钮禁用与启用
       uploadInnerDialogVisible: false,
-       withdrawRule: {
+
+      withdrawRule: {
         anotherRemarks: [
           {
-            validator:(rule,value,callback)=>{
-              if(this.refuseForm.anotherRemarks){
-                  callback()
-              }else{
-                  callback(new Error('请填写驳回原因'))
-              }
+            validator: (rule, value, callback) => {
+              if (this.refuseForm.anotherRemarks) callback()
+
+              else callback(new Error('请填写驳回原因'))
             }
           }
         ]
       },
 
-      detailOrAuthDialogType: 0, // 0: 审核 1： 详情
+      detailOrAuthDialogType: 0, // 0: 审核 1： 详情 2: 批量审核
 
       agreeHasSubTaskFormFields: {},
 
       agreeHasSubTaskFormData: {
         nextCheckCode: ''
-      }
+      },
+
+      // 批量审核的数据
+      selectionData: []
     }
   },
 
@@ -925,11 +976,14 @@ export default {
           prop: 'jailName',
           showOverflowTooltip: true
         }
-      ]
+      ], selectCol = {
+          type: 'selection',
+          selectable: this.selectableFunction
+        }
 
       if (this.isSuperAdmin) return [ ...onlySuperAdminCols, ...cols ]
 
-      return cols
+      else return [ selectCol, ...cols ]
     },
 
     apiUrls() {
@@ -988,6 +1042,7 @@ export default {
           customClass: ['none_margin-left']
         },
 
+        // 单条审核/批量审核 相同审批流 才显示
         nextCheckCodeAgreeButtons: {
           slotName: 'nextCheckCodeAgreeButtons',
           customClass: ['el-from_item-nextCheckCodeAgreeButtons'],
@@ -999,7 +1054,13 @@ export default {
     },
 
     detailOrAuthDialogTitle() {
-      return this.detailOrAuthDialogType ? '详情' : '审核'
+      const titleTypes = {
+        0: '审核',
+        1: '详情',
+        2: '批量审核'
+      }
+
+      return titleTypes[this.detailOrAuthDialogType]
     }
   },
 
@@ -1049,7 +1110,8 @@ export default {
     ...mapActions([
       'uploadFile',
       'resetState',
-      'getSubtaskPhone'
+      'getSubtaskPhone',
+      'isSameProcessDefinition'
     ]),
 
     ...mapActions('familyPhone', [
@@ -1057,7 +1119,9 @@ export default {
       'operateFamilyPhoneFamilies',
       'validateUploadFamilies',
       'getFamilyPhoneFamiliesDetail',
-      'authFamilyPhoneFamilies'
+      'authFamilyPhoneFamilies',
+      'batchAuthFamilyPhone',
+      'batchInvalidFamilyPhone'
     ]),
 
     async getDatas() {
@@ -1502,16 +1566,15 @@ export default {
     },
 
     async onAgreeAuthorize() {
+      // 单条审核/批量审核 相同审批流 需要去获取流程
       const { processInstanceId } = this.familiesRow
 
       await this.getSubtaskPhone({ processInstanceId })
 
-      if (this.isSubtask) {
-        this.agreeHasSubTaskFormValues = {
-          remarks: '同意',
-        }
+      if (this.isSubtask) this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
 
-        this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
+      this.agreeHasSubTaskFormValues = {
+        remarks: '同意'
       }
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
@@ -1729,6 +1792,82 @@ export default {
 
     onAgreeHasSubTaskFormSubmit(value) {
       this.agreeHasSubTaskFormFields = Object.assign({}, value)
+    },
+
+    // 未选择数据时候的提示文字
+    onWarning(message = '请选择要审核的记录') {
+      this.$message({
+        showClose: true,
+        message,
+        type: 'warning'
+      })
+    },
+
+    // 批量审核
+    onBatchAuth() {
+      console.log(this.selectionData)
+      // 审核类型
+      if (!this.selectionData.length) this.onWarning()
+
+      else {
+        (async () => {
+          await this.isSameProcessDefinition()
+
+          this.detailOrAuthDialogType = 2
+
+          this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+        })()
+      }
+    },
+
+    // 筛选可审核的数据
+    // 待审核标签 需要筛选
+    // 未通过/亲情电话标签 都不可选择
+    // 已通过标签 都可以选择
+    selectableFunction(row) {
+      const { isCheck } = row
+
+      return (!!isCheck && this.tabs !== 'first') || this.tabs === '1'
+    },
+
+    onSelectionChange(selection) {
+      this.selectionData = selection
+    },
+
+    // 批量作废
+    onInvalid() {
+      if (!this.selectionData.length) this.onWarning('请选择要作废的记录')
+
+      else {
+        this.$confirm('所选数据确认作废吗？', '提示', {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: 'warning',
+          closeOnClickModal: false,
+          callback: async () => {
+            const params = this.selectionData.reduce((accumulator, selection) => {
+              const { id } = selection
+
+              accumulator['list'].push(id)
+
+              return accumulator
+            }, { list: [] })
+
+            // const result = await this.batchInvalidFamilyPhone(phone)
+
+            // if (result) await this.getDatas()
+          }
+        })
+      }
+    },
+
+    // 批量审批 不同审批流数据 同意并结束按钮
+    onBatchAuthHaveDifferentProcessPassedEnd() {
+      this.agreeHasSubTaskFormValues = {
+        remarks: '同意'
+      }
+
+      this.$set(this.detailOrAuthDialog, 'agree', true)
     }
   },
 
@@ -1881,6 +2020,10 @@ $border-style: 1px solid #E4E7ED;
   }
 }
 
+.detail-logType_one {
+  flex: 1;
+}
+
 .multistage_examine-main {
   display: flex;
   flex-direction: column;
@@ -1916,9 +2059,6 @@ $border-style: 1px solid #E4E7ED;
     display: flex;
 
     flex-direction: column;
-    .detail-status {
-      flex: 1;
-    }
   }
 
   .border-bottom {

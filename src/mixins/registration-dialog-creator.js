@@ -2,6 +2,8 @@
 
 import { mapGetters } from 'vuex'
 
+import { arrayRemove } from '@/utils/helper'
+
 export default {
   data() {
     // 授权对话框的关闭按钮
@@ -218,7 +220,10 @@ export default {
     onMultistageExamineSubmit() {},
 
     // 高级审批提交情况下的提交操作
-    onMultistageExamineGoSubmit() {}
+    onMultistageExamineGoSubmit() {},
+
+    // 批量审批 含有不同审批流的数据 同意并结束的操作
+    onBatchAuthHaveDifferentProcessPassedEnd() {}
   },
 
   computed: {
@@ -320,6 +325,20 @@ export default {
           }
         },
 
+        // 亲情家属批量审核 / 数据含有不同审批流的交互
+        {
+          text: '同意并结束流程',
+
+          attrs: {
+            plain: true,
+            loading: this.buttonLoading
+          },
+
+          events: {
+            click: this.onBatchAuthHaveDifferentProcessPassedEnd
+          }
+        },
+
         {
           text: '不同意',
 
@@ -347,13 +366,10 @@ export default {
         this.closeButton
       ]
       // 高级审核人员 or 多级审批开关关闭 or 现场探视 or 有审批流 则无需提交按钮
-      if (this.isAdvancedAuditor || !this.haveMultistageExamine || this.visitsFlag || (this.toShow && this.toShow.processInstanceId)) {
-        items.splice(2, 1)
-      }
+      if (this.isAdvancedAuditor || !this.haveMultistageExamine || this.visitsFlag || (this.toShow && this.toShow.processInstanceId)) arrayRemove(items, '提交', 'text')
+
       // 有流程审批的情况
-      if (this.toShow && this.toShow.processInstanceId) {
-        items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
-      }
+      if (this.toShow && this.toShow.processInstanceId) items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
 
       return items
      }

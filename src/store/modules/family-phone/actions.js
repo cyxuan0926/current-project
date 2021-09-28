@@ -183,5 +183,31 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async batchAuthFamilyPhone(_, params) {
+    try {
+      const response = await familyPhoneApi.batchAuthFamilyPhone(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async batchInvalidFamilyPhone(_, params) {
+    try {
+      const response = await familyPhoneApi.batchInvalidFamilyPhone(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

@@ -595,13 +595,19 @@ export default {
           ],
           value: [0, 1]
         },
-          meetingEnabled: {
+        meetingEnabled: {
           type: 'switch',
           label: '狱警通话开关',
           disabled,
           rules: ['required'],
           value: 0
         },
+        familyPhoneManageAuto: {
+          type: 'switch',
+          label: '亲情电话家属自动审核开关',
+          disabled,
+          value: 0
+        }
       }, formButton),
       values: {},
 
