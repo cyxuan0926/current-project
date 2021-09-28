@@ -110,7 +110,7 @@ export const transitionRoleId = val => {
       { roleList: [7], role: '7' }
     ], controlArg = true
   for (let value of val) {
-    let { roleName } = value, roleId, isOwn = store.state['role'].filter(roles => {
+    let { roleName } = value, roleId, isOwn = store.state['role'].some(roles => {
       if (roles.label === roleName) {
         roleId = roles.role
         return true
