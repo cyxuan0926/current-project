@@ -99,6 +99,7 @@ export default {
       isGetSmscode: false,
       smsCountdown: 60,
       smsInterval: null,
+      hasGetedSmscode: false,
 
       formData: {
         username: '',
@@ -240,7 +241,7 @@ export default {
       }
       this.$message.closeAll();
       let valid = true
-      let count = 0;
+      let count = 0
       this.$refs.form.validateField(['username', 'password'], async err => {
         if (err) {
           valid = false
@@ -262,6 +263,7 @@ export default {
             // 提示
             else if (code == 'SMS_SEND_OK') {
               this.setSmsCountdown()
+              this.hasGetedSmscode = true
             }
           }
           else {
@@ -276,6 +278,11 @@ export default {
       this.$message.closeAll();
       this.$refs.form.validate(async valid => {
         if (!valid) return
+
+        if (!this.hasGetedSmscode) {
+          this.$message.error('还未获取验证码，请点击获取验证码')
+          return
+        }
 
         try {
           // const { key } = this.captchaConfigs
