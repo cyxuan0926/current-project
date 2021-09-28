@@ -9,7 +9,13 @@ export default {
 
       const size = response ? response['size'] : 0
 
-      commit('setFamiliesPaged', { content: list, totalCount: size })
+      const isCancel = response ? response['isCancel'] : false
+
+      commit('setFamiliesPaged', {
+        content: list,
+        totalCount: size,
+        isCancel
+      })
 
       return true
     }

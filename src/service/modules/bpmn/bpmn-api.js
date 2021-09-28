@@ -9,5 +9,5 @@ export default {
     getProcessTask: processInstanceId => service.get(service.getBpmnUrl(`/process/get-task?processInstanceId=${ processInstanceId }`)),
 
     // 依据多个流程实例id获取是否为同一流程
-    isSameProcessDefinition: instanceIds => service.get(service.getBpmnUrl(`/processDefinition/getSameDefinitions?instanceIds=${ instanceIds }`))
+    getIsSameProcessDefinition: instanceIds => service.get(service.getBpmnUrl(`/processDefinition/getSameDefinitions?instanceIds=${ instanceIds }`))
 }

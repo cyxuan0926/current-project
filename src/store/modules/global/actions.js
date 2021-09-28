@@ -192,13 +192,15 @@ export default {
   },
 
   // 判断是否是同一个审批流
-  async isSameProcessDefinition(_, instanceIds) {
+  async getIsSameProcessDefinition({ commit }, instanceIds) {
     try {
-      const response = await http.isSameProcessDefinition(instanceIds)
+      const response = await http.getIsSameProcessDefinition(instanceIds)
 
       const isSame = response && response['code'] === 200 && response['data']
 
-      return isSame
+      commit('setIsSameProcessDefinition', isSame)
+
+      return true
     }
     catch (err) {
       Promise.reject(err)

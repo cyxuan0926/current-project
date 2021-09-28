@@ -34,7 +34,7 @@
       </template>
 
       <template slot="append">
-        <template v-if="!isSuperAdmin && tabs === '1'">
+        <template v-if="!isSuperAdmin && tabs === '1' && familiesPaged.isCancel">
           <el-button type="primary" @click="onInvalid">作废</el-button>
         </template>
 
@@ -456,7 +456,7 @@
           <!-- 这个交互 -->
           <!-- 单条审批 没有子流程 -->
           <!-- 批量审核 相同审批流数据 没有子流程-->
-          <div v-if="!isSubtask" class="button-box">
+          <div v-if="!isSubtask && !isBatchAuthAndIsNoneSameProcessDefinition" class="button-box">
             <repetition-el-buttons :buttonItems="showAgreeButtons" />
           </div>
 
@@ -472,15 +472,17 @@
             >
               
               <template #nextCheckCodeAgreeButtons>
-                <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
-                  <template v-for="item in processInstanceIdSubtaskOptions">
-                    <el-option
-                      :key="item.taskCode"
-                      :label="item.taskName"
-                      :value="item.taskCode"
-                    />
-                  </template>
-                </el-select>
+                <template v-if="!isBatchAuthAndIsNoneSameProcessDefinition">
+                  <el-select v-model="agreeHasSubTaskFormData.nextCheckCode" placeholder="请选择审核人">
+                    <template v-for="item in processInstanceIdSubtaskOptions">
+                      <el-option
+                        :key="item.taskCode"
+                        :label="item.taskName"
+                        :value="item.taskCode"
+                      />
+                    </template>
+                  </el-select>
+                </template>
 
                 <repetition-el-buttons :buttonItems="showAgreeHasSubTaskButtons" />
               </template>
@@ -1030,7 +1032,7 @@ export default {
     },
 
     agreeHasSubTaskFormItems() {
-      return {
+      let items = {
         formConfigs: {
           labelWidth: '90px'
         },
@@ -1051,6 +1053,10 @@ export default {
           }
         }
       }
+
+      if (this.isBatchAuthAndIsNoneSameProcessDefinition) this.$set(items['nextCheckCodeAgreeButtons']['attrs'], 'label', ' ')
+
+      return items
     },
 
     detailOrAuthDialogTitle() {
@@ -1061,6 +1067,11 @@ export default {
       }
 
       return titleTypes[this.detailOrAuthDialogType]
+    },
+
+    // 是批量审批操作 并且 审批数据审批流配置不相同
+    isBatchAuthAndIsNoneSameProcessDefinition() {
+      return (!this.isSameProcessDefinition && this.detailOrAuthDialogType === 2)
     }
   },
 
@@ -1111,7 +1122,7 @@ export default {
       'uploadFile',
       'resetState',
       'getSubtaskPhone',
-      'isSameProcessDefinition'
+      'getIsSameProcessDefinition'
     ]),
 
     ...mapActions('familyPhone', [
@@ -1567,11 +1578,15 @@ export default {
 
     async onAgreeAuthorize() {
       // 单条审核/批量审核 相同审批流 需要去获取流程
-      const { processInstanceId } = this.familiesRow
+      if (!this.isBatchAuthAndIsNoneSameProcessDefinition) {
+        const [child] = this.selectionData
 
-      await this.getSubtaskPhone({ processInstanceId })
+        const { processInstanceId } = this.detailOrAuthDialogType === 2 ? child : this.familiesRow
 
-      if (this.isSubtask) this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
+        await this.getSubtaskPhone({ processInstanceId })
+
+        if (this.isSubtask) this.$set(this.agreeHasSubTaskFormData, 'nextCheckCode' , this.processInstanceIdSubtaskOptions[0]['taskCode'] || '')
+      }
 
       this.agreeHasSubTaskFormValues = {
         remarks: '同意'
@@ -1603,27 +1618,38 @@ export default {
     },
 
     // 同意 提交审批：同意并结束
+    // 不同审批流 批量审批 checkState: 3
     async onPassedAuthorize() {
       let inputs = {}
 
-      if (this.isSubtask) {
-        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
-
+      // 批量审批 不同审批流程
+      if (this.isBatchAuthAndIsNoneSameProcessDefinition) {
         const { remarks } = this.agreeHasSubTaskFormFields
-
-        const { nextCheckCode } = this.agreeHasSubTaskFormData
-
-        const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
 
         inputs = {
           remarks,
-          nextCheckRole: taskName,
-          nextCheckCode,
-          checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
+          checkState: 3
         }
       } else {
-        inputs = {
-          checkState: 1
+        if (this.isSubtask) {
+          this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
+          const { remarks } = this.agreeHasSubTaskFormFields
+
+          const { nextCheckCode } = this.agreeHasSubTaskFormData
+
+          const { taskName = '' } = this.processInstanceIdSubtaskOptions.filter(subtask => subtask.taskCode === nextCheckCode)[0] || {}
+
+          inputs = {
+            remarks,
+            nextCheckRole: taskName,
+            nextCheckCode,
+            checkState: nextCheckCode === 'visit.approve.end' ? 1 : 3
+          }
+        } else {
+          inputs = {
+            checkState: 1
+          }
         }
       }
 
@@ -1763,23 +1789,57 @@ export default {
       }
     },
 
+    // 审批/批量审批
     async onAuthorization(inputs = {}) {
-      const {
-        id,
-        processInstanceId,
-        taskName
-      } = this.familiesRow
-
-      const params = {
-        ...inputs,
-        familyPhoneId: id,
-        processInstanceId,
-        taskName
-      }
-
       this.buttonLoading = true
 
-      const result = await this.authFamilyPhoneFamilies(params)
+      let result
+
+      // 批量
+      if (this.detailOrAuthDialogType === 2) {
+        const familyPhoneIdProcessInstanceIdList = this.selectionData.reduce((accumulator, selection) => {
+          const {
+            id,
+            processInstanceId,
+            taskName
+          } = selection
+
+          const _temp = {
+            processInstanceId,
+            familyPhoneId: id,
+            taskName
+          }
+
+          accumulator.push(_temp)
+
+          return accumulator
+        } ,[])
+
+        const params = {
+          ...inputs,
+          familyPhoneIdProcessInstanceIdList
+        }
+
+        result = await this.batchAuthFamilyPhone(params)
+      }
+
+      // 审核
+      if (this.detailOrAuthDialogType === 0) {
+        const {
+          id,
+          processInstanceId,
+          taskName
+        } = this.familiesRow
+
+        const params = {
+          ...inputs,
+          familyPhoneId: id,
+          processInstanceId,
+          taskName
+        }
+
+        result = await this.authFamilyPhoneFamilies(params)
+      }
 
       this.buttonLoading = false
 
@@ -1804,19 +1864,26 @@ export default {
     },
 
     // 批量审核
-    onBatchAuth() {
-      console.log(this.selectionData)
+    async onBatchAuth() {
       // 审核类型
       if (!this.selectionData.length) this.onWarning()
 
       else {
-        (async () => {
-          await this.isSameProcessDefinition()
+        if (this.selectionData.length > 1) {
+          const instanceIds = this.selectionData.reduce((accumulator, selection) => {
+            const { processInstanceId } = selection
 
-          this.detailOrAuthDialogType = 2
+            accumulator = accumulator ? (accumulator + ',' + processInstanceId) : processInstanceId
 
-          this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
-        })()
+            return accumulator
+          }, '')
+
+          await this.getIsSameProcessDefinition(instanceIds)
+        } else this.$store.commit('setIsSameProcessDefinition', true) // 批量选择一条数据 肯定是同一审批流 就不调接口了
+
+        this.detailOrAuthDialogType = 2
+
+        this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
       }
     },
 
@@ -1853,9 +1920,9 @@ export default {
               return accumulator
             }, { list: [] })
 
-            // const result = await this.batchInvalidFamilyPhone(phone)
+            const result = await this.batchInvalidFamilyPhone(phone)
 
-            // if (result) await this.getDatas()
+            if (result) await this.getDatas()
           }
         })
       }

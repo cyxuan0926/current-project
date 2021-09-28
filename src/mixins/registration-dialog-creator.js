@@ -1,6 +1,6 @@
 // 注册页面 对话框操作 封装的组件
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { arrayRemove } from '@/utils/helper'
 
@@ -229,6 +229,10 @@ export default {
   computed: {
     ...mapGetters(['isAdvancedAuditor', 'haveMultistageExamine']),
 
+    ...mapState({
+      isSameProcessDefinition: state => state.global.isSameProcessDefinition
+    }),
+
     // 授权同意情况下按钮元素
     showAgreeButtons() {
       return [
@@ -330,8 +334,7 @@ export default {
           text: '同意并结束流程',
 
           attrs: {
-            plain: true,
-            loading: this.buttonLoading
+            plain: true
           },
 
           events: {
@@ -370,6 +373,10 @@ export default {
 
       // 有流程审批的情况
       if (this.toShow && this.toShow.processInstanceId) items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
+
+      // 批量审批并且审批数据不是同一个审批流 显示
+      // detailOrAuthDialogType 定义在亲情电话家属 2 为批量审批
+      if (!(!this.isSameProcessDefinition && this.detailOrAuthDialogType === 2)) arrayRemove(items, '同意并结束流程', 'text')
 
       return items
      }

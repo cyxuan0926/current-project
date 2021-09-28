@@ -76,5 +76,9 @@ export default {
 
   setCacheImageURLS: (state, cacheImageURLS) => {
     state.cacheImageURLS = cacheImageURLS
+  },
+
+  setIsSameProcessDefinition: (state, isSameProcessDefinition) => {
+    state.isSameProcessDefinition = isSameProcessDefinition
   }
 }

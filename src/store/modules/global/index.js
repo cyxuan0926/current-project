@@ -37,7 +37,10 @@ let state = {
   currentProcessTaskInformation: {},
 
   // 家属/罪犯 type 为protected privated的文件
-  cacheImageURLS: {}
+  cacheImageURLS: {},
+
+  // 批量审核不同审批流
+  isSameProcessDefinition: true
 }
 
 export default {
