@@ -446,7 +446,11 @@
       <!-- 批量审核: 1.选择的数据是相同的审批流 和直接审核一样的交互 2.不同的审核流 就是后端根据该数据申请时候的审批流 去处理 交互不同 -->
       <!-- 直接审核: 审批逻辑保持不变 -->
       <template v-if="!([1].includes(detailOrAuthDialogType))">
-        <div v-if="!detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree" class="button-box">
+        <div
+          v-if="!detailOrAuthDialog.agree && !detailOrAuthDialog.disAgree"
+          class="button-box"
+          :style="{ textAlign: detailOrAuthDialogType === 2  ? 'center' : 'right' }"
+        >
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
 
@@ -456,7 +460,11 @@
           <!-- 这个交互 -->
           <!-- 单条审批 没有子流程 -->
           <!-- 批量审核 相同审批流数据 没有子流程-->
-          <div v-if="!isSubtask && !isBatchAuthAndIsNoneSameProcessDefinition" class="button-box">
+          <div
+            v-if="!isSubtask && !isBatchAuthAndIsNoneSameProcessDefinition"
+            class="button-box"
+            :style="{ textAlign: (isBatchAuthAndIsNoneSameProcessDefinition || detailOrAuthDialogType === 2 && !isSubtask) ? 'center' : 'right' }"
+          >
             <repetition-el-buttons :buttonItems="showAgreeButtons" />
           </div>
 
