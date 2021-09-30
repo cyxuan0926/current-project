@@ -1626,17 +1626,17 @@ export default {
     },
 
     // 同意 提交审批：同意并结束
-    // 不同审批流 批量审批 checkState: 3
+    // 不同审批流 批量审批 同意并结束 checkState：1 确定通过 checkState： 3
     async onPassedAuthorize() {
       let inputs = {}
 
       // 批量审批 不同审批流程
       if (this.isBatchAuthAndIsNoneSameProcessDefinition) {
-        const { remarks } = this.agreeHasSubTaskFormFields
+        const { checkState } = this.agreeHasSubTaskFormValues, { remarks } = this.agreeHasSubTaskFormFields
 
         inputs = {
           remarks,
-          checkState: 3
+          checkState: checkState ? checkState : 3
         }
       } else {
         if (this.isSubtask) {
@@ -1939,7 +1939,8 @@ export default {
     // 批量审批 不同审批流数据 同意并结束按钮
     onBatchAuthHaveDifferentProcessPassedEnd() {
       this.agreeHasSubTaskFormValues = {
-        remarks: '同意'
+        remarks: '同意',
+        checkState: 1
       }
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
