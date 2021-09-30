@@ -369,7 +369,7 @@
                     </template>
                   </p>
 
-                  <p v-if="item.logType === 1 && [1, 2, 3].includes(item.checkState)" :class="
+                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
                     [
                       'detail-message-family',
                       {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
@@ -1928,7 +1928,7 @@ export default {
               return accumulator
             }, { list: [] })
 
-            const result = await this.batchInvalidFamilyPhone(phone)
+            const result = await this.batchInvalidFamilyPhone(params)
 
             if (result) await this.getDatas()
           }
