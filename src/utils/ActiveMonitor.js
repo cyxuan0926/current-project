@@ -5,7 +5,7 @@ import router from '@/router'
 import logout from '@/utils/logout'
 
 export default class ActiveMonitor {
-  constructor(maxTime = 10 * 60, types = ['click', 'keydown']) {
+  constructor(maxTime = 30 * 60, types = ['click', 'keydown']) {
     this.isActive = true
     this.MAX_TIME = this.timeRemaining = maxTime
     this.TYPES = types
