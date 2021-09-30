@@ -346,10 +346,10 @@
                   <p :class="[
                     'detail-message-family',
                     'detail-advices',
-                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2, 3].includes(item.checkState)) }
                   ]">
                     <template v-if="item.logType === 1">
-                      <template v-if="[1, 2].includes(item.checkState)">
+                      <template v-if="[1, 2, 3].includes(item.checkState)">
                         <span class="family-name advices-label">审核意见</span>
 
                         <span class="family-nameDetail advices-value">{{ item['remarks'] }}</span>
@@ -369,7 +369,7 @@
                     </template>
                   </p>
 
-                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                  <p v-if="item.logType === 1 && [1, 2, 3].includes(item.checkState)" :class="
                     [
                       'detail-message-family',
                       {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
@@ -400,10 +400,10 @@
                   <p :class="[
                     'detail-message-family',
                     'detail-status',
-                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2, 3].includes(item.checkState)) }
                   ]">
                     <template v-if="item.logType === 1">
-                      <template v-if="[1, 2].includes(item.checkState)">
+                      <template v-if="[1, 2, 3].includes(item.checkState)">
                         <span class="family-name status-label">审核时间</span>
 
                         <span class="family-nameDetail status-value">{{ item['createAt'] }}</span>
@@ -423,7 +423,7 @@
                     </template>
                   </p>
 
-                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                  <p v-if="item.logType === 1 && [1, 2, 3].includes(item.checkState)" :class="
                     [
                       'detail-message-family',
                       {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
