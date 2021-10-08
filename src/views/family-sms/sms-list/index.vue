@@ -613,7 +613,7 @@ export default {
       filterInit: {},
       tabledate:{},
       tableCols: [
-          {
+        {
           type: 'selection',
           selectable: this.handleControlSelect
         },

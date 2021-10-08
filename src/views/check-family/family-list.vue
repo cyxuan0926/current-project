@@ -686,7 +686,7 @@ export default {
       this.$confirm('删除后不可拨打可视电话，你确认删除吗？', '提醒', {
         type: 'warning',
         closeOnClickModal: false,
-        callback: async() => {
+        callback: async () => {
           const result = await this.deletePoliceFamily(phone)
 
           if (result) await this.getDatas()

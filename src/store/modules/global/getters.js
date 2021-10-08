@@ -38,22 +38,22 @@ export default {
   },
 
   // 高级审核人员
-  isAdvancedAuditor(state, getters) {
+  isAdvancedAuditor(_, getters) {
     return getters.role === roles.ADVANCED_AUDITOR
   },
 
   // 狱务通管理员
-  isSuperAdmin(state, getters) {
+  isSuperAdmin(_, getters) {
     return getters.role === roles.SUPER_ADMIN
   },
 
   // 租户管理员
-  isTenantAdmin(state, getters) {
+  isTenantAdmin(_, getters) {
     return getters.role === roles.TENANT_ADMIN
   },
 
   // 初级审核人员
-  isAuditor(state, getters) {
+  isAuditor(_, getters) {
     return getters.role === roles.AUDITOR
   },
 

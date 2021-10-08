@@ -189,7 +189,24 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  // 判断是否是同一个审批流
+  async getIsSameProcessDefinition({ commit }, instanceIds) {
+    try {
+      const response = await http.getIsSameProcessDefinition(instanceIds)
+
+      const isSame = response && response['code'] === 200 && response['data']
+
+      commit('setIsSameProcessDefinition', isSame)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
+
   // 修改用户名密码的方法
   // modifyPassword({ commit }, regs) {
   //   let params = {

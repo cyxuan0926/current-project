@@ -300,6 +300,10 @@ let switches = {
     {
       label: '提交下级审核',
       value: 3
+    },
+    {
+      label: '已作废',
+      value: 4
     }
   ],
 
