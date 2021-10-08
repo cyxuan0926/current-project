@@ -1283,7 +1283,8 @@ export default {
         },
         {
           label: '省份',
-          prop: 'provinceName'
+          prop: 'provinceName',
+          showOverflowTooltip: true
         },
         {
           label: '监狱名称',

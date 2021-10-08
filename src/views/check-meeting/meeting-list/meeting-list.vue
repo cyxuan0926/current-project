@@ -1174,6 +1174,12 @@
               slotName: 'content',
               minWidth: 80,
               className: 'orange'
+            },
+
+            {
+              label: '终端唯一标识',
+              prop: 'terminalNo',
+              minWidth: 100
             }
           ],
           allPrisonQueryAuthLeadingCols = [
@@ -1193,12 +1199,6 @@
             }
           ]
 
-        const terminaUniquelId = {
-          label: '终端唯一标识',
-          prop: 'terminalNo',
-          minWidth: 100
-        }
-
         // if (!applicationStartDate || !applicationEndDate) {
         //   for(let i = 0; i < basicCols.length; i++) {
         //     if (basicCols[i].prop === 'meetingTime') {
@@ -1207,14 +1207,13 @@
         //     }
         //   }
         // }
+        if (!this.isShowPhone) helper.arrayRemove(basicCols, '家属电话', 'label')
 
-        if (!this.isShowPhone) {
-          const index = basicCols.findIndex(col => col.label === '家属电话')
-          basicCols.splice(index, 1)
-        }
+        if (!['first'].includes(this.tabs)) helper.arrayRemove(basicCols, '终端唯一标识', 'label')
 
         if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-          this.operateQueryAuth=false
+          this.operateQueryAuth = false
+
           let cols = [
             {
               label: '省份',
@@ -1224,18 +1223,14 @@
             ...basicCols
           ]
 
-          if (this.tabs === 'first' || this.tabs === 'PASSED' ) {
-            cols = [ ...cols, terminaUniquelId,...noAllPrisonQueryAuthLeadingCols]
-          }
-          else if(this.tabs === 'PENDING' ) {
+          cols = [...cols, ...noAllPrisonQueryAuthLeadingCols]
 
-          }else{
-            cols=[...cols, ...noAllPrisonQueryAuthLeadingCols]
-          }
           return cols
         }
-        else{
-          this.operateQueryAuth=true
+
+        else {
+          this.operateQueryAuth = true
+
           return [
             ...basicCols,
             ...noAllPrisonQueryAuthLeadingCols
@@ -1243,6 +1238,7 @@
         }
       }
     },
+
     watch: {
       areaTabs() {
         this.submitSuccessParams = null

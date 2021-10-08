@@ -6,5 +6,8 @@ export default {
     getProcess: key => service.get(service.getBpmnUrl(`/processDefinition/showresource?key=${ key }`)),
 
     // 获取当前节点任务
-    getProcessTask: processInstanceId => service.get(service.getBpmnUrl(`/process/get-task?processInstanceId=${ processInstanceId }`))
+    getProcessTask: processInstanceId => service.get(service.getBpmnUrl(`/process/get-task?processInstanceId=${ processInstanceId }`)),
+
+    // 依据多个流程实例id获取是否为同一流程
+    getIsSameProcessDefinition: instanceIds => service.get(service.getBpmnUrl(`/processDefinition/getSameDefinitions?instanceIds=${ instanceIds }`))
 }

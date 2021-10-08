@@ -1,10 +1,16 @@
 export default {
   setFamiliesPaged: (state, paged) => {
-    const { content, totalCount } = paged
+    const {
+      content,
+      totalCount,
+      isCancel
+    } = paged
 
     state.familiesPaged.content = content
 
     state.familiesPaged.totalCount = totalCount
+
+    state.familiesPaged.isCancel = isCancel
   },
 
   setValidateFamiliesResult: (state, result) => {

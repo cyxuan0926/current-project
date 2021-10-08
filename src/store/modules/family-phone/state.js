@@ -1,5 +1,9 @@
 export default {
-  familiesPaged: { content: [], totalCount: 0 },
+  familiesPaged: {
+    content: [],
+    totalCount: 0,
+    isCancel: false
+  },
 
   validateFamiliesResult: {
     add_total: 0,

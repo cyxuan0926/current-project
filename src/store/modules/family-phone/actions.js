@@ -9,7 +9,13 @@ export default {
 
       const size = response ? response['size'] : 0
 
-      commit('setFamiliesPaged', { content: list, totalCount: size })
+      const isCancel = response ? response['isCancel'] : false
+
+      commit('setFamiliesPaged', {
+        content: list,
+        totalCount: size,
+        isCancel
+      })
 
       return true
     }
@@ -179,6 +185,32 @@ export default {
       if (!response) return
 
       return response
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async batchAuthFamilyPhone(_, params) {
+    try {
+      const response = await familyPhoneApi.batchAuthFamilyPhone(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async batchInvalidFamilyPhone(_, params) {
+    try {
+      const response = await familyPhoneApi.batchInvalidFamilyPhone(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
     }
     catch (err) {
       Promise.reject(err)

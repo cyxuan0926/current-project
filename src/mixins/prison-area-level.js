@@ -51,12 +51,20 @@ export default {
 
       if (childNode) this.clearSubPrisonArea(childNode, budingObject)
 
-      // 监区-用户权限
-      if (['prisonArea'].includes(key)) {
-        const { jailId, areaId } = budingObject
+      // 监区-用户权限（最底层用户权限）
+      // if (['prisonArea'].includes(key)) {
+      const {
+        jailId,
+        areaId,
+        layerId,
+        buildingId,
+        branchId
+      } = budingObject
 
-        await this.onGetPrisonAreaUsersData({ jailId, prisonConfigId: areaId }, budingObject)
-      }
+      const prisonConfigId = layerId || buildingId || branchId || areaId || ''
+
+      await this.onGetPrisonAreaUsersData({ jailId, prisonConfigId }, budingObject)
+      // }
 
       if (isLast) return
 
