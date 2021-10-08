@@ -1919,18 +1919,20 @@ export default {
           cancelButtonText: "取消",
           type: 'warning',
           closeOnClickModal: false,
-          callback: async () => {
-            const params = this.selectionData.reduce((accumulator, selection) => {
-              const { id } = selection
+          callback: async action => {
+            if (action === 'confirm') {
+              const params = this.selectionData.reduce((accumulator, selection) => {
+                const { id } = selection
 
-              accumulator['list'].push(id)
+                accumulator['list'].push(id)
 
-              return accumulator
-            }, { list: [] })
+                return accumulator
+              }, { list: [] })
 
-            const result = await this.batchInvalidFamilyPhone(params)
+              const result = await this.batchInvalidFamilyPhone(params)
 
-            if (result) await this.getDatas()
+              if (result) await this.getDatas()
+            }
           }
         })
       }
