@@ -2,10 +2,15 @@
   <el-row
     class="row-container"
     :gutter="0">
+     <m-excel-download
+      path="/download/newExportFindPage"
+      :params="filter"
+    />
     <m-search
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
+      
     <el-col :span="24">
       <m-table-new
         stripe
@@ -89,23 +94,23 @@ export default {
         {
           label: '未审核过期次数(次)',
           // prop: 'pendingExpiredTotal',
-          prop: 'expired',
+          prop: 'noAuthToExpired',
           minWidth: '8.2%'
         },
         {
           label: '未审核过期比例',
           // prop: 'pendingExpiredScale',
-          prop: 'expiredScale',
+          prop: 'noAuthToExpiredScale',
           minWidth: '8.2%'
         },
         {
           label: '审核通过未通话过期次数(次)',
-          prop: 'expiredTotal',
+          prop: 'authToExpired',
           minWidth: '9%'
         },
         {
           label: '审核通过未通话过期比例',
-          prop: 'expiredScale',
+          prop: 'authToExpiredScale',
           minWidth: '8.8%'
         },
         {
@@ -131,14 +136,9 @@ export default {
           minWidth: '8.2%'
         },
         {
-          label: '警官取消次数(次)',
+          label: '取消次数(次)',
           // prop: 'canceledTotal',
           prop: 'canceled',
-          minWidth: '8.2%'
-        },
-        {
-          label: '家属取消次数(次)',
-          prop: 'familyCanceledTotal',
           minWidth: '8.2%'
         }
       ],

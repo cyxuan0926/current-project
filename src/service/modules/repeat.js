@@ -33,8 +33,11 @@ export default {
   deleteRemoteSpecialConfig: params => {
     return service.post('/jails/special_configs/delete', params).then(res => res && res.code === 200)
   },
-  // 会见统计-监狱会见
+  // 会见统计-sh监区统计
   getPrisonReportList: params => {
+    return service.get('/report/newPrisonAreaReportPage', params).then(res => res && res.data)
+  },
+  getNewPrisonReportList: params => {
     return service.get('/report/newPrisonReportPage', params).then(res => res && res.data)
   },
   // 查询监区会见统计-监狱会见

@@ -5,6 +5,11 @@
       :path="excelDownloadPath"
       :params="filter"
     />
+      <m-excel-download
+      v-if="!isSuperAdmin"
+      path="/download/exportJailVideoPhone"
+      :params="filter"
+    />
 
     <m-search
       ref="search"
@@ -177,7 +182,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'getPrisonReportList',
+      'getNewPrisonReportList',
       'getPrisonReportListAll',
       'getPrisonReportDetail',
       'getPrisonReportDetailAll'
@@ -195,7 +200,7 @@ export default {
 
         if (this.isSuperAdmin) this.getPrisonReportListAll(params)
 
-        else this.getPrisonReportList(params)
+        else this.getNewPrisonReportList(params)
       } else {
         if (this.isSuperAdmin) this.getPrisonReportDetailAll(params)
 
