@@ -474,11 +474,15 @@
       @open="onOpenDialog"
       width="530px"
     >
-    <div  v-if="operationType==4" class="el-message-box__container" style="margin:24px 0 24px  71px;">
-      <div class="el-message-box__status el-icon-warning"></div>
-      <div class="el-message-box__message"><p> 提示：如果是转监，请使用转监功能，不要做离监操作！</p>
-      </div>
-      </div>
+      <template v-if="operationType === 4">
+        <div class="el-message-box__container" style="margin:24px 0 24px  71px;">
+          <div class="el-message-box__status el-icon-warning" />
+          <div class="el-message-box__message">
+            <p> 提示：如果是转监，请使用转监功能，不要做离监操作！</p>
+          </div>
+        </div>
+      </template>
+
       <m-form
         v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
@@ -699,7 +703,6 @@ export default {
       'notification',
       'notificationFamilies',
       'prisonConfigs',
-      'prisonConfigsMaxLevel',
       'jailPrisonAreas'
     ]),
 
@@ -986,27 +989,28 @@ export default {
               label: '原判刑期',
               clearable: true
             },
-             level: {
+
+            level: {
               type: 'select',
               label: '管教级别',
               options: [
-                      {
-                        label: '宽管级',
-                        value: '1'
-                      },
-                      {
-                        label: '普管级',
-                        value: '2'
-                      },
-                      {
-                        label: '考察级',
-                        value: '3'
-                      },
-                      {
-                        label: '严管级',
-                        value: '4'
-                      }
-                    ],
+                {
+                  label: '宽管级',
+                  value: '1'
+                },
+                {
+                  label: '普管级',
+                  value: '2'
+                },
+                {
+                  label: '考察级',
+                  value: '3'
+                },
+                {
+                  label: '严管级',
+                  value: '4'
+                }
+              ],
               props: genderProps,
               value: '2'
             },
@@ -1552,7 +1556,6 @@ export default {
       'deletePrisonerData',
       'addPrionser',
       'changePrisonAreaBatch',
-      'getPrisonAreaMaxLevel',
       'changePrisonJailOrBatch',
       'acceptPrisoners',
       'abortChangePrisoners',
@@ -1798,7 +1801,7 @@ export default {
       if (this.isPrisonAreaIdType) {
         await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
 
-        this.prisonConfigData = this.prisonConfigs.filter(val => val.name !== filterParams)
+        this.prisonConfigData = this.prisonConfigs.filter(val => !(val.id === filterParams && !(+val.hasChildren)))
       } else {
         // 转监
         // 省份的默认初始值
@@ -1827,10 +1830,10 @@ export default {
 
       this.prisoner = Object.assign({}, e)
 
-      if (this.isPrisonAreaIdType) {
-        await this.getPrisonAreaMaxLevel()
+      if ([2].includes(operationType)) {
+        const { prisonConfigId } = e
 
-        filterParams = this.prisonConfigsMaxLevel === 1 ? e.prisonArea : undefined
+        filterParams = prisonConfigId
       }
 
       await this.onInitPrisonConfigs(filterParams, operationType)
@@ -2016,7 +2019,11 @@ export default {
         await this.$store.dispatch(storesParams[prop]['actionName'], storesParams[prop]['paramsName'])
 
         // 数据默认值
-        let data = cloneDeep(this.$store.state.multiPrisonConfigs)
+        let data = this.isPrisonAreaIdType ? cloneDeep(this.$store.state.multiPrisonConfigs.filter(val => {
+          const { prisonConfigId } = this.prisoner
+
+          return !(val.id === prisonConfigId && !(+val.hasChildren))
+        })) : cloneDeep(this.$store.state.multiPrisonConfigs)
 
         // 筛选监狱数据
         if (prop === 'provincesId') data = cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
@@ -2268,7 +2275,9 @@ export default {
         (async () => {
           this.prisoner = {}
 
-          await this.onInitPrisonConfigs(undefined, operationType)
+          const params = [2, 6].includes(operationType) && this.selectPrisoners.length === 1 ? this.selectPrisoners[0]['prisonConfigId'] : undefined
+
+          await this.onInitPrisonConfigs(params, operationType)
         })()
       }
     },
