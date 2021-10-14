@@ -62,7 +62,7 @@ export default {
   },
   // 会见统计-监区会见
   getPrisonAreaReportList: params => {
-    return service.get('/report/prisonareaReportPage', params).then(res => res && res.data)
+    return service.get('/report/newPrisonAreaReportPage', params).then(res => res && res.data)
   },
   // 会见统计-监区会见-所有监狱
   getPrisonAreaReportListAll: params => {

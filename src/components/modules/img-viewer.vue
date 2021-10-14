@@ -1,6 +1,7 @@
 <template>
   <!-- <div> -->
   <!-- <p v-if="label">{{title}}</p> -->
+    
   <el-image
     :src="publicUrl || url"
     :fit="fit"

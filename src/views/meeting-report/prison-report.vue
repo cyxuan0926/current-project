@@ -176,6 +176,7 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
+    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
 
     await this.getDatas()
   },

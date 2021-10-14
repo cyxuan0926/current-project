@@ -92,9 +92,15 @@
       width="530px">
       <div class="infinite-list"  style="margin-left:10px;min-height:200px;width:100%">
         <p>请审核短信内容：</p>
-        <div v-html="toAuthorize.message" style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
-          {{ toAuthorize.message }}
-        </div>
+        <div style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
+          <p  v-if="toAuthorize.messageType!=2">{{ toAuthorize.message }}</p> 
+           <m-img-viewer
+            v-if="toAuthorize.messageType==2"
+            :url="toAuthorize.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+            :isLazy="false"
+            :toolbar="{ prev: 1, next: 1 }"
+            />
+          </div>
         </div>
       <div style="margin-top:10px"
         v-if="!show.agree && !show.disagree"
@@ -199,9 +205,16 @@
           <p class="textContent">时间：<span class="phone">{{messageContent.createTime}}</span></p>
         </div>
           <p class="textcontent">信息：</p>
-        <div  v-html="messageContent.message"  class="infinite-list messageText" >
-          {{ messageContent.message }}
+        <div   class="infinite-list messageText" >
+          <p v-if="messageContent.messageType!=2" v-html="messageContent.message" >{{ messageContent.message }}</p>
+           <m-img-viewer
+            v-if="messageContent.messageType==2"
+            :url="messageContent.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+            :isLazy="false"
+            :toolbar="{ prev: 1, next: 1 }"
+            />
         </div>
+        <p></p>
         <div>&nbsp;&nbsp;</div>
         <div>&nbsp;&nbsp;</div>
         <hr  class="messageNone"/>

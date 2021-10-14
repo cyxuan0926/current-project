@@ -220,12 +220,11 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-
     if (this.hasAllPrisonQueryAuth) {
       this.searchItems.prisonAreaId.getting = false
-
       await this.getDatas()
     } else {
+      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } })
 
       this.searchItems.prisonAreaId.options = this.jailPrisonAreas

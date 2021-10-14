@@ -147,6 +147,7 @@ export default {
   },
   mounted() {
     this.filter = Object.assign({}, this.filter, this.initFilter)
+    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
     this.getDatas()
   },
   methods: {
