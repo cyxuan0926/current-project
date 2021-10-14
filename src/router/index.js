@@ -86,12 +86,21 @@ const router = new Router({
 // 登录校验
 router.beforeEach((to, from, next) => {
   const isLogin = localStorage.getItem('accountInfo')
-
-  if (!to.meta.notLogin && !isLogin) {
-    next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+  if (isLogin) {
+    if (to.path.startsWith('/login')) {
+      next({ path: '/dashboard' })
+    }
+    else {
+      next()
+    }
   }
   else {
-    next()
+    if (to.meta.notLogin) {
+      next()
+    }
+    else {
+      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+    }
   }
 })
 
