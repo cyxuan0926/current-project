@@ -213,6 +213,12 @@ export default {
         const index = allCols.findIndex(col => col.label === '监区')
 
         this.$set(allCols[index], 'prop', 'prisonArea')
+      }else{
+        allCols.splice(1, 4)
+        this.searchItems.jailId.miss = true
+          this.searchItems.prisonAreaId.miss = true
+          this.searchItems.prisonerName.miss = true
+          this.searchItems.prisonerNumber.miss = true
       }
       return allCols
     }
