@@ -29,12 +29,13 @@
                     </template>
                     <template v-if="modalData.status == 1">
                         <div class="deli-video" v-if="!imgUrl">
-                            <img id="deliImg" alt="高拍仪" style="width: 506px; height: 380px">
+                            <img v-show="isDevOpen" id="deliImg" alt="高拍仪">
+                            <div v-show="!isDevOpen" class="tip">{{ !isDevSuccess ? '高拍仪连接失败，请检查设备重试' : '高拍仪连接中，请勿关闭窗口...' }}</div>
                         </div>
                         <m-img-viewer
                             v-else
                             style="width: 506px; height: 380px"
-                            :url="imgUrl"
+                            :url="`${ imgUrl }?token=${ token }`"
                             title="短信内容"
                             isRequired
                             :isLazy="false"
@@ -45,10 +46,13 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <template v-if="modalData.status == 1">
-                <el-button v-if="!imgUrl" type="primary" @click="handleCapture" :disabled="!isDevSuccess || isCapture" >拍 照</el-button>
-                <el-button v-else type="primary" @click="handleCancel">重新拍照</el-button>
+                <el-button v-if="!imgUrl" type="primary" @click="handleCapture" :disabled="!isDevSuccess || !isDevOpen || isCapture" >{{ isCapture ? '拍照中...' : '拍 照' }}</el-button>
+                <el-button v-if="imgUrl" type="primary" @click="handleCancel">重新拍照</el-button>
+                <el-button v-if="imgUrl" type="primary" @click="handleSmsSend">发 送</el-button>
             </template>
-            <el-button type="primary" @click="handleSmsSend">发 送</el-button>
+            <template v-else>
+                <el-button type="primary" @click="handleSmsSend">发 送</el-button>
+            </template>
             <el-button @click="handleClose">取 消</el-button>
         </span>
     </el-dialog>
@@ -57,6 +61,7 @@
 <script>
 import { toRefs, ref, reactive, watch, onMounted, onUnmounted } from '@vue/composition-api'
 import http from '@/service'
+import urls from '@/service/urls'
 import { smsSendTemplate } from '@/common/constants/const'
 import { Message } from 'element-ui'
 import highBeatMeter from './high-beat-meter.vue'
@@ -77,10 +82,12 @@ export default {
         const smsVisible = ref(false)
         const { value, modalData } = toRefs(props)
         const smsContent = ref('')
-        const imgUrl = ref('1')
+        const imgUrl = ref('')
         const deliDevSrc = ref('')
         const isCapture = ref(false)
         const isDevSuccess = ref(false)
+        const isDevOpen = ref(false)
+        const token = ref(urls.token)
         let deliIns = null
 
         // 创建得力高拍仪实例
@@ -89,17 +96,29 @@ export default {
                 // 高拍仪连接后回调
                 onCaptureWSMessage(b) {
                     if (smsVisible.value && !imgUrl.value) {
-                        // deliDevSrc.value = `data:image/png;base64,${ b }`
-                        document.getElementById("deliImg").src = `data:image/png;base64,${ b }`
+                        isDevOpen.value = true
+                        let deliImg = document.getElementById("deliImg")
+                        if (deliImg) {
+                            deliImg.src = `data:image/jpeg;base64,${ b }`
+                        }
                     }
                 },
                 // 高拍仪拍照回调
-                onCaptureEncodeBase64(re) {
-                    isCapture.value = false
-                    // imgUrl.value = deliDevSrc.value = `data:image/png;base64,${ re }`
-                    http.sendMessageFile({
-                        file: dataURLtoFile(`data:image/png;base64,${ re }`)
-                    })
+                async onCaptureEncodeBase64(re) {
+                    try {
+                        let { url } = await http.sendMessageFile({
+                           avatar: dataURLtoFile(`data:image/jpeg;base64,${ re }`, `sms-${ (Math.random() + '').replace('.','').substring(0, 8) }.jpg`)
+                        })
+                        imgUrl.value = url
+                        isCapture.value = false
+                    } catch (error) {
+                        Message.error('高拍仪拍照失败，请重试')
+                        isCapture.value = false
+                    }
+                },
+                // 打开高拍仪
+                onCaptureOpen(re) {
+                    // isDevOpen.value = re === 0
                 },
                 // 高拍仪连接成功
                 onWsopen() {
@@ -116,7 +135,7 @@ export default {
             if (val) {
                 imgUrl.value = ''
                 if (!isDevSuccess.value && modalData.value.status == 1) {
-                    Message.error('高拍仪连接失败，请重试')
+                    // Message.error('高拍仪连接失败，请重试')
                     deliIns.load()
                 }
             }
@@ -175,16 +194,6 @@ export default {
                     Message.error('请上传短信内容')
                     return
                 }
-                else {
-                    try {
-                       let { url } = await http.sendMessageFile({
-                           file: dataURLtoFile(imgUrl.value)
-                       })
-                        imgUrl.value = url
-                    } catch (error) {
-                        this.$message.error('上传短信内容失败，请重试')
-                    }
-                }
             }
             try {
                 let res = await http.sendMessage({
@@ -212,12 +221,15 @@ export default {
             smsVisible,
             smsContent,
             imgUrl,
+            token,
             handleSmsSend,
             handleClose,
             deliDevSrc,
             handleCapture,
+            handleCancel,
             isCapture,
-            isDevSuccess
+            isDevSuccess,
+            isDevOpen
         }
     }
 }
@@ -247,6 +259,25 @@ export default {
             width: 506px;
             height: 380px;
             background-color: #F5F7FA;
+            position: relative;
+
+            img {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .tip {
+                position: absolute;
+                left: 0;
+                top: 45%;
+                width: 100%;
+                text-align: center;
+                color: #999;
+            }
+
         }
     }
 </style>

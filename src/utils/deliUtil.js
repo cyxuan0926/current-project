@@ -84,9 +84,14 @@ export default class {
     // 响应ws请求
     handleWSMessage(str) {
         let { FuncName, result } = JSON.parse(str)
+        console.log(str)
         // 初始化
         if (FuncName === 'camInitCameraLib') {
             this.openDev()
+        }
+        // 打开设备
+        else if (FuncName === 'camOpenDev') {
+            this.options.onCaptureOpen(result)
         }
         // 拍照base64
         else if (FuncName === 'CaptureEncodeBase64') {
