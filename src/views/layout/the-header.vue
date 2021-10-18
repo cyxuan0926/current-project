@@ -161,8 +161,8 @@ export default {
         type: 'warning'
       }).then(() => {
         this.closeWebsocket()
-        this.$router.replace('/login')
         logout()
+        this.$router.replace('/login')
       }).catch(() =>{})
     },
     onSecurityQuestionsChange(e, field) {
