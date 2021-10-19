@@ -78,14 +78,6 @@ export default {
         //     maxMonthRange: 24
         //   }
         // },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options: [],
-          filterable: true,
-          belong: { value: 'id', label: 'name' },
-          value: ''
-        },
 
         reportRange: {
           type: 'dateRange',
