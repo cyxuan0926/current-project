@@ -5,6 +5,11 @@
       :path="excelDownloadPath"
       :params="filter"
     />
+      <m-excel-download
+      v-if="!isSuperAdmin"
+      path="/download/exportJailVideoPhone"
+      :params="filter"
+    />
 
     <m-search
       ref="search"
@@ -73,14 +78,6 @@ export default {
         //     maxMonthRange: 24
         //   }
         // },
-        prisonArea: {
-          type: 'select',
-          label: '监区',
-          options: [],
-          filterable: true,
-          belong: { value: 'id', label: 'name' },
-          value: ''
-        },
 
         reportRange: {
           type: 'dateRange',
@@ -171,13 +168,14 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
+    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
 
     await this.getDatas()
   },
 
   methods: {
     ...mapActions([
-      'getPrisonReportList',
+      'getNewPrisonReportList',
       'getPrisonReportListAll',
       'getPrisonReportDetail',
       'getPrisonReportDetailAll'
@@ -195,7 +193,7 @@ export default {
 
         if (this.isSuperAdmin) this.getPrisonReportListAll(params)
 
-        else this.getPrisonReportList(params)
+        else this.getNewPrisonReportList(params)
       } else {
         if (this.isSuperAdmin) this.getPrisonReportDetailAll(params)
 

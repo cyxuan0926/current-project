@@ -196,7 +196,7 @@ export default {
   },
   // 监狱数据查询-监狱会见数据统计表-列表
   getMeetingStatics: params => {
-    return service.get('/report/meetings', params)
+    return service.get('/report/prisonCallData', params)
   },
   // 监狱数据查询-外交官会见统计数据
   getDiplomatistDetail: params => {

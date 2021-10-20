@@ -106,6 +106,7 @@ let check = [{
     name: 'prison-report-check',
     // component: helper.loadView('meeting-report/prison-report'),
     component: 'meeting-report/prison-report',
+    props: { hasPrisonAreaAuth: true },
     // component: resolve => require(['@/views/meeting-report/prison-report'], resolve),
     meta: { permission: 'visit.visit-statistic.prison.search', breadcrumbName: '监狱统计' }
   }, {
