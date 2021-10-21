@@ -29,8 +29,8 @@
                     </template>
                     <template v-if="modalData.status == 1">
                         <div class="deli-video" v-if="!imgUrl">
-                            <img v-show="isDevOpen" id="deliImg" alt="高拍仪">
-                            <div v-show="!isDevOpen" class="tip">{{ !isDevSuccess ? '高拍仪连接失败，请检查设备重试' : '高拍仪连接中，请勿关闭窗口...' }}</div>
+                            <img v-show="isDevOpened" id="deliImg" alt="高拍仪">
+                            <div v-show="!isDevOpened" class="tip">{{ !isDevSuccess ? '高拍仪连接失败，请检查设备重试' : '高拍仪连接成功' }}</div>
                         </div>
                         <m-img-viewer
                             v-else
@@ -46,7 +46,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <template v-if="modalData.status == 1">
-                <el-button v-if="!imgUrl" type="primary" @click="handleCapture" :disabled="!isDevSuccess || !isDevOpen || isCapture" >{{ isCapture ? '拍照中...' : '拍 照' }}</el-button>
+                <el-button v-if="!imgUrl" type="primary" @click="handleCapture" :disabled="!isDevSuccess || !isDevOpened || isCapture" >{{ isCapture ? '拍照中...' : '拍 照' }}</el-button>
                 <el-button v-if="imgUrl" type="primary" @click="handleCancel">重新拍照</el-button>
                 <el-button v-if="imgUrl" type="primary" @click="handleSmsSend">发 送</el-button>
             </template>
@@ -64,14 +64,10 @@ import http from '@/service'
 import urls from '@/service/urls'
 import { smsSendTemplate } from '@/common/constants/const'
 import { Message } from 'element-ui'
-import highBeatMeter from './high-beat-meter.vue'
 import Deli from '@/utils/deliUtil'
 import { dataURLtoFile } from '@/utils/helper'
 
 export default {
-    components: {
-        highBeatMeter
-    },
     props: {
         value: Boolean,
         input: Function,
@@ -86,7 +82,7 @@ export default {
         const deliDevSrc = ref('')
         const isCapture = ref(false)
         const isDevSuccess = ref(false)
-        const isDevOpen = ref(false)
+        const isDevOpened = ref(false)
         const token = ref(urls.token)
         let deliIns = null
 
@@ -96,7 +92,7 @@ export default {
                 // 高拍仪连接后回调
                 onCaptureWSMessage(b) {
                     if (smsVisible.value && !imgUrl.value) {
-                        isDevOpen.value = true
+                        isDevOpened.value = true
                         let deliImg = document.getElementById("deliImg")
                         if (deliImg) {
                             deliImg.src = `data:image/jpeg;base64,${ b }`
@@ -126,6 +122,7 @@ export default {
                 },
                 // 高拍仪连接失败
                 onWsError() {
+                    isDevOpened.value = false
                     isDevSuccess.value = false
                 }
             })
@@ -134,6 +131,10 @@ export default {
         watch(value, val => {
             if (val) {
                 imgUrl.value = ''
+                let deliImg = document.getElementById("deliImg")
+                if (deliImg) {
+                    deliImg.src = ''
+                }
                 if (!isDevSuccess.value && modalData.value.status == 1) {
                     // Message.error('高拍仪连接失败，请重试')
                     deliIns.load()
@@ -229,7 +230,7 @@ export default {
             handleCancel,
             isCapture,
             isDevSuccess,
-            isDevOpen
+            isDevOpened
         }
     }
 }

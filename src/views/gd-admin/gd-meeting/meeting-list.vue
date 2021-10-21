@@ -146,8 +146,8 @@ export default {
     }
   },
   mounted() {
-    this.getDatas()
     this.filter = Object.assign({}, this.filter, this.initFilter)
+    this.getDatas()
   },
   methods: {
      async getDatas() {
