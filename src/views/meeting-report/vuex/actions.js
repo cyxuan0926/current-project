@@ -4,6 +4,9 @@ export default {
   getPrisonReportList: ({ commit }, params) => {
     http.getPrisonReportList(params).then(res => res && commit('getPrisonReportList', res))
   },
+  getNewPrisonReportList: ({ commit }, params) => {
+    http.getNewPrisonReportList(params).then(res => res && commit('getPrisonReportList', res))
+  },
   getPrisonReportListAll: ({ commit }, params) => {
     http.getPrisonReportListAll(params).then(res => res && commit('getPrisonReportList', res))
   },

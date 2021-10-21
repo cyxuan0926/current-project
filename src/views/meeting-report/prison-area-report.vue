@@ -5,6 +5,11 @@
       path="/download/newExportPrisonStatical"
       :params="filter"
     />
+    <m-excel-download
+      v-if="!hasAllPrisonQueryAuth"
+      path="/download/exportPrisonAreaReport"
+      :params="filter"
+    />
 
     <m-search
       ref="search"
@@ -14,7 +19,7 @@
     />
 
     <el-col :span="24">
-      <!--  show-summary :summary-method="summaryMethod" -->
+      <!--  show-summary :summary-method="summaryMethod" --> 
       <m-table-new
         stripe
         :data="prisonAreaReportList.contents"
@@ -31,6 +36,7 @@
         <template #canceled="{ row }">{{ row.canceled || 0 }} 次</template>
 
         <template #expired="{ row }">{{ row.expired || 0 }} 次</template>
+        <template #authToExpired="{ row }">{{ row.authToExpired || 0 }} 次</template>
 
         <template #denied="{ row }">{{ row.denied || 0 }} 次</template>
 
@@ -152,58 +158,53 @@ export default {
         },
 
         {
-          label: '申请次数',
+          label: '申请次数（次）',
           prop: 'num',
           slotName: 'num'
         },
 
         {
-          label: '未授权次数',
+          label: '未授权次数（次）',
           prop: 'pending',
           slotName: 'pending'
         },
 
         {
-          label: '待通话次数',
+          label: '待通话次数（次）',
           prop: 'passed',
           slotName: 'passed'
         },
-
         {
-          label: '已完成次数',
-          prop: 'finished',
-          slotName: 'finished'
-        },
-
-        {
-          label: '已过期次数',
-          prop: 'expired',
-          slotName: 'expired'
-        },
-
-        {
-          label: '已拒绝/撤回次数',
+          label: '已拒绝/撤回次数（次）',
           prop: 'denied',
           slotName: 'denied'
         },
-
         {
-          label: '已取消次数',
-          prop: 'canceled',
-          slotName: 'canceled'
+          label: '未审核过期次数（次）',
+          prop: 'expired',
+          slotName: 'expired'
         },
-
         {
-          label: '已结束次数',
-          prop: 'ended',
-          slotName: 'ended'
+          label: '审核通过未通话过期次数(次)',
+          prop: 'authToExpired',
+          slotName: 'authToExpired'
         },
-
         {
-          label: '通话中次数',
+          label: '已完成次数（次）',
+          prop: 'finished',
+          slotName: 'finished'
+        },
+        {
+          label: '通话结束次数（次）',
           prop: 'meetingOn',
           slotName: 'meetingOn'
+        },
+         {
+          label: '取消次数（次）',
+          prop: 'canceled',
+          slotName: 'canceled'
         }
+
       ]
 
       if (!this.hasAllPrisonQueryAuth) {
@@ -212,6 +213,12 @@ export default {
         const index = allCols.findIndex(col => col.label === '监区')
 
         this.$set(allCols[index], 'prop', 'prisonArea')
+      }else{
+        allCols.splice(1, 4)
+        this.searchItems.jailId.miss = true
+          this.searchItems.prisonAreaId.miss = true
+          this.searchItems.prisonerName.miss = true
+          this.searchItems.prisonerNumber.miss = true
       }
       return allCols
     }
@@ -219,12 +226,11 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-
     if (this.hasAllPrisonQueryAuth) {
       this.searchItems.prisonAreaId.getting = false
-
       await this.getDatas()
     } else {
+      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } })
 
       this.searchItems.prisonAreaId.options = this.jailPrisonAreas

@@ -2,19 +2,23 @@
   <el-row
     class="row-container"
     :gutter="0">
+     <m-excel-download
+      path="/download/exportJailStatical"
+      :params="filter"
+    />
     <m-search
       ref="search"
       :items="searchItems"
       @search="onSearch"
     >
-      <el-button 
+      <!-- <el-button 
         class="m-excel-download"
         type="primary"
         slot="append"
         :loading="downloading"
         @click="onDownloadExcel">
         导出execl
-      </el-button>
+      </el-button> -->
     </m-search>
     <el-col :span="24">
       <m-table-new
@@ -76,12 +80,12 @@ export default {
         },
         {
           label: '申请次数(次)',
-          prop: 'cnt',
+          prop: 'num',
           minWidth: '8.2%'
         },
         {
           label: '未授权次数(次)',
-          prop: 'pend',
+          prop: 'pending',
           minWidth: '8.2%'
         },
         {
@@ -96,7 +100,7 @@ export default {
         },
         {
           label: '审核被拒绝比例',
-          prop: 'deniedPercentShowValue',
+          prop: 'deniedScale',
           minWidth: '8.2%'
         },
         {
@@ -106,17 +110,17 @@ export default {
         },
         {
           label: '未审核过期比例',
-          prop: 'noAuthToExpiredPercentShowValue',
+          prop: 'noAuthToExpiredScale',
           minWidth: '8.2%'
         },
         {
           label: '审核通过未通话过期次数(次)',
-          prop: 'authedToExpired',
+          prop: 'authToExpired',
           minWidth: '9%'
         },
         {
           label: '审核通过未通话过期比例',
-          prop: 'authedToExpiredPercentShowValue',
+          prop: 'authToExpiredScale',
           minWidth: '8.8%'
         },
         {
@@ -126,7 +130,7 @@ export default {
         },
         {
           label: '通话完成比例',
-          prop: 'finishedPercentShowValue',
+          prop: 'finishedScale',
           minWidth: '8.2%'
         },
         {
@@ -136,17 +140,17 @@ export default {
         },
         {
           label: '通话结束比例',
-          prop: 'endedPercent',
+          prop: 'endedScale',
           minWidth: '8.2%'
         },
         {
-          label: '警官取消次数(次)',
-          prop: 'pollceCanceled',
+          label: '取消次数(次)',
+          prop: 'canceled',
           minWidth: '8.8%'
         },
         {
-          label: '家属取消次数',
-          prop: 'famillesCanceled',
+          label: '取消次数比例',
+          prop: 'canceledScale',
           minWidth: '8.2%'
         },
       ],
@@ -179,48 +183,35 @@ export default {
         this.downloading = false
       }, 300)
     },
-
-    filterBarData() {
-      const count = this.meetingStatistics.length > 10 ? 10 : this.meetingStatistics.length
-      this.barData = this.meetingStatistics.slice(0, count).map(data => [data.jailName, data.cnt])
-      this.barXAxisData = this.meetingStatistics.slice(0, count).map(data => data.jailName)
-      this.loading = false
-    },
-
-
     async onSearch() {
       const { rows } = this.pagination
       this.loading = true
       this.$refs.pagination.currentPage = 1
       this.pagination = Object.assign({}, { page: 1, rows })
       await this.getDatas()
-      this.filterBarData()
     },
 
     async getDatas() {
       const { page, rows } = this.pagination
 
-      const total = await this.getMeetingStatics({
+      const { total, report} = await this.getMeetingStatics({
         ...this.filter,
         ...this.pagination
       })
-
       this.total = total ? total + 1 : 0
 
-      this.tableDatas = this.meetingStatistics.slice(0)
-
+      this.tableDatas = report
       if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
     }
   },
 
-  async mounted() {
+ mounted() {
     this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
 
     this.$refs.search.onGetFilter()
 
-    await this.getDatas()
+    this.getDatas()
 
-    this.filterBarData()
   },
 
   computed: {

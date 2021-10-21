@@ -1126,6 +1126,11 @@
               prop: 'prisonerName',
               ...$likeName
             },
+            {
+              label: '罪名',
+              prop: 'crimes',
+              showOverflowTooltip: true
+            },
              {
               label: '管教级别',
               slotName: 'level',
