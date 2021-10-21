@@ -56,7 +56,6 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 const endDate = Moment().format('YYYY-MM-DD')
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
-const jailId = JSON.parse(localStorage.getItem('user')).jailId
 
 export default {
   mixins: [prisonFilterCreator],
@@ -102,7 +101,6 @@ export default {
           miss: true
         }
       },
-
       tabOptions: [
         {
           label: '监狱可视电话统计',
@@ -118,8 +116,7 @@ export default {
 
       initFilter: { // 默认查询上一个月的，筛选框初始化
         startDate,
-        endDate,
-        jailId
+        endDate
       }
     }
   },
@@ -170,7 +167,6 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-
     await this.getDatas()
   },
 
@@ -183,11 +179,9 @@ export default {
     ]),
 
     getDatas() {
-      const params = { ...this.filter, ...this.initFilter, ...this.pagination }
-      this.filter=Object.assign({}, this.filter, this.initFilter,...this.pagination)
+      const params = { ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId}
       if (this.activeComponentName === 'profile') {
         const { startDate, endDate } = this.filter
-
         if (startDate) params['startDate'] = `${ startDate } 00:00:00`
 
         if (endDate) params['endDate'] = `${ endDate } 23:59:59`
@@ -203,6 +197,7 @@ export default {
     },
 
     onSearch() {
+      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       this.$refs.pagination.handleCurrentChange(1)
     }
   }
