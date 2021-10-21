@@ -101,7 +101,6 @@ export default {
           miss: true
         }
       },
-
       tabOptions: [
         {
           label: '监狱可视电话统计',
@@ -115,7 +114,7 @@ export default {
         }
       ],
 
-      filterInit: { // 默认查询上一个月的，筛选框初始化
+      initFilter: { // 默认查询上一个月的，筛选框初始化
         startDate,
         endDate
       }
@@ -168,8 +167,6 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
-
     await this.getDatas()
   },
 
@@ -182,11 +179,9 @@ export default {
     ]),
 
     getDatas() {
-      const params = { ...this.filter, ...this.pagination }
-
+      const params = { ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId}
       if (this.activeComponentName === 'profile') {
         const { startDate, endDate } = this.filter
-
         if (startDate) params['startDate'] = `${ startDate } 00:00:00`
 
         if (endDate) params['endDate'] = `${ endDate } 23:59:59`
@@ -202,6 +197,7 @@ export default {
     },
 
     onSearch() {
+      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       this.$refs.pagination.handleCurrentChange(1)
     }
   }

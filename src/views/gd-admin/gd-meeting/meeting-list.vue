@@ -39,7 +39,7 @@ export default {
   data() {
      const endDate = Moment().format('YYYY-MM-DD')
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
-    return {
+   return {
       initFilter: { // 默认查询上一个月的，筛选框初始化
         startDate,
         endDate
@@ -146,16 +146,16 @@ export default {
     }
   },
   mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
     this.getDatas()
+    this.filter = Object.assign({}, this.filter, this.initFilter)
   },
   methods: {
      async getDatas() {
-      let res = await http.getPrisonReportListJails({ ...this.filter, ...this.pagination })
+      let res = await http.getPrisonReportListJails({ ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId})
       this.tabledata=res
     },
     onSearch() {
+      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       this.$refs.pagination.handleCurrentChange(1)
     }
   }
