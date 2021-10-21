@@ -56,6 +56,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 const endDate = Moment().format('YYYY-MM-DD')
 
 const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
+const jailId = JSON.parse(localStorage.getItem('user')).jailId
 
 export default {
   mixins: [prisonFilterCreator],
@@ -115,9 +116,10 @@ export default {
         }
       ],
 
-      filterInit: { // 默认查询上一个月的，筛选框初始化
+      initFilter: { // 默认查询上一个月的，筛选框初始化
         startDate,
-        endDate
+        endDate,
+        jailId
       }
     }
   },
@@ -168,7 +170,6 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-    this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
 
     await this.getDatas()
   },
@@ -182,8 +183,8 @@ export default {
     ]),
 
     getDatas() {
-      const params = { ...this.filter, ...this.pagination }
-
+      const params = { ...this.filter, ...this.initFilter, ...this.pagination }
+      this.filter=Object.assign({}, this.filter, this.initFilter,...this.pagination)
       if (this.activeComponentName === 'profile') {
         const { startDate, endDate } = this.filter
 
