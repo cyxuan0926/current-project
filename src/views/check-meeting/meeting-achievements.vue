@@ -19,7 +19,7 @@
       stripe 
       :data="meetingCostSaving.meetingDistances"
       :cols="tableCols">
-      <template #index="{ row, $index }">
+      <template #index="{ $index }">
         <span v-if="$index ==  meetingCostSaving.meetingDistances.length - 1">总计：</span>
         <span v-else>{{ $index + 1 + (pagination.page - 1) * pagination.rows }}</span>
       </template>  
