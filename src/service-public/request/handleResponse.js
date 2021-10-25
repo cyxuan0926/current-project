@@ -102,11 +102,15 @@ const responseHandlers = {
   },
   // 未授权
   401: res => {
-    tip('请求未授权')
+    const { url } = res.config
 
-    if (router.currentRoute.path !== '/login') {
-      logout()
-      router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+    if (!url.includes('image-server')) {
+      tip('请求未授权')
+
+      if (router.currentRoute.path !== '/login') {
+        logout()
+        router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
+      }
     }
 
     return false

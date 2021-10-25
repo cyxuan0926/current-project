@@ -295,6 +295,12 @@
               <span class="family-name">审核时间</span>
               <span class="family-nameDetail">{{item.createTime}}</span>
             </p>
+            <p class="detail-message-family" v-if="item.checkState &&index==toShow.logs.length-1">
+              <span class="family-name">审核状态</span>
+              <span class="family-nameDetail" v-if="item.checkState==1">已通过</span>
+              <span class="family-nameDetail" v-if="item.checkState==2">已拒绝</span>
+              <span class="family-nameDetail" v-if="item.checkState==3">已提交{{item.nextCheckRole}}审核</span>
+            </p>
           </div>
           <div class="detail-content">
             <p class="detail-message-family" >

@@ -333,13 +333,13 @@
                     <template v-if="item.logType === 1">
                       <span class="family-name audit-label label">审核员账号</span>
 
-                      <span class="family-nameDetail audit-value">{{ item['createRole'] }}</span>
+                      <span class="family-nameDetail audit-value">{{ item['createUser'] }}</span>
                     </template>
 
                     <template v-else>
                       <span class="family-name audit-label label">操作人姓名</span>
 
-                      <span class="family-nameDetail audit-value">{{ item['createUser'] }}</span>
+                      <span class="family-nameDetail audit-value">{{ item['createName'] }}</span>
                     </template>
                   </p>
 
@@ -387,7 +387,7 @@
                     <template v-if="item.logType === 1">
                       <span class="family-name audit-time-label">审核人姓名</span>
 
-                      <span class="family-nameDetail audit-time-value">{{ item['createUser'] }}</span>
+                      <span class="family-nameDetail audit-time-value">{{ item['createName'] }}</span>
                     </template>
 
                     <template v-else>
