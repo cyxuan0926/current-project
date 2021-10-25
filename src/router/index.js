@@ -88,7 +88,7 @@ router.beforeEach((to, from, next) => {
   const isLogin = localStorage.getItem('accountInfo')
   if (isLogin) {
     if (to.path.startsWith('/login')) {
-      next({ path: '/dashboard' })
+      next({ path: '/dashboard', replace: true })
     }
     else {
       next()
