@@ -17,6 +17,16 @@ export default {
   },
   resetState: (_, params) => {
     if (params === 'logout') {
+      store.commit('account/setAccountInfo', {})
+
+      store.commit('account/setRolesList', [])
+
+      store.commit('account/setAuthorities', [])
+
+      store.commit('account/setMenus', [])
+
+      store.commit('account/setPublicUserInfo', {})
+
       Object.keys(store.state).forEach(key => {
         if (store.state[key] && store.state[key].contents && store.state[key].contents.length) store.state[key] = { contents: [], total: 0 }
       })

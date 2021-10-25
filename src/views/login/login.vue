@@ -31,11 +31,11 @@
 
           <el-form-item prop="code">
             <el-input
-                clearable
-                v-model.trim="formData.code"
-                :maxlength="4"
-                placeholder="请输入验证码">
-                <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
+              clearable
+              v-model.trim="formData.code"
+              :maxlength="4"
+              placeholder="请输入验证码">
+              <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
             </el-input>
         </el-form-item>
 
@@ -221,17 +221,17 @@ export default {
 
     // 获取验证码倒计时
     setSmsCountdown() {
-        if (!this.smsInterval) {
-            this.smsInterval = setInterval(() => {
-                this.smsCountdown--
-                if (!this.smsCountdown) {
-                    this.smsCountdown = 60
-                    this.isGetSmscode = false
-                    clearInterval(this.smsInterval)
-                    this.smsInterval = null
-                }
-            }, 1000)
-        }
+      if (!this.smsInterval) {
+        this.smsInterval = setInterval(() => {
+          this.smsCountdown--
+          if (!this.smsCountdown) {
+            this.smsCountdown = 60
+            this.isGetSmscode = false
+            clearInterval(this.smsInterval)
+            this.smsInterval = null
+          }
+        }, 1000)
+      }
     },
 
     // 获取验证码
