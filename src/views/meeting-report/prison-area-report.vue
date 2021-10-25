@@ -214,7 +214,7 @@ export default {
 
         this.$set(allCols[index], 'prop', 'prisonArea')
       }else{
-        allCols.splice(1, 4)
+        allCols.splice(2, 4)
         this.searchItems.jailId.miss = true
           this.searchItems.prisonAreaId.miss = true
           this.searchItems.prisonerName.miss = true
