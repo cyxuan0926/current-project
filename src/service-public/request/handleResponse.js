@@ -107,10 +107,9 @@ const responseHandlers = {
     if (!url.includes('image-server')) {
       tip('请求未授权')
 
-      if (router.currentRoute.path !== '/login') {
-        logout()
-        router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
-      }
+      logout()
+
+      if (router.currentRoute.path !== '/login') router.push({ path: '/login', query: { redirect: router.currentRoute.fullPath } })
     }
 
     return false

@@ -346,7 +346,9 @@
                   <p :class="[
                     'detail-message-family',
                     'detail-advices',
-                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                    { 'item-no-bottom': 
+                      index + 1 === multistageRecordsValues.length &&
+                      !((item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
                   ]">
                     <template v-if="item.logType === 1">
                       <template v-if="[1, 2, 3].includes(item.checkState)">
@@ -369,16 +371,22 @@
                     </template>
                   </p>
 
-                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                  <p v-if="(item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))" :class="
                     [
                       'detail-message-family',
-                      {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
+                      {'item-no-bottom': index + 1 === multistageRecordsValues.length },
                       'detail-audit'
                     ]"
                   >
                     <span class="family-name audit-label label">审核状态</span>
 
-                    <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
+                    <template v-if="item['checkState'] === 3 && index === multistageRecordsValues.length - 1">
+                      <span class="family-nameDetail audit-value">提交{{ item['nextCheckRole'] }}审核</span>
+                    </template>
+
+                    <template v-else>
+                      <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
+                    </template>
                   </p>
                 </div>
 
@@ -400,7 +408,9 @@
                   <p :class="[
                     'detail-message-family',
                     'detail-status',
-                    { 'item-no-bottom': index + 1 === multistageRecordsValues.length && !(item.logType === 1 && [1, 2].includes(item.checkState)) }
+                    { 'item-no-bottom':
+                      index + 1 === multistageRecordsValues.length &&
+                      !((item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
                   ]">
                     <template v-if="item.logType === 1">
                       <template v-if="[1, 2, 3].includes(item.checkState)">
@@ -412,7 +422,7 @@
                       <template v-else>
                         <span class="family-name status-label">审核状态</span>
 
-                        <span class="family-nameDetail status-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
+                        <span class="family-nameDetail audit-value">{{ item['checkState'] | familyPhoneDetailTypes }}</span>
                       </template>
                     </template>
 
@@ -423,10 +433,10 @@
                     </template>
                   </p>
 
-                  <p v-if="item.logType === 1 && [1, 2].includes(item.checkState)" :class="
+                  <p v-if="(item.logType === 1 && [1, 2].includes(item.checkState)) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length)" :class="
                     [
                       'detail-message-family',
-                      {'item-no-bottom': index + 1 ===multistageRecordsValues.length },
+                      {'item-no-bottom': index + 1 === multistageRecordsValues.length },
                       'detail-advices',
                       'detail-logType_one'
                     ]"
