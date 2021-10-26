@@ -25,24 +25,7 @@
         :data="prisonAreaReportList.contents"
         :cols="tableCols"
       >
-        <template #num="{ row }">{{ row.num || 0 }} 次</template>
-
-        <template #pending="{ row }">{{ row.pending || 0 }} 次</template>
-
-        <template #passed="{ row }"> {{ row.passed || 0 }} 次</template>
-
-        <template #finished="{ row }">{{ row.finished || 0 }} 次</template>
-
-        <template #canceled="{ row }">{{ row.canceled || 0 }} 次</template>
-
-        <template #expired="{ row }">{{ row.expired || 0 }} 次</template>
-        <template #authToExpired="{ row }">{{ row.authToExpired || 0 }} 次</template>
-
-        <template #denied="{ row }">{{ row.denied || 0 }} 次</template>
-
-        <template #meetingOn="{ row }"> {{ row.meetingOn || 0 }} 次</template>
-
-        <template #ended="{ row }"> {{ row.ended || 0 }} 次</template>
+       
       </m-table-new>
     </el-col>
 
@@ -130,11 +113,13 @@ export default {
       let allCols = [
         {
           label: '省份',
+          minWidth: '11%',
           prop: 'provinceName'
         },
 
         {
           label: '监狱名称',
+          minWidth: '11%',
           prop: 'jailName',
           showOverflowTooltip: true
         },
@@ -150,59 +135,89 @@ export default {
           prop: 'prisonerNumber',
           ...$likePrisonerNumber
         },
-
         {
           label: '监区',
           prop: 'prisonArea',
           showOverflowTooltip: true
         },
-
         {
-          label: '申请次数（次）',
+          label: '申请次数(次)',
+          // prop: 'total',
           prop: 'num',
-          slotName: 'num'
+          minWidth: '8.2%'
         },
-
         {
-          label: '未授权次数（次）',
+          label: '未授权次数(次)',
+          // prop: 'unPendTotal',
           prop: 'pending',
-          slotName: 'pending'
+          minWidth: '8.2%'
         },
-
         {
-          label: '待通话次数（次）',
+          label: '待通话次数(次)',
+          // prop: 'passedTotal',
           prop: 'passed',
-          slotName: 'passed'
+          minWidth: '8.2%'
         },
         {
-          label: '已拒绝/撤回次数（次）',
+          label: '审核被拒绝次数(次)',
+          // prop: 'deniedTotal',
           prop: 'denied',
-          slotName: 'denied'
+          minWidth: '8.2%'
         },
         {
-          label: '未审核过期次数（次）',
-          prop: 'expired',
-          slotName: 'expired'
+          label: '审核被拒绝比例',
+          prop: 'deniedScale',
+          minWidth: '8.2%'
+        },
+        {
+          label: '未审核过期次数(次)',
+          // prop: 'pendingExpiredTotal',
+          prop: 'noAuthToExpired',
+          minWidth: '8.2%'
+        },
+        {
+          label: '未审核过期比例',
+          // prop: 'pendingExpiredScale',
+          prop: 'noAuthToExpiredScale',
+          minWidth: '8.2%'
         },
         {
           label: '审核通过未通话过期次数(次)',
           prop: 'authToExpired',
-          slotName: 'authToExpired'
+          minWidth: '9%'
         },
         {
-          label: '已完成次数（次）',
+          label: '审核通过未通话过期比例',
+          prop: 'authToExpiredScale',
+          minWidth: '8.8%'
+        },
+        {
+          label: '通话完成次数(次)',
+          // prop: 'finishedTotal',
           prop: 'finished',
-          slotName: 'finished'
+          minWidth: '8.2%'
         },
         {
-          label: '通话结束次数（次）',
-          prop: 'meetingOn',
-          slotName: 'meetingOn'
+          label: '通话完成比例',
+          prop: 'finishedScale',
+          minWidth: '8.2%'
         },
-         {
-          label: '取消次数（次）',
+        {
+          label: '通话结束次数(次)',
+          // prop: 'endedTotal',
+          prop: 'ended',
+          minWidth: '8.2%'
+        },
+        {
+          label: '通话结束比例',
+          prop: 'endedScale',
+          minWidth: '8.2%'
+        },
+        {
+          label: '取消次数(次)',
+          // prop: 'canceledTotal',
           prop: 'canceled',
-          slotName: 'canceled'
+          minWidth: '8.2%'
         }
 
       ]
