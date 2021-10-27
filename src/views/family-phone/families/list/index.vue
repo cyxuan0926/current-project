@@ -348,7 +348,7 @@
                     'detail-advices',
                     { 'item-no-bottom': 
                       index + 1 === multistageRecordsValues.length &&
-                      !((item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
+                      !(item.logType === 1 && ([1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
                   ]">
                     <template v-if="item.logType === 1">
                       <template v-if="[1, 2, 3].includes(item.checkState)">
@@ -371,7 +371,7 @@
                     </template>
                   </p>
 
-                  <p v-if="(item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))" :class="
+                  <p v-if="item.logType === 1 && ([1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))" :class="
                     [
                       'detail-message-family',
                       {'item-no-bottom': index + 1 === multistageRecordsValues.length },
@@ -410,7 +410,7 @@
                     'detail-status',
                     { 'item-no-bottom':
                       index + 1 === multistageRecordsValues.length &&
-                      !((item.logType === 1 && [1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
+                      !(item.logType === 1 && ([1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))) }
                   ]">
                     <template v-if="item.logType === 1">
                       <template v-if="[1, 2, 3].includes(item.checkState)">
@@ -433,7 +433,7 @@
                     </template>
                   </p>
 
-                  <p v-if="(item.logType === 1 && [1, 2].includes(item.checkState)) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length)" :class="
+                  <p v-if="item.logType === 1 && ([1, 2].includes(item.checkState) || ([3].includes(item.checkState) && index + 1 === multistageRecordsValues.length))" :class="
                     [
                       'detail-message-family',
                       {'item-no-bottom': index + 1 === multistageRecordsValues.length },
