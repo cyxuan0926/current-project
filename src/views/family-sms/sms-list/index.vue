@@ -1,37 +1,37 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       :items="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
-      @search="onSearch" >
+      @search="onSearch"
+    >
+      <template #append>
         <el-button
-        slot="append"
           class="m-excel-download"
           type="primary"
-          @click="onDownloadExcel()"
-        >
-        导出 Excel
-        </el-button>
-         <el-button
-          slot="append"
-          v-if="tabs==0 ||tabs==1"
+          @click="onDownloadExcel"
+        >导出 Excel</el-button>
+
+        <template v-if="[0, 1].includes(+tabs)">
+          <el-button
             type="primary"
             class="button-add"
-             @click="printList()"
+            @click="printList"
           >批量打印</el-button>
+        </template>
+      </template>
     </m-search>
+
     <el-col :span="24">
-      <el-tabs
-        v-model="tabs"
-        type="card">
-        <el-tab-pane
-          v-for="(pane, index) in tabPanes"
-          :key="`id-visit-pane-${ index + Math.random() }`"
-          :label="pane.label"
-          :name="pane.name"/>
+      <el-tabs v-model="tabs" type="card">
+        <template v-for="(pane, index) in tabPanes">
+          <el-tab-pane
+            :key="`id-visit-pane-${ index + Math.random() }`"
+            :label="pane.label"
+            :name="pane.name"
+          />
+        </template>
       </el-tabs>
 
       <m-table-new
@@ -39,272 +39,320 @@
         :data="tabledate.messages"
         @selection-change="handleSelectionChange"
         class="mini-td-padding td"
-        :cols="tableCols">
-         <el-table-column
-          type="selection"
-          width="55">
-          </el-table-column>
-          <template
-          slot="message"
-          slot-scope="scope">
-          <span style="color:#409EFF;cursor: pointer;" @click="messageDetail(scope.row)">短信内容</span>
+        :cols="tableCols"
+      >
+        <template #message="{ row }">
+          <span style="color:#409EFF;cursor: pointer;" @click="messageDetail(row)">短信内容</span>
         </template>
-        <template
-          slot="state"
-          slot-scope="scope">
-          <span v-if="scope.row.state == '0'">未审核</span>
-          <span v-if="scope.row.state == '1'">已发送</span>
-          <span v-if="scope.row.state == '2'">已拒绝</span>
-          <span v-if="scope.row.state == '5'">已取消</span>
-          <span v-if="scope.row.state == '6'">已打印</span>
-        </template>
-          <template
-          slot="isSensitive"
-          slot-scope="scope">
-          <span v-if="scope.row.isSensitive == '0'">无</span>
-          <span v-if="scope.row.isSensitive == '1'">有</span>
-        </template>
-        <template
-          slot="lastCoiumn"
-          slot-scope="scope">
 
+        <template #state="{ row }">
+          <span v-if="row.state === 0">未审核</span>
+          <span v-if="row.state === 1">已发送</span>
+          <span v-if="row.state === 2">已拒绝</span>
+          <span v-if="row.state === 5">已取消</span>
+          <span v-if="row.state === 6">已打印</span>
+        </template>
+
+        <template #isSensitive="{ row }">
+          <span v-if="row.isSensitive === 0">无</span>
+          <span v-if="row.isSensitive === 1">有</span>
+        </template>
+
+        <template #lastCoiumn="{ row }">
           <template>
-            <el-button
-              v-if="scope.row.state == '0'"
-              size="mini"
-              @click="handleAuthorization(scope.row)">审核</el-button>
-              <span v-else style="color:#409EFF;cursor: pointer;" @click="onDetail(scope.row)">详情</span>
-               <span v-if="scope.row.state == '1' && !scope.row.isPrisonerSend" style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(scope.row)">打印</span>
-                <span v-if="scope.row.state == '6' && !scope.row.isPrisonerSend" style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(scope.row)">已打印</span>
+            <template v-if="row.state === 0">
+              <el-button size="mini" @click="handleAuthorization(row)">审核</el-button>
+            </template>
+
+            <template v-else>
+              <span style="color:#409EFF;cursor: pointer;" @click="onDetail(row)">详情</span>
+            </template>
+          </template>
+
+          <template v-if="row.state === 1 && !row.isPrisonerSend">
+            <span style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(row)">打印</span>
+          </template>
+
+          <template v-if="row.state === 6 && !row.isPrisonerSend">
+            <span style="color:#409EFF;cursor: pointer;margin-left:15px" @click="messageDetail(row)">已打印</span>
           </template>
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="tabledate.totalElements"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
+
     <el-dialog
       :visible.sync="show.authorize"
       class="authorize-dialog"
-      @close="closeAuthorize()"
+      @close="closeAuthorize"
       title="审核"
-      width="530px">
-      <div class="infinite-list"  style="margin-left:10px;min-height:200px;width:100%">
+      width="530px"
+    >
+      <div class="infinite-list" style="margin-left:10px;min-height:200px;width:100%;">
         <p>请审核短信内容：</p>
-        <div style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid ">
-          <p  v-if="toAuthorize.messageType!=2">{{ toAuthorize.message }}</p> 
-           <m-img-viewer
-            v-if="toAuthorize.messageType==2"
-            :url="toAuthorize.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
-            :isLazy="false"
-            :toolbar="{ prev: 1, next: 1 }"
+
+        <div style="padding:8px 10px;margin-top:10px;min-height:160px;width:95%;border:1px solid;">
+          <template v-if="toAuthorize.messageType !== 2">
+            <p>{{ toAuthorize.message }}</p> 
+          </template>
+
+          <template v-else>
+            <m-img-viewer
+              :url="toAuthorize.message + `?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+              :isLazy="false"
+              :toolbar="{ prev: 1, next: 1 }"
             />
+          </template>
+        </div>
+      </div>
+
+      <template v-if="!show.agree && !show.disagree">
+        <div style="margin-top:10px" class="button-box">
+          <el-button plain @click="show.agree = true">同意</el-button>
+
+          <el-button plain @click="show.disagree = true">不同意</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false"
+          >关闭</el-button>
+        </div>
+      </template>
+
+      <template v-if="show.agree">
+        <div style="margin-top:10px" class="button-box">
+          <el-button plain @click="onAuthorization('1')">确定申请通过？</el-button>
+
+          <el-button plain @click="show.agree=false">返回</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="show.authorize = false"
+          >关闭</el-button>
+        </div>
+      </template>
+
+      <!-- 不同意的情况 -->
+      <template v-if="show.disagree">
+        <div class="button-box logMgCls">
+          <div style="margin-top:10px;margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
+
+          <div style="display: flex;">
+            <el-select
+              v-model="disArgeeRemarks"
+              :multiple="true"
+              :multiple-limit='5'
+              collapse-tags
+              @change="refuseFormChange"
+              style="width:70%; margin-right:10px"
+            >
+              <template v-for="(remark, index) in content">
+                <el-option
+                  class="select_edit"
+                  :value="remark"
+                  :label="(index + 1) + '、' + remark"
+                  :key="index"
+                />
+              </template>     
+            </el-select>
+
+            <el-button
+              type="primary"
+              :loading="btnDisable"
+              @click="onRejectshow('PASSED')"
+            >编辑驳回原因</el-button>
           </div>
-        </div>
-      <div style="margin-top:10px"
-        v-if="!show.agree && !show.disagree"
-        class="button-box">
-        <el-button
-          plain
-          @click="show.agree = true">同意</el-button>
-        <el-button
-          plain
-          @click="show.disagree = true">不同意</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-      <div
-         style="margin-top:10px"
-        v-if="show.agree"
-        class="button-box">
-        <el-button
-          plain
-          @click="onAuthorization('1')">确定申请通过？</el-button>
-        <el-button
-          plain
-          @click="show.agree=false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="show.authorize = false">关闭</el-button>
-      </div>
-       <!-- 不同意的情况 -->
-      <div v-if="show.disagree" class="button-box logMgCls">
-        <div style="margin-top:10px;margin-bottom: 10px;text-align: left;">请选择驳回原因</div>
 
-        <div style="display: flex;">
-          <el-select
-            v-model="disArgeeRemarks"
-            :multiple="true"
-            :multiple-limit='5'
-            collapse-tags
-            @change="refuseFormChange"
-            style="width:70%; margin-right:10px"
+          <el-form
+            :model="refuseForm"
+            :rules="withdrawRule"
+            ref="refuseForm"
+            class="withdraw-box"
           >
-            <el-option
-            class="select_edit"
-              v-for="(remark, index) in content"
-              :value="remark"
-              :label="(index + 1) + '、' + remark"
-              :key="index"
-            />
-          </el-select>
+            <el-form-item prop="anotherRemarks">
+              <el-input
+                :autosize="{ minRows: 6, maxRows:8 }"
+                type="textarea"
+                show-word-limit
+                maxlength="1000"
+                placeholder="请输入驳回原因..."
+                v-model="refuseForm.anotherRemarks"
+              />
+            </el-form-item>
+          </el-form>
 
           <el-button
-            type="primary"
+            plain
             :loading="btnDisable"
-            @click="onRejectshow('PASSED')"
-          >编辑驳回原因</el-button>
+            @click="onAuthorization('2')"
+          >提交</el-button>
+
+          <el-button plain @click="show.disagree = false">返回</el-button>
+
+          <el-button
+            type="danger"
+            plain
+            @click="closeAuthorize"
+          >关闭</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="show.message"
+      class="authorize-dialog"
+      title="短信内容"
+    >
+      <hr class="messageNone" />
+
+      <div class="flex-dialog" ref="print">
+        <div class="wapText">
+          <p class="textContentTime">{{ messageContent.receiveName }}</p>
+
+          <p class="textContent">
+            编号：<span class="phone">{{ messageContent.criminalNumber }}</span>
+          </p>
+
+          <p class="textContent">
+            家属：<span class="familyname">{{ messageContent.sendName }}</span>
+          </p>
+
+          <p class="textContent">
+            电话：<span class="phone">{{ messageContent.familyPhone }}</span>
+          </p>
+
+          <p class="textContent">
+            时间：<span class="phone">{{ messageContent.createTime }}</span>
+          </p>
         </div>
 
-        <el-form
-          :model="refuseForm"
-          :rules="withdrawRule"
-          ref="refuseForm"
-          class="withdraw-box"
-        >
-          <el-form-item prop="anotherRemarks">
-            <el-input
-              :autosize="{ minRows: 6, maxRows:8 }"
-              type="textarea"
-              show-word-limit
-              maxlength="1000"
-              placeholder="请输入驳回原因..."
-              v-model="refuseForm.anotherRemarks"
+        <p class="textcontent">信息：</p>
+
+        <div class="infinite-list messageText">
+          <template v-if="messageContent.messageType !== 2">
+            <p v-html="messageContent.message">{{ messageContent.message }}</p>
+          </template>
+
+          <template v-else>
+            <m-img-viewer
+              :url="messageContent.message + `?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+              :isLazy="false"
+              :toolbar="{ prev: 1, next: 1 }"
             />
-          </el-form-item>
-        </el-form>
-        <el-button
-          plain
-          :loading="btnDisable"
-          @click="onAuthorization('2')">提交</el-button>
-        <el-button
-          plain
-         @click="show.disagree = false">返回</el-button>
-        <el-button
-          type="danger"
-          plain
-          @click="closeAuthorize()">关闭</el-button>
-      </div>
-    </el-dialog>
-     <el-dialog
-      :visible.sync="show.message"
-       class="authorize-dialog"
-      title="短信内容"
-      >
-      <hr class="messageNone" />
-      <div class="flex-dialog" ref="print">
-        <div class="wapText"> 
-          <p class="textContentTime">{{messageContent.receiveName}}</p>
-          <p class="textContent">编号：<span class="phone">{{messageContent.criminalNumber}}</span></p>
-          <p class="textContent">家属：<span class="familyname">{{messageContent.sendName}}</span></p>
-          <p class="textContent">电话：<span class="phone">{{messageContent.familyPhone}}</span></p>
-          <p class="textContent">时间：<span class="phone">{{messageContent.createTime}}</span></p>
+          </template>
         </div>
-          <p class="textcontent">信息：</p>
-        <div   class="infinite-list messageText" >
-          <p v-if="messageContent.messageType!=2" v-html="messageContent.message" >{{ messageContent.message }}</p>
-           <m-img-viewer
-            v-if="messageContent.messageType==2"
-            :url="messageContent.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
-            :isLazy="false"
-            :toolbar="{ prev: 1, next: 1 }"
-            />
-        </div>
-        <p></p>
+
+        <p />
+
         <div>&nbsp;&nbsp;</div>
+
         <div>&nbsp;&nbsp;</div>
-        <hr  class="messageNone"/>
+
+        <hr class="messageNone"/>
       </div>
-        <el-row :gutter="0">
-           <!-- v-if="messageContent.state == '1' && !messageContent.isPrisonerSend" -->
+
+      <el-row :gutter="0">
+        <!-- v-if="messageContent.state == '1' && !messageContent.isPrisonerSend" -->
+        <template v-if="(messageContent.state === 1 || messageContent.state === 6) && !messageContent.isPrisonerSend">
           <el-button
-           v-if="(messageContent.state == '1' || messageContent.state == '6') && !messageContent.isPrisonerSend"
             type="primary"
             class="button-add"
-             @click="print"
+            @click="print"
             size="mini"
           >打印</el-button>
+        </template>
       </el-row>
     </el-dialog>
-      <el-dialog
+
+    <el-dialog
       :visible.sync="show.rejectEdit"
       title="编辑"
       width="530px"
       @close="changeClose"
-      class="authorize-dialog">
-      <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
-          <li
-            v-for="(item,index) in content"
-            :key='index'
-            class="infinite-list-item" style="line-height:32px">
-            {{ index + 1 }}.{{ item }}
-          </li>
-        </ul>
+      class="authorize-dialog"
+    >
+      <template v-if="show.editRebut">
+        <div class="flex-dialog">
+          <ul class="infinite-list" style="padding:0 20px;min-height:400px;width:100%;text-align:justify;">
+            <template v-for="(item,index) in content">
+              <li
+                :key='index'
+                class="infinite-list-item"
+                style="line-height:32px"
+              >{{ index + 1 }}.{{ item }}</li>
+            </template>
+          </ul>
 
-        <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
-      </div>
+          <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
+        </div>
+      </template>
 
-      <div
-        v-else
-        class="infinite-list"
-        style="margin-left:20px;min-height:400px"
-      >
-        <span v-for="(item,index) in content" :key="index">
-          <el-input
-            style="margin-bottom:10px"
-            maxlength="200"
-            v-model="content[index]"
-            placeholder="请输入内容"
-            clearable
-          >
-           <el-button
-            slot="append"
-            icon="el-icon-close"
-            @click="removeReject(index)"
-          />
-          </el-input>
-        </span>
-      </div>
+      <template v-else>
+        <div class="infinite-list" style="margin-left:20px;min-height:400px">
+          <template v-for="(item,index) in content">
+            <span :key="index">
+              <el-input
+                style="margin-bottom:10px"
+                maxlength="200"
+                v-model="content[index]"
+                placeholder="请输入内容"
+                clearable
+              >
+                <template #append>
+                  <el-button icon="el-icon-close" @click="removeReject(index)" />
+                </template>
+              </el-input>
+            </span>
+          </template>
+        </div>
+      </template>
 
       <el-row :gutter="0">
-        <el-button
-          v-if="show.editRebut"
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onRejectEditshow"
-        >编辑</el-button>
+        <template v-if="show.editRebut">
+          <el-button
+            type="primary"
+            class="button-add"
+            size="mini"
+            @click="onRejectEditshow"
+          >编辑</el-button>
+        </template>
 
         <span v-else>
-          <el-button
-            v-if="content.length>0"
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="onSubmitReject"
-          >保存</el-button>
+          <template v-if="content.length > 0">
+            <el-button
+              type="primary"
+              class="button-add"
+              size="mini"
+              @click="onSubmitReject"
+            >保存</el-button>
+          </template>
 
-          <el-button
-            v-if="content.length < 10"
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="addReject"
-          >新增</el-button>
+          <template v-if="content.length < 10">
+            <el-button
+              type="primary"
+              class="button-add"
+              size="mini"
+              @click="addReject"
+            >新增</el-button>
+          </template>
         </span>
       </el-row>
     </el-dialog>
+
     <el-dialog
       :visible.sync="show.dialog"
       title="详情"
       width="780px"
       class="authorize-dialog"
-      lock-scroll>
+      lock-scroll
+    >
       <div style="max-height:380px;overflow: auto">
         <div style="display: flex;border: 1px solid #E4E7ED;">
           <div class="family-detail">基本信息</div>
@@ -332,34 +380,35 @@
             <p class="detail-message-family" style="border: none">
               <span class="family-name">是否有敏感词</span>
 
-              <span class="family-nameDetail">{{toShow.isSensitive?"有":"无"}}</span>
+              <span class="family-nameDetail">{{ toShow.isSensitive ? "有": "无" }}</span>
             </p>
           </div>
         </div>
-        <div style="display: flex;border: 1px solid #E4E7ED;border-top: none"
-        >
+
+        <div style="display: flex;border: 1px solid #E4E7ED;border-top: none">
           <div class="family-detail">1</div>
+
           <div class="detail-message">
             <template v-if="toShow.state == '5'">
             <p class="detail-message-family">
               <span class="family-name" >取消人姓名</span>
-              <span class="family-nameDetail">{{toShow.updateUser}}</span>
+              <span class="family-nameDetail">{{ toShow.updateUser }}</span>
             </p>
             <p class="detail-message-family" style="border: none" >
               <span class="family-name">取消时间</span>
-                 <span class="family-nameDetail">{{toShow.updateTime}}</span>
+                 <span class="family-nameDetail">{{ toShow.updateTime }}</span>
             </p>
 
             </template>
             <template v-else>
             <p class="detail-message-family">
               <span class="family-name" >审核人员账号</span>
-              <span class="family-nameDetail">{{toShow.auditId}}</span>
+              <span class="family-nameDetail">{{ toShow.auditId }}</span>
             </p>
 
             <p class="detail-message-family" style="border: none" >
               <span class="family-name">审核时间</span>
-                 <span class="family-nameDetail">{{toShow.auditTime}}</span>
+                 <span class="family-nameDetail">{{ toShow.auditTime }}</span>
             </p>
             <p
               v-if="toShow.state == '2'"
@@ -368,7 +417,7 @@
             >
               <span class="family-name"  style="line-height: 40px">拒绝原因</span>
 
-              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{toShow.remarks}}</span>
+              <span class="family-nameDetail" style="padding: 10px;text-align: justify;line-height: 15px;">{{ toShow.remarks }}</span>
             </p>
             </template>
           </div>
@@ -376,7 +425,7 @@
           <div class="detail-content">
             <p class="detail-message-family" v-if="toShow.state != '5'"  >
               <span class="family-name" >审核人姓名</span>
-              <span class="family-nameDetail">{{toShow.auditName}}</span>
+              <span class="family-nameDetail">{{ toShow.auditName }}</span>
             </p>
 
             <p class="detail-message-family">
@@ -532,7 +581,7 @@ export default {
       printState,
       state,
       toShow:{},
-      messageContent:{},
+      messageContent: {},
       messagePrintList:[],
       searchItems: {
         familyName: {
@@ -793,8 +842,8 @@ export default {
         this.show.dialog=true
       },
       messageDetail(row){
-        this.messageContent=row
-        this.show.message=true
+        this.messageContent = row
+        this.show.message = true
       },
       refuseFormChange(e) {
        let str = ""
