@@ -118,7 +118,7 @@
             </p>
           </div>
         </div>
-        <div
+         <div
           v-for="(item,index) in toShow.logs"
           :key='index'
           style="display: flex;border: 1px solid #E4E7ED;border-top: none"
@@ -129,11 +129,24 @@
               <span class="family-name">审核人员账号</span>
               <span class="family-nameDetail">{{item.createUser}}</span>
             </p>
+            <p class="detail-message-family">
+              <span class="family-name">审核时间</span>
+              <span class="family-nameDetail">{{item.createTime}}</span>
+            </p>
+            <p class="detail-message-family" v-if="item.checkState &&index==toShow.logs.length-1">
+              <span class="family-name">审核状态</span>
+              <span class="family-nameDetail" v-if="item.checkState==1">已通过</span>
+              <span class="family-nameDetail" v-if="item.checkState==2">已拒绝</span>
+              <span class="family-nameDetail" v-if="item.checkState==3">已提交{{item.nextCheckRole}}审核</span>
+            </p>
           </div>
           <div class="detail-content">
             <p class="detail-message-family" >
               <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{item.operateName}}</span></p>
+              <span class="family-nameDetail">{{item.createName}}</span></p>
+              <p class="detail-message-family" >
+              <span class="family-name">审核人意见</span>
+              <span class="family-nameDetail">{{item.remarks}}</span></p>
           </div>
         </div>
       </div>
