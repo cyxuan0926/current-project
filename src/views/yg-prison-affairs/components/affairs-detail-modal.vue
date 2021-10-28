@@ -11,7 +11,7 @@
                     </div>
                     <div class="affairs-detail-createtime">发布于 {{ affairsStorage.createTime }}</div>
                     <div class="affairs-detail-content" v-if="affairsStorage.videoUrl">
-                        <video :src="affairsStorage.videoUrl" poster="http://qa-ywgk.yuwugongkai.com/static/images/video-cover.png" controls="controls" width="100%"></video></p>
+                        <video :src="affairsStorage.videoUrl" poster="http://qa-ywgk.yuwugongkai.com/static/images/video-cover.png" controls="controls" width="100%"></video>
                     </div>
                     <div class="affairs-detail-content" v-html="affairsStorage.content"></div>
                 </section>
