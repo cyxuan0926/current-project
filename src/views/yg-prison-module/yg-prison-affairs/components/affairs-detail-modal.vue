@@ -72,7 +72,7 @@
         width: 300px;
         height: 598px;
         position: relative;
-        background-image: url('../../../assets/images/phone-bg.png');
+        background-image: url('../../../../assets/images/phone-bg.png');
         background-repeat: no-repeat;
         background-position: 0 0;
         background-size: 100% auto;
