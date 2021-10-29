@@ -255,3 +255,12 @@ export const smsSendTemplate = [
     value: 3
   }
 ]
+
+export const uploadStepsTabOptions = [
+  { label: '读取excel' },
+  { label: '解析excel' },
+  { label: '初始化数据' },
+  { label: '校验数据' },
+  { label: '导入数据' },
+  { label: '导入完成' }
+]

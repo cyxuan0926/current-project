@@ -26,5 +26,14 @@ export default {
     // 数据管理-计分考核数据解析-验证
     validatePrisonerScorelist: params => service.get(service.getYgUrl('/prisoner_score/validate'), params),
     // 数据导入uploadFile
-    uploadFileYangGuangHost: params => service.postFormData(service.getYgUrl('/upload/uploadfile'), { file: params })
+    uploadFileYangGuangHost: params => service.postFormData(service.getYgUrl('/upload/uploadfile'), { file: params }),
+
+    // 阳光监狱 - 上传文件
+    ygUploadFile: file => service.postFile(service.getYgUrl('/upload/uploadfile'), file).then(res => res && res.data),
+
+    // 阳光监狱 - 查询列表
+    getPaged: ({ params, url }) => service.get(service.getYgUrl(url), params),
+
+    // 阳光监狱 - 验证excel
+    validateUploadYgCommon: ({ filepath, url }) => service.post(service.getYgUrl(url), { filepath }).then(response => response && response.data)
 }

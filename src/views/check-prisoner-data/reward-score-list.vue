@@ -60,7 +60,7 @@
           finish-status="success"
           style="margin: 20px 0px">
           <el-step
-            v-for="(tag, index) in tabMapOptions"
+            v-for="(tag, index) in $_uploadStepsTabOptions"
             :key="index"
             :title="tag.label" />
         </el-steps>
@@ -215,14 +215,6 @@
         onProgress: false,
         prisonerHref:`${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_score_template.xls`,
         active: 1,
-        tabMapOptions: [
-          { label: '读取excel' },
-          { label: '解析excel' },
-          { label: '初始化数据' },
-          { label: '校验数据' },
-          { label: '导入数据' },
-          { label: '导入完成' }
-        ],
         status: 0,
         showProcessSteps: false,
         spendTime: 0,

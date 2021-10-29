@@ -338,18 +338,16 @@
       :show-close="false"
       @open="onOpenUploadDialog"
     >
-      <el-row>
+      <el-row class="el-row__process">
         <el-col :span="20" :offset="2">
           <el-steps
+            class="el-steps__upload-process"
             :active="status"
             finish-status="success"
-            style="margin: 20px 0px"
           >
-            <el-step
-              v-for="(tag, index) in tabMapOptions"
-              :key="index"
-              :title="tag.label"
-            />
+            <template v-for="(tag, index) in $_uploadStepsTabOptions">
+              <el-step :key="index" :title="tag.label" />
+            </template>
           </el-steps>
         </el-col>
 
@@ -367,6 +365,7 @@
       <el-dialog
         class="authorize-dialog"
         append-to-body
+        custom-class="upload-dialog__inner"
         ref="uploadInnerDialog"
         title="导入结果提示"
         :visible.sync="uploadInnerDialogVisible"
@@ -380,9 +379,9 @@
           <template v-if="!!validatePhoneResult.error_total">
             <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ validatePhoneResult.error_total }}条
 
-            <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
+            <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
 
-            <p style="padding-left: 30px">导入失败数据：
+            <p style="padding-left: 30px;">导入失败数据：
               <m-excel-download
                 path="/download/localfile"
                 :params="{ filepath: validatePhoneResult.filePath }"
@@ -631,14 +630,6 @@ export default {
         dialog:false
       },
 
-      tabMapOptions: [
-        { label: '读取excel' },
-        { label: '解析excel' },
-        { label: '初始化数据' },
-        { label: '校验数据' },
-        { label: '导入数据' },
-        { label: '导入完成' }
-      ],
        refuseForm: {
         selectRemark:"",
         anotherRemarks: ""
@@ -1076,7 +1067,7 @@ export default {
     },
 
     beforeUpload(file) {
-      this.resetState({validateUploadPhone: {
+      this.resetState({ validatePhoneResult: {
         add_total: 0,
         error_total: 0,
         filePath: '',
@@ -1242,48 +1233,8 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.el-steps {
-  /deep/ .el-step__title {
-    font-size: 12px;
-    line-height: 32px;
-  }
-}
-
-.process-col_tips {
-  width: 68%;
-  margin-left: 32%;
-  span {
-    color: #303133;
-    font-weight: bold;
-    & + span {
-      padding-left: 3%;
-    }
-  }
-}
-
-.process-col_waiting {
-  width: 60%;
-  margin-left: 40%;
-  color: #303133;
-  font-weight: bold;
-}
-
-.upload-dialog {
-  /deep/ .el-dialog__body {
-    padding-bottom: 30px !important;
-  }
-
-  /deep/ .button-box {
-    padding-bottom: 0px;
-  }
-}
-
 .el-upload__excel {
   margin-right: 0px !important;
-}
-
-.m-excel-export {
-  float: none;
 }
 
 .authorize-dialog {

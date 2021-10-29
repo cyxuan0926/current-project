@@ -1,5 +1,9 @@
 <template>
-  <el-table ref="elTable" v-bind="$data.$_attrs" v-on="$data.$_listeners">
+  <el-table
+    ref="elTable"
+    v-bind="$data.$_attrs"
+    v-on="$data.$_listeners"
+  >
     <template v-for="col in cols">
       <el-table-column
         v-if="col.slotName"
