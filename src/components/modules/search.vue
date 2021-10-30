@@ -375,6 +375,10 @@ export default {
       padding: 0 5px 0 3px;
     }
   }
+
+  .el-upload__excel {
+    margin-right: 0px !important;
+  }
 }
 </style>
 <style type="text/stylus" lang="stylus">

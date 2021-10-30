@@ -7,7 +7,9 @@ export default {
 
       file && formData.append('file', file)
 
-      const filesResult = await api.uploadFile(formData)
+      const filesResult = await api.ygUploadFile(formData)
+
+      if (!filesResult) return
 
       commit('ygUploadFile', filesResult)
 

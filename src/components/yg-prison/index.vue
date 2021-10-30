@@ -2,23 +2,45 @@
   <!-- 整体容器 -->
   <el-row class="row-container" :gutter="0">
     <!-- 查询组件 -->
-    <m-search ref="$ygSearch" :items="{
-        familyName: {
-          type: 'input',
-          label: '家属姓名'
-        }}">
+    <m-search ref="$ygSearch" >
+      <!-- 查询组件 前插槽 -->
+      <template #pre>
+        <slot name="ygSearchPreSlots" />
+      </template>
+
+      <!-- 查询组件的 后插槽 -->
       <!-- 上传、导入、导出 -->
       <template #append>
+        <!-- 后置插槽的 前置部分 -->
+        <slot name="ygSearchAppendPreSlots" />
+
+        <!-- 模版 -->
+        <m-excel-download
+          path="/download/downloadfile"
+          :params="{ filepath: '' }"
+          text="模板"
+          :apiConfigs="{
+            apiHostKey: 'ygApiHost',
+            apiPathKey: 'temp'
+          }"
+        />
+
+        <!-- 导入组件 -->
         <m-excel-upload ref="$mExcelUpload" :configs="excelUploadConfigs" />
+
+        <!-- 前端导出 -->
+        <el-button type="primary">导出 Excel</el-button>
+
+        <!-- 后置插槽的 后置部分 -->
+        <slot name="ygSearchAppendAppendSlots" />
       </template>
-      <template #searchSlot></template>
     </m-search>
 
     <!-- 主体组件 -->
     <el-col :span="24">
       <!-- 标签页组件 -->
       <template v-if="!!tabItems.length">
-        <el-tabs type="card">
+        <el-tabs v-model="tabs" type="card">
           <template v-for="tab in tabItems">
             <el-tab-pane
               :key="tab.name"
@@ -30,11 +52,26 @@
       </template>
 
       <!-- 表格组件 -->
-      <m-table-new stripe ref="$ygTable"></m-table-new>
+      <m-table-new
+        stripe
+        ref="$ygTable"
+        :data="$pagedYgPrisonsDataCommon.list"
+        :cols="tableCols"
+      >
+        <template v-for="col in tableCols" #[col.slotName]="scope">
+          <template v-if="col.slotName">
+            <slot :name="col.slotName" v-bind="scope" />
+          </template>
+        </template>
+      </m-table-new>
     </el-col>
 
     <!-- 分页组件 -->
-    <m-pagination ref="$ygPagination" @onPageChange="getData" />
+    <m-pagination
+      ref="$ygPagination"
+      :total="$pagedYgPrisonsDataCommon.totalCount"
+      @onPageChange="getData"
+    />
 
     <!-- 导入数据的交互 -->
     <el-dialog
@@ -61,8 +98,7 @@
         </el-col>
 
         <el-col class="process-col_tips">
-          <!-- validateFamiliesResult.total -->
-          <span>准备导入数据总计：{{}}条</span>
+          <span>准备导入数据总计：{{ $ygPrisonValidateUploadResult.total }}条</span>
 
           <span>已用时：{{ spendTime }}秒</span>
 
@@ -84,19 +120,17 @@
         @close="onUploadInnerDialogClose"
       >
         <div style="line-height: 30px; margin-top: 10px;">
-          <!-- add_total -->
-          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{}}条<br>
-          <!-- v-if="!!validateFamiliesResult.error_total" -->
-          <template>
-            <!-- error_total -->
-            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{}}条
+          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{ $ygPrisonValidateUploadResult.add_total }}条<br>
+
+          <template v-if="!!$ygPrisonValidateUploadResult.error_total">
+            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ $ygPrisonValidateUploadResult.error_total }}条
 
             <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
 
             <p style="padding-left: 30px;">导入失败数据：
               <m-excel-download
                 path="/download/localfile"
-                :params="{}"
+                :params="{ filepath: $ygPrisonValidateUploadResult.filePath }"
                 :buttonsProps="excelExportButtonProps"
                 text="导入失败的数据.xls"
               />
@@ -113,7 +147,15 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from '@vue/composition-api'
+import {
+  ref,
+  reactive,
+  onMounted,
+  computed,
+  toRefs,
+  watch,
+  toRef
+} from '@vue/composition-api'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
@@ -128,15 +170,50 @@ export default {
   mixins: [prisonFilterCreator],
 
   props: {
+    // 标签页的初始值
+    tabs: {
+      type: String,
+      default: ''
+    },
+
     // 标签页的选项
     tabItems: {
       type: Array,
       default: () => []
+    },
+
+    // 列表选项
+    tableCols: {
+      type: Array,
+      default: () => []
+    },
+
+    // 查询选项
+    searchItems: {
+      type: Object,
+      default: () => {}
+    },
+
+    // http请求的
+    // 导入/导出/列表/模版/导出错误excel
+    // excelDownloadRequest: 模版
+    // excelUploadRequest: 导入
+    // pagedRequest: 列表
+    // failExcelExportRequest：导入失败数据的接口地址
+    // excelExportRequest: 导出
+    //   [name]: {
+    //     url: '',
+    //     params: {}
+    //   }
+    httpRequests: {
+      type: Object,
+      default: () => {}
     }
   },
 
   setup(props, context) {
     // console.log(context, router, store)
+    const { httpRequests } = toRefs(props)
     // 导入数据的外层弹框的显示控制
     const uploadDialogVisible = ref(false)
 
@@ -158,6 +235,12 @@ export default {
         type: 'text'
       }
     })
+
+    // store 列表数据选项 在内部引用 是个包装对象 .value
+    const $pagedYgPrisonsDataCommon = computed(() => store.state.ygPrisons.pagedYgPrisonsDataCommon)
+
+    // store excel 验证结果 在内部引用 是个包装对象 .value
+    const $ygPrisonValidateUploadResult = computed(() => store.state.ygPrisons.ygPrisonValidateUploadResult)
 
     // 上传外层弹框的元素
     const $mExcelUpload = ref(null)
@@ -223,7 +306,7 @@ export default {
               spendTime.value += 1
 
               // 验证excel
-              const isSuccess = await store.dispatch('ygPrisons/validateUploadYgCommon', store.state.ygPrisons.ygUploadResult.path)
+              const isSuccess = await store.dispatch('ygPrisons/validateUploadYgCommon', { url: '', filepath: store.state.ygPrisons.ygUploadResult.path })
 
               clearInterval(validateInterver)
 
@@ -296,7 +379,12 @@ export default {
     }
 
     // 获取列表数据
-    const getData = async () => {}
+    const getData = async () => {
+      await store.dispatch('ygPrisons/getPagedYgPrisonsDataCommon')
+    }
+
+    // mounted生命周期函数
+    onMounted(getData)
 
     return {
       uploadDialogVisible,
@@ -312,7 +400,9 @@ export default {
       $ygSearch,
       $ygTable,
       $ygPagination,
-      getData
+      getData,
+      $pagedYgPrisonsDataCommon,
+      $ygPrisonValidateUploadResult
     }
   }
 }

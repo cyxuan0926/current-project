@@ -1,6 +1,6 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-yg-prison-content />
+    <!-- <m-yg-prison-content></m-yg-prison-content> -->
     <m-search
       ref="search"
       :items="searchItems"
@@ -1980,10 +1980,6 @@ export default {
 
 <style lang="scss" scoped>
 $border-style: 1px solid #E4E7ED;
-
-.el-upload__excel {
-  margin-right: 0px !important;
-}
 
 .authorize-dialog {
   /deep/ .el-dialog__footer {

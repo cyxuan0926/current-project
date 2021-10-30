@@ -1233,10 +1233,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.el-upload__excel {
-  margin-right: 0px !important;
-}
-
 .authorize-dialog {
   /deep/ .el-dialog__footer {
     padding: 0px 20px 20px 0px;

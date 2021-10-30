@@ -406,10 +406,6 @@ export default {
   }
 }
 
-.el-upload__excel {
-  margin-right: 0px !important;
-}
-
 .m-excel-export {
   float: none;
 }
