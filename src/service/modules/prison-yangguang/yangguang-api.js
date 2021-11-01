@@ -35,5 +35,8 @@ export default {
     getPaged: ({ params, url }) => service.get(service.getYgUrl(url), params),
 
     // 阳光监狱 - 验证excel
-    validateUploadYgCommon: ({ filepath, url }) => service.post(service.getYgUrl(url), { filepath }).then(response => response && response.data)
+    validateUploadYgCommon: ({ filepath, url }) => service.post(service.getYgUrl(url), { filepath }).then(response => response && response.data),
+
+    // 阳光监狱 - 导出excel
+    exportYgPrisonExcel: ({ params, url }) => service.post(service.getYgUrl(url), params, { responseType: 'blob' }).then(response => response && response.data)
 }

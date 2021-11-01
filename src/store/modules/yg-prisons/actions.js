@@ -55,5 +55,18 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async exportYgPrisonExcel(_, inputs) {
+    try {
+      const response = await api.exportYgPrisonExcel(inputs)
+
+      if (!response) return
+
+      return response
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

@@ -1,6 +1,5 @@
 <template>
-  <el-row class="row-container" :gutter="0">
-    <!-- <m-yg-prison-content></m-yg-prison-content> -->
+  <el-row class="row-container" :gutter="0"> 
     <m-search
       ref="search"
       :items="searchItems"
