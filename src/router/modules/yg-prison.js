@@ -2,10 +2,7 @@ const routes = [
   {
     path: '/yg-prison',
     name: 'YgPrison',
-    meta: {
-      breadcrumbName: '阳光监狱信息管理',
-      hidden: true
-    },
+    meta: { breadcrumbName: '阳光监狱信息管理', hidden: true },
     children: [
       {
         path: '/yg-prison/prison-administration/list',

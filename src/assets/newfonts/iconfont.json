@@ -1,10 +1,17 @@
 {
   "id": "2326772",
-  "name": "ywgk-icon",
+  "name": "国科服务-可视电话后台管理",
   "font_family": "ywgk-iconfont",
   "css_prefix_text": "ywgk-icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "7171180",
+      "name": "人事信息管理",
+      "font_class": "yg-prison-guanli",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
     {
       "icon_id": "3960941",
       "name": "短信发送日志",

@@ -215,7 +215,10 @@ export default {
     },
 
     // 查询选项
-    parentSearchItems: {
+    // 需要在父组件引入 mixins prisonFilterCreator
+    // 而且父组件的 参数的名 必须为 searchItems
+    // 或者传props 进来
+    searchItems: {
       type: Object,
       default: () => ({})
     },
@@ -255,7 +258,6 @@ export default {
     const {
       httpRequests,
       componentsVisible,
-      parentSearchItems,
       tableCols,
       tabItems,
       tabs
@@ -295,8 +297,6 @@ export default {
 
     // 分页的元素
     const $ygPagination = ref(null)
-
-    const searchItems = ref(parentSearchItems.value)
 
     // filter
     const filter = ref({})
@@ -345,7 +345,7 @@ export default {
 
     // 导入弹框的文案
     const dialogTitle = computed(() => {
-      const tabItem = tabItems.value.filter(tabItem => tabItem.name === tabs.value),
+      const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
         text = (tabItem[0] && tabItem[0]['label']) || router.currentRoute.meta.breadcrumbName
 
       return `${ text }导入`
@@ -353,13 +353,7 @@ export default {
 
     // watch
     watch(tabs, async val => {
-      if (val) {
-        $tabs.value = val
-
-        $ygSearch.value.onGetFilter()
-
-        await getData()
-      }
+      if (val) $tabs.value = val
     }, {
       immediate: true
     })
@@ -524,7 +518,7 @@ export default {
 
       const { excelExportRequest = {} } = httpRequests.value,
         times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-        tabItem = tabItems.value.filter(tabItem => tabItem.name === tabs.value),
+        tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
         TABName = tabItem[0] && tabItem[0]['label'] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]['label'] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
         actionName = 'ygPrisons/exportYgPrisonExcel',
         params = {
@@ -543,11 +537,14 @@ export default {
         }, 300)
     }
 
-    // mounted生命周期函数
-    onMounted(async () => {
+    const initData = async () => {
       $ygSearch.value.onGetFilter()
 
       await getData()
+    }
+    // mounted生命周期函数
+    onMounted(async () => {
+      await initData()
     })
 
     return {
@@ -571,12 +568,12 @@ export default {
       onSearch,
       pagination,
       filter,
-      searchItems,
       $tableCols,
       ygPrisonDownloading,
       onYGPrisonDownloadExcel,
       dialogTitle,
-      $tabs
+      $tabs,
+      initData
     }
   }
 }
