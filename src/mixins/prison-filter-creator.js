@@ -29,8 +29,7 @@ export default {
     provincesId: String,
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
-    hasPrisonAreaAuth: Boolean,
-    userHasPrisonArea: Boolean
+    hasPrisonAreaAuth: Boolean
   },
 
   data() {

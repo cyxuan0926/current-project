@@ -9,6 +9,17 @@ const endDate = Moment().format('YYYY-MM')
 // search选项 适用绝大部分时间
 export const _ygPrisonCommonSearchItems = () => {
   return {
+    // 重定义监区字段 因为 只查第一次监区 参数名不要为prisonAreaId这个就可以了
+    prisonArea: {
+      label: '监区',
+      type: 'select',
+      options: [],
+      filterable: true,
+      belong: { value: 'id', label: 'name' },
+      value: '',
+      miss: false
+    },
+
     // 服刑人员编号
     prisonerNumber: {
       type: 'input',

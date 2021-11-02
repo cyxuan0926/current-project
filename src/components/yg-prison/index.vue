@@ -55,7 +55,7 @@
     <el-col :span="24">
       <!-- 标签页组件 -->
       <template v-if="!!tabItems.length">
-        <el-tabs v-model="tabs" type="card">
+        <el-tabs v-model="$tabs" type="card">
           <template v-for="tab in tabItems">
             <el-tab-pane
               :key="tab.name"
@@ -196,7 +196,7 @@ export default {
   mixins: [prisonFilterCreator, ygPrisonPerch],
 
   props: {
-    // 标签页的初始值
+    // 标签页的初始值 传递过来需要 加上 .sync修饰符
     tabs: {
       type: String,
       default: ''
@@ -251,7 +251,7 @@ export default {
     }
   },
 
-  setup(props, context) {
+  setup(props, { emit }) {
     const {
       httpRequests,
       componentsVisible,
@@ -307,6 +307,9 @@ export default {
     // 导出的loading
     const ygPrisonDownloading = ref(false)
 
+    // el-tabs 的value
+    const $tabs = ref('')
+
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
     const $pagedYgPrisonsDataCommon = computed(() => store.state.ygPrisons.pagedYgPrisonsDataCommon)
@@ -351,10 +354,18 @@ export default {
     // watch
     watch(tabs, async val => {
       if (val) {
+        $tabs.value = val
+
         $ygSearch.value.onGetFilter()
 
         await getData()
       }
+    }, {
+      immediate: true
+    })
+
+    watch($tabs, val => {
+      if (val) emit('update:tabs', val)
     })
 
     // methods
@@ -564,7 +575,8 @@ export default {
       $tableCols,
       ygPrisonDownloading,
       onYGPrisonDownloadExcel,
-      dialogTitle
+      dialogTitle,
+      $tabs
     }
   }
 }
