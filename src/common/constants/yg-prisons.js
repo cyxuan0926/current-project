@@ -1,10 +1,10 @@
 import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 
-import Moment from 'moment'
+import { formatTime } from '@/utils/helper'
 
-const startDate = Moment().format('YYYY-MM')
+const startDate = formatTime(new Date(), 'yyyy-MM')
 
-const endDate = Moment().format('YYYY-MM')
+const endDate = formatTime(new Date(), 'yyyy-MM')
 
 // search选项 适用绝大部分时间
 export const _ygPrisonCommonSearchItems = () => {
@@ -46,7 +46,7 @@ export const _ygPrisonCommonSearchItems = () => {
       startKey: 'startDate',
       endKey: 'endDate',
       range: {
-        max: Moment().format('YYYY-MM'),
+        max: formatTime(new Date(), 'yyyy-MM'),
         maxMonthRange: 24
       }
     }
@@ -59,6 +59,18 @@ export const _ygPrisonCommonTableCols = () => {
     {
       label: '序号',
       type: 'index'
+    },
+
+    {
+      label: '省份',
+      prop: 'provincesName',
+      showOverflowTooltip: true
+    },
+
+    {
+      label: '监狱名称',
+      prop: 'jailName',
+      showOverflowTooltip: true
     },
 
     {
@@ -76,20 +88,9 @@ export const _ygPrisonCommonTableCols = () => {
     },
 
     {
-      label: '省份',
-      prop: 'provincesName',
-      showOverflowTooltip: true
-    },
-
-    {
-      label: '监狱名称',
-      prop: 'jailName',
-      showOverflowTooltip: true
-    },
-
-    {
       label: '监区',
       prop: 'prisonArea',
+      slotName: 'prisonArea',
       showOverflowTooltip: true
     },
 
@@ -108,4 +109,6 @@ export const _ygPrisonCommonTableCols = () => {
 }
 
 // 导出excel的请求url
-export const _ygPrisonExportExcelUrls = []
+export const _ygPrisonExportExcelUrls = [
+  '/prisonManagementEnquiry/export'
+]

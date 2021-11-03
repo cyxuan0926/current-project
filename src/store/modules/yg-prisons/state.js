@@ -3,9 +3,9 @@ export default {
   ygUploadResult: {},
 
   ygPrisonValidateUploadResult: {
-    add_total: 0,
-    error_total: 0,
-    filePath: '',
+    successTotal: 0,
+    failTotal: 0,
+    filepath: '',
     total: 0
   },
 

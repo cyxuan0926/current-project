@@ -74,9 +74,8 @@
         :cols="$tableCols"
       >
         <template v-for="col in tableCols" #[col.slotName]="scope">
-          <template v-if="col.slotName">
-            <slot :name="col.slotName" v-bind="scope" />
-          </template>
+          <!-- 默认是为了 不可控的插槽的显示本身值 -->
+          <slot :name="col.slotName" v-bind="scope">{{ scope.row[col['prop']] }}</slot>
         </template>
       </m-table-new>
     </el-col>
@@ -135,17 +134,17 @@
         @close="onUploadInnerDialogClose"
       >
         <div style="line-height: 30px; margin-top: 10px;">
-          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{ $ygPrisonValidateUploadResult.add_total }}条<br>
+          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{ $ygPrisonValidateUploadResult.successTotal }}条<br>
 
-          <template v-if="!!$ygPrisonValidateUploadResult.error_total">
-            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ $ygPrisonValidateUploadResult.error_total }}条
+          <template v-if="!!$ygPrisonValidateUploadResult.failTotal">
+            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ $ygPrisonValidateUploadResult.failTotal }}条
 
             <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
 
             <p style="padding-left: 30px;">导入失败数据：
               <m-excel-download
                 path="/download/common/download"
-                :params="{ fileName: $ygPrisonValidateUploadResult.filePath }"
+                :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
                 :buttonsProps="excelExportButtonProps"
                 text="导入失败的数据.xls"
                 :apiConfigs="{
@@ -322,7 +321,7 @@ export default {
 
     // 非ywt_admin下面就不显示省份/监狱名称
     const $tableCols = computed(() => {
-      if ($isSuperAdmin.value) {
+      if (!$isSuperAdmin.value) {
         arrayRemove(tableCols.value, '省份', 'label')
         arrayRemove(tableCols.value, '监狱名称', 'label')
       }
@@ -376,13 +375,11 @@ export default {
 
     // el-upload 上传文件前的钩子函数
     const beforeUpload = file => {
-      store.dispatch('resetState', {
-        ygPrisonValidateUploadResult: {
-          add_total: 0,
-          error_total: 0,
-          filePath: '',
-          total: 0
-        }
+      store.commit('ygPrisons/setValidateExcelResult', {
+        successTotal: 0,
+        failTotal: 0,
+        filepath: '',
+        total: 0
       })
 
       let count = 0, index = 0
@@ -417,7 +414,14 @@ export default {
               // 验证excel
               const { excelUploadRequest = {} } = httpRequests.value
 
-              const isSuccess = await store.dispatch('ygPrisons/validateUploadYgCommon', { url: excelUploadRequest['url'], filepath: store.state.ygPrisons.ygUploadResult.path })
+              const isSuccess = await store.dispatch('ygPrisons/validateUploadYgCommon', {
+                url: excelUploadRequest['url'],
+                params: {
+                  filepath: store.state.ygPrisons.ygUploadResult.path,
+                  ...excelUploadRequest['params']
+                },
+                methods: excelUploadRequest['methods']
+              })
 
               clearInterval(validateInterver)
 
@@ -495,36 +499,44 @@ export default {
     }
 
     // 获取列表数据
-    const getData = async () => {
-      const { pagedRequest = {} } = httpRequests.value
+    const getData = () => {
+      Vue.nextTick(async () => {
+        const { pagedRequest } = httpRequests.value
 
-      const { url, params = {} } = pagedRequest
+        const { url, params = {} } = pagedRequest
 
-      const allParams = {
-        ...filter.value,
-        ...pagination.value,
-        ...params
-      }
+        const allParams = {
+          ...filter.value,
+          ...pagination.value,
+          ...params
+        }
 
-      await store.dispatch('ygPrisons/getPagedYgPrisonsDataCommon', {
-        url,
-        params: allParams
+        await store.dispatch('ygPrisons/getPagedYgPrisonsDataCommon', {
+          url,
+          params: allParams
+        })
       })
     }
 
     // 导出excel
-    const onYGPrisonDownloadExcel = async () => {
-      ygPrisonDownloading.value = true
+    const onYGPrisonDownloadExcel = () => {
+      Vue.nextTick(async () => {
+        ygPrisonDownloading.value = true
 
-      const { excelExportRequest = {} } = httpRequests.value,
-        times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-        tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-        TABName = tabItem[0] && tabItem[0]['label'] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]['label'] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
-        actionName = 'ygPrisons/exportYgPrisonExcel',
-        params = {
-          url: excelExportRequest['url'],
-          params: excelExportRequest['params']
-        }
+        const { excelExportRequest = {} } = httpRequests.value,
+          times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+          tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
+          TABName = tabItem[0] && tabItem[0]['label'] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]['label'] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
+          actionName = 'ygPrisons/exportYgPrisonExcel',
+          params = {
+            url: excelExportRequest['url'],
+            params: {
+              ...filter.value,
+              ...excelExportRequest['params']
+            },
+
+            methods: excelExportRequest['methods']
+          }
 
         await tokenExcel({
           menuName: `${ TABName }-${ times }`,
@@ -535,6 +547,7 @@ export default {
         setTimeout(() => {
           ygPrisonDownloading.value = false
         }, 300)
+      })
     }
 
     const initData = async () => {
@@ -573,7 +586,7 @@ export default {
       onYGPrisonDownloadExcel,
       dialogTitle,
       $tabs,
-      initData
+      initData,
     }
   }
 }
