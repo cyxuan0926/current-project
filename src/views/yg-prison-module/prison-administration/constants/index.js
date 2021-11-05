@@ -39,19 +39,19 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        filepath: 'reward_punish_template.xls'
+        fileName: 'reward_punish_template.xls'
       }
     },
 
     '1': {
       params: {
-        filepath: 'rating_template.xls'
+        fileName: 'rating_template.xls'
       }
     },
 
     '2': {
       params: {
-        filepath: 'score_template.xls'
+        fileName: 'score_template.xls'
       }
     }
   },

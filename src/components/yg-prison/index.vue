@@ -240,7 +240,7 @@ export default {
       default: () => ({
         excelDownloadRequest: {
           params: {
-            filepath: ''
+            fileName: ''
           }
         }
       })

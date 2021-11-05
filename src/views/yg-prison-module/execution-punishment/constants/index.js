@@ -23,7 +23,7 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        filepath: 'info_sentence_parole_template.xls'
+        fileName: 'info_sentence_parole_template.xls'
       }
     }
   },
