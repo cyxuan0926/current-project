@@ -22,7 +22,7 @@
         <!-- 模版 -->
         <template v-if="$componentsVisible['excelDownloadVisible']">
           <m-excel-download
-            path="/download/downloadfile"
+            path="/download/common/download"
             :params="httpRequests['excelDownloadRequest']['params']"
             text="模板"
             :apiConfigs="{
