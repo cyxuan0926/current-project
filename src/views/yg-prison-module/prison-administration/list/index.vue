@@ -15,11 +15,8 @@
 import {
   ref,
   reactive,
-  onMounted,
   computed,
-  toRefs,
-  watch,
-  toRef
+  watch
 } from '@vue/composition-api'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
@@ -83,6 +80,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

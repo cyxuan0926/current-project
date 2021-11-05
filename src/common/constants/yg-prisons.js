@@ -77,14 +77,16 @@ export const _ygPrisonCommonTableCols = () => {
       // 以防需要自定义
       label: '年份',
       prop: 'yearNum',
-      slotName: 'yearNum'
+      slotName: 'yearNum',
+      width: 50
     },
 
     {
       // 以防需要自定义
       label: '月份',
       prop: 'monthNum',
-      slotName: 'monthNum'
+      slotName: 'monthNum',
+      width: 50
     },
 
     {

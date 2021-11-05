@@ -142,16 +142,19 @@
             <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
 
             <p style="padding-left: 30px;">导入失败数据：
-              <m-excel-download
-                path="/download/common/download"
-                :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
-                :buttonsProps="excelExportButtonProps"
-                text="导入失败的数据.xls"
-                :apiConfigs="{
-                  apiHostKey: 'ygApiHost',
-                  apiPathKey: 'temp'
-                }"
-              />
+              <!-- 为了扩展处理下载的处理 -->
+              <slot name="elDialogExcelDownloadSlot" v-bind="$ygPrisonValidateUploadResult"> 
+                <m-excel-download
+                  path="/download/common/download"
+                  :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
+                  :buttonsProps="excelExportButtonProps"
+                  text="导入失败的数据.xls"
+                  :apiConfigs="{
+                    apiHostKey: 'ygApiHost',
+                    apiPathKey: 'temp'
+                  }"
+                />
+              </slot>
             </p>
           </template>
         </div>
@@ -551,10 +554,16 @@ export default {
     }
 
     const initData = async () => {
+      store.commit('ygPrisons/setPagedYgPrisonsDataCommon', {
+        list: [],
+        totalCount: 0
+      })
+
       $ygSearch.value.onGetFilter()
 
       await getData()
     }
+
     // mounted生命周期函数
     onMounted(async () => {
       await initData()
@@ -591,6 +600,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

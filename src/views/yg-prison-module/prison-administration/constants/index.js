@@ -37,19 +37,19 @@ export const httpRequests = {
   },
 
   excelDownloadRequest: {
-    0: {
+    '0': {
       params: {
         filepath: 'reward_punish_template.xls'
       }
     },
 
-    1: {
+    '1': {
       params: {
         filepath: 'rating_template.xls'
       }
     },
 
-    2: {
+    '2': {
       params: {
         filepath: 'score_template.xls'
       }
@@ -86,16 +86,18 @@ const _createTime = {
 const _remark = {
   label: '备注',
   prop: 'remark',
-  showOverflowTooltip: true
+  showOverflowTooltip: true,
+  minWidth: 120
 }
 
 export const _tableCols = {
-  0: [
+  '0': [
     ..._commonCols,
     {
       label: '奖惩事由',
       prop: 'reason',
-      showOverflowTooltip: true
+      showOverflowTooltip: true,
+      minWidth: 120
     },
 
     {
@@ -120,7 +122,7 @@ export const _tableCols = {
     _createTime
   ],
 
-  1: [
+  '1': [
     ..._criminalRate(),
 
     {
@@ -131,7 +133,7 @@ export const _tableCols = {
     _createTime
   ],
 
-  2: [
+  '2': [
     ..._commonCols,
 
     {
@@ -151,7 +153,8 @@ export const _tableCols = {
 
     {
       label: '事由',
-      prop: 'reason'
+      prop: 'reason',
+      minWidth: 120
     },
 
     {
