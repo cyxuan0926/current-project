@@ -39,7 +39,7 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: 'reward_punish_template.xls'
+        fileName: '/template/food_supply_template.xls'
       }
     },
 
@@ -57,7 +57,7 @@ export const httpRequests = {
   },
 
   excelUploadRequest: {
-    url: '/prisonManagementEnquiry/import',
+    url: '/prisonManagementEnquiry/import ',
 
     params: {},
 

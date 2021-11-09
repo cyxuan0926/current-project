@@ -112,5 +112,8 @@ export const _ygPrisonCommonTableCols = () => {
 
 // 导出excel的请求url
 export const _ygPrisonExportExcelUrls = [
-  '/prisonManagementEnquiry/export'
+  '/prisonManagementEnquiry/export',
+  '/infoFoodSupply/exportFoodSupplyList',
+  '/infoQuiltSend/export',
+  '/infoMedicalExpense/exportMedicalExpense'
 ]

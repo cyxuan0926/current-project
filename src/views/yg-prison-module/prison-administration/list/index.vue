@@ -58,7 +58,6 @@ export default {
           ...accumulator[key],
           ...temp
         }
-
         return accumulator
       }, {})
     })
