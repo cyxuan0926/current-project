@@ -58,7 +58,7 @@ export default {
           ...accumulator[key],
           ...temp
         }
- console.log(accumulator)
+
         return accumulator
       }, {})
     })
