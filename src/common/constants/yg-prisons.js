@@ -115,5 +115,10 @@ export const _ygPrisonExportExcelUrls = [
   '/prisonManagementEnquiry/export',
   '/infoFoodSupply/exportFoodSupplyList',
   '/infoQuiltSend/export',
+  '/infoPocketMoney/exportPocketMoney',
+  '/infoRecipe/export',
+  '/infoLaborReform/exportList',
+  '/infoLaborRemuneration/exportList',
+  '/infoLaborTrain/exportList',
   '/infoMedicalExpense/exportMedicalExpense'
 ]

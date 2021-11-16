@@ -59,19 +59,19 @@ export const httpRequests = {
   excelDownloadRequest: {
     0: {
       params: {
-        fileName: 'labor_remuneration_template.xlsx'
+        fileName: '/template/labor_reform_template.xlsx'
       }
     },
 
     1: {
       params: {
-        fileName: 'rating_template.xls'
+        fileName: '/template/labor_remuneration_template.xlsx'
       }
     },
 
     2: {
       params: {
-        fileName: 'labor_train_template.xlsx'
+        fileName: '/template/labor_train_template.xlsx'
       }
     }
   },
@@ -123,26 +123,19 @@ export const _tableCols = {
   0: [
     ..._commonCols,
     {
-      label: '奖惩事由',
-      prop: 'reason',
+      label: '劳动项目',
+      prop: 'project',
       showOverflowTooltip: true
     },
-
     {
-      label: '奖惩类别',
-      prop: 'type',
+      label: '岗位',
+      prop: 'post',
       showOverflowTooltip: true
     },
-
     {
-      label: '加减分情况',
-      prop: 'score',
+      label: '完成劳动任务',
+      prop: 'situation',
       showOverflowTooltip: true
-    },
-
-    {
-      label: '审批时间',
-      prop: 'auditTime'
     },
 
     _remark,
@@ -154,41 +147,27 @@ export const _tableCols = {
     ..._criminalRate(),
 
     {
-      label: '分管等级',
-      prop: 'level'
+      label: '劳动报酬金',
+      prop: 'amount'
     },
-
+    {
+      label: '劳动报酬累计',
+      prop: 'amountSum'
+    },
+    _remark,
     _createTime
   ],
 
   2: [
     ..._commonCols,
-
     {
-      label: '教育改造分',
-      prop: 'educationScores'
+      label: '岗前培训情况',
+      prop: 'situation'
     },
-
     {
-      label: '劳动改造分',
-      prop: 'laborScores'
+      label: '培训时间',
+      prop: 'trainDate'
     },
-
-    {
-      label: '奖扣分',
-      prop: 'scores'
-    },
-
-    {
-      label: '事由',
-      prop: 'reason'
-    },
-
-    {
-      label: '当月得分',
-      prop: 'monthScores'
-    },
-
     _remark,
 
     _createTime
