@@ -1,7 +1,7 @@
 <template>
-  <el-row class="el-row__prison-adminstration-list" :gutter="0">
+  <el-row class="el-row__execution-punishment-list" :gutter="0">
     <m-yg-prison-content
-      ref="$ygPrisonAdminstrationParent"
+      ref="$ygExecutionPunishmentParent"
       :tabItems="$tabItems"
       :searchItems="searchItems"
       :tabs.sync="$tabs"
@@ -33,7 +33,7 @@ export default {
   mixins: [prisonFilterCreator],
 
   setup() {
-    const $ygPrisonAdminstrationParent = ref(null)
+    const $ygExecutionPunishmentParent = ref(null)
 
     const searchItems = reactive(_searchItems)
 
@@ -59,11 +59,11 @@ export default {
     const $tableCols = computed(() => _tableCols[$tabs['value']])
 
     watch($tabs, val => {
-      $ygPrisonAdminstrationParent.value.initData()
+      $ygExecutionPunishmentParent.value.initData()
     })
 
     return {
-      $ygPrisonAdminstrationParent,
+      $ygExecutionPunishmentParent,
       searchItems,
       $tabs,
       $tabItems,

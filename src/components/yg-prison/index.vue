@@ -73,7 +73,7 @@
         :data="$pagedYgPrisonsDataCommon.list"
         :cols="$tableCols"
       >
-        <template v-for="col in tableCols" #[col.slotName]="scope">
+        <template v-for="col in $tableCols" #[col.slotName]="scope">
           <!-- 默认是为了 不可控的插槽的显示本身值 -->
           <slot :name="col.slotName" v-bind="scope">{{ scope.row[col['prop']] }}</slot>
         </template>
@@ -192,6 +192,8 @@ import { tokenExcel } from '@/utils/token-excel'
 
 // 为了重载一些内部方法
 import ygPrisonPerch from '@/mixins/yg-prison-perch'
+
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'YgPrisonContent',
 
@@ -324,12 +326,14 @@ export default {
 
     // 非ywt_admin下面就不显示省份/监狱名称
     const $tableCols = computed(() => {
+      let _temp = cloneDeep(tableCols.value)
+
       if (!$isSuperAdmin.value) {
-        arrayRemove(tableCols.value, '省份', 'label')
-        arrayRemove(tableCols.value, '监狱名称', 'label')
+        arrayRemove(_temp, '省份', 'label')
+        arrayRemove(_temp, '监狱名称', 'label')
       }
 
-      return tableCols.value
+      return _temp
     })
 
     const $componentsVisible = computed(() => {

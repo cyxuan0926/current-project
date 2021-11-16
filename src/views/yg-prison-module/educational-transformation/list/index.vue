@@ -1,7 +1,7 @@
 <template>
-  <el-row class="el-row__prison-adminstration-list" :gutter="0">
+  <el-row class="el-row__educational-transformation-list" :gutter="0">
     <m-yg-prison-content
-      ref="$ygPrisonAdminstrationParent"
+      ref="$ygEducationalTransformationParent"
       :tabItems="$tabItems"
       :searchItems="searchItems"
       :tabs.sync="$tabs"
@@ -28,12 +28,12 @@ import {
   _tableCols
 } from '../constants'
 export default {
-  name: 'PrisonAdminstrationList',
+  name: 'EducationalTransformationList',
 
   mixins: [prisonFilterCreator],
 
   setup() {
-    const $ygPrisonAdminstrationParent = ref(null)
+    const $ygEducationalTransformationParent = ref(null)
 
     const searchItems = reactive(_searchItems)
 
@@ -44,13 +44,6 @@ export default {
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce((accumulator, [key, value]) => {
         let temp = value
-
-        if (['pagedRequest', 'excelExportRequest', 'excelUploadRequest'].includes(key)) {
-          temp['params'] = {
-            ...value['params'],
-            tab: $tabs.value
-          }
-        }
 
         if (['excelDownloadRequest'].includes(key)) temp = value[$tabs.value]
 
@@ -66,11 +59,11 @@ export default {
     const $tableCols = computed(() => _tableCols[$tabs['value']])
 
     watch($tabs, val => {
-      $ygPrisonAdminstrationParent.value.initData()
+      $ygEducationalTransformationParent.value.initData()
     })
 
     return {
-      $ygPrisonAdminstrationParent,
+      $ygEducationalTransformationParent,
       searchItems,
       $tabs,
       $tabItems,
