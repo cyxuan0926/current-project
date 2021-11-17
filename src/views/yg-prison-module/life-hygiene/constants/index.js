@@ -73,7 +73,7 @@ export const httpRequests = {
     3: {
       url: '/infoQuiltSend/export',
       params: {},
-      methods: 'post'
+      methods: 'get'
     },
     4: {
       url: '/infoPocketMoney/exportPocketMoney',
@@ -109,7 +109,7 @@ export const httpRequests = {
 
     4: {
       params: {
-        fileName: 'pocket_money_template.xls'
+        fileName: '/template/pocket_money_template.xls'
       }
     }
   },
@@ -254,6 +254,10 @@ export const _tableCols = {
   ],
   3: [
     {
+      label: '序号',
+      type: 'index'
+    },
+    {
       label: '省份',
       prop: 'provincesName',
       showOverflowTooltip: true
@@ -306,6 +310,10 @@ export const _tableCols = {
   ],
   4: [
     {
+      label: '序号',
+      type: 'index'
+    },
+    {
       label: '省份',
       prop: 'provincesName',
       showOverflowTooltip: true
@@ -334,23 +342,18 @@ export const _tableCols = {
       ...$likePrisonerNumber
     },
     {
-      label: '类别',
-      prop: 'category'
+      label: '收入情况',
+      prop: 'income'
     },
 
     {
-      label: '品名',
-      prop: 'brandName',
+      label: '支出情况（购物）',
+      prop: 'expenditure',
       showOverflowTooltip: true
     },
     {
-      label: '标准',
-      prop: 'standard',
-      showOverflowTooltip: true
-    },
-    {
-      label: '发放情况',
-      prop: 'condition',
+      label: '余额',
+      prop: 'balance',
       showOverflowTooltip: true
     },
     _remark,
