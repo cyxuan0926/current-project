@@ -459,6 +459,7 @@ export default {
 
                   setTimeout(() => {
                     uploadInnerDialogVisible.value = true
+                    initData()
                   }, 1500)
                 } else spendTime.value += 1
               }, 1000)

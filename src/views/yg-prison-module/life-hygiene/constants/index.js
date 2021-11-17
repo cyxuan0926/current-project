@@ -204,6 +204,25 @@ export const _tableCols = {
       prop: 'monthNum',
       slotName: 'monthNum'
     },
+    {
+      // 以防需要自定义
+      label: '早餐',
+      prop: 'breakfast'
+    },
+    {
+      // 以防需要自定义
+      label: '星期',
+      prop: 'week'
+    },
+    {
+      label: '中餐',
+      prop: 'lunch'
+    },
+    {
+      // 以防需要自定义
+      label: '晚餐',
+      prop: 'dinner'
+    },
     _remark,
 
     _createTime
