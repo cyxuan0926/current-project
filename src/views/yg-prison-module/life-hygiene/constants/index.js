@@ -206,13 +206,13 @@ export const _tableCols = {
     },
     {
       // 以防需要自定义
-      label: '早餐',
-      prop: 'breakfast'
+      label: '星期',
+      prop: 'week'
     },
     {
       // 以防需要自定义
-      label: '星期',
-      prop: 'week'
+      label: '早餐',
+      prop: 'breakfast'
     },
     {
       label: '中餐',
