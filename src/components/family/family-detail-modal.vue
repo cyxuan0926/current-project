@@ -29,7 +29,7 @@
                         title="身份证背面"
                         isRequired />
                     <m-img-viewer
-                        :url="familyDetData.familyAvatarUrl"
+                        :joinUrl="familyDetData.familyAvatarUrl"
                         title="头像"
                         isRequired />
                 </div>

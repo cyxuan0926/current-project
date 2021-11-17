@@ -98,7 +98,7 @@
             <m-img-viewer
               isRequired
               class="img-viewer__hidden"
-              :url="row.avatarUrl"
+              :joinUrl="row.avatarUrl"
               :toolbar="{ prev: 1, next: 1 }"
               title="头像"
             />
@@ -293,7 +293,7 @@
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.avatarUrl}]"
-          :url="toAuthorize.avatarUrl"
+          :joinUrl="toAuthorize.avatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
         />

@@ -328,7 +328,7 @@
 
         <m-img-viewer
           isRequired
-          :url="family.familyAvatarUrl"
+          :joinUrl="family.familyAvatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
         />
@@ -426,13 +426,13 @@
 
       <!-- 有告知书图片的才显示 -->
       <div v-show="notificationForm.meetingNotificationUrl" class="notification__content">
-          <label>告知书：</label>
+        <label>告知书：</label>
 
-          <m-img-viewer
-            :url="notificationForm.meetingNotificationUrl"
-            :isLazy="false"
-            title="告知书"
-          />
+        <m-img-viewer
+          :url="notificationForm.meetingNotificationUrl"
+          :isLazy="false"
+          title="告知书"
+        />
       </div>
 
       <template v-if="!notificationForm.protoNum">
@@ -1662,7 +1662,7 @@ export default {
         meetNoticeUrl
       }
 
-      const _key = `familyId_${ family.id }`
+      const _key = `familyId_${ family.familyId }`
 
       const URLS = await batchDownloadPublicImageURL(urls, _key)
 
