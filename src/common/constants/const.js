@@ -244,7 +244,8 @@ export const terminalUsersBasicAuths = [
   'terminal.realtime-monitor',
   'terminal.surveillance-video',
   'terminal-videoconference',
-  'terminal.terminal-to-termianl'
+  'terminal.terminal-to-termianl',
+  'terminal.police-meeting'
 ]
 
 

@@ -538,7 +538,7 @@
               isRequired
             />
             <m-img-viewer
-              :url="scope.familyAvatarUrl"
+              :joinUrl="scope.familyAvatarUrl"
               title="头像"
               isRequired
             />
@@ -1629,7 +1629,8 @@
           familyRelationalProofUrl,
           familyRelationalProofUrl2,
           familyRelationalProofUrl3,
-          familyRelationalProofUrl4
+          familyRelationalProofUrl4,
+          meetNoticeUrl
         } = data.family
 
         const urls = {

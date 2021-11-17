@@ -325,7 +325,7 @@
         <m-img-viewer
           isRequired
           :class="[{'el-image__no-box_shadow': !toAuthorize.avatarUrl}]"
-          :url="toAuthorize.avatarUrl"
+          :joinUrl="toAuthorize.avatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
         />
@@ -1484,7 +1484,7 @@ export default {
       if (contents === 'all') {
         const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
 
-        const passedData = this.registrations.contents.filter(content => content.status == 'PASSED')
+        const passedData = this.registrations.contents.filter(content => content.status === 'PASSED')
 
         params = this.filterDownloadParams(passedData)
 

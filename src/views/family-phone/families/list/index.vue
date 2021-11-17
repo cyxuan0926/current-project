@@ -179,7 +179,7 @@
 
         <m-img-viewer
           isRequired
-          :url="authorizeFamilyDetail.avatarUrl"
+          :joinUrl="authorizeFamilyDetail.avatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
         />
