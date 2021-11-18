@@ -370,7 +370,7 @@ export default {
 
     // methods
     // 重制上传的参数关闭对话框
-    const onResetAndcloseUploadDialog = () => {
+    const onResetAndcloseUploadDialog = async isSuccess => {
       spendTime.value = 0
 
       percent.value = 0
@@ -378,6 +378,8 @@ export default {
       status.value = 0
 
       uploadDialogVisible.value = false
+
+      if (isSuccess) await getData()
     }
 
     // el-upload 上传文件前的钩子函数
@@ -459,7 +461,6 @@ export default {
 
                   setTimeout(() => {
                     uploadInnerDialogVisible.value = true
-                    initData()
                   }, 1500)
                 } else spendTime.value += 1
               }, 1000)
@@ -497,7 +498,9 @@ export default {
     // 关闭上传内层弹框的回调函数
     const onUploadInnerDialogClose = () => {
       setTimeout(() => {
-        onResetAndcloseUploadDialog()
+        const _temp = !!$ygPrisonValidateUploadResult.value.successTotal
+
+        onResetAndcloseUploadDialog(_temp)
       }, 1000)
     }
 

@@ -516,7 +516,11 @@ superAdmin = [{
     }, {
       path: '/prison-data/prisoners',
       name: 'prison-data_prisoners',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: {
+        hasAllPrisonQueryAuth: true,
+        hasProvinceQueryAuth: true,
+        provincesId: '1'
+      },
       meta: {
         permission: 'visit.prisoner.all-prison.search',
         breadcrumbName: '服刑人员信息'
