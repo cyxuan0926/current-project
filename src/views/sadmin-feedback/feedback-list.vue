@@ -32,7 +32,7 @@
             />
             <m-img-viewer
               v-else
-              :publicUrl="row.imageUrls[0]"
+              :url="row.imageUrls[0]"
               isRequired
             /> 
           </template>
@@ -116,7 +116,7 @@
               <m-img-viewer
                 v-for="(img, index) in feedback.imageUrls"
                 :key="index"
-                :publicUrl="img"
+                :url="img"
                 isRequired
               />
             </template>

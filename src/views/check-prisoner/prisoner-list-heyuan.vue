@@ -271,7 +271,7 @@
 
         <m-img-viewer
           isRequired
-          :url="family.familyAvatarUrl"
+          :joinUrl="family.familyAvatarUrl"
           :toolbar="{ prev: 1, next: 1 }"
           title="头像"
         />
@@ -1272,7 +1272,7 @@ export default {
         meetNoticeUrl
       }
 
-      const _key = `familyId_${ family.id }`
+      const _key = `familyId_${ family.familyId }`
 
       const URLS = await batchDownloadPublicImageURL(urls, _key)
 

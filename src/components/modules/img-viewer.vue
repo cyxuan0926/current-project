@@ -1,9 +1,9 @@
 <template>
   <!-- <div> -->
   <!-- <p v-if="label">{{title}}</p> -->
-    
+
   <el-image
-    :src="publicUrl || url"
+    :src="url || joinUrl + `?token=${ this.$urls.token }`"
     :fit="fit"
     :alt="title"
     :lazy="isLazy"
@@ -32,7 +32,7 @@ export default {
   // },
 
   props: {
-    // 狱务通的图片
+    // 公共服务公有类型的图片或者不需要拼接token处理的图片
     url: {
       type: String,
       default: ''
@@ -45,8 +45,8 @@ export default {
       type: String,
       default: ''
     },
-    // 公共服务公有类型的图片或者不需要拼接token处理的图片
-    publicUrl: {
+    // 狱务通的图片 需要拼接 node的token
+    joinUrl: {
       type: String,
       default: ''
     },
@@ -97,7 +97,7 @@ export default {
         hidden: function() {
           this.viewer.destroy()
         },
-        url: this.publicUrl || `${ this.url }?token=${ this.$urls.token }`
+        url: this.url || `${ this.joinUrl }?token=${ this.$urls.token }`
       });
     }
   }

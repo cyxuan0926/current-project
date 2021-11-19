@@ -120,9 +120,7 @@
       </family-detail-information>
 
       <template>
-        <div
-          v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine"
-          class="button-box">
+        <div v-if="!show.agree && !show.disagree && !show.callback && !show.multistageExamine" class="button-box">
           <repetition-el-buttons :buttonItems="authorizeButtons" />
         </div>
       </template>
@@ -480,7 +478,8 @@ export default {
         idCardBack,
         idCardFront,
         meetNoticeUrl,
-        id
+        id,
+        avatarUrl
       } = registrant,
       URLS = { idCardBack, idCardFront, meetNoticeUrl },
       _key = `diplomatsRegistrationId_${ id }`
@@ -489,7 +488,8 @@ export default {
 
       this.registrant = {
         ...registrant,
-        ...urls
+        ...urls,
+        avatarUrl: avatarUrl && `${ avatarUrl }?token=${ this.$urls.token }`
       }
 
       this.show.disagree = false

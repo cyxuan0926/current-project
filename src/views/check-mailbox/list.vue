@@ -29,7 +29,7 @@
           <template v-if="row.imageUrls.length">
             <m-img-viewer
               v-if="!hasOnlyAllPrisonQueryAuth"
-              :publicUrl="row.imageUrls[0]"
+              :url="row.imageUrls[0]"
               isRequired
             />
 
@@ -39,7 +39,7 @@
               :class="!index ? '' : 'img-viewer__hidden'"
               :key="url"
               :toolbar=" hasOnlyAllPrisonQueryAuth && row.imageUrls.length > 1 ? toolbar : {} "
-              :publicUrl="url"
+              :url="url"
               isRequired
             />
           </template>
@@ -121,7 +121,7 @@
               <m-img-viewer
                 :key="index"
                 isRequired
-                :publicUrl="img"
+                :url="img"
               />
             </template>
           </div>
