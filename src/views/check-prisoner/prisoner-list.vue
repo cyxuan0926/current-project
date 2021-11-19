@@ -1531,6 +1531,8 @@ export default {
 
   async mounted() {
     // await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
+    this.$refs.search.onGetFilter()
+
     if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
 
     else {
