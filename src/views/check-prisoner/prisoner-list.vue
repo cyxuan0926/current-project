@@ -1537,7 +1537,6 @@ export default {
 
     else {
       // this.filter = Object.assign({}, this.filter, { status: 1 })
-      this.$refs.search.onGetFilter()
       await this.getDatas()
     }
   },
