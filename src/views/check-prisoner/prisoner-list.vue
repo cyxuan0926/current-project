@@ -1534,8 +1534,8 @@ export default {
     if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
 
     else {
-      this.filter = Object.assign({}, this.filter, { status: 1 })
-
+      // this.filter = Object.assign({}, this.filter, { status: 1 })
+      this.$refs.search.onGetFilter()
       await this.getDatas()
     }
   },
@@ -1568,6 +1568,7 @@ export default {
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
       // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
       // this.isIndeterminate = false 不要删除
+      console.log('this.filter====', this.filter)
       const params = {
         ...this.filter,
         ...this.pagination
