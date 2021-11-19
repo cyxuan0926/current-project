@@ -41,14 +41,13 @@ export const _ygPrisonCommonSearchItems = () => {
     dateMonth: {
       type: 'monthRangeSelector',
       canNotClear: true,
-      startValue: startDate,
-      endValue: endDate,
       startKey: 'startDate',
       endKey: 'endDate',
       range: {
         max: formatTime(new Date(), 'yyyy-MM'),
         maxMonthRange: 24
-      }
+      },
+      value: [startDate, endDate]
     }
   }
 }
