@@ -222,7 +222,7 @@ export default {
     // 需要在父组件引入 mixins prisonFilterCreator
     // 而且父组件的 参数的名 必须为 searchItems
     // 或者传props 进来
-    searchItems: {
+    parentSearchItems: {
       type: Object,
       default: () => ({})
     },
@@ -264,7 +264,8 @@ export default {
       componentsVisible,
       tableCols,
       tabItems,
-      tabs
+      tabs,
+      parentSearchItems
     } = toRefs(props)
 
     // data
@@ -313,6 +314,9 @@ export default {
 
     // el-tabs 的value
     const $tabs = ref('')
+
+    // 深拷贝的查询组件的元素
+    const searchItems = reactive(cloneDeep(parentSearchItems.value))
 
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
@@ -604,6 +608,7 @@ export default {
       dialogTitle,
       $tabs,
       initData,
+      searchItems
     }
   }
 }
