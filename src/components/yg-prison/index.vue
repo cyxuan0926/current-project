@@ -72,6 +72,8 @@
         ref="$ygTable"
         :data="$pagedYgPrisonsDataCommon.list"
         :cols="$tableCols"
+        v-bind="elTableConfigs['_$attrs']"
+        v-on="elTableConfigs['_$listeners']"
       >
         <template v-for="col in $tableCols" #[col.slotName]="scope">
           <!-- 默认是为了 不可控的插槽的显示本身值 -->
@@ -222,7 +224,7 @@ export default {
     // 需要在父组件引入 mixins prisonFilterCreator
     // 而且父组件的 参数的名 必须为 searchItems
     // 或者传props 进来
-    parentSearchItems: {
+    searchItems: {
       type: Object,
       default: () => ({})
     },
@@ -255,6 +257,17 @@ export default {
     componentsVisible: {
       type: Object,
       default: () => ({})
+    },
+
+    // m-table
+    elTableConfigs: {
+      type: Object,
+      default: () => {
+        return {
+          _$attrs: {}, // el-table的属性
+          _$listeners: {} // el-table的事件
+        }
+      }
     }
   },
 
@@ -264,8 +277,7 @@ export default {
       componentsVisible,
       tableCols,
       tabItems,
-      tabs,
-      parentSearchItems
+      tabs
     } = toRefs(props)
 
     // data
@@ -314,9 +326,6 @@ export default {
 
     // el-tabs 的value
     const $tabs = ref('')
-
-    // 深拷贝的查询组件的元素
-    const searchItems = reactive(cloneDeep(parentSearchItems.value))
 
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
@@ -607,8 +616,7 @@ export default {
       onYGPrisonDownloadExcel,
       dialogTitle,
       $tabs,
-      initData,
-      searchItems
+      initData
     }
   }
 }

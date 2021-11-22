@@ -3,7 +3,7 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :parentSearchItems="searchItems"
+      :searchItems="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
@@ -27,6 +27,8 @@ import {
   httpRequests,
   _tableCols
 } from '../constants'
+
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'PrisonAdminstrationList',
 
@@ -35,7 +37,7 @@ export default {
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
 
-    const searchItems = reactive(_searchItems)
+    const searchItems = reactive(cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 

@@ -3,11 +3,14 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :parentSearchItems="searchItems"
+      :searchItems="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
-    />
+      :elTableConfigs="elTableConfigs"
+    >
+      <template #infoRecipeYearNum="{ row }">{{ row.yearNum }}</template>
+    </m-yg-prison-content>
   </el-row>
 </template>
 
@@ -30,6 +33,8 @@ import {
   httpRequests,
   _tableCols
 } from '../constants'
+
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'PrisonAdminstrationList',
 
@@ -38,7 +43,7 @@ export default {
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
 
-    const searchItems = reactive(_searchItems)
+    const searchItems = reactive(cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 
@@ -62,10 +67,55 @@ export default {
         return accumulator
       }, {})
     })
+
     const $tableCols = computed(() => _tableCols[$tabs['value']])
 
+    const onTableSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
+      if ($tabs.value !== '0') return {
+        rowspan: 0,
+        colspan: 0
+      }
+
+      else {
+        if (['monthNum'].includes(column.property)) {
+          return {
+            rowspan: 0,
+            colspan: 0
+          }
+        }
+        return {
+          rowspan: 0,
+          colspan: 0
+        }
+      }
+    }
+
+    const elTableConfigs = reactive({
+      _$attrs: {
+        spanMethod: onTableSpanMethod
+      }
+    })
+
     watch($tabs, val => {
-      $ygPrisonAdminstrationParent.value.initData()
+      if (val  === '0') {
+        searchItems.prisonArea.miss = true
+
+        searchItems.prisonerNumber.miss = true
+
+        searchItems.prisonerName.miss = true
+      }
+
+      else {
+        searchItems.prisonArea.miss = false
+
+        searchItems.prisonerNumber.miss = false
+
+        searchItems.prisonerName.miss = false
+      }
+
+      $ygPrisonAdminstrationParent.value && $ygPrisonAdminstrationParent.value.initData()
+    }, {
+      immediate: true
     })
 
     return {
@@ -74,11 +124,9 @@ export default {
       $tabs,
       $tabItems,
       $httpRequests,
-      $tableCols
+      $tableCols,
+      elTableConfigs
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

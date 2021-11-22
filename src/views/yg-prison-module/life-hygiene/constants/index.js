@@ -1,5 +1,5 @@
 import { _ygPrisonCommonSearchItems, _ygPrisonCommonTableCols } from '@/common/constants/yg-prisons'
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+
 import { arrayRemove } from '@/utils/helper'
 
 export const tabItems = [
@@ -32,50 +32,50 @@ export const _searchItems = _ygPrisonCommonSearchItems()
 export const httpRequests = {
   // 查询数据表
   pagedRequest: {
-    0: {
+    '0': {
       url: '/infoRecipe/page',
       params: {}
     },
-    1: {
+    '1': {
       url: '/infoFoodSupply/foodSupplyList',
       params: {}
     },
-    2: {
+    '2': {
       url: '/infoMedicalExpense/medicalExpenseList',
       params: {}
     },
-    3: {
+    '3': {
       url: '/infoQuiltSend/quiltSendList',
       params: {}
     },
-    4: {
+    '4': {
       url: '/infoPocketMoney/pocketMoneyList',
       params: {}
     }
   },
     // 导出数据表
   excelExportRequest: {
-    0: {
+    '0': {
       url: '/infoRecipe/export',
       params: {},
       methods: 'get'
     },
-    1: {
+    '1': {
       url: '/infoFoodSupply/exportFoodSupplyList',
       params: {},
       methods: 'get'
     },
-    2: {
+    '2': {
       url: '/infoMedicalExpense/exportMedicalExpense',
       params: {},
       methods: 'get'
     },
-    3: {
+    '3': {
       url: '/infoQuiltSend/export',
       params: {},
       methods: 'get'
     },
-    4: {
+    '4': {
       url: '/infoPocketMoney/exportPocketMoney',
       params: {},
       methods: 'get'
@@ -83,31 +83,31 @@ export const httpRequests = {
   },
    // 数据表模板下载
   excelDownloadRequest: {
-    0: {
+    '0': {
       params: {
         fileName: '/template/info_recipe_template.xls'
       }
     },
 
-    1: {
+    '1': {
       params: {
         fileName: '/template/food_supply_template.xls'
       }
     },
 
-    2: {
+    '2': {
       params: {
         fileName: '/template/medical_expense_template.xls'
       }
     },
 
-    3: {
+    '3': {
       params: {
         fileName: '/template/quilt_send_template.xls'
       }
     },
 
-    4: {
+    '4': {
       params: {
         fileName: '/template/pocket_money_template.xls'
       }
@@ -115,27 +115,27 @@ export const httpRequests = {
   },
  // 导入数据表
   excelUploadRequest: {
-    0: {
+    '0': {
       url: '/infoRecipe/import',
       params: {},
       methods: 'post'
       },
-     1: {
+     '1': {
       url: '/infoFoodSupply/importInfoFoodSupply',
       params: {},
       methods: 'post'
       },
-    2: {
+    '2': {
         url: '/infoMedicalExpense/importInfoMedicalExpense',
         params: {},
         methods: 'post'
         },
-     3: {
+     '3': {
           url: '/infoQuiltSend/importInfoQuiltSend',
           params: {},
           methods: 'post'
       },
-     4: {
+     '4': {
            url: '/infoPocketMoney/importInfoPocketMoney',
            params: {},
            methods: 'post'
@@ -172,13 +172,24 @@ const _reason = {
   showOverflowTooltip: true
 }
 
-export const _tableCols = {
-  0: [
-    {
-      label: '序号',
-      type: 'index'
-    },
+const _infoFoodSupplyCols = () => {
+  const _temp = _ygPrisonCommonTableCols()
 
+  arrayRemove(_temp, '序号', 'label')
+
+  return _temp
+}
+
+const _infoQuiltSendCols = () => {
+  const _temp = _criminalRate()
+
+  arrayRemove(_temp, '序号', 'label')
+
+  return _temp
+}
+
+export const _tableCols = {
+  '0': [
     {
       label: '省份',
       prop: 'provincesName',
@@ -195,15 +206,16 @@ export const _tableCols = {
       // 以防需要自定义
       label: '年份',
       prop: 'yearNum',
-      slotName: 'yearNum'
+      slotName: 'infoRecipeYearNum'
     },
 
     {
       // 以防需要自定义
       label: '月份',
       prop: 'monthNum',
-      slotName: 'monthNum'
+      slotName: 'infoRecipeMonthNum'
     },
+
     {
       // 以防需要自定义
       label: '星期',
@@ -228,22 +240,9 @@ export const _tableCols = {
     _createTime
   ],
 
-  1: [
-    ..._criminalRate(),
+  '1': [
+    ..._infoFoodSupplyCols(),
 
-    {
-      // 以防需要自定义
-      label: '年份',
-      prop: 'yearNum',
-      slotName: 'yearNum'
-    },
-
-    {
-      // 以防需要自定义
-      label: '月份',
-      prop: 'monthNum',
-      slotName: 'monthNum'
-    },
     {
       label: '食物名称',
       prop: 'foodName'
@@ -256,7 +255,7 @@ export const _tableCols = {
     _createTime
   ],
 
-  2: [
+  '2': [
     ..._commonCols,
 
     {
@@ -271,39 +270,8 @@ export const _tableCols = {
     _reason,
     _createTime
   ],
-  3: [
-    {
-      label: '序号',
-      type: 'index'
-    },
-    {
-      label: '省份',
-      prop: 'provincesName',
-      showOverflowTooltip: true
-    },
-
-    {
-      label: '监狱名称',
-      prop: 'jailName',
-      showOverflowTooltip: true
-    },
-    {
-      label: '监区',
-      prop: 'prisonArea',
-      slotName: 'prisonArea',
-      showOverflowTooltip: true
-    },
-    {
-      label: '罪犯姓名',
-      prop: 'prisonerName',
-      ...$likeName
-    },
-
-    {
-      label: '罪犯编号',
-      prop: 'prisonerNumber',
-      ...$likePrisonerNumber
-    },
+  '3': [
+    ..._infoQuiltSendCols(),
     {
       label: '类别',
       prop: 'category'
@@ -324,42 +292,10 @@ export const _tableCols = {
       prop: 'condition',
       showOverflowTooltip: true
     },
-    _remark,
-    _createTime
+    _remark
   ],
-  4: [
-    {
-      label: '序号',
-      type: 'index'
-    },
-    {
-      label: '省份',
-      prop: 'provincesName',
-      showOverflowTooltip: true
-    },
-
-    {
-      label: '监狱名称',
-      prop: 'jailName',
-      showOverflowTooltip: true
-    },
-    {
-      label: '监区',
-      prop: 'prisonArea',
-      slotName: 'prisonArea',
-      showOverflowTooltip: true
-    },
-    {
-      label: '罪犯姓名',
-      prop: 'prisonerName',
-      ...$likeName
-    },
-
-    {
-      label: '罪犯编号',
-      prop: 'prisonerNumber',
-      ...$likePrisonerNumber
-    },
+  '4': [
+    ..._commonCols,
     {
       label: '收入情况',
       prop: 'income'
