@@ -148,7 +148,7 @@ export const _tableCols = {
 
     {
       label: '奖扣分',
-      prop: 'scores'
+      prop: 'awardScores'
     },
 
     {
@@ -160,6 +160,11 @@ export const _tableCols = {
     {
       label: '当月得分',
       prop: 'monthScores'
+    },
+
+    {
+      label: '累计得分',
+      prop: 'scores'
     },
 
     _remark,
