@@ -271,28 +271,29 @@ export const _tableCols = {
     _createTime
   ],
   '3': [
-    ..._infoQuiltSendCols(),
-    {
-      label: '类别',
-      prop: 'category'
-    },
-
-    {
-      label: '品名',
-      prop: 'brandName',
-      showOverflowTooltip: true
-    },
-    {
-      label: '标准',
-      prop: 'standard',
-      showOverflowTooltip: true
-    },
-    {
-      label: '发放情况',
-      prop: 'condition',
-      showOverflowTooltip: true
-    },
-    _remark
+      ..._criminalRate(),
+      {
+        label: '类别',
+        prop: 'category'
+      },
+  
+      {
+        label: '品名',
+        prop: 'brandName',
+        showOverflowTooltip: true
+      },
+      {
+        label: '标准',
+        prop: 'standard',
+        showOverflowTooltip: true
+      },
+      {
+        label: '发放情况',
+        prop: 'condition',
+        showOverflowTooltip: true
+      },
+      _remark,
+      _createTime
   ],
   '4': [
     ..._commonCols,

@@ -144,7 +144,7 @@ export const _tableCols = {
   ],
 
   1: [
-    ..._criminalRate(),
+    ..._commonCols,
 
     {
       label: '劳动报酬金',

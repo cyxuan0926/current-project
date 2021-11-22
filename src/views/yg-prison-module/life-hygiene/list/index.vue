@@ -97,22 +97,32 @@ export default {
     })
 
     watch($tabs, val => {
-      if (val  === '0') {
-        searchItems.prisonArea.miss = true
-
+       if(val==0){
+        searchItems.prisonArea.miss= true
         searchItems.prisonerNumber.miss = true
-
         searchItems.prisonerName.miss = true
+        searchItems.dateMonth.miss = false
+      }else if(val==1){
+          searchItems.prisonArea.miss= false
+            searchItems.prisonerNumber.miss = false
+            searchItems.prisonerName.miss = false
+            searchItems.dateMonth.miss = false
+      }else if(val==2){
+          searchItems.prisonArea.miss= false
+            searchItems.prisonerNumber.miss = false
+            searchItems.prisonerName.miss = false
+            searchItems.dateMonth.miss = false
+      }else if(val == 3){
+          searchItems.prisonArea.miss= false
+            searchItems.prisonerNumber.miss = false
+            searchItems.prisonerName.miss = false
+            searchItems.dateMonth.miss = true
+      }else if(val == 4){
+          searchItems.prisonArea.miss= false
+            searchItems.prisonerNumber.miss = false
+            searchItems.prisonerName.miss = false
+            searchItems.dateMonth.miss = false
       }
-
-      else {
-        searchItems.prisonArea.miss = false
-
-        searchItems.prisonerNumber.miss = false
-
-        searchItems.prisonerName.miss = false
-      }
-
       $ygPrisonAdminstrationParent.value && $ygPrisonAdminstrationParent.value.initData()
     }, {
       immediate: true
