@@ -72,20 +72,20 @@ export default {
 
     const onTableSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
       if ($tabs.value !== '0') return {
-        rowspan: 0,
-        colspan: 0
+        rowspan: 1,
+        colspan: 1
       }
 
       else {
         if (['monthNum'].includes(column.property)) {
           return {
-            rowspan: 0,
-            colspan: 0
+            rowspan: 1,
+            colspan: 1
           }
         }
         return {
-          rowspan: 0,
-          colspan: 0
+          rowspan: 1,
+          colspan: 1
         }
       }
     }
