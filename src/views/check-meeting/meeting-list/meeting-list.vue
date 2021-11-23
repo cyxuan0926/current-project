@@ -839,7 +839,8 @@
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间',
-            canNotClear: this.$store.state.global.user.role == '0',
+            canNotClear: true,
+            //canNotClear: this.$store.state.global.user.role == '0',
             value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')]
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]

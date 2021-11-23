@@ -84,6 +84,7 @@ export default {
           unlinkPanels: true,
           start: 'startDate',
           end: 'endDate',
+          canNotClear: true,
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
           value: [startDate, endDate]

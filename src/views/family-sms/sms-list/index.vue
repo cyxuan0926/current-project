@@ -595,6 +595,7 @@ export default {
         applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
+            canNotClear:true,
             start: 'startTime',
             end: 'endTime',
             startPlaceholder: '申请开始时间',
