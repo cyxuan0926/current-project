@@ -5,3 +5,4 @@ export const downloadPublicServiceFile = (url, attachment = true) => {
 
   return get(url, { attachment }, { responseType })
 }
+

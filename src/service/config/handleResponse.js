@@ -170,7 +170,8 @@ const handleErrorMessage = (message) => {
   return word ? enToZh[word] : message
 }
 export default params => {
-  if (responseURLWhiteLists.includes(params.config.url.replace(`${ params.config.baseURL + agency }`, '')) || responseURLWhiteLists.some(url => params.config.url.includes(url))) {
+  const requestUrl = params.config.url.replace(`${ params.config.baseURL + agency }`, '')
+  if (responseURLWhiteLists.includes(requestUrl) || responseURLWhiteLists.some(url => params.config.url.includes(url)) || /^\/download.*/.test(requestUrl)) {
     if (params.status === 200 && !params.data.code) return params
   }
   // if (params.config.url.includes('/meetings/batchAuthorize')) if (params.status === 200) return params.data

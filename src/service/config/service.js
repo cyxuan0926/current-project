@@ -94,6 +94,11 @@ export const get = (url, params = {}, config = {}) => {
   params.t = new Date().getTime()
   return instance.get(getUrl(url), { params, ...config }).then(res => res)
 }
+
+export const getFile = url => {
+  return get(url, {}, { responseType: 'blob' })
+}
+
 /**
  * 封装post请求
  * @param url
