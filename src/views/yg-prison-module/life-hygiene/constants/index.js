@@ -171,25 +171,12 @@ const _reason = {
   prop: 'reason',
   showOverflowTooltip: true
 }
-
-const _infoFoodSupplyCols = () => {
-  const _temp = _ygPrisonCommonTableCols()
-
-  arrayRemove(_temp, '序号', 'label')
-
-  return _temp
-}
-
-const _infoQuiltSendCols = () => {
-  const _temp = _criminalRate()
-
-  arrayRemove(_temp, '序号', 'label')
-
-  return _temp
-}
-
 export const _tableCols = {
   '0': [
+    {
+      label: '序号',
+      type: 'index'
+    },
     {
       label: '省份',
       prop: 'provincesName',
@@ -241,8 +228,10 @@ export const _tableCols = {
   ],
 
   '1': [
-    ..._infoFoodSupplyCols(),
-
+    {
+      label: '序号',
+      type: 'index'
+    },
     {
       label: '食物名称',
       prop: 'foodName'
