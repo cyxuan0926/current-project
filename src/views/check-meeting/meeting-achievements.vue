@@ -93,6 +93,7 @@ export default {
           name: 'daterange',
           attrs: {
             type: 'daterange',
+            clearable: false,
             valueFormat: 'yyyy-MM-dd',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'

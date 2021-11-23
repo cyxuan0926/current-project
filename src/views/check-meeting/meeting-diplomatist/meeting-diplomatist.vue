@@ -344,6 +344,7 @@ export default {
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
+          canNotClear: true,
           start: 'applicationStartDate',
           end: 'applicationEndDate',
           startPlaceholder: '通话开始时间',

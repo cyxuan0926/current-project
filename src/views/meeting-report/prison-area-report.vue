@@ -93,6 +93,7 @@ export default {
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,
+          canNotClear: true,
           start: 'startDate',
           end: 'endDate',
           startPlaceholder: '通话开始时间',
