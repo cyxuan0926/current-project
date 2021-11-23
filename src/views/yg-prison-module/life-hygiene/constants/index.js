@@ -71,7 +71,7 @@ export const httpRequests = {
       methods: 'get'
     },
     '3': {
-      url: '/infoQuiltSend/export',
+      url: '/infoQuiltSend/exportQuiltSend',
       params: {},
       methods: 'get'
     },
