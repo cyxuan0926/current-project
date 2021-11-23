@@ -47,7 +47,8 @@ export default {
         time: {
           type: 'monthrange',
           start: 'start',
-          end: 'end'
+          end: 'end',
+          canNotClear: true,
         },
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1
           ? {
@@ -62,18 +63,32 @@ export default {
               options,
               belong
             }
-      }
+      },
+      filterInit: {},
     }
   },
   methods: {
     getDatas() {
       if (JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
+      console.log(this.filter)
       this.getPrisonersPocketMoney({
-        ...this.filter,
-        ...this.pagination
+          ...this.filter,
+          ...this.pagination
       })
+    },
+     onLocalGetFilter() {
+      this.$refs.search.onGetFilter()
     }
-  }
+  },
+   created() {
+      this.filterInit = Object.assign({}, this.filterInit, {
+        start:  this.$_dateOneWeekAgo,
+        end: this.$_dateNow
+      })
+    },
+    mounted(){
+      console.log(this.filterInit)
+    }
 }
 </script>
 

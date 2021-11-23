@@ -115,7 +115,7 @@ export default {
          date: {
           type: 'month',
           label: '时间',
-          canNotClear:true,
+          canNotClear: true,
           value: ''
         },
         name:  {

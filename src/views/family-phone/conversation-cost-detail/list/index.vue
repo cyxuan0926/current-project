@@ -247,6 +247,7 @@ export default {
           unlinkPanels: true,
           start: 'meetingStartDate',
           end: 'meetingEndDate',
+          canNotClear: true,
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
           pickerOptions: {
@@ -266,12 +267,13 @@ export default {
           type: 'dateRange',
           unlinkPanels: true,
           start: 'startDate',
+          canNotClear: true,
           end: 'endDate',
           startPlaceholder: '结算开始时间',
           endPlaceholder: '结算结束时间'
         }
       },
-
+      filterInit: {},
       downloading: false,
 
       settlementDialogVisible: false,
@@ -778,7 +780,7 @@ $border-style: 1px solid #E4E7ED;
   width: 12%;
   align-items:center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 13px
 }
 
 .detail-message {

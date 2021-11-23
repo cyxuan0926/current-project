@@ -494,7 +494,7 @@ export default {
         checkState:"",
         remarks:"同意！呈上审批。",
         nextCheckRole:"",
-        nextCheckCode:''
+        nextCheckCode:'',
       }
      const todayDate = Moment().format('YYYY-MM-DD')
     const oneMonthLater = Moment().add(-7, 'days').format('YYYY-MM-DD')
@@ -551,6 +551,7 @@ export default {
             unlinkPanels: true,
             start: 'startTime',
             end: 'endTime',
+            canNotClear: true,
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'
           },

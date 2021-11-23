@@ -175,6 +175,7 @@
                         type: 'dateRange',
                         unlinkPanels: true,
                         start: 'startTime',
+                        canNotClear: true,
                         end: 'endTime',
                         startPlaceholder: '开始时间',
                         endPlaceholder: '结束时间',

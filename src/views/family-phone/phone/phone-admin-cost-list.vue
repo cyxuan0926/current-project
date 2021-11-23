@@ -133,6 +133,7 @@ export default {
       downloading:false,
       tabledate:{},
       toShow:{},
+      filterInit: {},
       searchItems: {
         familyName: {
           type: 'input',
@@ -295,7 +296,7 @@ export default {
       })
     },
   mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
+    this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
     this.getDatas()
   }
 }

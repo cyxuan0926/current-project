@@ -114,7 +114,6 @@
           v-if="item.type=== 'monthRangeSelector' && !item.miss"
           class="monthRangeSelector"
           :prop="index"
-          :clear="!item.canNotClear"
           :range="item.range"
           :start-key="item.startKey"
           :end-key="item.endKey"

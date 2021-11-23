@@ -50,6 +50,7 @@ export default {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
+          canNotClear: true,
           unlinkPanels: true
         },
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1

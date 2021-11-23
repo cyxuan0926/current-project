@@ -777,7 +777,7 @@ export default {
   created() {
       this.filterInit = Object.assign({}, this.filterInit, {
         startTime:  this.oneMonthLater,
-        endTime:this.todayDate
+        endTime:  this.$_dateNow
       })
     },
   mounted() {

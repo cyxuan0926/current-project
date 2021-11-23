@@ -144,6 +144,7 @@ export default {
             type: 'dateRange',
             unlinkPanels: true,
             start: 'startDate',
+            canNotClear: true,
             end: 'endDate',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'

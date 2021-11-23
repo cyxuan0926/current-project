@@ -655,7 +655,7 @@ import { tokenExcel } from '@/utils/token-excel'
 import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-
+import Moment from 'moment'
 import {
     $likeName,
     $likePrisonerNumber,
@@ -667,6 +667,8 @@ export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
   data() {
+     const todayDate = Moment().format('YYYY-MM-DD')
+    const oneMonthLater = Moment().add(-7, 'days').format('YYYY-MM-DD')
     const tabsItems = [
       {
         label: '亲情电话',
@@ -696,6 +698,15 @@ export default {
         familyName: {
           type: 'input',
           label: '家属姓名'
+        },
+        applicationDate: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          canNotClear: true,
+          startPlaceholder: '开始时间',
+          endPlaceholder: '结束时间'
         },
 
         criminalName: {
@@ -737,6 +748,8 @@ export default {
           miss: true
         }
       },
+      todayDate,
+      oneMonthLater,
 
       familyInformationVisible: false,
 
@@ -1960,6 +1973,7 @@ export default {
   },
 
   async mounted() {
+    this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater,this.todayDate ])
     await this.getDatas()
   }
 }
