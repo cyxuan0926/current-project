@@ -228,10 +228,7 @@ export const _tableCols = {
   ],
 
   '1': [
-    {
-      label: '序号',
-      type: 'index'
-    },
+    ..._commonCols,
     {
       label: '食物名称',
       prop: 'foodName'
