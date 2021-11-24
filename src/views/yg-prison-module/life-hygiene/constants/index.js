@@ -253,7 +253,7 @@ export const _tableCols = {
       label: '治疗费',
       prop: 'cost'
     },
-    _reason,
+    _remark,
     _createTime
   ],
   '3': [
