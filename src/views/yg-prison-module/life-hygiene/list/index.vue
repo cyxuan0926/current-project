@@ -45,7 +45,7 @@ export default {
 
     const searchItems = reactive(cloneDeep(_searchItems))
 
-    const $tabs = ref('0')
+    const $tabs = ref('1')
 
     const $tabItems = reactive(tabItems)
 
@@ -103,10 +103,10 @@ export default {
         searchItems.prisonerName.miss = true
         searchItems.dateMonth.miss = false
       }else if(val==1){
-          searchItems.prisonArea.miss= false
-            searchItems.prisonerNumber.miss = false
-            searchItems.prisonerName.miss = false
-            searchItems.dateMonth.miss = false
+        searchItems.prisonArea.miss= false
+        searchItems.prisonerNumber.miss = false
+        searchItems.prisonerName.miss = false
+        searchItems.dateMonth.miss = false
       }else if(val==2){
           searchItems.prisonArea.miss= false
             searchItems.prisonerNumber.miss = false
