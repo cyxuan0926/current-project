@@ -262,7 +262,7 @@ export const _tableCols = {
         label: '类别',
         prop: 'category'
       },
-  
+
       {
         label: '品名',
         prop: 'brandName',
