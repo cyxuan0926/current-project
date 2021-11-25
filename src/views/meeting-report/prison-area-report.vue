@@ -56,25 +56,14 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
-
-
-const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
-const endDate = Moment().format('YYYY-MM-DD')
-
 import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
     return {
       show: false,
-
-      filterInit: { // 默认查询上一个月的，筛选框初始化
-        startDate: startDate,
-        endDate: endDate
-      },
 
       searchItems: {
         prisonAreaId: {
@@ -93,11 +82,12 @@ export default {
         reportRange: {
           type: 'dateRange',
           unlinkPanels: true,
+          canNotClear: true,
           start: 'startDate',
           end: 'endDate',
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
-          value: [startDate, endDate]
+          value: [this.$_oneMonthAgo, this.$_dateNow]
         },
 
         prisonerName: {
@@ -215,35 +205,12 @@ export default {
         this.$set(allCols[index], 'prop', 'prisonArea')
       }else{
         allCols.splice(2, 4)
-        this.searchItems.jailId.miss = true
-          this.searchItems.prisonAreaId.miss = true
-          this.searchItems.prisonerName.miss = true
-          this.searchItems.prisonerNumber.miss = true
+        if (this.searchItems.jailId) this.searchItems.jailId.miss = true
+        if (this.searchItems.prisonAreaId) this.searchItems.prisonAreaId.miss = true
+        if (this.searchItems.prisonerName)  this.searchItems.prisonerName.miss = true
+        if (this.searchItems.prisonerNumber)  this.searchItems.prisonerNumber.miss = true
       }
       return allCols
-    }
-  },
-
-  async mounted() {
-    this.$refs.search.onGetFilter()
-    if (this.hasAllPrisonQueryAuth) {
-      this.searchItems.prisonAreaId.getting = false
-      await this.getDatas()
-    } else {
-      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
-      await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } })
-
-      this.searchItems.prisonAreaId.options = this.jailPrisonAreas
-
-      this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
-
-      this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
-
-      this.filter.prisonAreaId = this.searchItems.prisonAreaId.options[0].id
-
-      this.searchItems.prisonAreaId.getting = false
-
-      await this.getDatas()
     }
   },
 
@@ -381,6 +348,30 @@ export default {
           this.$set(this.searchItems['prisonAreaId'], 'options', [])
         }
         this.$set(this.searchItems['prisonAreaId'], 'value', '')
+      }
+    },
+
+    async _mixinsInitMethods() {
+      if(this.hasAllPrisonQueryAuth) {
+        this.searchItems.prisonAreaId.getting = false
+
+        await this.getDatas()
+      } else {
+        this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
+
+        await this.getJailPrisonAreas({ url: '/prison_config/getPrisonConfigs', params: { jailId: JSON.parse(localStorage['user']).jailId } })
+
+        this.searchItems.prisonAreaId.options = this.jailPrisonAreas
+
+        this.searchItems.prisonAreaId.options.push({ id: '无监区', name: '无监区' })
+
+        this.searchItems.prisonAreaId.value = this.searchItems.prisonAreaId.options[0].id
+
+        this.filter.prisonAreaId = this.searchItems.prisonAreaId.options[0].id
+
+        this.searchItems.prisonAreaId.getting = false
+
+        await this.getDatas()
       }
     }
   }

@@ -1,17 +1,19 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <el-button
-      size="small"
-      type="primary"
-      plain
-      class="button-add button-shift-down"
-      @click="onAdd">添加广告</el-button>
+  <el-row class="row-container" :gutter="0">
     <m-search
       ref="search"
       :items="searchItems"
-      @search="onSearch" />
+      @search="onSearch"
+    >
+      <template #append>
+        <el-button
+          size="small"
+          type="primary"
+          plain
+          @click="onAdd"
+        >添加广告</el-button>
+      </template>
+    </m-search>
     <el-col :span="24">
       <m-table-new
         stripe
@@ -112,7 +114,8 @@ export default {
             start: 'startDateStart',
             end: 'startDateEnd',
             startPlaceholder: '周期开始时间',
-            endPlaceholder: '周期结束时间'
+            endPlaceholder: '周期结束时间',
+            value: [this.$_dateOneWeekAgo, this.$_dateNow]
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
           },
@@ -198,20 +201,6 @@ export default {
       'provincesAll',
       'advertisementTypes'
     ])
-  },
-
-  async mounted() {
-    this.$set(this.searchItems['startDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
-
-    this.$refs.search.onGetFilter()
-
-    this.getDatas()
-
-    let res= await getadserviceslist()
-
-    this.searchItems.adservicesId.options= res
-
-    this.searchItems.adservicesId.getting = false
   },
 
   methods: {
@@ -309,10 +298,15 @@ export default {
                   message: '已取消'
                 });
             }
+       },
+
+       async _mixinsInitMethods() {
+         const response = await Promise.all([this.getDatas(), getadserviceslist()])
+
+          this.searchItems.adservicesId.options= response[1]
+
+          this.searchItems.adservicesId.getting = false
        }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

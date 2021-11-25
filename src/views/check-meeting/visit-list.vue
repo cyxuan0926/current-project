@@ -684,9 +684,6 @@
         }
       ]
 
-      // const yesterdayDate = Moment().subtract(1, 'days').format('YYYY-MM-DD')
-      const todayDate = this.$_dateNow
-
       const oneMonthLater = Moment().add(1, 'months').format('YYYY-MM-DD')
       return {
         user: this.$store.state.global.user,
@@ -715,9 +712,10 @@
             unlinkPanels: true,
             start: 'applicationStartDate',
             end: 'applicationEndDate',
+            canNotClear: true,
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间',
-            value: [ this.$_dateNow, Moment().add(1, 'months').format('YYYY-MM-DD') ]
+            value: [this.$_dateNow, Moment().add(1, 'months').format('YYYY-MM-DD')]
           },
 
           prisonerName: {
@@ -861,14 +859,7 @@
 
           status: 'status'
         },
-
-        // yesterdayDate,
-
-        // todayDate,
-
-        oneMonthLater,
         submitParams:{},
-        filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
         updateer:'',
@@ -1174,18 +1165,6 @@
         },
         deep: true
       }
-    },
-
-    created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        applicationStartDate: this.todayDate,
-        applicationEndDate: this.oneMonthLater
-      })
-    },
-
-    async mounted() {
-      this.$refs.search.onGetFilter()
-      this.getDatas()
     },
 
     methods: {

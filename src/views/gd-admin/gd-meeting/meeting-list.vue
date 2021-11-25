@@ -7,6 +7,7 @@
       :params="filter"
     />
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
@@ -33,23 +34,17 @@
 <script>
 import http from '@/service'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import Moment from 'moment'
 export default {
   mixins: [prisonFilterCreator],
   data() {
-     const endDate = Moment().format('YYYY-MM-DD')
-    const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
    return {
-      initFilter: { // 默认查询上一个月的，筛选框初始化
-        startDate,
-        endDate
-      },
       searchItems: {
        time: {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
-          value: [startDate, endDate],
+          canNotClear: true,
+          value: [this.$_oneMonthAgo, this.$_dateNow],
           unlinkPanels: true
         }
       },
@@ -145,15 +140,13 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.getDatas()
-  },
+
   methods: {
      async getDatas() {
       let res = await http.getPrisonReportListJails({ ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId})
       this.tabledata=res
     },
+
     onSearch() {
       this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       this.$refs.pagination.handleCurrentChange(1)

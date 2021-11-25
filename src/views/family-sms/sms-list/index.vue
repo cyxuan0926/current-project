@@ -498,7 +498,6 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import validator from '@/utils'
-import Moment from 'moment'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
@@ -512,8 +511,6 @@ import {
 export default {
   mixins: [prisonFilterCreator],
   data() {
-    const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
     const stateAll = [
@@ -595,10 +592,12 @@ export default {
         applicationDate: {
             type: 'dateRange',
             unlinkPanels: true,
+            canNotClear:true,
             start: 'startTime',
             end: 'endTime',
             startPlaceholder: '申请开始时间',
-            endPlaceholder: '申请结束时间'
+            endPlaceholder: '申请结束时间',
+            value: [this.$_oneMonthAgo, this.$_dateNow]
           },
         criminalName: {
           type: 'input',
@@ -669,10 +668,7 @@ export default {
       remarks: [],
       disArgeeRemarks: "",
       tabPanes,
-      todayDate,
       mediaQueryList:null,
-      oneMonthLater,
-      filterInit: {},
       tabledate:{},
       tableCols: [
         {
@@ -772,41 +768,39 @@ export default {
     },
     remarks(val) {
       if (val !== '其他' && this.refuseForm.refuseRemark) this.$refs['refuseForm'].resetFields()
-    }
-  },
-  created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        startTime:  this.oneMonthLater,
-        endTime:this.todayDate
-      })
     },
-  mounted() {
-     window.addEventListener("message",  e => {
-      if(!e.data.type){
-               this.$confirm('确认打印机是否正常工作, 正常出票?', '提示', {
-                confirmButtonText: '正常出票',
-                cancelButtonText: '没有出票',
-                type: 'warning'
-              }).then(async () => {
-                let gkMessageIdList=[]
-                //判断是单独打印还是批量打印
-                if(this.show.isMessageList){
-                  this.messagePrintList.forEach(item=>gkMessageIdList.push(item.uid))
-                }else{
-                  gkMessageIdList.push(this.messageContent.uid)
-                }
-                 let res = await http.messagePrint({gkMessageIdList:gkMessageIdList})
-                  if(res){
-                   this.show.message=false
-                   this.messageContent={}
-                   this.getDatas()
-                  }
-              })
+
+    async _mixinsInitMethods() {
+      window.addEventListener("message",  e => {
+        if(!e.data.type) {
+          this.$confirm('确认打印机是否正常工作, 正常出票?', '提示', {
+            confirmButtonText: '正常出票',
+            cancelButtonText: '没有出票',
+            type: 'warning'
+          }).then(async () => {
+            let gkMessageIdList = []
+            //判断是单独打印还是批量打印
+            if(this.show.isMessageList) this.messagePrintList.forEach(item=>gkMessageIdList.push(item.uid))
+
+            else gkMessageIdList.push(this.messageContent.uid)
+
+            let res = await http.messagePrint({gkMessageIdList:gkMessageIdList})
+
+            if(res) {
+              this.show.message = false
+
+              this.messageContent = {}
+
+              await this.getDatas()
+            }
+        })
       }
     }, false);
-     this.$set(this.searchItems.applicationDate, 'value', [ this.oneMonthLater, this.todayDate])
-    this.getDatas()
+
+    await this.getDatas()
+    }
   },
+
   methods: {
     ...mapActions([
       'getVisits',

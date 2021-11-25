@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch" >
         <template slot="append">
@@ -70,11 +71,6 @@ export default {
     ]
     return {
       isFirst: true,
-      initFilter: {
-        year,
-        timeType:1,
-        dataType:1
-      },
       downloading:false,
       searchItems: {
        year:{
@@ -103,9 +99,10 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.getDatas()
+  async mounted() {
+    this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   },
   methods: {
      // 导出excel

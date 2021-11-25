@@ -148,14 +148,10 @@
                 } catch (error) {
                     this.loading.refresh = false
                 }
+            },
+            async _mixinsInitMethods() {
+                await this.handleRefresh()
             }
-        },
-        mounted() {
-            this.handleRefresh()
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

@@ -173,7 +173,6 @@
 
 <script>
 import { mapActions } from 'vuex'
-import Moment from 'moment'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
@@ -187,8 +186,6 @@ import {
 export default {
   mixins: [prisonFilterCreator],
   data() {
-    const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(-1, 'months').format('YYYY-MM-DD')
    const stateAll = [
       {
         label: '未审核',
@@ -270,7 +267,8 @@ export default {
             start: 'startDate',
             end: 'endDate',
             startPlaceholder: '申请开始时间',
-            endPlaceholder: '申请结束时间'
+            endPlaceholder: '申请结束时间',
+            value: [this.$_oneMonthAgo, this.$_dateNow]
           },
         prisonerName: {
           type: 'input',
@@ -316,9 +314,6 @@ export default {
         contentId:"",
       remarks: [],
       tabPanes,
-      todayDate,
-      oneMonthLater,
-      filterInit: {},
       tabledate:{},
       tableCols: [
         {
@@ -413,16 +408,7 @@ export default {
       this.onSearch()
     }
   },
-  created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        startTime:  this.oneMonthLater,
-        endTime:this.todayDate
-      })
-    },
-  mounted() {
-     this.$set(this.searchItems.applicationDate, 'value', [ this.oneMonthLater, this.todayDate])
-    this.getDatas()
-  },
+
   methods: {
     ...mapActions([
       'getVisits',

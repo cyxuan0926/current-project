@@ -12,6 +12,9 @@
 <script>
 import qs from 'qs';
 import urls from '@/service/urls';
+import { getFile } from '@/service/config/service'
+import { saveAs } from 'file-saver'
+import { helper } from '@/utils'
 
 export default {
   props: {
@@ -42,7 +45,7 @@ export default {
   },
 
   methods: {
-    onDownloadExcel() {
+    async onDownloadExcel() {
       const { apiHostKey, apiPathKey } = this.apiConfigs
 
       const apiHost = urls[apiHostKey]
@@ -53,7 +56,10 @@ export default {
 
       const query = qs.stringify(params)
 
-      location.href = apiHost + apiPath + this.path + (query && '?' + query)
+      let res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
+      if (res && res.data) {
+        saveAs(res.data, `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+      }
     }
   }
 }

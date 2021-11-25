@@ -110,7 +110,7 @@
                             value: 'id'
                         },
                         selectKey: 'callOrgProvince',
-                        value: ''
+                        value: '1'
                     },
                     callOrgType: {
                         label: '单位类型',
@@ -214,7 +214,3 @@
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

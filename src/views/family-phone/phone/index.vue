@@ -469,7 +469,7 @@ import { mapActions, mapState } from 'vuex'
 import familyDetailModal from '@/components/family/family-detail-modal.vue'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-import Moment from 'moment'
+
 import http from '@/service'
 
 import {
@@ -493,10 +493,9 @@ export default {
         checkState:"",
         remarks:"同意！呈上审批。",
         nextCheckRole:"",
-        nextCheckCode:''
+        nextCheckCode:'',
       }
-     const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(-7, 'days').format('YYYY-MM-DD')
+
     const tabsItems = [
       {
         label: '亲情电话申请',
@@ -524,8 +523,6 @@ export default {
       prisonerHref:`/download/downloadfile?filepath=family_phone_apply_template.xls`,
       src:"",
       tabs: '3',
-      todayDate,
-      oneMonthLater,
       tabledate:{},
       toShow:{},
       downloading: false,
@@ -550,8 +547,10 @@ export default {
             unlinkPanels: true,
             start: 'startTime',
             end: 'endTime',
+            canNotClear: true,
             startPlaceholder: '开始时间',
-            endPlaceholder: '结束时间'
+            endPlaceholder: '结束时间',
+            value: [this.$_oneMonthAgo, this.$_dateNow]
           },
 
         state: {
@@ -1193,16 +1192,9 @@ export default {
       }
     },
   },
+
   created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        startTime: this.oneMonthLater,
-        endTime: this.todayDate
-      })
-    },
-  mounted() {
-    this.show.isAdd=this.$store.state.account.authorities.findIndex(item=>item==`visit.family-phone.phone-jail.add`)==-1?false:true
-     this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
-    this.getDatas()
+    this.show.isAdd = this.$store.state.account.authorities.findIndex(item=>item==`visit.family-phone.phone-jail.add`) === -1 ? false : true
   }
 }
 </script>

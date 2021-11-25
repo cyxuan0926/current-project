@@ -97,12 +97,6 @@ export default {
             }
         }
 
-        // 生命周期 mounted
-        onMounted(() => {
-            $search.value.onGetFilter()
-            getData()
-        })
-
         return {
             $search,
             $pagination,

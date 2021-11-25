@@ -57,10 +57,6 @@
             }
         },
 
-        created() {
-            this.getDatas()
-        },
-
         methods: {
             handlePage(page, rows) {
                 if( page ) {
@@ -94,8 +90,6 @@
 
             async getDatas() {
                 const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({
-                    startDate,
-                    endDate,
                     ...this.filter,
                     ...this.pagination
                 })

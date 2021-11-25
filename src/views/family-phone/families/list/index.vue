@@ -656,10 +656,10 @@ import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import {
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
-  } from '@/common/constants/const'
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone
+} from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -695,6 +695,16 @@ export default {
         familyName: {
           type: 'input',
           label: '家属姓名'
+        },
+        applicationDate: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          canNotClear: true,
+          startPlaceholder: '开始时间',
+          endPlaceholder: '结束时间',
+          value: [this.$_oneMonthAgo, this.$_dateNow]
         },
 
         criminalName: {
@@ -1946,10 +1956,6 @@ export default {
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
     }
-  },
-
-  async mounted() {
-    await this.getDatas()
   }
 }
 </script>

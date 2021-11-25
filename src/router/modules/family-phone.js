@@ -42,7 +42,7 @@ const routes = [
         name: 'FamilyPhoneSupervise',
         meta: { permission: 'visit.family-phone.phone-supervise', breadcrumbName: '亲情电话监管表' },
         props: { hasPrisonAreaAuth: true },
-        component: 'family-phone/supervise/index'
+        component: 'family-phone/supervise'
       }
     ]
   }

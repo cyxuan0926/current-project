@@ -175,10 +175,10 @@
                         type: 'dateRange',
                         unlinkPanels: true,
                         start: 'startTime',
+                        canNotClear: true,
                         end: 'endTime',
                         startPlaceholder: '开始时间',
                         endPlaceholder: '结束时间',
-                        // miss: true,
                         value: [this.$_dateOneWeekAgo, this.$_dateNow]
                     }
                 },
@@ -298,10 +298,6 @@
                     this.downloading = false
                 }
             }
-        },
-        mounted() {
-            this.$refs.search.onGetFilter()
-            this.getData()
         }
     }
 </script>

@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" >
@@ -46,10 +47,6 @@ export default {
      const endTime = Moment().format('YYYY-MM-DD')
     const startTime = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
-      initFilter: { // 默认查询上一个月的，筛选框初始化
-        startTime,
-        endTime
-      },
       downloading:false,
       searchItems: {
        time: {
@@ -162,10 +159,7 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.getDatas()
-  },
+
   methods: {
      // 导出excel
     async onDownloadExcel() {

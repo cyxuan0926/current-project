@@ -26,7 +26,10 @@ export default {
     hasOnlyAllPrisonQueryAuth: Boolean,
     hasProvinceQueryAuth: Boolean,
     isChartQuery: Boolean,
-    provincesId: String,
+    provincesId: {
+      type: String,
+      default: '1'
+    },
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
     hasPrisonAreaAuth: Boolean
@@ -39,19 +42,52 @@ export default {
     }
   },
 
-  created() {
-    if (this.hasDiplomatQueryAuth) this.createDiplomatFilter()
+  async mounted() {
+    let _promise = []
 
-    if (this.hasOnlyAllPrisonQueryAuth) this.createPrisonFilter()
-
-    if (this.hasAllPrisonQueryAuth) {
-      this.createPrisonAreaFilter()
-      this.createPrisonFilter()
+    if (this.hasDiplomatQueryAuth) {
+      _promise = [
+        ..._promise,
+        this.createDiplomatFilter()
+      ]
     }
 
-    if (this.hasPrisonAreaAuth) this.createPrisonAreaFilter()
+    if (this.hasOnlyAllPrisonQueryAuth) {
+      _promise = [
+        ..._promise,
+        this.createPrisonFilter()
+      ]
+    }
 
-    if (this.hasProvinceQueryAuth) this.createProvinceFilter()
+    if (this.hasAllPrisonQueryAuth) {
+      _promise = [
+        ..._promise,
+        this.createPrisonAreaFilter(),
+        this.createPrisonFilter()
+      ]
+    }
+
+    if (this.hasPrisonAreaAuth) {
+      _promise = [
+        ..._promise,
+        this.createPrisonAreaFilter()
+      ]
+    }
+
+    if (this.hasProvinceQueryAuth) {
+      _promise = [
+        ..._promise,
+        this.createProvinceFilter()
+      ]
+    }
+
+    await Promise.all(_promise)
+
+    const $search = this.$refs.search || this.$refs.$search
+
+    $search && $search.onGetFilter()
+
+    await this._initData()
   },
 
   methods: {
@@ -185,7 +221,7 @@ export default {
       }, ret)
     },
 
-    createPrisonAreaFilter() {
+    async createPrisonAreaFilter() {
       const prisonAreaItem = Object.assign({}, baseItem, {
         selectKey: 'prisonAreaId',
         label: '监区'
@@ -198,7 +234,13 @@ export default {
       const _jailId = this.jailId || this.$store.state.global.user.jailId
 
       if (_jailId && _jailId !== -1) {
-        this.searchSelectChange('jailId', _jailId)
+        await this.searchSelectChange('jailId', _jailId)
+
+        if (!this.$store.getters.isSuperAdmin && this.hasPrisonAreaAuth && this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
+          const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
+
+          this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
+        }
       }
     },
 
@@ -219,12 +261,17 @@ export default {
     async searchSelectChange(selectKey, value) {
       if (selectKey === 'prisonAreaId') {
         this.clearSubPrisonArea('prisonSubArea')
+
         if (value) {
           let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
+
           Message.closeAll()
+
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonSubArea()
+
             this.$set(this.searchItems['prisonSubArea'], 'value', '')
+
             this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
           }
         }
@@ -232,12 +279,17 @@ export default {
 
       if (selectKey === 'prisonSubAreaId') {
         this.clearSubPrisonArea('prisonHouse')
+
         if (value) {
           let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
+
           Message.closeAll()
+
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonHouseItem()
+
             this.$set(this.searchItems['prisonHouse'], 'value', '')
+
             this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
           }
         }
@@ -247,10 +299,14 @@ export default {
         this.clearSubPrisonArea('prisonFloor')
         if (value) {
           let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value }) || {}
+
           Message.closeAll()
+
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonFloorItem()
+
             this.$set(this.searchItems['prisonFloor'], 'value', '')
+
             this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
           }
         }
@@ -280,8 +336,10 @@ export default {
           this.clearSubPrisonArea('prisonSubArea')
 
           this.$set(this.searchItems['jailId'], 'value', '')
+
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
+
             this.$set(this.searchItems['prisonArea'], 'options', [])
           }
         }
@@ -302,12 +360,13 @@ export default {
       if (selectKey === 'status') {
         if (this.searchItems.changerType) {
           if (value === 'CANCELED') {
-            if (this.toShow && this.toShow.changerType === true) {
-              this.searchItems.changerType.miss = true
-            }
+            if (this.toShow && this.toShow.changerType === true) this.searchItems.changerType.miss = true
+
             else {
               this.searchItems.changerType.miss = false
+
               delete this.filter.changerType
+
               this.searchItems.changerType.value = ''
             }
           }
@@ -319,6 +378,16 @@ export default {
     },
 
     // mixins search组件本地 其他 select 的change事件的方法
-    prisonFilterCreatorSelfSearchSelectChange(selectKey, value) {}
+    prisonFilterCreatorSelfSearchSelectChange(selectKey, value) {},
+
+    // 初始化数据
+    async _initData() {
+      // 优先自定义的方法
+      const _promise = this._mixinsInitMethods || this.getDatas || this.getData || async function() {
+        return true
+      }
+
+      await _promise()
+    }
   }
 }

@@ -30,7 +30,8 @@ import {
   _timeNow,
   _timeOneWeekAgo,
   _operationAuthorizations,
-  uploadStepsTabOptions
+  uploadStepsTabOptions,
+  _oneMonthAgo
 } from '@/common/constants/const'
 
 // 打印机
@@ -61,6 +62,8 @@ Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 Vue.prototype.$_operationAuthorizations = _operationAuthorizations
 
 Vue.prototype.$_uploadStepsTabOptions = uploadStepsTabOptions
+
+Vue.prototype.$_oneMonthAgo = _oneMonthAgo
 
 // 只在生产环境启用等保
 if (BUILD_ENV === 'production') {

@@ -247,6 +247,7 @@ export default {
           unlinkPanels: true,
           start: 'meetingStartDate',
           end: 'meetingEndDate',
+          canNotClear: true,
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
           pickerOptions: {
@@ -266,6 +267,7 @@ export default {
           type: 'dateRange',
           unlinkPanels: true,
           start: 'startDate',
+          canNotClear: true,
           end: 'endDate',
           startPlaceholder: '结算开始时间',
           endPlaceholder: '结算结束时间'
@@ -709,28 +711,28 @@ export default {
 
     isEmpty(input) {
       return isEmpty(input)
-    }
-  },
+    },
 
-  async mounted() {
-    this.$set(this.searchItems['meetingTime'], 'clearable', !this.isSuperAdmin)
+    async _mixinsInitMethods() {
+      this.$set(this.searchItems['meetingTime'], 'clearable', !this.isSuperAdmin)
 
-    if (this.isSuperAdmin) {
-      this.$set(this.searchItems['meetingTime'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+      if (this.isSuperAdmin) {
+        this.$set(this.searchItems['meetingTime'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
 
-      this.$refs.search.onGetFilter()
-    }
+        this.$refs.search.onGetFilter()
+      }
 
-    await this.getDatas()
+      await this.getDatas()
 
-    if (!this.isSuperAdmin) {
-      const { configs } = this.settleAccountsPaged
+      if (!this.isSuperAdmin) {
+        const { configs } = this.settleAccountsPaged
 
-      const { meetingEndDate = Moment().subtract(1, 'days').format('YYYY-MM-DD'), meetingStartDate } = configs
+        const { meetingEndDate = Moment().subtract(1, 'days').format('YYYY-MM-DD'), meetingStartDate } = configs
 
-      this.$set(this.searchItems['meetingTime'], 'value', [meetingStartDate, meetingEndDate])
+        this.$set(this.searchItems['meetingTime'], 'value', [meetingStartDate, meetingEndDate])
 
-      this.$refs.search.onGetFilter()
+        this.$refs.search.onGetFilter()
+      }
     }
   }
 }
@@ -778,7 +780,7 @@ $border-style: 1px solid #E4E7ED;
   width: 12%;
   align-items:center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 13px
 }
 
 .detail-message {

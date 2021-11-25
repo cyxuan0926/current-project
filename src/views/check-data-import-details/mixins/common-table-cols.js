@@ -18,6 +18,7 @@ export default {
       time: {
         type: 'dateRange',
         start: 'start',
+        canNotClear: true,
         end: 'end',
         unlinkPanels: true
       }
@@ -36,11 +37,8 @@ export default {
       ...this.searchItems,
       ...this.selfOwnSearchItems
     }
-
     if (![dataImportDetails.DATA_POCKET_MONEY].includes(this.type)) this.$set(this.searchItems['time'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
-
     this.onLocalGetFilter()
-
     await this.getDatas()
   },
 
@@ -55,7 +53,9 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    onLocalGetFilter() {}
+    onLocalGetFilter() {
+      this.$refs.search && this.$refs.search.onGetFilter()
+    }
   },
   computed: {
     ...mapState([
@@ -88,6 +88,7 @@ export default {
         {
           label: '数据导入人员',
           prop: 'realName',
+          canNotClear: true,
           minWidth: '92'
         },
         {

@@ -50,6 +50,7 @@ export default {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
+          canNotClear: true,
           unlinkPanels: true
         },
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1
@@ -78,16 +79,7 @@ export default {
         },
         ...this.pagination
       })
-    },
-
-    onLocalGetFilter() {
-      this.$refs.search.onGetFilter()
     }
   },
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>

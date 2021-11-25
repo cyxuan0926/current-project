@@ -14,6 +14,7 @@
       :params="filter"
     />
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch"
       @searchSelectChange="searchSelectChange"
@@ -176,21 +177,7 @@ export default {
 
     ...mapGetters(['isSuperAdmin'])
   },
-  async mounted() {
-    // if (this.routeRole === '0') {
-    //   await this.getPrisonAll()
-    //   this.$set(this.searchItems.jail, 'getting', true)
-    //   this.$set(this.searchItems.jail, 'options', this.prisonAll)
-    //   this.$set(this.searchItems.jail, 'getting', false)
-    // }
-    await this.getDatas()
-    if (this.user.role === '-1') {
-      this.$set(this.searchItems.roleId, 'getting', true)
-      await this.getRolesList()
-      this.$set(this.searchItems.roleId, 'options', this.rolesList)
-      this.$set(this.searchItems.roleId, 'getting', false)
-    }
-  },
+
   methods: {
     ...mapActions(['getPrisonUsers', 'deletePrisonUser', 'enableOrDisablePrisonUser']),
     ...mapActions('account', ['getRolesList', 'getAllTenants']),
@@ -232,6 +219,20 @@ export default {
     },
     onAdd() {
       this.$router.push(`/account/add`)
+    },
+
+    async _mixinsInitMethods() {
+      await this.getDatas()
+
+      if (this.user.role === '-1') {
+        this.$set(this.searchItems.roleId, 'getting', true)
+
+        await this.getRolesList()
+
+        this.$set(this.searchItems.roleId, 'options', this.rolesList)
+
+        this.$set(this.searchItems.roleId, 'getting', false)
+      }
     }
   }
 }

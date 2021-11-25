@@ -5,6 +5,7 @@
     @mouseleave="hideClose">
     <el-date-picker
       v-model="startDate"
+      :clearable="false"
       ref="start"
       type="month"
       class="startMonthClass"
@@ -17,6 +18,7 @@
     <span class="aa-span">-</span>
     <el-date-picker
       v-model="endDate"
+      :clearable="false"
       ref="end"
       type="month"
       format="yyyy-MM"
@@ -26,14 +28,13 @@
       @change="onChangeEnd"
       :picker-options="endObj"
     />
-    <span class="el-input__suffix">
+    <!-- <span class="el-input__suffix">
       <span class="el-input__suffix-inner">
         <i
           class="el-input__icon el-icon-circle-close close-icon"
           @click="close"
-          v-if="closeShow" />
-      </span>
-    </span>
+          v-if="closeShow" /> 
+    </span> -->
   </div>
 </template>
 

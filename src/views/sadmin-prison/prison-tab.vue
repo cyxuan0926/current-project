@@ -33,7 +33,7 @@
       v-if="paginationShow"
       ref="pagination"
       :total="total"
-      @onPageChange="getDatas"
+      @onPageChange="onGetDatas"
     />
   </el-row>
 </template>
@@ -43,7 +43,7 @@ import { mapActions } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   name: 'PrisonTab',
-  mixins: [ prisonFilterCreator ],
+  mixins: [prisonFilterCreator],
   data () {
     const listTabs = ['prison', 'tenant']
 
@@ -63,18 +63,8 @@ export default {
         }
       ],
       activeName: this.$route.path.slice(this.$route.path.indexOf('/')+1, this.$route.path.lastIndexOf('/')),
-      searchItems: {
-        // title: {
-        //   type: 'input',
-        //   label: '监狱名称',
-        //   miss: false
-        // },
-        // name: {
-        //   type: 'input',
-        //   label: '租户名称',
-        //   miss: true
-        // },
-      },
+
+      searchItems: {},
       total: 0,
       filter: {},
       pagination: {
@@ -93,7 +83,12 @@ export default {
     }
   },
 
-  async created() {
+  async mounted() {
+    this.filter = {
+      ...this.filter,
+      provincesId: '1'
+    }
+
     await this.getSearchItem()
   },
 
@@ -128,7 +123,7 @@ export default {
     },
 
     // 获取数据
-    getDatas() {
+    onGetDatas() {
       this.paginationShow = false
 
       const tabName = this.activeName.toLowerCase()
@@ -194,21 +189,14 @@ export default {
 
       const tabName = this.activeName.toLowerCase()
 
-      for(let [key, val] of Object.entries(tabsSearchItemsObject[tabName])) {
-        this.$set(this.searchItems[key], 'miss', val)
-      }
+      for(let [key, val] of Object.entries(tabsSearchItemsObject[tabName])) this.$set(this.searchItems[key], 'miss', val)
 
       if (e === 'clearFilter') this.$refs.search.onClear()
 
-      await this.getDatas()
+      await this.onGetDatas()
 
       this.loading = false
     }
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>

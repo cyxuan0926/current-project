@@ -138,8 +138,6 @@
         </template>
 
         <template v-if="item.type=== 'monthRangeSelector' && !item.miss">
-          <!-- :start-value="item.startValue"
-            :end-value="item.endValue"@onEnsure="onEnsure" -->
           <m-month-range-selector
             :key="index"
             v-model="item.value"
@@ -149,7 +147,6 @@
             :range="item.range"
             :start-key="item.startKey"
             :end-key="item.endKey"
-            
           />
         </template>
 
