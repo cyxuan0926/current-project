@@ -1525,19 +1525,9 @@ export default {
         minReactInChainKey = result[result.length - 1] || 'jailId'
       }
 
+      this.$refs.search.onGetFilter()
+
       this.onSearch()
-    }
-  },
-
-  async mounted() {
-    // await this.handleRolePrisonArea(this.searchItems, 'prisonArea', 'belong')
-    this.$refs.search.onGetFilter()
-
-    if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
-
-    else {
-      // this.filter = Object.assign({}, this.filter, { status: 1 })
-      await this.getDatas()
     }
   },
 
@@ -1569,7 +1559,6 @@ export default {
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
       // this.multipleSelection = new Array(this.prisoners.contents.length).fill(false) // 不要删除
       // this.isIndeterminate = false 不要删除
-      console.log('this.filter====', this.filter)
       const params = {
         ...this.filter,
         ...this.pagination
@@ -2469,6 +2458,12 @@ export default {
           this.onCloseDialogAndRefreshen()
         }, 1500)
       }
+    },
+
+    async _mixinsInitMethods() {
+      if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
+
+      else await this.getDatas()
     }
 
     // 自定义的全选操作 不要删除

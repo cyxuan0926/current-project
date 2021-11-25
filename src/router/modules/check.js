@@ -30,7 +30,7 @@ let check = [{
       permission: 'visit.diplomatic-consul-official.search',
       breadcrumbName: '外交领事官员注册列表'
     },
-    component: 'diplomatic-consul-official/registration/index'
+    component: 'diplomatic-consul-official/registration'
   }]
 }, {
   path: '/meeting',
@@ -325,14 +325,14 @@ let check = [{
       name: 'sms-send',
       props: { hasPrisonAreaAuth: true },
       meta: { permission: 'visit.family-sms.send', breadcrumbName: '发送亲情短信' },
-      component: 'family-sms/sms-send/index'
+      component: 'family-sms/sms-send'
     },
     {
       path: '/family-sms/list',
       name: 'sms-list',
       props: { hasPrisonAreaAuth: true },
       meta: { permission: 'visit.family-sms.list', breadcrumbName: '亲情短信申请管理' },
-      component: 'family-sms/sms-list/index'
+      component: 'family-sms/sms-list'
     }
   ]
 }]

@@ -29,10 +29,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import { mapState, mapActions } from 'vuex'
 
-import Moment from 'moment'
-
 import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
-
 export default {
   name: 'MeetingFamilyStatistics',
 
@@ -42,10 +39,6 @@ export default {
     const typeInput = {
       type: 'input'
     }
-
-    const endDate = this.$_dateNow
-
-    const startDate = Moment().subtract(1, 'months').format('YYYY-MM-DD')
 
     const options = [
       {
@@ -58,11 +51,6 @@ export default {
       }
     ]
     return {
-      initFilter: { // 默认查询上一个月的，筛选框初始化
-        startDate,
-        endDate
-      },
-
       searchItems: {
         status: {
           type: 'select',
@@ -80,7 +68,7 @@ export default {
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
           disabled: false,
-          value: [startDate, endDate]
+          value: [this.$_oneMonthAgo, this.$_dateNow]
         },
 
         familyName: {
@@ -199,12 +187,6 @@ export default {
         else this.$set(this.searchItems['meetingDate'], 'disabled', false)
       }
     }
-  },
-
-  async mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-
-    await this.getDatas()
   }
 }
 </script>

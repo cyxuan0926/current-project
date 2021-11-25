@@ -273,7 +273,7 @@ export default {
           endPlaceholder: '结算结束时间'
         }
       },
-      filterInit: {},
+
       downloading: false,
 
       settlementDialogVisible: false,
@@ -711,28 +711,28 @@ export default {
 
     isEmpty(input) {
       return isEmpty(input)
-    }
-  },
+    },
 
-  async mounted() {
-    this.$set(this.searchItems['meetingTime'], 'clearable', !this.isSuperAdmin)
+    async _mixinsInitMethods() {
+      this.$set(this.searchItems['meetingTime'], 'clearable', !this.isSuperAdmin)
 
-    if (this.isSuperAdmin) {
-      this.$set(this.searchItems['meetingTime'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
+      if (this.isSuperAdmin) {
+        this.$set(this.searchItems['meetingTime'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
 
-      this.$refs.search.onGetFilter()
-    }
+        this.$refs.search.onGetFilter()
+      }
 
-    await this.getDatas()
+      await this.getDatas()
 
-    if (!this.isSuperAdmin) {
-      const { configs } = this.settleAccountsPaged
+      if (!this.isSuperAdmin) {
+        const { configs } = this.settleAccountsPaged
 
-      const { meetingEndDate = Moment().subtract(1, 'days').format('YYYY-MM-DD'), meetingStartDate } = configs
+        const { meetingEndDate = Moment().subtract(1, 'days').format('YYYY-MM-DD'), meetingStartDate } = configs
 
-      this.$set(this.searchItems['meetingTime'], 'value', [meetingStartDate, meetingEndDate])
+        this.$set(this.searchItems['meetingTime'], 'value', [meetingStartDate, meetingEndDate])
 
-      this.$refs.search.onGetFilter()
+        this.$refs.search.onGetFilter()
+      }
     }
   }
 }

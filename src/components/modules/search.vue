@@ -35,21 +35,23 @@
           type="datetime"
           :placeholder="item.label"
           align="right"
-          :picker-options="pickerOptions"/>
+          :picker-options="pickerOptions"
+          :clearable="false"/>
         <el-date-picker
           :key="index"
           v-if="item.type === 'date' && !item.miss"
           v-model="item.value"
           type="date"
           value-format="yyyy-MM-dd"
-          :placeholder="item.label"/>
+          :placeholder="item.label"
+          :clearable="false"/>
         <el-date-picker
           :key="index"
           v-if="item.type === 'month' && !item.miss"
           v-model="item.value"
           type="month"
           :size="item.size"
-          :clearable="!item.canNotClear"
+          :clearable="false"
           :editable="!item.canNotClear"
           :picker-options="item.pickerOptions"
           value-format="yyyy-MM"
@@ -60,7 +62,7 @@
           v-model="item.value"
           type="year"
           :size="item.size"
-          :clearable="!item.canNotClear"
+          :clearable="false"
           :editable="!item.canNotClear"
           :picker-options="item.pickerOptions"
           value-format="yyyy"
@@ -75,12 +77,13 @@
           :end-placeholder=" item.endPlaceholder || '结束时间'"
           format="yyyy-MM-dd HH:mm:ss"
           :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
-          :default-time="['00:00:00', '23:59:59']"/>
+          :default-time="['00:00:00', '23:59:59']"
+          :clearable="false"/>
         <el-date-picker
           :key="index"
           v-if="item.type === 'daterange' && !item.miss"
           v-model="item.value"
-          :clearable="!item.clearable"
+          :clearable="false"
           unlink-panels
           type="daterange"
           :start-placeholder="item.startPlaceholder || '开始时间'"
@@ -93,7 +96,7 @@
           :key="index"
           v-if="item.type === 'dateRange' && !item.miss"
           v-model="item.value"
-          :clearable="!item.canNotClear"
+          :clearable="false"
           type="daterange"
           :disabled="item.disabled || false"
           :unlink-panels="item.unlinkPanels"
@@ -114,6 +117,7 @@
           v-if="item.type=== 'monthRangeSelector' && !item.miss"
           class="monthRangeSelector"
           :prop="index"
+          :clear="false"
           :range="item.range"
           :start-key="item.startKey"
           :end-key="item.endKey"

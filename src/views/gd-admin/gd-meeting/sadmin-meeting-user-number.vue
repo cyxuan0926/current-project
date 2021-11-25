@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" >
@@ -85,12 +86,6 @@ export default {
       }
     ]
     return {
-      isFirst: true,
-      initFilter: {
-        year,
-        timeType:1,
-        dataType:1
-      },
       downloading:false,
       searchItems: {
        year:{
@@ -119,10 +114,7 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    // this.getDatas()
-  },
+
   computed: {
       ...mapState({
         jailIdAll: state => state.prisonAll
@@ -132,8 +124,6 @@ export default {
     jailIdAll(val) {
       if( val && val.length ) {
        this.$set(this.searchItems['jailId'], 'value',val[0].id)
-        this.isFirst && this.getDatas()
-        this.isFirst = false
       }
 
     }

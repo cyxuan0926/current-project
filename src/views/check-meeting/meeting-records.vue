@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch" />
     <el-col :span="24">
@@ -65,13 +66,7 @@ export default {
           label: '罪犯编号',
           miss: false
         },
-        // prisonArea: {
-        //   type: 'select',
-        //   label: '监区',
-        //   options,
-        //   belong,
-        //   miss: false
-        // },
+
         familyName: {
           type: 'input',
           label: '家属姓名',
@@ -190,6 +185,7 @@ export default {
       else return jailerFamilyFreeMeetingsTableCols
     }
   },
+
   watch: {
     tabs(val) {
       if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
@@ -210,12 +206,13 @@ export default {
         this.$set(this.searchItems.policeName, 'miss', false)
         this.$set(this.searchItems.policeNumber, 'miss', false)
       }
+
+      this.$refs.search.onGetFilter()
+
       this.onSearch()
     }
   },
-  mounted() {
-    this.getDatas()
-  },
+
   methods: {
     ...mapActions([
       'getFreeMeetings',
@@ -236,6 +233,7 @@ export default {
         })
       }
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
@@ -250,6 +248,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

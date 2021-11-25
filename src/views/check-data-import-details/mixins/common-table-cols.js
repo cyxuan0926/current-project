@@ -53,7 +53,9 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    onLocalGetFilter() {}
+    onLocalGetFilter() {
+      this.$refs.search && this.$refs.search.onGetFilter()
+    }
   },
   computed: {
     ...mapState([

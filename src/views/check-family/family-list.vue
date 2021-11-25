@@ -532,12 +532,10 @@ export default {
         this.$set(this.searchItems.policeName, 'miss', false)
       }
 
+      this.$refs.search.onGetFilter()
+
       this.onSearch()
     }
-  },
-
-  async mounted() {
-    await this.getDatas()
   },
 
   methods: {

@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch" >
         <template slot="append">
@@ -46,20 +47,15 @@ import {
 } from '@/common/constants/const'
 export default {
   data() {
-     const endTime = Moment().format('YYYY-MM-DD')
     const startTime = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
-      initFilter: { // 默认查询上一个月的，筛选框初始化
-        startTime,
-        endTime
-      },
       downloading:false,
       searchItems: {
        time: {
           type: 'dateRange',
           start: 'startTime',
           end: 'endTime',
-          value: [startTime, endTime],
+          value: [startTime, this.$_dateNow],
           unlinkPanels: true
         }
       },
@@ -158,9 +154,10 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.getDatas()
+  async mounted() {
+    this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   },
   methods: {
      // 导出excel
@@ -190,6 +187,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

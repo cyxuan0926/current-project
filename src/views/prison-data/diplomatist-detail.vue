@@ -64,10 +64,6 @@
             }
         },
 
-        created() {
-            this.getDatas()
-        },
-
         methods: {
             handlePage(page, rows) {
                 if( page ) {

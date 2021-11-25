@@ -115,7 +115,6 @@
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { mapActions, mapState } from 'vuex'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
-import Moment from 'moment'
 import http from '@/service'
 export default {
   name: 'FamilyPhone_Families',
@@ -123,17 +122,12 @@ export default {
   mixins: [prisonFilterCreator,registrationDialogCreator],
 
   data() {
-   const todayDate = Moment().format('YYYY-MM-DD')
-    const oneMonthLater = Moment().add(-7, 'days').format('YYYY-MM-DD')
     const clearable = true
     return {
       messageContent:"",
-      todayDate,
-      oneMonthLater,
       downloading:false,
       tabledate:{},
       toShow:{},
-      filterInit: {},
       searchItems: {
         familyName: {
           type: 'input',
@@ -155,7 +149,8 @@ export default {
             start: 'startDate',
             end: 'endDate',
             startPlaceholder: '开始时间',
-            endPlaceholder: '结束时间'
+            endPlaceholder: '结束时间',
+            value: [this.$_dateOneWeekAgo, this.$_dateNow]
           },
 
         status: {
@@ -288,16 +283,6 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
-  },
-  created() {
-      this.filterInit = Object.assign({}, this.filterInit, {
-        startDate: this.oneMonthLater,
-        endDate: this.todayDate
-      })
-    },
-  mounted() {
-    this.$set(this.searchItems.applicationDate, 'value', [this.oneMonthLater, this.todayDate])
-    this.getDatas()
   }
 }
 </script>

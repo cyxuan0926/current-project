@@ -116,7 +116,7 @@ export default {
           type: 'month',
           label: '时间',
           canNotClear: true,
-          value: ''
+          value: MonthDate
         },
         name:  {
           type: 'input',
@@ -125,19 +125,20 @@ export default {
       }
     }
   },
-  created() {
-      this.filterInit = Object.assign({}, this.filterInit, { date: this.MonthDate })
-    },
+
   async mounted() {
-    this.$set(this.searchItems['date'], 'value', this.MonthDate)
-    this.getDatas()
+    this.$refs.search.onGetFilter()
+
+    await this.getDatas()
   },
+
   methods: {
     async getDatas() {
       let jailId=JSON.parse(localStorage.getItem('user')).jailId
       let res = await http.getPrisonerBonusPenaltylist({ ...this.filter,jailId:jailId, ...this.pagination })
       this.tabledata= res.data
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(0)
     }

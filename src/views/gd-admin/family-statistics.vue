@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch">
       <el-select
@@ -61,7 +62,6 @@ const chartTypes = {
 export default {
   mixins: [prisonFilterCreator],
   data () {
-    const endDate = this.$_dateNow
     const startDate = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     return {
       totalCount: 0,
@@ -72,17 +72,14 @@ export default {
       meetingStatistics:[],
       meetingStatisticTotalItem:{},
       filter: {},
-      filterInit: {
-        startDate,
-        endDate
-      },
+
       searchItems: {
         time: {
           type: 'dateRange',
           start: 'startDate',
           end: 'endDate',
           canNotClear: true,
-          value: [startDate, endDate],
+          value: [startDate, this.$_dateNow],
           unlinkPanels: true
         }
       },
@@ -269,12 +266,14 @@ export default {
       this.tableDatas = this.meetingStatistics.slice(0)
       this.meetingStatisticTotalItem = usefullData[0][0]
       if (totalCount && Math.ceil(this.totalCount / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem || {})
+    },
+
+    async _mixinsInitMethods() {
+      await this.getDatas()
+      this.filterBarData()
     }
   },
-  async mounted() {
-    await this.getDatas()
-    this.filterBarData()
-  },
+
   computed: {
     ...mapGetters(['chartRole']),
     pieArr: function () {

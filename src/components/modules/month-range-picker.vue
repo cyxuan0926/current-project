@@ -28,18 +28,13 @@
       @change="onChangeEnd"
       :picker-options="endObj"
     />
-    <span class="el-input__suffix">
+    <!-- <span class="el-input__suffix">
       <span class="el-input__suffix-inner">
-        <!-- <i
+        <i
           class="el-input__icon el-icon-circle-close close-icon"
           @click="close"
-          v-if="closeShow" /> -->
-          <i
-          class="el-input__icon el-icon-circle-close close-icon"
-          @click="close"
-          v-if="false" />
-      </span>
-    </span>
+          v-if="closeShow" /> 
+    </span> -->
   </div>
 </template>
 

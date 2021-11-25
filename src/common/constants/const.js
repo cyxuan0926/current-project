@@ -28,7 +28,6 @@ export const responseURLWhiteLists = [
   '/terminal/version/exportUpgradeStatistics',
   '/meetingMembersStatistics/export',
   '/meetingCallDetail/export',
-  '/registrations/exportFamilyRegJails',
   '/prisoner_visits/exportPrisonerVisits',
   '/prisoner_visits/exportAdminPrisonerVisits'
 ]
@@ -179,6 +178,8 @@ export const _timeOneWeekAgo = `${ _dateOneWeekAgo } 00:00:00`
 export const _operationAuthorizations = {
   _familyPhoneFamiliesSubPrisonAreaAuth: 'visit.family-phone.families-sub-prison-area.auth'
 }
+
+export const _oneMonthAgo = Moment().subtract(1, 'month').format('YYYY-MM-DD')
 
 // 监狱内网白名单(租户编号)
 export const prisonerInsideWhiteLists = ['4411']

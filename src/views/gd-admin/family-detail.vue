@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch">
@@ -219,8 +220,6 @@ export default {
   mixins: [prisonFilterCreator,registrationDialogCreator],
   data () {
     const { options } = this.$store.getters.prisonAreaOptions
-    const createEndDate = this.$_dateNow
-    const createStartDate = this.$_dateOneWeekAgo
     const freeMeetingsOptions = [
       {
         label: '是',
@@ -234,10 +233,6 @@ export default {
     return {
       total: 0,
       filter: {},
-      filterInit: {
-        createStartDate,
-        createEndDate
-      },
       loading: true,
       searchItems: {
         time: {
@@ -246,7 +241,7 @@ export default {
           start: 'createStartDate',
           end: 'createEndDate',
           canNotClear: true,
-          value: [createStartDate, createEndDate],
+          value: [this.$_dateOneWeekAgo, this.$_dateNow],
           // miss: true,
           // value: ''
         },
@@ -431,12 +426,14 @@ export default {
       })
       this.total = total
       this.tableDatas = this.getFamilyMeetingDetail.slice(0)
+    },
+
+    async _mixinsInitMethods() {
+      await this.getDatas()
+      this.filterBarData()
     }
   },
-  async mounted() {
-    await this.getDatas()
-    this.filterBarData()
-  },
+
   computed: {
     ...mapState([
       'meetingRefresh',

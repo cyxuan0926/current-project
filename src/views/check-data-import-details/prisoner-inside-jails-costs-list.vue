@@ -79,16 +79,7 @@ export default {
         },
         ...this.pagination
       })
-    },
-
-    onLocalGetFilter() {
-      this.$refs.search.onGetFilter()
     }
   },
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>

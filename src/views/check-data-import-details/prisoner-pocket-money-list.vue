@@ -70,14 +70,11 @@ export default {
   methods: {
     getDatas() {
       if (JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
-      console.log(this.filter)
+
       this.getPrisonersPocketMoney({
           ...this.filter,
           ...this.pagination
       })
-    },
-     onLocalGetFilter() {
-      this.$refs.search.onGetFilter()
     }
   },
    created() {
@@ -85,9 +82,6 @@ export default {
         start:  this.$_dateOneWeekAgo,
         end: this.$_dateNow
       })
-    },
-    mounted(){
-      console.log(this.filterInit)
     }
 }
 </script>
