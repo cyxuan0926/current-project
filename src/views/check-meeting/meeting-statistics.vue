@@ -57,7 +57,8 @@ export default {
         time: {
           type: 'datetimerange',
           start: 'startDate',
-          end: 'endDate'
+          end: 'endDate',
+          value: [this.$_timeOneWeekAgo, this.$_timeNow]
         }
       },
       tableCols: [
@@ -203,15 +204,6 @@ export default {
       this.tableDatas = report
       if (total && Math.ceil(this.total / rows) === page) this.tableDatas.push(this.meetingStatisticTotalItem)
     }
-  },
-
- mounted() {
-    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
-
-    this.$refs.search.onGetFilter()
-
-    this.getDatas()
-
   },
 
   computed: {

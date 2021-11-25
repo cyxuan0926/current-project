@@ -335,7 +335,7 @@ export default {
       selectValue:"",
       clashTime:[],
       selectOptions: [],
-      tabs: '',
+      tabs: 'PENDING',
       searchItems: {
         name: {
           type: 'input',
@@ -344,11 +344,13 @@ export default {
         applicationDate: {
           type: 'dateRange',
           unlinkPanels: true,
+          canNotClear: true,
           start: 'applicationStartDate',
           end: 'applicationEndDate',
           startPlaceholder: '通话开始时间',
           endPlaceholder: '通话结束时间',
           miss: false,
+          value: [this.$_dateNow, tenDaysLater]
           // value: ''
         },
         auditName: {
@@ -530,9 +532,7 @@ export default {
         { ...goBackButton,
           events: { click: this.onAgreeAuthorizeGoBack } },
           closeButton
-      ],
-
-      tenDaysLater
+      ]
     }
   },
   components: {
@@ -729,12 +729,7 @@ export default {
       deep: true
     }
   },
-  mounted() {
-    this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateNow, this.tenDaysLater])
-  },
-  created(){
-   this.tabs="PENDING"
-  },
+
   methods: {
     ...mapActions([
       'getMeetingsDiplomats',//表格数据

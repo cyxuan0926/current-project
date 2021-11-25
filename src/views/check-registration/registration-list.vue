@@ -7,7 +7,7 @@
     /> -->
 
     <m-search
-      :items="searchItems"
+      :items.sync="searchItems"
       ref="search"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
@@ -19,7 +19,7 @@
           @click="onDownload('all')"
         >下载关系证明</el-button>
          <el-button
-         v-if="!isSuperAdmin"
+          v-if="!isSuperAdmin"
           type="primary"
           :loading="downloading"
           @click="handleExportExcel"
@@ -747,12 +747,12 @@ import { tokenExcel } from '@/utils/token-excel'
 
 //import { registrationWithdrawOrAnthorinputReason } from '@/common/constants/const'
 
-import moment from 'moment'
-
 import { helper } from '@/utils'
 import { Message } from 'element-ui'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
+
+import Moment from 'moment'
 export default {
   components: {
     registrationDetail
@@ -769,10 +769,12 @@ export default {
           type: 'input',
           label: '家属姓名'
         },
+
         prisonerName: {
           type: 'input',
           label: '罪犯姓名'
         },
+
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
@@ -782,6 +784,7 @@ export default {
           label: '审核人',
           miss: true
         },
+
         status: {
           type: 'select',
           label: '审核状态',
@@ -790,18 +793,25 @@ export default {
           // no: ['DENIED'],
           value: ''
         },
-        auditAt: {
-          type: 'date',
-          label: '审核时间',
-          miss: true
-        },
+
         nationality: {
           type: 'select',
           label: '家属类型',
           options: this.$store.state['nationality'],
           value: ''
         },
-        level:{
+
+        applicationDate: {
+          type: 'dateRange',
+          unlinkPanels: true,
+          start: 'startDate',
+          end: 'endDate',
+          startPlaceholder: '申请开始时间',
+          endPlaceholder: '申请结束时间',
+          value: [this.$_oneMonthAgo, this.$_dateNow]
+        },
+
+        level: {
           type: 'select',
           label: '管教级别',
           options: [
@@ -811,7 +821,7 @@ export default {
             { label: '严管级', value: 4 }
           ],
           value: ''
-        }
+        },
       },
       toAuthorize: {},
       show: {
@@ -953,11 +963,8 @@ export default {
         else {
           this.searchItems.status.miss = true
         }
-        this.searchItems.auditAt.miss = true
         delete this.filter.auditName
-        delete this.filter.auditAt
         this.searchItems.auditName.value = ''
-        this.searchItems.auditAt.value = ''
         this.searchItems.status.value = ''
       }
       else {
@@ -965,17 +972,10 @@ export default {
         this.searchItems.status.value = ''
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
-        this.searchItems.auditAt.miss = false
         this.searchItems.status.options = this.$store.state.registStatus
       }
       this.onSearch()
     }
-  },
-
-  async mounted() {
-    this.$refs.search.onGetFilter()
-
-    await this.getDatas()
   },
 
   computed: {
@@ -1482,7 +1482,7 @@ export default {
 
       // 下载当前页的
       if (contents === 'all') {
-        const dayNow = moment(Date.now()).format('YYYYMMDDHHmmss')
+        const dayNow = Moment(Date.now()).format('YYYYMMDDHHmmss')
 
         const passedData = this.registrations.contents.filter(content => content.status === 'PASSED')
 

@@ -75,9 +75,7 @@ export default {
   },
 
   computed: {
-    ...mapState([
-      'meetingCostSaving',
-      'provincesAll']),
+    ...mapState(['meetingCostSaving', 'provincesAll']),
 
     ...mapGetters(['isSuperAdmin']),
 
@@ -93,6 +91,7 @@ export default {
           name: 'daterange',
           attrs: {
             type: 'daterange',
+            clearable: false,
             valueFormat: 'yyyy-MM-dd',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间'
@@ -117,11 +116,12 @@ export default {
           filterable: true,
           clearable: true,
           loading: true,
-          value: null,
+          value: '1',
         },
         options: [],
         labelKey: 'name',
-        valueKey: 'id'
+        valueKey: 'id',
+        defaultValue: '1'
       }
       if (this.hasPrisonArea || this.isSuperAdmin) {
         result[result.length - 1].options.push({
@@ -143,6 +143,7 @@ export default {
 
     requetParams() {
       const result = {}
+
       const { daterange, provincesId } = this.filterParams
 
       if (provincesId) result.provincesId = provincesId

@@ -37,14 +37,13 @@
                     applicationDate: {
                         type: 'monthRangeSelector',
                         canNotClear: true,
-                        startValue: startDate,
-                        endValue: endDate,
                         startKey: 'startDate',
                         endKey: 'endDate',
                         range: {
                             max: Moment().format('YYYY-MM'),
                             maxMonthRange: 24
-                        }
+                        },
+                        value: [startDate, endDate]
                     },
                 },
                 tableDatas: {
@@ -56,10 +55,6 @@
                     page: 1
                 }
             }
-        },
-
-        created() {
-            this.getDatas()
         },
 
         methods: {
@@ -95,8 +90,6 @@
 
             async getDatas() {
                 const { diplomatsMeetingDetails,  total} = await http.getDiplomatistDetail({
-                    startDate,
-                    endDate,
                     ...this.filter,
                     ...this.pagination
                 })

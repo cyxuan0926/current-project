@@ -44,7 +44,7 @@
                             value: 'id'
                         },
                         selectKey: 'provinceCode',
-                        value: ''
+                        value: '1'
                     },
                     cityCode: {
                         label: '市',
@@ -149,13 +149,9 @@
                 }
             }
         },
-        mounted() {
+        async mounted() {
             this.$refs.search.onGetFilter()
-            this.getData()
+            await this.getData()
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

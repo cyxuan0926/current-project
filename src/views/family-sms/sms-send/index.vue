@@ -78,7 +78,7 @@ export default {
             getData()
         }
         // 点击发送短信按钮
-        const handleClick = (row) => {
+        const handleClick = row => {
             modalData.value = row
             showModal.value = true
         }
@@ -96,12 +96,6 @@ export default {
                 tableData.total = data.total
             }
         }
-
-        // 生命周期 mounted
-        onMounted(() => {
-            $search.value.onGetFilter()
-            getData()
-        })
 
         return {
             $search,

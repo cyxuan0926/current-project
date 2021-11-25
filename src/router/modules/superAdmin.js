@@ -2,6 +2,7 @@
 // import { helper } from '@/utils'
 
 let superAdmin
+
 superAdmin = [{
   path: '/',
   meta: { hidden: true },
@@ -465,7 +466,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-applications',
       name: 'prison-data_meeting-applications',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, provincesId: '1' },
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison.remote-visit.search',
         breadcrumbName: '可视电话申请'
@@ -487,11 +488,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics',
       name: 'prison-data_meeting-statistics',
-      props: {
-        hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true,
-        provincesId: '1'
-      },
+      props: { hasProvinceQueryAuth: true, hasOnlyAllPrisonQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison.search',
         breadcrumbName: '监狱可视电话统计'
@@ -501,11 +498,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/meeting-statistics/prison-area',
       name: 'prison-data_meeting-statistics_prison-area',
-      props: {
-        hasAllPrisonQueryAuth: true,
-        hasProvinceQueryAuth: true,
-        provincesId: '1'
-      },
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.visit-statistic.all-prison-area.search',
         breadcrumbName: '监区可视电话统计'
@@ -515,7 +508,7 @@ superAdmin = [{
     }, {
       path: '/prison-data/prisoners',
       name: 'prison-data_prisoners',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, provincesId: '1' },
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.prisoner.all-prison.search',
         breadcrumbName: '服刑人员信息'
@@ -559,7 +552,7 @@ superAdmin = [{
         breadcrumbName: '外交领事官员注册表',
         permission: 'visit.data-search.diplomatic-consul-official.search'
       },
-      component: 'diplomatic-consul-official/registration/index'
+      component: 'diplomatic-consul-official/registration'
     }, {
       path: '/prison-data/diplomatist',
       name: 'prison-data_diplomatist',
@@ -746,16 +739,49 @@ superAdmin = [{
       {
         path: '/family-information/registrations/list',
         name: 'FamilyInformationRegistrationsList',
-        props: {
-          hasAllPrisonQueryAuth: true,
-          hasProvinceQueryAuth: true,
-          provincesId: '1'
-        },
+        props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
         meta: {
           permission: 'visit.family-registration.all-prison.search',
           breadcrumbName: '家属注册信息'
         },
         component: 'check-registration/registration-list'
+      }
+    ]
+  }, {
+    path: '/yg-prison-information',
+    name: 'SuperAdminYgPrisonInformation',
+    meta: { breadcrumbName: '阳光监狱信息查询', hidden: true },
+    children: [
+      {
+        path: '/yg-prison-information/prison-administration/list',
+        name: 'YgPrisonPrisonAdministrationInformationList',
+        props: { hasProvinceQueryAuth: true, hasAllPrisonQueryAuth: true },
+        meta: { permission: 'visit.yg-prison.prison-administration-all.search', breadcrumbName: '狱政管理信息' },
+        component: 'yg-prison-module/prison-administration/list'
+      }, {
+        path: '/yg-prison-information/execution-punishment/list',
+        name: 'YgPrisonExecutionPunishmentInformationList',
+        props: { hasProvinceQueryAuth: true, hasAllPrisonQueryAuth: true },
+        meta: { permission: 'visit.yg-prison.execution-punishment-all.search', breadcrumbName: '刑罚执行信息' },
+        component: 'yg-prison-module/execution-punishment/list'
+      }, {
+        path: '/yg-prison-information/educational-transformation/list',
+        name: 'YgPrisonEducationalTransformationInformationList',
+        props: { hasProvinceQueryAuth: true, hasAllPrisonQueryAuth: true },
+        meta: { permission: 'visit.yg-prison.educational-transformation-all.search', breadcrumbName: '教育改造信息' },
+        component: 'yg-prison-module/educational-transformation/list'
+      }, {
+        path: '/yg-prison-information/life-hygiene/list',
+        name: 'YgPrisonLifeHygieneInformationList',
+        props: { hasProvinceQueryAuth: true, hasAllPrisonQueryAuth: true },
+        meta: { permission: 'visit.yg-prison.life-hygiene-all.search', breadcrumbName: '生活卫生信息' },
+        component: 'yg-prison-module/life-hygiene/list'
+      }, {
+        path: '/yg-prison-information/labor-reform/list',
+        name: 'YgPrisonLaborReformInformationList',
+        props: { hasProvinceQueryAuth: true, hasAllPrisonQueryAuth: true },
+        meta: { permission: 'visit.yg-prison.labor-reform-all.search', breadcrumbName: '劳动改造信息' },
+        component: 'yg-prison-module/labor-reform/list'
       }
     ]
   }]

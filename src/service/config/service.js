@@ -123,7 +123,7 @@ export const postObj = (url, data = {}, config = {}) => {
  */
 export const postFile = (url, data = {}) => {
   // data.toString() !== {}.toString() && data.append('jail_id', localStorage['jail_id'])
-  return instance.post(agency + url, data, {
+  return instance.post(getUrl(url), data, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -157,7 +157,7 @@ export function postFormData(url = '', data = {}, config = {}) {
  */
 export const patchFile = (url, data = {}) => {
   // data.toString() !== {}.toString() && data.append('jail_id', localStorage['jail_id'])
-  return instance.patch(agency + url, data, {
+  return instance.patch(getUrl(url), data, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

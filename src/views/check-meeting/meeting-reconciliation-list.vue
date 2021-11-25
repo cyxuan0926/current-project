@@ -114,7 +114,8 @@ export default {
           start: 'applicationStartTime',
           end: 'applicationEndTime',
           startPlaceholder: '申请开始时间',
-          endPlaceholder: '申请结束时间'
+          endPlaceholder: '申请结束时间',
+          value: [this.$_timeOneWeekAgo, this.$_timeNow]
         }
         // status: {
         //   type: 'select',
@@ -321,14 +322,6 @@ export default {
     //   if (!['orderIndex', 'jailName', 'meetingId'].includes(column.property)) return 'no-pandding__td'
     // }
 
-  },
-
-  async mounted() {
-    this.$set(this.searchItems['meetingDate'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
-
-    this.$refs.search.onGetFilter()
-
-    await this.getDatas()
   },
 
   computed: {

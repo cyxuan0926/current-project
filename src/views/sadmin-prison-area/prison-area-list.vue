@@ -16,6 +16,7 @@
     />
 
     <m-search
+      ref="search"
       :items="user.role !== '4' && user.role !=='-1' ? searchItems : null "
       @search="onSearch"
       @searchSelectChange="searchSelectChange"
@@ -127,15 +128,6 @@ export default {
   data() {
     return {
       searchItems: {},
-      // searchItems: {
-      //   jailId: {
-      //     type: 'select',
-      //     label: '监狱名称',
-      //     getting: true,
-      //     belong: { value: 'id', label: 'title' },
-      //     filterable: true
-      //   }
-      // },
       dialogVisible: false,
       prisonArea: {},
       allPrisonAreas: [],
@@ -147,11 +139,13 @@ export default {
       maxLevel: 4
     }
   },
+
   computed: {
     ...mapState(['prisonAreas', 'prisonAll']),
     user() {
       if (localStorage['user']) return JSON.parse(localStorage['user'])
     },
+
     showContent() {
       let title, text
       switch (this.dialogPermission) {
@@ -168,8 +162,9 @@ export default {
           text = ''
           break;
       }
-      return {title,text}
+      return {title, text}
     },
+
     tableCols() {
       let cols = [
         {
@@ -207,18 +202,7 @@ export default {
 
     ...mapGetters(['isSuperAdmin'])
   },
-  async mounted() {
-    this.getDatas()
-    let { data } = await http.queryPrisonAreaMaxlevel()
-    if ( data.maxLevel ) {
-      this.maxLevel = data.maxLevel
-    }
-    // if (this.user.role !== '4' && this.user.role !== '-1') {
-    //   await this.getPrisonAll()
-    //   this.searchItems.jailId.options = this.prisonAll
-    //   this.searchItems.jailId.getting = false
-    // }
-  },
+
   methods: {
     ...mapActions([
       'getPrisonAreas',
@@ -354,6 +338,13 @@ export default {
       }
     },
 
+    async _mixinsInitMethods() {
+      const response = await Promise.all([this.getDatas(), http.queryPrisonAreaMaxlevel()])
+
+      const { data } = response[1]
+
+      if (data.maxLevel) this.maxLevel = data.maxLevel
+    }
     // searchSelectChange() {}
   }
 }

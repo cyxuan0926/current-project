@@ -12,6 +12,8 @@ import literature from './modules/literature'
 
 import familyPhone from './modules/family-phone'
 
+import ygPrison from './modules/yg-prison'
+
 const routes = [
   ...superAdmin,
   ...admin,
@@ -19,7 +21,8 @@ const routes = [
   ...information,
   ...literature,
   ...common,
-  ...familyPhone
+  ...familyPhone,
+  ...ygPrison
 ]
 
 /**

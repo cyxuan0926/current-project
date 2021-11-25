@@ -3,6 +3,7 @@
     class="row-container"
     :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch" />
@@ -54,10 +55,6 @@ export default {
       }
     ]
     return {
-      initFilter: { // 默认查询上一个月的，筛选框初始化
-        startDate,
-        endDate
-      },
       searchItems: {
          familyType: {
             type: 'select',
@@ -141,10 +138,7 @@ export default {
       tabledata:{}
     }
   },
-  mounted() {
-    this.filter = Object.assign({}, this.filter, this.initFilter)
-    this.getDatas()
-  },
+
   methods: {
      async getDatas() {
        let params = { ...this.filter, ...this.pagination }
@@ -160,6 +154,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus" scoped>
-</style>

@@ -41,7 +41,7 @@
 
         data() {
             return {
-                tabs: '',
+                tabs: 'PENDING',
                 tabsItems: [
                     {
                         label: '可视电话申请',
@@ -64,7 +64,7 @@
                         end: 'applicationEndDate',
                         startPlaceholder: '通话开始时间',
                         endPlaceholder: '通话结束时间',
-                        value: ''
+                        value: [this.$_dateOneWeekAgo, this.$_dateNow]
                     },
                     auditName: {
                         type: 'input',
@@ -117,14 +117,11 @@
                     this.searchItems.auditName.miss = false
                     this.searchItems.auditAt.miss = false
                 }
+
+                this.$refs.search.onGetFilter()
+
                 this.onSearch()
             },
-        },
-
-        created() {
-            this.$set(this.searchItems['applicationDate'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
-
-            this.tabs = 'PENDING'
         },
 
         methods: {

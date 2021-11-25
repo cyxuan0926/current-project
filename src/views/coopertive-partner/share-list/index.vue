@@ -170,7 +170,8 @@ export default {
           unlinkPanels: true,
           start: 'startDate',
           end: 'endDate',
-          miss: false
+          miss: false,
+          value: [this.$_dateOneWeekAgo, this.$_dateNow]
         },
 
         monthRange: {
@@ -275,14 +276,6 @@ export default {
         delete this.filter[filter]
       })
     }
-  },
-
-  async mounted() {
-    this.$set(this.searchItems['dateRange'], 'value', [this.$_dateOneWeekAgo, this.$_dateNow])
-
-    this.$refs.search.onGetFilter()
-
-    await this.getDatas()
   }
 }
 </script>

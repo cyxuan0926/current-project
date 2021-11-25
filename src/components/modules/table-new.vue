@@ -1,5 +1,9 @@
 <template>
-  <el-table ref="elTable" v-bind="$data.$_attrs" v-on="$data.$_listeners">
+  <el-table
+    ref="elTable"
+    v-bind="$data.$_attrs"
+    v-on="$data.$_listeners"
+  >
     <template v-for="col in cols">
       <el-table-column
         v-if="col.slotName"
@@ -53,13 +57,9 @@
 
       <!--el-table 自定义的插槽-->  
       <template v-else-if="col.isElSlots">
-        <template
-          v-for="constElSlot in constElSlots"
-          :slot="constElSlot" >
+        <template v-for="constElSlot in constElSlots" :slot="constElSlot" >
           <template v-if="col.belong === constElSlot">
-            <slot
-              v-for="elSlot in col.elSlots"
-              :name="elSlot.name" />
+            <slot v-for="elSlot in col.elSlots" :name="elSlot.name" />
           </template>
         </template>     
       </template>
@@ -69,7 +69,6 @@
         v-bind="col"
         :key="`${col.label}-${col.prop}`"
       />
-
     </template>
 
   </el-table>

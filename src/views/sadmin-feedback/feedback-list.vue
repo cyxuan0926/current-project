@@ -171,7 +171,7 @@ export default {
   data() {
     return {
       searchItems: {
-        time: { type: 'datetimerange', start: 'startTime', end: 'endTime'},
+        time: { type: 'datetimerange', start: 'startTime', end: 'endTime', value: [this.$_timeOneWeekAgo, this.$_timeNow]},
         type: { type: 'select', label: '反馈类别', options: [], getting: true, belong: { value: 'id', label: 'name' } },
         isReply: { type: 'select', label: '是否回复', options: [{ value: 1, label: '是' }, { value: 0, label: '否' }] },
         name: { type: 'input', label: '家属姓名' }
@@ -224,19 +224,18 @@ export default {
     }
   },
 
-  mounted() {
-    this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
-
+  async mounted() {
     this.$refs.search.onGetFilter()
 
-    this.getDatas()
+    const response = await Promise.all([this.getDatas(), this.getFeedbackTypes()])
 
-    this.getFeedbackTypes().then(res => {
-      if (!res) return
-      this.searchItems.type.options = this.feedbackTypes
-      this.searchItems.type.getting = false
-    })
+    if (!response[1]) return
+
+    this.searchItems.type.options = this.feedbackTypes
+
+    this.searchItems.type.getting = false
   },
+
   methods: {
     ...mapActions(['getFeedbacks', 'getFeedbackTypes', 'deleteFeedback', 'replyFeedback', 'getFeedbackDetail', 'downloadFeedbacks']),
     getDatas() {

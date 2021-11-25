@@ -250,11 +250,15 @@ export default {
         miss: true
       },
 
-      auditAt: {
-        type: 'date',
-        label: '审核时间',
-        miss: true
-      }
+      applicationDate: {
+        type: 'dateRange',
+        unlinkPanels: true,
+        start: 'startDate',
+        end: 'endDate',
+        startPlaceholder: '申请开始时间',
+        endPlaceholder: '申请结束时间',
+        value: [this.$_oneMonthAgo, this.$_dateNow]
+      },
     }
     return {
       tabOptions,
@@ -301,19 +305,13 @@ export default {
 
         this.$set(this.searchItems['status'], 'miss', true)
 
-        this.$set(this.searchItems['auditAt'], 'miss', true)
-
         delete this.filter.auditName
 
         delete this.filter.status
 
-        delete this.filter.auditAt
-
         this.$set(this.searchItems['auditName'], 'value', '')
 
         this.$set(this.searchItems['status'], 'value', '')
-
-        this.$set(this.searchItems['auditAt'], 'value', '')
       } else {
         delete this.filter.status
 
@@ -321,7 +319,6 @@ export default {
 
         this.$set(this.searchItems['status'], 'miss', false)
 
-        this.$set(this.searchItems['auditAt'], 'miss', false)
       }
 
       if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
@@ -659,26 +656,28 @@ export default {
       onMultistageExamineSubmit() {
         this.$refs['diplomatic-multistage_examine-form'].onSubmit()
       },
-  },
 
-  async mounted() {
-    if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      this.$set(this.searchItems['orgName'], 'miss', true)
-    } else {
-      const { jailId } = this.$store.state.global.user
+      async _mixinsInitMethods() {
+        if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) this.$set(this.searchItems['orgName'], 'miss', true)
 
-      this.$set(this.searchItems['orgName'], 'miss', false)
+        else {
+          const { jailId } = this.$store.state.global.user
 
-      this.$set(this.searchItems['orgName'], 'getting', true)
+          this.$set(this.searchItems['orgName'], 'miss', false)
 
-      await this.getOrgName({ jailId })
+          this.$set(this.searchItems['orgName'], 'getting', true)
 
-      this.$set(this.searchItems['orgName'], 'options', this.organizationNames)
+          await this.getOrgName({ jailId })
 
-      this.$set(this.searchItems['orgName'], 'getting', false)
-    }
+          this.$set(this.searchItems['orgName'], 'options', this.organizationNames)
 
-    await this.getDatas()
+          this.$set(this.searchItems['orgName'], 'getting', false)
+        }
+
+        this.$refs.search.onGetFilter()
+
+        await this.getDatas()
+      }
   }
 }
 </script>

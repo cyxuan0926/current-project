@@ -1,6 +1,7 @@
 <template>
   <el-row class="row-container" :gutter="0">
     <m-search
+      ref="search"
       :items="searchItems"
       @search="onSearch"
       @searchSelectChange="searchSelectChange"
@@ -45,7 +46,7 @@
     <m-pagination
       ref="pagination"
       :total="terminals.total"
-      @onPageChange="getDatas" />
+      @onPageChange="onGetDatas" />
   </el-row>
 </template>
 
@@ -166,13 +167,20 @@ export default {
   },
 
   async activated() {
-    await this.getDatas()
+    this.$refs.search.onGetFilter()
+
+    this.filter = {
+      ...this.filter,
+      provincesId: '1'
+    }
+
+    await this.onGetDatas()
   },
 
   methods: {
     ...mapActions(['getTerminals', 'updateTerminal', 'enableTerminal']),
 
-    getDatas() {
+    onGetDatas() {
       this.getTerminals({ ...this.filter, ...this.pagination })
     },
 

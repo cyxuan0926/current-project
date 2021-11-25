@@ -50,7 +50,8 @@
                         range: {
                             max: Moment().format('YYYY-MM'),
                             maxMonthRange: 24
-                        }
+                        },
+                        value: [startDate, endDate]
                     },
                 },
                 tableDatas: {
@@ -62,10 +63,6 @@
                     page: 1
                 }
             }
-        },
-
-        created() {
-            this.getDatas()
         },
 
         methods: {

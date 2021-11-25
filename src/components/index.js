@@ -22,6 +22,8 @@ import ChartBlock from './modules/chart-block'
 import Draggable from './modules/draggable'
 import excelUpload from './modules/excel-upload'
 import multistageRecords from './multistage_examine-records'
+
+import YgPrisonContent from './yg-prison'
 export default {
   audio,
   Form,
@@ -46,5 +48,6 @@ export default {
   ChartBlock,
   Draggable,
   excelUpload,
-  multistageRecords
+  multistageRecords,
+  YgPrisonContent
 }

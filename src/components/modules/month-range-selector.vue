@@ -16,14 +16,14 @@
       slot="reference">
       <i class="el-input__icon el-range__icon el-icon-date" />
       <input
-        v-model="start"
+        v-model="_values[0]"
         readonly
         autocomplete="off"
         placeholder="开始月份"
         class="el-range-input">
       <span class="el-range-separator">-</span>
       <input
-        v-model="end"
+        v-model="_values[1]"
         readonly
         autocomplete="off"
         placeholder="结束月份"
@@ -33,7 +33,7 @@
         :class="[
           'el-input__icon',
           'el-range__close-icon',
-          {'el-icon-circle-close' : clear && start && end}]"
+          {'el-icon-circle-close' : clear && _values[0] && _values[1]}]"
         @click="handleClear"/>
     </div>
     <div
@@ -146,44 +146,34 @@ import Clickoutside from '@/utils/clickoutside'
 import Moment from 'moment'
 export default {
   props: {
-    startValue: {
-      type: String,
-      default: '',
+    value: {
+      type: Array,
+      default: [],
       validator: function(value) {
-        if (!value) {
-          return true
+        if (Array.isArray(value)) {
+          const [startValue, endValue] = value
+
+          if (!startValue || !endValue) return true
+
+          else if (!(/^[0-9]{4}-[0-9]{2}$/).test(startValue) || !(/^[0-9]{4}-[0-9]{2}$/).test(endValue)) return false
+
+          else return true
         }
-        else if (!(/^[0-9]{4}-[0-9]{2}$/).test(value)) {
-          return false
-        }
-        return true
+
+        return false
       }
     },
-    endValue: {
-      type: String,
-      default: '',
-      validator: function(value) {
-        if (!value) {
-          return true
-        }
-        else if (!(/^[0-9]{4}-[0-9]{2}$/).test(value)) {
-          return false
-        }
-        return true
-      }
-    },
+
     startKey: {
       type: String,
       default: 'startDate'
     },
+
     endKey: {
       type: String,
       default: 'endDate'
     },
-    prop: {
-      type: String,
-      default: 'range'
-    },
+
     range: {
       type: Object,
       default: function() {
@@ -194,16 +184,17 @@ export default {
         }
       }
     },
+
     clear: {
       type: Boolean,
       default: true
     }
   },
+
   directives: { Clickoutside },
+
   data() {
     return {
-      start: '',
-      end: '',
       visible: false,
       preYear: 0,
       nextYear: 0,
@@ -217,41 +208,47 @@ export default {
       maxYear: null,
       maxRangeYear: null,
       maxRangeMonth: null,
-      count: 0
+      count: 0,
+
+      _values: []
     }
   },
-  mounted() {
-    this.start = this.startValue
-    this.end = this.endValue
-    this.render('startValue', 'endValue')
-    if (this.range.min) {
-      this.minYear = parseInt(this.range.min.split('-')[0])
-    }
-    if (this.range.max) {
-      this.maxYear = parseInt(this.range.max.split('-')[0])
+
+  watch: {
+    value: {
+      immediate: true,
+
+      handler(val) {
+        this._values = val || []
+      }
     }
   },
+
   methods: {
-    render(start, end) {
-      if (this[start]) {
-        this.preYear = parseInt(this[start].split('-')[0])
+    render() {
+      if (this._values[0]) {
+        this.preYear = parseInt(this._values[0].split('-')[0])
         this.pickedPreYear = this.preYear
-        this.pickedPreMonth = parseInt(this[start].split('-')[1])
+        this.pickedPreMonth = parseInt(this._values[0].split('-')[1])
       }
-      if (this[end]) {
-        this.nextYear = parseInt(this[end].split('-')[0])
+
+      if (this._values[1]) {
+        this.nextYear = parseInt(this._values[1].split('-')[0])
         this.pickedNextYear = this.nextYear
-        this.pickedNextMonth = parseInt(this[end].split('-')[1])
+        this.pickedNextMonth = parseInt(this._values[1].split('-')[1])
       }
+
       if (this.preYear === this.nextYear) this.preYear = this.preYear - 1
     },
+
     handleClick(e) {
-      if (e.target.className.indexOf('el-icon-circle-close') > -1 || this.visible) {
-        return false
-      }
-      this.render('start', 'end')
+      if (e.target.className.indexOf('el-icon-circle-close') > -1 || this.visible) return false
+
+      this.render()
+
       this.visible = true
     },
+
     inRange(year, month) {
       if (!this.pickedPreMonth || !this.pickedNextMonth) return false
       let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`,
@@ -259,6 +256,7 @@ export default {
         now = `${ year }-${ this.fillPre(month) }`
       return now > pickedPre && now < pickedNext
     },
+
     isDisabled(year, month) {
       let now = `${ year }-${ this.fillPre(month) }`
       if ((this.range.min && now < this.range.min) || (this.range.max && now > this.range.max) || (this.range.maxMonthRange && this.minRangeYear && this.minRangeMonth && now < `${ this.minRangeYear }-${ this.minRangeMonth }`) || (this.range.maxMonthRange && this.maxRangeYear && this.maxRangeMonth && now > `${ this.maxRangeYear }-${ this.maxRangeMonth }`)) {
@@ -266,10 +264,12 @@ export default {
       }
       return false
     },
+
     fillPre(num) {
       if (!num) return ''
       return `00${ num }`.slice(-2)
     },
+
     handlePick(year, month, disabled) {
       if (disabled) return
       if (this.count >= 2) this.count = 0
@@ -296,6 +296,7 @@ export default {
         if (this.range.maxMonthRange) this.clearRange()
       }
     },
+
     handleRange(year, month, dur) {
       let minRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).subtract(dur, 'months').format('YYYY-MM').split('-'), maxRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).add(dur, 'months').format('YYYY-MM').split('-')
       this.minRangeYear = minRangeMonth[0]
@@ -303,10 +304,13 @@ export default {
       this.maxRangeYear = maxRangeMonth[0]
       this.maxRangeMonth = maxRangeMonth[1]
     },
+
     handleBlur(e) {
       if (!this.visible) return
+
       this.visible = false
     },
+
     handlePreYear(e, disabled) {
       if (disabled) return
       if (e === 'pre') {
@@ -318,6 +322,7 @@ export default {
         this.nextYear = parseInt(this.nextYear) - 1
       }
     },
+
     handleNextYear(e, disabled) {
       if (disabled) return
       if (e === 'pre') {
@@ -329,6 +334,7 @@ export default {
         this.nextYear = parseInt(this.nextYear) + 1
       }
     },
+
     handleClearPicked(e) {
       this.count = e
       this.pickedPreYear = null
@@ -337,28 +343,47 @@ export default {
       this.pickedNextMonth = null
       if (this.range.maxMonthRange) this.clearRange()
     },
+
     clearRange() {
       this.minRangeYear = null
       this.minRangeMonth = null
       this.maxRangeYear = null
       this.maxRangeMonth = null
     },
+
     handleEnsure(e) {
-      this.start = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+      let end
+
+      const start = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+
       if (e === 'single') {
-        this.end = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+        end = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+
         this.count = 0
       }
-      else {
-        this.end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
-      }
-      this.$emit('onEnsure', { [this.startKey]: this.start, [this.endKey]: this.end, prop: this.prop })
+
+      else end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+
+      this._values = [start, end]
+
+      this.$emit('input', this._values)
+
       this.visible = false
     },
+
     handleClear(e) {
-      this.start = ''
-      this.end = ''
+      this._values = []
+
+      this.$emit('input', this._values)
     }
+  },
+
+  mounted() {
+    this.render()
+
+    if (this.range.min) this.minYear = parseInt(this.range.min.split('-')[0])
+
+    if (this.range.max) this.maxYear = parseInt(this.range.max.split('-')[0])
   }
 }
 </script>

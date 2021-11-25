@@ -31,6 +31,7 @@
         align="right"
         unlink-panels
         v-bind="item.attrs"
+        :clearable="false"
       />
     </el-form-item>
 

@@ -839,7 +839,8 @@
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间',
-            canNotClear: this.$store.state.global.user.role == '0',
+            canNotClear: true,
+            //canNotClear: this.$store.state.global.user.role == '0',
             value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')]
             // miss: true,
             // value: [yesterdayDate, yesterdayDate]
@@ -989,7 +990,6 @@
 
         // oneMonthLater,
         submitParams: {},
-        filterInit: {},
         btnDisable: false, // 按钮禁用与启用
         content:[],
         updateer:'',
@@ -1325,28 +1325,10 @@
       }
     },
 
-    // created() {
-    //   this.filterInit = Object.assign({}, this.filterInit, {
-    //     applicationStartDate: this.todayDate,
-    //     applicationEndDate: this.oneMonthLater
-    //   })
-    // },
-
-    async mounted() {
-      // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
-      //   this.$set(this.searchItems.applicationDate, 'value', [this.yesterdayDate, this.yesterdayDate])
-      //   // this.$set(this.searchItems.applicationDate, 'miss', true)
-      //   // this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
-      // }
-      // else {
-        // this.$set(this.searchItems.applicationDate, 'miss', false)
-        // this.$set(this.searchItems.applicationDateAdmin, 'miss', true)
-      // }
-      // this.$set(this.searchItems.applicationDate, 'value', [this.todayDate, this.oneMonthLater])
-      this.searchItems.area.options=JSON.parse(localStorage.getItem('user')).separateByArea?this.$store.state.areaOptions:this.AreaObj
-      this.$refs.search.onGetFilter()
-      await this.getDatas('mounted')
+    created() {
+      this.searchItems.area.options = JSON.parse(localStorage.getItem('user')).separateByArea ? this.$store.state.areaOptions : this.AreaObj
     },
+
     methods: {
       ...mapActions([
         'getMeetings',

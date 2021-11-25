@@ -842,7 +842,7 @@ export default {
         (async() => {
           const { id, name } = this.toAuthorize
           await this.getMeetingTimes({ id })
-          const { meetingQueue, meetings, terminals, applicationDate } = this.meetingTimes
+          const { meetingQueue, meetings, terminals,  } = this.meetingTimes
           // 列名
           const meetingTimeTableProps = meetingQueue.map(queue => ({ label: queue, prop: queue }))
           const meetingTimeTableQueueData = meetingQueue.reduce((total, value) => {
