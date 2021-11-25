@@ -37,14 +37,13 @@
                     applicationDate: {
                         type: 'monthRangeSelector',
                         canNotClear: true,
-                        startValue: startDate,
-                        endValue: endDate,
                         startKey: 'startDate',
                         endKey: 'endDate',
                         range: {
                             max: Moment().format('YYYY-MM'),
                             maxMonthRange: 24
-                        }
+                        },
+                        value: [startDate, endDate]
                     },
                 },
                 tableDatas: {

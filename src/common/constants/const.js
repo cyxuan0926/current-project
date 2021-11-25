@@ -1,5 +1,7 @@
 import Moment from 'moment'
 
+import { _ygPrisonExportExcelUrls } from './yg-prisons'
+
 const isDesensitizationCol = true
 
 const className = 'el-form-item--ellipsis'
@@ -29,7 +31,8 @@ export const responseURLWhiteLists = [
   '/meetingMembersStatistics/export',
   '/meetingCallDetail/export',
   '/prisoner_visits/exportPrisonerVisits',
-  '/prisoner_visits/exportAdminPrisonerVisits'
+  '/prisoner_visits/exportAdminPrisonerVisits',
+  ..._ygPrisonExportExcelUrls
 ]
 
 export const withdrawOrAnthorinputReason = `1、上传的资料不足以证明与服刑人员的关系。
@@ -256,4 +259,13 @@ export const smsSendTemplate = [
     template: '尊敬的用户，湖南省女子监狱（$prisonerName）正在给您发送亲情短信，系统检测显示您的账户余额不足。请您打开国科服务APP，点击服务-更多-亲情短信，按照提示进行账户充值。',
     value: 3
   }
+]
+
+export const uploadStepsTabOptions = [
+  { label: '读取excel' },
+  { label: '解析excel' },
+  { label: '初始化数据' },
+  { label: '校验数据' },
+  { label: '导入数据' },
+  { label: '导入完成' }
 ]

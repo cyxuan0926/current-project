@@ -155,7 +155,13 @@ export default {
       else {
         if (payload.actype === 'INDIVIDUAL') {
           _row = {
-            familyName: _text
+            familyName: _text,
+            $isSpecialTotalCol: true
+          }
+        }
+        else if (payload.actype === 'PRISON_AREA') {
+          _row = {
+            jailName: _text
           }
         }
         else {
@@ -176,24 +182,21 @@ export default {
     }
     commit('setMeetingCostSaving', payload)
   },
-  async getMeetingCostSavingIndividual({ dispatch, commit }, payload) {
+  async getMeetingCostSavingIndividual({ dispatch }, payload) {
     const data = await repeatAPI.getMeetingCostSavingIndividual(payload)
     data.meetingDistances = data.personalDimensions
     data.actype = 'INDIVIDUAL'
-    // commit('setMeetingCostSaving', data || {})
     dispatch('meetingCostCommonAction', data || {})
     return data
   },
-  async getMeetingCostSavingPrisonArea({ dispatch, commit }, payload) {
+  async getMeetingCostSavingPrisonArea({ dispatch }, payload) {
     const data = await repeatAPI.getMeetingCostSavingPrisonArea(payload)
     data.actype = 'PRISON_AREA'
-    // commit('setMeetingCostSaving', data || {})
     dispatch('meetingCostCommonAction', data || {})
     return data
   },
-  async getMeetingCostSavingPrison({ dispatch, commit }, payload) {
+  async getMeetingCostSavingPrison({ dispatch }, payload) {
     const data = await repeatAPI.getMeetingCostSavingPrison(payload)
-    // commit('setMeetingCostSaving', data || {})
     dispatch('meetingCostCommonAction', data || {})
     return data
   },

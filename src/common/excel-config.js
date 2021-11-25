@@ -36,7 +36,7 @@ const prisonerExcelConfig = {
     },
     {
       key: 'families',
-      formater: (families) => {
+      formater: families => {
         if (families instanceof Array && families.length > 0) {
           return families.reduce((previous, current) => {
             if (previous === 'START') {
@@ -58,7 +58,7 @@ const prisonerExcelConfig = {
 const wardenMailboxExcelConfig = {
   filename: {
     value: '监狱长信箱',
-    formater: (filename) => {
+    formater: filename => {
       return `${ filename + formatTime(undefined, 'yyyyMMddhhmmss') }`
     }
   },
@@ -72,7 +72,7 @@ const wardenMailboxExcelConfig = {
     { key: 'createdAt' },
     {
       key: 'isReply',
-      formater: (isReply) => {
+      formater: isReply => {
         if (isReply) return '是'
         else return '否'
       }
@@ -92,7 +92,7 @@ const prisonerDataImportExcelConfig = {
     { key: 'name' },
     {
       key: 'gender',
-      formater: (gender) => {
+      formater: gender => {
         if (gender === 'm') return '男'
         if (gender === 'f') return '女'
         else return ''
@@ -102,13 +102,13 @@ const prisonerDataImportExcelConfig = {
     { key: 'additionalPunishment' },
     {
       key: 'prisonTermStartedAt',
-      formater: (prisonTermStartedAt) => {
+      formater: prisonTermStartedAt => {
         return formatTime(prisonTermStartedAt, 'yyyy/MM/dd')
       }
     },
     {
       key: 'prisonTermEndedAt',
-      formater: (prisonTermEndedAt) => {
+      formater: prisonTermEndedAt => {
         return formatTime(prisonTermEndedAt, 'yyyy/MM/dd')
       }
     },

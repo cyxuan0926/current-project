@@ -32,8 +32,7 @@ export default {
     },
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
-    hasPrisonAreaAuth: Boolean,
-    userHasPrisonArea: Boolean
+    hasPrisonAreaAuth: Boolean
   },
 
   data() {
@@ -84,7 +83,7 @@ export default {
 
     await Promise.all(_promise)
 
-    const $search = this.$refs.search || this.$refs.$search
+    const $search = this.$refs.search || this.$refs.$search || this.$refs.$ygSearch
 
     $search && $search.onGetFilter()
 
@@ -139,10 +138,10 @@ export default {
 
       Message.closeAll()
 
-      this.searchItems.jailId.options = this.$store.state.prisonAll
-      if (this.jailId) {
-        this.$set(this.searchItems['jailId'], 'value', this.jailId)
-      }
+      this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
+
+      if (this.jailId) this.$set(this.searchItems['jailId'], 'value', this.jailId)
+
       this.searchItems.jailId.getting = false
     },
 

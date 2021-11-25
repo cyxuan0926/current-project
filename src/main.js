@@ -30,6 +30,7 @@ import {
   _timeNow,
   _timeOneWeekAgo,
   _operationAuthorizations,
+  uploadStepsTabOptions,
   _oneMonthAgo
 } from '@/common/constants/const'
 
@@ -59,6 +60,8 @@ Vue.prototype.$_timeNow = _timeNow
 Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
 
 Vue.prototype.$_operationAuthorizations = _operationAuthorizations
+
+Vue.prototype.$_uploadStepsTabOptions = uploadStepsTabOptions
 
 Vue.prototype.$_oneMonthAgo = _oneMonthAgo
 

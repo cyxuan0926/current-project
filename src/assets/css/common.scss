@@ -69,3 +69,49 @@
   transform: translate(0, 0), scale(1);
   opacity: 1;
 }
+
+/* 导出的进度条的 */
+.authorize-dialog.upload-dialog {
+  .el-dialog__body {
+    padding-bottom: 30px !important;
+    .el-row__process {
+      .el-steps.el-steps__upload-process {
+        margin: 20px 0px;
+        .el-step__title {
+          font-size: 12px;
+          line-height: 32px;
+        }
+      }
+
+      .el-col {
+        &.process-col_tips {
+          width: 68%;
+          margin-left: 32%;
+          span {
+            color: #303133;
+            font-weight: bold;
+            & + span {
+              padding-left: 3%;
+            }
+          }
+        }
+
+        &.process-col_waiting {
+          width: 60%;
+          margin-left: 40%;
+          color: #303133;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.el-dialog.upload-dialog__inner {
+  .el-dialog__body {
+    padding: 20px;
+    .m-excel-download {
+      float: none;
+    }
+  }
+}

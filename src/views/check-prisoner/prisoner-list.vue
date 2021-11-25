@@ -1524,10 +1524,6 @@ export default {
 
         minReactInChainKey = result[result.length - 1] || 'jailId'
       }
-
-      this.$refs.search.onGetFilter()
-
-      this.onSearch()
     }
   },
 

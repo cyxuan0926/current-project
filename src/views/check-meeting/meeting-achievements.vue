@@ -75,9 +75,7 @@ export default {
   },
 
   computed: {
-    ...mapState([
-      'meetingCostSaving',
-      'provincesAll']),
+    ...mapState(['meetingCostSaving', 'provincesAll']),
 
     ...mapGetters(['isSuperAdmin']),
 
