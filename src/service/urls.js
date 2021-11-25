@@ -58,6 +58,7 @@ const config = {
   production: {
     bpmnApiHost: 'https://activiti-api.yuwugongkai.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
+    ygApiHost: 'https://sunjail-api.yuwugongkai.com/sunjail',
     // jailApiHost: 'http://192.168.100.1:8098/ywgk', // 会城监狱
     // jailApiHost: 'http://8.129.14.169:8088/ywgk', // 潍坊监狱
     jailApiHost: 'https://www.yuwugongkai.com/ywgk', // 河源监狱
