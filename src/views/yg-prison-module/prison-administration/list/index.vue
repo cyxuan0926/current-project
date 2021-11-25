@@ -3,7 +3,7 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :searchItems.sync="searchItems"
+      :searchItems="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"

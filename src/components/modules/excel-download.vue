@@ -57,9 +57,11 @@ export default {
       const query = qs.stringify(params)
 
       let res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
-      if (res && res.data) {
-        saveAs(res.data, `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
-      }
+      const { headers } = res
+
+      const originFileName = headers['content-disposition'] && decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
+
+      if (res && res.data) saveAs(res.data, originFileName || `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
     }
   }
 }

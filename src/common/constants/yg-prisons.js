@@ -122,5 +122,7 @@ export const _ygPrisonExportExcelUrls = [
   '/infoLaborReform/exportList',
   '/infoLaborRemuneration/exportList',
   '/infoLaborTrain/exportList',
-  '/infoMedicalExpense/exportMedicalExpense'
+  '/infoMedicalExpense/exportMedicalExpense',
+  // 为了处理baseURL 不是狱物通的
+  '/download/common/download'
 ]
