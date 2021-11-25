@@ -19,8 +19,6 @@ import {
   watch
 } from '@vue/composition-api'
 
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
 import {
   tabItems,
   _searchItems,
@@ -31,8 +29,6 @@ import {
 import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'EducationalTransformationList',
-
-  mixins: [prisonFilterCreator],
 
   setup() {
     const $ygEducationalTransformationParent = ref(null)

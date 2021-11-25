@@ -23,13 +23,13 @@
             :filterable="item.filterable"
             @change="onSelectChange(item.selectKey ? item.selectKey : item.correlation, item.value)"
           >
-          <!-- :key="item.belong ? option[item.belong.value] : option.value" -->
             <template v-for="(option, i) in item.options">
               <el-option
                 v-if="item.no ? (item.no.indexOf(item.belong ? option[item.belong.value] : option.value) == -1) : true"
                 :key="i"
                 :label="item.belong ? option[item.belong.label] : option.label"
-                :value="item.belong ? option[item.belong.value] : option.value" />
+                :value="item.belong ? option[item.belong.value] : option.value"
+              />
             </template>
           </el-select>
         </template>
@@ -42,6 +42,7 @@
             :placeholder="item.label"
             align="right"
             :picker-options="pickerOptions"
+            :clearable="false"
           />
         </template>
 
@@ -52,6 +53,7 @@
             type="date"
             value-format="yyyy-MM-dd"
             :placeholder="item.label"
+            :clearable="false"
           />
         </template>
 
@@ -61,7 +63,7 @@
             :key="index"
             type="month"
             :size="item.size"
-            :clearable="!item.canNotClear"
+            :clearable="false"
             :editable="!item.canNotClear"
             :picker-options="item.pickerOptions"
             value-format="yyyy-MM"
@@ -75,7 +77,7 @@
             :key="index"
             type="year"
             :size="item.size"
-            :clearable="!item.canNotClear"
+            :clearable="false"
             :editable="!item.canNotClear"
             :picker-options="item.pickerOptions"
             value-format="yyyy"
@@ -94,6 +96,7 @@
             format="yyyy-MM-dd HH:mm:ss"
             :value-format=" item.valueFormat ? 'yyyy-MM-dd' : 'yyyy-MM-dd HH:mm:ss' "
             :default-time="['00:00:00', '23:59:59']"
+            :clearable="false"
           />
         </template>
 
@@ -101,7 +104,7 @@
           <el-date-picker
             v-model="item.value"
             :key="index"
-            :clearable="!item.clearable"
+            :clearable="false"
             unlink-panels
             type="daterange"
             :start-placeholder="item.startPlaceholder || '开始时间'"
@@ -109,6 +112,7 @@
             format="yyyy-MM"
             value-format="yyyy-MM"
             :picker-options="item.pickerOptions"
+            
           />
         </template>
 
@@ -116,7 +120,7 @@
           <el-date-picker
             v-model="item.value"
             :key="index"
-            :clearable="!item.canNotClear"
+            :clearable="false"
             type="daterange"
             :disabled="item.disabled || false"
             :unlink-panels="item.unlinkPanels"
@@ -143,10 +147,10 @@
             v-model="item.value"
             class="monthRangeSelector"
             :prop="index"
-            :clear="!item.canNotClear"
+            :clear="false"
             :range="item.range"
             :start-key="item.startKey"
-            :end-key="item.endKey"
+            :end-key="item.endKey" 
           />
         </template>
 

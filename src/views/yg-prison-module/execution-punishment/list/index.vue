@@ -19,8 +19,6 @@ import {
   watch
 } from '@vue/composition-api'
 
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
 import {
   tabItems,
   _searchItems,
@@ -32,9 +30,7 @@ import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'ExecutionPunishmentList',
 
-  mixins: [prisonFilterCreator],
-
-  setup() {
+  setup(props) {
     const $ygExecutionPunishmentParent = ref(null)
 
     const searchItems = reactive(cloneDeep(_searchItems))

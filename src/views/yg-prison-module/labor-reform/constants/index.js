@@ -1,7 +1,5 @@
 import { _ygPrisonCommonSearchItems, _ygPrisonCommonTableCols } from '@/common/constants/yg-prisons'
 
-import { arrayRemove } from '@/utils/helper'
-
 export const tabItems = [
   {
     label: '劳动改造任务完成情况表',
@@ -96,16 +94,6 @@ export const httpRequests = {
 }
 
 const _commonCols = _ygPrisonCommonTableCols()
-
-const _criminalRate = () => {
-  const _temp = _ygPrisonCommonTableCols()
-
-  arrayRemove(_temp, '年份', 'label')
-
-  arrayRemove(_temp, '月份', 'label')
-
-  return _temp
-}
 
 const _createTime = {
   label: '导入时间',

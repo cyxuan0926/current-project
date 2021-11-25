@@ -166,11 +166,7 @@ const _remark = {
   prop: 'remark',
   showOverflowTooltip: true
 }
-const _reason = {
-  label: '备注',
-  prop: 'reason',
-  showOverflowTooltip: true
-}
+
 export const _tableCols = {
   '0': [
     {

@@ -268,6 +268,31 @@ export default {
           _$listeners: {} // el-table的事件
         }
       }
+    },
+
+    hasProvinceQueryAuth: {
+      type: Boolean,
+      default: false
+    },
+
+    hasAllPrisonQueryAuth: {
+      type: Boolean,
+      default: false
+    },
+
+    hasOnlyAllPrisonQueryAuth: {
+      type: Boolean,
+      default: false
+    },
+
+    hasDiplomatQueryAuth: {
+      type: Boolean,
+      default: false
+    },
+
+    hasPrisonAreaAuth: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -584,11 +609,6 @@ export default {
 
       await getData()
     }
-
-    // mounted生命周期函数
-    onMounted(async () => {
-      await initData()
-    })
 
     return {
       uploadDialogVisible,

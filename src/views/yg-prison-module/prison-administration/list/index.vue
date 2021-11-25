@@ -3,7 +3,7 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :searchItems="searchItems"
+      :searchItems.sync="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
@@ -19,8 +19,6 @@ import {
   watch
 } from '@vue/composition-api'
 
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
 import {
   tabItems,
   _searchItems,
@@ -31,8 +29,6 @@ import {
 import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'PrisonAdminstrationList',
-
-  mixins: [prisonFilterCreator],
 
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
@@ -65,6 +61,12 @@ export default {
     })
 
     const $tableCols = computed(() => _tableCols[$tabs['value']])
+
+    const $hasProvinceQueryAuth = computed(() => hasProvinceQueryAuth)
+
+    const $hasAllPrisonQueryAuth = computed(() => hasAllPrisonQueryAuth)
+
+    const $hasPrisonAreaAuth = computed(() => hasPrisonAreaAuth)
 
     watch($tabs, val => {
       $ygPrisonAdminstrationParent.value.initData()

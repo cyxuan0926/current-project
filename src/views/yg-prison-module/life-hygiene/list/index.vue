@@ -25,8 +25,6 @@ import {
   toRef
 } from '@vue/composition-api'
 
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
 import {
   tabItems,
   _searchItems,
@@ -37,8 +35,6 @@ import {
 import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'PrisonAdminstrationList',
-
-  mixins: [prisonFilterCreator],
 
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
