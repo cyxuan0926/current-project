@@ -10,16 +10,16 @@ const endDate = formatTime(new Date(), 'yyyy-MM')
 export const _ygPrisonCommonSearchItems = () => {
   return {
     // 重定义监区字段 因为 只查第一次监区 selectKey不要为prisonAreaId这个就可以了
-    // prisonArea: {
-    //   label: '监区',
-    //   selectKey: 'prisonArea',
-    //   type: 'select',
-    //   options: [],
-    //   filterable: true,
-    //   belong: { value: 'id', label: 'name' },
-    //   value: '',
-    //   miss: false
-    // },
+    prisonArea: {
+      label: '监区',
+      selectKey: 'prisonArea',
+      type: 'select',
+      options: [],
+      filterable: true,
+      belong: { value: 'id', label: 'name' },
+      value: '',
+      miss: false
+    },
 
     // 服刑人员编号
     prisonerNumber: {

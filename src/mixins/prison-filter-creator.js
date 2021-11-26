@@ -26,10 +26,7 @@ export default {
     hasOnlyAllPrisonQueryAuth: Boolean,
     hasProvinceQueryAuth: Boolean,
     isChartQuery: Boolean,
-    provincesId: {
-      type: String,
-      default: '1'
-    },
+    provincesId: String,
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
     hasPrisonAreaAuth: Boolean
@@ -39,6 +36,12 @@ export default {
     // this.filter 有值 说明是vue3的写法 在setup中返回了 在生命周期initData()之前
     return this.filter || {
       filter: {}
+    }
+  },
+
+  computed: {
+    $_provincesId() {
+      return this.provincesId || (this.$store.state.provincesAll && this.$store.state.provincesAll.length && this.$store.state.provincesAll[0]['id'])
     }
   },
 
@@ -132,7 +135,7 @@ export default {
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
-      const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.provincesId
+      const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.$_provincesId
 
       await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
@@ -153,7 +156,7 @@ export default {
         options: [],
         belong: { label: 'name', value: 'id' },
         filterable: true,
-        value: this.provincesId,
+        value: '',
         getting: true
       }
 
@@ -165,9 +168,12 @@ export default {
 
       this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
 
-      this.$set(this.searchItems['provincesId'], 'value', this.provincesId || '')
+      this.$set(this.searchItems['provincesId'], 'value', this.$_provincesId)
 
       this.$set(this.searchItems['provincesId'], 'getting', false)
+
+
+      if (this.$_provincesId) await this.searchSelectChange('provincesId', this.$_provincesId)
     },
 
     createPrisonSubArea() {
@@ -240,6 +246,8 @@ export default {
           const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
 
           this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
+
+          await this.searchSelectChange('prisonAreaId', _prisonArea)
         }
       }
     },
