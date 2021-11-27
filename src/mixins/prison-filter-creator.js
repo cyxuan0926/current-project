@@ -135,17 +135,19 @@ export default {
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
-      const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.$_provincesId
+      if (!this.hasProvinceQueryAuth) {
+        const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.$_provincesId
 
-      await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
+        await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
-      Message.closeAll()
+        Message.closeAll()
 
-      this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
+        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
 
-      if (this.jailId) this.$set(this.searchItems['jailId'], 'value', this.jailId)
+        if (this.jailId) this.$set(this.searchItems['jailId'], 'value', this.jailId)
 
-      this.searchItems.jailId.getting = false
+        this.searchItems.jailId.getting = false
+      }
     },
 
     async createProvinceFilter() {
@@ -172,8 +174,7 @@ export default {
 
       this.$set(this.searchItems['provincesId'], 'getting', false)
 
-
-      if (this.$_provincesId) await this.searchSelectChange('provincesId', this.$_provincesId)
+      if (this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth) await this.searchSelectChange('provincesId', this.$_provincesId)
     },
 
     createPrisonSubArea() {

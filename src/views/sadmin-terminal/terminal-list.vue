@@ -180,8 +180,8 @@ export default {
   methods: {
     ...mapActions(['getTerminals', 'updateTerminal', 'enableTerminal']),
 
-    onGetDatas() {
-      this.getTerminals({ ...this.filter, ...this.pagination })
+    async onGetDatas() {
+      await this.getTerminals({ ...this.filter, ...this.pagination })
     },
 
     onSearch() {
