@@ -35,7 +35,8 @@ export default {
   data() {
     // this.filter 有值 说明是vue3的写法 在setup中返回了 在生命周期initData()之前
     return this.filter || {
-      filter: {}
+      filter: {},
+      $_prisonFilterCreatorMounting: false
     }
   },
 
@@ -46,6 +47,8 @@ export default {
   },
 
   async mounted() {
+    this.$_prisonFilterCreatorMounting = true
+
     let _promise = []
 
     if (this.hasDiplomatQueryAuth) {
@@ -91,6 +94,14 @@ export default {
     $search && $search.onGetFilter()
 
     await this._initData()
+
+    this.$_prisonFilterCreatorMounting = false
+  },
+
+  async activated() {
+    if (this.$_prisonFilterCreatorMounting) return
+
+    await this._activedMethods()
   },
 
   methods: {
@@ -144,7 +155,10 @@ export default {
 
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
 
-        if (this.jailId) this.$set(this.searchItems['jailId'], 'value', this.jailId)
+        if (this.jailId) {
+          const _jailId = this.jailId || (this.this.$store.state.prisonAll && this.$store.state.prisonAll.length && this.$store.state.prisonAll[0]['id'])
+          this.$set(this.searchItems['jailId'], 'value', this.jailId)
+        }
 
         this.searchItems.jailId.getting = false
       }
@@ -344,7 +358,7 @@ export default {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
 
-          this.$set(this.searchItems['jailId'], 'value', '')
+          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) this.$set(this.searchItems['jailId'], 'value', '')
 
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
@@ -393,6 +407,15 @@ export default {
     async _initData() {
       // 优先自定义的方法
       const _promise = this._mixinsInitMethods || this.getDatas || this.getData || async function() {
+        return true
+      }
+
+      await _promise()
+    },
+
+    // actived
+    async _activedMethods() {
+      const _promise = this._mixinsActivedMethods || this.getDatas || this.getData || async function() {
         return true
       }
 

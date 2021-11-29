@@ -46,7 +46,7 @@
     <m-pagination
       ref="pagination"
       :total="terminals.total"
-      @onPageChange="onGetDatas" />
+      @onPageChange="getDatas" />
   </el-row>
 </template>
 
@@ -166,21 +166,10 @@ export default {
     ...mapState(['terminals'])
   },
 
-  async activated() {
-    this.$refs.search.onGetFilter()
-
-    this.filter = {
-      ...this.filter,
-      provincesId: '1'
-    }
-
-    await this.onGetDatas()
-  },
-
   methods: {
     ...mapActions(['getTerminals', 'updateTerminal', 'enableTerminal']),
 
-    async onGetDatas() {
+    async getDatas() {
       await this.getTerminals({ ...this.filter, ...this.pagination })
     },
 
