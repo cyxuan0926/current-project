@@ -262,7 +262,9 @@ export default {
 
           this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
 
-          await this.searchSelectChange('prisonAreaId', _prisonArea)
+          const { selectKey } = this.searchItems['prisonArea']
+
+          if (selectKey === 'prisonAreaId') await this.searchSelectChange('prisonAreaId', _prisonArea)
         }
       }
     },
