@@ -257,15 +257,15 @@ export default {
       if (_jailId && _jailId !== -1) {
         await this.searchSelectChange('jailId', _jailId)
 
-        if (!this.$store.getters.isSuperAdmin && this.hasPrisonAreaAuth && this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
-          const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
+        // if (!this.$store.getters.isSuperAdmin && this.hasPrisonAreaAuth && this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
+        //   const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
 
-          this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
+        //   this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
 
-          const { selectKey } = this.searchItems['prisonArea']
+        //   const { selectKey } = this.searchItems['prisonArea']
 
-          if (selectKey === 'prisonAreaId') await this.searchSelectChange('prisonAreaId', _prisonArea)
-        }
+        //   if (selectKey === 'prisonAreaId') await this.searchSelectChange('prisonAreaId', _prisonArea)
+        // }
       }
     },
 
