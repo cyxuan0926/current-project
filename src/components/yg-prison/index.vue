@@ -221,9 +221,9 @@ export default {
 
     // 查询选项
     // 需要在父组件引入 mixins prisonFilterCreator
-    // 而且父组件的 参数的名 必须为 searchItems
+    // 而且父组件的 参数的名
     // 或者传props 进来
-    searchItems: {
+    ygSearchItems: {
       type: Object,
       default: () => ({})
     },
@@ -268,30 +268,6 @@ export default {
         }
       }
     }
-    // hasProvinceQueryAuth: {
-    //   type: Boolean,
-    //   default: false
-    // },
-
-    // hasAllPrisonQueryAuth: {
-    //   type: Boolean,
-    //   default: false
-    // },
-
-    // hasOnlyAllPrisonQueryAuth: {
-    //   type: Boolean,
-    //   default: false
-    // },
-
-    // hasDiplomatQueryAuth: {
-    //   type: Boolean,
-    //   default: false
-    // },
-
-    // hasPrisonAreaAuth: {
-    //   type: Boolean,
-    //   default: false
-    // }
   },
 
   setup(props, { emit }) {
@@ -301,7 +277,7 @@ export default {
       tableCols,
       tabItems,
       tabs,
-      searchItems
+      ygSearchItems
     } = toRefs(props)
 
     // data
@@ -350,6 +326,9 @@ export default {
 
     // el-tabs 的value
     const $tabs = ref('')
+
+    // 搜索组件
+    const searchItems = ref(Object.assign({}, ygSearchItems.value))
 
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
@@ -403,6 +382,10 @@ export default {
 
     watch($tabs, val => {
       if (val) emit('update:tabs', val)
+    })
+
+    watch(searchItems, val => {
+      if (val) emit('update:ygSearchItems', val)
     })
 
     // methods
@@ -635,7 +618,8 @@ export default {
       onYGPrisonDownloadExcel,
       dialogTitle,
       $tabs,
-      initData
+      initData,
+      searchItems
     }
   }
 }

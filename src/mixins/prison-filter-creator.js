@@ -26,10 +26,7 @@ export default {
     hasOnlyAllPrisonQueryAuth: Boolean,
     hasProvinceQueryAuth: Boolean,
     isChartQuery: Boolean,
-    provincesId: {
-      type: String,
-      default: '1'
-    },
+    provincesId: String,
     jailId: Number,
     hasDiplomatQueryAuth: Boolean,
     hasPrisonAreaAuth: Boolean
@@ -38,11 +35,20 @@ export default {
   data() {
     // this.filter 有值 说明是vue3的写法 在setup中返回了 在生命周期initData()之前
     return this.filter || {
-      filter: {}
+      filter: {},
+      $_prisonFilterCreatorMounting: false
+    }
+  },
+
+  computed: {
+    $_provincesId() {
+      return this.provincesId || (this.$store.state.provincesAll && this.$store.state.provincesAll.length && this.$store.state.provincesAll[0]['id'])
     }
   },
 
   async mounted() {
+    this.$_prisonFilterCreatorMounting = true
+
     let _promise = []
 
     if (this.hasDiplomatQueryAuth) {
@@ -88,6 +94,14 @@ export default {
     $search && $search.onGetFilter()
 
     await this._initData()
+
+    this.$_prisonFilterCreatorMounting = false
+  },
+
+  async activated() {
+    if (this.$_prisonFilterCreatorMounting) return
+
+    await this._activedMethods()
   },
 
   methods: {
@@ -132,17 +146,22 @@ export default {
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
-      const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.provincesId
+      if (!this.hasProvinceQueryAuth) {
+        const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.$_provincesId
 
-      await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
+        await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
-      Message.closeAll()
+        Message.closeAll()
 
-      this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
+        this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
 
-      if (this.jailId) this.$set(this.searchItems['jailId'], 'value', this.jailId)
+        if (this.jailId) {
+          const _jailId = this.jailId || (this.this.$store.state.prisonAll && this.$store.state.prisonAll.length && this.$store.state.prisonAll[0]['id'])
+          this.$set(this.searchItems['jailId'], 'value', this.jailId)
+        }
 
-      this.searchItems.jailId.getting = false
+        this.searchItems.jailId.getting = false
+      }
     },
 
     async createProvinceFilter() {
@@ -153,7 +172,7 @@ export default {
         options: [],
         belong: { label: 'name', value: 'id' },
         filterable: true,
-        value: this.provincesId,
+        value: '',
         getting: true
       }
 
@@ -165,9 +184,11 @@ export default {
 
       this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
 
-      this.$set(this.searchItems['provincesId'], 'value', this.provincesId || '')
+      this.$set(this.searchItems['provincesId'], 'value', this.$_provincesId)
 
       this.$set(this.searchItems['provincesId'], 'getting', false)
+
+      if (this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth) await this.searchSelectChange('provincesId', this.$_provincesId)
     },
 
     createPrisonSubArea() {
@@ -240,6 +261,10 @@ export default {
           const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
 
           this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)
+
+          const { selectKey } = this.searchItems['prisonArea']
+
+          if (selectKey === 'prisonAreaId') await this.searchSelectChange('prisonAreaId', _prisonArea)
         }
       }
     },
@@ -335,7 +360,7 @@ export default {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
 
-          this.$set(this.searchItems['jailId'], 'value', '')
+          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) this.$set(this.searchItems['jailId'], 'value', '')
 
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
@@ -384,6 +409,15 @@ export default {
     async _initData() {
       // 优先自定义的方法
       const _promise = this._mixinsInitMethods || this.getDatas || this.getData || async function() {
+        return true
+      }
+
+      await _promise()
+    },
+
+    // actived
+    async _activedMethods() {
+      const _promise = this._mixinsActivedMethods || this.getDatas || this.getData || async function() {
         return true
       }
 

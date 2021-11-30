@@ -3,10 +3,11 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :searchItems="searchItems"
+      :ygSearchItems.sync="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
+      v-bind="routeProps"
     />
   </el-row>
 </template>
@@ -27,6 +28,8 @@ import {
 } from '../constants'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import useRouteProps from '@/common/composables/useRouteProps'
 export default {
   name: 'PrisonAdminstrationList',
 
@@ -62,11 +65,7 @@ export default {
 
     const $tableCols = computed(() => _tableCols[$tabs['value']])
 
-    const $hasProvinceQueryAuth = computed(() => hasProvinceQueryAuth)
-
-    const $hasAllPrisonQueryAuth = computed(() => hasAllPrisonQueryAuth)
-
-    const $hasPrisonAreaAuth = computed(() => hasPrisonAreaAuth)
+    const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
       $ygPrisonAdminstrationParent.value.initData()
@@ -78,7 +77,8 @@ export default {
       $tabs,
       $tabItems,
       $httpRequests,
-      $tableCols
+      $tableCols,
+      routeProps
     }
   }
 }

@@ -3,10 +3,11 @@
     <m-yg-prison-content
       ref="$ygExecutionPunishmentParent"
       :tabItems="$tabItems"
-      :searchItems="searchItems"
+      :ygSearchItems.sync="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
+      v-bind="routeProps"
     />
   </el-row>
 </template>
@@ -27,10 +28,12 @@ import {
 } from '../constants'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import useRouteProps from '@/common/composables/useRouteProps'
 export default {
   name: 'ExecutionPunishmentList',
 
-  setup(props) {
+  setup() {
     const $ygExecutionPunishmentParent = ref(null)
 
     const searchItems = reactive(cloneDeep(_searchItems))
@@ -56,6 +59,8 @@ export default {
 
     const $tableCols = computed(() => _tableCols[$tabs['value']])
 
+    const { routeProps } = useRouteProps()
+
     watch($tabs, val => {
       $ygExecutionPunishmentParent.value.initData()
     })
@@ -66,7 +71,8 @@ export default {
       $tabs,
       $tabItems,
       $httpRequests,
-      $tableCols
+      $tableCols,
+      routeProps
     }
   }
 }

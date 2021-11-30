@@ -79,21 +79,8 @@ export default {
 
   watch: {
     activeName(val) {
-      this.getSearchItem('clearFilter')
+      this.getDatas('clearFilter')
     }
-  },
-
-  async mounted() {
-    this.filter = {
-      ...this.filter,
-      provincesId: '1'
-    }
-
-    await this.getSearchItem()
-  },
-
-  async activated() {
-    await this.getSearchItem()
   },
 
   methods: {
@@ -117,9 +104,7 @@ export default {
         this.$refs.pagination && this.$refs.pagination.updateCurrentPage(page)
       }
       // 人脸识别配置标签页
-      else {
-        this.$router.replace('/face-recognition/configs')
-      }
+      else this.$router.replace('/face-recognition/configs')
     },
 
     // 获取数据
@@ -159,7 +144,7 @@ export default {
       this.$refs.pagination.handleCurrentChange(1)
     },
 
-    async getSearchItem(e) {
+    async getDatas(e) {
       if (this.loading) return
 
       const tabsSearchItemsObject = {

@@ -3,11 +3,12 @@
     <m-yg-prison-content
       ref="$ygPrisonAdminstrationParent"
       :tabItems="$tabItems"
-      :searchItems="searchItems"
+      :ygSearchItems.sync="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
       :elTableConfigs="elTableConfigs"
+      v-bind="routeProps"
     >
       <template #infoRecipeYearNum="{ row }">{{ row.yearNum }}</template>
     </m-yg-prison-content>
@@ -32,6 +33,8 @@ import {
 } from '../constants'
 
 import cloneDeep from 'lodash/cloneDeep'
+
+import useRouteProps from '@/common/composables/useRouteProps'
 export default {
   name: 'PrisonAdminstrationList',
 
@@ -91,29 +94,31 @@ export default {
       }
     })
 
+    const { routeProps } = useRouteProps()
+
     watch($tabs, val => {
-       if(val==0){
-        // searchItems.prisonArea.miss= true
+       if(val === '0') {
+        searchItems.prisonArea.miss= true
         searchItems.prisonerNumber.miss = true
         searchItems.prisonerName.miss = true
         searchItems.dateMonth.miss = false
-      }else if(val==1){
-        // searchItems.prisonArea.miss= false
+      } else if(val === '1') {
+        searchItems.prisonArea.miss= false
         searchItems.prisonerNumber.miss = false
         searchItems.prisonerName.miss = false
         searchItems.dateMonth.miss = false
-      }else if(val==2){
-          // searchItems.prisonArea.miss= false
+      } else if(val === '2'){
+            searchItems.prisonArea.miss= false
             searchItems.prisonerNumber.miss = false
             searchItems.prisonerName.miss = false
             searchItems.dateMonth.miss = false
-      }else if(val == 3){
-          // searchItems.prisonArea.miss= false
+      } else if(val === '3'){
+            searchItems.prisonArea.miss= false
             searchItems.prisonerNumber.miss = false
             searchItems.prisonerName.miss = false
             searchItems.dateMonth.miss = true
-      }else if(val == 4){
-          // searchItems.prisonArea.miss= false
+      } else if(val === '4'){
+            searchItems.prisonArea.miss= false
             searchItems.prisonerNumber.miss = false
             searchItems.prisonerName.miss = false
             searchItems.dateMonth.miss = false
@@ -130,7 +135,8 @@ export default {
       $tabItems,
       $httpRequests,
       $tableCols,
-      elTableConfigs
+      elTableConfigs,
+      routeProps
     }
   }
 }
