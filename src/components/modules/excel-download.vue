@@ -19,7 +19,9 @@ import { helper } from '@/utils'
 export default {
   props: {
     path: String,
+
     params: Object,
+
     text: {
       type: String,
       default: '导出 Excel'
@@ -56,8 +58,9 @@ export default {
 
       const query = qs.stringify(params)
 
-      let res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
-      const { headers } = res
+      const res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
+
+      const { headers } = res || {}
 
       const originFileName = headers['content-disposition'] && decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
 
