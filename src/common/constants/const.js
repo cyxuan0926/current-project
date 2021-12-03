@@ -269,3 +269,16 @@ export const uploadStepsTabOptions = [
   { label: '导入数据' },
   { label: '导入完成' }
 ]
+
+// 监狱 数据管理 模版 组件配置
+export const _prisonerDataExcelDownloadConsts = {
+  path: '/download/downloadfile',
+
+  buttonsProps: {
+    attrs: {
+      type: 'text'
+    }
+  },
+
+  className: 'm-excel_download__prisoner-data'
+}
