@@ -7,7 +7,10 @@
         <el-form-item label="可视电话申请自动审核" :rules="{ required: true }">
           <el-switch v-model="autoAuthorizeMeeting" active-color="#13ce66" />
         </el-form-item>
-
+         <el-form-item label="家属认证自动审核" :rules="{ required: true }">
+          <el-switch v-model="autoAuthorizeMeeting" active-color="#13ce66" />
+        </el-form-item>
+        
          <el-form-item label="异常可视电话时长配置" :rules="{ required: true }">
           <el-switch v-model="abnormalCallDurationSwitch" active-color="#13ce66" />
 

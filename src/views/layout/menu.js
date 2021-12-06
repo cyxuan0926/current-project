@@ -142,6 +142,10 @@ let superAdminMenu = [{
         path: '/prisoner-data/inside-jails-costs',
         title: '狱内消费情况数据导入',
         icon: 'iconfont icon-circle-o'
+      }, {
+        path: '/prisoner-data/data-jiashuxinxi',
+        title: '家属信息导入',
+        icon: 'iconfont icon-circle-o'
       }
     ]
   }, {

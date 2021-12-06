@@ -262,7 +262,14 @@ let check = [{
     component: 'check-prisoner-data/inside-jails-costs',
     // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
     meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '狱内消费情况数据导入' }
-  }, {
+  }, , {
+    path: '/prisoner-data/data-jiashuxinxi',
+    name: 'prisoner-inside-jails-costs',
+    // component: helper.loadView('check-prisoner-data/inside-jails-costs'),
+    component: 'check-prisoner-data/data-jiashuxinxi',
+    // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
+    meta: { permission: 'visit.data-import.prison-consumption.import', breadcrumbName: '亲情家属信息导入' }
+  },{
     path: '/prisoner-data/sensitive-characters',
     name: 'HeiYuang-jail-prisoner-sensitive-characters',
     component: 'literature/literature-sensitive-characters/literature-sensitive-characters',
