@@ -5,7 +5,6 @@
       path="/download/exportRegistrations"
       :params="filter"
     /> -->
-
     <m-search
       :items.sync="searchItems"
       ref="search"
@@ -808,7 +807,8 @@ export default {
           end: 'endDate',
           startPlaceholder: '申请开始时间',
           endPlaceholder: '申请结束时间',
-          value: [this.$_oneMonthAgo, this.$_dateNow]
+          value: [this.$_oneMonthAgo, this.$_dateNow],
+          canNotClear: false
         },
 
         level: {
