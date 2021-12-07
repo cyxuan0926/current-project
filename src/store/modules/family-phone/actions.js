@@ -51,6 +51,20 @@ export default {
       Promise.reject(err)
     }
   },
+  async validateImportFamilyInformation({ commit }, filepath) {
+    try {
+      const response = await familyPhoneApi.validateImportFamilyInformation(filepath).then(res => res && res.data)
+    
+      if (!response) return
+
+      commit('setImportFamilyInformationResult', response)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
   async validateUploadPhone({ commit }, filepath) {
     try {
       const response = await familyPhoneApi.validateUploaPhone(filepath)

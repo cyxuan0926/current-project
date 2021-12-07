@@ -42,6 +42,10 @@ export default {
   validateUploaPhone: filepath => {
     return service.post('/msg/parse/familyphone/apply/validateFpna', { filepath }).then(response => response && response.data)
   },
+  // 家属信息导入
+  validateImportFamilyInformation: filepath => {
+    return service.post('/familyInformationImport/importFamilyInformation', { filepath }).then(response => response && response.data)
+  },
 
   // 亲情电话家属 - 详情
   getFamilyPhoneFamiliesDetail: inputs => {
