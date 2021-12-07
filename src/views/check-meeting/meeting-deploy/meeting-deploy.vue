@@ -184,7 +184,7 @@ export default {
       http.getMeetDeploy().then((res) => {
         this.dialogVisible = false;
         this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting? true: false;
-        // this.regAutoAudit = res.data.regAutoAudit ? true : false;
+        this.regAutoAudit = res.data.regAutoAudit ? true : false;
         this.multistageExamine = res.data.multistageExamine ? true : false;
         this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch
           ? true
@@ -208,11 +208,6 @@ export default {
       } else {
         this.submitDeploy();
       }
-      // if (this.regAutoAudit == true && this.multistageExamine == true) {
-      //   this.dialogVisible = true;
-      // } else {
-      //   this.submitDeploy();
-      // }
     },
     closeDeploy() {
       this.dialogVisible = false;
@@ -221,8 +216,8 @@ export default {
       const params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
-        // regAutoAudit: this.regAutoAudit ? 1 : 0,
-        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
+        regAutoAudit:this.regAutoAudit ? 1 : 0,
+        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0
       });
       this.$refs.form.validate((valid) => {
         if (valid) {

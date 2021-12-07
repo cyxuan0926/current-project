@@ -58,7 +58,6 @@ export default {
 
       let res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
       const { headers } = res
-
       const originFileName = headers['content-disposition'] && decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
 
       if (res && res.data) saveAs(res.data, originFileName || `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
