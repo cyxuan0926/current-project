@@ -44,7 +44,7 @@ export default {
   },
   // 家属信息导入
   validateImportFamilyInformation: filepath => {
-    return service.post('/familyInformationImport/importFamilyInformation', { filepath }).then(response => response && response.data)
+    return service.post('/familyInformationImport/importFamilyInformation',  filepath ).then(response => response && response.data)
   },
 
   // 亲情电话家属 - 详情

@@ -53,7 +53,8 @@ export default {
   },
   async validateImportFamilyInformation({ commit }, filepath) {
     try {
-      const response = await familyPhoneApi.validateImportFamilyInformation(filepath).then(res => res && res.data)
+       let obj={jailId:JSON.parse(localStorage.getItem('user')).jailId,filepath:filepath}
+      const response = await familyPhoneApi.validateImportFamilyInformation(obj).then(res => res && res.data)
     
       if (!response) return
 
