@@ -33,7 +33,7 @@ export default {
   },
   // 新增家属信息
   familyforAdd: data => {
-    return service.postObj(service.getHyUrl('/familyInformationImport/addFamilyInformation'), data).then(res => res && res.data)
+    return service.post(service.getHyUrl('/familyInformationImport/addFamilyInformation'), data).then(res => res && res.data)
   },
   // 通过审核
   authPhone: data => {

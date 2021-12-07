@@ -143,7 +143,7 @@ export default {
       params: false,
       abnormalCallDuration: 300,
       autoAuthorizeMeeting: true,
-      regAutoAudit: true,
+      regAutoAudit: false,
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
       formData: {
