@@ -1,8 +1,5 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <el-button type="primary" :loading="downloading" @click="onDownloadExcel"
-      >导出 Excel</el-button
-    >
     <m-search ref="search" :items="searchItems" @search="onSearch" />
     <el-col :span="24">
       <el-tabs v-model="tabs" type="card">
