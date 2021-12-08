@@ -955,6 +955,15 @@ export default {
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
         }
+        if (val == 'PENDING') {
+          this.$set(this.searchItems.applicationDate, 'miss', true)
+          this.$delete(this.filter, 'startDate')
+          this.$delete(this.filter, 'endDate')
+        }else {
+          this.$set(this.searchItems.applicationDate, 'miss', false)
+          this.$set(this.filter, 'startDate', this.$_oneMonthAgo)
+          this.$set(this.filter, 'endDate', this.$_dateNow)
+        }
         if (val === '') {
           delete this.filter.status
           this.searchItems.status.miss = false
@@ -973,8 +982,18 @@ export default {
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.status.options = this.$store.state.registStatus
+        this.$set(this.searchItems.applicationDate, 'miss', false)
       }
       this.onSearch()
+    }
+  },
+
+  mounted() {
+    // tabs: 'PENDING',
+    if (this.tabs == 'PENDING') {
+      this.$set(this.searchItems.applicationDate, 'miss', true)
+      this.$delete(this.filter, 'startDate')
+      this.$delete(this.filter, 'endDate')
     }
   },
 
