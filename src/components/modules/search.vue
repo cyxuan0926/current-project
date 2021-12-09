@@ -120,7 +120,7 @@
           <el-date-picker
             v-model="item.value"
             :key="index"
-            :clearable="false"
+            :clearable="typeof item.canNotClear === 'undefined' ? false : !item.canNotClear"
             type="daterange"
             :disabled="item.disabled || false"
             :unlink-panels="item.unlinkPanels"
@@ -252,6 +252,13 @@ export default {
   methods: {
     onSearch(e) {
       this.onGetFilter()
+      let { filter: { name, prisonerName, prisonerNumber } } = this.$parent.$parent
+      let _dateKey = Object.values(this.items).find(v => v.type == 'dateRange')
+      _dateKey = _dateKey && _dateKey.start
+      if (!this.$parent.$parent.filter[_dateKey] && !name && !prisonerName && !prisonerNumber) {
+        this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
+        return
+      }
 
       if (e !== 'tabs') this.$emit('search')
     },
