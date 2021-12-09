@@ -9,6 +9,7 @@ const className = 'el-form-item--ellipsis'
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
+  '/download/exportFamilyRegJails',
   '/download/exportVideoTelRecords',
   '/download/province/export',
   '/familyMessage/export',
