@@ -821,6 +821,7 @@
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
+        isSearchLimit: true,
         searchItems: {
           name: {
             type: 'input',
@@ -840,10 +841,8 @@
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间',
             canNotClear: false,
-            //canNotClear: this.$store.state.global.user.role == '0',
-            value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')]
-            // miss: true,
-            // value: [yesterdayDate, yesterdayDate]
+            value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')],
+            miss: true
           },
           area: {
             type: 'select',
@@ -1257,6 +1256,8 @@
       },
 
       tabs(val) {
+        // 修改 searchItems search组件会重新渲染 再执search组件的 onSearch 方法
+        this.$set(this.searchItems.applicationDate, 'miss', val == 'PENDING')
         this.$refs.search.onSearch('tabs')
         this.searchItems.changerType.miss = true
         delete this.filter.changerType

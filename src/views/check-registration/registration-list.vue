@@ -763,6 +763,7 @@ export default {
     return {
       showDetail: false,
       authorizeDetData: {},
+      isSearchLimit: true,
       searchItems: {
         name: {
           type: 'input',
@@ -808,7 +809,8 @@ export default {
           startPlaceholder: '申请开始时间',
           endPlaceholder: '申请结束时间',
           value: [this.$_oneMonthAgo, this.$_dateNow],
-          canNotClear: false
+          canNotClear: false,
+          miss: true
         },
 
         level: {
@@ -948,21 +950,14 @@ export default {
 
   watch: {
     tabs(val) {
+      // 修改 searchItems search组件会重新渲染 再执search组件的 onSearch 方法
+      this.$set(this.searchItems.applicationDate, 'miss', val == 'PENDING')
       this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
         if ( val === 'DENIED,WITHDRAW' ) {
           delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
-        }
-        if (val == 'PENDING') {
-          this.$set(this.searchItems.applicationDate, 'miss', true)
-          this.$delete(this.filter, 'startDate')
-          this.$delete(this.filter, 'endDate')
-        }else {
-          this.$set(this.searchItems.applicationDate, 'miss', false)
-          this.$set(this.filter, 'startDate', this.$_oneMonthAgo)
-          this.$set(this.filter, 'endDate', this.$_dateNow)
         }
         if (val === '') {
           delete this.filter.status
@@ -982,18 +977,8 @@ export default {
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.status.options = this.$store.state.registStatus
-        this.$set(this.searchItems.applicationDate, 'miss', false)
       }
       this.onSearch()
-    }
-  },
-
-  mounted() {
-    // tabs: 'PENDING',
-    if (this.tabs == 'PENDING') {
-      this.$set(this.searchItems.applicationDate, 'miss', true)
-      this.$delete(this.filter, 'startDate')
-      this.$delete(this.filter, 'endDate')
     }
   },
 

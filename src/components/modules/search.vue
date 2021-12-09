@@ -185,6 +185,7 @@
 <script>
 import autowidth from '@/common/directives/autowidth'
 import { helper } from '@/utils'
+import moment from 'moment'
 
 export default {
   props: {
@@ -252,12 +253,25 @@ export default {
   methods: {
     onSearch(e) {
       this.onGetFilter()
-      let { filter: { name, prisonerName, prisonerNumber } } = this.$parent.$parent
-      let _dateKey = Object.values(this.items).find(v => v.type == 'dateRange')
-      _dateKey = _dateKey && _dateKey.start
-      if (!this.$parent.$parent.filter[_dateKey] && !name && !prisonerName && !prisonerNumber) {
-        this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
-        return
+      // search组件 添加判断逻辑 家属姓名、罪犯姓名、罪犯编号和日期选择 不可同时为空  日期选择范围不可大于1年
+      // 父组件如果定义了是否添加此限制 isSearchLimit true
+      let { isSearchLimit, filter: { name, prisonerName, prisonerNumber } } = this.$parent.$parent
+      if (isSearchLimit) {
+        let _dateKey = Object.values(this.items).find(v => !v.miss && v.type == 'dateRange')
+        if (_dateKey && !this.$parent.$parent.filter[_dateKey.start] && !name && !prisonerName && !prisonerNumber) {
+          this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
+          return
+        }
+        if (_dateKey ) {
+          let _start = this.$parent.$parent.filter[_dateKey.start]
+          _start = _start && moment(_start, 'YYYY-MM-DD')
+          let _end = this.$parent.$parent.filter[_dateKey.end]
+          _end = _end && moment(_end, 'YYYY-MM-DD')
+          if (_start && _end && _end.diff(_start, 'years', true) * 100 > 100 ) {
+            this.$message.warning('开始时间-结束时间的选择范围不可大于1年')
+            return
+          }
+        }
       }
 
       if (e !== 'tabs') this.$emit('search')
