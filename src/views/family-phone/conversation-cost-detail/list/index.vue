@@ -208,11 +208,11 @@ import isEmpty from 'lodash/isEmpty'
 
 import cloneDeep from 'lodash/cloneDeep'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
-} from '@/common/constants/const'
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone
+// } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_ConversationCostDetail_List',
 
@@ -426,23 +426,23 @@ export default {
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
-          ...$likePrisonerNumber
+          prop: 'criminalNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName',
-          ...$likeName
+          prop: 'criminalName'
+          // ...$likeName
         },
         {
           label: '家属姓名',
-          prop: 'familyName',
-          ...$likeName
+          prop: 'familyName'
+          // ...$likeName
         },
         {
           label: '家属电话',
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },
         {
           label: '总通话时间段',

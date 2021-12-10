@@ -8,14 +8,60 @@ import { mapState } from 'vuex'
 
 export default {
   data() {
+    const checkAreaId = (rule, value, callback) => {
+      if (!value && value !== null) {
+        callback(new Error('请选择监区'))
+      } else callback()
+    }
+
     return {
       localPrisonAreaLevelObject: cloneDeep(prisonAreaLevelObject),
-      prisonConfigIdKey: ''
+
+      prisonConfigIdKey: '',
+
+      rule: {
+        terminalNumber: [{
+          required: true,
+          message: '请填写终端号',
+          trigger: 'blur'
+        }],
+
+        jailId: [{
+          required: true,
+          message: '请选择监狱'
+        }],
+
+        areaId: [{ validator: checkAreaId }],
+
+        branchId: [{
+          required: true,
+          message: '请选择分监区'
+        }],
+
+        buildingId: [{
+          required: true,
+          message: '请选择楼栋'
+        }],
+
+        layerId: [{
+          required: true,
+          message: '请选择楼层'
+        }],
+
+        terminalType: [
+          {
+            required: true,
+            message: '请选择终端类型'
+          }
+        ]
+      },
+
+      gettingPrison: true
     }
   },
 
   computed: {
-    ...mapState(['terminalUserListsByPrisonConfigId'])
+    ...mapState(['terminalUserListsByPrisonConfigId', 'terminalTypes'])
   },
 
   methods: {

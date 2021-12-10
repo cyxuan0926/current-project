@@ -678,3 +678,19 @@ body .el-table colgroup.gutter {
 .confirm_pre-operation {
   width: 450px !important;
 }
+
+.el-form {
+  &__terminal {
+    .el-form-item {
+      &__areaId {
+        .el-form-item__label {
+          &::before {
+            content: '*';
+            color: #F56C6C;
+             margin-right: 4px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -121,18 +121,17 @@
 <script>
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 import http from '@/service'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
-} from '@/common/constants/const'
-
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone
+// } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -213,9 +212,12 @@ export default {
   },
   computed: {
     ...mapState({
-        uploadResult: state => state.global.uploadResult,
-        validatePhoneResult: state => state.familyPhone.validatePhoneResult
-      }),
+      uploadResult: state => state.global.uploadResult,
+      validatePhoneResult: state => state.familyPhone.validatePhoneResult
+    }),
+
+    ...mapGetters(['isSuperAdmin']),
+
     tableCols() {
       const cols = [
         {
@@ -224,13 +226,13 @@ export default {
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
-          ...$likePrisonerNumber
+          prop: 'criminalNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName',
-          ...$likeName
+          prop: 'criminalName'
+          // ...$likeName
         },
         {
           label: '申请时间',
@@ -243,14 +245,14 @@ export default {
         },
         {
           label: '家属姓名',
-          prop: 'familyName',
-          ...$likeName
+          prop: 'familyName'
+          // ...$likeName
         },
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },
         {
           label: '关系',

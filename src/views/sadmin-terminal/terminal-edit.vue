@@ -7,6 +7,7 @@
         :rules="rule"
         label-position="left"
         label-width="115px"
+        class="el-form__terminal"
       >
         <el-form-item label="终端号" prop="terminalNumber">
           <el-input v-model="formData.terminalNumber" placeholder="请填写终端号" />
@@ -58,7 +59,7 @@
             :key="localPrisonAreaLevel.prop"
             :label="localPrisonAreaLevel.label"
             :prop="localPrisonAreaLevel.prop"
-            :class="[ { 'el-form-iten__areaId': key === 'prisonArea' } ]"
+            :class="[ { 'el-form-item__areaId': key === 'prisonArea' } ]"
           >
             <el-select
               v-model="formData[localPrisonAreaLevel.prop]"
@@ -145,61 +146,15 @@ export default {
   mixins: [prisonAreaLevel],
 
   data() {
-    const checkAreaId = (rule, value, callback) => {
-      if (!value && value !== null) {
-        callback(new Error('请选择监区'))
-      } else callback()
-    }
-
     return {
-      rule: {
-        terminalNumber: [{
-          required: true,
-          message: '请填写终端号',
-          trigger: 'blur'
-        }],
-
-        jailId: [{
-          required: true,
-          message: '请选择监狱'
-        }],
-
-        areaId: [{ validator: checkAreaId }],
-
-        branchId: [{
-          required: true,
-          message: '请选择分监区'
-        }],
-
-        buildingId: [{
-          required: true,
-          message: '请选择楼栋'
-        }],
-
-        layerId: [{
-          required: true,
-          message: '请选择楼层'
-        }],
-
-        terminalType: [
-          {
-            required: true,
-            message: '请选择终端类型'
-          }
-        ]
-      },
-
       gettingPrisonArea: true,
-
-      gettingPrison: true,
-
-      terminalTypes: this.$store.state.terminalTypes,
 
       formData: {},
 
       level: 1
     }
   },
+
   computed: {
     ...mapState([
       'prisonAllWithBranchPrison',
@@ -357,17 +312,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.el-form {
-  /deep/ .el-form-iten__areaId {
-    .el-form-item__label {
-      &::before {
-        content: '*';
-        color: #F56C6C;
-         margin-right: 4px;
-      }
-    }
-  }
-}
-</style>

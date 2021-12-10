@@ -518,8 +518,8 @@ import prisons from '@/common/constants/prisons'
 import {
   provinceJailLevelConfigsParamsName,
   prisonerInsideWhiteLists,
-  $likeName,
-  $likePrisonerNumber
+  $likeName
+  // $likePrisonerNumber
 } from '@/common/constants/const'
 
 import moment from 'moment'
@@ -1330,13 +1330,13 @@ export default {
         {
           label: '罪犯姓名',
           prop: 'name',
-          minWidth: 75,
-          ...$likeName
+          minWidth: 75
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '性别',
@@ -1524,6 +1524,8 @@ export default {
 
         minReactInChainKey = result[result.length - 1] || 'jailId'
       }
+
+      this.onSearch()
     }
   },
 

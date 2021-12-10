@@ -361,7 +361,7 @@ export function countNextQueue(queue, duration, interver) {
  * @param {*} times 最大会见时间段次数
  */
 export function getNextQueue(queue = [], duration = 25, interval = 5, times = 1, result = []) {
-  Array.apply(null, { length: times }).map((item, index) => {
+  Array.apply(null, { length: times }).map((_, index) => {
     if (index === 0) {
       const timeQueueStart = queue[0]
 

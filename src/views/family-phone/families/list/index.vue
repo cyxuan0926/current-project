@@ -655,11 +655,11 @@ import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
-} from '@/common/constants/const'
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone
+// } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -930,25 +930,25 @@ export default {
       const cols = [
         {
           label: '家属姓名',
-          ...$likeName,
+          // ...$likeName,
           className: '',
           prop: 'familyName',
           desensitizationColSlotName: 'family'
         },
         {
           label: '家属电话',
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName',
-          ...$likeName
+          prop: 'criminalName'
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
-          ...$likePrisonerNumber
+          prop: 'criminalNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '监区',
@@ -1881,11 +1881,19 @@ export default {
     },
 
     // 批量审核
+    // 没有选择数据 就是批量审核所有可以审核的数据
+    // 选择了数据(选择的待审核的数据为0/1/多个) 就是批量审核所有选择的数据
     async onBatchAuth() {
-      // 审核类型
+      console.log(this.selectionData)
+      // 没有待审核数据
       if (!this.selectionData.length) this.onWarning()
 
+      // 存在待审核数据
       else {
+        // 审核所有
+        if (!this.selectionData.length) {}
+
+        // 审核选择的数据
         if (this.selectionData.length > 1) {
           const instanceIds = this.selectionData.reduce((accumulator, selection) => {
             const { processInstanceId } = selection
@@ -1955,6 +1963,11 @@ export default {
       }
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
+    },
+
+    // 批量审核 审核所有数据处理
+    onPreConfirm() {
+      this.$confirm('', {})
     }
   }
 }
