@@ -801,6 +801,7 @@
       // const todayDate = this.$_dateNow
 
       // const oneMonthLater = Moment().add(10, 'days').format('YYYY-MM-DD')
+      let _isAdmin = this.$store.state.global.user.role == '0'
       return {
         showTips: '',
         isShowTips: false,
@@ -821,7 +822,7 @@
         withdrawOrAnthorinputReason,
         tabsItems,
         tabs: 'PENDING',
-        isSearchLimit: true,
+        isSearchLimit: !_isAdmin,
         searchItems: {
           name: {
             type: 'input',
@@ -840,9 +841,9 @@
             end: 'applicationEndDate',
             startPlaceholder: '通话开始时间',
             endPlaceholder: '通话结束时间',
-            canNotClear: false,
+            canNotClear: _isAdmin,
             value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')],
-            miss: true
+            miss: !_isAdmin
           },
           area: {
             type: 'select',
@@ -1257,8 +1258,8 @@
 
       tabs(val) {
         // 修改 searchItems search组件会重新渲染 再执search组件的 onSearch 方法
-        this.$set(this.searchItems.applicationDate, 'miss', val == 'PENDING')
-        this.$refs.search.onSearch('tabs')
+        this.isSearchLimit && this.$set(this.searchItems.applicationDate, 'miss', val == 'PENDING')
+        let _res = this.$refs.search.onSearch('tabs')
         this.searchItems.changerType.miss = true
         delete this.filter.changerType
         this.searchItems.changerType.value = ''
@@ -1313,6 +1314,13 @@
           }else{
             this.searchItems.status.options=this.$store.state.applyStatus
           }
+        }
+        // tab切换时如果搜索条件均为空 则添加上默认时间
+        if (!_res) {
+          let _days = Moment().add(10, 'days').format('YYYY-MM-DD')
+          this.searchItems.applicationDate.value = [this.$_dateNow, _days]
+          this.$set(this.filter, 'applicationStartDate', this.$_dateNow)
+          this.$set(this.filter, 'applicationEndDate', _days)
         }
         this.onSearch()
       },

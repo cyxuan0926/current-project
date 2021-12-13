@@ -259,8 +259,9 @@ export default {
       if (isSearchLimit) {
         let _dateKey = Object.values(this.items).find(v => !v.miss && v.type == 'dateRange')
         if (_dateKey && !this.$parent.$parent.filter[_dateKey.start] && !name && !prisonerName && !prisonerNumber) {
-          this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
-          return
+          // tab切换时候不提示
+          e !== 'tabs' && this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
+          return false
         }
         if (_dateKey ) {
           let _start = this.$parent.$parent.filter[_dateKey.start]
@@ -268,13 +269,14 @@ export default {
           let _end = this.$parent.$parent.filter[_dateKey.end]
           _end = _end && moment(_end, 'YYYY-MM-DD')
           if (_start && _end && _end.diff(_start, 'years', true) * 100 > 100 ) {
-            this.$message.warning('开始时间-结束时间的选择范围不可大于1年')
-            return
+            e !== 'tabs' && this.$message.warning('开始时间-结束时间的选择范围不可大于1年')
+            return false
           }
         }
       }
 
       if (e !== 'tabs') this.$emit('search')
+      return true
     },
 
     // onEnsure(e) {
