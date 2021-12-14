@@ -1,29 +1,16 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-search
-      ref="search"
-      :items="searchItems"
-      @search="onSearch" />
+  <el-row class="row-container" :gutter="0">
+    <m-search ref="search" :items="searchItems" @search="onSearch" />
     <el-col :span="24">
-      <el-tabs
-        v-model="tabs"
-        type="card" >
-        <el-tab-pane
-          label="家属免费通话记录"
-          name="familyFreeMeetings" />
+      <el-tabs v-model="tabs" type="card">
+        <el-tab-pane label="家属免费通话记录" name="familyFreeMeetings" />
         <el-tab-pane
           label="警员家属免费通话记录"
-          name="jailerFamilyFreeMeetings" />
+          name="jailerFamilyFreeMeetings"
+        />
       </el-tabs>
-      <m-table-new
-        stripe
-        :data="freeMeetings.contents"
-        :cols="tableCols">
-        <template
-          slot="duration"
-          slot-scope="scope">
+      <m-table-new stripe :data="freeMeetings.contents" :cols="tableCols">
+        <template slot="duration" slot-scope="scope">
           {{ scope.row.duration | time }}
         </template>
       </m-table-new>
@@ -31,7 +18,8 @@
     <m-pagination
       ref="pagination"
       :total="freeMeetings.total"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -44,49 +32,66 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   mixins: [prisonFilterCreator],
   data() {
-    const { belong } = prisons.PRISONAREA
-    const { options } = this.$store.getters.prisonAreaOptions
-
+    const { belong } = prisons.PRISONAREA;
+    const { options } = this.$store.getters.prisonAreaOptions;
+    const startDate = Moment().format("YYYY-MM");
+    const endDate = Moment().format("YYYY-MM");
     const tabOptions = {
-      FAMILY_FREE_MEETINGS: 'familyFreeMeetings',
-      JAILER_FAMILY_FREE_MEETINGS: 'jailerFamilyFreeMeetings'
-    }
+      FAMILY_FREE_MEETINGS: "familyFreeMeetings",
+      JAILER_FAMILY_FREE_MEETINGS: "jailerFamilyFreeMeetings",
+    };
     return {
       tabOptions,
+      startDate,
+      downloading: false,
+      endDate,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
         name: {
-          type: 'input',
-          label: '家属姓名',
-          miss: false
+          type: "input",
+          label: "家属姓名",
+          miss: false,
         },
+
         prisonerNumber: {
-          type: 'input',
-          label: '罪犯编号',
-          miss: false
+          type: "input",
+          label: "罪犯编号",
+          miss: false,
         },
 
         familyName: {
-          type: 'input',
-          label: '家属姓名',
-          miss: true
+          type: "input",
+          label: "家属姓名",
+          miss: true,
         },
         policeName: {
-          type: 'input',
-          label: '警员姓名',
-          miss: true
+          type: "input",
+          label: "警员姓名",
+          miss: true,
         },
         policeNumber: {
-          type: 'input',
-          label: '警员编号',
-          miss: true
-        }
+          type: "input",
+          label: "警员编号",
+          miss: true,
+        },
+
+        applicationDate: {
+          type: "monthRangeSelector",
+          canNotClear: true,
+          startKey: "startDate",
+          endKey: "endDate",
+          range: {
+            max: Moment().format("YYYY-MM"),
+            maxMonthRange: 24,
+          },
+          value: [startDate, endDate],
+        },
       },
-      filter: {}
-    }
+      filter: {},
+    };
   },
   computed: {
-    ...mapState(['freeMeetings']),
+    ...mapState(["freeMeetings"]),
 
     tableCols() {
       const jailerFamilyFreeMeetingsTableCols = [
@@ -106,30 +111,39 @@ export default {
           // ...$likePrisonerNumber
         },
         {
-          label: '通话时间',
-          prop: 'meetingTime',
-          minWidth: 140
+          label: "省份",
+          prop: "provincesName",
+        },
+
+        {
+          label: "监狱名称",
+          prop: "jailName",
         },
         {
-          label: '通话时长',
-          slotName: 'duration',
-          minWidth: 110
+          label: "通话时间",
+          prop: "meetingTime",
+          minWidth: 140,
         },
         {
-          label: '终端号',
-          prop: 'terminalNumber'
+          label: "通话时长",
+          slotName: "duration",
+          minWidth: 110,
         },
         {
-          label: '家属所在省',
-          prop: 'province',
-          showOverflowTooltip: true
+          label: "终端号",
+          prop: "terminalNumber",
         },
         {
-          label: '家属所在市',
-          prop: 'city',
-          showOverflowTooltip: true
-        }
-      ]
+          label: "家属所在省",
+          prop: "province",
+          showOverflowTooltip: true,
+        },
+        {
+          label: "家属所在市",
+          prop: "city",
+          showOverflowTooltip: true,
+        },
+      ];
       const familyFreeMeetingstableCols = [
         {
           label: '家属姓名',
@@ -148,102 +162,127 @@ export default {
           // ...$likePrisonerNumber
         },
         {
-          label: '通话时间',
-          prop: 'meetingTime',
+          label: "省份",
+          prop: "provincesName",
+        },
+
+        {
+          label: "监狱名称",
+          prop: "jailName",
+        },
+        {
+          label: "通话时间",
+          prop: "meetingTime",
           showOverflowTooltip: true,
-          minWidth: 140
+          minWidth: 140,
         },
         {
-          label: '监区',
-          prop: 'prisonArea',
+          label: "监区",
+          prop: "prisonArea",
           minWidth: 92,
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
         },
         {
-          label: '通话时长',
-          slotName: 'duration',
+          label: "通话时长",
+          slotName: "duration",
           minWidth: 110,
           showOverflowTooltip: true,
         },
         {
-          label: '终端号',
-          prop: 'terminalNumber'
+          label: "终端号",
+          prop: "terminalNumber",
         },
         {
-          label: '家属所在省',
-          prop: 'province',
-          showOverflowTooltip: true
+          label: "家属所在省",
+          prop: "province",
+          showOverflowTooltip: true,
         },
         {
-          label: '家属所在市',
-          prop: 'city',
-          showOverflowTooltip: true
-        }
-      ]
-      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) return familyFreeMeetingstableCols
-      else return jailerFamilyFreeMeetingsTableCols
-    }
+          label: "家属所在市",
+          prop: "city",
+          showOverflowTooltip: true,
+        },
+      ];
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS)
+        return familyFreeMeetingstableCols;
+      else return jailerFamilyFreeMeetingsTableCols;
+    },
   },
 
   watch: {
     tabs(val) {
       if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
-        this.resetSearchFilters(['familyName', 'policeName', 'policeNumber'])
-        this.$set(this.searchItems.name, 'miss', false)
-        this.$set(this.searchItems.prisonerNumber, 'miss', false)
-        this.$set(this.searchItems.prisonArea, 'miss', false)
-        this.$set(this.searchItems.familyName, 'miss', true)
-        this.$set(this.searchItems.policeName, 'miss', true)
-        this.$set(this.searchItems.policeNumber, 'miss', true)
-      }
-      else {
-        this.resetSearchFilters(['name', 'prisonerNumber', 'prisonArea'])
-        this.$set(this.searchItems.name, 'miss', true)
-        this.$set(this.searchItems.prisonerNumber, 'miss', true)
-        this.$set(this.searchItems.prisonArea, 'miss', true)
-        this.$set(this.searchItems.familyName, 'miss', false)
-        this.$set(this.searchItems.policeName, 'miss', false)
-        this.$set(this.searchItems.policeNumber, 'miss', false)
+        this.resetSearchFilters(["familyName", "policeName", "policeNumber"]);
+        this.$set(this.searchItems.name, "miss", false);
+        this.$set(this.searchItems.prisonerNumber, "miss", false);
+        this.$set(this.searchItems.prisonArea, "miss", false);
+        this.$set(this.searchItems.familyName, "miss", true);
+        this.$set(this.searchItems.policeName, "miss", true);
+        this.$set(this.searchItems.policeNumber, "miss", true);
+      } else {
+        this.resetSearchFilters(["name", "prisonerNumber", "prisonArea"]);
+        this.$set(this.searchItems.name, "miss", true);
+        this.$set(this.searchItems.prisonerNumber, "miss", true);
+        this.$set(this.searchItems.prisonArea, "miss", true);
+        this.$set(this.searchItems.familyName, "miss", false);
+        this.$set(this.searchItems.policeName, "miss", false);
+        this.$set(this.searchItems.policeNumber, "miss", false);
       }
 
-      this.$refs.search.onGetFilter()
+      this.$refs.search.onGetFilter();
 
-      this.onSearch()
-    }
+      this.onSearch();
+    },
   },
 
   methods: {
-    ...mapActions([
-      'getFreeMeetings',
-      'getPoliceFamilyFreeMeetings'
-    ]),
+    ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
+    // 导出excel
+    async onDownloadExcel() {
+      this.downloading = true;
+      const times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
+        actionName = "familyPhone/exportFamilyPhone",
+        params = {
+          url: "/download/exportVideoTelRecords",
+          methods: "get",
+          params: { ...this.filter },
+          isPrisonInternetGetUrlWay: "getHyUrl",
+        };
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `免费通话记录表-${times}`,
+      });
 
+      setTimeout(() => {
+        this.downloading = false;
+      }, 300);
+    },
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.getFreeMeetings({
           ...this.filter,
-          ...this.pagination
-        })
-      }
-      else {
+          ...this.pagination,
+        });
+      } else {
         this.getPoliceFamilyFreeMeetings({
           ...this.filter,
-          ...this.pagination
-        })
+          ...this.pagination,
+        });
       }
     },
 
     onSearch() {
-      this.$refs.pagination.handleCurrentChange(1)
+      this.$refs.pagination.handleCurrentChange(1);
     },
 
     // 重置搜索组件的filter
     resetSearchFilters(filters = []) {
-      filters.map(filter => {
-        this.$set(this.searchItems[filter], 'value', '')
-        delete this.filter[filter]
-      })
-    }
-  }
-}
+      filters.map((filter) => {
+        this.$set(this.searchItems[filter], "value", "");
+        delete this.filter[filter];
+      });
+    },
+  },
+};
 </script>

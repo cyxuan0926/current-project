@@ -10,7 +10,7 @@
                 <dd>{{ modalData.familyName }}</dd>
             </dl>
             <dl>
-                <dt>家属电话：</dt>
+                <dt>家属电话：</dt>
                 <dd>{{ modalData.familyPhone }}</dd>
             </dl>
             <dl>

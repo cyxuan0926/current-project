@@ -295,6 +295,7 @@
             <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
 
             <p style="padding-left: 30px;">导入失败数据：
+              
               <m-excel-download
                 path="/download/localfile"
                 :params="{ filepath: validateFamiliesResult.filePath }"

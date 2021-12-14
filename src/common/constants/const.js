@@ -9,6 +9,7 @@ const className = 'el-form-item--ellipsis'
 export const responseURLWhiteLists = [
   '/feedbacks/download',
   '/authorFamily/export',
+  '/download/exportFamilyRegJails',
   '/download/exportVideoTelRecords',
   '/download/province/export',
   '/familyMessage/export',
@@ -16,6 +17,7 @@ export const responseURLWhiteLists = [
   '/parse/familyphone/exportFamilyPhone',
   '/parse/familyphone/validateFpm',
   '/msg/parse/familyphone/apply/validateFpna',
+  '/familyInformationImport/importFamilyInformation',
   '/msg/parse/familyphone/apply/exportFamilyPhoneApply',
   '/parse/familyphone/apply/export',
   '/processDefinition/showresource',
@@ -269,3 +271,16 @@ export const uploadStepsTabOptions = [
   { label: '导入数据' },
   { label: '导入完成' }
 ]
+
+// 监狱 数据管理 模版 组件配置
+export const _prisonerDataExcelDownloadConsts = {
+  path: '/download/downloadfile',
+
+  buttonsProps: {
+    attrs: {
+      type: 'text'
+    }
+  },
+
+  className: 'm-excel_download__prisoner-data'
+}

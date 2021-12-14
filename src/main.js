@@ -31,7 +31,8 @@ import {
   _timeOneWeekAgo,
   _operationAuthorizations,
   uploadStepsTabOptions,
-  _oneMonthAgo
+  _oneMonthAgo,
+  _prisonerDataExcelDownloadConsts
 } from '@/common/constants/const'
 
 // 打印机
@@ -65,6 +66,7 @@ Vue.prototype.$_uploadStepsTabOptions = uploadStepsTabOptions
 
 Vue.prototype.$_oneMonthAgo = _oneMonthAgo
 
+Vue.prototype.$_prisonerDataExcelDownloadConsts = _prisonerDataExcelDownloadConsts
 // 只在生产环境启用等保
 if (BUILD_ENV === 'production') {
   new ActiveMonitor().start()
