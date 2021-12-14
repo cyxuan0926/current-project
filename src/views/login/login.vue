@@ -459,7 +459,7 @@ export default {
   }
 
   .forget-password {
-    margin-left: 61%;
+    margin-left: 58%;
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
   }
 

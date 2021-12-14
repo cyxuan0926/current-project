@@ -760,9 +760,11 @@ export default {
   mixins: [prisonFilterCreator, registrationDialogCreator],
 
   data() {
+    let _isAdmin = this.$store.state.global.user.role == '0'
     return {
       showDetail: false,
       authorizeDetData: {},
+      isSearchLimit: !_isAdmin,
       searchItems: {
         name: {
           type: 'input',
@@ -808,7 +810,8 @@ export default {
           startPlaceholder: '申请开始时间',
           endPlaceholder: '申请结束时间',
           value: [this.$_oneMonthAgo, this.$_dateNow],
-          canNotClear: false
+          canNotClear: _isAdmin,
+          miss: !_isAdmin
         },
 
         level: {
@@ -948,21 +951,14 @@ export default {
 
   watch: {
     tabs(val) {
-      this.$refs.search.onSearch('tabs')
+      // 修改 searchItems search组件会重新渲染 再执search组件的 onSearch 方法
+      this.isSearchLimit && this.$set(this.searchItems.applicationDate, 'miss', val == 'PENDING')
+      let _res = this.$refs.search.onSearch('tabs')
       if (val !== 'first') {
         if ( val === 'DENIED,WITHDRAW' ) {
           delete this.filter.status
           this.searchItems.status.miss = false
           this.searchItems.status.options = this.$store.state.refuseStatus
-        }
-        if (val == 'PENDING') {
-          this.$set(this.searchItems.applicationDate, 'miss', true)
-          this.$delete(this.filter, 'startDate')
-          this.$delete(this.filter, 'endDate')
-        }else {
-          this.$set(this.searchItems.applicationDate, 'miss', false)
-          this.$set(this.filter, 'startDate', this.$_oneMonthAgo)
-          this.$set(this.filter, 'endDate', this.$_dateNow)
         }
         if (val === '') {
           delete this.filter.status
@@ -982,18 +978,14 @@ export default {
         this.searchItems.status.miss = false
         this.searchItems.auditName.miss = false
         this.searchItems.status.options = this.$store.state.registStatus
-        this.$set(this.searchItems.applicationDate, 'miss', false)
+      }
+      // tab切换时如果搜索条件均为空 则添加上默认时间
+      if (!_res) {
+        this.searchItems.applicationDate.value = [this.$_oneMonthAgo, this.$_dateNow]
+        this.$set(this.filter, 'startDate', this.$_oneMonthAgo)
+        this.$set(this.filter, 'endDate', this.$_dateNow)
       }
       this.onSearch()
-    }
-  },
-
-  mounted() {
-    // tabs: 'PENDING',
-    if (this.tabs == 'PENDING') {
-      this.$set(this.searchItems.applicationDate, 'miss', true)
-      this.$delete(this.filter, 'startDate')
-      this.$delete(this.filter, 'endDate')
     }
   },
 
