@@ -1,6 +1,14 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-search ref="search" :items="searchItems" @search="onSearch" />
+    <m-search ref="search" :items="searchItems" @search="onSearch">
+      <el-button
+        slot="append"
+        type="primary"
+        :loading="downloading"
+        @click="onDownloadExcel"
+        >导出 Excel</el-button
+      ></m-search
+    >
     <el-col :span="24">
       <el-tabs v-model="tabs" type="card">
         <el-tab-pane label="家属免费通话记录" name="familyFreeMeetings" />
@@ -76,7 +84,11 @@ export default {
           label: "警员编号",
           miss: true,
         },
-
+        status: {
+          type: "select",
+          label: "通话类型",
+          options: this.$store.state.familyPhoneAuthenticationType,
+        },
         applicationDate: {
           type: "monthRangeSelector",
           canNotClear: true,
@@ -103,6 +115,15 @@ export default {
           ...$likeName,
         },
         {
+          label: "省份",
+          prop: "provincesName",
+        },
+
+        {
+          label: "监狱名称",
+          prop: "jailName",
+        },
+        {
           label: "警员姓名",
           prop: "policeName",
           ...$likeName,
@@ -117,15 +138,7 @@ export default {
           label: "通话类型",
           miss: true,
         },
-        {
-          label: "省份",
-          prop: "provincesName",
-        },
 
-        {
-          label: "监狱名称",
-          prop: "jailName",
-        },
         {
           label: "通话时间",
           prop: "meetingTime",

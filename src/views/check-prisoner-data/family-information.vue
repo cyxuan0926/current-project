@@ -7,9 +7,9 @@
       @search="onSearch"
     >
       <template slot="append">
-        <el-button type="primary" @click="onNewFamily">新增</el-button>
-        <m-excel-download :path="prisonerHref" text="模板" />
-        <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" />
+        <el-button type="primary" v-if="!isSuperAdmin" @click="onNewFamily">新增</el-button>
+        <m-excel-download :path="prisonerHref" v-if="!isSuperAdmin" text="模板" />
+        <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" v-if="!isSuperAdmin" />
         <el-button
           type="primary"
           :loading="downloading"

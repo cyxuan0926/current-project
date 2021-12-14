@@ -584,6 +584,15 @@ superAdmin = [{
       },
       component: 'check-meeting/meeting-family-statistics'
     },
+    {
+      path: '/meeting-records',
+      name: 'meeting-records',
+      // component: helper.loadView('check-meeting/meeting-records'),
+      component: 'check-meeting/meeting-records',
+      // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
+    },
      {
       path: '/meeting-report/meeting-sadmin-island-list',
       component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
