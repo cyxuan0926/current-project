@@ -12,6 +12,8 @@ import identity from 'lodash/identity'
 
 import { Message } from 'element-ui'
 
+import jwtDecode from 'jwt-decode'
+
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
 }
@@ -495,4 +497,12 @@ export const dataURLtoFile = function(dataurl, filename) {
     u8arr[n] = bstr.charCodeAt(n)
   }
   return new File([u8arr], filename, { type: mime })
+}
+
+// token 是否过期
+// 会偶发出现 token 502 拿不到错误响应体 并且跨域的情况 不确定是不是和token 失效有关 ！！！
+export const accessTokenIsExpired = access_token => {
+  const { exp } = jwtDecode(access_token)
+
+  return Moment().diff(Moment.unix(exp)) > 0
 }

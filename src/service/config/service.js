@@ -1,10 +1,17 @@
 import base from './base'
+
 import axios from 'axios'
+
 import store from '@/store'
+
 import handleResponse from './handleResponse'
+
 import publicHandleResponse from '@/service-public/request/handleResponse'
+
 import qs from 'qs'
+
 import urls from '../urls'
+
 export const instance = axios.create(base)
 
 let state = ''
@@ -34,11 +41,13 @@ instance.interceptors.request.use(
       // config.headers['appVersion'] = '9999'
       config.headers['appVersion'] = '308'
     }
+
     if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
+  
     state = history.state
-    if (access_token) {
-      config.headers.Authorization = config.url.includes('/image-server/avatars') ? urls.token : `${ token_type } ${ access_token }`
-    }
+
+    if (access_token) config.headers.Authorization = config.url.includes('/image-server/avatars') ? urls.token : `${ token_type } ${ access_token }`
+
     return config
   },
   error => Promise.reject(error)
