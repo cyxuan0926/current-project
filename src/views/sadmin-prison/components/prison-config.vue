@@ -634,6 +634,20 @@ export default {
             disabled,
             value: 0,
           },
+
+          visiblePhonePeopleNumber: {
+            label: "可视电话通话人数上限",
+
+            type: "input",
+
+            rules: ["isPositiveNumber", "isNumber"],
+
+            append: "次",
+
+            value: "6",
+
+            customClass: ['el-form-item-people_number']
+          }          
         },
         formButton
       ),
@@ -1057,3 +1071,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.el-form {
+  .el-form-item {
+    /deep/ &-people_number {
+      .el-input {
+        width: 260px;
+      }
+    }
+  }
+}
+</style>
