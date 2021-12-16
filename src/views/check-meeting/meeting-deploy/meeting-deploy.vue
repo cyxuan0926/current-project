@@ -184,7 +184,7 @@ export default {
           },
         ],
 
-        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, trigger: "blur" }]
+        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }]
       },
     };
   },

@@ -27,8 +27,9 @@ export default {
     else callback()
   },
   isNumber: (rule, value, callback) => {
+    const reg = /^-?[1-9]\d*$/
     if (isEmpty(value)) callback()
-    else if (!Number.isInteger(Number(value))) callback(new Error('请输入整数'))
+    else if (!reg.test(value)) callback(new Error('请输入整数'))
     else callback()
   },
   noChinese: (rule, value, callback) => {
@@ -100,16 +101,16 @@ export default {
   },
   // 正整数
   isPositiveIntegers: (rule, value, callback) => {
-    const integerNumbers = Number.isInteger(+value)
+    const reg = /^[1-9]\d*$/
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
-    else if (!integerNumbers || value <= 0) callback(new Error('请输入正整数'))
+    else if (!reg.test(value)) callback(new Error('请输入正整数'))
     else callback()
   },
   // 正整数>0
   isPositiveNumber: (rule, value, callback) => {
-    const integerNumbers = Number.isInteger(+value)
+    const reg = /^[1-9]\d*|0$/
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
-    else if (!integerNumbers || value < 0) callback(new Error('请输入正整数'))
+    else if (!reg.test(value)) callback(new Error('请输入非负整数'))
     else callback()
   },
   password(rule, value, callback) {

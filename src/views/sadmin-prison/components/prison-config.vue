@@ -568,7 +568,7 @@ export default {
 
             type: "input",
 
-            rules: ["required", "isPositiveNumber", "isNumber"],
+            rules: ["required", "isPositiveNumber"],
 
             append: "次",
 
@@ -640,7 +640,7 @@ export default {
 
             type: "input",
 
-            rules: ["isPositiveNumber", "isNumber"],
+            rules: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }],
 
             append: "次",
 
