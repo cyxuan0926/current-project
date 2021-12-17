@@ -1,14 +1,11 @@
 <template>
-  <el-row
-    style="min-height: 370px;"
-    :gutter="0">
+  <el-row style="min-height: 370px;" :gutter="0">
     <el-col
       :span="22"
       :offset="2"
-      style="margin-top: 20px;">
-      <el-tabs
-        v-model="tabs"
-        type="card">
+      style="margin-top: 20px;"
+    >
+      <el-tabs v-model="tabs" type="card">
         <!--<el-tab-pane-->
           <!--label="罪犯数据导入"-->
           <!--name="first" />-->
@@ -17,18 +14,23 @@
           <!--name="second" />-->
       </el-tabs>
     </el-col>
-    <el-row
-      class="row-container"
-      :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+    <el-row class="row-container" :gutter="0">
+      <el-col :span="22" :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">罪犯信息导入(狱政科模板)</a>&nbsp;&nbsp;
-        <span
-          v-if="tabs === 'second'"
-          style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中，修改相应监区名称)</span>
+
+        <m-excel-download
+          text="罪犯信息导入(狱政科模板)"
+          :buttonsProps="$_prisonerDataExcelDownloadConsts['buttonsProps']"
+          :path="$_prisonerDataExcelDownloadConsts['path']"
+          :params="{ filepath: 'prison_yzk_template.xls' }"
+          :class="$_prisonerDataExcelDownloadConsts['className']"
+        />&nbsp;&nbsp;
+
+        <template v-if="tabs === 'second'">
+          <span style="color:#999;">(若需修改监区名，可使用监狱管理员账号登录平台，在监区管理模块中，修改相应监区名称)</span>
+        </template>
       </el-col>
+
       <el-col :gutter="0">
         <el-col
           :span="22"
@@ -169,10 +171,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
 import Utils from './utils'
+
 import { prisonerDataImportExcelConfig } from '@/common/excel-config'
-
-
 export default {
   data() {
     return {
@@ -181,7 +183,6 @@ export default {
       fileList: [],
       visible: false,
       onProgress: false,
-      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`,
       active: 1,
       status: 0,
       showProcessSteps: false,
@@ -198,15 +199,15 @@ export default {
     })
   },
 
-  watch: {
-    tabs(val) {
-      if (this.$notify) this.$notify.closeAll()
+  // watch: {
+  //   tabs(val) {
+  //     if (this.$notify) this.$notify.closeAll()
 
-      if (val === 'first') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
+  //     if (val === 'first') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_template.xls`
 
-      else if (val === 'second') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`
-    }
-  },
+  //     else if (val === 'second') this.prisonerHref = `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_yzk_template.xls`
+  //   }
+  // },
 
   mounted() {
     this.resetState({ prisonerDataResult: {}, prisonerYZKDataResult: {} })

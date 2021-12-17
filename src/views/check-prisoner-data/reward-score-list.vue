@@ -1,34 +1,35 @@
 <template>
-  <el-row
-    style="min-height: 370px;"
-    :gutter="0">
+  <el-row style="min-height: 370px;" :gutter="0">
     <el-col
       :span="22"
       :offset="2"
-      style="margin-top: 20px;">
-    </el-col>
-    <el-row
-      class="row-container"
-      :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      style="margin-top: 20px;"  
+    />
+
+    <el-row class="row-container" :gutter="0">
+      <el-col :span="22" :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">服刑人员计分考核数据导入</a>
-        </el-col>
+
+        <m-excel-download
+          text="服刑人员计分考核数据导入"
+          :buttonsProps="$_prisonerDataExcelDownloadConsts['buttonsProps']"
+          :path="$_prisonerDataExcelDownloadConsts['path']"
+          :params="{ filepath: 'prisoner_score_template.xls' }"
+          :class="$_prisonerDataExcelDownloadConsts['className']"
+        />&nbsp;&nbsp;
+      </el-col>
+
       <el-col :gutter="0">
-        <el-col
-          :span="22"
-          :offset="2">
+        <el-col :span="22" :offset="2">
           <span>上传模板文件：</span>
+
           <p>限制文件后缀名为
             <span class="red">.xls</span>或<span class="red">.xlsx</span>
           </p>
         </el-col>
       </el-col>
-      <el-col
-        :span="22"
-        :offset="2">
+
+      <el-col :span="22" :offset="2">
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -213,7 +214,6 @@
         fileList: [],
         visible: false,
         onProgress: false,
-        prisonerHref:`${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prisoner_score_template.xls`,
         active: 1,
         status: 0,
         showProcessSteps: false,
