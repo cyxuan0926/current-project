@@ -1,12 +1,12 @@
 <template>
   <el-row class="row-container" :gutter="0">
     <m-excel-download
-      v-if="isSuperAdmin"
+      v-if="isSuperAdmin&&activeComponentName==`profile`"
       :path="excelDownloadPath"
       :params="filter"
     />
     <m-excel-download
-      v-if="!isSuperAdmin"
+      v-if="!isSuperAdmin&&activeComponentName==`profile`"
       path="/download/exportJailVideoPhone"
       :params="filter"
     />

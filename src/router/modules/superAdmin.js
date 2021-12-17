@@ -716,6 +716,30 @@ superAdmin = [{
         permission: 'visit.family-phone.admin-cost.search'
       },
       component: 'family-phone/phone/phone-admin-cost-list'
+    }, {
+      path: '/family-phone/phone-recharge-list',
+      name: 'FamilyPhonePhoneRechargeList',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话通话费用充值',
+        permission: 'visit.family-phone.admin-cost.search'
+      },
+      component: 'family-phone/recharge/list'
+    }, {
+      path: '/family-phone/phone-cost-management',
+      name: 'FamilyPhonePhoneRechargeList',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话通话费用管理',
+        permission: 'visit.family-phone.admin-cost.search'
+      },
+      component: 'family-phone/cost-management/list'
     }]
   }, {
     path: '/family-information',
