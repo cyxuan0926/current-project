@@ -584,6 +584,15 @@ superAdmin = [{
       },
       component: 'check-meeting/meeting-family-statistics'
     },
+    {
+      path: '/meeting-records',
+      name: 'meeting-records',
+      // component: helper.loadView('check-meeting/meeting-records'),
+      component: 'check-meeting/meeting-records',
+      // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
+    },
      {
       path: '/meeting-report/meeting-sadmin-island-list',
       component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
@@ -759,7 +768,6 @@ superAdmin = [{
         },
         component: 'check-family/family-list'
       },
-
       {
         path: '/family-information/registrations/list',
         name: 'FamilyInformationRegistrationsList',
@@ -769,6 +777,14 @@ superAdmin = [{
           breadcrumbName: '家属注册信息'
         },
         component: 'check-registration/registration-list'
+      }, {
+        path: '/prisoner-data/family-information',
+        name: 'prisoner-inside-jails-costs',
+        props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+        // component: helper.loadView('check-prisoner-data/inside-jails-costs'),
+        component: 'check-prisoner-data/family-information',
+        // component: resolve => require(['@/views/check-prisoner-data/inside-jails-costs'], resolve),
+        meta: { permission: 'visit.data-import.prison-family-information.import', breadcrumbName: '家属信息导入查询' }
       }
     ]
   }, {

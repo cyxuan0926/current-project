@@ -1,25 +1,28 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <el-row :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      <el-col :span="22" :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonTermHref">刑期变动信息导入模板</a>
+
+        <m-excel-download
+          text="刑期变动信息导入模板"
+          :buttonsProps="$_prisonerDataExcelDownloadConsts['buttonsProps']"
+          :path="$_prisonerDataExcelDownloadConsts['path']"
+          :params="{ filepath: 'prison_term_template.xls' }"
+          :class="$_prisonerDataExcelDownloadConsts['className']"
+        />&nbsp;&nbsp;
       </el-col>
     </el-row>
+
     <el-row :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      <el-col :span="22" :offset="2">
         <span>上传模板文件：</span>
         <p>限制文件后缀名为
           <span class="red">.xls</span>或<span class="red">.xlsx</span>
         </p>
       </el-col>
     </el-row>
+
     <el-row :gutter="0">
       <el-col
         :span="22"
@@ -108,7 +111,6 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      prisonTermHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=prison_term_template.xls`, // 下载罪犯刑期模板文件的地址
       fileList: []
     }
   },

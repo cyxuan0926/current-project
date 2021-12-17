@@ -1,28 +1,29 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <el-row :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      <el-col :span="22" :offset="2">
         <span>点击下载模板：</span>
-        <a :href="prisonerHref">零花钱数据导入模板</a>
+
+        <m-excel-download
+          text="零花钱数据导入模板"
+          :buttonsProps="$_prisonerDataExcelDownloadConsts['buttonsProps']"
+          :path="$_prisonerDataExcelDownloadConsts['path']"
+          :params="{ filepath: 'pocket_money_template.xls' }"
+          :class="$_prisonerDataExcelDownloadConsts['className']"
+        />&nbsp;&nbsp;
       </el-col>
     </el-row>
+
     <el-row :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      <el-col :span="22" :offset="2">
         <p>限制文件后缀名为
           <span class="red">.xls</span>或<span class="red">.xlsx</span>
         </p>
       </el-col>
     </el-row>
+
     <el-row :gutter="0">
-      <el-col
-        :span="22"
-        :offset="2">
+      <el-col :span="22" :offset="2">
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -129,16 +130,18 @@ import Utils from './utils'
 export default {
   data() {
     return {
-      fileList: [],
-      prisonerHref: `${ this.$urls.apiHost }${ this.$urls.apiPath }/download/downloadfile?filepath=pocket_money_template.xls`
+      fileList: []
     }
   },
+
   computed: {
     ...mapState(['uploadPocketMoneyExcelResult', 'importPocketMoneyResult'])
   },
+
   mounted() {
     this.resetState({ uploadPocketMoneyExcelResult: {} })
   },
+
   methods: {
     ...mapActions(['importSuccessfulAnalysisExcel', 'uploadAnalyticExcel', 'resetState']),
     submitUpload() {

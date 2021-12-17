@@ -11,6 +11,12 @@ export default {
     filePath: '',
     total: 0
   },
+  validateInformationResult: {
+    successTotal: 0,
+    failTotal: 0,
+    filepath: '',
+    total: 0,
+  },
 
   validatePhoneResult: {
     add_total: 0,

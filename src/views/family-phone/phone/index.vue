@@ -1176,7 +1176,8 @@ export default {
     },
     async onFamilyInformationDialogFormSubmit(data) {
       if (data) {
-        let res= await http.familyPhoneAdd(data)
+        let res= await http.familyPhoneAdd(data).then()
+        conlose.log(res)
           if (!res) return
           setTimeout(() =>{
             this.onCloseFamilyInformationDialog()
