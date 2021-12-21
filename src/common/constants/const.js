@@ -284,3 +284,6 @@ export const _prisonerDataExcelDownloadConsts = {
 
   className: 'm-excel_download__prisoner-data'
 }
+
+// 亲情电话家属 全量审核 审核上限
+export const familyPhoneFamiliesAllPendingReviewUpperLimit = 2000

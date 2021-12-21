@@ -115,5 +115,15 @@ export default {
   // 亲情电话家属 - 批量作废
   batchInvalidFamilyPhone: params => {
     return service.putObj('/msg/familyPhoneManage/batchInvalid', params)
+  },
+
+  // 亲情电话家属 - 全量查询待审核数据
+  getFamilyPhoneFamiliesAllPendingReview: params => {
+    return service.get('/msg/familyPhoneManage/waitAudit', params)
+  },
+
+  // 亲情电话家属 - 全量审核数据
+  allAuthFamilyPhoneFamilies: params => {
+    return service.putObj('/msg/familyPhoneManage/auditAll', params)
   }
 }

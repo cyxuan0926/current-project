@@ -45,5 +45,9 @@ export default {
 
   setFamilyPhoneSettleAccountsDetail: (state, familyPhoneSettleAccountsDetail) => {
     state.familyPhoneSettleAccountsDetail = familyPhoneSettleAccountsDetail
+  },
+
+  setFamilyPhoneFamiliesAllPendingReviewData: (state, familyPhoneFamiliesAllPendingReviewData) => {
+    state.familyPhoneFamiliesAllPendingReviewData = Object.assign({}, familyPhoneFamiliesAllPendingReviewData)
   }
 }
