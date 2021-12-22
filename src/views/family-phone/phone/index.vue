@@ -671,14 +671,16 @@ export default {
 
   computed: {
     ...mapState({
-        uploadResult: state => state.global.uploadResult,
-        validatePhoneResult: state => state.familyPhone.validatePhoneResult
-      }),
+      uploadResult: state => state.global.uploadResult,
+      validatePhoneResult: state => state.familyPhone.validatePhoneResult
+    }),
+
     tableCols() {
       const cols = [
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',

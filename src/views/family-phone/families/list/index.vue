@@ -2065,19 +2065,23 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
-  .el-select-dropdown{
-        max-width: 243px;
-    }
-    .select_edit.el-select-dropdown__item{
-        display: inline-block;
-    }
-    .select_edit.el-select-dropdown__item span {
-        min-width: 400px;
-        display: inline-block;
-   }
+
+.el-select-dropdown {
+  max-width: 243px;
+}
+
+.select_edit.el-select-dropdown__item{
+  display: inline-block;
+}
+
+.select_edit.el-select-dropdown__item span {
+  min-width: 400px;
+  display: inline-block;
+}
 </style>
 
 <style lang="scss" scoped>
