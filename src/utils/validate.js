@@ -1,5 +1,5 @@
 import dateFormate from '@/filters/modules/date'
-import { isArray, isEqual } from 'lodash'
+
 import * as helper from './helper'
 
 const isEmpty = (val) => {
@@ -122,10 +122,10 @@ export default {
   isRepeatValidate: (rule, value, callback) => {
     if (!value) callback()
 
-    if (rule.repeatArray && isArray(rule.repeatArray)) {
+    if (rule.repeatArray && _.isArray(rule.repeatArray)) {
       const filterValue = rule.filterFun ? rule.filterFun(value) : value
 
-      const exist = rule.repeatArray.find(item => isEqual(item[rule['valueKey']], filterValue))
+      const exist = rule.repeatArray.find(item => _.isEqual(item[rule['valueKey']], filterValue))
 
       if (exist) callback(new Error(rule.message))
 

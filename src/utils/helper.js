@@ -2,13 +2,7 @@ import Moment from 'moment'
 
 import urls from '@/service/urls'
 
-import { parseInt } from 'lodash'
-
 import store from '@/store'
-
-import pickBy from 'lodash/pickBy'
-
-import identity from 'lodash/identity'
 
 import { Message } from 'element-ui'
 
@@ -56,12 +50,12 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
   if (unit !== 's') {
     return 'unkown-unit'
   }
-  duration = parseInt(duration)
+  duration = _.parseInt(duration)
   let ss, mm, hh
   ss = duration % 60
   if (unit === 's' && format === 'HH:mm:ss') {
-    mm = parseInt(duration / 60) % 60
-    hh = parseInt(duration / 60 / 60)
+    mm = _.parseInt(duration / 60) % 60
+    hh = _.parseInt(duration / 60 / 60)
     return `${ fillPre(hh) }:${ fillPre(mm) }:${ fillPre(ss) }`
   }
   if (unit === 's' && format === 'mm:ss') {
@@ -430,7 +424,7 @@ export const batchDownloadPublicImageURL = async(URLS = {}, _key = '') => {
   if (store.state.global.cacheImageURLS.hasOwnProperty(_key)) return store.state.global.cacheImageURLS[_key]
 
   else {
-    const pickByURLS = pickBy(URLS, identity)
+    const pickByURLS = _.pickBy(URLS, _.identity)
 
     const promises = Object.values(pickByURLS).reduce((accumulator, url) => {
       accumulator.push(store.dispatch('files/downloadPublicServiceFile', { url }))

@@ -1,7 +1,5 @@
 import { prisonAreaLevelObject, terminalUsersBasicAuths } from '@/common/constants/const'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import { Message } from 'element-ui'
 
 import { mapState } from 'vuex'
@@ -15,7 +13,7 @@ export default {
     }
 
     return {
-      localPrisonAreaLevelObject: cloneDeep(prisonAreaLevelObject),
+      localPrisonAreaLevelObject: _.cloneDeep(prisonAreaLevelObject),
 
       prisonConfigIdKey: '',
 

@@ -111,8 +111,6 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Moment from 'moment'
-import isEqual from 'lodash/isEqual'
-import cloneDeep from 'lodash/cloneDeep'
 import roles from '@/common/constants/roles'
 export default {
   data() {
@@ -188,7 +186,7 @@ export default {
       this.getRemoteNormalConfig({ jailId: this.jailId }).then(res => {
         if (!res) return
         this.configs = this.normalConfig.normalConfig
-        this.orignConfigs = cloneDeep(this.normalConfig.normalConfig)
+        this.orignConfigs = _.cloneDeep(this.normalConfig.normalConfig)
       })
     }
   },
@@ -217,7 +215,7 @@ export default {
       // 初始的通话配置
       const orignConfigs = this.filterParams(this.orignConfigs)
       // 是否发生变化
-      const hasNoChanged = isEqual(configs, orignConfigs)
+      const hasNoChanged = _.isEqual(configs, orignConfigs)
       if (hasNoChanged) {
         this.$message({
           showClose: true,

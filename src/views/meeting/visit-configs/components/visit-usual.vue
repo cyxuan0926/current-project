@@ -252,13 +252,9 @@ import { mapActions, mapState } from 'vuex'
 
 import remoteWeekCy from '../../components/remote-week-cy'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import normalMixins from '../../mixins'
 
 import { weeks } from '@/common/constants/const'
-
-import isEqual from 'lodash/isEqual'
 
 import Moment from 'moment'
 
@@ -395,7 +391,7 @@ export default {
 
     durationIntervalItems() {
       const item = {
-        formConfigs: { ...cloneDeep(this.durationIntervalormConfigs), labelWidth: '106px' },
+        formConfigs: { ...(_.cloneDeep(this.durationIntervalormConfigs)), labelWidth: '106px' },
 
         duration: {
           label: '通话时长',
@@ -407,12 +403,12 @@ export default {
           ]
         },
 
-        interval: cloneDeep(this.interval)
+        interval: _.cloneDeep(this.interval)
       }
 
       return this.allConfigs.map(configs => {
         return configs.map((config, index, target) => {
-          const cloneItem = cloneDeep(item)
+          const cloneItem = _.cloneDeep(item)
 
           this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
 
@@ -503,7 +499,7 @@ export default {
 
     // 当前仅有before config的时候 并且发生改变的时候
     hasConfigBeforeChange() {
-      return this.hasOriginConfigBefore && !isEqual(this.allConfigs[0], this.visitNormalConfigs['configBefore'])
+      return this.hasOriginConfigBefore && !_.isEqual(this.allConfigs[0], this.visitNormalConfigs['configBefore'])
     },
 
     // 周期配置开关
@@ -527,7 +523,7 @@ export default {
     },
 
     newStatusHasConfigAfterChange() {
-      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !isEqual(this.allConfigs[1], this.visitNormalConfigs['configAfter'])
+      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !_.isEqual(this.allConfigs[1], this.visitNormalConfigs['configAfter'])
     },
 
     initComponentStatus() {
@@ -577,9 +573,9 @@ export default {
         this.$message.closeAll()
       }
 
-      const configsBefore = cloneDeep(configBefore)
+      const configsBefore = _.cloneDeep(configBefore)
 
-      const configsAfter = cloneDeep(configAfter)
+      const configsAfter = _.cloneDeep(configAfter)
 
       this.allConfigs = [configsBefore, configsAfter]
     },
@@ -611,7 +607,7 @@ export default {
 
         if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) hasNoChanged = !this.hasConfigBeforeChange
 
-        else hasNoChanged = isEqual(this.daysAndPrisonAreaFilterParams(after, ['window_size']), this.daysAndPrisonAreaFilterParams(configAfter, ['window_size'])) && enabledAt === this.computedEffectiveDate
+        else hasNoChanged = _.isEqual(this.daysAndPrisonAreaFilterParams(after, ['window_size']), this.daysAndPrisonAreaFilterParams(configAfter, ['window_size'])) && enabledAt === this.computedEffectiveDate
 
         let updateMaps = [], initMaps = []
 

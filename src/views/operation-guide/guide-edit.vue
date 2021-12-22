@@ -12,7 +12,6 @@
 
 <script>
     import http from '@/service'
-    import isEqual from 'lodash/isEqual'
     import { mapState, mapActions } from 'vuex'
     export default {
         data() {
@@ -83,7 +82,7 @@
             },
             async handleBack(fields) {
                 try {
-                    if( (!!fields.guide || !!fields.content) && !isEqual(this.guideStorage, { guide: fields.guide, content: fields.content })) {
+                    if( (!!fields.guide || !!fields.content) && !(_.isEqual(this.guideStorage, { guide: fields.guide, content: fields.content }))) {
                         await this.$confirm('页面内容已更新，您确定要离开吗？', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',

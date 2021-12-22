@@ -193,8 +193,6 @@ import { tokenExcel } from '@/utils/token-excel'
 
 // 为了重载一些内部方法
 import ygPrisonPerch from '@/mixins/yg-prison-perch'
-
-import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: 'YgPrisonContent',
 
@@ -342,7 +340,7 @@ export default {
 
     // 非ywt_admin下面就不显示省份/监狱名称
     const $tableCols = computed(() => {
-      let _temp = cloneDeep(tableCols.value)
+      let _temp = _.cloneDeep(tableCols.value)
 
       if (!$isSuperAdmin.value) {
         arrayRemove(_temp, '省份', 'label')

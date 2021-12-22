@@ -204,10 +204,6 @@ import { tokenExcel } from '@/utils/token-excel'
 
 import { DateFormat } from '@/utils/helper'
 
-import isEmpty from 'lodash/isEmpty'
-
-import cloneDeep from 'lodash/cloneDeep'
-
 // import {
 //   $likeName,
 //   $likePrisonerNumber,
@@ -550,7 +546,7 @@ export default {
 
       const { content } = this.settleAccountsPaged
 
-      this.localTableData = cloneDeep(content)
+      this.localTableData = _.cloneDeep(content)
     },
 
     onSearch() {
@@ -710,7 +706,7 @@ export default {
     },
 
     isEmpty(input) {
-      return isEmpty(input)
+      return _.isEmpty(input)
     },
 
     async _mixinsInitMethods() {

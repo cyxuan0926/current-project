@@ -78,9 +78,6 @@
 import { faceRecognitionValues } from '@/common/constants/const'
 
 import { mapActions, mapState } from 'vuex'
-
-import cloneDeep from 'lodash/cloneDeep'
-
 export default {
   data() {
     return {
@@ -169,7 +166,7 @@ export default {
 
         this.$set(this.formData, 'afrIOSSetValue', afrIOSSetValue)
 
-        this.values = cloneDeep(val)
+        this.values = _.cloneDeep(val)
       },
 
       immediate: true,

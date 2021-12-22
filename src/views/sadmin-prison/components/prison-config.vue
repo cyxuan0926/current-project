@@ -194,14 +194,10 @@
 import { mapActions, mapState } from "vuex";
 import validator, { helper } from "@/utils";
 import roles from "@/common/constants/roles";
-import cloneDeep from "lodash/cloneDeep";
 import { Message } from "element-ui";
 
 import { faceRecognitionValues } from "@/common/constants/const";
 
-import isEqual from "lodash/isEqual";
-
-import Difference from "lodash/difference";
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -754,11 +750,11 @@ export default {
 
         const { familyPhoneScope } = e;
 
-        if (isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
+        if (_.isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
 
-        if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
+        if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
 
-        if (!Difference([1, 2], familyPhoneScope).length)
+        if (!_.Difference([1, 2], familyPhoneScope).length)
           e.familyPhoneScope = 2;
 
         let params = Object.assign({}, e, {
@@ -1034,9 +1030,9 @@ export default {
         abnormalCalldurationSwitch,
         afrIOSSetValue,
         afrAndroidSetValue,
-      } = cloneDeep(this.prison);
+      } = _.cloneDeep(this.prison);
 
-      this.values = cloneDeep(this.prison);
+      this.values = _.cloneDeep(this.prison);
 
       this.$set(
         this.slotFormData,

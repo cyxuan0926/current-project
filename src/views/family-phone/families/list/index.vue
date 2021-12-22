@@ -643,10 +643,6 @@ import {
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-import isEqual from 'lodash/isEqual'
-
-import cloneDeep from 'lodash/cloneDeep'
-
 import validator from '@/utils'
 
 import http from '@/service'
@@ -1378,7 +1374,7 @@ export default {
         isEdit: values['isEdit']
       }
 
-      const hasNoChange = isEqual(_values_temp, _origin_temp)
+      const hasNoChange = _.isEqual(_values_temp, _origin_temp)
 
       let isSuccess = false
 
@@ -1436,7 +1432,7 @@ export default {
 
           const { isEdit } = this.originalFamilyInformationDialogFormValues
 
-          this.familyInformationDialogFormValues = cloneDeep(this.originalFamilyInformationDialogFormValues)
+          this.familyInformationDialogFormValues = _.cloneDeep(this.originalFamilyInformationDialogFormValues)
 
           if (isEdit === 2) {
             this.$set(this.familyInformationDialogFormItems, 'buttons', [{

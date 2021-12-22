@@ -751,8 +751,6 @@
     // $likePhone
   } from '@/common/constants/const'
 
-  import cloneDeep from 'lodash/cloneDeep'
-
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
     data() {
