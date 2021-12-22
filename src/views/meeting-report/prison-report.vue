@@ -153,11 +153,6 @@ export default {
     getDatas() {
       const params = { ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId}
       if (this.activeComponentName === 'profile') {
-        const { startDate, endDate } = this.filter
-        if (startDate) params['startDate'] = `${ startDate } 00:00:00`
-
-        if (endDate) params['endDate'] = `${ endDate } 23:59:59`
-
         if (this.isSuperAdmin) this.getPrisonReportListAll(params)
 
         else this.getNewPrisonReportList(params)

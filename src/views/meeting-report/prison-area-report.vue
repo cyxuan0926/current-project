@@ -224,12 +224,6 @@ export default {
     async getDatas() {
       let res
 
-      const { startDate, endDate } = this.filter
-
-      if (startDate) this.filter['startDate'] = `${ startDate } 00:00:00`
-
-      if (endDate) this.filter['endDate'] = `${ endDate } 23:59:59`
-
       this.prisonArea = this.searchItems.prisonAreaId.options.find(o => o.id === this.filter.prisonAreaId)
 
       if (this.filter.prisonAreaId === '无监区' && this.searchItems.prisonAreaId.options.length === 1) delete this.filter.prisonAreaId
