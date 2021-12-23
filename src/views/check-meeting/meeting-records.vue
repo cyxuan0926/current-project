@@ -89,17 +89,26 @@ export default {
           label: "通话类型",
           options: this.$store.state.familyPhoneAuthenticationType,
         },
+        // applicationDate: {
+        //   type: "monthRangeSelector",
+        //   canNotClear: true,
+        //   startKey: "startDate",
+        //   endKey: "endDate",
+        //   range: {
+        //     max: Moment().format("YYYY-MM"),
+        //     maxMonthRange: 24,
+        //   },
+        //   value: [startDate, endDate],
+        // },
         applicationDate: {
-          type: "monthRangeSelector",
-          canNotClear: true,
-          startKey: "startDate",
-          endKey: "endDate",
-          range: {
-            max: Moment().format("YYYY-MM"),
-            maxMonthRange: 24,
+            type: 'dateRange',
+            unlinkPanels: true,
+            start: 'startDate',
+            end: 'endDate',
+            startPlaceholder: '申请开始时间',
+            endPlaceholder: '申请结束时间',
+            value: [this.$_oneMonthAgo, this.$_dateNow]
           },
-          value: [startDate, endDate],
-        },
       },
       filter: {},
     };
@@ -114,15 +123,15 @@ export default {
           prop: "familyName",
           ...$likeName,
         },
-        {
-          label: "省份",
-          prop: "provincesName",
-        },
+        // {
+        //   label: "省份",
+        //   prop: "provincesName",
+        // },
 
-        {
-          label: "监狱名称",
-          prop: "jailName",
-        },
+        // {
+        //   label: "监狱名称",
+        //   prop: "jailName",
+        // },
         {
           label: "警员姓名",
           prop: "policeName",
@@ -181,15 +190,15 @@ export default {
           minWidth: 92,
           ...$likePrisonerNumber,
         },
-        {
-          label: "省份",
-          prop: "provincesName",
-        },
+        // {
+        //   label: "省份",
+        //   prop: "provincesName",
+        // },
 
-        {
-          label: "监狱名称",
-          prop: "jailName",
-        },
+        // {
+        //   label: "监狱名称",
+        //   prop: "jailName",
+        // },
         {
           label: "通话时间",
           prop: "meetingTime",
