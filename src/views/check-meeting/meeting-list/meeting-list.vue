@@ -245,7 +245,7 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">家属姓名</span>
-              <span class="family-nameDetail">{{toShow.names}}</span>
+              <span class="family-nameDetail">{{toShow.names || toShow.name}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">关系</span>

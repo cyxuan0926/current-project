@@ -564,7 +564,7 @@ export default {
 
             type: "input",
 
-            rules: ["required", "isPositiveNumber", "isNumber"],
+            rules: ["required", "isPositiveNumber"],
 
             append: "次",
 
@@ -630,6 +630,20 @@ export default {
             disabled,
             value: 0,
           },
+
+          visiblePhonePeopleNumber: {
+            label: "可视电话通话人数上限",
+
+            type: "input",
+
+            rules: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }],
+
+            append: "次",
+
+            value: "6",
+
+            customClass: ['el-form-item-people_number']
+          }          
         },
         formButton
       ),
@@ -1053,3 +1067,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.el-form {
+  .el-form-item {
+    /deep/ &-people_number {
+      .el-input {
+        width: 260px;
+      }
+    }
+  }
+}
+</style>

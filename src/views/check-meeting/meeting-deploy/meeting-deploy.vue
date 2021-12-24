@@ -93,6 +93,16 @@
           </el-input>
         </el-form-item>
 
+        <el-form-item
+          label="可视电话通话人数上限"
+          prop="visiblePhonePeopleNumber"
+          class="el-form-item_people-number"
+        >
+          <el-input v-model="formData.visiblePhonePeopleNumber" placeholder="请输入可视电话通话人数上限">
+            <template #append>人</template>
+          </el-input>
+        </el-form-item>
+
         <el-form-item />
         <el-form-item />
         <el-form-item />
@@ -152,6 +162,8 @@ export default {
         afrIOSSetValue: "0.2",
 
         afrAndroidSetValue: "0.4",
+
+        visiblePhonePeopleNumber: "6"
       },
 
       faceRecognitionValues,
@@ -171,6 +183,8 @@ export default {
             max: 3600,
           },
         ],
+
+        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }]
       },
     };
   },
@@ -190,7 +204,7 @@ export default {
           ? true
           : false;
         this.abnormalCallDuration = res.data.abnormalCallDuration;
-        this.formData = Object.assign({}, res.data);
+        this.formData = Object.assign({}, this.formData, res.data);
       });
     },
     changeTimes() {
@@ -246,6 +260,12 @@ export default {
       .el-select {
         width: 15.5%;
       }
+    }
+  }
+
+  /deep/ .el-form-item_people-number {
+    .el-input {
+      width: 20%;
     }
   }
 }
