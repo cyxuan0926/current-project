@@ -470,7 +470,7 @@
           <!-- 审批结束 -->
           <!-- 这个交互 -->
           <!-- 单条审批 没有子流程 -->
-          <!-- 批量审核 相同审批流数据 没有子流程-->
+          <!-- 批量/全量审核 相同审批流数据 没有子流程-->
           <div
             v-if="!isSubtask && !isBatchAuthAndIsNoneSameProcessDefinition"
             class="button-box"
@@ -480,8 +480,8 @@
           </div>
 
           <!-- 审批流程中 -->
-          <!-- 单条审核/批量审核 相同审批流 -->
-          <!-- 批量审批 不同审批流数据 -->
+          <!-- 单条审核/批量/全量审核 相同审批流 -->
+          <!-- 批量/全量审批 不同审批流数据 -->
           <div v-else class="button-box">
             <m-form
               ref="agreeHasSubTaskForm"
@@ -568,13 +568,12 @@
       @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+        <ul class="infinite-list" style="margin-left: 20px; min-height: 400px; width: 100%">
           <li
             v-for="(item,index) in content"
             :key='index'
-            class="infinite-list-item" style="line-height:32px">
-            {{ index + 1 }}.{{ item }}
-          </li>
+            class="infinite-list-item" style="line-height: 32px;"
+          >{{ index + 1 }}.{{ item }}</li>
         </ul>
 
         <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
@@ -583,7 +582,7 @@
       <div
         v-else
         class="infinite-list"
-        style="margin-left:20px;min-height:400px"
+        style="margin-left: 20px; min-height: 400px;"
       >
         <span v-for="(item,index) in content" :key="index">
           <el-input
@@ -603,31 +602,36 @@
       </div>
 
       <el-row :gutter="0">
-        <el-button
-          v-if="show.editRebut"
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onRejectEditshow"
-        >编辑</el-button>
-
-        <span v-else>
+        <template v-if="show.editRebut">
           <el-button
-            v-if="content.length>0"
             type="primary"
             class="button-add"
             size="mini"
-            @click="onSubmitReject"
-          >保存</el-button>
+            @click="onRejectEditshow"
+          >编辑</el-button>
+        </template>
 
-          <el-button
-            v-if="content.length < 10"
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="addReject"
-          >新增</el-button>
-        </span>
+        <template v-else>
+          <span>
+            <template v-if="content.length > 0">
+              <el-button
+                type="primary"
+                class="button-add"
+                size="mini"
+                @click="onSubmitReject"
+              >保存</el-button>
+            </template>
+
+            <template v-if="content.length < 10">
+              <el-button
+                type="primary"
+                class="button-add"
+                size="mini"
+                @click="addReject"
+              >新增</el-button>
+            </template>
+          </span>
+        </template>
       </el-row>
     </el-dialog>
 
@@ -1690,6 +1694,8 @@ export default {
 
       // 批量/全量 审批 不同审批流程
       if (this.isBatchAuthAndIsNoneSameProcessDefinition) {
+        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
         const { checkState } = this.agreeHasSubTaskFormValues, { remarks } = this.agreeHasSubTaskFormFields
 
         inputs = {

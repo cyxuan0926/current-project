@@ -102,8 +102,8 @@ export default {
       // 服刑人员编号之类似的规则
       const regPrisonerNumber = /^(?!phone|terminal).*number$/i
 
-      // 姓名之类的规则
-      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea).*name$/i // 这些因为有冲突 重复 不能统一处理
+      // 姓名之类的规则 这些因为有交集 所以需要主动添加
+      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user).*name$/i // 这些因为有冲突 重复 不能统一处理
 
       // uuid
       const regIdCard = /.*uuid$/i

@@ -38,8 +38,9 @@
             :key="key"
             v-bind="item.attrs"
             v-on="item.events"
-            :class="item.customClass">
-              <slot :name="item.slotName" :fields="fields" />
+            :class="item.customClass"
+          >
+            <slot :name="item.slotName" :fields="fields" />
           </el-form-item>
         </template>
       </template>
