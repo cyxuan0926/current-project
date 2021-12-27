@@ -226,12 +226,13 @@ export default {
           value: "",
           clearable,
         },
-        familyPhone: {
+          familyPhone: {
           type: "input",
           label: "家属电话",
           rules: [
-            { required: true, message: "请输入家属电话请输入正确的电话号码" },
-          ],
+                'required',
+                'phone'
+              ],
           // rules: ["required"],
           value: "",
           clearable,
