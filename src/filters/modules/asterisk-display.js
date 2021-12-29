@@ -9,8 +9,10 @@ import { asteriskDisplayConst } from '@/common/constants/const'
 // 如果*数目正常 则剩下来的正常显示
 export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => {
   if (!value) return
+
+  const filterValue = value.replace(/\s*/g, '')
   // 强制字符串
-  const stringValue = value.toString()
+  const stringValue = filterValue.toString()
 
   const stringLength = stringValue.length
 
@@ -22,7 +24,7 @@ export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => 
   const { start, asteriskCount } = params
 
   // 如果小于初始位置 则不做处理
-  if (stringLength <= start) return value
+  if (stringLength <= start) return filterValue
 
   let actualAsteriskCount = asteriskCount ? (stringLength - start - asteriskCount < 0 ? stringLength - start : asteriskCount) : stringLength - start,
     asterisks = '*',
@@ -36,7 +38,7 @@ export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => 
     asterisks += '*'
   })
 
-  const result = value.replace(dynamicReg, `$1${ asterisks }$2`)
+  const result = filterValue.replace(dynamicReg, `$1${ asterisks }$2`)
 
-  return result
+  return result 
 }
