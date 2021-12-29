@@ -46,7 +46,14 @@ export default {
   validateImportFamilyInformation: filepath => {
     return service.post('/familyInformationImport/importFamilyInformation',  filepath ).then(response => response && response.data)
   },
-
+  // 批量导入离监罪犯信息表
+  validateImportPrisonerLeave: filepath => {
+    return service.post('/prisoners/importPrisonerLeave', {filepath}).then(response => response&& response.data)
+  },
+   // 批量导入转监罪犯信息表
+  validateImportPrisonerTransfer: filepath => {
+    return service.post('/prisoners/importPrisonerTransfer', {filepath}).then(response => response&& response.data)
+  },
   // 亲情电话家属 - 详情
   getFamilyPhoneFamiliesDetail: inputs => {
     const {

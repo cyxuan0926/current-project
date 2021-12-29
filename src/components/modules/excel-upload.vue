@@ -80,7 +80,7 @@ export default {
 <style lang="scss" scoped>
 .el-upload__excel {
   margin-bottom: 0px !important;
-  // margin-left: 10px !important;
+   margin-left: 10px !important;
   /deep/ .el-upload-list {
     display: none !important;
   }

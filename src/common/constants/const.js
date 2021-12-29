@@ -18,6 +18,8 @@ export const responseURLWhiteLists = [
   '/parse/familyphone/validateFpm',
   '/msg/parse/familyphone/apply/validateFpna',
   '/familyInformationImport/importFamilyInformation',
+  '/prisoners/importPrisonerLeave',
+  '/prisoners/importPrisonerTransfer',
   '/msg/parse/familyphone/apply/exportFamilyPhoneApply',
   '/parse/familyphone/apply/export',
   '/processDefinition/showresource',
