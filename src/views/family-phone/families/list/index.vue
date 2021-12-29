@@ -658,6 +658,7 @@ import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import { familyPhoneFamiliesAllPendingReviewUpperLimit } from '@/common/constants/const'
+import { Message } from 'element-ui'
 // import {
 //   $likeName,
 //   $likePrisonerNumber,
@@ -1952,10 +1953,12 @@ export default {
         // 查询当前查询条件下的全量待审核数据
         await this.getFamilyPhoneFamiliesAllPendingReview(this.filter)
 
+        Message.closeAll()
+
         const { size } = this.familyPhoneFamiliesAllPendingReviewData
 
         // 没有待审核的数据
-        if (!size) this.onWarning()
+        if (!size) this.onWarning('当前没有待审核数据')
 
         // 待审核数据大于2000
         else if (this.isUpperLimit) this.onPreConfirm(`系统最多一次可审核${familyPhoneFamiliesAllPendingReviewUpperLimit}条，确认审核前${familyPhoneFamiliesAllPendingReviewUpperLimit}条数据吗？`)
