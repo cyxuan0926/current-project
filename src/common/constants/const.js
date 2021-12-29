@@ -286,4 +286,4 @@ export const _prisonerDataExcelDownloadConsts = {
 }
 
 // 亲情电话家属 全量审核 审核上限
-export const familyPhoneFamiliesAllPendingReviewUpperLimit = 2000
+export const familyPhoneFamiliesAllPendingReviewUpperLimit = 1000
