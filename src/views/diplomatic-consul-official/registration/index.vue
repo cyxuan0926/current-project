@@ -206,7 +206,7 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import { mapState, mapActions } from 'vuex'
 
-import { $likeName, $likeIdCard } from '@/common/constants/const'
+// import { $likeName, $likeIdCard } from '@/common/constants/const'
 
 import { batchDownloadPublicImageURL } from '@/utils/helper'
 export default {
@@ -385,13 +385,13 @@ export default {
         },
         {
           label: '姓名',
-          prop: 'name',
-          ...$likeName
+          prop: 'name'
+          // ...$likeName
         },
         {
           label: '证件号',
-          prop: 'uuid',
-          ...$likeIdCard
+          prop: 'uuid'
+          // ...$likeIdCard
         },
         {
           label: '身份证件有效期至',

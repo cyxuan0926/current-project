@@ -151,7 +151,6 @@
 
 <script>
 // import { mapActions } from 'vuex'
-// import isEmpty from 'lodash/isEmpty'
 
 export default {
   name: 'MFormItem',
@@ -205,7 +204,7 @@ export default {
     // },
     // 简单判断下是否是非空
     // isEmpty(input) {
-    //   return isEmpty(input)
+    //   return _.isEmpty(input)
     // },
     tinymceChange(contents, text, content) {
       if (!content) {

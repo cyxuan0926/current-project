@@ -32,8 +32,6 @@ import {
   _tableCols
 } from '../constants'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import useRouteProps from '@/common/composables/useRouteProps'
 export default {
   name: 'PrisonAdminstrationList',
@@ -41,7 +39,7 @@ export default {
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
 
-    const searchItems = reactive(cloneDeep(_searchItems))
+    const searchItems = reactive(_.cloneDeep(_searchItems))
 
     const $tabs = ref('1')
 

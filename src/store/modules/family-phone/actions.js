@@ -250,5 +250,49 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async getFamilyPhoneFamiliesAllPendingReview({ commit }, params) {
+    try {
+      const response = await familyPhoneApi.getFamilyPhoneFamiliesAllPendingReview(params)
+
+      let _data = {
+        size: 0,
+        list: [],
+        processInstanceIds: ''
+      }
+
+      if (response && response['data']) {
+        const { data } = response
+
+        const { size, list = [], processInstanceIds } = data
+
+        _data = Object.assign({}, {
+          size,
+          list: list || [],
+          processInstanceIds
+        })
+      }
+
+      commit('setFamilyPhoneFamiliesAllPendingReviewData',  _data)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async allAuthFamilyPhoneFamilies(_, params) {
+    try {
+      const response = await familyPhoneApi.allAuthFamilyPhoneFamilies(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

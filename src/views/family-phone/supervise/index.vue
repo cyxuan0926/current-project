@@ -86,9 +86,9 @@
     import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
     import {
-        $likeName,
-        $likePrisonerNumber,
-        $likePhone
+        $likeName
+        // $likePrisonerNumber,
+        // $likePhone
     } from '@/common/constants/const'
 
     export default {
@@ -106,13 +106,13 @@
                 },
                 {
                     label: '罪犯编号',
-                    prop: 'criminalNumber',
-                    ...$likePrisonerNumber
+                    prop: 'criminalNumber'
+                    // ...$likePrisonerNumber
                 },
                 {
                     label: '罪犯姓名',
-                    prop: 'criminalName',
-                    ...$likeName
+                    prop: 'criminalName'
+                    // ...$likeName
                 },
                 {
                     label: '家属姓名',
@@ -127,8 +127,8 @@
                 },
                 {
                     label: '家属电话',
-                    prop: 'familyPhone',
-                    ...$likePhone
+                    prop: 'familyPhone'
+                    // ...$likePhone
                 },
                 {
                     label: '通话开始时间',

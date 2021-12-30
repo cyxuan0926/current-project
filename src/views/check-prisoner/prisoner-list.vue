@@ -597,13 +597,11 @@ import prisons from '@/common/constants/prisons'
 import {
   provinceJailLevelConfigsParamsName,
   prisonerInsideWhiteLists,
-  $likeName,
-  $likePrisonerNumber
+  $likeName
+  // $likePrisonerNumber
 } from '@/common/constants/const'
 
 import moment from 'moment'
-
-import cloneDeep from 'lodash/cloneDeep'
 
 import { Message } from 'element-ui'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
@@ -1439,13 +1437,13 @@ export default {
         {
           label: '罪犯姓名',
           prop: 'name',
-          minWidth: 75,
-          ...$likeName
+          minWidth: 75
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '性别',
@@ -2040,7 +2038,7 @@ export default {
     // dialog组件 获取ref
     onOpenDialog() {
       this.$nextTick(function() {
-        const provincesIdItem = cloneDeep(this.dialogContent['items']['provincesId'])
+        const provincesIdItem = _.cloneDeep(this.dialogContent['items']['provincesId'])
 
         if (provincesIdItem) this.onGetNextLevelPrisonConfigsData(this.currentProvincesId, 'provincesId', provincesIdItem)
       })
@@ -2241,17 +2239,17 @@ export default {
         await this.$store.dispatch(storesParams[prop]['actionName'], storesParams[prop]['paramsName'])
 
         // 数据默认值
-        let data = this.isPrisonAreaIdType ? cloneDeep(this.$store.state.multiPrisonConfigs.filter(val => {
+        let data = this.isPrisonAreaIdType ? _.cloneDeep(this.$store.state.multiPrisonConfigs.filter(val => {
           const { prisonConfigId } = this.prisoner
 
           return !(val.id === prisonConfigId && !(+val.hasChildren))
-        })) : cloneDeep(this.$store.state.multiPrisonConfigs)
+        })) : _.cloneDeep(this.$store.state.multiPrisonConfigs)
 
         // 筛选监狱数据
-        if (prop === 'provincesId') data = cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
+        if (prop === 'provincesId') data = _.cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
 
         // 监区数据
-        if (prop === 'jailId') data = cloneDeep(this.prisonConfigs)
+        if (prop === 'jailId') data = _.cloneDeep(this.prisonConfigs)
 
         // 如果没有数据 则隐藏该选项
         if (!data || (Array.isArray(data) && !data.length)) {
@@ -2265,7 +2263,7 @@ export default {
                 disabled: true
               })
             } else {
-              this.dialogFormResponseValues = Object.assign({}, cloneDeep(this.dialogFormResponseValues), {
+              this.dialogFormResponseValues = Object.assign({}, _.cloneDeep(this.dialogFormResponseValues), {
                 ...itemConfigs,
                 [_list[0]]: ''
               })
@@ -2335,7 +2333,7 @@ export default {
 
     onDialogFormResponse(values) {
       this.$nextTick(function() {
-        this.dialogFormResponseValues = cloneDeep(values)
+        this.dialogFormResponseValues = _.cloneDeep(values)
       })
     },
 
@@ -2505,7 +2503,7 @@ export default {
     },
 
     onChangePrisonJailOrBatch() {
-      const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
+      const currentDialogFormResponseValues = _.cloneDeep(this.dialogFormResponseValues)
 
       this.$confirm('更换监狱后，该服刑人员的可视电话申请和现场探视申请都将取消，您确认更换吗？', {
         closeOnClickModal: false,
@@ -2647,7 +2645,7 @@ export default {
     },
 
     async onAcceptPrisoners() {
-      const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
+      const currentDialogFormResponseValues = _.cloneDeep(this.dialogFormResponseValues)
 
       const { jailId } = this.user
 

@@ -35,5 +35,7 @@ export default {
 
   settleAccountsPaged: { content: [], totalCount: 0, configs: {} },
 
-  familyPhoneSettleAccountsDetail: []
+  familyPhoneSettleAccountsDetail: [],
+
+  familyPhoneFamiliesAllPendingReviewData: {}
 }

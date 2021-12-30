@@ -2,15 +2,11 @@ import Moment from 'moment'
 
 import urls from '@/service/urls'
 
-import { parseInt } from 'lodash'
-
 import store from '@/store'
 
-import pickBy from 'lodash/pickBy'
-
-import identity from 'lodash/identity'
-
 import { Message } from 'element-ui'
+
+import jwtDecode from 'jwt-decode'
 
 let fillPre = (val) => {
   return `00${ val }`.slice(-2)
@@ -54,12 +50,12 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
   if (unit !== 's') {
     return 'unkown-unit'
   }
-  duration = parseInt(duration)
+  duration = _.parseInt(duration)
   let ss, mm, hh
   ss = duration % 60
   if (unit === 's' && format === 'HH:mm:ss') {
-    mm = parseInt(duration / 60) % 60
-    hh = parseInt(duration / 60 / 60)
+    mm = _.parseInt(duration / 60) % 60
+    hh = _.parseInt(duration / 60 / 60)
     return `${ fillPre(hh) }:${ fillPre(mm) }:${ fillPre(ss) }`
   }
   if (unit === 's' && format === 'mm:ss') {
@@ -361,7 +357,7 @@ export function countNextQueue(queue, duration, interver) {
  * @param {*} times 最大会见时间段次数
  */
 export function getNextQueue(queue = [], duration = 25, interval = 5, times = 1, result = []) {
-  Array.apply(null, { length: times }).map((item, index) => {
+  Array.apply(null, { length: times }).map((_, index) => {
     if (index === 0) {
       const timeQueueStart = queue[0]
 
@@ -428,7 +424,7 @@ export const batchDownloadPublicImageURL = async(URLS = {}, _key = '') => {
   if (store.state.global.cacheImageURLS.hasOwnProperty(_key)) return store.state.global.cacheImageURLS[_key]
 
   else {
-    const pickByURLS = pickBy(URLS, identity)
+    const pickByURLS = _.pickBy(URLS, _.identity)
 
     const promises = Object.values(pickByURLS).reduce((accumulator, url) => {
       accumulator.push(store.dispatch('files/downloadPublicServiceFile', { url }))
@@ -495,4 +491,12 @@ export const dataURLtoFile = function(dataurl, filename) {
     u8arr[n] = bstr.charCodeAt(n)
   }
   return new File([u8arr], filename, { type: mime })
+}
+
+// token 是否过期
+// 会偶发出现 token 502 拿不到错误响应体 并且跨域的情况 不确定是不是和token 失效有关 ！！！
+export const accessTokenIsExpired = access_token => {
+  const { exp } = jwtDecode(access_token)
+
+  return Moment().diff(Moment.unix(exp)) > 0
 }

@@ -120,12 +120,11 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import http from '@/service'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
-} from '@/common/constants/const'
-
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone
+// } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families',
 
@@ -203,24 +202,24 @@ export default {
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName',
-          ...$likeName
+          prop: 'prisonerName'
+          // ...$likeName
         },
         {
           label: '家属姓名',
-          prop: 'familyName',
-          ...$likeName
+          prop: 'familyName'
+          // ...$likeName
         },
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },{
           label: '总通话时间段',
           prop: 'totalTime',

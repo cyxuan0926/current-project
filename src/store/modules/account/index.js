@@ -92,8 +92,10 @@ const actions = {
         return loginRes
       }
       else {
+        const { authorities = [] } = jwtDecode(loginRes.access_token)
+
         commit('setAccountInfo', loginRes)
-        commit('setAuthorities', (jwtDecode(loginRes.access_token).authorities || []))
+        commit('setAuthorities', (authorities || []))
         userInfoRes = await dispatch('getPublicUserInfo')
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })

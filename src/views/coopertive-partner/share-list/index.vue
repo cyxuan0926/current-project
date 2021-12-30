@@ -48,8 +48,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import Moment from 'moment'
 
-import { $likePhone } from '@/common/constants/const'
-
+// import { $likePhone } from '@/common/constants/const'
 export default {
   name: 'coopertivePartnerSharedList',
 
@@ -68,8 +67,8 @@ export default {
     const phoneItem = {
       label: '手机号码(合作商)',
       prop: 'partnerPhone',
-      minWidth: 105,
-      ...$likePhone
+      minWidth: 105
+      // ...$likePhone
     }
 
     const terminaUniquelIdItem = {
