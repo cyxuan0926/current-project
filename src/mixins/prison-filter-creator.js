@@ -52,7 +52,7 @@ export default {
     },
 
     // 初始化的时候只有监区搜索框
-    _isInitHaOnlyPrisonArea() {
+    $_isInitHasOnlyPrisonArea() {
       return !(this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) && this.hasPrisonAreaAuth
     }
   },
@@ -264,7 +264,7 @@ export default {
 
       const _jailId = this.jailId || (this.$store.state.global.user.jailId !== -1 && this.$store.state.global.user.jailId)
 
-      if (_jailId && this._isInitHaOnlyPrisonArea) {
+      if (_jailId && this.$_isInitHasOnlyPrisonArea) {
         await this.searchSelectChange('jailId', _jailId)
 
         // if (this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
