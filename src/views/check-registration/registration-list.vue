@@ -78,7 +78,6 @@
         </el-table-column>
 
         <el-table-column
-          v-if="isShowPhone"
           prop="phone"
           min-width="90"
           label="家属电话"
@@ -1008,7 +1007,6 @@ export default {
       'isAuditor',
       'isAdvancedAuditor',
       'haveMultistageExamine',
-      'isShowPhone',
       'isSuperAdmin'
     ]),
 
