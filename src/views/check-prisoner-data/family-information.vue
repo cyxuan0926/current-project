@@ -138,10 +138,9 @@ import prisonFilterCreator from "@/mixins/prison-filter-creator";
 import { mapActions, mapState, mapGetters } from "vuex";
 import { DateFormat } from "@/utils/helper";
 import { tokenExcel } from "@/utils/token-excel";
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone,
+import { $likeName
+  // $likePrisonerNumber,
+  // $likePhone,
 } from "@/common/constants/const";
 import registrationDialogCreator from "@/mixins/registration-dialog-creator";
 import http from "@/service";
@@ -271,13 +270,13 @@ export default {
           },
           {
             label: "罪犯编号",
-            prop: "prisonerNumber",
-            ...$likePrisonerNumber,
+            prop: "prisonerNumber"
+            // ...$likePrisonerNumber,
           },
           {
             label: "罪犯姓名",
-            prop: "prisonerName",
-            ...$likeName,
+            prop: "prisonerName"
+            // ...$likeName,
           },
           {
             label: "家属姓名",
@@ -292,8 +291,8 @@ export default {
           },
           {
             label: "家属电话",
-            prop: "familyPhone",
-            ...$likePhone,
+            prop: "familyPhone"
+            // ...$likePhone,
           },
           {
             label: "导入时间",

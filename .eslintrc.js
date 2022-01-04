@@ -19,7 +19,8 @@ module.exports = {
   ],
   globals: {
     'JSEncrypt': 'readonly',
-    'BUILD_ENV': 'readonly'
+    'BUILD_ENV': 'readonly',
+    '_': 'readonly' // lodash
   },
   // required to lint *.vue files
   plugins: ['vue', 'html'],

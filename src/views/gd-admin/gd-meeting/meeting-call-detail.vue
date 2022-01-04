@@ -39,12 +39,12 @@ import Moment from 'moment'
 import { DateFormat } from '@/utils/helper'
 import { saveAs } from 'file-saver'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone,
-  $likeIdCard
-} from '@/common/constants/const'
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone,
+//   $likeIdCard
+// } from '@/common/constants/const'
 export default {
   data() {
     const startTime = Moment().subtract(1, 'months').subtract(1, 'days').format('YYYY-MM-DD')
@@ -63,14 +63,14 @@ export default {
         {
           label: '罪犯姓名',
           prop: 'prisonerName',
-          minWidth: '8.2%',
-          ...$likeName
+          minWidth: '8.2%'
+          // ...$likeName
         },
         {
           label: '罪犯编号',
           prop: 'prisonerNumber',
-          minWidth: '8.2%',
-          ...$likePrisonerNumber
+          minWidth: '8.2%'
+          // ...$likePrisonerNumber
         },
         {
           label: '会见开始时间',
@@ -115,8 +115,8 @@ export default {
         {
           label: '会见人姓名',
           prop: 'familyName',
-          minWidth: '8.8%',
-          ...$likeName
+          minWidth: '8.8%'
+          // ...$likeName
         },
         {
           label: '关系',
@@ -136,14 +136,14 @@ export default {
         {
           label: '会见人证件号',
           prop: 'familyUuid',
-          minWidth: '8.8%',
-          ...$likeIdCard
+          minWidth: '8.8%'
+          // ...$likeIdCard
         },
         {
           label: '会见人联系电话',
           prop: 'phone',
-          minWidth: '8.8%',
-          ...$likePhone
+          minWidth: '8.8%'
+          // ...$likePhone
         },
         {
           label: '家庭详情住址',

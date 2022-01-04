@@ -228,10 +228,6 @@ import normalMixins from '../mixins'
 
 import Moment from 'moment'
 
-import isEqual from 'lodash/isEqual'
-
-import cloneDeep from 'lodash/cloneDeep'
-
 import { Message } from 'element-ui'
 
 import { weeks, meetingChargeConfigDurations } from '@/common/constants/const'
@@ -342,11 +338,11 @@ export default {
 
     // 当前仅有before config的时候 并且发生改变的时候
     hasConfigBeforeChange() {
-      return !isEqual(this.allConfigs[0], this.meetingRoomConfigs['configBefore'])
+      return !_.isEqual(this.allConfigs[0], this.meetingRoomConfigs['configBefore'])
     },
 
     newStatusHasConfigAfterChange() {
-      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !isEqual(this.allConfigs[1], this.meetingRoomConfigs['configAfter'])
+      return !this.hasOriginConfigBefore && !this.hasOriginConfigAfter && !_.isEqual(this.allConfigs[1], this.meetingRoomConfigs['configAfter'])
     },
 
     // 可选日期
@@ -384,7 +380,7 @@ export default {
     // 通话时长和间隔时间
     durationIntervalItems() {
       const item = {
-        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+        formConfigs: _.cloneDeep(this.durationIntervalormConfigs),
 
         duration: {
           label: '通话时长',
@@ -393,12 +389,12 @@ export default {
           rules: ['required']
         },
 
-        interval: cloneDeep(this.interval)
+        interval: _.cloneDeep(this.interval)
       }
 
       return this.allConfigs.map(configs => {
         return configs.map((config, index, target) => {
-          const cloneItem = cloneDeep(item)
+          const cloneItem = _.cloneDeep(item)
 
           this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
 
@@ -466,9 +462,9 @@ export default {
         Message.closeAll()
       }
 
-      const configsBefore = cloneDeep(configBefore)
+      const configsBefore = _.cloneDeep(configBefore)
 
-      const configsAfter = cloneDeep(configAfter)
+      const configsAfter = _.cloneDeep(configAfter)
 
       this.effectiveDate = enabledAt
 
@@ -550,7 +546,7 @@ export default {
       // 只有正在生效的
       if (this.hasOriginConfigBefore && !this.hasOriginConfigAfter) hasNoChanged = !this.hasConfigBeforeChange
 
-      else hasNoChanged = isEqual(this.daysAndPrisonAreaFilterParams(after), this.daysAndPrisonAreaFilterParams(configAfter)) && enabledAt === this.computedEffectiveDate
+      else hasNoChanged = _.isEqual(this.daysAndPrisonAreaFilterParams(after), this.daysAndPrisonAreaFilterParams(configAfter)) && enabledAt === this.computedEffectiveDate
 
       if (hasNoChanged) {
         this.$message({
@@ -622,10 +618,10 @@ export default {
     // 配置监区按钮
     // index：序号 type：正在生效/将要生效 configs：当前配置信息
     onDeployPrisonArea(index, type, configs, init) {
-      const selectItem = cloneDeep(this.prisonAreasItem),
+      const selectItem = _.cloneDeep(this.prisonAreasItem),
 
       formConfigs = {
-        ...cloneDeep(this.durationIntervalormConfigs),
+        ..._.cloneDeep(this.durationIntervalormConfigs),
         inline: true
       },
       items = {
@@ -677,16 +673,16 @@ export default {
       }
 
       // 返回的是对应日子的数组
-      const haveDaysConfigs = cloneDeep(this.week).filter(weekDay => days.includes(weekDay.value))
+      const haveDaysConfigs = _.cloneDeep(this.week).filter(weekDay => days.includes(weekDay.value))
 
       let haveItems = {}
 
       const { prisonBranch } = this.meetingRoomConfigs
 
       haveDaysConfigs.forEach(item => {
-        for (let [key, value] of Object.entries(cloneDeep(items))) {
+        for (let [key, value] of Object.entries(_.cloneDeep(items))) {
           if (item.key === key) {
-            const cloneItem = cloneDeep(value)
+            const cloneItem = _.cloneDeep(value)
 
             cloneItem['value'] = this.allConfigs[type][index][key]
             // 点击配置监区

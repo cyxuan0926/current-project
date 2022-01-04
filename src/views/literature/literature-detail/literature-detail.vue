@@ -75,7 +75,6 @@
 </template>
 
 <script>
-import debounce from 'lodash/debounce'
 import { mapActions, mapState } from 'vuex'
 import { deepCopy } from '@/utils/helper'
 import store from '@/store'
@@ -109,7 +108,7 @@ export default {
         }],
         title: [
           {
-            validator: debounce(this.titleValidator, 300, {
+            validator: _.debounce(this.titleValidator, 300, {
               maxWait: 60 * 1000
             }),
             trigger: [
@@ -125,7 +124,7 @@ export default {
         ],
         content: [
           {
-            validator: debounce(this.contentValidator, 300, {
+            validator: _.debounce(this.contentValidator, 300, {
               maxWait: 60 * 1000
             }),
             trigger: [

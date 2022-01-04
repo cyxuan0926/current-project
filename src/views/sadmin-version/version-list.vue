@@ -246,6 +246,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus">
-</style>

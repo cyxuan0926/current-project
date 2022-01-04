@@ -737,7 +737,7 @@ superAdmin = [{
       },
       {
         path: '/family-information/registrations/list',
-        name: 'FamilyInformationRegistrationsList',
+        name: 'FamilyInformationRegistrationsListAdmin',
         props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
         meta: {
           permission: 'visit.family-registration.all-prison.search',
@@ -746,7 +746,7 @@ superAdmin = [{
         component: 'check-registration/registration-list'
       }, {
         path: '/prisoner-data/family-information',
-        name: 'prisoner-inside-jails-costs',
+        name: 'prisoner-inside-jails-costs-admin',
         props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
         // component: helper.loadView('check-prisoner-data/inside-jails-costs'),
         component: 'check-prisoner-data/family-information',

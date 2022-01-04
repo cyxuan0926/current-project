@@ -481,8 +481,6 @@ import Moment from 'moment'
 
 import normalMixins from '../mixins'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 export default {
   mixins: [normalMixins],
 
@@ -533,13 +531,13 @@ export default {
 
     durationIntervalItems() {
       const item = {
-        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+        formConfigs: _.cloneDeep(this.durationIntervalormConfigs),
 
-        interval: cloneDeep(this.interval)
+        interval: _.cloneDeep(this.interval)
       }
 
       return this.configs.map((config, index, target) => {
-        const cloneItem = cloneDeep(item)
+        const cloneItem = _.cloneDeep(item)
 
         this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
@@ -579,7 +577,7 @@ export default {
     async initData() {
       await this.getRemoteSpecialConfigs({ jailId: this.jailId })
    const { complexSpecialConfigs , separateByArea } = this.specialConfigs
-     this.configs = cloneDeep(complexSpecialConfigs)
+     this.configs = _.cloneDeep(complexSpecialConfigs)
 
       this.configs.forEach((item,i)=>{
         if(i==0){
@@ -940,7 +938,7 @@ export default {
         this.configs.splice(index, 1)
       }
       else {
-        this.configs = cloneDeep([this.basicConfig])
+        this.configs = _.cloneDeep([this.basicConfig])
       }
     },
 
@@ -989,7 +987,7 @@ export default {
       }
     },
     onAddDay() {
-          this.configs.push(cloneDeep(this.basicConfig))
+          this.configs.push(_.cloneDeep(this.basicConfig))
     }
   }
 }

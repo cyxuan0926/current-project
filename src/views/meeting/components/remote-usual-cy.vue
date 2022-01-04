@@ -232,10 +232,6 @@
 
   import Moment from 'moment'
 
-  import isEqual from 'lodash/isEqual'
-
-  import cloneDeep from 'lodash/cloneDeep'
-
   import { Message } from 'element-ui'
 
   import remoteWeekCy from './remote-week-cy'
@@ -359,7 +355,7 @@
 
       // 当前仅有before config的时候 并且发生改变的时候
       hasConfigBeforeChange() {
-        return !!(this.hasConfigBefore && !isEqual(this.allConfigs[0], this.normalCongigs['configBefore']))
+        return !!(this.hasConfigBefore && !_.isEqual(this.allConfigs[0], this.normalCongigs['configBefore']))
       },
 
       // 可选日期
@@ -395,7 +391,7 @@
     // 通话时长和间隔时间
     durationIntervalItems() {
       const item = {
-        formConfigs: cloneDeep(this.durationIntervalormConfigs),
+        formConfigs: _.cloneDeep(this.durationIntervalormConfigs),
 
         duration: {
           label: '通话时长',
@@ -404,14 +400,14 @@
           rules: ['required', 'isPositiveIntegers']
         },
 
-        interval: cloneDeep(this.interval)
+        interval: _.cloneDeep(this.interval)
       }
 
       if (!this.isSuperAdmin) this.$delete(item, 'duration')
 
       return this.allConfigs.map(configs => {
         return configs.map((config, index, target) => {
-          const cloneItem = cloneDeep(item)
+          const cloneItem = _.cloneDeep(item)
 
           if (this.isSuperAdmin) this.$set(cloneItem['duration'], 'disabled', !(!config.queue.length && target.length === 1))
 
@@ -446,7 +442,7 @@
           this.$set(this.allConfigs[type], 1,{ days: [],config: [],queue: [],timeperiod: [],timeperiodQueue: [],interval: 5,duration: 25,area:1,showError: [] })
         }
         else{
-          this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+          this.$set(this.allConfigs, type, _.cloneDeep([this.basicConfig]))
         }
       },
 
@@ -509,9 +505,9 @@
           this.terminals[1]=[afterarea1,afterarea2]
         }
 
-        this.configsBefore = cloneDeep(configBefore)
+        this.configsBefore = _.cloneDeep(configBefore)
 
-        this.configsAfter = cloneDeep(configAfter)
+        this.configsAfter = _.cloneDeep(configAfter)
 
         this.effectiveDate = enabledAt
 
@@ -670,9 +666,9 @@
 
         const { configBefore, configAfter, enabledAt } = this.normalCongigs
 
-        if (!this.hasOriginConfigAfter) hasNoChanged = isEqual(this.filterParams(before,0), this.filterParams(configBefore,0)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
+        if (!this.hasOriginConfigAfter) hasNoChanged = _.isEqual(this.filterParams(before,0), this.filterParams(configBefore,0)) && (!enabledAt || enabledAt === this.computedEffectiveDate)
 
-        else hasNoChanged = isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
+        else hasNoChanged = _.isEqual(this.filterParams(after,1), this.filterParams(configAfter,1)) && enabledAt === this.computedEffectiveDate
 
         if (hasNoChanged) {
           // this.$message({
@@ -753,7 +749,7 @@
 
         const { configBefore } = this.normalCongigs
 
-        const beforDuration = cloneDeep(configBefore)[0].duration
+        const beforDuration = _.cloneDeep(configBefore)[0].duration
 
         const initDuration = beforDuration
 
@@ -761,7 +757,7 @@
           if (configs.length > 1) this.allConfigs[type].splice(index, 1)
 
           else {
-            this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+            this.$set(this.allConfigs, type, _.cloneDeep([this.basicConfig]))
 
             this.$set(this.filterDuration, type, initDuration)
           }

@@ -47,7 +47,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import isEqual from 'lodash/isEqual'
 export default {
   props: {
     // v-model的值
@@ -95,7 +94,7 @@ export default {
     // 是否修改了可视电话申请提前天数
     hasChange() {
       // 不等于默认的配置天数
-      return !isEqual(this.advanceDayLimit_, this.advanceDayLimit)
+      return !_.isEqual(this.advanceDayLimit_, this.advanceDayLimit)
     }
   },
   watch: {

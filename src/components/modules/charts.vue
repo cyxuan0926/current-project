@@ -22,9 +22,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import echarts from 'echarts'
-import isPlainObject from 'lodash/isPlainObject'
-import debounce from 'lodash/debounce'
 
 export default {
   props: {
@@ -100,7 +97,7 @@ export default {
     options: {
       deep: true,
       handler(val) {
-        if (isPlainObject(val)) {
+        if (_.isPlainObject(val)) {
           this.instance.setOption(val, true)
         }
       }
@@ -126,7 +123,7 @@ export default {
     init() {
       this.instance = echarts.init(document.getElementById(this.id))
       this.instance.setOption(this.options)
-      this.resizeHandler = debounce(this.resize, 300)
+      this.resizeHandler = _.debounce(this.resize, 300)
 
       if (this.loading) {
         this.instance.showLoading()

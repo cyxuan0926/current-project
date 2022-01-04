@@ -14,7 +14,6 @@
 </template>
 <script>
 
-import cloneDeep from 'lodash/cloneDeep'
 // 凡是需要交互回去的数据 通过v-model传递过来
 export default {
   data () {
@@ -114,7 +113,7 @@ export default {
     },
     onGetTime(row, column, cell, event) {
       const haveNoCellStyleProp = ['terminalNumber']
-      const cloneDate = cloneDeep(this.meetingConfigs.originTableData)
+      const cloneDate = _.cloneDeep(this.meetingConfigs.originTableData)
       if (haveNoCellStyleProp.includes(column.property) || (!haveNoCellStyleProp.includes(column.property) && row[column.property])) return
       this.$set(this.meetingConfigs, 'tableData', cloneDate)
       this.$set(this.meetingConfigs.tableData[row.indexNumber], column.property, this.meetingConfigs.familyName)
