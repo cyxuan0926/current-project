@@ -100,10 +100,10 @@ export default {
   computed: {
     elTableCols() {
       // 服刑人员编号之类似的规则
-      const regPrisonerNumber = /^(?!phone|terminal).*number$/i
+      const regPrisonerNumber = /^(?!phone|terminal|room).*number$/i
 
       // 姓名之类的规则 这些因为有交集 所以需要主动添加
-      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full|city|county).*name$/i // 这些因为有冲突 重复 不能统一处理
+      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full|city|county|terminal).*name$/i // 这些因为有冲突 重复 不能统一处理
 
       // uuid
       const regIdCard = /.*uuid$/i
