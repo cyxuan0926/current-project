@@ -27,7 +27,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-import { $likePhone } from '@/common/constants/const'
+// import { $likePhone } from '@/common/constants/const'
 
 export default {
   data() {
@@ -43,8 +43,8 @@ export default {
       tableCols: [
         {
           label: '账号',
-          prop: 'phone',
-          ...$likePhone
+          prop: 'phone'
+          // ...$likePhone
         },
         {
           label: 'app版本',

@@ -58,7 +58,7 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { Message } from 'element-ui'
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -131,14 +131,14 @@ export default {
 
         {
           label: '罪犯姓名',
-          prop: 'prisonerName',
-          ...$likeName
+          prop: 'prisonerName'
+          // ...$likeName
         },
 
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
 
         {
@@ -223,12 +223,6 @@ export default {
 
     async getDatas() {
       let res
-
-      const { startDate, endDate } = this.filter
-
-      if (startDate) this.filter['startDate'] = `${ startDate } 00:00:00`
-
-      if (endDate) this.filter['endDate'] = `${ endDate } 23:59:59`
 
       this.prisonArea = this.searchItems.prisonAreaId.options.find(o => o.id === this.filter.prisonAreaId)
 

@@ -1,5 +1,4 @@
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
-
+// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 import { formatTime } from '@/utils/helper'
 
 const startDate = formatTime(new Date(), 'yyyy-MM')
@@ -97,14 +96,14 @@ export const _ygPrisonCommonTableCols = () => {
 
     {
       label: '罪犯姓名',
-      prop: 'prisonerName',
-      ...$likeName
+      prop: 'prisonerName'
+      // ...$likeName
     },
 
     {
       label: '罪犯编号',
-      prop: 'prisonerNumber',
-      ...$likePrisonerNumber
+      prop: 'prisonerNumber'
+      // ...$likePrisonerNumber
     }
   ]
 }

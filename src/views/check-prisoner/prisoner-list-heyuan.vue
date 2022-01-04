@@ -475,7 +475,6 @@ import { provinceJailLevelConfigsParamsName } from '@/common/constants/const'
 
 import moment from 'moment'
 
-import cloneDeep from 'lodash/cloneDeep'
 // import roleAuthCreator from '@/mixins/role-auth-creator'
 
 import { batchDownloadPublicImageURL } from '@/utils/helper'
@@ -1412,7 +1411,7 @@ export default {
     // dialog组件 获取ref
     onOpenDialog() {
       this.$nextTick(function() {
-        const provincesIdItem = cloneDeep(this.dialogContent['items']['provincesId'])
+        const provincesIdItem = _.cloneDeep(this.dialogContent['items']['provincesId'])
 
         if (provincesIdItem) this.onGetNextLevelPrisonConfigsData(this.currentProvincesId, 'provincesId', provincesIdItem)
       })
@@ -1607,13 +1606,13 @@ export default {
         await this.$store.dispatch(storesParams[prop]['actionName'], storesParams[prop]['paramsName'])
 
         // 数据默认值
-        let data = cloneDeep(this.$store.state.multiPrisonConfigs)
+        let data = _.cloneDeep(this.$store.state.multiPrisonConfigs)
 
         // 筛选监狱数据
-        if (prop === 'provincesId') data = cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
+        if (prop === 'provincesId') data = _.cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
 
         // 监区数据
-        if (prop === 'jailId') data = cloneDeep(this.prisonConfigs)
+        if (prop === 'jailId') data = _.cloneDeep(this.prisonConfigs)
 
         // 如果没有数据 则隐藏该选项
         if (!data || (Array.isArray(data) && !data.length)) {
@@ -1860,7 +1859,7 @@ export default {
     onChangePrisonJailOrBatch() {
       this.changeJailButtonLoading = true
 
-      const currentDialogFormResponseValues = cloneDeep(this.dialogFormResponseValues)
+      const currentDialogFormResponseValues = _.cloneDeep(this.dialogFormResponseValues)
 
       this.$confirm('更换监狱后，可视电话申请都将取消，您确认更换吗？').then(async () => {
         const { jailId } = currentDialogFormResponseValues

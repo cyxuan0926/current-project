@@ -261,8 +261,8 @@ export default {
             },
             {
               label: '狱警号',
-              prop: 'policeNumber',
-              ...$likePrisonerNumber
+              prop: 'policeNumber'
+              // ...$likePrisonerNumber
             },
             {
               label: '性别',

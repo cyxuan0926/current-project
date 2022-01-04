@@ -46,7 +46,14 @@ export default {
   validateImportFamilyInformation: filepath => {
     return service.post('/familyInformationImport/importFamilyInformation',  filepath ).then(response => response && response.data)
   },
-
+  // 批量导入离监罪犯信息表
+  validateImportPrisonerLeave: filepath => {
+    return service.post('/prisoners/importPrisonerLeave', {filepath}).then(response => response&& response.data)
+  },
+   // 批量导入转监罪犯信息表
+  validateImportPrisonerTransfer: filepath => {
+    return service.post('/prisoners/importPrisonerTransfer', {filepath}).then(response => response&& response.data)
+  },
   // 亲情电话家属 - 详情
   getFamilyPhoneFamiliesDetail: inputs => {
     const {
@@ -115,5 +122,15 @@ export default {
   // 亲情电话家属 - 批量作废
   batchInvalidFamilyPhone: params => {
     return service.putObj('/msg/familyPhoneManage/batchInvalid', params)
+  },
+
+  // 亲情电话家属 - 全量查询待审核数据
+  getFamilyPhoneFamiliesAllPendingReview: params => {
+    return service.get('/msg/familyPhoneManage/waitAudit', params)
+  },
+
+  // 亲情电话家属 - 全量审核数据
+  allAuthFamilyPhoneFamilies: params => {
+    return service.putObj('/msg/familyPhoneManage/auditAll', params)
   }
 }

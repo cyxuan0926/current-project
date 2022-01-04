@@ -27,8 +27,6 @@ import {
   _tableCols
 } from '../constants'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import useRouteProps from '@/common/composables/useRouteProps'
 export default {
   name: 'EducationalTransformationList',
@@ -36,7 +34,7 @@ export default {
   setup() {
     const $ygEducationalTransformationParent = ref(null)
 
-    const searchItems = reactive(cloneDeep(_searchItems))
+    const searchItems = reactive(_.cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 

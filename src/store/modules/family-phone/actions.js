@@ -80,6 +80,26 @@ export default {
       Promise.reject(err)
     }
   },
+  async validateUploadPrisonerLeave({ commit }, {filepath,type}) {
+    try {
+      let response=null;
+      console.log(type)
+      if(type){
+        response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
+      }else{
+        response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
+      }
+     
+      if (!response) return
+     
+      commit('setValidatePrisonerLeaveResult', response)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
 
   async exportFamilyPhone(_, inputs) {
     try {
@@ -222,6 +242,50 @@ export default {
   async batchInvalidFamilyPhone(_, params) {
     try {
       const response = await familyPhoneApi.batchInvalidFamilyPhone(params)
+
+      const isSucess = response && response['code'] === 200
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async getFamilyPhoneFamiliesAllPendingReview({ commit }, params) {
+    try {
+      const response = await familyPhoneApi.getFamilyPhoneFamiliesAllPendingReview(params)
+
+      let _data = {
+        size: 0,
+        list: [],
+        processInstanceIds: ''
+      }
+
+      if (response && response['data']) {
+        const { data } = response
+
+        const { size, list = [], processInstanceIds } = data
+
+        _data = Object.assign({}, {
+          size,
+          list: list || [],
+          processInstanceIds
+        })
+      }
+
+      commit('setFamilyPhoneFamiliesAllPendingReviewData',  _data)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  async allAuthFamilyPhoneFamilies(_, params) {
+    try {
+      const response = await familyPhoneApi.allAuthFamilyPhoneFamilies(params)
 
       const isSucess = response && response['code'] === 200
 

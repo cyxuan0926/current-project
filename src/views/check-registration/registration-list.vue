@@ -79,7 +79,6 @@
         </el-table-column>
 
         <el-table-column
-          v-if="isShowPhone"
           prop="phone"
           min-width="90"
           label="家属电话"
@@ -114,13 +113,14 @@
         >
           <template #default="{ row }">
            <el-popover
-              popper-class="is-asterisk_display"
-              placement="top-start"
-              trigger="hover"
-              :content="row.prisonerName">
+            popper-class="is-asterisk_display"
+            placement="top-start"
+            trigger="hover"
+            :content="row.prisonerName"
+            >
               <span slot="reference">{{ row.prisonerName | asteriskDisplay('asterisk_name') }}</span>
-          </el-popover>
-         </template>
+            </el-popover>
+          </template>
         </el-table-column>
 
         <el-table-column
@@ -1008,7 +1008,6 @@ export default {
       'isAuditor',
       'isAdvancedAuditor',
       'haveMultistageExamine',
-      'isShowPhone',
       'isSuperAdmin'
     ]),
 

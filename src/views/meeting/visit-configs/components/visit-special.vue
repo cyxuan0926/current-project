@@ -169,15 +169,11 @@
 <script>
 import normalMixins from '../../mixins'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import remoteWeekCy from '../../components/remote-week-cy'
 
 import { mapActions, mapState } from 'vuex'
 
 import Moment from 'moment'
-
-import isEqual from 'lodash/isEqual'
 export default {
   components: {
     remoteWeekCy
@@ -207,11 +203,11 @@ export default {
     durationIntervalItems() {
       const item = {
         formConfigs: {
-          ...cloneDeep(this.durationIntervalormConfigs),
+          ...(_.cloneDeep(this.durationIntervalormConfigs)),
           labelWidth: '107px'
         },
 
-        prisonConfigIds: cloneDeep(this.prisonAreasItem),
+        prisonConfigIds: _.cloneDeep(this.prisonAreasItem),
 
         duration: {
           label: '通话时长',
@@ -223,11 +219,11 @@ export default {
           ]
         },
 
-        interval: cloneDeep(this.interval)
+        interval: _.cloneDeep(this.interval)
       }
 
       return this.configs.map((config, index, target) => {
-        const cloneItem = cloneDeep(item)
+        const cloneItem = _.cloneDeep(item)
 
         this.$set(cloneItem['interval'], 'disabled', !!config.queue.length)
 
@@ -416,7 +412,7 @@ export default {
 
     // 新增特殊日期
     onAddDay() {
-      this.configs.push(cloneDeep(this.basicConfig))
+      this.configs.push(_.cloneDeep(this.basicConfig))
     },
 
     // 新增时间段
@@ -473,7 +469,7 @@ export default {
         this.$message.closeAll()
       }
 
-      this.configs = cloneDeep(complexVisitSpecialConfigs)
+      this.configs = _.cloneDeep(complexVisitSpecialConfigs)
     },
 
     canSave(config) {
@@ -502,7 +498,7 @@ export default {
         config.config.length !== config.queue.length ||
         config.day !== config.oldDay ||
         config.old_window_size !== config.window_size ||
-        !isEqual(config.prisonConfigIds, config.oldPrisonConfigIds)
+        !(_.isEqual(config.prisonConfigIds, config.oldPrisonConfigIds))
       ) return true
 
       // 修改了某个通话时间段
@@ -516,7 +512,7 @@ export default {
     splice(index) {
       if (this.configs.length > 1) this.configs.splice(index, 1)
 
-      else this.configs = cloneDeep([this.basicConfig])
+      else this.configs = _.cloneDeep([this.basicConfig])
     }
   },
 

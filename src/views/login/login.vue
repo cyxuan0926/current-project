@@ -85,7 +85,6 @@ import { Base64 } from 'js-base64'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { helper } from '@/utils'
 import { sendSmsByAccount } from '@/service-public/api/account'
-import { JSEncryptEncrypt } from '@/common/constants/rsa'
 
 export default {
   components: {

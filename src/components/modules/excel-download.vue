@@ -59,8 +59,9 @@ export default {
       const query = qs.stringify(params)
       
       const res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
-
+      
       const { headers } = res || {}
+
       const originFileName = headers['content-disposition'] && decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
 
       if (res && res.data) saveAs(res.data, originFileName || `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
@@ -68,3 +69,12 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.m-excel-download {
+  margin-bottom: 0px !important;
+   margin-left: 10px !important;
+  /deep/ .el-upload-list {
+    display: none !important;
+  }
+}
+</style>

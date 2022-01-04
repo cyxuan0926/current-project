@@ -24,6 +24,9 @@ export default {
   setValidatePhoneResult: (state, result) => {
     state.validatePhoneResult = Object.assign({}, result)
   },
+  setValidatePrisonerLeaveResult: (state, result) => {
+    state.validatePrisonerLeaveResult = Object.assign({}, result.data)
+  },
 
   setFamilyPhoneFamiliesDetail: (state, familyPhoneFamiliesDetail) => {
     state.familyPhoneFamiliesDetail = familyPhoneFamiliesDetail
@@ -45,5 +48,9 @@ export default {
 
   setFamilyPhoneSettleAccountsDetail: (state, familyPhoneSettleAccountsDetail) => {
     state.familyPhoneSettleAccountsDetail = familyPhoneSettleAccountsDetail
+  },
+
+  setFamilyPhoneFamiliesAllPendingReviewData: (state, familyPhoneFamiliesAllPendingReviewData) => {
+    state.familyPhoneFamiliesAllPendingReviewData = Object.assign({}, familyPhoneFamiliesAllPendingReviewData)
   }
 }

@@ -245,7 +245,7 @@
           <div class="detail-message">
             <p class="detail-message-family">
               <span class="family-name">家属姓名</span>
-              <span class="family-nameDetail">{{toShow.names}}</span>
+              <span class="family-nameDetail">{{toShow.names || toShow.name}}</span>
             </p>
             <p class="detail-message-family" style="border: none">
               <span class="family-name">关系</span>
@@ -746,12 +746,10 @@
   import http from '@/service'
   import {
     withdrawOrAnthorinputReason,
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
+    $likeName
+    // $likePrisonerNumber,
+    // $likePhone
   } from '@/common/constants/const'
-
-  import cloneDeep from 'lodash/cloneDeep'
 
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
@@ -1118,13 +1116,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              ...$likePrisonerNumber
+              prop: 'prisonerNumber'
+              // ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
-              prop: 'prisonerName',
-              ...$likeName
+              prop: 'prisonerName'
+              // ...$likeName
             },
             {
               label: '罪名',
@@ -1167,8 +1165,8 @@
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              ...$likePhone
+              prop: 'phone'
+              // ...$likePhone
             },
             {
               label: '关系',
