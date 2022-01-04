@@ -103,7 +103,7 @@ export default {
       const regPrisonerNumber = /^(?!phone|terminal).*number$/i
 
       // 姓名之类的规则 这些因为有交集 所以需要主动添加
-      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full).*name$/i // 这些因为有冲突 重复 不能统一处理
+      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full|city|county).*name$/i // 这些因为有冲突 重复 不能统一处理
 
       // uuid
       const regIdCard = /.*uuid$/i
