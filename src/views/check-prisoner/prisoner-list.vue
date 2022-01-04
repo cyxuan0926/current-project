@@ -43,15 +43,15 @@
          <m-excel-download
             path="/download/downloadfile"
             :params='{ filepath:"prisoner__leave_import_template.xls"}'
-            text="离监模板"
+            text="离监模板" style="margin-left: 10px"
           />
-          <m-excel-upload ref="mExcelUpload" text='导入离监数据'  @click.native="one(true)" :configs="excelUploadConfigs" />
+          <m-excel-upload ref="mExcelUpload" text='导入离监数据'  @click.native="one(true)" :configs="excelUploadConfigs" style="margin-left: 10px" />
           <m-excel-download
             path="/download/downloadfile"
             :params='{ filepath:"prisoner__transfer_import_template.xls"}'
-            text="转监模板"
+            text="转监模板" style="margin-left: 10px"
           />
-            <m-excel-upload ref="mExcelUploadConfig" text='导入转监数据' @click.native="one(false)"  :configs="excelUploadConfigs" />
+            <m-excel-upload ref="mExcelUploadConfig" text='导入转监数据' @click.native="one(false)"  :configs="excelUploadConfigs" style="margin-left: 10px" />
         <span style="margin-left:10px">
         <el-button  type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
         <el-button type="primary" @click="showDelPrionser">离监</el-button>

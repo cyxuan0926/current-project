@@ -69,12 +69,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.m-excel-download {
-  margin-bottom: 0px !important;
-   margin-left: 10px !important;
-  /deep/ .el-upload-list {
-    display: none !important;
-  }
-}
-</style>
