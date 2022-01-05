@@ -29,7 +29,9 @@
             v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             ref="mExcelUpload"
             :configs="excelUploadConfigs"
-          />
+          >
+            <el-button type="primary" @click.stop="onExportWarnning">导入</el-button>
+          </m-excel-upload>
         </template>
       </template>
 
@@ -143,7 +145,7 @@
       />
     </el-dialog>
 
-     <el-dialog
+    <el-dialog
       title="家属信息"
       class="authorize-dialog"
       :visible.sync="authorizeDialogVisible"
@@ -2057,6 +2059,10 @@ export default {
       this.detailOrAuthDialogType = 2
 
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+    },
+
+    onExportWarnning() {
+      this.$refs['mExcelUpload'].onHandleClick()
     }
   }
 }
