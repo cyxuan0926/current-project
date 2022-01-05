@@ -170,7 +170,7 @@
 import { mapActions, mapState } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-import { $likeName } from '@/common/constants/const'
+// import { $likeName } from '@/common/constants/const'
 
 // import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
@@ -233,8 +233,8 @@ export default {
       const commonCols = [
         {
           label: '用户',
-          prop: 'name',
-          ...$likeName
+          prop: 'name'
+          // ...$likeName
         },
         {
           label: '信件类别',

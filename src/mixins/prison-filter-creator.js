@@ -41,8 +41,19 @@ export default {
   },
 
   computed: {
+    // 初始化省份搜索框的
     $_provincesId() {
       return this.provincesId || (this.$store.state.provincesAll && this.$store.state.provincesAll.length && this.$store.state.provincesAll[0]['id'])
+    },
+
+    // 初始化监狱搜索框的
+    $_jailId() {
+      return this.jailId || (this.$store.state.global.user.jailId !== -1 && this.$store.state.global.user.jailId) || (this.$store.state.prisonAll && this.$store.state.prisonAll.length && this.$store.state.prisonAll[0]['id'])
+    },
+
+    // 初始化的时候只有监区搜索框
+    $_isInitHasOnlyPrisonArea() {
+      return !(this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) && this.hasPrisonAreaAuth
     }
   },
 
@@ -140,14 +151,14 @@ export default {
         getting: true,
         belong: { value: 'id', label: 'title' },
         filterable: true,
-        value: this.jailId,
+        value: '',
         options: []
       }
 
       this.searchItems = Object.assign({}, { jailId: prisonSearchItem }, this.searchItems)
 
       if (!this.hasProvinceQueryAuth) {
-        const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.$_provincesId
+        const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.provincesId
 
         await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
@@ -155,12 +166,11 @@ export default {
 
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
 
-        if (this.jailId) {
-          const _jailId = this.jailId || (this.this.$store.state.prisonAll && this.$store.state.prisonAll.length && this.$store.state.prisonAll[0]['id'])
-          this.$set(this.searchItems['jailId'], 'value', this.jailId)
-        }
+        this.$set(this.searchItems['jailId'], 'value',  this.$_jailId)
 
         this.searchItems.jailId.getting = false
+
+        if (this.hasAllPrisonQueryAuth) await this.searchSelectChange('jailId', this.$_jailId)
       }
     },
 
@@ -252,12 +262,12 @@ export default {
         prisonArea: prisonAreaItem
       }, this.searchItems)
 
-      const _jailId = this.jailId || this.$store.state.global.user.jailId
+      const _jailId = this.jailId || (this.$store.state.global.user.jailId !== -1 && this.$store.state.global.user.jailId)
 
-      if (_jailId && _jailId !== -1) {
+      if (_jailId && this.$_isInitHasOnlyPrisonArea) {
         await this.searchSelectChange('jailId', _jailId)
 
-        // if (!this.$store.getters.isSuperAdmin && this.hasPrisonAreaAuth && this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
+        // if (this.$store.state.jailPrisonAreas && this.$store.state.jailPrisonAreas.length) {
         //   const _prisonArea = this.$store.state.jailPrisonAreas[0]['id']
 
         //   this.$set(this.searchItems['prisonArea'], 'value', _prisonArea)

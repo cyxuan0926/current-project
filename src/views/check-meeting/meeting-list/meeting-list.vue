@@ -746,12 +746,10 @@
   import http from '@/service'
   import {
     withdrawOrAnthorinputReason,
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
+    $likeName
+    // $likePrisonerNumber,
+    // $likePhone
   } from '@/common/constants/const'
-
-  import cloneDeep from 'lodash/cloneDeep'
 
   export default {
     mixins: [prisonFilterCreator, registrationDialogCreator],
@@ -1118,13 +1116,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              ...$likePrisonerNumber
+              prop: 'prisonerNumber'
+              // ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
-              prop: 'prisonerName',
-              ...$likeName
+              prop: 'prisonerName'
+              // ...$likeName
             },
             {
               label: '罪名',
@@ -1167,8 +1165,8 @@
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              ...$likePhone
+              prop: 'phone'
+              // ...$likePhone
             },
             {
               label: '关系',

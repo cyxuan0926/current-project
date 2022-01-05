@@ -472,10 +472,8 @@ import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
 import http from '@/service'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
+import { $likeName
+  // $likePhone
 } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families',
@@ -673,24 +671,26 @@ export default {
 
   computed: {
     ...mapState({
-        uploadResult: state => state.global.uploadResult,
-        validatePhoneResult: state => state.familyPhone.validatePhoneResult
-      }),
+      uploadResult: state => state.global.uploadResult,
+      validatePhoneResult: state => state.familyPhone.validatePhoneResult
+    }),
+
     tableCols() {
       const cols = [
         {
           label: '监区',
-          prop: 'prisonArea'
+          prop: 'prisonArea',
+          showOverflowTooltip: true
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
-          ...$likePrisonerNumber
+          prop: 'criminalNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName',
-          ...$likeName
+          prop: 'criminalName'
+          // ...$likeName
         },
         {
           label: '申请时间',
@@ -715,8 +715,8 @@ export default {
         {
           label: '家属电话',
           minWidth: 120,
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },
         {
           label: '关系',

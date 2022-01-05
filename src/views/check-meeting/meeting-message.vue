@@ -438,11 +438,11 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import http from '@/service'
 import { DateFormat } from '@/utils/helper'
 import { tokenExcel } from '@/utils/token-excel'
-import {
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
-  } from '@/common/constants/const'
+// import {
+//     $likeName,
+//     $likePrisonerNumber,
+//     $likePhone
+//   } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -621,13 +621,13 @@ export default {
         {
           label: '罪犯编号',
           prop: 'criminalNumber',
-          width: 110,
-          ...$likePrisonerNumber
+          width: 110
+          // ...$likePrisonerNumber
         },
         {
           label: '发送人姓名',
-          prop: 'sendName',
-          ...$likeName
+          prop: 'sendName'
+          // ...$likeName
         },
         {
           label: '申请时间',
@@ -636,14 +636,14 @@ export default {
         },
         {
           label: '接收人姓名',
-          prop: 'receiveName',
-          ...$likeName
+          prop: 'receiveName'
+          // ...$likeName
         },
         {
           label: '家属电话',
           prop: 'familyPhone',
-          width: 140,
-          ...$likePhone
+          width: 140
+          // ...$likePhone
         },
         {
           label: '关系',

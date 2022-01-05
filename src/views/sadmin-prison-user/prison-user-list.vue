@@ -64,11 +64,10 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
+  $likeName
+  // $likePrisonerNumber,
+  // $likePhone
 } from '@/common/constants/const'
-
 export default {
   name: 'AccountList',
 
@@ -144,8 +143,8 @@ export default {
         {
           label: '狱警号',
           prop: 'policeNumber',
-          minWidth: 90,
-          ...$likePrisonerNumber
+          minWidth: 90
+          // ...$likePrisonerNumber
         },
 
         {
@@ -157,7 +156,7 @@ export default {
         {
           label: '电话号码',
           prop: 'phoneNumber',
-          ...$likePhone,
+          // ...$likePhone,
           // 不是ywt_admin 下面的列表列
           isNotSuperAdminCol: true
         },

@@ -1,5 +1,4 @@
 import urls from '@/service/urls'
-import mergeWith from 'lodash/mergeWith'
 
 const defaultMapConfig = {
     mapStyle: 'amap://styles/whitesmoke'
@@ -103,7 +102,7 @@ export default class AmapUtil {
         this.AmapConstructor = constructor
         if (config) {
             let { id, ...mapConfig } = config
-            this.map = new this.AmapConstructor.Map(id, mergeWith({}, defaultMapConfig, mapConfig))
+            this.map = new this.AmapConstructor.Map(id, _.mergeWith({}, defaultMapConfig, mapConfig))
         }
         return this
     }
@@ -151,31 +150,31 @@ export default class AmapUtil {
 
     addCircle(circles) {
         circles = Array.isArray(circles) ? circles : [circles]
-        this.circles = circles.map(c => new this.AmapConstructor.Circle(mergeWith({}, defaultCircleConfig, c)))
+        this.circles = circles.map(c => new this.AmapConstructor.Circle(_.mergeWith({}, defaultCircleConfig, c)))
         this.map.add(this.circles)
         return this
     }
 
     addInfoWindow(config) {
-        this.infoWindow = new this.AmapConstructor.InfoWindow(mergeWith({}, defaultInfowinConfig, config))
+        this.infoWindow = new this.AmapConstructor.InfoWindow(_.mergeWith({}, defaultInfowinConfig, config))
         this.map.add(this.infoWindow)
         return this
     }
 
     addDistrictLayerWorld(config) {
-        this.districtLayerWorld = new this.AmapConstructor.DistrictLayer.World(mergeWith({}, defaultDisWorldConfig, config))
+        this.districtLayerWorld = new this.AmapConstructor.DistrictLayer.World(_.mergeWith({}, defaultDisWorldConfig, config))
         this.map.add(this.districtLayerWorld)
         return this
     }
 
     addDistrictLayerCountry(config) {
-        this.districtLayerCountry = new this.AmapConstructor.DistrictLayer.World(mergeWith({}, defaultDisCountryConfig, config))
+        this.districtLayerCountry = new this.AmapConstructor.DistrictLayer.World(_.mergeWith({}, defaultDisCountryConfig, config))
         this.map.add(this.districtLayerCountry)
         return this
     }
 
     addDistrictLayerProvince(config) {
-        this.districtLayerProvince = new this.AmapConstructor.DistrictLayer.Province(mergeWith({}, defaultDisProvinceConfig, config))
+        this.districtLayerProvince = new this.AmapConstructor.DistrictLayer.Province(_.mergeWith({}, defaultDisProvinceConfig, config))
         this.map.add(this.districtLayerProvince)
         return this
     }

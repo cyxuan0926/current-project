@@ -14,6 +14,8 @@ import familyPhone from './modules/family-phone'
 
 import ygPrison from './modules/yg-prison'
 
+import logout from '@/utils/logout'
+
 const routes = [
   ...superAdmin,
   ...admin,
@@ -32,13 +34,9 @@ const routes = [
  */
 const mapLoadComponet = (routes) => {
   return routes.map(route => {
-    if (route.component) {
-      route.component = helper.loadView(route.component)
-    }
+    if (route.component) route.component = helper.loadView(route.component)
 
-    if (route.children) {
-      return mapLoadComponet(route.children)
-    }
+    if (route.children) return mapLoadComponet(route.children)
   })
 }
 
@@ -73,76 +71,68 @@ const router = new Router({
   mode: 'history',
   routes,
   linkActiveClass: 'active-menu',
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    }
-    else if (to.hash) {
-      return { selector: to.hash }
-    }
-    else {
-      return { x: 0, y: 0 }
-    }
+  scrollBehavior(to, _, savedPosition) {
+    if (savedPosition) return savedPosition
+
+    else if (to.hash) return { selector: to.hash }
+
+    else return { x: 0, y: 0 }
   }
 })
 
 // 登录校验
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const isLogin = localStorage.getItem('accountInfo')
+
   if (isLogin) {
-    if (to.path.startsWith('/login')) {
-      next({ path: '/dashboard', replace: true })
-    }
-    else {
-      next()
+    const { access_token } = JSON.parse(isLogin)
+
+    const is_expired = helper.accessTokenIsExpired(access_token)
+
+    if (is_expired) {
+      logout()
+
+      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+    } else {
+      if (to.path.startsWith('/login')) next({ path: '/dashboard', replace: true })
+
+      else next()
     }
   }
   else {
-    if (to.meta.notLogin) {
-      next()
-    }
-    else {
-      next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
-    }
+    if (to.meta.notLogin) next()
+
+    else next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
   }
 })
 
 // 路由权限校验
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const permission = store.state.account.authorities
-  if (permission.includes('all') || permission.includes(to.meta.permission) || !to.meta.permission) {
-    next()
-  }
-  else {
-    next({ path: '/dashboard', replace: true })
-  }
+  if (permission.includes('all') || permission.includes(to.meta.permission) || !to.meta.permission) next()
+
+  else next({ path: '/dashboard', replace: true })
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.hidden) {
-    next({ path: '/dashboard', replace: true })
-  }
-  else {
-    next()
-  }
+router.beforeEach((to, _, next) => {
+  if (to.meta.hidden) next({ path: '/dashboard', replace: true })
+
+  else next()
 })
 
 // 动态缓存组件
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   // 移除缓存组件
   if (to.meta.componentsUnRemoveKeepAlive) {
     const componentsKeepAlive = [...new Set([
       ...store.state.global.componentsKeepAlive
     ])]
-    const components = componentsKeepAlive.filter(comp => {
-      return to.meta.componentsUnRemoveKeepAlive.includes(comp)
-    })
+    const components = componentsKeepAlive.filter(comp => to.meta.componentsUnRemoveKeepAlive.includes(comp))
 
     store.commit('setComponentsKeepAlive', components)
   }
-  else {
-    store.commit('setComponentsKeepAlive', [])
-  }
+
+  else store.commit('setComponentsKeepAlive', [])
 
   // 缓存组件
   if (to.meta.componentsToKeepAlive) {
