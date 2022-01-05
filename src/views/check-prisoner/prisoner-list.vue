@@ -834,10 +834,6 @@ export default {
           value: '刑满释放'
         },
         {
-          label: '离监探亲',
-          value: '离监探亲'
-        },
-        {
           label: '假释',
           value: '假释'
         },
@@ -983,7 +979,6 @@ export default {
              address: {
               type: 'input',
               label: '户籍',
-              rules: ['required'],
               clearable: true
             },
 
