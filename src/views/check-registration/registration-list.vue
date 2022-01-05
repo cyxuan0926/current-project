@@ -1066,7 +1066,7 @@ export default {
       'getProcessTask'
     ]),
      cellred({row, column, rowIndex, columnIndex}){
-      if(row.nationality!==0){
+      if((row.domicile&&row.domicile!==0)||(row.nationality&&row.nationality!==0)){
           return 'color:red'
       }
     },
