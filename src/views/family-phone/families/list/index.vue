@@ -145,7 +145,7 @@
       />
     </el-dialog>
 
-     <el-dialog
+    <el-dialog
       title="家属信息"
       class="authorize-dialog"
       :visible.sync="authorizeDialogVisible"
