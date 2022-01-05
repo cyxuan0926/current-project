@@ -10,7 +10,9 @@
     :action="actionsUrl"
     v-bind="configs['attrs']"
   >
-    <el-button slot="trigger" type="primary">{{ text }}</el-button>
+    <slot name="default">
+      <el-button slot="trigger" type="primary">{{ text }}</el-button>
+    </slot>
 </el-upload>
 </template>
 <script>
@@ -73,6 +75,22 @@ export default {
   methods: {
     onManualUpload() {
       this.$refs.upload.submit()
+    },
+
+    
+    onHandleClick(message = '由于亲情电话家属导入时判断条件多，建议导入数据控制在300条以内', title = '提示', configs = {}) {
+      this.$confirm(message, title, {
+        confirmButtonText: "确定",
+        type: 'warning',
+        closeOnClickModal: false,
+        showClose: false,
+        showCancelButton: false,
+        customClass: 'el-upload__confirm',
+        callback: action => {
+          if (action === 'confirm') this.$refs['upload'].$refs['upload-inner'].handleClick()
+        },
+        ...configs
+      })
     }
   }
 }
