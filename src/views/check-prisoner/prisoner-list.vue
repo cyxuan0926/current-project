@@ -1459,7 +1459,7 @@ export default {
         {
           label: '户籍',
           minWidth: 130,
-          slotName: 'address'
+          prop: 'address'
         },
 
         {
