@@ -643,7 +643,7 @@ export default {
             value: "6",
 
             customClass: ['el-form-item-people_number']
-          }          
+          },       
         },
         formButton
       ),

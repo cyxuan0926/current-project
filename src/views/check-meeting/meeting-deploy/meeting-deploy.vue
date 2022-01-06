@@ -98,11 +98,22 @@
           prop="visiblePhonePeopleNumber"
           class="el-form-item_people-number"
         >
-          <el-input v-model="formData.visiblePhonePeopleNumber" placeholder="请输入可视电话通话人数上限">
+          <el-input
+            v-model="formData.visiblePhonePeopleNumber"
+            placeholder="请输入可视电话通话人数上限"
+          >
             <template #append>人</template>
           </el-input>
         </el-form-item>
+        <el-form-item
+          label="家属关系"
+          prop="visiblePhonePeopleNumber"
+          class="el-form-item_people-number"
+        >
 
+
+
+        </el-form-item>
         <el-form-item />
         <el-form-item />
         <el-form-item />
@@ -163,7 +174,7 @@ export default {
 
         afrAndroidSetValue: "0.4",
 
-        visiblePhonePeopleNumber: "6"
+        visiblePhonePeopleNumber: "6",
       },
 
       faceRecognitionValues,
@@ -184,7 +195,12 @@ export default {
           },
         ],
 
-        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }]
+        visiblePhonePeopleNumber: [
+          {
+            validator: validator.isPositiveIntegers,
+            ownMessage: "请输入可视电话通话人数上限",
+          },
+        ],
       },
     };
   },
@@ -197,7 +213,9 @@ export default {
     getDeploy() {
       http.getMeetDeploy().then((res) => {
         this.dialogVisible = false;
-        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting? true: false;
+        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting
+          ? true
+          : false;
         this.regAutoAudit = res.data.regAutoAudit ? true : false;
         this.multistageExamine = res.data.multistageExamine ? true : false;
         this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch
@@ -230,8 +248,8 @@ export default {
       const params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
-        regAutoAudit:this.regAutoAudit ? 1 : 0,
-        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0
+        regAutoAudit: this.regAutoAudit ? 1 : 0,
+        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
       });
       this.$refs.form.validate((valid) => {
         if (valid) {

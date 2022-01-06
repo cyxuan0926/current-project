@@ -775,10 +775,14 @@ export default {
           type: 'input',
           label: '罪犯姓名'
         },
-
+         
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
+        },
+        familyPhone: {
+          type: "input",
+          label: "家属电话",
         },
         auditName: {
           type: 'input',
@@ -794,7 +798,7 @@ export default {
           // no: ['DENIED'],
           value: ''
         },
-
+        
         nationality: {
           type: 'select',
           label: '家属类型',
