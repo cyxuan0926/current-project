@@ -1,33 +1,33 @@
 <template>
   <div style="overflow: hidden;">
     <div class="video-box">
-      <div
-        v-if="!value"
-        class="no-video">
-        <i class="iconfont icon-video" />
-      </div>
-      <video
-        v-else
-        controls
-        poster="/static/images/video-background.png"
-        style="width: 192px; height: 108px;">
-        <source
-          :src="value"
-          type='video/mp4'>
-        <source
-          :src="value"
-          type='video/webm'>
-        <source
-          :src="value"
-          type='video/ogg'>您的浏览器不支持Video标签。
-      </video>
+      <template v-if="!value">
+        <div class="no-video">
+          <i class="iconfont icon-video" />
+        </div>
+      </template>
+
+      <template v-else>
+        <video
+          controls
+          poster="/static/images/video-background.png"
+          style="width: 192px; height: 108px;"
+        >
+          <source :src="value" type='video/mp4'>
+          <source :src="value" type='video/webm'>
+          <source :src="value" type='video/ogg'>
+          您的浏览器不支持Video标签。
+        </video>
+      </template>
+
       <span
         slot="tip"
         class="el-upload__tip"
-        style="line-height: 40px;">
-        只能上传<span class="red">mp4/webm/ogg</span>文件
+        style="line-height: 40px;"
+      >只能上传<span class="red">mp4/webm/ogg</span>文件
       </span>
     </div>
+
     <div class="upload-buttons">
       <el-upload
         ref="uploadVideo"
@@ -49,15 +49,17 @@
           slot="trigger"
           size="small"
           :disabled="loading || Boolean(value)"
-          type="primary">上传视频
-        </el-button>
+          type="primary"
+        >上传视频</el-button>
       </el-upload>
+
       <el-button
         type="danger"
         size="small"
         :disabled="!loading && !Boolean(value)"
         style="margin-top: 10px;"
-        @click="handleDelete">删除</el-button>
+        @click="handleDelete"
+      >删除</el-button>
     </div>
   </div>
 </template>
@@ -71,6 +73,7 @@ export default {
       default: ''
     }
   },
+
   data() {
     return {
       headers: {
@@ -80,6 +83,7 @@ export default {
       notification: null
     }
   },
+
   computed: {
     fileList() {
       let files = [], name = ''
@@ -90,10 +94,12 @@ export default {
       return files
     }
   },
+
   destroyed() {
     if (this.notification) this.notification.close()
     this.notification = null
   },
+
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
@@ -111,6 +117,7 @@ export default {
           this.$message.error(`上传视频失败:${ res.message }`)
       }
     },
+
     beforUpload(file) {
       if (['video/mp4', 'video/webm', 'video/ogg'].indexOf(file.type) !== 0) {
         this.$message.error(`请上传视频文件`)
@@ -126,19 +133,23 @@ export default {
       })
       return true
     },
+
     handleExceed() {
       this.loading = false
       this.$message.error('视频数量超出限制')
     },
+
     handleError(e) {
       this.loading = false
       this.$message.error(`上传视频失败`)
       this.notification.close()
     },
+
     handleRemove(file, fileList) {
       this.loading = false
       this.$emit('success', fileList.length ? fileList : '')
     },
+
     handleDelete() {
       this.$refs.uploadVideo.clearFiles()
       this.handleRemove('', [])
