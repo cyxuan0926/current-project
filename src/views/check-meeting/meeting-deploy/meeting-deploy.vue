@@ -107,13 +107,65 @@
         </el-form-item>
         <el-form-item
           label="家属关系"
-          prop="visiblePhonePeopleNumber"
+          prop="family"
           class="el-form-item_people-number"
         >
-
-
-
+          <ul
+            class="infinite-list"
+            style="margin-left: 20px; min-height: 400px; width: 100%"
+          >
+            <li
+              v-for="(item, index) in content"
+              :key="index"
+              class="infinite-list-item"
+            >
+              {{ index + 1 }}.{{ item }}
+            </li>
+          </ul>
+          <el-button type="primary" @click="onNewFamily">编辑</el-button>
         </el-form-item>
+        <el-dialog
+          :visible.sync="familyrelations"
+          title="新增家属关系"
+          width="40%"
+        >
+          <div>
+            <span v-for="(item, index) in content" :key="index">
+              <el-input
+                v-model="content[index]"
+                style="margin-bottom: 10px"
+                maxlength="200"
+                placeholder="请输入家属关系"
+                clearable
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-close"
+                  @click="removeReject(index)"
+                />
+              </el-input>
+            </span>
+          </div>
+          <span>
+            <el-button
+              v-if="content.length >= 1"
+              class="button-add"
+              type="primary"
+              size="mini"
+              @click="onSubmitReject"
+              >保存</el-button
+            >
+
+            <el-button
+              v-if="content.length < 10"
+              type="primary"
+              class="button-add"
+              size="mini"
+              @click="addReject"
+              >新增</el-button
+            >
+          </span>
+        </el-dialog>
         <el-form-item />
         <el-form-item />
         <el-form-item />
@@ -167,6 +219,10 @@ export default {
       regAutoAudit: false,
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
+      familyrelations: false,
+      primary:"",
+      family: "",
+      content: [],
       formData: {
         afrInterval: "1500",
 
@@ -224,6 +280,31 @@ export default {
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
       });
+    },
+
+    addReject() {
+      this.content.push("");
+    },
+
+    removeReject(index) {
+      this.content.splice(index, 1);
+    },
+    async onSubmitReject() {
+      this.content = this.content.filter((res) => res && res.trim());
+
+      if (this.content.length < 1) {
+        this.$message({
+          message: "新增编辑内容不能为空",
+          type: "error",
+        });
+
+        return false;
+      } else {
+      }
+    },
+
+    onNewFamily() {
+      this.familyrelations = true;
     },
     changeTimes() {
       if (this.abnormalCallDuration > 600) {

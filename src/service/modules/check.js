@@ -311,7 +311,7 @@ export default {
   getMeetDeploy: params => {
     return service.get('/jails/getAutoAuthorizeMeeting', params).then(res => res && res)
   },
-  // 监狱配置管理查询
+  // 监狱配置管理更新
   getMeetDeployUpdate: params => {
     return service.post('/jails/updateAutoAuthorizeMeeting', params).then(res => res && res.data)
   }
