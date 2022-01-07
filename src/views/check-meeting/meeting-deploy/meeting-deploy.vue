@@ -110,25 +110,19 @@
           prop="family"
           class="el-form-item_people-number"
         >
-          <el-input
-            style="min-height: 400px; width: 400px"
-          >
-            <li
-              v-for="(item, index) in content"
-              :key="index"
-              class="infinite-list-item"
-            >
-              {{ index + 1 }}.{{ item }}
-            </li>
-          </el-input>
+        <div style="display:flex">
+          <div style="border:1px solid #DCDFE6; min-height:42px; min-width:300px; width:500px;margin-right:20px">
+            <span  style="border:1px solid #DCDFE6;padding:5px 10px;margin-left:10px; " v-for="(item, index) in content" :key="index">{{item}}</span>
+          </div>
           <el-button type="primary" @click="onNewFamily">编辑</el-button>
+          </div>
         </el-form-item>
         <el-dialog
           :visible.sync="familyrelations"
           title="新增家属关系"
           width="40%"
         >
-          <div>
+          <div style="display:flex">
             <span v-for="(item, index) in content" :key="index">
               <el-input
                 v-model="content[index]"
@@ -290,15 +284,16 @@ export default {
     async onSubmitReject() {
       this.content = this.content.filter((res) => res && res.trim());
 
-      if (this.content.length < 1) {
-        this.$message({
-          message: "新增编辑内容不能为空",
-          type: "error",
-        });
+      // if (this.content.length < 1) {
+      //   this.$message({
+      //     message: "新增编辑内容不能为空",
+      //     type: "error",
+      //   });
 
-        return false;
-      } else {
-      }
+      //   return false;
+      // } else {
+
+      // }
     },
 
     onNewFamily() {
