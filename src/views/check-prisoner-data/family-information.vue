@@ -8,7 +8,7 @@
     >
       <template slot="append">
         <el-button type="primary" v-if="!isSuperAdmin" @click="onNewFamily">新增</el-button>
-        <m-excel-download :path="prisonerHref" v-if="!isSuperAdmin"  text="模板" />
+        <m-excel-download :path="prisonerHref" v-if="!isSuperAdmin" text="模板" />
         <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" v-if="!isSuperAdmin" />
         <el-button
           type="primary"
@@ -138,9 +138,10 @@ import prisonFilterCreator from "@/mixins/prison-filter-creator";
 import { mapActions, mapState, mapGetters } from "vuex";
 import { DateFormat } from "@/utils/helper";
 import { tokenExcel } from "@/utils/token-excel";
-import { $likeName
-  // $likePrisonerNumber,
-  // $likePhone,
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone,
 } from "@/common/constants/const";
 import registrationDialogCreator from "@/mixins/registration-dialog-creator";
 import http from "@/service";
@@ -226,7 +227,7 @@ export default {
           value: "",
           clearable,
         },
-          familyPhone: {
+        familyPhone: {
           type: "input",
           label: "家属电话",
           rules: [
@@ -270,13 +271,13 @@ export default {
           },
           {
             label: "罪犯编号",
-            prop: "prisonerNumber"
-            // ...$likePrisonerNumber,
+            prop: "prisonerNumber",
+            ...$likePrisonerNumber,
           },
           {
             label: "罪犯姓名",
-            prop: "prisonerName"
-            // ...$likeName,
+            prop: "prisonerName",
+            ...$likeName,
           },
           {
             label: "家属姓名",
@@ -291,8 +292,8 @@ export default {
           },
           {
             label: "家属电话",
-            prop: "familyPhone"
-            // ...$likePhone,
+            prop: "familyPhone",
+            ...$likePhone,
           },
           {
             label: "导入时间",
@@ -327,8 +328,9 @@ export default {
     async onFamilyInformationDialogFormSubmit(data) {
       if (data) {
         let res  = await http.familyforAdd(data)
-        // if (!res) return;
-        // console.log(res)
+        console.log(res)
+        if (res===undefined) return;
+        // console.log(data)
         setTimeout(() => {
           this.onCloseFamilyInformationDialog();
           this.getDatas();
