@@ -8,7 +8,7 @@
     >
       <template slot="append">
         <el-button type="primary" v-if="!isSuperAdmin" @click="onNewFamily">新增</el-button>
-        <m-excel-download :path="prisonerHref" v-if="!isSuperAdmin"  text="模板" />
+        <m-excel-download :path="prisonerHref" v-if="!isSuperAdmin" text="模板" />
         <m-excel-upload ref="mExcelUpload" :configs="excelUploadConfigs" v-if="!isSuperAdmin" />
         <el-button
           type="primary"
@@ -227,7 +227,7 @@ export default {
           value: "",
           clearable,
         },
-          familyPhone: {
+        familyPhone: {
           type: "input",
           label: "家属电话",
           rules: [
@@ -328,8 +328,9 @@ export default {
     async onFamilyInformationDialogFormSubmit(data) {
       if (data) {
         let res  = await http.familyforAdd(data)
-        // if (!res) return;
-        // console.log(res)
+        console.log(res)
+        if (res===undefined) return;
+        // console.log(data)
         setTimeout(() => {
           this.onCloseFamilyInformationDialog();
           this.getDatas();
