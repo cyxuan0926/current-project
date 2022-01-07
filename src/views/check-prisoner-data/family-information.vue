@@ -37,7 +37,7 @@
       ref="familyInformationDialog"
       :visible.sync="familyInformationVisible"
       :close-on-click-modal="false"
-      title="新增亲情电话信息"
+      title="新增家属信息"
       width="40%"
       @close="onCloseFamilyInformationDialog"
     >
