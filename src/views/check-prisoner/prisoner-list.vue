@@ -1774,7 +1774,7 @@ export default {
       }
     },
     cellred({row, column, rowIndex, columnIndex}){
-      if((row.domicile&&row.domicile!==0)||(row.nationality&&row.nationality!==0)){
+      if(!row.address.includes("中国")){
           return 'color:red'
       }
     },
