@@ -220,7 +220,6 @@ export default {
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
       familyrelations: false,
-      primary:"",
       family: "",
       content: [],
       formData: {
