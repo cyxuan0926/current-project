@@ -143,11 +143,11 @@ let switches = {
     },
     {
       label: '港澳台家属',
-      value: 1
+      value: 2
     },
     {
       label: '非中国籍家属',
-      value: 2
+      value: 1
     }
   ],
   terminalTypes: [
