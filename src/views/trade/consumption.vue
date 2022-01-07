@@ -12,8 +12,7 @@
 <script>
 import { mapState } from 'vuex'
 
-import { $likePhone } from '@/common/constants/const'
-
+// import { $likePhone } from '@/common/constants/const'
 export default {
   computed: {
     ...mapState({
@@ -25,8 +24,8 @@ export default {
       tableCols: [
         {
           label: '手机号码',
-          prop: 'phone',
-          ...$likePhone
+          prop: 'phone'
+          // ...$likePhone
         },
         {
           label: '交易金额(元)',

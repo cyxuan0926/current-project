@@ -81,7 +81,6 @@
   import guangdongJson from '@/assets/map/guangdong.json'
   import { getRankBarChart, getSolidCircleLineChart } from '@/utils/chartOptions'
   import http from '@/service'
-  import debounce from 'lodash/debounce'
   export default {
     data() {
       return {
@@ -492,7 +491,7 @@
       this.initLineChart()
       this.initTop8()
       this.drawMapInterval = setInterval(this.drawMap, 5 * 60 * 1000)
-      this.winHandleResize = debounce(this.handleResize, 400)
+      this.winHandleResize = _.debounce(this.handleResize, 400)
       window.addEventListener('resize', this.winHandleResize)
     },
     destroyed() {

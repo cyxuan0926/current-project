@@ -76,8 +76,6 @@ import special from './components/visit-special'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
 import validator from '@/utils'
-
-import cloneDeep from 'lodash/cloneDeep'
 export default {
   components: {
     // 可视电话提前天数
@@ -162,7 +160,7 @@ export default {
         buttons: ['back', 'update']
       }
 
-      let cloneDeepItem = cloneDeep(items)
+      let cloneDeepItem = _.cloneDeep(items)
 
       if (!this.haveRemoteVisitDay) delete cloneDeepItem['buttons']
 

@@ -26,8 +26,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
-
+// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   data() {
     return {
@@ -71,13 +70,13 @@ export default {
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName',
-          ...$likeName
+          prop: 'prisonerName'
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '汇款家属',

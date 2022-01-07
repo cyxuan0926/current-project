@@ -12,7 +12,6 @@ import superAdmin from './modules/superAdmin'
 import literature from './modules/literature'
 
 import md5 from 'js-md5'
-import lodash from 'lodash'
 import { helper } from '@/utils'
 
 // 重置路由: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
@@ -198,7 +197,7 @@ router.beforeEach((to, from, next) => {
   if (permission && permission.length && !hasDynamicRoutes) {
     // 函数记忆 受限的地方很多 不同监狱的同一角色相同权限的roleId不一样 因为sessiStorage只能存储字符串 所有对象里面的函数也存不了 所有只能是在不刷新的情况下才有限
     let routes, { userRoles } = store.state.account.publicUserInfo, keys = md5RoleId(userRoles), clonePermission = permission.slice(0),
-      cloneDeepRoutes = lodash.cloneDeep([...superAdmin, ...information, ...admin, ...check, ...literature]), testmenusAuth = handlePermissions(store.state.account.menus)
+      cloneDeepRoutes = _.cloneDeep([...superAdmin, ...information, ...admin, ...check, ...literature]), testmenusAuth = handlePermissions(store.state.account.menus)
     if (memoryDynamicRoutes.hasOwnProperty(keys)) {
       routes = memoryDynamicRoutes[keys]
     }

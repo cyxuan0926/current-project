@@ -17,7 +17,6 @@
 
 <script>
     import http from '@/service'
-    import isEqual from 'lodash/isEqual'
     import { mapState, mapActions } from 'vuex'
     import affairsDetailModal from './components/affairs-detail-modal.vue'
     export default {
@@ -160,7 +159,7 @@
 
             async handleBack(fields) {
                 try {
-                    if( !isEqual(this.affairsStorage, fields)) {
+                    if( !(_.isEqual(this.affairsStorage, fields))) {
                         await this.$confirm('页面内容已更新，您确定要离开吗？', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
@@ -169,7 +168,7 @@
                     }
                     this.$router.push({ path: `/prison-affairs-list/${ this.$route.meta.typeId }` })
                 } catch (error) {
-                    console.log(error)
+                    Promise.reject(error)
                 }
             }
         }

@@ -1,4 +1,3 @@
-import throttle from 'lodash/throttle'
 import { Message } from 'element-ui'
 import router from '@/router'
 
@@ -12,7 +11,7 @@ export default class ActiveMonitor {
   }
 
   start() {
-    const handler = throttle(this._handler.bind(this), 10 * 1000)
+    const handler = _.throttle(this._handler.bind(this), 10 * 1000)
 
     this.TYPES.forEach(type => window.addEventListener(type, handler))
 

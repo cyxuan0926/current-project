@@ -222,7 +222,6 @@ import validator, { helper } from '@/utils'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import prisons from '@/common/constants/prisons'
 import MeetingTime from './meeting-time'
-import cloneDeep from 'lodash/cloneDeep'
 
 export default {
   name: 'meetingList',
@@ -866,8 +865,8 @@ export default {
             return { terminalId: id, terminalNumber, ...meetingTimeTableQueueCopyData, indexNumber: index }
           })
           this.$set(this.meetingTimeProps, 'tableProps', meetingTimeTableProps)
-          this.$set(this.meetingConfigs, 'tableData', cloneDeep(meetingTimeTableData))
-          this.$set(this.meetingConfigs, 'originTableData', cloneDeep(meetingTimeTableData))
+          this.$set(this.meetingConfigs, 'tableData', _.cloneDeep(meetingTimeTableData))
+          this.$set(this.meetingConfigs, 'originTableData', _.cloneDeep(meetingTimeTableData))
           this.$set(this.meetingConfigs, 'familyName', name)
           this.show.meetingTime = true
         })()

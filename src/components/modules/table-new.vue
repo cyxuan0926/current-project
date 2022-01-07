@@ -4,7 +4,7 @@
     v-bind="$data.$_attrs"
     v-on="$data.$_listeners"
   >
-    <template v-for="col in cols">
+    <template v-for="col in elTableCols">
       <el-table-column
         v-if="col.slotName"
         v-bind="col"
@@ -64,18 +64,22 @@
         </template>     
       </template>
 
-      <el-table-column
-        v-else
-        v-bind="col"
-        :key="`${col.label}-${col.prop}`"
-      />
+      <template v-else>
+        <el-table-column v-bind="col" :key="`${col.label}-${col.prop}`" />
+      </template>
     </template>
-
   </el-table>
 </template>
 
 <script>
 import attrsListenersHack from "@/mixins/attrs-listeners-hack";
+
+import {
+  $likeName,
+  $likePrisonerNumber,
+  $likePhone,
+  $likeIdCard
+} from '@/common/constants/const'
 
 export default {
   mixins: [attrsListenersHack],
@@ -88,11 +92,42 @@ export default {
 
   data() {
     return {
-
       // el-table table solt 常量
-
       constElSlots: ['append']
+    }
+  },
 
+  computed: {
+    elTableCols() {
+      // 服刑人员编号之类似的规则
+      const regPrisonerNumber = /^(?!phone|terminal|room).*number$/i
+
+      // 姓名之类的规则 这些因为有交集 所以需要主动添加
+      const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full|city|county|terminal).*name$/i // 这些因为有冲突 重复 不能统一处理
+
+      // uuid
+      const regIdCard = /.*uuid$/i
+
+      // 电话号码
+      const rePhone = /.*phone.*/i
+
+      return this.cols.reduce((accumulator, col) => {
+        const _type = col['prop'] || col['slotName']
+
+        if (_type) {
+          if (regPrisonerNumber.test(_type)) col = Object.assign({}, $likePrisonerNumber, col)
+
+          if (regName.test(_type)) col = Object.assign({}, $likeName, col)
+
+          if (regIdCard.test(_type)) col = Object.assign({}, $likeIdCard, col)
+
+          if (rePhone.test(_type)) col = Object.assign({}, $likePhone, col)
+        }
+
+        accumulator.push(col)
+
+        return accumulator
+      }, [])
     }
   },
 

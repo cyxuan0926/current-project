@@ -67,7 +67,6 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
-import isEqual from 'lodash/isEqual'
 import Moment from 'moment'
 import roles from '@/common/constants/roles'
 import remoteTimepridConfig from './remote-timeprid-config'
@@ -316,7 +315,7 @@ export default {
         return false
       }
       // 新增的特殊日期配置 或者 是新增了通话时间段 或者是更换了新的配置日期
-      else if (!config.id || config.config.length !== config.queue.length || !isEqual(config.day, config.oldDay)) {
+      else if (!config.id || config.config.length !== config.queue.length || !_.isEqual(config.day, config.oldDay)) {
         return true
       }
       // 修改了某个通话时间段

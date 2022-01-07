@@ -29,7 +29,9 @@
             v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             ref="mExcelUpload"
             :configs="excelUploadConfigs"
-          />
+          >
+            <el-button type="primary" @click.stop="onExportWarnning">导入</el-button>
+          </m-excel-upload>
         </template>
       </template>
 
@@ -66,6 +68,7 @@
         :cols="tableCols"
         :data="familiesPaged.content"
         @selection-change="onSelectionChange"
+        @select-all="onSelectAll"
       >
         <template #family="{ row }">
           <el-button
@@ -142,7 +145,7 @@
       />
     </el-dialog>
 
-     <el-dialog
+    <el-dialog
       title="家属信息"
       class="authorize-dialog"
       :visible.sync="authorizeDialogVisible"
@@ -469,7 +472,7 @@
           <!-- 审批结束 -->
           <!-- 这个交互 -->
           <!-- 单条审批 没有子流程 -->
-          <!-- 批量审核 相同审批流数据 没有子流程-->
+          <!-- 批量/全量审核 相同审批流数据 没有子流程-->
           <div
             v-if="!isSubtask && !isBatchAuthAndIsNoneSameProcessDefinition"
             class="button-box"
@@ -479,8 +482,8 @@
           </div>
 
           <!-- 审批流程中 -->
-          <!-- 单条审核/批量审核 相同审批流 -->
-          <!-- 批量审批 不同审批流数据 -->
+          <!-- 单条审核/批量/全量审核 相同审批流 -->
+          <!-- 批量/全量审批 不同审批流数据 -->
           <div v-else class="button-box">
             <m-form
               ref="agreeHasSubTaskForm"
@@ -567,13 +570,12 @@
       @close="changeClose"
       class="authorize-dialog">
       <div class="flex-dialog" v-if="show.editRebut">
-        <ul class="infinite-list" style="margin-left:20px;min-height:400px;width:100%">
+        <ul class="infinite-list" style="margin-left: 20px; min-height: 400px; width: 100%">
           <li
             v-for="(item,index) in content"
             :key='index'
-            class="infinite-list-item" style="line-height:32px">
-            {{ index + 1 }}.{{ item }}
-          </li>
+            class="infinite-list-item" style="line-height: 32px;"
+          >{{ index + 1 }}.{{ item }}</li>
         </ul>
 
         <p style="margin-left:20px;">编辑用户: {{ updateer }}</p>
@@ -582,7 +584,7 @@
       <div
         v-else
         class="infinite-list"
-        style="margin-left:20px;min-height:400px"
+        style="margin-left: 20px; min-height: 400px;"
       >
         <span v-for="(item,index) in content" :key="index">
           <el-input
@@ -602,31 +604,36 @@
       </div>
 
       <el-row :gutter="0">
-        <el-button
-          v-if="show.editRebut"
-          type="primary"
-          class="button-add"
-          size="mini"
-          @click="onRejectEditshow"
-        >编辑</el-button>
-
-        <span v-else>
+        <template v-if="show.editRebut">
           <el-button
-            v-if="content.length>0"
             type="primary"
             class="button-add"
             size="mini"
-            @click="onSubmitReject"
-          >保存</el-button>
+            @click="onRejectEditshow"
+          >编辑</el-button>
+        </template>
 
-          <el-button
-            v-if="content.length < 10"
-            type="primary"
-            class="button-add"
-            size="mini"
-            @click="addReject"
-          >新增</el-button>
-        </span>
+        <template v-else>
+          <span>
+            <template v-if="content.length > 0">
+              <el-button
+                type="primary"
+                class="button-add"
+                size="mini"
+                @click="onSubmitReject"
+              >保存</el-button>
+            </template>
+
+            <template v-if="content.length < 10">
+              <el-button
+                type="primary"
+                class="button-add"
+                size="mini"
+                @click="addReject"
+              >新增</el-button>
+            </template>
+          </span>
+        </template>
       </el-row>
     </el-dialog>
 
@@ -642,10 +649,6 @@ import {
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
-import isEqual from 'lodash/isEqual'
-
-import cloneDeep from 'lodash/cloneDeep'
-
 import validator from '@/utils'
 
 import http from '@/service'
@@ -656,11 +659,13 @@ import { DateFormat, batchDownloadPublicImageURL } from '@/utils/helper'
 
 import registrationDialogCreator from '@/mixins/registration-dialog-creator'
 
-import {
-  $likeName,
-  $likePrisonerNumber,
-  $likePhone
-} from '@/common/constants/const'
+import { familyPhoneFamiliesAllPendingReviewUpperLimit } from '@/common/constants/const'
+import { Message } from 'element-ui'
+// import {
+//   $likeName,
+//   $likePrisonerNumber,
+//   $likePhone
+// } from '@/common/constants/const'
 export default {
   name: 'FamilyPhone_Families_List',
 
@@ -907,7 +912,10 @@ export default {
       },
 
       // 批量审核的数据
-      selectionData: []
+      selectionData: [],
+
+      // 选择了所有
+      isSelectAll: false
     }
   },
 
@@ -922,7 +930,8 @@ export default {
     ...mapState('familyPhone', [
       'familiesPaged',
       'validateFamiliesResult',
-      'familyPhoneFamiliesDetail'
+      'familyPhoneFamiliesDetail',
+      'familyPhoneFamiliesAllPendingReviewData'
     ]),
 
     ...mapState('account', ['publicUserInfo']),
@@ -931,25 +940,25 @@ export default {
       const cols = [
         {
           label: '家属姓名',
-          ...$likeName,
+          // ...$likeName,
           className: '',
           prop: 'familyName',
           desensitizationColSlotName: 'family'
         },
         {
           label: '家属电话',
-          prop: 'familyPhone',
-          ...$likePhone
+          prop: 'familyPhone'
+          // ...$likePhone
         },
         {
           label: '罪犯姓名',
-          prop: 'criminalName',
-          ...$likeName
+          prop: 'criminalName'
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'criminalNumber',
-          ...$likePrisonerNumber
+          prop: 'criminalNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '监区',
@@ -1090,6 +1099,48 @@ export default {
     // 是批量审批操作 并且 审批数据审批流配置不相同
     isBatchAuthAndIsNoneSameProcessDefinition() {
       return (!this.isSameProcessDefinition && this.detailOrAuthDialogType === 2)
+    },
+
+    // 全量审核超过审核上限
+    isUpperLimit() {
+      const { size } = this.familyPhoneFamiliesAllPendingReviewData
+
+      return size > familyPhoneFamiliesAllPendingReviewUpperLimit
+    },
+
+    // 全量审核
+    isAllPendingReview() {
+      return !(this.selectionData.length || this.isSelectAll)
+    },
+
+    // 全量/批量 审核的数据
+    AllPendingReviewOrBatchSelectData() {
+      if (this.isAllPendingReview) {
+        const { list } = this.familyPhoneFamiliesAllPendingReviewData
+
+        if (this.isUpperLimit) return list.slice(0, familyPhoneFamiliesAllPendingReviewUpperLimit + 1)
+
+        else return list.slice(0)
+      }
+
+      else return this.selectionData
+    },
+
+    // 全量/批量审批数量 审批实例ids
+    familyPhoneFamiliesAllPendingReviewProcessInstanceIds() {
+      if (this.isAllPendingReview) {
+        const { processInstanceIds } = this.familyPhoneFamiliesAllPendingReviewData
+
+        if (!this.isUpperLimit) return processInstanceIds
+      }
+
+      return this.AllPendingReviewOrBatchSelectData.reduce((accumulator, selection) => {
+        const { processInstanceId } = selection
+
+        accumulator = accumulator ? (accumulator + ',' + processInstanceId) : processInstanceId
+
+        return accumulator
+      }, '')
     }
   },
 
@@ -1150,7 +1201,9 @@ export default {
       'getFamilyPhoneFamiliesDetail',
       'authFamilyPhoneFamilies',
       'batchAuthFamilyPhone',
-      'batchInvalidFamilyPhone'
+      'batchInvalidFamilyPhone',
+      'getFamilyPhoneFamiliesAllPendingReview',
+      'allAuthFamilyPhoneFamilies'
     ]),
 
     async getDatas() {
@@ -1328,7 +1381,7 @@ export default {
         isEdit: values['isEdit']
       }
 
-      const hasNoChange = isEqual(_values_temp, _origin_temp)
+      const hasNoChange = _.isEqual(_values_temp, _origin_temp)
 
       let isSuccess = false
 
@@ -1386,7 +1439,7 @@ export default {
 
           const { isEdit } = this.originalFamilyInformationDialogFormValues
 
-          this.familyInformationDialogFormValues = cloneDeep(this.originalFamilyInformationDialogFormValues)
+          this.familyInformationDialogFormValues = _.cloneDeep(this.originalFamilyInformationDialogFormValues)
 
           if (isEdit === 2) {
             this.$set(this.familyInformationDialogFormItems, 'buttons', [{
@@ -1578,12 +1631,14 @@ export default {
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },
 
+    // 查看详情
     async onGetDetail(id) {
       this.detailOrAuthDialogType = 1
 
       await this.onInitFamilyDetails(id)
     },
 
+    // 审核按钮
     async onAuthFamily(row) {
       const { id } = row
 
@@ -1597,7 +1652,7 @@ export default {
     async onAgreeAuthorize() {
       // 单条审核/批量审核 相同审批流 需要去获取流程
       if (!this.isBatchAuthAndIsNoneSameProcessDefinition) {
-        const [child] = this.selectionData
+        const [child] = this.AllPendingReviewOrBatchSelectData
 
         const { processInstanceId } = this.detailOrAuthDialogType === 2 ? child : this.familiesRow
 
@@ -1640,8 +1695,10 @@ export default {
     async onPassedAuthorize() {
       let inputs = {}
 
-      // 批量审批 不同审批流程
+      // 批量/全量 审批 不同审批流程
       if (this.isBatchAuthAndIsNoneSameProcessDefinition) {
+        this.$refs.agreeHasSubTaskForm && this.$refs.agreeHasSubTaskForm.onSubmit()
+
         const { checkState } = this.agreeHasSubTaskFormValues, { remarks } = this.agreeHasSubTaskFormFields
 
         inputs = {
@@ -1705,23 +1762,21 @@ export default {
     },
 
     refuseFormChange(e){
-      let str = ""
+      let str = ''
 
       if (!this.refuseForm.anotherRemarks) {
-        this.refuseForm.anotherRemarks = ""
+        this.refuseForm.anotherRemarks = ''
       }
 
       e.forEach((item,index) => {
-        if(!this.refuseForm.anotherRemarks.includes(item)) {
-          str +=`${item}。\n`
-        }
+        if (!this.refuseForm.anotherRemarks.includes(item)) str +=`${item}。\n`
       })
 
       this.refuseForm.anotherRemarks += str
     },
 
     // 获取当前驳回原因列表
-    async onRejectshow(str,isform) {
+    async onRejectshow(str, isform) {
       let params = {}
 
       params.jailId = JSON.parse(localStorage.getItem('user')).jailId
@@ -1736,15 +1791,11 @@ export default {
         this.contentId = res.id
 
         this.updateer = res.updateEr
-      } else {
-        this.content = []
-      }
+      } else this.content = []
 
-      if(str === 'PASSED') {
-        this.show.rejectEdit = true
-      } else {
-        this.show.rejectEdit = false
-      }
+      if (str === 'PASSED') this.show.rejectEdit = true
+
+      else this.show.rejectEdit = false
     },
 
     addReject() {
@@ -1797,17 +1848,18 @@ export default {
 
           if (res.content) {
             this.content = res.content
+
             this.contentId = res.id
+
             this.updateer = es.updateEr
-          } else {
-            this.content = []
-          }
+          } else this.content = []
         }
+
         this.show.editRebut = true
       }
     },
 
-    // 审批/批量审批
+    // 审批/批量/全量审批
     async onAuthorization(inputs = {}) {
       this.buttonLoading = true
 
@@ -1815,30 +1867,43 @@ export default {
 
       // 批量
       if (this.detailOrAuthDialogType === 2) {
-        const familyPhoneIdProcessInstanceIdList = this.selectionData.reduce((accumulator, selection) => {
-          const {
-            id,
-            processInstanceId,
-            taskName
-          } = selection
+        if (this.isAllPendingReview) {
+          const { list, processInstanceIds } = this.familyPhoneFamiliesAllPendingReviewData
 
-          const _temp = {
-            processInstanceId,
-            familyPhoneId: id,
-            taskName
+          const params = {
+            ...inputs,
+            familyPhoneIdProcessInstanceIdList: list,
+            processInstanceIds
           }
 
-          accumulator.push(_temp)
-
-          return accumulator
-        } ,[])
-
-        const params = {
-          ...inputs,
-          familyPhoneIdProcessInstanceIdList
+          result = await this.allAuthFamilyPhoneFamilies(params)
         }
+        else {
+          const familyPhoneIdProcessInstanceIdList = this.selectionData.reduce((accumulator, selection) => {
+            const {
+              id,
+              processInstanceId,
+              taskName
+            } = selection
 
-        result = await this.batchAuthFamilyPhone(params)
+            const _temp = {
+              processInstanceId,
+              familyPhoneId: id,
+              taskName
+            }
+
+            accumulator.push(_temp)
+
+            return accumulator
+          } ,[])
+
+          const params = {
+            ...inputs,
+            familyPhoneIdProcessInstanceIdList
+          }
+
+          result = await this.batchAuthFamilyPhone(params)
+        }
       }
 
       // 审核
@@ -1864,7 +1929,7 @@ export default {
       if (result) {
         this.onCloseAuthorize()
 
-        this.getDatas()
+        await this.getDatas()
       }
     },
 
@@ -1882,26 +1947,35 @@ export default {
     },
 
     // 批量审核
+    // 没有选择数据 就是批量审核所有可以审核的数据
+    // 选择了数据(选择的待审核的数据为0/1/多个) 就是批量审核所有选择的数据
     async onBatchAuth() {
-      // 审核类型
-      if (!this.selectionData.length) this.onWarning()
+      // 没有选择数据 批量审核全部
+      if (this.isAllPendingReview) {
+        // 查询当前查询条件下的全量待审核数据
+        await this.getFamilyPhoneFamiliesAllPendingReview(this.filter)
 
+        Message.closeAll()
+
+        const { size } = this.familyPhoneFamiliesAllPendingReviewData
+
+        // 没有待审核的数据
+        if (!size) this.onWarning('当前没有待审核数据')
+
+        // 待审核数据大于2000
+        else if (this.isUpperLimit) this.onPreConfirm(`系统最多一次可审核${familyPhoneFamiliesAllPendingReviewUpperLimit}条，确认审核前${familyPhoneFamiliesAllPendingReviewUpperLimit}条数据吗？`)
+
+        // 待审核数据小于等于2000
+        else this.onPreConfirm(`确认审核这${size}条数据吗？`)
+      }
+
+      // 选择了数据
       else {
-        if (this.selectionData.length > 1) {
-          const instanceIds = this.selectionData.reduce((accumulator, selection) => {
-            const { processInstanceId } = selection
+        // 没有待审核数据
+        if (!this.selectionData.length) this.onWarning()
 
-            accumulator = accumulator ? (accumulator + ',' + processInstanceId) : processInstanceId
-
-            return accumulator
-          }, '')
-
-          await this.getIsSameProcessDefinition(instanceIds)
-        } else this.$store.commit('setIsSameProcessDefinition', true) // 批量选择一条数据 肯定是同一审批流 就不调接口了
-
-        this.detailOrAuthDialogType = 2
-
-        this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+        // 审核选择的数据
+        else await this.onPreJudgeIsSameProcessDefinition()
       }
     },
 
@@ -1948,7 +2022,7 @@ export default {
       }
     },
 
-    // 批量审批 不同审批流数据 同意并结束按钮
+    // 批量/全量 审批 不同审批流数据 同意并结束按钮
     onBatchAuthHaveDifferentProcessPassedEnd() {
       this.agreeHasSubTaskFormValues = {
         remarks: '同意',
@@ -1956,6 +2030,39 @@ export default {
       }
 
       this.$set(this.detailOrAuthDialog, 'agree', true)
+    },
+
+    // 批量审核 审核所有数据处理
+    onPreConfirm(message) {
+      this.$confirm(message, '提示', {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: 'warning',
+        closeOnClickModal: false,
+        callback: async action => {
+          if (action === 'confirm') await this.onPreJudgeIsSameProcessDefinition()
+        }
+      })
+    },
+
+    // 勾选全选
+    onSelectAll(selection) {
+      this.isSelectAll = !this.isSelectAll
+    },
+
+    // 批量/全量 审核 判断是否是同一审批流
+    async onPreJudgeIsSameProcessDefinition() {
+      if (this.AllPendingReviewOrBatchSelectData.length > 1) await this.getIsSameProcessDefinition(this.familyPhoneFamiliesAllPendingReviewProcessInstanceIds)
+
+      else this.$store.commit('setIsSameProcessDefinition', true) // 批量选择一条数据 肯定是同一审批流 就不调接口了
+
+      this.detailOrAuthDialogType = 2
+
+      this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
+    },
+
+    onExportWarnning() {
+      this.$refs['mExcelUpload'].onHandleClick()
     }
   }
 }
@@ -1969,19 +2076,23 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
 }
-  .el-select-dropdown{
-        max-width: 243px;
-    }
-    .select_edit.el-select-dropdown__item{
-        display: inline-block;
-    }
-    .select_edit.el-select-dropdown__item span {
-        min-width: 400px;
-        display: inline-block;
-   }
+
+.el-select-dropdown {
+  max-width: 243px;
+}
+
+.select_edit.el-select-dropdown__item{
+  display: inline-block;
+}
+
+.select_edit.el-select-dropdown__item span {
+  min-width: 400px;
+  display: inline-block;
+}
 </style>
 
 <style lang="scss" scoped>
