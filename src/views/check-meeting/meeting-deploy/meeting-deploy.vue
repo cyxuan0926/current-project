@@ -110,9 +110,8 @@
           prop="family"
           class="el-form-item_people-number"
         >
-          <dev
-            class="infinite-list"
-            style="margin-left: 20px; min-height: 400px; width: 100%"
+          <el-input
+            style="min-height: 400px; width: 400px"
           >
             <li
               v-for="(item, index) in content"
@@ -121,7 +120,7 @@
             >
               {{ index + 1 }}.{{ item }}
             </li>
-          </dev>
+          </el-input>
           <el-button type="primary" @click="onNewFamily">编辑</el-button>
         </el-form-item>
         <el-dialog
