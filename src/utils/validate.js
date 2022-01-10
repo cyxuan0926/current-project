@@ -1,5 +1,5 @@
 import dateFormate from '@/filters/modules/date'
-import { isArray, isEqual } from 'lodash'
+
 import * as helper from './helper'
 
 const isEmpty = (val) => {
@@ -27,8 +27,9 @@ export default {
     else callback()
   },
   isNumber: (rule, value, callback) => {
+    const reg = /^-?[1-9]\d*$/
     if (isEmpty(value)) callback()
-    else if (!Number.isInteger(Number(value))) callback(new Error('请输入整数'))
+    else if (!reg.test(value)) callback(new Error('请输入整数'))
     else callback()
   },
   noChinese: (rule, value, callback) => {
@@ -100,16 +101,16 @@ export default {
   },
   // 正整数
   isPositiveIntegers: (rule, value, callback) => {
-    const integerNumbers = Number.isInteger(+value)
+    const reg = /^[1-9]\d*$/
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
-    else if (!integerNumbers || value <= 0) callback(new Error('请输入正整数'))
+    else if (!reg.test(value)) callback(new Error('请输入正整数'))
     else callback()
   },
   // 正整数>0
   isPositiveNumber: (rule, value, callback) => {
-    const integerNumbers = Number.isInteger(+value)
+    const reg = /^[1-9]\d*|0$/
     if (isEmpty(value)) callback(new Error(rule.ownMessage))
-    else if (!integerNumbers || value < 0) callback(new Error('请输入正整数'))
+    else if (!reg.test(value)) callback(new Error('请输入非负整数'))
     else callback()
   },
   password(rule, value, callback) {
@@ -122,10 +123,10 @@ export default {
   isRepeatValidate: (rule, value, callback) => {
     if (!value) callback()
 
-    if (rule.repeatArray && isArray(rule.repeatArray)) {
+    if (rule.repeatArray && _.isArray(rule.repeatArray)) {
       const filterValue = rule.filterFun ? rule.filterFun(value) : value
 
-      const exist = rule.repeatArray.find(item => isEqual(item[rule['valueKey']], filterValue))
+      const exist = rule.repeatArray.find(item => _.isEqual(item[rule['valueKey']], filterValue))
 
       if (exist) callback(new Error(rule.message))
 

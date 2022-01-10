@@ -155,7 +155,6 @@
   import { mapActions, mapState } from 'vuex'
   import normalMixins from '../mixins'
   import { Message } from 'element-ui'
-  import cloneDeep from 'lodash/cloneDeep'
   export default {
     props: {
       allConfigs: {
@@ -307,7 +306,7 @@
       // 通话时长和间隔时间
       durationIntervalItems() {
         const item = {
-          formConfigs: cloneDeep(this.durationIntervalormConfigs),
+          formConfigs: _.cloneDeep(this.durationIntervalormConfigs),
 
           duration: {
             label: '通话时长',
@@ -319,12 +318,12 @@
             value: (this.durations.length && this.durations[0].value) || 25
           },
 
-          interval: cloneDeep(this.interval)
+          interval: _.cloneDeep(this.interval)
         }
         // if (!this.isSuperAdmin) this.$delete(item, 'duration')
         return this.allConfigs.map(configs => {
           return configs.map((config, index, target) => {
-            const cloneItem = cloneDeep(item)
+            const cloneItem = _.cloneDeep(item)
             // if (this.isSuperAdmin ) {
             //   this.$set(cloneItem['duration'], 'disabled', !index ? !!config.queue.length : true)
             // }
@@ -524,7 +523,7 @@
 
         const { configBefore } = this.normalCongigs
 
-        const beforDuration = cloneDeep(configBefore)[0].duration
+        const beforDuration = _.cloneDeep(configBefore)[0].duration
 
         const initDuration = beforDuration
 
@@ -565,7 +564,7 @@
             if (configs.length > 1) {
               this.allConfigs[type].splice(index, 1)
             } else {
-              this.$set(this.allConfigs, type, cloneDeep([this.basicConfig]))
+              this.$set(this.allConfigs, type, _.cloneDeep([this.basicConfig]))
 
               this.$set(this.filterDuration, type, initDuration)
             }

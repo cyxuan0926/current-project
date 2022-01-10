@@ -227,8 +227,6 @@ import roles from '@/common/constants/roles'
 
 import { mapActions, mapState } from 'vuex'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import Moment from 'moment'
 
 import BigNumber from 'bignumber.js'
@@ -484,7 +482,7 @@ export default {
 
       tableData: [],
 
-      basicFormData: cloneDeep(originalNewTableData),
+      basicFormData: _.cloneDeep(originalNewTableData),
 
       diplomaticConsulOfficialFormItems: {
         formConfigs,
@@ -507,14 +505,14 @@ export default {
             {
               value: 0,
 
-              itemConfigs: cloneDeep(diplomatistChargeObject[0]['itemConfigs'])
+              itemConfigs: _.cloneDeep(diplomatistChargeObject[0]['itemConfigs'])
             },
 
             // 打开外交领事官员可视电话收费设置
             {
               value: 1,
 
-              itemConfigs: cloneDeep(diplomatistChargeObject[1]['itemConfigs'])
+              itemConfigs: _.cloneDeep(diplomatistChargeObject[1]['itemConfigs'])
             }
           ]
         },
@@ -562,14 +560,14 @@ export default {
             {
               value: 0,
 
-              itemConfigs: cloneDeep(familyPhoneChargeObject[0]['itemConfigs'])
+              itemConfigs: _.cloneDeep(familyPhoneChargeObject[0]['itemConfigs'])
             },
 
             // 打开亲情电话收费设置
             {
               value: 1,
 
-              itemConfigs: cloneDeep(familyPhoneChargeObject[1]['itemConfigs'])
+              itemConfigs: _.cloneDeep(familyPhoneChargeObject[1]['itemConfigs'])
             }
           ]
         },
@@ -656,10 +654,10 @@ export default {
 
           configs: [
             // 按次付费
-            cloneDeep(basicFormChargeObject[1]['formItemconfigs']),
+            _.cloneDeep(basicFormChargeObject[1]['formItemconfigs']),
 
             // 按分钟收费
-            cloneDeep(basicFormChargeObject[2]['formItemconfigs'])
+            _.cloneDeep(basicFormChargeObject[2]['formItemconfigs'])
           ],
 
           func: this.onFormTableDataChange
@@ -749,15 +747,15 @@ export default {
 
       return ({
         startMinutes: [
-          { ...cloneDeep(this.basicStartMinutes), inputParams, max: this.radio }
+          { ...(_.cloneDeep(this.basicStartMinutes)), inputParams, max: this.radio }
         ],
 
         startMoney: [
-          { ...cloneDeep(this.basicStartMoney), inputParams }
+          { ...(_.cloneDeep(this.basicStartMoney)), inputParams }
         ],
 
         fixedMoney: [
-          { ...cloneDeep(this.basicFixedMoney), inputParams }
+          { ...(_.cloneDeep(this.basicFixedMoney)), inputParams }
         ]
       })
     },
@@ -765,11 +763,11 @@ export default {
     diplomaticConsulOfficialRules() {
       const inputParams =  this.diplomaticConsulOfficialFormData
 
-      const minutes = { ...cloneDeep(this.basicStartMinutes), inputParams }
+      const minutes = { ...(_.cloneDeep(this.basicStartMinutes)), inputParams }
 
-      const money = { ...cloneDeep(this.basicStartMoney), inputParams }
+      const money = { ...(_.cloneDeep(this.basicStartMoney)), inputParams }
 
-      const fixedMoney = { ...cloneDeep(this.basicFixedMoney), inputParams }
+      const fixedMoney = { ...(_.cloneDeep(this.basicFixedMoney)), inputParams }
 
       return ({
         startMinutes: [minutes],
@@ -925,7 +923,7 @@ export default {
     async onInitData() {
       await this.getMeetingChargeTemplate({ id: this.id })
 
-      const clonePrisonChargeConfigs = cloneDeep(this.prisonChargeConfigs)
+      const clonePrisonChargeConfigs = _.cloneDeep(this.prisonChargeConfigs)
 
       const {
         chargeType,
@@ -986,7 +984,7 @@ export default {
           itemConfigs,
           dissMissConfigs,
           fields
-        } = cloneDeep(item.values), { key, type, params, currentKeys } = item
+        } = _.cloneDeep(item.values), { key, type, params, currentKeys } = item
 
         this.$set(this.diplomaticConsulOfficialFormItems[key]['configs'][type], 'itemConfigs', itemConfigs)
 
@@ -1041,7 +1039,7 @@ export default {
 
       const { formItemconfigs } = this.currentChargeTypeConfigs
 
-      this.$set(this.basicFormItems[chargeTypeProp]['configs'], [this.localChargeType - 1], cloneDeep(formItemconfigs))
+      this.$set(this.basicFormItems[chargeTypeProp]['configs'], [this.localChargeType - 1], _.cloneDeep(formItemconfigs))
 
       this.$set(this.basicFormItems['duration']['rule'][1], 'repeatArray', [])
 
@@ -1149,7 +1147,7 @@ export default {
 
     // 更新配置
     async onUpdate(values) {
-      const copy = cloneDeep(this.prisonChargeConfigs)
+      const copy = _.cloneDeep(this.prisonChargeConfigs)
 
       const {
         diplomatistCharge,

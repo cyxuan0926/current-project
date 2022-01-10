@@ -1,5 +1,3 @@
-import flattenDepth from 'lodash/flattenDepth'
-
 export default {
   getMeetings(state, params) {
     const { meetings } = params
@@ -73,7 +71,7 @@ export default {
   setMeetingCallRecords: (state, meetingCallRecords) => {
     const { filterMeetingCallRecords, meetingCallRecordsSize } = meetingCallRecords
     state.meetingCallRecords.total = meetingCallRecordsSize
-    state.meetingCallRecords.contents = flattenDepth(filterMeetingCallRecords)
+    state.meetingCallRecords.contents = _.flattenDepth(filterMeetingCallRecords)
   },
   setMeetingTimes: (state, meetingTimes) => {
     state.meetingTimes = meetingTimes

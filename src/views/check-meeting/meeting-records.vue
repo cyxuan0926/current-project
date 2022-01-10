@@ -32,13 +32,11 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import prisons from "@/common/constants/prisons";
-import prisonFilterCreator from "@/mixins/prison-filter-creator";
-import Moment from "moment";
-import { $likeName, $likePrisonerNumber } from "@/common/constants/const";
-import { DateFormat } from "@/utils/helper";
-import { tokenExcel } from "@/utils/token-excel";
+import { mapActions, mapState } from 'vuex'
+import prisons from '@/common/constants/prisons'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+
+// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -119,9 +117,9 @@ export default {
     tableCols() {
       const jailerFamilyFreeMeetingsTableCols = [
         {
-          label: "家属姓名",
-          prop: "familyName",
-          ...$likeName,
+          label: '家属姓名',
+          prop: 'familyName'
+          // ...$likeName
         },
         // {
         //   label: "省份",
@@ -133,19 +131,14 @@ export default {
         //   prop: "jailName",
         // },
         {
-          label: "警员姓名",
-          prop: "policeName",
-          ...$likeName,
+          label: '警员姓名',
+          prop: 'policeName'
+          // ...$likeName
         },
         {
-          label: "警员编号",
-          prop: "policeNumber",
-          ...$likePrisonerNumber,
-        },
-        {
-          type: "input",
-          label: "通话类型",
-          miss: true,
+          label: '警员编号',
+          prop: 'policeNumber'
+          // ...$likePrisonerNumber
         },
 
         {
@@ -175,20 +168,20 @@ export default {
       ];
       const familyFreeMeetingstableCols = [
         {
-          label: "家属姓名",
-          prop: "name",
-          ...$likeName,
+          label: '家属姓名',
+          prop: 'name'
+          // ...$likeName
         },
         {
-          label: "罪犯姓名",
-          prop: "prisonerName",
-          ...$likeName,
+          label: '罪犯姓名',
+          prop: 'prisonerName'
+          // ...$likeName
         },
         {
-          label: "罪犯编号",
-          prop: "prisonerNumber",
-          minWidth: 92,
-          ...$likePrisonerNumber,
+          label: '罪犯编号',
+          prop: 'prisonerNumber',
+          minWidth: 92
+          // ...$likePrisonerNumber
         },
         // {
         //   label: "省份",

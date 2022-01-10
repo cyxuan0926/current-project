@@ -1,15 +1,7 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-excel-download
-      v-if="isSuperAdmin&&activeComponentName==`profile`"
-      :path="excelDownloadPath"
-      :params="filter"
-    />
-    <m-excel-download
-      v-if="!isSuperAdmin&&activeComponentName==`profile`"
-      path="/download/exportJailVideoPhone"
-      :params="filter"
-    />
+
+    <m-excel-download :path="excelDownloadPath" :params="filter" />
 
     <m-search
       ref="search"
@@ -48,8 +40,11 @@ import {
   mapState,
   mapGetters
 } from 'vuex'
+
 import profile from './prison-report-profile'
+
 import detail from './prison-report-detail'
+
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 export default {
   mixins: [prisonFilterCreator],
@@ -59,6 +54,7 @@ export default {
   data() {
     return {
       activeComponentName: 'profile',
+
       searchItems: {
         reportRange: {
           type: 'dateRange',
@@ -82,42 +78,44 @@ export default {
           label: '罪犯编号',
           miss: true
         }
-      },
-      tabOptions: [
-        {
-          label: '监狱可视电话统计',
-          name: 'profile',
-          excelDownloadPath: '/download/exportJailStatical'
-        },
-        {
-          label: '可视电话统计详情',
-          name: 'detail',
-          excelDownloadPath: '/download/exportDetailsStatical'
-        }
-      ]
+      }
     }
   },
 
   computed: {
+    ...mapGetters(['isSuperAdmin']),
+
     ...mapState(['prisonReportList', 'prisonReportDetail']),
 
     totalPage() {
-      if (this.activeComponentName === 'profile') {
-        return this.prisonReportList.total
-      } else {
-        return this.prisonReportDetail.total
-      }
+      if (this.activeComponentName === 'profile') return this.prisonReportList.total
+
+      else return this.prisonReportDetail.total
     },
 
     excelDownloadPath() {
-      const activeTab = this.tabOptions.find(tab => {
-        return tab.name === this.activeComponentName
-      })
+      const activeTab = this.tabOptions.find(tab => tab.name === this.activeComponentName)
 
       return activeTab && activeTab.excelDownloadPath
     },
 
-    ...mapGetters(['isSuperAdmin'])
+    tabOptions() {
+      return (
+        [
+          {
+            label: '监狱可视电话统计',
+            name: 'profile',
+            excelDownloadPath: this.isSuperAdmin ? '/download/exportJailStatical' : '/download/exportJailVideoPhone'
+          },
+
+          {
+            label: '可视电话统计详情',
+            name: 'detail',
+            excelDownloadPath: '/download/exportDetailsStatical'
+          }
+        ]
+      )
+    }
   },
 
   watch: {
@@ -150,26 +148,24 @@ export default {
       'getPrisonReportDetailAll'
     ]),
 
-    getDatas() {
-      const params = { ...this.filter, ...this.pagination,jailId:JSON.parse(localStorage.getItem('user')).jailId}
+    async getDatas() {
+      // 后端说这里jailid 为 -1 也传入 后端自行做了处理
+      this.filter = Object.assign({}, { jailId: JSON.parse(localStorage.getItem('user')).jailId }, this.filter)
+
+      const params = Object.assign({}, { ...this.filter, ...this.pagination })
+
       if (this.activeComponentName === 'profile') {
-        const { startDate, endDate } = this.filter
-        if (startDate) params['startDate'] = `${ startDate } 00:00:00`
+        if (this.isSuperAdmin) await this.getPrisonReportListAll(params)
 
-        if (endDate) params['endDate'] = `${ endDate } 23:59:59`
-
-        if (this.isSuperAdmin) this.getPrisonReportListAll(params)
-
-        else this.getNewPrisonReportList(params)
+        else await this.getNewPrisonReportList(params)
       } else {
-        if (this.isSuperAdmin) this.getPrisonReportDetailAll(params)
+        if (this.isSuperAdmin) await this.getPrisonReportDetailAll(params)
 
-        else this.getPrisonReportDetail(params)
+        else await this.getPrisonReportDetail(params)
       }
     },
 
     onSearch() {
-      this.filter.jailId=JSON.parse(localStorage.getItem('user')).jailId
       this.$refs.pagination.handleCurrentChange(1)
     }
   }

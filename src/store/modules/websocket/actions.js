@@ -1,7 +1,6 @@
 // import { Notification, Message } from 'element-ui'
 import { Notification } from 'element-ui'
 import urls from '@/service/urls'
-import throttle from 'lodash/throttle'
 
 const wsUrl = jailId => `${ urls.socketUrl }/${ jailId }`
 
@@ -116,7 +115,7 @@ export default {
           if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
         }
       },
-      reconnect = throttle(() => {
+      reconnect = _.throttle(() => {
         if (lockReconnect) return
         lockReconnect = true
         createWS()

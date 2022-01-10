@@ -636,12 +636,8 @@
   import registrationDialogCreator from '@/mixins/registration-dialog-creator'
   import http from '@/service'
   import { saveAs } from 'file-saver'
-  import {
-    withdrawOrAnthorinputReason,
-    $likeName,
-    $likePrisonerNumber,
-    $likePhone
-  } from '@/common/constants/const'
+
+  import { withdrawOrAnthorinputReason, $likeName } from '@/common/constants/const'
 
   import { batchDownloadPublicImageURL } from '@/utils/helper'
   export default {
@@ -967,13 +963,13 @@
             },
             {
               label: '罪犯编号',
-              prop: 'prisonerNumber',
-              ...$likePrisonerNumber
+              prop: 'prisonerNumber'
+              // ...$likePrisonerNumber
             },
             {
               label: '罪犯姓名',
-              prop: 'prisonerName',
-              ...$likeName
+              prop: 'prisonerName'
+              // ...$likeName
             },
             {
               label: '管教级别',
@@ -1012,8 +1008,8 @@
             },
             {
               label: '家属电话',
-              prop: 'phone',
-              ...$likePhone
+              prop: 'phone'
+              // ...$likePhone
             },
             {
               label: '关系',

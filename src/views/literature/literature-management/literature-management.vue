@@ -130,7 +130,6 @@
 </template>
 
 <script>
-import lodash from 'lodash'
 import { mapActions, mapState } from 'vuex';
 import literatureSearchMixin from '../common/mixins/literature-search'
 

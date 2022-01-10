@@ -29,7 +29,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import { mapState, mapActions } from 'vuex'
 
-import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   name: 'MeetingFamilyStatistics',
 
@@ -112,18 +112,18 @@ export default {
         },
         {
           label: '家属姓名',
-          prop: 'familyName',
-          ...$likeName
+          prop: 'familyName'
+          // ...$likeName
         },
         {
           label: '罪犯姓名',
-          prop: 'prisonerName',
-          ...$likeName
+          prop: 'prisonerName'
+          // ...$likeName
         },
         {
           label: '罪犯编号',
-          prop: 'prisonerNumber',
-          ...$likePrisonerNumber
+          prop: 'prisonerNumber'
+          // ...$likePrisonerNumber
         },
         {
           label: '关系',

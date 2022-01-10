@@ -55,10 +55,13 @@ export default {
       filter: {},
       searchItems: {
         time: {
-          type: 'datetimerange',
+          type: 'dateRange',
+          unlinkPanels: true,
           start: 'startDate',
           end: 'endDate',
-          value: [this.$_timeOneWeekAgo, this.$_timeNow]
+          startPlaceholder: '开始时间',
+          endPlaceholder: '结束时间',
+          value: [this.$_dateOneWeekAgo, this.$_dateNow]
         }
       },
       tableCols: [

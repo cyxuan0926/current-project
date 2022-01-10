@@ -92,7 +92,6 @@
 <script>
   import { getRankBarChart, getSolidCircleLineChart } from '@/utils/chartOptions'
   import http from '@/service'
-  import debounce from 'lodash/debounce'
   export default {
     props: {
       mapData: Object
@@ -541,7 +540,7 @@
       this.initTop8()
       this.drawEffectMap()
       this.drawMapInterval = setInterval(this.drawMap, 5 * 60 * 1000)
-      this.winHandleResize = debounce(this.handleResize, 400)
+      this.winHandleResize = _.debounce(this.handleResize, 400)
       window.addEventListener('resize', this.winHandleResize)
     },
     destroyed() {

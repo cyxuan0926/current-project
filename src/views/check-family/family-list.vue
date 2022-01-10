@@ -196,8 +196,8 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import {
   $likeName,
-  $likePhone,
-  $likePrisonerNumber
+  // $likePhone,
+  // $likePrisonerNumber
 } from '@/common/constants/const'
 
 import { batchDownloadPublicImageURL } from '@/utils/helper'
@@ -413,8 +413,8 @@ export default {
       const familyTableCols = [
         {
           label: '家属姓名',
-          prop: 'name',
-          ...$likeName
+          prop: 'name'
+          // ...$likeName
         },
 
         {
@@ -457,26 +457,26 @@ export default {
       const jailerFamiliesTableCols = [
         {
           label: '警员姓名',
-          prop: 'policeName',
-          ...$likeName
+          prop: 'policeName'
+          // ...$likeName
         },
 
         {
           label: '警员编号',
-          prop: 'policeNumber',
-          ...$likePrisonerNumber
+          prop: 'policeNumber'
+          // ...$likePrisonerNumber
         },
 
         {
           label: '家属姓名',
-          prop: 'familyName',
-          ...$likeName
+          prop: 'familyName'
+          // ...$likeName
         },
 
         {
           label: '家属手机号码',
-          prop: 'phone',
-          ...$likePhone
+          prop: 'phone'
+          // ...$likePhone
         },
 
         {

@@ -194,14 +194,10 @@
 import { mapActions, mapState } from "vuex";
 import validator, { helper } from "@/utils";
 import roles from "@/common/constants/roles";
-import cloneDeep from "lodash/cloneDeep";
 import { Message } from "element-ui";
 
 import { faceRecognitionValues } from "@/common/constants/const";
 
-import isEqual from "lodash/isEqual";
-
-import Difference from "lodash/difference";
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -568,7 +564,7 @@ export default {
 
             type: "input",
 
-            rules: ["required", "isPositiveNumber", "isNumber"],
+            rules: ["required", "isPositiveNumber"],
 
             append: "次",
 
@@ -634,6 +630,20 @@ export default {
             disabled,
             value: 0,
           },
+
+          visiblePhonePeopleNumber: {
+            label: "可视电话通话人数上限",
+
+            type: "input",
+
+            rules: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }],
+
+            append: "次",
+
+            value: "6",
+
+            customClass: ['el-form-item-people_number']
+          }          
         },
         formButton
       ),
@@ -754,11 +764,11 @@ export default {
 
         const { familyPhoneScope } = e;
 
-        if (isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
+        if (_.isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
 
-        if (isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
+        if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
 
-        if (!Difference([1, 2], familyPhoneScope).length)
+        if (!_.difference([1, 2], familyPhoneScope).length)
           e.familyPhoneScope = 2;
 
         let params = Object.assign({}, e, {
@@ -1034,9 +1044,9 @@ export default {
         abnormalCalldurationSwitch,
         afrIOSSetValue,
         afrAndroidSetValue,
-      } = cloneDeep(this.prison);
+      } = _.cloneDeep(this.prison);
 
-      this.values = cloneDeep(this.prison);
+      this.values = _.cloneDeep(this.prison);
 
       this.$set(
         this.slotFormData,
@@ -1057,3 +1067,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.el-form {
+  .el-form-item {
+    /deep/ &-people_number {
+      .el-input {
+        width: 260px;
+      }
+    }
+  }
+}
+</style>

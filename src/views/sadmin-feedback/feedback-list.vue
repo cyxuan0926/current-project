@@ -166,7 +166,7 @@ import { mapActions, mapState } from 'vuex'
 
 import { helper } from '@/utils'
 
-import { $likeName } from '@/common/constants/const'
+// import { $likeName } from '@/common/constants/const'
 export default {
   data() {
     return {
@@ -184,8 +184,8 @@ export default {
       tableCols: [
         {
           label: '用户',
-          prop: 'name',
-          ...$likeName
+          prop: 'name'
+          // ...$likeName
         },
         {
           label: '反馈类别',
