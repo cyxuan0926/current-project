@@ -780,10 +780,13 @@ export default {
           type: 'input',
           label: '罪犯编号'
         },
-        familyPhone: {
+
+        phone: {
           type: "input",
           label: "家属电话",
+          miss: !_isAdmin
         },
+
         auditName: {
           type: 'input',
           label: '审核人',
