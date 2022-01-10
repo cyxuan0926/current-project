@@ -110,20 +110,37 @@
           prop="family"
           class="el-form-item_people-number"
         >
-        <div style="display:flex">
-          <div style="border:1px solid #DCDFE6; min-height:42px; min-width:300px; width:500px;margin-right:20px">
-            <span  style="border:1px solid #DCDFE6;padding:5px 10px;margin-left:10px; " v-for="(item, index) in content" :key="index">{{item}}</span>
-          </div>
-          <el-button type="primary" @click="onNewFamily">编辑</el-button>
+          <div style="display: flex">
+            <div
+              style="
+                border: 1px solid #dcdfe6;
+                min-height: 42px;
+                min-width: 300px;
+                width: 500px;
+                margin-right: 20px;
+              "
+            >
+              <span
+                style="
+                  border: 1px solid #dcdfe6;
+                  padding: 5px 10px;
+                  margin-left: 20px;
+                "
+                v-for="(item, index) in content"
+                :key="index"
+                >{{ item }}</span
+              >
+            </div>
+            <el-button type="primary" @click="onNewFamily">编辑</el-button>
           </div>
         </el-form-item>
         <el-dialog
           :visible.sync="familyrelations"
           title="新增家属关系"
-          width="40%"
+          width="530px"
         >
-          <div style="display:flex">
-            <span v-for="(item, index) in content" :key="index">
+          <div style="height: 400px; overflow-y:auto">
+            <span style="width:220px; display: inline-block; padding-left:30px" v-for="(item, index) in content" :key="index">
               <el-input
                 v-model="content[index]"
                 style="margin-bottom: 10px"
@@ -150,7 +167,7 @@
             >
 
             <el-button
-              v-if="content.length < 10"
+              v-if="content.length < 30"
               type="primary"
               class="button-add"
               size="mini"
@@ -271,7 +288,9 @@ export default {
           : false;
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
+        this.content = res.data.relationshipTemplate.split(",")
       });
+
     },
 
     addReject() {
@@ -284,16 +303,37 @@ export default {
     async onSubmitReject() {
       this.content = this.content.filter((res) => res && res.trim());
 
-      // if (this.content.length < 1) {
-      //   this.$message({
-      //     message: "新增编辑内容不能为空",
-      //     type: "error",
-      //   });
+      if (this.content.length < 1) {
+        this.$message({
+          message: "新增编辑内容不能为空",
+          type: "relationshipTemplate",
+        });
 
-      //   return false;
-      // } else {
+        return false;
+      } else {
+        let params = {
+          relationshipTemplate: this.contentrelationshipTemplate,
+          type: 1,
+          content: this.content,
+        };
 
-      // }
+        // let res = await http.setRejectEdit(params);
+
+        if (res) {
+          let params = {};
+          params.jailId = JSON.parse(localStorage.getItem("user")).jailId;
+          params.type = 1;
+
+          let res = await http.getRejectEdit(params);
+
+          if (res.content) {
+            this.content = res.content;
+            this.contentId = res.id;
+            this.updateer = res.updateEr;
+          } else this.content = [];
+        }
+        this.show.editRebut = true;
+      }
     },
 
     onNewFamily() {
