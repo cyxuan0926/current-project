@@ -1589,6 +1589,7 @@ export default {
     tabs(val) {
       const searchItemKeys = [
         'prisonArea',
+        'address',
         'status',
         'isNotify',
         'familyName'
@@ -1774,7 +1775,8 @@ export default {
       }
     },
     cellred({row, column, rowIndex, columnIndex}){
-      if(!row.address.includes("中国")){
+      console.log(row.address)
+      if(!(row.address&&row.address.includes("中国"))){
           return 'color:red'
       }
     },
