@@ -126,7 +126,7 @@
                   padding: 5px 10px;
                   margin-left: 20px;
                 "
-                v-for="(item, index) in content"
+                v-for="(item, index) in familylist"
                 :key="index"
                 >{{ item }}</span
               >
@@ -139,8 +139,12 @@
           title="新增家属关系"
           width="530px"
         >
-          <div style="height: 400px; overflow-y:auto">
-            <span style="width:220px; display: inline-block; padding-left:30px" v-for="(item, index) in content" :key="index">
+          <div style="height: 400px; overflow-y: auto">
+            <span
+              style="width: 220px; display: inline-block; padding-left: 30px"
+              v-for="(item, index) in content"
+              :key="index"
+            >
               <el-input
                 v-model="content[index]"
                 style="margin-bottom: 10px"
@@ -230,6 +234,7 @@ export default {
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
       familyrelations: false,
+      familylist:[],
       family: "",
       content: [],
       formData: {
@@ -288,9 +293,9 @@ export default {
           : false;
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
-        this.content = res.data.relationshipTemplate.split(",")
+        this.content =  res.data.relationshipTemplate.split(",")
+        this.familylist=Object.assign({}, this.familylist, res.data.relationshipTemplate.split(",")); 
       });
-
     },
 
     addReject() {
@@ -301,38 +306,27 @@ export default {
       this.content.splice(index, 1);
     },
     async onSubmitReject() {
-      this.content = this.content.filter((res) => res && res.trim());
-
-      if (this.content.length < 1) {
+     let relationship = this.content.filter((res) => res && res.trim());
+     
+      if (relationship.length < 1) {
         this.$message({
           message: "新增编辑内容不能为空",
-          type: "relationshipTemplate",
+          type: "error",
         });
 
         return false;
       } else {
         let params = {
-          relationshipTemplate: this.contentrelationshipTemplate,
-          type: 1,
-          content: this.content,
+           jailId:JSON.parse(localStorage.getItem("user")).jailId,
+           relationshipTemplate: relationship.toString()
         };
 
-        // let res = await http.setRejectEdit(params);
+        let res = await http.updateRelationshipTemplate(params);
 
         if (res) {
-          let params = {};
-          params.jailId = JSON.parse(localStorage.getItem("user")).jailId;
-          params.type = 1;
-
-          let res = await http.getRejectEdit(params);
-
-          if (res.content) {
-            this.content = res.content;
-            this.contentId = res.id;
-            this.updateer = res.updateEr;
-          } else this.content = [];
+           this.getDeploy();
         }
-        this.show.editRebut = true;
+        this.familyrelations = false;
       }
     },
 

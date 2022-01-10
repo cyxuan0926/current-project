@@ -28,13 +28,17 @@ export default {
   downloadRelationshipFile: params => {
     return service.postObj('/registrations/getRelationshipFile', params, { responseType: 'blob' })
   },
-   // 获取驳回编辑列表 家属注册管理
-   getRejectEdit: params => {
+  // 获取驳回编辑列表 家属注册管理
+  getRejectEdit: params => {
     return service.get('/meetingsReviewWord/get', params).then(res => res && res.data)
   },
   // 保存修改驳回编辑列表 家属注册管理
   setRejectEdit: params => {
     return service.postObj('/meetingsReviewWord/edit', params).then(res => res && res.code === 200)
+  },
+  // 监狱配置管理中的家属关系更新
+  updateRelationshipTemplate: params => {
+    return service.post('/jails/updateRelationshipTemplate', params).then(res => res && res.code === 200)
   },
 
   // 家属注册管理-一级授权
@@ -82,11 +86,11 @@ export default {
   // 家属会见申请-会见变更详情 //详情接口修改
   getMeettingsChangelogDetail: params => {
     return service.get('/meetings/meeting-changelog', params).then(res => res && res.data)
-    },
-    // 家属会见申请-会见详情
+  },
+  // 家属会见申请-会见详情
   getMeettingsDetail: params => {
-      return service.get('/meetings/detail', params).then(res => res && res.data.meetings)
-    },
+    return service.get('/meetings/detail', params).then(res => res && res.data.meetings)
+  },
   // 家属会见申请-授权
   authorizeMeeting: params => {
     // return service.post('/meetings/authorize',params).then(res => res && res.code === 200)
@@ -114,8 +118,8 @@ export default {
   withdrawMeeting: params => {
     return service.post('/meetings/withdraw', params).then(res => res && res.code === 200)
   },
-   // 添加异常通话的备注信息
-   addUnusualRemark: params => {
+  // 添加异常通话的备注信息
+  addUnusualRemark: params => {
     return service.post('/meetings/unusualRemark', params).then(res => res && res.code === 200)
   },
   // 实地探监管理-列表
@@ -148,18 +152,18 @@ export default {
     return service.post('/prisoner_visits/withdraw', params).then(res => res && res.code === 200)
   },
   // 实地探监管理-获取实地会见配置信息
-  getVisitsConfigDetail: jailId => service.get(`/prisoner_visits/configDetail?jailId=${ jailId }`),
+  getVisitsConfigDetail: jailId => service.get(`/prisoner_visits/configDetail?jailId=${jailId}`),
   // 实地探监管理-获取实地会见配置时间表
-  getVisitsConfigMeetingtime: id => service.get(`/prisoner_visits/query-meettime-config?id=${ id }`),
+  getVisitsConfigMeetingtime: id => service.get(`/prisoner_visits/query-meettime-config?id=${id}`),
   // 实地探监管理-获取实地会见状态变更详情
-  getVisitsChangelog: id => service.get(`/prisoner_visits/visit-changelog?visitId=${ id }`),
+  getVisitsChangelog: id => service.get(`/prisoner_visits/visit-changelog?visitId=${id}`),
   // 监狱长信箱-列表
   getMailboxes: params => {
     return service.get('/mailboxes/page', params).then(res => res && res.data)
   },
   // 监狱长信箱-详情
   getMailbox: params => {
-    return service.get(`/mailboxes/jailReply?id=${ params }`).then(res => res && res.data)
+    return service.get(`/mailboxes/jailReply?id=${params}`).then(res => res && res.data)
   },
   // 监狱长信箱-回复
   mailboxReply: params => {

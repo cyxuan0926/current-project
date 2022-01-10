@@ -1247,7 +1247,7 @@ export default {
       if (this.content.length < 1) {
         this.$message({
           message: "新增编辑内容不能为空",
-          type: "error",
+          type: "C",
         });
 
         return false;
