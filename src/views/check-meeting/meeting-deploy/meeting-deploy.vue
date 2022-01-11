@@ -131,7 +131,7 @@
                 >{{ item }}</span
               >
             </div>
-            <el-button type="primary" @click="onNewFamily">编辑</el-button>
+            <el-button :disabled="isSuperAdmin" type="primary" @click="onNewFamily">编辑</el-button>
           </div>
         </el-form-item>
         <el-dialog
@@ -222,7 +222,7 @@ import http from "@/service";
 import { faceRecognitionValues } from "@/common/constants/const";
 
 import validator from "@/utils";
-
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -274,7 +274,11 @@ export default {
       },
     };
   },
-
+   computed: {
+      ...mapGetters([
+        'isSuperAdmin'
+      ])
+   },
   mounted() {
     this.getDeploy();
   },
@@ -306,7 +310,7 @@ export default {
       this.content.splice(index, 1);
     },
     async onSubmitReject() {
-     let relationship = this.content.filter((res) => res && res.trim());
+     let relationship = [...new Set(this.content.filter((res) => res && res.trim()))];
      
       if (relationship.length < 1) {
         this.$message({
