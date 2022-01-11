@@ -122,9 +122,12 @@
             >
               <span
                 style="
+                  line-height: 15px;
                   border: 1px solid #dcdfe6;
-                  padding: 5px 10px;
-                  margin-left: 20px;
+                  padding: 5px 8px;
+                  margin: 5px;
+                  display: inline-block;
+                  margin-top:10px;
                 "
                 v-for="(item, index) in familylist"
                 :key="index"
@@ -139,7 +142,7 @@
           title="新增家属关系"
           width="530px"
         >
-          <div style="height: 400px; overflow-y: auto;">
+          <div style="height: 400px; overflow-y: auto; ">
             <span
               style="width: 220px; display: inline-block; padding-left: 30px"
               v-for="(item, index) in content"
@@ -147,7 +150,7 @@
             >
               <el-input
                 v-model="content[index]"
-                style="margin-bottom: 10px;"
+                style="margin-bottom: 10px;  "
                 maxlength="200"
                 placeholder="请输入家属关系"
                 clearable
@@ -284,8 +287,8 @@ export default {
   },
 
   methods: {
-    getDeploy() {
-      http.getMeetDeploy().then((res) => {
+    async getDeploy() {
+      await http.getMeetDeploy().then((res) => {
         this.dialogVisible = false;
         this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting
           ? true
@@ -298,7 +301,7 @@ export default {
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
         this.content =  res.data.relationshipTemplate.split(",")
-        this.familylist=Object.assign({}, this.familylist, res.data.relationshipTemplate.split(",")); 
+        this.familylist=Object.assign({}, {}, res.data.relationshipTemplate.split(",")); 
       });
     },
 
