@@ -1617,20 +1617,20 @@ export default {
         if (filterKeys.includes(minReactInChainKey)) (async() => await this.searchSelectChange(minReactInChainKey, this.filter[minReactInChainKey]))()
       } else {
         searchItemKeys.forEach(key => {
-          this.searchItems[key].miss = true
-
-          this.searchItems[key].value = ''
+         this.searchItems[key].miss = true
+        // this.$set( this.searchItems,this.searchItems[key], "" )
+        // this.searchItems[key].value = ''
 
           if (key === 'prisonArea') delete this.filter['prisonConfigId']
 
           else delete this.filter[key]
         })
 
-        this.clearSubPrisonArea('prisonSubArea')
+         this.clearSubPrisonArea('prisonSubArea')
 
-        const result = mountedKeys.filter(key => Object.keys(this.searchItems).includes(key) && !this.searchItems[key].miss)
+         const result = mountedKeys.filter(key => Object.keys(this.searchItems).includes(key) && !this.searchItems[key].miss)
 
-        minReactInChainKey = result[result.length - 1] || 'jailId'
+         minReactInChainKey = result[result.length - 1] || 'jailId'
       }
 
       this.onSearch()
@@ -1775,9 +1775,10 @@ export default {
       }
     },
     cellred({row, column, rowIndex, columnIndex}){
-      console.log(row.address)
       if(!(row.address&&row.address.includes("中国"))){
-          return 'color:red'
+        if(row.address){
+           return 'color:red'
+        }
       }
     },
     async getDatas() {
