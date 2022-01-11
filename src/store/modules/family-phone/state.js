@@ -24,6 +24,12 @@ export default {
     filePath: '',
     total: 0
   },
+  validatePrisonerLeaveResult: {
+    successTotal: 0,
+    failTotal: 0,
+    filePath: '',
+    total: 0
+  },
 
   familyPhoneFamiliesDetail: {},
 

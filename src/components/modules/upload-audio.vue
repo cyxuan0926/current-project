@@ -1,15 +1,17 @@
 <template>
   <div style="overflow: hidden;">
     <div class="audio-box">
-      <div
-        v-if="!value"
-        class="no-video">
-        <i class="iconfont icon-yinpinaudio47" />
-      </div>
-      <m-audio
-        v-else
-        :value="value" />
+      <template v-if="!value">
+        <div class="no-video">
+          <i class="iconfont icon-yinpinaudio47" />
+        </div>
+      </template>
+
+      <template v-else>
+        <m-audio :value="value" />
+      </template>
     </div>
+
     <div class="upload-buttons">
       <el-upload
         ref="uploadAudio"
@@ -26,20 +28,23 @@
         :limit="1"
         :disabled="loading || Boolean(value)"
         :on-exceed="handleExceed"
-        :on-remove="handleRemove">
+        :on-remove="handleRemove"
+      >
         <el-button
           slot="trigger"
           size="small"
           :disabled="loading || Boolean(value)"
-          type="primary">上传音频
-        </el-button>
+          type="primary"
+        >上传音频</el-button>
       </el-upload>
+
       <el-button
         type="danger"
         size="small"
         style="margin-left: 10px; margin-top: 2px;"
         :disabled="!loading && !Boolean(value)"
-        @click="handleDelete">删除</el-button>
+        @click="handleDelete"
+      >删除</el-button>
     </div>
   </div>
 </template>
@@ -57,6 +62,7 @@ export default {
       default: ''
     }
   },
+
   data() {
     return {
       headers: {
@@ -71,6 +77,7 @@ export default {
       interval: null
     }
   },
+
   computed: {
     fileList() {
       let files = [], name = ''
@@ -81,15 +88,19 @@ export default {
       return files
     }
   },
+
   mounted() {
     this.$refs.audio && this.getTotalDuration()
   },
+
   destroyed() {
     if (this.notification) this.notification.close()
     this.notification = null
   },
+
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
+
     handleSuccess(res, file, fileList) {
       this.loading = false
       switch (res.code) {
@@ -105,6 +116,7 @@ export default {
           this.$message.error(`上传音频失败:${ res.message }`)
       }
     },
+
     beforUpload(file) {
       if (file.type.indexOf('audio/') !== 0) {
         this.$message.error(`请上传音频文件`)
@@ -120,6 +132,7 @@ export default {
       })
       return true
     },
+
     handleTimeUpdate() {
       if (!this.$refs.audio) return
       let totalTime = parseInt(this.$refs.audio.duration),
@@ -133,6 +146,7 @@ export default {
         this.progressBarVal = (currentTime / totalTime * 100)
       }
     },
+
     handleDelete() {
       this.$refs.uploadAudio.clearFiles()
       this.handleRemove('', [])
@@ -140,6 +154,7 @@ export default {
       this.audioImg = AudioThree
       this.progressBarVal = 0
     },
+
     handleAudio() {
       if (this.$refs.audio.paused) {
         this.$refs.audio.play()
@@ -156,18 +171,22 @@ export default {
         this.audioImg = AudioThree
       }
     },
+
     getTotalDuration() {
       this.leastTime = helper.timeNew(parseInt(this.$refs.audio.duration))
     },
+
     handleExceed() {
       this.loading = false
       this.$message.error('音频数量超出限制')
     },
+
     handleError(e) {
       this.loading = false
       this.$message.error(`上传音频失败`)
       this.notification.close()
     },
+
     handleRemove(file, fileList) {
       this.loading = false
       this.$emit('success', fileList.length ? fileList : '')

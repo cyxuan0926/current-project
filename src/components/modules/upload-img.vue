@@ -1,18 +1,20 @@
 <template>
   <div style="overflow: hidden;">
     <div class="component-img__box">
-      <div
-        v-if="!value"
-        class="no-video"
-        :style="imgStyle">
-        <i class="iconfont icon-image" />
-      </div>
-      <m-img-viewer 
-        v-else
-        :style="imgStyle"
-        :url="`${ value }?token=${ $urls.token }`"
-        :lazy="false"
-        fit="contain" />
+      <template v-if="!value">
+        <div class="no-video" :style="imgStyle">
+          <i class="iconfont icon-image" />
+        </div>
+      </template>
+
+      <template v-else>
+        <m-img-viewer 
+          :style="imgStyle"
+          :url="`${ value }?token=${ $urls.token }`"
+          :lazy="false"
+          fit="contain"
+        />
+      </template>
       <!-- <img
         v-else
         :src="value + '?token=' + $urls.token"
@@ -58,13 +60,15 @@
         size="small"
         :disabled="!loading && !Boolean(value)"
         style="margin-top: 10px;"
-        @click="handleDelete">删除</el-button>
+        @click="handleDelete"
+      >删除</el-button>
     </div>
 
     <span
       slot="tip"
       class="el-upload__tip"
-      style="line-height: 40px; clear: both; display: block;">
+      style="line-height: 40px; clear: both; display: block;"
+    >
       <template v-if="showTip">
         只能上传<span class="red">jpg/jpeg</span>文件,且文件大小不超过<span class="red">1MB</span>
       </template>
@@ -106,18 +110,22 @@ export default {
       type: String,
       default: ''
     },
+
     ratio: {
       type: String,
       default: ''
     },
+
     showTip: {
       type: Boolean,
       default: true
     },
+
     uploadAttrs: {
       type: Object,
       default: () => defaultUploadAttrs
     },
+
     slots: {
       type: Object,
       default: () => ({
@@ -126,6 +134,7 @@ export default {
         ]
       })
     },
+
     imgStyle: {
       type: Object,
       default: () => ({
@@ -134,6 +143,7 @@ export default {
       })
     }
   },
+
   data() {
     return {
       imageUrl: '',
@@ -142,6 +152,7 @@ export default {
       notification: null
     }
   },
+
   computed: {
     fileList() {
       let files = []
@@ -152,6 +163,7 @@ export default {
       return files
     }
   },
+
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
     handleSuccess(res, file, fileList) {
@@ -170,6 +182,7 @@ export default {
           this.$message.error(`上传图片失败:${ res.message }`)
       }
     },
+
     beforUpload(file) {
       const fileType = this.uploadAttrs.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
@@ -202,20 +215,25 @@ export default {
         reader.readAsDataURL(file)
       })
     },
+
     handlePictureCardPreview() {
       this.imageUrl = `${ this.value }?token=${ this.$urls.token }`
       this.dialogVisible = true
     },
+
     handleExceed() {
       this.$message.error('图片数量超出限制')
       this.$refs.uploadImage.$el.getElementsByClassName('el-upload el-upload--picture-card')[0].style.display = 'none'
     },
+
     handleError(e) {
       console.log(e)
     },
+
     handleRemove(file, fileList) {
       this.$emit('input', fileList.length ? fileList : '')
     },
+
     handleDelete() {
       this.$refs.uploadImage.clearFiles()
       this.handleRemove('', [])

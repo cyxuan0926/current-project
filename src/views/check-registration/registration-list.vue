@@ -44,6 +44,7 @@
         class="mini-td-padding registration-table"
         style="width: 100%"
         @sort-change="sortChange"
+        :cell-style="cellred"
       >
         <el-table-column
           v-if="hasProvinceQueryAuth"
@@ -1064,7 +1065,11 @@ export default {
       'getSubtaskPhone',
       'getProcessTask'
     ]),
-
+     cellred({row, column, rowIndex, columnIndex}){
+      if((row.domicile&&row.domicile!==0)||(row.nationality&&row.nationality!==0)){
+          return 'color:red'
+      }
+    },
     ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
 
     async handleExportExcel() {

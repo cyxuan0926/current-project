@@ -254,9 +254,9 @@ export const hasValue = val => (val === 0 ? true : Boolean(val))
  * 筛选对象中符合条件的项
  * @param obj 目标对象
  * @param fn 筛选函数，接受三个参数（val, k, obj）
- *   @param val 属性值
- *   @param k 属性名
- *   @param obj 目标对象
+ * @param val 属性值
+ * @param k 属性名
+ * @param obj 目标对象
  * @return 筛选函数执行结果为 truthy 的项组成的对象
  *
  * @example

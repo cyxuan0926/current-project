@@ -15,7 +15,6 @@
       path="/download/exportPrisoners"
       :params="filter"
     />
-
     <m-search
       ref="search"
       :items="searchItems"
@@ -41,10 +40,24 @@
 
     <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
-        <el-button type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
+         <m-excel-download
+            path="/download/downloadfile"
+            :params='{ filepath:"prisoner__leave_import_template.xls"}'
+            text="离监模板" style="margin-left: 10px"
+          />
+          <m-excel-upload ref="mExcelUpload" text='导入离监数据'  @click.native="one(true)" :configs="excelUploadConfigs" style="margin-left: 10px" />
+          <m-excel-download
+            path="/download/downloadfile"
+            :params='{ filepath:"prisoner__transfer_import_template.xls"}'
+            text="转监模板" style="margin-left: 10px"
+          />
+            <m-excel-upload ref="mExcelUploadConfig" text='导入转监数据' @click.native="one(false)"  :configs="excelUploadConfigs" style="margin-left: 10px" />
+        <span style="margin-left:10px">
+        <el-button  type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
         <el-button type="primary" @click="showDelPrionser">离监</el-button>
         <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
         <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+        </span>
       </template>
     </el-row>
 
@@ -81,6 +94,7 @@
         :data="prisoners.contents"
         @selection-change="handleSelectionChange"
         :cols="tableCols"
+        :cell-style="cellred"
       >
         <template #accessTime="{ row }">
           <div>
@@ -495,7 +509,72 @@
 
       <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
+  <el-dialog
+      class="authorize-dialog upload-dialog"
+      ref="uploadDialog"
+      title="信息数据导入中"
+      :visible.sync="uploadDialogVisible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      @open="onOpenUploadDialog"
+    >
+      <el-row class="el-row__process">
+        <el-col :span="20" :offset="2">
+          <el-steps
+            class="el-steps__upload-process"
+            :active="status"
+            finish-status="success"
+          >
+            <template v-for="(tag, index) in $_uploadStepsTabOptions">
+              <el-step :key="index" :title="tag.label" />
+            </template>
+          </el-steps>
+        </el-col>
 
+        <el-col class="process-col_tips">
+          <span>准备导入数据总计：{{ validatePrisonerLeaveResult.total }}条</span>
+
+          <span>已用时：{{ spendTime }}秒</span>
+
+          <span>进度：{{ percent }}%</span>
+        </el-col>
+
+        <el-col class="process-col_waiting">请稍后...</el-col>
+      </el-row>
+
+      <el-dialog
+        class="authorize-dialog"
+        append-to-body
+        custom-class="upload-dialog__inner"
+        ref="uploadInnerDialog"
+        title="导入结果提示"
+        :visible.sync="uploadInnerDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        @close="onUploadInnerDialogClose"
+      >
+        <div style="line-height: 30px; margin-top: 10px;">
+          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{ validatePrisonerLeaveResult.successTotal }}条<br>
+
+          <template v-if="!!validatePrisonerLeaveResult.failTotal">
+            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ validatePrisonerLeaveResult.failTotal }}条
+
+            <p style="padding-left: 30px;">导入失败数据：
+              <m-excel-download
+                path="/download/localfile"
+                :params="{ filepath: validatePrisonerLeaveResult.filePath }"
+                text="导入失败的数据.xls"
+              />
+            </p>
+          </template>
+        </div>
+
+        <div slot="footer">
+          <el-button type="primary" @click="uploadInnerDialogVisible = false">确 定</el-button>
+        </div>        
+      </el-dialog>
+    </el-dialog>
     <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData" />
   </el-row>
 </template>
@@ -580,7 +659,17 @@ export default {
     return {
       detailDetVisible: false, // 详情弹窗
       prisonerDetData: {},
+      uploadDialogVisible: false,// 导入数据弹窗
+      status: 0,
+      spendTime: 0,
+      percent: 0,
+      uploadInnerDialogVisible: false,
+      UploadType: false,
       searchItems: {
+          address: {
+          type: 'input',
+          label: '户籍'
+        },
         prisonerNumber: {
           type: 'input',
           label: '罪犯编号'
@@ -691,6 +780,14 @@ export default {
       tabsItems,
 
       tabs: 'prisoner',
+      excelUploadConfigs: {
+        attrs: {
+          autoUpload: false,
+          limit: 1,
+          beforeUpload: this.beforeUpload,
+          onChange: this.onChange
+        }
+      },
 
       timesDialogType: '' // accessTime: 通话次数 smsNum; 短信次数
     }
@@ -707,7 +804,9 @@ export default {
     ...mapGetters(['isSuperAdmin', 'hasPrisonArea']),
 
     ...mapState({
-      user: state => state.global.user
+      user: state => state.global.user,
+      uploadResult: state => state.global.uploadResult,
+      validatePrisonerLeaveResult: state => state.familyPhone.validatePrisonerLeaveResult
     }),
 
     ...mapState('account', ['publicUserInfo']),
@@ -735,25 +834,25 @@ export default {
           value: '刑满释放'
         },
         {
-          label: '保外就医',
-          value: '保外就医'
+          label: '假释',
+          value: '假释'
         },
         {
-          label: '因病去世',
-          value: '因病去世'
+          label: '病亡',
+          value: '病亡'
         },
         {
-          label: '离监探亲',
-          value: '离监探亲'
+          label: '死亡',
+          value: '死亡'
         },
         {
           label: '错误数据',
           value: '错误数据'
+        },
+        {
+          label: '其他（特赦释放、无罪释放、改判释放等等）',
+          value: '其他（特赦释放、无罪释放、改判释放等等）'
         }
-        // {
-        //   label: '其他',
-        //   value: '其他'
-        // }
       ]
 
       const otherDelReasonDetail = {
@@ -875,6 +974,11 @@ export default {
               type: 'input',
               label: '服刑人员姓名',
               rules: ['required'],
+              clearable: true
+            },
+             address: {
+              type: 'input',
+              label: '户籍',
               clearable: true
             },
 
@@ -1038,7 +1142,7 @@ export default {
               func: this.handleChangeDelReason
             }
           }, formButton)
-          if(this.showReasonValue === '其他') items = Object.assign({}, items, otherDelReasonDetail)
+          if(this.showReasonValue === '其它') items = Object.assign({}, items, otherDelReasonDetail)
           else Reflect.deleteProperty(items, 'content')
           break
         case 6:
@@ -1270,7 +1374,7 @@ export default {
         label: '对应家属',
         prop: 'families',
         ...$likeName,
-        className: '',
+        className: 'aa',
         desensitizationColsConfigs: {
           keyWord: 'id',
           prop: 'familyName',
@@ -1351,6 +1455,11 @@ export default {
           label: '监区',
           prop: 'prisonArea',
           showOverflowTooltip: true
+        },
+        {
+          label: '户籍',
+          minWidth: 130,
+          prop: 'address'
         },
 
         {
@@ -1549,7 +1658,126 @@ export default {
       'getTransferOutPrisonersPagedData',
       'getJailPrisonAreas'
     ]),
+    ...mapActions(["uploadFile", "resetState"]),
+     ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
+     one(type){
+       this.UploadType=type
+       console.log(this.UploadType)
+     },
+      // 重制上传的参数关闭对话框
+    onResetAndcloseUploadDialog() {
+      this.spendTime = 0;
 
+      this.percent = 0;
+
+      this.status = 0;
+
+      this.uploadDialogVisible = false;
+    },
+      // 内层提示对话框关闭的回调方法
+    onUploadInnerDialogClose() {
+      setTimeout(() => {
+        this.onResetAndcloseUploadDialog();
+      }, 1000);
+    },
+     onOpenUploadDialog() {
+      this.$nextTick(() => {
+        this.$refs.mExcelUpload.onManualUpload();
+        this.$refs.mExcelUploadConfig.onManualUpload();
+      });
+    },
+    beforeUpload(file) {
+         console.log(file)
+      this.resetState({ validatePrisonerLeaveResult: {
+        successTotal: 0,
+        failTotal: 0,
+        filePath: '',
+        total: 0
+      }})
+
+      let count = 0, index = 0
+
+      // 上次文件的定时器
+      const uploadInterver = setInterval(async () => {
+        this.status += 1
+
+        this.percent += 15
+
+        this.spendTime += .5
+
+        if (this.status === 4) {
+          clearInterval(uploadInterver)
+
+          // 上次文件到服务器
+          const isSuccess = await this.uploadFile(file)
+
+          if (!isSuccess) {
+            this.onResetAndcloseUploadDialog()
+
+            return
+          }
+
+          // 验证excel的定时器
+          const validateInterver = setInterval(async () => {
+            count ++
+
+            if (count === 1) {
+              this.spendTime += 1
+
+              // 验证excel
+              const isSuccess = await this.validateUploadPrisonerLeave({ filepath: this.uploadResult.path, type: this.UploadType})
+
+              clearInterval(validateInterver)
+
+              if (!isSuccess) {
+                this.onResetAndcloseUploadDialog()
+
+                return
+              }
+
+              // 模拟完成最后两步
+              const processInterver = setInterval(() => {
+                index ++
+
+                if (index === 1) {
+                  this.percent += 20
+
+                  this.spendTime += 1
+
+                  this.status = this.status + 1
+
+                  clearInterval(processInterver)
+
+                  this.spendTime += 1
+
+                  this.status += 1
+
+                  this.percent = 100
+                  setTimeout(() => {
+                    this.uploadInnerDialogVisible = true
+                  }, 1500)
+                } else this.spendTime += 1
+              }, 1000)
+            } else this.spendTime += 1
+          }, 1000)
+        } else this.spendTime += 1
+      }, 500)
+
+      return false
+    },
+
+    onChange(file) {
+      if (this.uploadDialogVisible) return
+
+      if (file) {
+        this.uploadDialogVisible = true
+      }
+    },
+    cellred({row, column, rowIndex, columnIndex}){
+      if(!row.address.includes("中国")){
+          return 'color:red'
+      }
+    },
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
@@ -2489,6 +2717,9 @@ export default {
 </script>
 
 <style type="text/stylus" lang="stylus" scoped>
+.red{
+  color:red
+}
 .row-container
   .el-dialog__body
     img

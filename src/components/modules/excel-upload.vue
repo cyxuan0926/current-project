@@ -22,18 +22,22 @@ export default {
       type: String,
       default: '导入'
     },
+
     url: {
       type: String,
       default: ''
     },
+
     'get-results': {
       type: Function,
       default: () => () => {}
     },
+
     'handle-error': {
       type: Function,
       default: () => () => {}
     },
+
     headers: {
       type: Object,
       default: function() {
@@ -68,7 +72,7 @@ export default {
 
       const apiPath = this.$urls[apiPathKey] || ''
 
-      return `${apiHost}${apiPath}${this.url}`
+      return `${ apiHost }${ apiPath }${ this.url }`
     }
   },
 
@@ -77,7 +81,6 @@ export default {
       this.$refs.upload.submit()
     },
 
-    
     onHandleClick(message = '为了更好的使用体验，建议导入数据控制在300条以内', title = '提示', configs = {}) {
       this.$confirm(message, title, {
         confirmButtonText: "确定",
@@ -98,7 +101,7 @@ export default {
 <style lang="scss" scoped>
 .el-upload__excel {
   margin-bottom: 0px !important;
-  // margin-left: 10px !important;
+  //  margin-left: 10px !important;
   /deep/ .el-upload-list {
     display: none !important;
   }

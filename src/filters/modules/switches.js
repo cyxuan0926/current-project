@@ -138,8 +138,12 @@ let switches = {
   ],
   nationality: [
     {
-      label: '中国籍家属',
+      label: '大陆籍家属',
       value: 0
+    },
+    {
+      label: '港澳台家属',
+      value: 2
     },
     {
       label: '非中国籍家属',

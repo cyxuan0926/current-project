@@ -80,6 +80,26 @@ export default {
       Promise.reject(err)
     }
   },
+  async validateUploadPrisonerLeave({ commit }, {filepath,type}) {
+    try {
+      let response=null;
+      console.log(type)
+      if(type){
+        response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
+      }else{
+        response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
+      }
+     
+      if (!response) return
+     
+      commit('setValidatePrisonerLeaveResult', response)
+
+      return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
 
   async exportFamilyPhone(_, inputs) {
     try {
