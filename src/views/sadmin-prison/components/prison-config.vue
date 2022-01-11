@@ -801,7 +801,7 @@ export default {
 
         if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
 
-        if (!_.Difference([1, 2], familyPhoneScope).length)
+        if (!_.difference([1, 2], familyPhoneScope).length)
           e.familyPhoneScope = 2;
 
         let params = Object.assign({}, e, {
