@@ -116,7 +116,7 @@
                   padding: 5px 10px;
                   margin-left: 20px;
                 "
-                v-for="(item, index) in arr"
+                v-for="(item, index) in relationship"
                 :key="index"
                 >{{ item }}</span
               >
@@ -681,7 +681,7 @@ export default {
         formButton
       ),
       values: {},
-      arr:[],
+      relationship:[],
       permission,
 
       slotFormData: {
@@ -759,7 +759,6 @@ export default {
   },
 
   mounted() {
-    this.arr=this.prison.relationshipTemplate.split(",")
     if (this.$route.meta.role === "3") this.formItems.branchPrison.tips = "";
     if (this.permission === "edit") return;
     if (
@@ -1070,7 +1069,9 @@ export default {
 
     async onInitPrisonConfigDetails() {
       const res = await this.getPrisonDetail({ id: this.$route.params.id });
-      console.log(res)
+       if(this.prison.relationshipTemplate){
+            this.relationship=this.prison.relationshipTemplate.split(",")
+        }
       if (!res) return;
 
       const {

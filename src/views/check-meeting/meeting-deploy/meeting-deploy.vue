@@ -139,7 +139,7 @@
           title="新增家属关系"
           width="530px"
         >
-          <div style="height: 400px; overflow-y: auto">
+          <div style="height: 400px; overflow-y: auto;">
             <span
               style="width: 220px; display: inline-block; padding-left: 30px"
               v-for="(item, index) in content"
@@ -147,7 +147,7 @@
             >
               <el-input
                 v-model="content[index]"
-                style="margin-bottom: 10px"
+                style="margin-bottom: 10px;"
                 maxlength="200"
                 placeholder="请输入家属关系"
                 clearable
