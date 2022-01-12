@@ -32,11 +32,13 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import prisons from '@/common/constants/prisons'
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
-// import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
+import { mapActions, mapState } from "vuex";
+import prisons from "@/common/constants/prisons";
+import prisonFilterCreator from "@/mixins/prison-filter-creator";
+import Moment from "moment";
+import { $likeName, $likePrisonerNumber } from "@/common/constants/const";
+import { DateFormat } from "@/utils/helper";
+import { tokenExcel } from "@/utils/token-excel";
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -87,26 +89,17 @@ export default {
           label: "通话类型",
           options: this.$store.state.familyPhoneAuthenticationType,
         },
-        // applicationDate: {
-        //   type: "monthRangeSelector",
-        //   canNotClear: true,
-        //   startKey: "startDate",
-        //   endKey: "endDate",
-        //   range: {
-        //     max: Moment().format("YYYY-MM"),
-        //     maxMonthRange: 24,
-        //   },
-        //   value: [startDate, endDate],
-        // },
         applicationDate: {
-            type: 'dateRange',
-            unlinkPanels: true,
-            start: 'startDate',
-            end: 'endDate',
-            startPlaceholder: '申请开始时间',
-            endPlaceholder: '申请结束时间',
-            value: [this.$_oneMonthAgo, this.$_dateNow]
+          type: "monthRangeSelector",
+          canNotClear: true,
+          startKey: "startDate",
+          endKey: "endDate",
+          range: {
+            max: Moment().format("YYYY-MM"),
+            maxMonthRange: 24,
           },
+          value: [startDate, endDate],
+        },
       },
       filter: {},
     };
@@ -117,28 +110,33 @@ export default {
     tableCols() {
       const jailerFamilyFreeMeetingsTableCols = [
         {
-          label: '家属姓名',
-          prop: 'familyName'
-          // ...$likeName
+          label: "家属姓名",
+          prop: "familyName",
+          ...$likeName,
         },
-        // {
-        //   label: "省份",
-        //   prop: "provincesName",
-        // },
+        {
+          label: "省份",
+          prop: "provincesName",
+        },
 
-        // {
-        //   label: "监狱名称",
-        //   prop: "jailName",
-        // },
         {
-          label: '警员姓名',
-          prop: 'policeName'
-          // ...$likeName
+          label: "监狱名称",
+          prop: "jailName",
         },
         {
-          label: '警员编号',
-          prop: 'policeNumber'
-          // ...$likePrisonerNumber
+          label: "警员姓名",
+          prop: "policeName",
+          ...$likeName,
+        },
+        {
+          label: "警员编号",
+          prop: "policeNumber",
+          ...$likePrisonerNumber,
+        },
+        {
+          type: "input",
+          label: "通话类型",
+          miss: true,
         },
 
         {
@@ -168,30 +166,30 @@ export default {
       ];
       const familyFreeMeetingstableCols = [
         {
-          label: '家属姓名',
-          prop: 'name'
-          // ...$likeName
+          label: "家属姓名",
+          prop: "name",
+          ...$likeName,
         },
         {
-          label: '罪犯姓名',
-          prop: 'prisonerName'
-          // ...$likeName
+          label: "罪犯姓名",
+          prop: "prisonerName",
+          ...$likeName,
         },
         {
-          label: '罪犯编号',
-          prop: 'prisonerNumber',
-          minWidth: 92
-          // ...$likePrisonerNumber
+          label: "罪犯编号",
+          prop: "prisonerNumber",
+          minWidth: 92,
+          ...$likePrisonerNumber,
         },
-        // {
-        //   label: "省份",
-        //   prop: "provincesName",
-        // },
+        {
+          label: "省份",
+          prop: "provincesName",
+        },
 
-        // {
-        //   label: "监狱名称",
-        //   prop: "jailName",
-        // },
+        {
+          label: "监狱名称",
+          prop: "jailName",
+        },
         {
           label: "通话时间",
           prop: "meetingTime",
