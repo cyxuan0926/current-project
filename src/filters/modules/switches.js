@@ -216,6 +216,16 @@ let switches = {
       value: 1
     }
   ],
+  calltype: [
+    {
+      label: '系统电话',
+      value: 0
+    },
+    {
+      label: '可视电话',
+      value: 1
+    }
+  ],
 
   familyPhoneCheckType: [
     {
