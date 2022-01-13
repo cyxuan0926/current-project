@@ -43,6 +43,12 @@ const routes = [
         meta: { permission: 'visit.family-phone.phone-supervise', breadcrumbName: '亲情电话监管表' },
         props: { hasPrisonAreaAuth: true },
         component: 'family-phone/supervise'
+      }, {
+        path: '/family-phone-manage/call-recharge/list',
+        name: 'FamilyPhoneManageCallRechargeList',
+        props: { hasPrisonAreaAuth: true },
+        meta: { permission: 'visit.family-phone.call-recharge-jail.search', breadcrumbName: '亲情电话费用管理' },
+        component: 'family-phone/call-recharge/list'
       }
     ]
   }

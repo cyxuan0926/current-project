@@ -586,12 +586,12 @@ superAdmin = [{
     },
     {
       path: '/meeting-records',
-      name: 'meeting-records',
+      name: 'MeetingRecordsAll',
       // component: helper.loadView('check-meeting/meeting-records'),
       component: 'check-meeting/meeting-records',
       // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
-      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
+      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit-all.search', breadcrumbName: '免费通话记录表' }
     },
      {
       path: '/meeting-report/meeting-sadmin-island-list',
@@ -726,29 +726,17 @@ superAdmin = [{
       },
       component: 'family-phone/phone/phone-admin-cost-list'
     }, {
-      path: '/family-phone/phone-recharge-list',
-      name: 'FamilyPhonePhoneRechargeList',
-      props: {
-        hasProvinceQueryAuth: true,
-        hasOnlyAllPrisonQueryAuth: true
-      },
-      meta: {
-        breadcrumbName: '亲情电话通话费用充值',
-        permission: 'visit.family-phone.admin-cost.search'
-      },
-      component: 'family-phone/recharge/list'
-    }, {
-      path: '/family-phone/phone-cost-management',
-      name: 'FamilyPhonePhoneRechargeList',
+      path: '/family-phone/call-recharge/list',
+      name: 'FamilyPhoneCallRechargeList',
       props: {
         hasProvinceQueryAuth: true,
         hasOnlyAllPrisonQueryAuth: true
       },
       meta: {
         breadcrumbName: '亲情电话通话费用管理',
-        permission: 'visit.family-phone.admin-cost.search'
+        permission: 'visit.family-phone.call-recharge-all.search'
       },
-      component: 'family-phone/cost-management/list'
+      component: 'family-phone/call-recharge/list'
     }]
   }, {
     path: '/family-information',

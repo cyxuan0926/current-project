@@ -1,9 +1,8 @@
 <template>
-  <el-row class="el-row__educational-transformation-list" :gutter="0">
+  <el-row class="el-row__call-recharge-list" :gutter="0">
     <m-yg-prison-content
-      ref="$ygEducationalTransformationParent"
+      ref="$callRechargeParent"
       :tabItems="$tabItems"
-      :componentsVisible="componentsVisible"
       :ygSearchItems.sync="searchItems"
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
@@ -28,31 +27,18 @@ import {
   _tableCols
 } from '../constants'
 
-import cloneDeep from 'lodash/cloneDeep'
-
 import useRouteProps from '@/common/composables/useRouteProps'
 export default {
-  name: 'EducationalTransformationList',
+  name: 'CallRechargeList',
 
   setup() {
-    const $ygEducationalTransformationParent = ref(null)
+    const $callRechargeParent = ref(null)
 
-    const searchItems = reactive(cloneDeep(_searchItems))
+    const searchItems = ref(_.cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 
     const $tabItems = reactive(tabItems)
-    const componentsVisible =computed(() => {
-      let obj={}
-      if(JSON.parse(localStorage.getItem('user')).jailId==-1){
-        obj.excelUploadVisible = true
-        obj.excelDownloadVisible = true
-      } else {
-        obj.excelUploadVisible = false
-        obj.excelDownloadVisible = false
-      }
-      return obj
-    })
 
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce((accumulator, [key, value]) => {
@@ -74,17 +60,20 @@ export default {
     const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
-      $ygEducationalTransformationParent.value.initData()
+      if (val === '0') searchItems.value.types.miss = false
+
+      else if (val === '1') searchItems.value.types.miss = true
+
+      $callRechargeParent.value && $callRechargeParent.value.initData()
     })
 
     return {
-      $ygEducationalTransformationParent,
+      $callRechargeParent,
       searchItems,
       $tabs,
       $tabItems,
       $httpRequests,
       $tableCols,
-      componentsVisible,
       routeProps
     }
   }

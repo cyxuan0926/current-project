@@ -118,12 +118,12 @@ let check = [{
     meta: { permission: 'visit.visit-statistic.prison-area.search', breadcrumbName: '监区统计' }
   }, {
     path: '/meeting/records',
-    name: 'meeting-records',
+    name: 'MeetingRecordsJail',
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
     props: { hasPrisonAreaAuth: true },
-    meta: { permission: 'visit.visit-statistic.remote-free-visit.search', breadcrumbName: '免费通话记录' }
+    meta: { permission: 'visit.visit-statistic.remote-free-visit-jail.search', breadcrumbName: '免费通话记录' }
   }, {
     path: '/meeting-report/meeting-achievements',
     component: 'check-meeting/meeting-achievements',

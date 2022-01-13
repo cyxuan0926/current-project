@@ -843,29 +843,33 @@
             value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')],
             miss: !_isAdmin
           },
+
           area: {
             type: 'select',
             label: '通话区域',
             options: this.$store.state.areaOptions,
             value: ''
           },
+
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
-           level:{
-          type: 'select',
-          label: '管教级别',
-          options: [
-            { label: '宽管级', value: 1 },
-            { label: '普管级', value: 2 },
-            { label: '考察级', value: 3 },
-            { label: '严管级', value: 4 }
-          ],
-          value: ''
-        },
+
+          level:{
+            type: 'select',
+            label: '管教级别',
+            options: [
+              { label: '宽管级', value: 1 },
+              { label: '普管级', value: 2 },
+              { label: '考察级', value: 3 },
+              { label: '严管级', value: 4 }
+            ],
+            value: ''
+          },
+
           status: {
             type: 'select',
             label: '申请状态',

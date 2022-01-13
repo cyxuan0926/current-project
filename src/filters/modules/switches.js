@@ -391,7 +391,18 @@ let switches = {
       label: '已加入黑名单',
       value: 5
     }
-  ]
+  ],
+
+  familyPhoneCallRechargeTypeOptions: [
+    {
+      label: '充值',
+      value: 0
+    },
+    {
+      label: '退款',
+      value: 1
+    }
+  ]  
 }
 
 // 多级审批

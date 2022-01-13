@@ -34,7 +34,7 @@ export default {
   setup() {
     const $ygExecutionPunishmentParent = ref(null)
 
-    const searchItems = reactive(_.cloneDeep(_searchItems))
+    const searchItems = ref(_.cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 
@@ -60,7 +60,7 @@ export default {
     const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
-      $ygExecutionPunishmentParent.value.initData()
+      $ygExecutionPunishmentParent.value && $ygExecutionPunishmentParent.value.initData()
     })
 
     return {
