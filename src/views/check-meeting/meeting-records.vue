@@ -87,9 +87,19 @@ export default {
         status: {
           type: "select",
           label: "通话类型",
-          // value: [startDate, endDate],
-          options: this.$store.state.calltype, 
+          options: this.$store.state.calltype,
         },
+        // applicationDate: {
+        //   type: "monthRangeSelector",
+        //   canNotClear: true,
+        //   startKey: "startDate",
+        //   endKey: "endDate",
+        //   range: {
+        //     max: Moment().format("YYYY-MM"),
+        //     maxMonthRange: 24,
+        //   },
+        //   value: [startDate, endDate],
+        // },
          applicationDate: {
           type: "dateRange",
           unlinkPanels: true,
