@@ -216,7 +216,7 @@ let switches = {
       value: 1
     }
   ],
-  calltype: [
+  type: [
     {
       label: '系统电话',
       value: 0
