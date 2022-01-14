@@ -301,7 +301,7 @@ export default {
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
         this.content =  res.data.relationshipTemplate.split(",")
-        this.familylist=Object.assign({}, {}, res.data.relationshipTemplate.split(",")); 
+        this.familylist = [...res.data.relationshipTemplate.split(",")] 
       });
     },
 
@@ -338,6 +338,7 @@ export default {
     },
 
     onNewFamily() {
+      this.content=[...this.familylist]
       this.familyrelations = true;
     },
     changeTimes() {
