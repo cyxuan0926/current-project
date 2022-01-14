@@ -88,6 +88,7 @@ export default {
           type: "select",
           label: "通话类型",
           options: this.$store.state.calltype,
+          // miss: true,
         },
         // applicationDate: {
         //   type: "monthRangeSelector",
