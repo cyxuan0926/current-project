@@ -1,28 +1,45 @@
-.over-hidden{
+.over-hidden {
   overflow: hidden;
 }
-.height100{
+
+// 百分百
+// .absolutely {
+//   &-height {
+//     height: $absolutely-measure;
+//   }
+
+//   &-width {
+//     width: $absolutely-measure;
+//   }
+// }
+.height100 {
   height: 100%;
 }
-.width100{
+
+.width100 {
   width: 100%;
 }
-.transition{
+
+.transition {
   transition: all .3s ease-in-out;
 }
-.circle{
+
+.circle {
   border-radius: 50%;
 }
-.ellipsis{
+
+.ellipsis {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.disappear{
+
+.disappear {
   height: 0;
   width: 0;
   overflow: hidden;
 }
+
 .ml-10{
   margin-left: 10px;
 }

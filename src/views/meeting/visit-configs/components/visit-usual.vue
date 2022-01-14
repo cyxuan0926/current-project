@@ -886,7 +886,7 @@ export default {
     /deep/ .el-form-item {
       margin-bottom: 13px;
 
-      .el-form-item__content {
+      &__content {
         width: 30% !important;
       }
 
@@ -894,7 +894,7 @@ export default {
         line-height: 36px;
       }
 
-      .el-form-item__error {
+      &__error {
         padding-top: 0px;
         top: 95%
       }
