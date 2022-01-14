@@ -38,10 +38,8 @@ describe.skip('components-audio', () => {
 
     let audio = wrapper.find({ ref: 'audio' })
     audio.trigger('pause')
-    console.log(audio.element.paused)
     wrapper.vm.handlePlay()
     wrapper.vm.$nextTick(() => {
-      console.log(audio.duration)
       expect(setInterval).toHaveBeenCalledTimes(1)
       done()
     })

@@ -202,7 +202,6 @@ export default {
         this.$refs[formName].validate( async (valid) => {
           if (valid) {
             this.ruleForm.effectTime=  Moment(this.ruleForm.effectTime).format("YYYY-MM-DD HH:mm:ss")
-             console.log(this.ruleForm.effectTime)
             this.ruleForm.id = this.newForm.id?this.newForm.id:this.ruleForm.id
             let res= await http.editMessageList({...this.ruleForm})
              if(res){

@@ -266,6 +266,8 @@ export default {
 
   mixins: [normalMixins],
 
+  inject: ['onParentSubimt'],
+
   data() {
     const validateDay = (rule, value, callback) => {
       const {
@@ -592,7 +594,7 @@ export default {
         ]
       }
 
-      const result = await this.$parent.$parent.$parent.onParentSubimt(windowSizes)
+      const result = await this.onParentSubimt(windowSizes)
 
       if (result) {
         let hasNoChanged = false

@@ -88,6 +88,14 @@ export default {
     special
   },
 
+  provide() {
+    return {
+      onParentSubimt: this.onParentSubimt,
+
+      errorMsg: this.errorMsg
+    }
+  },
+
   data() {
     const remoteVisitDayNames = ['usual']
 

@@ -581,7 +581,6 @@ export default {
 
       this.configs.forEach((item,i)=>{
         if(i==0){
-          console.log(item)
           if(item.day){
             item.disabledMeeting=true
           }else{
