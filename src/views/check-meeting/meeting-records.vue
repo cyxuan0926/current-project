@@ -87,6 +87,7 @@ export default {
         status: {
           type: "select",
           label: "通话类型",
+          // value: [startDate, endDate],
           options: this.$store.state.calltype,
         },
         // applicationDate: {
