@@ -295,7 +295,7 @@
       </template>
 
       <div slot="footer" class="dialog-footer">
-        <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
+        <div class="process-select-block" v-if="!show.agree && !show.disagree">
         <!-- 审批流 -->
         <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
           <span style="padding-right: 12px;">选择流程节点:</span>
@@ -2175,6 +2175,7 @@
     font-size: 12px;
   }
   .process-select-block {
+    @include clearfix;
     padding: 20px 0 10px;
   }
 </style>

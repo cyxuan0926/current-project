@@ -4,7 +4,7 @@
         :visible.sync="smsVisible"
         width="720px"
         @close="handleClose">
-        <div class="sms-send-content clearfix">
+        <div class="sms-send-content">
             <dl>
                 <dt>家属姓名：</dt>
                 <dd>{{ modalData.familyName }}</dd>
@@ -238,6 +238,7 @@ export default {
 
 <style lang="scss" scoped>
     .sms-send-content {
+        @include clearfix;
         dl {
             display: flex;
             float: left;
@@ -253,7 +254,7 @@ export default {
                 padding: 0 16px;
             }
             &:last-child {
-                width: 100%;
+                width: $absolutely-measure;
             }
         }
         .deli-video {
@@ -266,15 +267,15 @@ export default {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
-                height: 100%;
+                width: $absolutely-measure;
+                height: $absolutely-measure;
             }
 
             .tip {
                 position: absolute;
                 left: 0;
                 top: 45%;
-                width: 100%;
+                width: $absolutely-measure;
                 text-align: center;
                 color: #999;
             }

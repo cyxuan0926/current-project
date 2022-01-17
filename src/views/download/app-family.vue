@@ -93,10 +93,10 @@ export default {
     background-image: url('../../assets/images/app-family-download-bg.png');
     background-position: center center;
     background-repeat:  no-repeat;
-    background-size: auto 100%;
+    background-size: auto $absolutely-measure;
     background-color: #2B6CFF;
-    width: 100%;
-    height: 100%;
+    width: $absolutely-measure;
+    height: $absolutely-measure;
     position: relative;
 
     &-wrap {
@@ -122,7 +122,7 @@ export default {
       width: 246px;
       img {
         display: block;
-        width: 100%;
+        width: $absolutely-measure;
         height: auto;
       }
     }
@@ -136,18 +136,18 @@ export default {
     }
 
     &-block {
-      width: 100%;
+      width: $absolutely-measure;
       display: flex;
       flex-direction: column;
       // &-hd img {
       //   display: block;
-      //   width: 100%;
+      //   width: $absolutely-measure;
       //   height: auto;
       //   margin-bottom: 76px;
       // }
       &-hd h3 {
         display: block;
-        width: 100%;
+        width: $absolutely-measure;
         font-size: 44px;
         margin-top: 0;
         margin-bottom: 70px;
@@ -204,7 +204,7 @@ export default {
       margin-left: 44px;
       img {
         display: block;
-        width: 100%;
+        width: $absolutely-measure;
         height: auto;
         box-shadow: 6px 6px 15px #2c6bff;
       }

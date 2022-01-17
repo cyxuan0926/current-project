@@ -763,7 +763,7 @@ export default {
 
 <style lang="scss" scoped>
 .meeting-list {
-  width: 100%;
+  width: $absolutely-measure;
   overflow: hidden;
   display: flex;
 
@@ -797,12 +797,12 @@ export default {
       &.draggable,
       &.special {
         color: #fff;
-        background-color: #3c8dbc;
+        background-color: $light-blue;
       }
 
       &.swap-target {
         color: #fff;
-        background-color: #f56c6c;
+        background-color: $red;
       }
     }
   }
@@ -910,13 +910,13 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: $absolutely-measure;
+    height: $absolutely-measure;
     color: #fff;
 
     &.selected {
       color: #fff;
-      background-color: #3c8dbc;
+      background-color: $light-blue;
     }
   }
 }
@@ -949,18 +949,18 @@ export default {
 
     &.draggable {
       color: #fff;
-      background-color: #3c8dbc;
+      background-color: $light-blue;
       cursor: move;
     }
 
     &.special {
       color: #fff;
-      background-color: #3c8dbc;
+      background-color: $light-blue;
     }
 
     &.swap-target {
       color: #fff;
-      background-color: #f56c6c;
+      background-color: $red;
     }
   }
 

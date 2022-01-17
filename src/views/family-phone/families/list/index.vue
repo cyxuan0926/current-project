@@ -2121,8 +2121,8 @@ $border-style: 1px solid #E4E7ED;
     margin-bottom: 5px;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: $absolutely-measure;
+      height: $absolutely-measure;
       cursor: pointer;
     }
 
@@ -2187,7 +2187,7 @@ $border-style: 1px solid #E4E7ED;
 
   .multistage_examine-item {
     display: flex;
-    width: 100%;
+    width: $absolutely-measure;
   }
 
   .detail-content {

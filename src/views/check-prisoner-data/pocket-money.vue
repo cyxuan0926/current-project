@@ -182,7 +182,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.tips{
+.tips {
   color: #f56c6c;
   font-weight: bold;
   text-align: center;

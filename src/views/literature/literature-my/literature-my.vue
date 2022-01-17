@@ -243,11 +243,11 @@ h3 {
     display: flex;
     align-items: center;
     width: 70px;
-    max-height: 100%;
+    max-height: $absolutely-measure;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: $absolutely-measure;
+      height: $absolutely-measure;
     }
   }
 

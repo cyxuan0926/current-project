@@ -75,7 +75,7 @@
         background-image: url('../../../../assets/images/phone-bg.png');
         background-repeat: no-repeat;
         background-position: 0 0;
-        background-size: 100% auto;
+        background-size: $absolutely-measure auto;
     }
     .phone-dialog-iframe {
         background-color: #fff;
@@ -128,7 +128,7 @@
             /deep/ img,
             /deep/ video {
                 display: block;
-                width: 100%;
+                width: $absolutely-measure;
                 height: auto;
             }
         }

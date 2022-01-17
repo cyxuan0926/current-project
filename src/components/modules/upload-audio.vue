@@ -195,7 +195,7 @@ export default {
   }
   .audio-box .no-video{
     height: 36px;
-    width: 100%;
+    width: $absolutely-measure;
     background: #E5E5E5;
     line-height: 36px;
     text-align: center;

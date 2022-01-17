@@ -188,15 +188,15 @@ export default {
       margin-right: 0;
     }
   }
-  .button-box{
+  .button-box {
     padding-bottom: 20px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     clear: both;
   }
-  .tips{
-    color: #F56C6C;
+  .tips {
+    color: $red;
     position: absolute;
     left: 0;
     top: 32px;

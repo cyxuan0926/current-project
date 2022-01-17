@@ -23,7 +23,7 @@ export default {
 
 <style lang="scss" scoped>
 .m-footer {
-  height: 100%;
+  height: $absolutely-measure;
   // font-size: 13px;
   // font-weight: bold;
   background: #fff;

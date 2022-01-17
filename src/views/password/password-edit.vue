@@ -1,5 +1,5 @@
 <template>
-  <el-container :class="['height100', { 'no-login': $route.meta.notLogin }]">
+  <el-container :class="['absolutely-height', { 'no-login': $route.meta.notLogin }]">
     <el-header height="46px">
       <the-header />
     </el-header>

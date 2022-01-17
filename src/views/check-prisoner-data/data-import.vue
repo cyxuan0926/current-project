@@ -389,7 +389,7 @@ export default {
 .row-container {
   line-height: 40px;
   .red {
-    color: #F56C6C;
+    color: $red;
     font-weight: bold;
   }
 }
@@ -409,7 +409,7 @@ export default {
 }
 
 .tips {
-  color: #f56c6c;
+  color: $red;
   font-weight: bold;
   text-align: center;
   // font-size: 12px;

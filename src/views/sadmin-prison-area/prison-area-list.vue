@@ -368,11 +368,11 @@ export default {
   font-weight: normal;
   // background-color: #e2e2e2;
   color: #fff;
-  background-color: #3c8dbc;
+  background-color: $light-blue;
 }
 .el-input-div__error {
   font-size: 12px;
-  color: #f56c6c;
+  color: $red;
   line-height: 1;
   padding-top: 10px;
   text-align: center;

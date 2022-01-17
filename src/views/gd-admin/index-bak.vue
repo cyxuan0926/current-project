@@ -507,13 +507,13 @@
 </script>
 <style lang="scss" scoped>
   .fullscreen-layout {
-    height: 100%;
+    height: $absolutely-measure;
     display: flex;
     flex: 1;
   }
 
   .gd-home {
-    height: 100%;
+    height: $absolutely-measure;
     background-color: #000A26;
 
     &-title {
@@ -548,8 +548,8 @@
           position: absolute;
           left: 0;
           top: 0;
-          width: 100%;
-          height: 100%;
+          width: $absolutely-measure;
+          height: $absolutely-measure;
           overflow: hidden;
         }
 
@@ -632,7 +632,7 @@
         &:after {
           display: block;
           content: '';
-          width: 100%;
+          width: $absolutely-measure;
           height: 1px;
           bottom: 0;
           left: 0;
@@ -648,8 +648,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 100%;
-      height: 100%;
+      width: $absolutely-measure;
+      height: $absolutely-measure;
 
       &-datepicker {
         margin: 16px 0;
@@ -657,7 +657,7 @@
 
       &-block {
         flex: 1;
-        width: 100%;
+        width: $absolutely-measure;
         margin: 8px 0 16px;
       }
     }

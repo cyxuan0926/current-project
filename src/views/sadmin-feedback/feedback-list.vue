@@ -362,12 +362,12 @@ export default {
       /deep/ .el-image{
         width: 195px;
         /deep/ img {
-          width: 100%;
+          width: $absolutely-measure;
         }
       }
     }
     button{
-      width: 100%;
+      width: $absolutely-measure;
     }
   }
 }
