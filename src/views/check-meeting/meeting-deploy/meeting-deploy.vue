@@ -1,7 +1,8 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <el-tabs type="border-card">
-      <el-form ref="form" label-width="150px" :rules="rules" :model="formData">
+    <el-tabs type="border-card" v-model="tabs" @tab-click="handleClick">
+      <el-tab-pane label="配置信息" name="information" >
+         <el-form ref="form" label-width="150px" :rules="rules" :model="formData">
         <el-form-item label="可视电话申请自动审核" :rules="{ required: true }">
           <el-switch v-model="autoAuthorizeMeeting" active-color="#13ce66" />
         </el-form-item>
@@ -98,7 +99,10 @@
           prop="visiblePhonePeopleNumber"
           class="el-form-item_people-number"
         >
-          <el-input v-model="formData.visiblePhonePeopleNumber" placeholder="请输入可视电话通话人数上限">
+          <el-input
+            v-model="formData.visiblePhonePeopleNumber"
+            placeholder="请输入可视电话通话人数上限"
+          >
             <template #append>人</template>
           </el-input>
         </el-form-item>
@@ -123,6 +127,132 @@
           >
         </el-form-item>
       </el-form>
+      </el-tab-pane>
+
+      <el-tab-pane label="会见次数配置" name="configuration" >
+        <div >
+        <div class="el-form-item__content">可视电话会见配置</div>
+        <el-table
+        class="el-table__has__border-bottom"
+        :data="tableData.configurationsFamilyPhoneList"
+        border
+        style="width: 800px">
+         <el-table-column
+          prop="type"
+          label="管教级别"
+         >
+           <template slot-scope="scope">
+            <span v-if="scope.row.type==1">
+              宽管级别
+            </span>
+            <span v-if="scope.row.type==2">
+              普管级别
+            </span>
+            <span v-if="scope.row.type==3">
+              考察级别
+            </span>
+            <span v-if="scope.row.type==4">
+              严管级别
+            </span>
+            <span v-if="scope.row.type==5">
+              其它级别
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="number"
+          label="通话次数(次/月)">
+           <template slot-scope="scope">
+            <span v-if="scope.row.isEditPropertyShow">
+              <el-input  type="number" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
+              <template slot="append">/次</template>
+                </el-input>
+            </span>
+            <span v-else>{{ scope.row.number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button v-if="!scope.row.isEditPropertyShow" type="primary" size="mini" @click="editProperty(scope.row,scope.$index)">编辑</el-button>
+                <div v-else>
+                  <el-button type="primary" plain size="mini" @click="saveProperty(scope.row,scope.$index)">保存</el-button>
+                  <el-button size="mini" @click="cancelProperty(scope.row,scope.$index)">取消</el-button>
+                </div>
+              </template>
+        </el-table-column>
+      </el-table>
+
+      </div>
+
+      <div >
+        <div class="el-form-item__content">亲情电话会见配置</div>
+        <el-table
+        class="el-table__has__border-bottom"
+        :data="tableData.configurationsFamilyPhoneList"
+        border
+        style="width: 800px">
+         <el-table-column
+          prop="type"
+          label="管教级别"
+          width="100">
+           <template slot-scope="scope">
+            <span v-if="scope.row.type==1">
+              宽管级别
+            </span>
+            <span v-if="scope.row.type==2">
+              普管级别
+            </span>
+            <span v-if="scope.row.type==3">
+              考察级别
+            </span>
+            <span v-if="scope.row.type==4">
+              严管级别
+            </span>
+            <span v-if="scope.row.type==5">
+              其它级别
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="duration"
+          label="通话时长(分钟)"
+          width="200">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isEditPropertyShow">
+              <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" >
+               <template slot="append">/分钟</template>
+              </el-input>
+            </span>
+            <span v-else>{{ scope.row.duration }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="number"
+          label="通话次数(次/月)">
+           <template slot-scope="scope">
+            <span v-if="scope.row.isEditPropertyShow">
+              <el-input  type="number" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
+              <template slot="append">/次</template>
+                </el-input>
+            </span>
+            <span v-else>{{ scope.row.number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button v-if="!scope.row.isEditPropertyShow" type="primary" size="mini" @click="editProperty(scope.row,scope.$index)">编辑</el-button>
+                <!-- <div v-else>
+                  <el-button type="primary" plain size="mini" @click="saveProperty(scope.row,scope.$index)">保存</el-button>
+                  <el-button size="mini" @click="cancelProperty(scope.row,scope.$index)">取消</el-button>
+                </div> -->
+              </template>
+        </el-table-column>
+      </el-table>
+
+      </div>
+      </el-tab-pane>
+
+     
     </el-tabs>
 
     <el-dialog title="提示" :visible.sync="dialogVisible" width="500px">
@@ -149,6 +279,7 @@ import validator from "@/utils";
 export default {
   data() {
     return {
+      tabs:'information',
       dialogVisible: false,
       params: false,
       abnormalCallDuration: 300,
@@ -156,6 +287,9 @@ export default {
       regAutoAudit: false,
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
+      tableData: {
+          configurationsFamilyPhoneList:[],
+        },
       formData: {
         afrInterval: "1500",
 
@@ -163,7 +297,7 @@ export default {
 
         afrAndroidSetValue: "0.4",
 
-        visiblePhonePeopleNumber: "6"
+        visiblePhonePeopleNumber: "6",
       },
 
       faceRecognitionValues,
@@ -184,20 +318,29 @@ export default {
           },
         ],
 
-        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }]
+        visiblePhonePeopleNumber: [
+          {
+            validator: validator.isPositiveIntegers,
+            ownMessage: "请输入可视电话通话人数上限",
+          },
+        ],
       },
     };
   },
-
+  
   mounted() {
     this.getDeploy();
   },
 
   methods: {
+    handleClick(tab, event){
+    },
     getDeploy() {
       http.getMeetDeploy().then((res) => {
         this.dialogVisible = false;
-        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting? true: false;
+        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting
+          ? true
+          : false;
         this.regAutoAudit = res.data.regAutoAudit ? true : false;
         this.multistageExamine = res.data.multistageExamine ? true : false;
         this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch
@@ -230,8 +373,8 @@ export default {
       const params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
-        regAutoAudit:this.regAutoAudit ? 1 : 0,
-        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0
+        regAutoAudit: this.regAutoAudit ? 1 : 0,
+        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
       });
       this.$refs.form.validate((valid) => {
         if (valid) {

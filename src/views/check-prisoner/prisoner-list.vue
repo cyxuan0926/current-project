@@ -709,6 +709,12 @@ export default {
           ],
           value: ''
         },
+        accessTime: {
+          type: 'input',
+          label: '通话次数',
+          miss: false,
+          rules: ["required"],
+        },
       },
 
       formItems: {
