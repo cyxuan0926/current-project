@@ -84,10 +84,11 @@ export default {
           label: "警员编号",
           miss: true,
         },
-        status: {
+        type: {
           type: "select",
           label: "通话类型",
-          options: this.$store.state.calltype,
+          options: this.$store.state.type,
+          miss: true,
         },
         // applicationDate: {
         //   type: "monthRangeSelector",
@@ -147,7 +148,7 @@ export default {
         {
           type: "input",
           label: "通话类型",
-          miss: true,
+          miss: false
         },
 
         {
@@ -247,6 +248,7 @@ export default {
         this.$set(this.searchItems.name, "miss", false);
         this.$set(this.searchItems.prisonerNumber, "miss", false);
         this.$set(this.searchItems.prisonArea, "miss", false);
+        this.$set(this.searchItems.type, "miss", true);
         this.$set(this.searchItems.familyName, "miss", true);
         this.$set(this.searchItems.policeName, "miss", true);
         this.$set(this.searchItems.policeNumber, "miss", true);
@@ -258,6 +260,7 @@ export default {
         this.$set(this.searchItems.familyName, "miss", false);
         this.$set(this.searchItems.policeName, "miss", false);
         this.$set(this.searchItems.policeNumber, "miss", false);
+        this.$set(this.searchItems.type, "miss", false);
       }
 
       this.$refs.search.onGetFilter();
