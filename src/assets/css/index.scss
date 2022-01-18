@@ -1,5 +1,12 @@
 @import "./common.scss", "element-ui/lib/theme-chalk/display.css";
 // @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+
+// 为css定义全局共享变量 变量取自scss的变量
+:root {
+  --absolutely-measure: #{$absolutely-measure};
+  --white-css: #{$white};
+}
+
 html, body {
   height: $absolutely-measure;
   padding: 0;

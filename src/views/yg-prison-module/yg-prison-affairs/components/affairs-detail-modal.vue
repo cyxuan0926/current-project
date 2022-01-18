@@ -78,7 +78,7 @@
         background-size: $absolutely-measure auto;
     }
     .phone-dialog-iframe {
-        background-color: #fff;
+        background-color: $white;
         position: absolute;
         top: 34px;
         bottom: 48px;

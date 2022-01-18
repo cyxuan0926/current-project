@@ -26,7 +26,7 @@ export default {
   height: $absolutely-measure;
   // font-size: 13px;
   // font-weight: bold;
-  background: #fff;
+  background: $white;
   // color: #444;
   border-top: 1px solid #d2d6de;
   line-height: 36px;

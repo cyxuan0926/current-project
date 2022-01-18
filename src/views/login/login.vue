@@ -441,7 +441,7 @@ export default {
     line-height: 36px;
     border-top: 1px solid #d2d6de;
     text-align: center;
-    background: #fff;
+    background: $white;
     color: #444;
 
     a {

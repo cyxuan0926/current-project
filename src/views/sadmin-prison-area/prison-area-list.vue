@@ -367,7 +367,7 @@ export default {
   text-align: center;
   font-weight: normal;
   // background-color: #e2e2e2;
-  color: #fff;
+  color: $white;
   background-color: $light-blue;
 }
 .el-input-div__error {

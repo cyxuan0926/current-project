@@ -796,12 +796,12 @@ export default {
 
       &.draggable,
       &.special {
-        color: #fff;
+        color: $white;
         background-color: $light-blue;
       }
 
       &.swap-target {
-        color: #fff;
+        color: $white;
         background-color: $red;
       }
     }
@@ -815,7 +815,7 @@ export default {
     border-radius: 3px;
     line-height: 42px;
     text-align: center;
-    background-color: #fff;
+    background-color: $white;
     box-shadow: 0px 0px 2px rgba(0,0,0,0.382);
   }
 
@@ -860,7 +860,7 @@ export default {
     }
 
     .meeting-list-cell__acrossdate {
-      color: #fff;
+      color: $white;
       cursor: pointer;
       margin-right: 10px;
     }
@@ -912,10 +912,10 @@ export default {
     left: 0;
     width: $absolutely-measure;
     height: $absolutely-measure;
-    color: #fff;
+    color: $white;
 
     &.selected {
-      color: #fff;
+      color: $white;
       background-color: $light-blue;
     }
   }
@@ -943,23 +943,23 @@ export default {
     border-radius: 3px;
     line-height: 42px;
     text-align: center;
-    background-color: #fff;
+    background-color: $white;
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.382);
     overflow: hidden;
 
     &.draggable {
-      color: #fff;
+      color: $white;
       background-color: $light-blue;
       cursor: move;
     }
 
     &.special {
-      color: #fff;
+      color: $white;
       background-color: $light-blue;
     }
 
     &.swap-target {
-      color: #fff;
+      color: $white;
       background-color: $red;
     }
   }

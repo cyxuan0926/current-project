@@ -186,7 +186,7 @@
         left: 0;
         top: 0;
         bottom: 0;
-        background: #fff;
+        background: $white;
         border: none;
 
         .entry:before {

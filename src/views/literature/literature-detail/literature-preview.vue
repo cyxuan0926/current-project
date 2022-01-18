@@ -94,7 +94,7 @@ export default {
 
 /deep/ .el-textarea.is-disabled .el-textarea__inner {
   color: #333;
-  background-color: #fff;
+  background-color: $white;
   cursor: text;
 }
 </style>

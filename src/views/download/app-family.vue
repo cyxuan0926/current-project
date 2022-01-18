@@ -151,7 +151,7 @@ export default {
         font-size: 44px;
         margin-top: 0;
         margin-bottom: 70px;
-        color: #fff;
+        color: $white;
         font-weight: 400;
         text-align: center;
       }
@@ -184,12 +184,12 @@ export default {
 
       .btn-ios {
         background: #333;
-        color: #fff;
+        color: $white;
       }
 
       .btn-and {
         background: #A5C846;
-        color: #fff;
+        color: $white;
       }
 
       /deep/ .iconfont {
@@ -200,7 +200,7 @@ export default {
 
     &-qrcode {
       width: 174px;
-      color: #fff;
+      color: $white;
       margin-left: 44px;
       img {
         display: block;

@@ -559,8 +559,8 @@
           top: 0;
           z-index: 3;
           width: 240px;
-          color: #fff;
-          border: 1px solid #fff;
+          color: $white;
+          border: 1px solid $white;
           opacity: .9;
           
           &-title {
@@ -568,7 +568,7 @@
             height: 24px;
             line-height: 24px;
             background-color: #2F7DDF;
-            border-bottom: 1px solid #fff;
+            border-bottom: 1px solid $white;
           }
         }
 
@@ -691,8 +691,8 @@
         padding: 0 !important;
         height: 22px;
         line-height: 22px;
-        color: #fff;
-        border-bottom: 1px solid #fff !important;
+        color: $white;
+        border-bottom: 1px solid $white !important;
       }
 
       thead th {

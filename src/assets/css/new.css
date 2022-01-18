@@ -1,14 +1,17 @@
 body {
-  height: 100%;
+  height: var(--absolutely-measure);
 }
-.blue-container{
+
+.blue-container {
   padding-bottom: 65px;
 }
-.blue-container::before, .blue-container::after{
+
+.blue-container::before, .blue-container::after {
   content: "";
   display: table;
 }
-.img-box{
+
+.img-box {
   width: 25%;
   float: left;
   position: relative;
@@ -16,14 +19,16 @@ body {
   padding-left: 15px;
   padding-right: 15px;
 }
-.download-box{
+
+.download-box {
   width: 75%;
   padding: 0 30px;
   float: left;
   position: relative;
   min-height: 1px;
 }
-.img-box .img-user{
+
+.img-box .img-user {
   position: absolute;
   left: -55%;
   top: 8px;
@@ -31,7 +36,8 @@ body {
   margin-top: -15px;
   margin-left: -26%;
 }
-.img-box .img-prison{
+
+.img-box .img-prison {
   position: absolute;
   left: 25%;
   top: 60px;
@@ -39,7 +45,8 @@ body {
   margin-top: -15px;
   margin-left: -26%;
 }
-.download{
+
+.download {
   width: 50%;
   float: left;
   display: flex;
@@ -48,11 +55,13 @@ body {
   box-sizing: border-box;
   padding: 0 20px;
 }
-.download.prison{
-  width: 100%;
+
+.download.prison {
+  width: var(--absolutely-measure);
   padding: 0 15px;
 }
-.download.prison .android{
+
+.download.prison .android {
   width: 66.66666667%;
   margin: 0 auto;
   padding-right: 15px;
@@ -60,39 +69,46 @@ body {
   position: relative;
   min-height: 1px;
 }
-.download-box h3{
+
+.download-box h3 {
   font-size: 24px;
-  color: #fff;
+  color: var(--white-css);
   padding: 0 20px;
   margin-top: 40px;
 }
-.download button{
-  color: #fff;
+
+.download button {
+  color: var(--white-css);
   border: 0;
   margin-bottom: 8px;
   padding: 10px 0;
-  width: 100%;
+  width: var(--absolutely-measure);
 }
-.download .iconfont{
+
+.download .iconfont {
   margin-right: 5px;
 }
-.download img{
-  max-width: 100%;
+
+.download img {
+  max-width: var(--absolutely-measure);
   height: auto;
   line-height: 1.42857143;
   border: 1px solid #ddd;
   border-radius: 4px;
   vertical-align: middle;
-  background: #fff;
+  background: var(--white-css);
   padding: 4px;
 }
-.download.android button, .download.prison button{
+
+.download.android button, .download.prison button {
   background: #5CB85C;
 }
-.download.ios button{
+
+.download.ios button {
   background: #5BC0DE;
 }
-.tips{
+
+.tips {
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 2px 2px 5px #333;
   color: #337AB7;
@@ -107,100 +123,121 @@ body {
   padding: 5px;
   border-radius: 4px;
 }
-.tips p, .main-footer p{
+
+.tips p, .main-footer p {
   margin: 0;
 }
-.main-footer{
+
+.main-footer {
   font-size: 12px;
   font-weight: bold;
   position: fixed;
   bottom: 0;
   left: 0;
   margin-left: 0;
-  width: 100%;
+  width: var(--absolutely-measure);
   display: flex;
   justify-content: space-between;
   text-align: center;
 }
-main{
+
+main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  height: var(--absolutely-measure);
   margin-bottom: 48px;
 }
-@media screen and (max-width: 767px){
-  .main-footer{
+
+@media screen and (max-width: 767px) {
+  .main-footer {
     justify-content: center;
   }
-  .main-footer>div{
+  .main-footer > div {
     display: none;
   }
 }
+
 @media screen and (max-width: 605px) and (min-width: 564px) {
-  .img-box .img-user{
+  .img-box .img-user {
     margin-top: 0;
     margin-left: -20%;
   }
-  .download button{
+
+  .download button {
     font-size: 12px;
     padding: 8px 0;
   }
-  .download-box{
+
+  .download-box {
     padding: 0 15px;
   }
 }
-@media screen and (max-width: 563px){
-  .download-box{
+
+@media screen and (max-width: 563px) {
+  .download-box {
     padding-right: 0;
   }
-  .download-box h3{
+
+  .download-box h3 {
     font-size: 20px;
-    color: #fff;
+    color: var(--white-css);
     padding: 0 15px 0 0;
     margin-top: 40px;
   }
-  .img-box .img-user{
+
+  .img-box .img-user {
     margin-left: -20%;
   }
-  .download button{
+
+  .download button {
     font-size: 12px;
     padding: 8px 0;
   }
-  .download .iconfont{
+
+  .download .iconfont {
     margin-right: 0;
   }
-  .img-box{
+
+  .img-box {
     width: 30%;
   }
-  .download-box{
+
+  .download-box {
     width: 70%;
   }
-  .download{
+
+  .download {
     padding: 0 15px 0 0;
   }
-  .download.prison .android{
+
+  .download.prison .android {
     width: 90%;
   }
-  .img-box .img-prison{
+
+  .img-box .img-prison {
     margin-left: -8%;
   }
 }
+
 @media screen and (max-width: 439px) {
-  .img-box .img-user{
+  .img-box .img-user {
     margin-top: 0;
   }
 }
+
 @media screen and (max-width: 376px) {
-  .img-box .img-user{
+  .img-box .img-user {
     margin-top: 13px;
   }
 }
+
 @media screen and (max-width: 320px) {
-  .download .iconfont{
+  .download .iconfont {
     display: none;
   }
-  .tips{
+
+  .tips {
     /* width: 43%; */
   }
 }

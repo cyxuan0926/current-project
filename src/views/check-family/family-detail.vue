@@ -62,25 +62,27 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.detail-container{
+.detail-container {
   width: 50%;
   min-width: 240px;
   margin: auto;
   padding: 20px 0;
   min-height: 400px;
 }
-.detail-container .detail-item{
+
+.detail-container .detail-item {
   line-height: 24px;
   overflow: hidden;
-
 }
-.detail-container .detail-item label{
+
+.detail-container .detail-item label {
   width: 100px;
   font-weight: bold;
   float: left;
 }
-.detail-container .detail-item span{
-  width: calc(100% - 100px);
+
+.detail-container .detail-item span {
+  width: calc(var(--absolutely-measure) - 100px);
   float: right;
 }
 </style>
