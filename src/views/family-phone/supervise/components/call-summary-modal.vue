@@ -29,7 +29,11 @@
                 </m-table-new>
             </template>
             <div class="summary-container-wrap">
-                <div class="summary-container clearfix" v-for="r in records">
+                <div
+                    class="summary-container"
+                    v-for="(r, index) in records"
+                    :key="index"
+                >
                     <dl class="summary-item">
                         <dt>通话纪要记录人：</dt>
                         <dd>{{ r.createdBy }}</dd>
@@ -167,18 +171,14 @@
         overflow-y: auto;
     }
     .summary-scroller {
-        width: 100%;
+        width: $absolutely-measure;
     }
     .summary-table {
         margin-bottom: 30px;
     }
     .summary-container {
         padding: 16px 16px 0;
-        &.clearfix {
-            display: table;
-            content: '';
-            clear: both;
-        }
+        @include clearfix;
         & + .summary-container {
             border-top: 1px solid #ededed;
         }

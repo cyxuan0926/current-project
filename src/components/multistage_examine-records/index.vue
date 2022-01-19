@@ -306,7 +306,7 @@ export default {
 
   .multistage_examine-item {
     display: flex;
-    width: 100%;
+    width: $absolutely-measure;
   }
 
   .detail-content {

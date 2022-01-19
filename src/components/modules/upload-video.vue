@@ -164,7 +164,7 @@ export default {
   }
   .video-box .no-video{
     height: 108px;
-    width: 100%;
+    width: var(--absolutely-measure);
     background: #E5E5E5;
     line-height: 108px;
     text-align: center;

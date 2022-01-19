@@ -1,6 +1,6 @@
 .no-login {
   & > .main-container {
-    height: 100%;
+    height: $absolutely-measure;
     .el-main {
       padding: 0;
     }

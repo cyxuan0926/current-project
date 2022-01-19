@@ -171,7 +171,7 @@
         }
     }
     .dipdetail__table {
-        width: 100%;
+        width: $absolutely-measure;
         td {
             padding: 5px;
         }

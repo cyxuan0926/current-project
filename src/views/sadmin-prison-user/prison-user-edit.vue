@@ -189,6 +189,6 @@ export default {
 }
 
 .el-cascader {
-  width: 100%;
+  width: $absolutely-measure;
 }
 </style>

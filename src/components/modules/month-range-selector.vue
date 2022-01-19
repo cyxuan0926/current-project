@@ -62,14 +62,9 @@
             @click="handleNextYear('pre', preYear >= nextYear - 1)" /> -->
           <div>{{ preYear }}年</div>
         </div>
-        <table
-          class="el-month-table table-month">
-          <tr
-            v-for="row in 3"
-            :key="row">
-            <td
-              v-for="col in 4"
-              :key="col">
+        <table class="el-month-table table-month">
+          <tr v-for="row in 3" :key="row">
+            <td v-for="col in 4" :key="col">
               <span
                 class="cell"
                 :class="[
@@ -388,39 +383,47 @@ export default {
 }
 </script>
 <style scoped>
-.el-date-editor .el-range-separator{
+.el-date-editor .el-range-separator {
   padding: 0;
   width: 20px;
 }
-.el-date-editor--daterange .el-icon-circle-close{
+
+.el-date-editor--daterange .el-icon-circle-close {
   color: transparent;
 }
-.el-date-editor--daterange:hover .el-icon-circle-close{
+
+.el-date-editor--daterange:hover .el-icon-circle-close {
   color: #c0c4cc;
 }
-.is-left{
+
+.is-left {
   margin: 0;
   padding: 0 15px 0 0;
 }
-.is-right{
+
+.is-right {
   margin: 0;
   padding: 0 0 0 15px;
 }
-.el-date-range-picker__header{
+
+.el-date-range-picker__header {
   border-bottom: 1px solid #ebeef5;
 }
-.show-picked{
+
+.show-picked {
   border-bottom: 1px solid #ebeef5;
   display: table;
-  width: 100%;
+  width: var(--absolutely-measure);
   padding-bottom: 4px;
 }
-.show-picked>div{
+
+.show-picked > div {
   display: table-cell;
   line-height: 30px;
   text-align: center;
 }
-.show-picked .pre-content, .show-picked .next-content{
+
+.show-picked .pre-content, .show-picked .next-content {
   border: 1px solid #ebeef5;
   text-align: center;
   border-radius: 4px;
@@ -429,36 +432,44 @@ export default {
   display: inline-block;
   padding: 0 20px;
 }
-.el-date-range-picker__header div{
+
+.el-date-range-picker__header div {
   margin-right: 0;
   line-height: 28px;
 }
-.table-month td{
+
+.table-month td {
   padding: 10px 3px;
   cursor: default;
 }
-.table-month td .cell{
+
+.table-month td .cell {
   width: 37px;
   cursor: pointer;
 }
-.table-month .cell.in-range{
+
+.table-month .cell.in-range {
   background: #f2f6fc;
 }
-.table-month .cell.picked{
+
+.table-month .cell.picked {
   background: #409EFF;
-  color: #fff;
+  color: var(--white-css);
 }
-.table-month .cell.is-disabled{
+
+.table-month .cell.is-disabled {
   background-color: #f5f7fa;
   opacity: 1;
   cursor: not-allowed;
   color: #c0c4cc;
 }
-.picker-panel{
+
+.picker-panel {
   padding: 12px;
   overflow: hidden;
 }
-.el-picker-panel__footer{
+
+.el-picker-panel__footer {
   clear: both;
 }
 </style>

@@ -120,8 +120,8 @@
                     height: 110px;
                     margin-bottom: 5px;
                     img {
-                        width: 100%;
-                        height: 100%;
+                        width: $absolutely-measure;
+                        height: $absolutely-measure;
                         cursor: pointer;
                     }
                 }

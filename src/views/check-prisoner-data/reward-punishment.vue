@@ -322,7 +322,7 @@
   .row-container {
     line-height: 40px;
     .red {
-      color: #F56C6C;
+      color: $red;
       font-weight: bold;
     }
   }
@@ -338,8 +338,8 @@
     text-align: center;
     font-weight: bold;
   }
-  .tips{
-    color: #f56c6c;
+  .tips {
+    color: $red;
     font-weight: bold;
     text-align: center;
     // font-size: 12px;

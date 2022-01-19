@@ -300,7 +300,7 @@ export default {
 
   &.content {
     position: absolute;
-    top: 100%;
+    top: $absolutely-measure;
     right: 0;
     padding-top: 5px;
     line-height: 1;

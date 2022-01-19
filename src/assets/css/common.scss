@@ -3,21 +3,14 @@
 }
 
 // 百分百
-// .absolutely {
-//   &-height {
-//     height: $absolutely-measure;
-//   }
+.absolutely {
+  &-height {
+    height: $absolutely-measure;
+  }
 
-//   &-width {
-//     width: $absolutely-measure;
-//   }
-// }
-.height100 {
-  height: 100%;
-}
-
-.width100 {
-  width: 100%;
+  &-width {
+    width: $absolutely-measure;
+  }
 }
 
 .transition {
@@ -40,31 +33,32 @@
   overflow: hidden;
 }
 
-.ml-10{
+.ml-10 {
   margin-left: 10px;
 }
-.center{
+
+.center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .pull-left {
   float: left;
 }
+
 .pull-right {
   float: right;
 }
-.clearfix:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-.min-height-400{
+
+.min-height-400 {
   min-height: 400px;
 }
+
 .img-viewer__overflow-unset {
   overflow: unset !important;
 }
+
 .el-image__no-box_shadow {
   box-shadow: none !important;
   img {

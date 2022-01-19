@@ -763,7 +763,7 @@ export default {
 
 <style lang="scss" scoped>
 .meeting-list {
-  width: 100%;
+  width: $absolutely-measure;
   overflow: hidden;
   display: flex;
 
@@ -796,13 +796,13 @@ export default {
 
       &.draggable,
       &.special {
-        color: #fff;
-        background-color: #3c8dbc;
+        color: $white;
+        background-color: $light-blue;
       }
 
       &.swap-target {
-        color: #fff;
-        background-color: #f56c6c;
+        color: $white;
+        background-color: $red;
       }
     }
   }
@@ -815,7 +815,7 @@ export default {
     border-radius: 3px;
     line-height: 42px;
     text-align: center;
-    background-color: #fff;
+    background-color: $white;
     box-shadow: 0px 0px 2px rgba(0,0,0,0.382);
   }
 
@@ -860,7 +860,7 @@ export default {
     }
 
     .meeting-list-cell__acrossdate {
-      color: #fff;
+      color: $white;
       cursor: pointer;
       margin-right: 10px;
     }
@@ -910,13 +910,13 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    color: #fff;
+    width: $absolutely-measure;
+    height: $absolutely-measure;
+    color: $white;
 
     &.selected {
-      color: #fff;
-      background-color: #3c8dbc;
+      color: $white;
+      background-color: $light-blue;
     }
   }
 }
@@ -943,24 +943,24 @@ export default {
     border-radius: 3px;
     line-height: 42px;
     text-align: center;
-    background-color: #fff;
+    background-color: $white;
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.382);
     overflow: hidden;
 
     &.draggable {
-      color: #fff;
-      background-color: #3c8dbc;
+      color: $white;
+      background-color: $light-blue;
       cursor: move;
     }
 
     &.special {
-      color: #fff;
-      background-color: #3c8dbc;
+      color: $white;
+      background-color: $light-blue;
     }
 
     &.swap-target {
-      color: #fff;
-      background-color: #f56c6c;
+      color: $white;
+      background-color: $red;
     }
   }
 

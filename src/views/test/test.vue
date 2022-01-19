@@ -1,5 +1,5 @@
 <template>
-  <el-container class="height100">
+  <el-container class="absolutely-height">
     <el-header style="background-color: #B3C0D1; color: #333; text-align: center; line-height: 60px;">Header</el-header>
     <el-container>
       <el-aside width="200px">Aside</el-aside>

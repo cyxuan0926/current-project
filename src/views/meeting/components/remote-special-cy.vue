@@ -1094,7 +1094,7 @@ export default {
 
       .m-range-selector {
         float: none;
-        width: 100%;
+        width: $absolutely-measure;
         height: 36px;
         margin-bottom: 13px;
       }
@@ -1106,7 +1106,7 @@ export default {
 
     /deep/ .error-status {
       .m-range-selector {
-        border-color: #F56C6C;
+        border-color: $red;
         margin-bottom: 4px;
       }
       & ~ button {

@@ -118,7 +118,7 @@ export default {
   border-radius: 4px;
 }
 .audio-container-right {
-  width: calc(100% - 70px);
+  width: calc(#{$absolutely-measure} - 70px);
   height: 10px;
   border: 1px solid #2B569A;
   margin: 0 auto;

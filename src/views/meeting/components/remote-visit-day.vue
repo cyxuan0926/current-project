@@ -142,7 +142,7 @@ export default {
 
   .tip {
     margin-left: 12px;
-    color: #f56c6c;
+    color: $red;
   }
   
   .operate {

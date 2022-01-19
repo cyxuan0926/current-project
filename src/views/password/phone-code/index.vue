@@ -372,7 +372,7 @@ export default {
   margin: 10% auto;
   padding: 30px;
   border: 1px solid #EBEEF5;
-  background-color: #fff;
+  background-color: $white;
   color: #303133;
   overflow: hidden;
   display: flex;

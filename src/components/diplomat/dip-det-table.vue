@@ -205,7 +205,7 @@
         width: 32%;
         &.img-viewer__overflow-unset {
             img {
-                width: 100%;
+                width: $absolutely-measure;
             }
             
         }

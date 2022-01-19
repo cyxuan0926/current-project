@@ -65,6 +65,10 @@ exports.cssLoaders = function (options) {
     }
   }
 
+  function resolveResouce(name) {
+    return path.resolve(__dirname, '../src/assets/css/' + name);
+  }
+
   // generate loader string to be used with extract text plugin
   function generateLoaders (loader, loaderOptions) {
     const loaders = options.usePostCSS ? [cssLoader, postcssLoader] : [cssLoader]
@@ -76,6 +80,15 @@ exports.cssLoaders = function (options) {
           sourceMap: options.sourceMap
         })
       })
+
+      if (loader === 'sass') {
+        loaders.push({
+          loader: 'sass-resources-loader',
+          options: {
+            resources: [resolveResouce('_variable.scss'), resolveResouce('mixin.scss')]
+          }
+        })
+      }
     }
 
     // Extract CSS when that option is specified

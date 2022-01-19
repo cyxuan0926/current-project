@@ -185,7 +185,7 @@ export default {
 
     justify-content: center;
 
-    width: 100%;
+    width: $absolutely-measure;
 
     padding: 0px 5px;
 
@@ -206,7 +206,7 @@ export default {
         }
 
         .el-input {
-          width: 100%;
+          width: $absolutely-measure;
         }
 
         .el-select {

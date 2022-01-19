@@ -1,7 +1,7 @@
 <template>
     <div class="meeting-process-container">
         <dl class="meeting-process-item" v-for="(pro, i) in bpmnList" :key="pro.value">
-            <dt class="clearfix">
+            <dt>
                <h3 class="pull-left">{{ pro.label }}</h3>
                <el-button class="pull-right" type="primary" size="mini" icon="el-icon-plus" @click="handleEditProcess(pro.value, bpmnXmls[i])">{{ !bpmnXmls[i] ? '创建新' : '编辑' }}审批</el-button>
             </dt>
@@ -81,6 +81,7 @@
       }
 
       dt {
+         @include clearfix;
          h3 {
                margin: 16px 0;
                font-weight: 600;
@@ -98,11 +99,11 @@
       }
    }
    .bpmn-viewer {
-      width: 100%;
+      width: $absolutely-measure;
       min-height: 200px;
    }
    .bpmn-none {
-      width: 100%;
+      width: $absolutely-measure;
       min-height: 60px;
       text-align: center;
       padding-top: 60px;

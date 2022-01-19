@@ -85,7 +85,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../assets/css/new.css";
-.blue-block{
+.blue-block {
   background: #337AB7;
   display: flex;
   justify-content: center;
