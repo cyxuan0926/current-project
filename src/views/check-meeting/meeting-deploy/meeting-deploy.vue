@@ -199,7 +199,6 @@
           </el-table>
         </div>
        
-        <el-form-item />
         <div style="margin:50px 0">
           <div class="el-form-item__content">亲情电话会见配置</div>
           <el-table
