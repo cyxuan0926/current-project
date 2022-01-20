@@ -43,12 +43,14 @@
   align-items: center;
 }
 
-.pull-left {
-  float: left;
-}
+.pull {
+  &-left {
+    float: left;
+  }
 
-.pull-right {
-  float: right;
+  &-right {
+    float: right;
+  }
 }
 
 .min-height-400 {
