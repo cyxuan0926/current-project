@@ -79,7 +79,7 @@ export default {
 
   watch: {
     activeName(val) {
-      this.getDatas('clearFilter')
+      this.getDatas()
     }
   },
 
