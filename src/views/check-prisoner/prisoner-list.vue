@@ -684,7 +684,8 @@ export default {
           label: '服刑人员状态',
           options: prisonerStatus,
           value: 1,
-          miss: false
+          miss: false,
+          
         },
         isNotify: {
           type: 'select',
@@ -714,6 +715,7 @@ export default {
           label: '通话次数',
           miss: false,
           rules: ["required"],
+          
         },
       },
 
