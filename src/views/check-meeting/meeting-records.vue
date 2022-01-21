@@ -27,24 +27,20 @@
 import { mapActions, mapState } from 'vuex'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
+import Moment from 'moment'
 // import { $likeName, $likePrisonerNumber } from '@/common/constants/const'
 export default {
   mixins: [prisonFilterCreator],
   data() {
     const { belong } = prisons.PRISONAREA;
     const { options } = this.$store.getters.prisonAreaOptions;
-    const startDate = Moment().format("YYYY-MM");
-    const endDate = Moment().format("YYYY-MM");
     const tabOptions = {
       FAMILY_FREE_MEETINGS: "familyFreeMeetings",
       JAILER_FAMILY_FREE_MEETINGS: "jailerFamilyFreeMeetings",
     };
     return {
       tabOptions,
-      startDate,
       downloading: false,
-      endDate,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
         name: {
@@ -84,7 +80,7 @@ export default {
             max: Moment().format("YYYY-MM"),
             maxMonthRange: 24,
           },
-          value: [startDate, endDate],
+          value: [this.$_dateNow, this.$_dateNow],
         },
       },
       filter: {},
@@ -237,27 +233,7 @@ export default {
 
   methods: {
     ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
-    // 导出excel
-    async onDownloadExcel() {
-      this.downloading = true;
-      const times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
-        actionName = "familyPhone/exportFamilyPhone",
-        params = {
-          url: "/download/exportVideoTelRecords",
-          methods: "get",
-          params: { ...this.filter },
-          isPrisonInternetGetUrlWay: "getHyUrl",
-        };
-      await tokenExcel({
-        params,
-        actionName,
-        menuName: `免费通话记录表-${times}`,
-      });
 
-      setTimeout(() => {
-        this.downloading = false;
-      }, 300);
-    },
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.getFreeMeetings({

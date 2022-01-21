@@ -69,6 +69,19 @@
             </el-form-item>
           </el-col>
         </template>
+        <template #smscode>
+          <el-col :span="24">
+            <el-switch
+              v-model="formData.verificationCodeSwitch"
+              active-color="#13ce66"
+              inactive-color="#dddddd"
+              :active-value="1"
+              :inactive-value="0"
+              :width="60">
+            </el-switch>
+            <span style="margin-left: 8px; color: #999;">该开关打开后，监狱配置中“快捷登录验证码”也打开的状态，监狱的用户点击获取验证码时，不获取真实的验证码，直接用替代验证码登录即可</span>
+          </el-col>
+        </template>
       </m-form>
     </div>
   </div>
@@ -85,8 +98,8 @@ export default {
 
       formData: {
         afrIOSSetValue: '0.2',
-
-        afrAndroidSetValue: '0.4'
+        afrAndroidSetValue: '0.4',
+        verificationCodeSwitch: 1
       },
 
       updateLoading: false,
@@ -128,6 +141,13 @@ export default {
           value: '1500'
         },
 
+        smscode: {
+          slotName: 'smscode',
+          attrs: {
+            label: '验证码获取开关'
+          }
+        },
+
         buttons: [{
           text: '更新',
           add: {
@@ -159,12 +179,15 @@ export default {
         const {
           afrIOSSetValue,
           afrAndroidSetValue,
-          afrInterval
+          afrInterval,
+          verificationCodeSwitch
         } = val
 
         this.$set(this.formData, 'afrAndroidSetValue', afrAndroidSetValue)
 
         this.$set(this.formData, 'afrIOSSetValue', afrIOSSetValue)
+
+        this.$set(this.formData, 'verificationCodeSwitch', verificationCodeSwitch)
 
         this.values = _.cloneDeep(val)
       },

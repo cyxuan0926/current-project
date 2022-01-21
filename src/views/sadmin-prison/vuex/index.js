@@ -13,7 +13,9 @@ let state = {
 
     afrAndroidSetValue: '0.4',
 
-    afrInterval: '60'
+    afrInterval: '60',
+
+    verificationCodeSwitch: 1
   },
 
   // 监狱收费配置

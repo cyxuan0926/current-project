@@ -79,17 +79,20 @@ export default {
   getFaceRecognitionConfigs: async({ commit }, params) => {
     try {
       const response = await http.getFaceRecognitionConfigs(params)
+      let { afrIOSSetValue = '0.2', afrAndroidSetValue = '0.4', afrInterval = '1500', verificationCodeSwitch = 1 } = response || {}
 
-      const afrIOSSetValue = response ? (response['afrIOSSetValue'] || '0.2') : '0.2'
+      // const afrIOSSetValue = response ? (response['afrIOSSetValue'] || '0.2') : '0.2'
 
-      const afrAndroidSetValue = response ? (response['afrAndroidSetValue'] || '0.4') : '0.4'
+      // const afrAndroidSetValue = response ? (response['afrAndroidSetValue'] || '0.4') : '0.4'
 
-      const afrInterval = response ? (response['afrInterval'] || '1500') : '1500'
+      // const afrInterval = response ? (response['afrInterval'] || '1500') : '1500'
+
 
       commit('setFaceRecognitionConfigs', {
         afrIOSSetValue,
         afrAndroidSetValue,
-        afrInterval
+        afrInterval,
+        verificationCodeSwitch
       })
 
       return true

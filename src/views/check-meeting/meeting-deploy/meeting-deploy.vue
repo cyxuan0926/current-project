@@ -98,11 +98,91 @@
           prop="visiblePhonePeopleNumber"
           class="el-form-item_people-number"
         >
-          <el-input v-model="formData.visiblePhonePeopleNumber" placeholder="请输入可视电话通话人数上限">
+          <el-input
+            v-model="formData.visiblePhonePeopleNumber"
+            placeholder="请输入可视电话通话人数上限"
+          >
             <template #append>人</template>
           </el-input>
         </el-form-item>
+        <el-form-item
+          label="家属关系"
+          prop="family"
+          class="el-form-item_people-number"
+        >
+          <div style="display: flex">
+            <div
+              style="
+                border: 1px solid #dcdfe6;
+                min-height: 42px;
+                min-width: 300px;
+                width: 500px;
+                margin-right: 20px;
+              "
+            >
+              <span
+                style="
+                  line-height: 15px;
+                  border: 1px solid #dcdfe6;
+                  padding: 5px 8px;
+                  margin: 5px;
+                  display: inline-block;
+                  margin-top:10px;
+                "
+                v-for="(item, index) in familylist"
+                :key="index"
+                >{{ item }}</span
+              >
+            </div>
+            <el-button :disabled="isSuperAdmin" type="primary" @click="onNewFamily">编辑</el-button>
+          </div>
+        </el-form-item>
+        <el-dialog
+          :visible.sync="familyrelations"
+          title="新增家属关系"
+          width="530px"
+        >
+          <div style="height: 400px; overflow-y: auto; ">
+            <span
+              style="width: 220px; display: inline-block; padding-left: 30px"
+              v-for="(item, index) in content"
+              :key="index"
+            >
+              <el-input
+                v-model="content[index]"
+                style="margin-bottom: 10px;  "
+                maxlength="200"
+                placeholder="请输入家属关系"
+                clearable
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-close"
+                  @click="removeReject(index)"
+                />
+              </el-input>
+            </span>
+          </div>
+          <span>
+            <el-button
+              v-if="content.length >= 1"
+              class="button-add"
+              type="primary"
+              size="mini"
+              @click="onSubmitReject"
+              >保存</el-button
+            >
 
+            <el-button
+              v-if="content.length < 30"
+              type="primary"
+              class="button-add"
+              size="mini"
+              @click="addReject"
+              >新增</el-button
+            >
+          </span>
+        </el-dialog>
         <el-form-item />
         <el-form-item />
         <el-form-item />
@@ -145,7 +225,7 @@ import http from "@/service";
 import { faceRecognitionValues } from "@/common/constants/const";
 
 import validator from "@/utils";
-
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -156,6 +236,10 @@ export default {
       regAutoAudit: false,
       abnormalCallDurationSwitch: true,
       multistageExamine: false,
+      familyrelations: false,
+      familylist:[],
+      family: "",
+      content: [],
       formData: {
         afrInterval: "1500",
 
@@ -163,7 +247,7 @@ export default {
 
         afrAndroidSetValue: "0.4",
 
-        visiblePhonePeopleNumber: "6"
+        visiblePhonePeopleNumber: "6",
       },
 
       faceRecognitionValues,
@@ -184,20 +268,31 @@ export default {
           },
         ],
 
-        visiblePhonePeopleNumber: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }]
+        visiblePhonePeopleNumber: [
+          {
+            validator: validator.isPositiveIntegers,
+            ownMessage: "请输入可视电话通话人数上限",
+          },
+        ],
       },
     };
   },
-
+   computed: {
+      ...mapGetters([
+        'isSuperAdmin'
+      ])
+   },
   mounted() {
     this.getDeploy();
   },
 
   methods: {
-    getDeploy() {
-      http.getMeetDeploy().then((res) => {
+    async getDeploy() {
+      await http.getMeetDeploy().then((res) => {
         this.dialogVisible = false;
-        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting? true: false;
+        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting
+          ? true
+          : false;
         this.regAutoAudit = res.data.regAutoAudit ? true : false;
         this.multistageExamine = res.data.multistageExamine ? true : false;
         this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch
@@ -205,7 +300,46 @@ export default {
           : false;
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
+        this.content =  res.data.relationshipTemplate.split(",")
+        this.familylist = [...res.data.relationshipTemplate.split(",")] 
       });
+    },
+
+    addReject() {
+      this.content.push("");
+    },
+
+    removeReject(index) {
+      this.content.splice(index, 1);
+    },
+    async onSubmitReject() {
+     let relationship = [...new Set(this.content.filter((res) => res && res.trim()))];
+     
+      if (relationship.length < 1) {
+        this.$message({
+          message: "新增编辑内容不能为空",
+          type: "error",
+        });
+
+        return false;
+      } else {
+        let params = {
+           jailId:JSON.parse(localStorage.getItem("user")).jailId,
+           relationshipTemplate: relationship.toString()
+        };
+
+        let res = await http.updateRelationshipTemplate(params);
+
+        if (res) {
+           this.getDeploy();
+        }
+        this.familyrelations = false;
+      }
+    },
+
+    onNewFamily() {
+      this.content=[...this.familylist]
+      this.familyrelations = true;
     },
     changeTimes() {
       if (this.abnormalCallDuration > 600) {
@@ -230,8 +364,8 @@ export default {
       const params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
-        regAutoAudit:this.regAutoAudit ? 1 : 0,
-        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0
+        regAutoAudit: this.regAutoAudit ? 1 : 0,
+        abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
       });
       this.$refs.form.validate((valid) => {
         if (valid) {
