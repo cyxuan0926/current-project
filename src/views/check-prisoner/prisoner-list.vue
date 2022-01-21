@@ -95,6 +95,7 @@
         @selection-change="handleSelectionChange"
         :cols="tableCols"
         :cell-style="cellred"
+        @sort-change="sortChange"
       >
         <template #accessTime="{ row }">
           <div>
@@ -1473,6 +1474,7 @@ export default {
         {
           label: '通话次数/月',
           minWidth: 85,
+          sortable: 'custom',
           slotName: 'accessTime'
         },
 
@@ -1667,6 +1669,23 @@ export default {
       'getTransferOutPrisonersPagedData',
       'getJailPrisonAreas'
     ]),
+    sortChange({ column, prop, order }) {
+      console.log(column)
+      console.log(prop)
+      console.log(order)
+        // if (!prop || !order) {
+        //   this.sortObj = {}
+        //   delete this.filter.sortDirection
+        //   delete this.filter.orderField
+        // }
+        // else {
+        //   this.sortObj.orderField = prop
+        //   if (order === 'descending') this.sortObj.sortDirection = 'desc'
+        //   else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+        //   this.filter = Object.assign(this.filter, this.sortObj)
+        // }
+        // this.getDatas('sortChange')
+      },
     ...mapActions(["uploadFile", "resetState"]),
      ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
      one(type){
@@ -2723,7 +2742,8 @@ export default {
     //   else this.allSelectionvalue = false
     //   this.isIndeterminate = this.deletePrisoners.length > 0 && this.deletePrisoners.length < this.prisoners.contents.length
     // }
-  }
+  },
+  
 }
 </script>
 
