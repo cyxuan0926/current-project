@@ -1643,6 +1643,11 @@ export default {
       const { id } = row
 
       this.familiesRow = Object.assign({}, row)
+      
+      // 点击审核按钮 添加该条选中数据
+      if (!this.selectionData.find(d => d.id == row.id)) {
+        this.selectionData.push(row)
+      }
 
       this.detailOrAuthDialogType = 0
 
