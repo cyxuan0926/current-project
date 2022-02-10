@@ -1670,21 +1670,14 @@ export default {
       'getJailPrisonAreas'
     ]),
     sortChange({ column, prop, order }) {
-      console.log(column)
-      console.log(prop)
-      console.log(order)
-        // if (!prop || !order) {
-        //   this.sortObj = {}
-        //   delete this.filter.sortDirection
-        //   delete this.filter.orderField
-        // }
-        // else {
-        //   this.sortObj.orderField = prop
-        //   if (order === 'descending') this.sortObj.sortDirection = 'desc'
-        //   else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
-        //   this.filter = Object.assign(this.filter, this.sortObj)
-        // }
-        // this.getDatas('sortChange')
+          this.sortObj = {}
+          delete this.filter.sortDirection
+          delete this.filter.orderField
+          this.sortObj.orderField = "accessTime"
+          if (order === 'descending') this.sortObj.sortDirection = 'desc'
+          else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+          this.filter = Object.assign(this.filter, this.sortObj)
+          this.getDatas('sortChange')
       },
     ...mapActions(["uploadFile", "resetState"]),
      ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
@@ -1830,6 +1823,8 @@ export default {
     },
 
     onSearch(isCurrent) {
+          delete this.filter.sortDirection
+          delete this.filter.orderField
       this.$refs.pagination.handleCurrentChange(!!isCurrent ? this.pagination.page : 1)
       // this.$refs.pagination.handleCurrentChange(1)
     },
