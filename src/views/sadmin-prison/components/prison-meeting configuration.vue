@@ -115,22 +115,22 @@ export default {
     },
     // 保存可视电话修改参数配置
     async saveProperty(row, index, type) {
-      if (this.tableData[index].accessTime) {
+      if (type == 2){
+        this.getdata();
+      }else{
+        if (this.tableData[index].accessTime) {
         this.$set(this.tableData[index], "isEditPropertyShow", false);
-        if (type == 2) {
-          this.getdata();
-        } else {
-          let data = {
-            jailId: this.$route.params.id,
+         let data = {
+            jailId: JSON.parse(localStorage.getItem("user")).jailId,
             level: row.level,
             accessTime: row.accessTime,
           };
           let res = await http.setConfigurationsFamilyMeeting(data);
           if (!res) return;
           this.getdata();
-        }
-      } else {
-        this.$message.error("请填写通话次数！！");
+          }else{
+          this.$message.error("请填写通话次数！！");
+          }
       }
     },
     async getdata() {
