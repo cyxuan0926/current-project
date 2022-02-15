@@ -153,6 +153,19 @@
             :end-key="item.endKey" 
           />
         </template>
+         <template v-if="item.type === 'number' && !item.miss">
+           <el-input
+           type="number"
+           class="inputHeight"
+            v-model.trim="item.value"
+            :key="index"
+            :min="0"
+            onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" 
+            clearable
+            :disabled="item.disabled"
+            :placeholder="item.noPlaceholder ? item.label : '请输入' + item.label"
+          />
+        </template>
 
         <template v-if="item.slotName">
           <slot :name="item.slotName" />
@@ -387,6 +400,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/css/custom-element.scss";
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
 
 .filter-container{
   // line-height: 40px;
@@ -461,6 +481,18 @@ export default {
 }
 </style>
 <style type="text/stylus" lang="stylus">
+.inputHeight .el-input__inner {
+    height: 34px;
+    line-height: inherit;
+}
+.inputHeight .input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+
 .filter-container .filter-right
   .monthRangeSelector
     // min-width: 170px;
