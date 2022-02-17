@@ -32,14 +32,15 @@ import prisonConfig from './components/prison-config'
 import prisonPhoneChargeConfig from './components/prison-charge-config'
 import prisonFamilyChargeConfig from './components/prison-family-charge-config'
 import prisonMessageChargeConfig from './components/prison-message-charge-config'
-
+import prisonmeetingconfiguration from './components/prison-meeting configuration'
 export default {
   components: {
     prisonBase,
     prisonConfig,
     prisonPhoneChargeConfig,
     prisonFamilyChargeConfig,
-    prisonMessageChargeConfig
+    prisonMessageChargeConfig,
+    prisonmeetingconfiguration
   },
 
   data() {
@@ -70,6 +71,7 @@ export default {
        if( this.isAdmin ) {
           this.tabMapOptions.push({label: '亲情电话收费配置',key: 'prisonFamilyChargeConfig'})
           this.tabMapOptions.push({label: '亲情短信收费配置',key: 'prisonMessageChargeConfig'})
+          this.tabMapOptions.push({label: '会见次数配置',key: 'prisonmeetingconfiguration'})
          }
     this.render()
   },

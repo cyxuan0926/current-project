@@ -39,19 +39,31 @@ npm test
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-# 堡垒机
-服务器：8.129.125.40:60022
+## 堡垒机
 
-# 预发布环境
+```sh
+服务器：8.129.125.40:60022
+```
+
+## 预发布环境
+
+```sh
 服务器：47.119.192.31/172.18.139.27
 路径： /mnt/projects/nginx/www
 appVersion: 9999
+```
 
-# 生产环境
+## 生产环境
+
+```sh
 服务器：39.108.185.51/172.18.85.104
 路径： /mnt/projects/nginxnew/www
 appVersion: 根据版本号确定
+```
 
-# 测试环境
+## 测试环境
+
+```sh
 服务器：47.107.245.151
 路径： /mnt/projects/nginx/www
+```

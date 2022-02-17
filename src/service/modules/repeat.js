@@ -211,5 +211,13 @@ export default {
   //  亲情短信收费配置更新
   editMessageList: params => {
     return service.postObj('/configurationsFamilyMessage/editMessage', params)
-  }
+  },
+  // 监狱配置 - 会见次数配置
+  getConfigurationsFamilyMeeting: params => {
+    return service.get('/configurationsFamilyMeeting/jailId', params)
+  },
+   // 监狱配置-亲情电话会见配置
+   setConfigurationsFamilyMeeting: data => {
+    return service.putObj(`/configurationsFamilyMeeting/jailId/level?jailId=${ data.jailId }&level=${ data.level }&accessTime=${ data.accessTime }`).then(res => res && res.code === 200)
+  },
 }
