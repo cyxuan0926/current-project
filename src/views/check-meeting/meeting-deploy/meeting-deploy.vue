@@ -563,7 +563,6 @@ export default {
       });
     },
 
-
     addReject() {
       this.content.push("");
     },

@@ -135,6 +135,14 @@ export default {
         return false
       }
       if (this.permission === 'edit') {
+        const { familyPhoneScope } = e
+
+        if (_.isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1
+
+        if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0
+
+        if (!_.difference([1, 2], familyPhoneScope).length) e.familyPhoneScope = 2
+
         let params = Object.assign({}, e, { changed: 0, weekendChanged: 0, specialChanged: 0 })
         this.formItems.buttons[1].update.loading = true
         this.updatePrison(params).then(res => {
