@@ -328,9 +328,7 @@ export default {
     async onFamilyInformationDialogFormSubmit(data) {
       if (data) {
         let res  = await http.familyforAdd(data)
-        console.log(res)
         if (res===undefined) return;
-        // console.log(data)
         setTimeout(() => {
           this.onCloseFamilyInformationDialog();
           this.getDatas();

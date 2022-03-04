@@ -1681,7 +1681,6 @@ export default {
      ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
      one(type){
        this.UploadType=type
-       console.log(this.UploadType)
      },
       // 重制上传的参数关闭对话框
     onResetAndcloseUploadDialog() {
@@ -1706,7 +1705,6 @@ export default {
       });
     },
     beforeUpload(file) {
-         console.log(file)
       this.resetState({ validatePrisonerLeaveResult: {
         successTotal: 0,
         failTotal: 0,

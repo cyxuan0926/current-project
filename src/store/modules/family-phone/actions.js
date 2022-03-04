@@ -82,13 +82,11 @@ export default {
   },
   async validateUploadPrisonerLeave({ commit }, {filepath,type}) {
     try {
-      let response=null;
-      console.log(type)
-      if(type){
-        response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
-      }else{
-        response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
-      }
+      let response = null
+
+      if(type) response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
+
+      else response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
      
       if (!response) return
      
