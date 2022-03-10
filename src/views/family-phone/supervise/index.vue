@@ -5,7 +5,9 @@
         <m-search
             :items="searchItems"
             ref="search"
-            @search="onSearch">
+            @search="onSearch"
+            @searchSelectChange="searchSelectChange"
+        >
             <!-- <m-excel-download
             :path="`${ isAdmin ? '/familyphonesummary/export' : `/download/exportVideoTelSummary?tab=${ tab }` }`"
             :params="filter"
