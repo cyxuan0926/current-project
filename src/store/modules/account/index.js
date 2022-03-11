@@ -1,7 +1,7 @@
 import {
   login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByAccount, modifyMyPasswordByCode
+  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByModifypassword, modifyMyPasswordByCode
 } from '@/service-public/api/account'
 
 import { helper } from '@/utils'
