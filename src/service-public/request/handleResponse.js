@@ -2,17 +2,23 @@ import { Message } from 'element-ui'
 import logout from '@/utils/logout'
 import router from '@/router'
 
+import apiUrls from '@/service/urls'
+
 const tip = (message = '操作失败！', type = 'error', duration = 3000) => {
   Message.closeAll()
   Message({ type, message, duration, showClose: true })
 }
+
+const verificationCodesLists = ['/sms/verification-codes/username', '/sms/verification-codes/username-modifypassword']
+
+const plainUrl = url => url.replace(apiUrls.publicApiHost, '')
 
 const responseHandlers = {
   // 有些接口正向成功是200
   200: res => {
     const { url } = res.config
     if (url.includes('/oauth/token')) {}
-    else if (url.includes('/sms/verification-codes/username')) {
+    else if (verificationCodesLists.includes(plainUrl(url))) {
       tip(res.data, 'success', 0)
       return { code: 'SMS_SEND_OK' }
     }
@@ -70,7 +76,7 @@ const responseHandlers = {
     else if (url.includes('/users/security-question-answers/verification')) {
       return false
     }
-    else if (url.includes('/sms/verification-codes/username')) {
+    else if (verificationCodesLists.includes(plainUrl(url))) {
       tip(res.data)
       return { code: 'SMS_SEND_ERR', msg: res.data }
     }
@@ -89,7 +95,7 @@ const responseHandlers = {
   // 根据账号发送短信验证码 未绑定手机号
   417: res => {
     const { url } = res.config
-    if (url.includes('/sms/verification-codes/username')) {
+    if (verificationCodesLists.includes(plainUrl(url))) {
       return { code: 'SMS_NO_BIND', msg: '用户未配置手机号码' }
     }
     else {
