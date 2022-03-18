@@ -157,7 +157,12 @@ const codes = {
       }
       else tips(params.msg)
     }
-  }
+  },
+  '-2': {
+    next: params => {
+      tips(params.msg || '未找到对应数据')
+    }
+  },
 }
 const enToZh = {
   timeout: '请求超时，请稍后重试'
