@@ -208,7 +208,7 @@ export default {
 
         this.$refs['passwordRetrieveForm'].validateField("username")
 
-        if (isUsefully === 'SMS_SEND_OK') {
+        if (isUsefully['code'] === 'SMS_SEND_OK') {
           this.isDisabledVerificationCodeBtn = true
 
           this.countDown = false

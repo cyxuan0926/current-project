@@ -1,7 +1,7 @@
 import {
   login, getPublicUserInfo, getMenus, modifyMyPassword, getRoles, estimateUsername, getAllTenants, getSecurityQuestions,
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
-  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByAccount, modifyMyPasswordByCode
+  modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByModifypassword, modifyMyPasswordByCode
 } from '@/service-public/api/account'
 
 import { helper } from '@/utils'
@@ -317,10 +317,10 @@ const actions = {
     }
   },
 
-  // 发送验证码
+  // 密码修改页 - 发送验证码
   async sendSmsVerificationCodes(_, username) {
     try {
-      const res = await sendSmsByAccount(username)
+      const res = await sendSmsByModifypassword(username)
 
       return res
     }

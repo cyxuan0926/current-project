@@ -94,21 +94,18 @@
             v-if="(
               row.status == 'PENDING' && 
               row.isLock !== 1 && 
-              operateQueryAuth === true && 
-              ( 
-                !( 
-                  haveMultistageExamine && 
-                  row.authorizeLevel === 1 && 
-                  !isAdvancedAuditor
-                ) || row.isCheck  
-              )
-            )"
+              operateQueryAuth && 
+              !( 
+                haveMultistageExamine && 
+                row.authorizeLevel === 1 && 
+                !isAdvancedAuditor
+              )) && row.isCheck"
             size="mini"
             @click="handleAuthorization(row)">授权</el-button>
           <el-button
             v-else-if="
               row.status === 'PASSED' && 
-              operateQueryAuth === true && 
+              operateQueryAuth && 
                 !( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor )"
             size="mini"
             @click="handleWithdraw(row)"
@@ -118,7 +115,7 @@
             v-if="
               row.status != 'PENDING' || 
               ( haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor ) || 
-              row.isCheck==0"
+              !row.isCheck"
             type="text"
             size="mini"
             class="button-detail"

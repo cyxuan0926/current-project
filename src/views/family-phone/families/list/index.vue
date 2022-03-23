@@ -1110,13 +1110,13 @@ export default {
 
     // 全量审核
     isAllPendingReview() {
-      return !(this.selectionData.length || this.isSelectAll)
+      return !(this.selectionData.length || this.isSelectAll) && this.detailOrAuthDialogType === 2
     },
 
     // 全量/批量 审核的数据
     AllPendingReviewOrBatchSelectData() {
       if (this.isAllPendingReview) {
-        const { list } = this.familyPhoneFamiliesAllPendingReviewData
+        const { list = [] } = this.familyPhoneFamiliesAllPendingReviewData
 
         if (this.isUpperLimit) return list.slice(0, familyPhoneFamiliesAllPendingReviewUpperLimit + 1)
 
@@ -1817,7 +1817,7 @@ export default {
     },
 
     async onSubmitReject() {
-      this.content = this.content.filter((res)=>res && res.trim())
+      this.content = this.content.filter(res => res && res.trim())
 
       if (this.content.length < 1) {
         this.$message({
@@ -1950,6 +1950,8 @@ export default {
     // 没有选择数据 就是批量审核所有可以审核的数据
     // 选择了数据(选择的待审核的数据为0/1/多个) 就是批量审核所有选择的数据
     async onBatchAuth() {
+      this.detailOrAuthDialogType = 2
+
       // 没有选择数据 批量审核全部
       if (this.isAllPendingReview) {
         // 查询当前查询条件下的全量待审核数据
@@ -2055,8 +2057,6 @@ export default {
       if (this.AllPendingReviewOrBatchSelectData.length > 1) await this.getIsSameProcessDefinition(this.familyPhoneFamiliesAllPendingReviewProcessInstanceIds)
 
       else this.$store.commit('setIsSameProcessDefinition', true) // 批量选择一条数据 肯定是同一审批流 就不调接口了
-
-      this.detailOrAuthDialogType = 2
 
       this.$set(this.detailOrAuthDialog, 'dialogVisible', true)
     },

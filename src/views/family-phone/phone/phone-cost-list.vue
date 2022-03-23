@@ -4,6 +4,7 @@
       ref="search"
       :items="searchItems"
       @search="onSearch"
+      @searchSelectChange="searchSelectChange"
     >
      <template slot="append">
         <el-button

@@ -31,8 +31,9 @@ instance.interceptors.request.use(
     const { access_token, token_type } = store.state.account.accountInfo
 
     if (BUILD_ENV === 'production') {
+      // 预线上环境的app版本号固定为9999 生产环境的版本号为非9999
       // config.headers['appVersion'] = '9999'
-      config.headers['appVersion'] = '311'
+      config.headers['appVersion'] = '312'
     }
     if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
     state = history.state

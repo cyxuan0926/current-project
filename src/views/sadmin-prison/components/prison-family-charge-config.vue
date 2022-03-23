@@ -664,7 +664,7 @@ export default {
       &__message-set {
         .el-form-item__content {
           width: 36.5%;
-        }
+        }   
       }
 
       &_once-monney {
