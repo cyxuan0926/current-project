@@ -35,6 +35,8 @@
 import { mapActions, mapState } from 'vuex'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import { DateFormat } from '@/utils/helper'
+import { tokenExcel } from '@/utils/token-excel'
 import Moment from 'moment'
 export default {
   mixins: [prisonFilterCreator],
@@ -50,18 +52,6 @@ export default {
       downloading: false,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
-         provincesId: {
-          type: "select",
-          label: "省份",
-          options: this.$store.state.provincesId,
-          miss: false,
-        },
-         jailId: {
-          type: "select",
-          label: "监狱",
-          options: this.$store.state.jailId,
-          miss: false,
-        },
         name: {
           type: "input",
           label: "家属姓名",
@@ -122,15 +112,7 @@ export default {
           prop: "familyName",
           // ...$likeName,
         },
-        {
-          label: "省份",
-          prop: "provincesName",
-        },
-
-        {
-          label: "监狱名称",
-          prop: "jailName",
-        },
+      
         {
           label: "警员姓名",
           prop: "policeName",
@@ -172,6 +154,17 @@ export default {
           showOverflowTooltip: true,
         },
       ];
+      const a =[
+          {
+          label: "省份",
+          prop: "provincesName",
+        },
+
+        {
+          label: "监狱名称",
+          prop: "jailName",
+        },
+      ]
       const familyFreeMeetingstableCols = [
         {
           label: "家属姓名",
@@ -264,9 +257,27 @@ export default {
       this.onSearch();
     },
   },
-
+  
   methods: {
     ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
+    // 导出excel
+    async onDownloadExcel() {
+      this.downloading = true;
+      const times = DateFormat (Date.now(), "YYYYMMDDHHmmss"),
+        actionName = "familyPhone/exportFamilyPhone",
+        params = {
+          url: "/download/exportVideoTelRecords",
+          methods: "get",
+          params: { ...this.filter },
+          isPrisonInternetGetUrlWay: "getHyUrl",
+        };
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `免费通话记录表-${times}`,
+      });
+ 
+    },
 
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
@@ -285,7 +296,7 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1);
     },
-
+  
     // 重置搜索组件的filter
     resetSearchFilters(filters = []) {
       filters.map((filter) => {

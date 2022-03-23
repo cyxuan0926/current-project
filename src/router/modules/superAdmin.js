@@ -585,13 +585,13 @@ superAdmin = [{
       component: 'check-meeting/meeting-family-statistics'
     },
     {
-      path: '/meeting-records',
+      path: '/prison-data/meeting-records',
       name: 'MeetingRecordsAll',
       // component: helper.loadView('check-meeting/meeting-records'),
       component: 'check-meeting/meeting-records',
       // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
-      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit-all.search', breadcrumbName: '免费通话记录表' }
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },                
+      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
     },
      {
       path: '/meeting-report/meeting-sadmin-island-list',

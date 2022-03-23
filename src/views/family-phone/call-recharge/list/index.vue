@@ -56,6 +56,7 @@ export default {
     })
 
     const $tableCols = computed(() => _tableCols[$tabs['value']])
+    console.log( $tableCols)
 
     const { routeProps } = useRouteProps()
 
@@ -63,7 +64,7 @@ export default {
       if (val === '0') searchItems.value.types.miss = false
 
       else if (val === '1') searchItems.value.types.miss = true
-
+      console.log( $tabs)
       $callRechargeParent.value && $callRechargeParent.value.initData()
     })
 

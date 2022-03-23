@@ -117,7 +117,7 @@ let check = [{
     // component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve),
     meta: { permission: 'visit.visit-statistic.prison-area.search', breadcrumbName: '监区统计' }
   }, {
-    path: '/meeting/records',
+    path: '/meeting-report/records',
     name: 'MeetingRecordsJail',
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',

@@ -1,7 +1,5 @@
 import { _ygPrisonCommonSearchItems, _ygPrisonCommonTableCols } from '@/common/constants/yg-prisons'
 
-import { arrayRemove } from '@/utils/helper'
-
 import switches from '@/filters/modules/switches'
 
 import { _dateNow, _oneMonthAgo } from '@/common/constants/const'
@@ -87,19 +85,37 @@ export const httpRequests = {
   }
 }
 
-// const _commonCols = () => {
-//   const _temp = _ygPrisonCommonTableCols()
 
-//   arrayRemove(_temp, '序号', 'label')
+const _commonCols = [
+  {
+    label: '省份',
+    prop: 'provincesName',
+    showOverflowTooltip: true
+  },
 
-//   arrayRemove(_temp, '年份', 'label')
+  {
+    label: '监狱名称',
+    prop: 'jailName',
+    showOverflowTooltip: true
+  },
+  {
+    label: '监区',
+    prop: 'prisonArea',
+    slotName: 'prisonArea',
+    showOverflowTooltip: true
+  },
+    {
+      label: '罪犯姓名',
+      prop: 'prisonerName'
+      // ...$likeName
+    },
 
-//   arrayRemove(_temp, '月份', 'label')
-
-//   return _temp
-// }
-const _commonCols = _ygPrisonCommonTableCols()
-console.log(_commonCols)
+    {
+      label: '罪犯编号',
+      prop: 'prisonerNumber'
+      // ...$likePrisonerNumber
+    }
+]
 
 const _rechargeAmount = {
   label: '亲情电话充值金额(元)',
@@ -136,7 +152,7 @@ export const _tableCols = {
 
   '1': [
     ..._commonCols,
-    
+
     {
       label: '亲情电话充值金额(元)',
       prop: 'rechargeAmount',

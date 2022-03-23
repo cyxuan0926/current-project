@@ -76,7 +76,8 @@ export const _ygPrisonCommonTableCols = () => {
       label: '年份',
       prop: 'yearNum',
       slotName: 'yearNum',
-      width: 50
+      width: 50,
+      showOverflowTooltip: true
     },
 
     {
