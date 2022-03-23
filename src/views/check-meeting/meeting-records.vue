@@ -57,12 +57,24 @@ export default {
       endDate,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
+         provincesId: {
+          type: "select",
+          label: "省份",
+          options: this.$store.state.provincesId,
+          miss: false,
+        },
+         jailId: {
+          type: "select",
+          label: "监狱",
+          options: this.$store.state.jailId,
+          miss: false,
+        },
         name: {
           type: "input",
           label: "家属姓名",
           miss: false,
         },
-
+       
         prisonerNumber: {
           type: "input",
           label: "罪犯编号",
@@ -90,17 +102,6 @@ export default {
           options: this.$store.state.type,
           miss: true,
         },
-        // applicationDate: {
-        //   type: "monthRangeSelector",
-        //   canNotClear: true,
-        //   startKey: "startDate",
-        //   endKey: "endDate",
-        //   range: {
-        //     max: Moment().format("YYYY-MM"),
-        //     maxMonthRange: 24,
-        //   },
-        //   value: [startDate, endDate],
-        // },
          applicationDate: {
           type: "dateRange",
           unlinkPanels: true,

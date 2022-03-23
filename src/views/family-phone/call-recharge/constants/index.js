@@ -87,17 +87,19 @@ export const httpRequests = {
   }
 }
 
-const _commonCols = () => {
-  const _temp = _ygPrisonCommonTableCols()
+// const _commonCols = () => {
+//   const _temp = _ygPrisonCommonTableCols()
 
-  arrayRemove(_temp, '序号', 'label')
+//   arrayRemove(_temp, '序号', 'label')
 
-  arrayRemove(_temp, '年份', 'label')
+//   arrayRemove(_temp, '年份', 'label')
 
-  arrayRemove(_temp, '月份', 'label')
+//   arrayRemove(_temp, '月份', 'label')
 
-  return _temp
-}
+//   return _temp
+// }
+const _commonCols = _ygPrisonCommonTableCols()
+console.log(_commonCols)
 
 const _rechargeAmount = {
   label: '亲情电话充值金额(元)',
@@ -134,15 +136,18 @@ export const _tableCols = {
 
   '1': [
     ..._commonCols,
-
-    _rechargeAmount,
-
+    
+    {
+      label: '亲情电话充值金额(元)',
+      prop: 'rechargeAmount',
+      showOverflowTooltip: true
+    },
+    
     {
       label: '可视电话消费金额(元)',
       prop: 'cultureEducation',
       showOverflowTooltip: true
     },
-
     {
       label: '系统电话消费金额(元)',
       prop: 'cultureEducation',
@@ -150,7 +155,7 @@ export const _tableCols = {
     },
 
     {
-      label: '余额(元)',
+      label: '亲情电话余额(元)',
       prop: 'cultureEducation',
       showOverflowTooltip: true
     },
