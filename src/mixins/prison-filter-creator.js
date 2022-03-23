@@ -294,11 +294,12 @@ export default {
     },
 
     async searchSelectChange(selectKey, value) {
+      // 监区
       if (selectKey === 'prisonAreaId') {
         this.clearSubPrisonArea('prisonSubArea')
 
         if (value) {
-          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
+          const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
 
           Message.closeAll()
 
@@ -316,7 +317,7 @@ export default {
         this.clearSubPrisonArea('prisonHouse')
 
         if (value) {
-          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
+          const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
 
           Message.closeAll()
 
@@ -332,8 +333,9 @@ export default {
 
       if (selectKey === 'prisonHouseId') {
         this.clearSubPrisonArea('prisonFloor')
+
         if (value) {
-          let { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value }) || {}
+          const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value }) || {}
 
           Message.closeAll()
 
@@ -347,30 +349,30 @@ export default {
         }
       }
 
+      // 监狱
       if (selectKey === 'jailId') {
-        if (value) {
-          this.clearSubPrisonArea('prisonSubArea')
+        this.clearSubPrisonArea('prisonSubArea')
 
-          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
-            // 柏鑫说 ywt_admin和租户管理员都是查当前监狱所有的监区 其余监狱角色都是查当前用户管理的监区
+        if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
+          // 柏鑫说 ywt_admin和租户管理员都是查当前监狱所有的监区 其余监狱角色都是查当前用户管理的监区
+          if (value) {
             if (this.$store.getters.isSuperAdmin || this.$store.getters.isTenantAdmin) await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
 
             else await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
 
             Message.closeAll()
-
-            this.$set(this.searchItems['prisonArea'], 'value', '')
-
-            this.$set(this.searchItems['prisonArea'], 'options', this.$store.state.jailPrisonAreas)
           }
+
+          this.$set(this.searchItems['prisonArea'], 'value', '')
+
+          this.$set(this.searchItems['prisonArea'], 'options', value ? this.$store.state.jailPrisonAreas : [])
         }
       }
 
+      // 省份
       if (selectKey === 'provincesId') {
         if (value) {
           this.clearSubPrisonArea('prisonSubArea')
-
-          if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) this.$set(this.searchItems['jailId'], 'value', '')
 
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
@@ -382,10 +384,17 @@ export default {
         if (this.searchItems['jailId'] && !this.searchItems['jailId'].miss) {
           this.$set(this.searchItems['jailId'], 'getting', true)
 
-          await this.$store.dispatch('getPrisonAll', { provincesId: value })
+          if (value){
+            await this.$store.dispatch('getPrisonAll', { provincesId: value })
+
+            this.$set(this.searchItems['jailId'], 'value', '')
+          }
+
+          else await this.$store.dispatch('getPrisonAll')
 
           Message.closeAll()
 
+          
           this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
 
           this.$set(this.searchItems['jailId'], 'getting', false)

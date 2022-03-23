@@ -74,12 +74,12 @@
         <template #operate="{ row }">
           <!-- authorizeLevel 等于1就是一级审核人员提交，等于2就是高级审核人员审核过了  -->
           <el-button
-            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)) && row.isCheck"
+            v-if="(row.status == 'PENDING' && row.isLock !== 1 && operateQueryAuth && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)) && row.isCheck"
             size="mini"
             @click="handleAuthorization(row)">授权</el-button>
 
           <el-button
-            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth === true && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
+            v-else-if="row.status === 'PASSED' && row.isWithdrawFlag === 1  && operateQueryAuth && !(haveMultistageExamine && row.authorizeLevel === 1 && !isAdvancedAuditor)"
             size="mini"
             @click="handleWithdraw(row)">撤回</el-button>
 

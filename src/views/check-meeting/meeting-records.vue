@@ -32,29 +32,22 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import prisons from "@/common/constants/prisons";
-import prisonFilterCreator from "@/mixins/prison-filter-creator";
-import Moment from "moment";
-import { $likeName, $likePrisonerNumber } from "@/common/constants/const";
-import { DateFormat } from "@/utils/helper";
-import { tokenExcel } from "@/utils/token-excel";
+import { mapActions, mapState } from 'vuex'
+import prisons from '@/common/constants/prisons'
+import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import Moment from 'moment'
 export default {
   mixins: [prisonFilterCreator],
   data() {
     const { belong } = prisons.PRISONAREA;
     const { options } = this.$store.getters.prisonAreaOptions;
-    const startDate = Moment().format("YYYY-MM");
-    const endDate = Moment().format("YYYY-MM");
     const tabOptions = {
       FAMILY_FREE_MEETINGS: "familyFreeMeetings",
       JAILER_FAMILY_FREE_MEETINGS: "jailerFamilyFreeMeetings",
     };
     return {
       tabOptions,
-      startDate,
       downloading: false,
-      endDate,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
       searchItems: {
          provincesId: {
@@ -107,11 +100,13 @@ export default {
           unlinkPanels: true,
           start: "startDate",
           canNotClear: true,
-          end: "endDate",
-          startPlaceholder: "开始时间",
-          endPlaceholder: "结束时间",
-          // value: [startDate, endDate],
-          value: [this.$_dateOneWeekAgo, this.$_dateNow],
+          startKey: "startDate",
+          endKey: "endDate",
+          range: {
+            max: Moment().format("YYYY-MM"),
+            maxMonthRange: 24,
+          },
+          value: [this.$_dateNow, this.$_dateNow]
         },
       },
       filter: {},
@@ -125,7 +120,7 @@ export default {
         {
           label: "家属姓名",
           prop: "familyName",
-          ...$likeName,
+          // ...$likeName,
         },
         {
           label: "省份",
@@ -139,12 +134,12 @@ export default {
         {
           label: "警员姓名",
           prop: "policeName",
-          ...$likeName,
+          // ...$likeName,
         },
         {
           label: "警员编号",
           prop: "policeNumber",
-          ...$likePrisonerNumber,
+          // ...$likePrisonerNumber,
         },
         {
           type: "input",
@@ -181,18 +176,18 @@ export default {
         {
           label: "家属姓名",
           prop: "name",
-          ...$likeName,
+          // ...$likeName,
         },
         {
           label: "罪犯姓名",
           prop: "prisonerName",
-          ...$likeName,
+          // ...$likeName,
         },
         {
           label: "罪犯编号",
           prop: "prisonerNumber",
           minWidth: 92,
-          ...$likePrisonerNumber,
+          // ...$likePrisonerNumber,
         },
         {
           label: "省份",
@@ -272,27 +267,7 @@ export default {
 
   methods: {
     ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
-    // 导出excel
-    async onDownloadExcel() {
-      this.downloading = true;
-      const times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
-        actionName = "familyPhone/exportFamilyPhone",
-        params = {
-          url: "/download/exportVideoTelRecords",
-          methods: "get",
-          params: { ...this.filter },
-          isPrisonInternetGetUrlWay: "getHyUrl",
-        };
-      await tokenExcel({
-        params,
-        actionName,
-        menuName: `免费通话记录表-${times}`,
-      });
 
-      setTimeout(() => {
-        this.downloading = false;
-      }, 300);
-    },
     getDatas() {
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.getFreeMeetings({

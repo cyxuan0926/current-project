@@ -4,6 +4,7 @@
       ref="search"
       :items="searchItems"
       @search="onSearch"
+      @searchSelectChange="searchSelectChange"
     >
       <template v-if="show.isAdd">
         <template slot="append">

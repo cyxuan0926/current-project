@@ -134,7 +134,7 @@ export default {
 
   methods: {
     async getDatas() {
-      let jailId=JSON.parse(localStorage.getItem('user')).jailId
+      let jailId=jailId
       let res = await http.getPrisonerBonusPenaltylist({ ...this.filter,jailId:jailId, ...this.pagination })
       this.tabledata= res.data
     },

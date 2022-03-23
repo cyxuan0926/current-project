@@ -137,7 +137,7 @@ export default {
                 width: '130px'
             },
              {
-                  prop: 'title',
+                prop: 'jailName',
                 label: '监狱名称',
                 width: '130px'
             },

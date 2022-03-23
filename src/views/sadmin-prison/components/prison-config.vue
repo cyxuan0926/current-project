@@ -99,6 +99,30 @@
           </el-form-item>
         </el-col>
       </template>
+       <template #relationshipTemplate>
+          <div style="display: flex">
+            <div
+              style="
+                border: 1px solid #dcdfe6;
+                min-height: 42px;
+                min-width: 300px;
+                width: 500px;
+                margin-right: 20px;
+              "
+            >
+              <span
+                style="
+                  border: 1px solid #dcdfe6;
+                  padding: 5px 10px;
+                  margin-left: 20px;
+                "
+                v-for="(item, index) in relationship"
+                :key="index"
+                >{{ item }}</span
+              >
+            </div>
+          </div>
+      </template>
     </m-form>
     <!-- <template #basicConfigs>
         <el-col :span="11">
@@ -643,12 +667,21 @@ export default {
             value: "6",
 
             customClass: ['el-form-item-people_number']
-          }          
+          },
+          relationshipTemplate: {
+            slotName: "relationshipTemplate",
+
+            customClass: "threshold__configs",
+
+            attrs: {
+              label: "家属关系",
+            },
+          },   
         },
         formButton
       ),
       values: {},
-
+      relationship:[],
       permission,
 
       slotFormData: {
@@ -1036,7 +1069,9 @@ export default {
 
     async onInitPrisonConfigDetails() {
       const res = await this.getPrisonDetail({ id: this.$route.params.id });
-
+       if(this.prison.relationshipTemplate){
+            this.relationship=this.prison.relationshipTemplate.split(",")
+        }
       if (!res) return;
 
       const {

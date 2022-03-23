@@ -58,7 +58,7 @@ export default {
           key: 'tenant'
         },
         {
-          label: '人脸识别配置',
+          label: '业务配置',
           key: 'face-recognition'
         }
       ],
@@ -79,7 +79,7 @@ export default {
 
   watch: {
     activeName(val) {
-      this.getDatas('clearFilter')
+      this.getDatas()
     }
   },
 
