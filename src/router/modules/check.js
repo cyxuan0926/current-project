@@ -341,8 +341,15 @@ let check = [{
       path: '/family-sms/list',
       name: 'sms-list',
       props: { hasPrisonAreaAuth: true },
-      meta: { permission: 'visit.family-sms.list', breadcrumbName: '亲情短信申请管理' },
+      meta: { permission: 'visit.family-sms.list', breadcrumbName: '家属发送短信申请管理' },
       component: 'family-sms/sms-list'
+    },
+    {
+      path: '/family-sms/criminalList',
+      name: 'sms-criminalList',
+      props: { hasPrisonAreaAuth: true },
+      meta: { permission: 'visit.family-sms.criminalList', breadcrumbName: '服刑人员发送短信申请管理' },
+      component: 'family-sms/sms-criminal-List'
     }
   ]
 }]
