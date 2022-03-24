@@ -145,7 +145,7 @@ export const _tableCols = {
 
     {
       label: '充值时间',
-      prop: 'cultureEducation',
+      prop: 'createTime',
       showOverflowTooltip: true
     }
   ],
