@@ -590,7 +590,7 @@ superAdmin = [{
       // component: helper.loadView('check-meeting/meeting-records'),
       component: 'check-meeting/meeting-records',
       // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },                
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
     },
      {
@@ -621,11 +621,20 @@ superAdmin = [{
     },
     children: [{
       path: '/prison-message/meeting-list',
-      component: 'check-message/message-list',
+      component: 'family-sms/sms-list',
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.prison-message.visit-message.search',
-        breadcrumbName: '短信申请管理列表'
+        breadcrumbName: '家属发送短信申请列表'
+      }
+    },
+    {
+      path: '/prison-message/meeting-criminalList',
+      component: 'family-sms/sms-criminal-List',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.prison-message.visit-criminalList.search',
+        breadcrumbName: '服刑人员发送短信申请列表'
       }
     }]
     }, {
