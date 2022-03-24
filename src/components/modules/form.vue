@@ -108,7 +108,6 @@
           size="small"
           @click="onCancel"
           :class="button.className"
-          :type="button.type || 'primary'"
           v-bind="button.attrs">取消</el-button>  
         <el-button
           v-if="button === 'back'"

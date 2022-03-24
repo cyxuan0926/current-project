@@ -279,6 +279,8 @@ export default {
   addPrionser: params => {
     return service.postObj('/prisoners/addPrison', params).then(res => res && res.code === 200)
   },
+  // 服刑人员信息管理 - 修改管教级别
+  updPrionserLevel: params => service.post('/prisoners/changePrisonerLevel', params),
   // 导入数据详情列表-服刑人员狱内消费情况列表
   getPrisonersInsideJailsCosts: params => {
     return service.get('/prisonerConsume/page', params).then(res => res && res.data)

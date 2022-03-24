@@ -56,6 +56,7 @@
         <el-button  type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
         <el-button type="primary" @click="showDelPrionser">离监</el-button>
         <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+        <el-button type="primary" @click="showModifyLevel(12)">调整管教级别</el-button>
         <el-button type="primary" @click="showAddPrisoner">新增</el-button>
         </span>
       </template>
@@ -127,7 +128,17 @@
         </template>
         
        <template #level="{ row }">
-         {{ row.level | level }}
+         <div>
+            <span>{{ row.level | level }}</span>
+            <el-button
+              v-if="!hasAllPrisonQueryAuth"
+              :disabled="!row.sysFlag"
+              size="small"
+              type="text"
+              style="margin-left: 5px;"
+              @click="showModifyLevel(11, row)"
+            >修改</el-button>
+          </div>
         </template>
 
         <template #prisonTerm="{ row }">
@@ -497,7 +508,9 @@
           </div>
         </div>
       </template>
-
+      <template v-if="operationType === 11">
+        <p style="font-size: 12px;">罪犯姓名：{{ prisoner.name }}</p>
+      </template>
       <m-form
         v-if="!(isPrisonAreaIdType && prisonConfigs.length < 1)"
         :items="dialogContent['items']"
@@ -594,6 +607,7 @@ import { prisonerExcelConfig } from '@/common/excel-config'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
 import prisons from '@/common/constants/prisons'
+import http from '@/service'
 
 import {
   provinceJailLevelConfigsParamsName,
@@ -772,7 +786,7 @@ export default {
       selectPrisoners: [], // 删除的罪犯数据
       // isIndeterminate: false, // 单选框的样式控制 不要删掉
       // multipleSelection: [], // 多选数据 不要删掉
-      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员 5批量更换监区 6为转监 7为批量转监 8为批量接收 9为单个接收 10为非ywt_Admin批量转监
+      operationType: 0, // 默认是0就是不操作 1为加入黑名单 2为更换监区 3 为新增服刑人员 4为删除服刑人员 5批量更换监区 6为转监 7为批量转监 8为批量接收 9为单个接收 10为非ywt_Admin批量转监 // 11修改管教级别 12批量修改管教级别
 
       prisonerExcelConfig,
 
@@ -968,6 +982,7 @@ export default {
             }
           }, { dissMissConfigs }, formButton)
           break
+        
         case 3:
           title = '新增服刑人员'
           formButton.buttons = [
@@ -1370,6 +1385,30 @@ export default {
             }
           }, { dissMissConfigs: changePrisonDissMissConfigs }, formButton)
           break
+        case 11:
+        case 12:
+          title = '修改管教级别'
+          items = {
+            level: {
+              type: 'select',
+              label: '管教级别',
+              options: [
+                { label: '宽管级', value: 1 },
+                { label: '普管级', value: 2 },
+                { label: '考察级', value: 3 },
+                { label: '严管级', value: 4 }
+              ],
+              value: 2
+            },
+            buttons: [
+              'cancel',
+              {
+                add: true,
+                text: '确定'
+              }
+            ]
+          }
+          break
         default:
           break
       }
@@ -1471,7 +1510,7 @@ export default {
 
         {
           label: '通话次数/月',
-          minWidth: 85,
+          minWidth: 120,
           sortable: 'custom',
           slotName: 'accessTime'
         },
@@ -1483,12 +1522,12 @@ export default {
         // },
         {
           label: '管教级别',
-          minWidth: 85,
+          minWidth: 120,
           slotName: 'level'
         },
         {
           label: '服刑人员状态',
-          minWidth: 90,
+          minWidth: 120,
           showOverflowTooltip: true,
           slotName: 'prisonerStatus'
         },
@@ -1497,7 +1536,7 @@ export default {
 
         {
           label: '家属可视电话告知书',
-          minWidth: 125,
+          minWidth: 150,
           slotName: 'notifyId'
         },
 
@@ -2098,6 +2137,27 @@ export default {
       this.visible = true
     },
 
+    // 展示调整管教级别
+    showModifyLevel(operationType, row) {
+      this.operationType = operationType
+      if (operationType == 11) {
+        this.prisoner = Object.assign({}, row)
+        this.dialogFormValues = {
+          level: row.level
+        }
+      }else {
+        if(!this.selectPrisoners.length) {
+          this.$message({
+            showClose: true,
+            message: '提示：请选择要调整管教级别的数据！！',
+            type: 'warning'
+          })
+          return
+        }
+      }
+      this.visible = true
+    },
+
     // 关闭对话框
     handleCloseDialog() {
      let props, configs
@@ -2172,6 +2232,16 @@ export default {
 
         this.addPrionser(val).then(res => {
           if(!res) return
+          this.onCloseDialogAndRefreshen()
+        })
+      }
+      // 修改管教级别 单个、批量
+      if (this.operationType === 11 || this.operationType === 12) {
+        // console.log('prisoner==', this.prisoner, val)
+        http.updPrionserLevel({
+          prisonerIds: this.operationType === 11 ? this.prisoner.id : this.selectPrisoners.map(s => s.id).join(','),
+          level: val.level
+        }).then(res => {
           this.onCloseDialogAndRefreshen()
         })
       }
