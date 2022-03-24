@@ -1014,9 +1014,9 @@ export default {
             prisonAreaId: {
               type: 'select',
               label: '监区',
-              rules: !JSON.parse(localStorage.getItem('user')).branch_prison ? [] : ['required'],
-              disabled: !JSON.parse(localStorage.getItem('user')).branch_prison,
-              customClass: !JSON.parse(localStorage.getItem('user')).branch_prison ? 'input_required__show' : '',
+              rules: !this.user.branch_prison ? [] : ['required'],
+              disabled: !this.user.branch_prison,
+              customClass: !this.user.branch_prison ? 'input_required__show' : '',
               func: this.onGetNextLevelPrisonConfigsData,
               filterable
             },
@@ -2074,7 +2074,7 @@ export default {
 
       // 更换监区
       if (this.isPrisonAreaIdType) {
-        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+        await this.getPrisonConfigs({ jailId: this.user.jailId })
 
         this.prisonConfigData = this.prisonConfigs.filter(val => !(val.id === filterParams && !(+val.hasChildren)))
       } else {
@@ -2206,11 +2206,11 @@ export default {
 
       // 新增罪犯
       if (this.operationType === 3) {
-        const { jailId } = JSON.parse(localStorage.getItem('user'))
+        const { jailId } = this.user
 
         let prisonArea, temp = { jailId }
 
-        if(JSON.parse(localStorage.getItem('user')).branch_prison) {
+        if(this.user.branch_prison) {
           // 暂时默认租户管理员
           if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonAreaId))[0].name
 
@@ -2238,6 +2238,7 @@ export default {
       // 修改管教级别 单个、批量
       if (this.operationType === 11 || this.operationType === 12) {
         http.updPrionserLevel({
+          jailId: this.user.jailId,
           prisonerIds: this.operationType === 11 ? this.prisoner.id : this.selectPrisoners.map(s => s.id).join(','),
           level: val.level
         }).then(res => {
@@ -2520,7 +2521,7 @@ export default {
         // 租户管理员
         const options = operation === 'search' ? { value: 'name', label: 'name' } : { value: 'id', label: 'name' }
 
-        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+        await this.getPrisonConfigs({ jailId: this.user.jailId })
 
         this.$set(element[prop], 'options', this.prisonConfigs)
 
@@ -2715,7 +2716,7 @@ export default {
 
       if (this.hasPrisonArea) {
         // 分监区
-        await this.getPrisonConfigs({ jailId: JSON.parse(localStorage.getItem('user')).jailId })
+        await this.getPrisonConfigs({ jailId: this.user.jailId })
 
         this.visible = true
       } else {
