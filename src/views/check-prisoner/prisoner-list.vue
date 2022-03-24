@@ -2237,7 +2237,6 @@ export default {
       }
       // 修改管教级别 单个、批量
       if (this.operationType === 11 || this.operationType === 12) {
-        // console.log('prisoner==', this.prisoner, val)
         http.updPrionserLevel({
           prisonerIds: this.operationType === 11 ? this.prisoner.id : this.selectPrisoners.map(s => s.id).join(','),
           level: val.level
