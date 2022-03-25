@@ -7,10 +7,11 @@
       :tabs.sync="$tabs"
       :httpRequests="$httpRequests"
       :tableCols="$tableCols"
+      :componentsVisible="componentsVisible1"
       v-bind="routeProps"
     >
       <template #ygSearchAppendPreSlots
-        ><el-button type="primary" @click="onNewFamily"
+        ><el-button type="primary" v-if="$isSuperAdmin" @click="onNewFamily"
           >新增</el-button
         ></template
       >
@@ -37,6 +38,8 @@
 </template>
 
 <script>
+import store from '@/store'
+
 import { ref, reactive, computed, watch } from "@vue/composition-api";
 
 import { tabItems, _searchItems, httpRequests, _tableCols } from "../constants";
@@ -49,56 +52,77 @@ export default {
     const $callRechargeParent = ref(null);
 
     const searchItems = ref(_.cloneDeep(_searchItems));
+
     const familyInformationDialogFormItems = ref({
       buttons: ["add", "cancel"],
       formConfigs: {
         labelWidth: "120px",
       },
-      prisonerNumber: {
+      jailName: {
         type: "input",
         label: "监狱名称",
         rules: ["required"],
         value: "",
-        clearable:true,
+        clearable: true,
       },
       prisonerName: {
         type: "input",
         label: "罪犯姓名",
         rules: ["required"],
         value: "",
-        clearable:true,
+        clearable: true,
       },
-      familyName: {
+      prisonerNumber: {
         type: "input",
         label: "罪犯编号",
         rules: ["required"],
         value: "",
-        clearable:true,
+        clearable: true,
       },
-      familyPhone: {
+      vocationalResult: {
         type: "input",
         label: "亲情电话充值金额",
         rules: ["required", "phone"],
         // rules: ["required"],
         value: "",
-        clearable:true,
+        clearable: true,
       },
       remark: {
         type: "input",
         label: "备注",
         // rules: ["required"],
         value: "",
-        clearable:true,
-      }
+        clearable: true,
+      },
     });
-  const familyInformationDialogFormValues = ref({});
-    const $tabs = ref("0");
+   
+   const $tabs = ref("0");
+
+    const $tabItems = reactive(tabItems);
+
+    const familyInformationDialogFormValues = ref({});
+
+    const componentsVisible1 = ref({excelDownloadVisible:false, excelUploadVisible:false});
 
     const familyphonerechargeamount = ref(false);
 
     const familyInformationVisible = ref(false);
 
-    const $tabItems = reactive(tabItems);
+    // store ywt_admin账号
+    const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
+    
+    const $componentsVisible = computed(() => {
+      return Object.entries(componentsVisible.value).reduce((accumulator, [key, value]) => {
+        accumulator[key] = value
+
+        return accumulator
+      } , {
+        // 默认 ywt_admin下面没有导入和模版
+        excelUploadVisible: $isSuperAdmin.value,
+        excelDownloadVisible: $isSuperAdmin.value,
+        excelExportVisible:  true // 默认都有导出功能
+      })
+    })
 
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce(
@@ -119,19 +143,20 @@ export default {
     });
 
     const $tableCols = computed(() => _tableCols[$tabs["value"]]);
-    console.log($tableCols);
 
     const { routeProps } = useRouteProps();
+
     async function onNewFamily() {
       familyphonerechargeamount.value = true;
     }
-     async function onFamilyInformationDialogFormSubmit(data) {
+
+    async function onFamilyInformationDialogFormSubmit(data) {
       if (data) {
-        let res  = await http.familyforAdd(data)
-        if (res===undefined) return;
+        let res = await http.familyforAdd(data);
+        if (res === undefined) return;
         setTimeout(() => {
           this.onCloseFamilyInformationDialog();
-         $callRechargeParent.value && $callRechargeParent.value.initData();
+          $callRechargeParent.value && $callRechargeParent.value.initData();
         }, 1000);
       } else {
         this.$message({
@@ -152,6 +177,8 @@ export default {
       if (val === "0") searchItems.value.types.miss = false;
       else if (val === "1") searchItems.value.types.miss = true;
       $callRechargeParent.value && $callRechargeParent.value.initData();
+      // if ( $isSuperAdmin) componentsVisible1.excelDownloadVisible = true;
+      // else componentsVisible1.excelDownloadVisible = false;
     });
 
     return {
@@ -168,7 +195,10 @@ export default {
       familyInformationDialogFormItems,
       familyInformationDialogFormValues,
       onFamilyInformationDialogFormSubmit,
-      onCloseFamilyInformationDialog
+      onCloseFamilyInformationDialog,
+      $isSuperAdmin,
+      componentsVisible1,
+      $componentsVisible
     };
   },
 };

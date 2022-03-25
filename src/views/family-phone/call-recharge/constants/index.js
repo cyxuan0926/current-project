@@ -119,7 +119,7 @@ const _commonCols = [
 
 const _rechargeAmount = {
   label: '亲情电话充值金额(元)',
-  prop: '',
+  prop: 'vocationalResult',
 }
 
 const _remark = {
@@ -155,7 +155,7 @@ export const _tableCols = {
 
     {
       label: '亲情电话充值金额(元)',
-      prop: 'rechargeAmount',
+      prop: 'vocationalResult',
       showOverflowTooltip: true
     },
     

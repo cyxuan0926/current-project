@@ -154,7 +154,7 @@ export default {
           showOverflowTooltip: true,
         },
       ];
-      const a =[
+      const familyFreeMeetings =[
           {
           label: "省份",
           prop: "provincesName",
