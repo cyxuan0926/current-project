@@ -63,17 +63,36 @@ export const _searchItems = {
 
 export const httpRequests = {
   pagedRequest: {
-    url: '/infoEducation/page'
+    '0': {
+      url: '/infoRecipe/page',
+      params: {}
+    },
+    '1': {
+      url: '/callChargeManage/managePage',
+      //非阳光监狱传true
+      params: { isYgPrison: true }
+    }
   },
-
   excelExportRequest: {
-    url: '/infoEducation/export',
-
-    methods: 'get'
+    '0': {
+      url: '/infoRecipe/export',
+      params: {},
+      methods: 'get'
+    },
+    '1': {
+      url: '/callChargeManag/exportManage',
+      params: { isYgPrison: true },
+      methods: 'get'
+    }
   },
 
   excelDownloadRequest: {
     '0': {
+      params: {
+        fileName: '/template/info_education_template.xls'
+      }
+    },
+    '1': {
       params: {
         fileName: '/template/info_education_template.xls'
       }
@@ -89,7 +108,7 @@ export const httpRequests = {
 const _commonCols = [
   {
     label: '省份',
-    prop: 'provincesName',
+    prop: 'provinceName',
     showOverflowTooltip: true
   },
 
@@ -104,17 +123,17 @@ const _commonCols = [
     slotName: 'prisonArea',
     showOverflowTooltip: true
   },
-    {
-      label: '罪犯姓名',
-      prop: 'prisonerName'
-      // ...$likeName
-    },
+  {
+    label: '罪犯姓名',
+    prop: 'prisonerName'
+    // ...$likeName
+  },
 
-    {
-      label: '罪犯编号',
-      prop: 'prisonerNumber'
-      // ...$likePrisonerNumber
-    }
+  {
+    label: '罪犯编号',
+    prop: 'prisonerNumber'
+    // ...$likePrisonerNumber
+  }
 ]
 
 const _rechargeAmount = {
@@ -137,7 +156,7 @@ export const _tableCols = {
 
     {
       label: '充值账号',
-      prop: 'ideologyResult',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
 
@@ -145,7 +164,7 @@ export const _tableCols = {
 
     {
       label: '充值时间',
-      prop: 'createTime',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     }
   ],
@@ -155,24 +174,24 @@ export const _tableCols = {
 
     {
       label: '亲情电话充值金额(元)',
-      prop: 'vocationalResult',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
-    
+
     {
       label: '可视电话消费金额(元)',
-      prop: 'cultureEducation',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
     {
       label: '系统电话消费金额(元)',
-      prop: 'cultureEducation',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
 
     {
       label: '亲情电话余额(元)',
-      prop: 'cultureEducation',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
 

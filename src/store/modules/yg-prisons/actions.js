@@ -37,13 +37,26 @@ export default {
 
   async getPagedYgPrisonsDataCommon({ commit }, inputs) {
     try {
-      const response = await api.getPaged(inputs)
+      let response, list, totalCount;
+      if (inputs.params.isYgPrison) {
+        response = await api.familytelephonecallcostmanagement(inputs)
+      } else {
+        response = await api.getPaged(inputs)
+      }
 
       if (!response || !response.data) return
 
-      const list = response.data['list'] && Array.isArray(response.data['list']) ? response.data['list'] : []
+      if (inputs.params.isYgPrison) {
+        list = response.data['familyInfoImportList'] && Array.isArray(response.data['familyInfoImportList']) ? response.data['familyInfoImportList'] : []
 
-      const totalCount = response.data['list'] && Array.isArray(response.data['list']) ? response.data['totalCount'] : 0
+        totalCount = response.data['familyInfoImportList'] && Array.isArray(response.data['familyInfoImportList']) ? response.data['total'] : 0
+      } else {
+
+        list = response.data['list'] && Array.isArray(response.data['list']) ? response.data['list'] : []
+
+        totalCount = response.data['list'] && Array.isArray(response.data['list']) ? response.data['totalCount'] : 0
+      }
+
 
       commit('setPagedYgPrisonsDataCommon', {
         list,
@@ -59,7 +72,14 @@ export default {
 
   async exportYgPrisonExcel(_, inputs) {
     try {
-      const response = await api.exportYgPrisonExcel(inputs)
+      console.log(inputs)
+      let response;
+      if (inputs.params.isYgPrison) {
+        response = await api.familytelephoneexcel(inputs)
+      } else {
+        response = await api.exportYgPrisonExcel(inputs)
+      }
+      // const response = await api.exportYgPrisonExcel(inputs)
 
       if (!response) return
 

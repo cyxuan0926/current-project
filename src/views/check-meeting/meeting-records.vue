@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import prisons from '@/common/constants/prisons'
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 import { DateFormat } from '@/utils/helper'
@@ -104,6 +104,7 @@ export default {
   },
   computed: {
     ...mapState(["freeMeetings"]),
+    ...mapGetters(['isSuperAdmin']),
 
     tableCols() {
       const jailerFamilyFreeMeetingsTableCols = [
@@ -164,6 +165,7 @@ export default {
           label: "监狱名称",
           prop: "jailName",
         },
+        
       ]
       const familyFreeMeetingstableCols = [
         {
@@ -181,15 +183,6 @@ export default {
           prop: "prisonerNumber",
           minWidth: 92,
           // ...$likePrisonerNumber,
-        },
-        {
-          label: "省份",
-          prop: "provincesName",
-        },
-
-        {
-          label: "监狱名称",
-          prop: "jailName",
         },
         {
           label: "通话时间",
@@ -224,6 +217,8 @@ export default {
           showOverflowTooltip: true,
         },
       ];
+   if (this.isSuperAdmin) return [...familyFreeMeetings, ...familyFreeMeetingstableCols];
+
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS)
         return familyFreeMeetingstableCols;
       else return jailerFamilyFreeMeetingsTableCols;

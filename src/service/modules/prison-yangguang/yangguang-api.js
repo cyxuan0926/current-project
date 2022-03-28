@@ -38,5 +38,11 @@ export default {
     validateUploadYgCommon: ({ params, url, methods = 'post' }) => service[methods](service.getYgUrl(url), params).then(response => response && response.data),
 
     // 阳光监狱 - 导出excel
-    exportYgPrisonExcel: ({ params, url, methods = 'post' }) => service[methods](service.getYgUrl(url), params, { responseType: 'blob' }).then(response => response && response.data)
+    exportYgPrisonExcel: ({ params, url, methods = 'post' }) => service[methods](service.getYgUrl(url), params, { responseType: 'blob' }).then(response => response && response.data),
+    
+    // 查询亲情电话通话费用管理ywt-admin
+    familytelephonecallcostmanagement: ({ params, url }) => service.get( url, params),
+
+    // 亲情电话通话费用管理 --导入excel
+    familytelephoneexcel: ({ params, url, methods = 'post' }) => service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data),
 }

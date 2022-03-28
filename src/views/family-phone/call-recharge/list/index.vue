@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import store from '@/store'
+import store from "@/store";
 
 import { ref, reactive, computed, watch } from "@vue/composition-api";
 
@@ -95,14 +95,17 @@ export default {
         clearable: true,
       },
     });
-   
-   const $tabs = ref("0");
+
+    const $tabs = ref("0");
 
     const $tabItems = reactive(tabItems);
 
     const familyInformationDialogFormValues = ref({});
 
-    const componentsVisible1 = ref({excelDownloadVisible:false, excelUploadVisible:false});
+    const componentsVisible1 = ref({
+      excelDownloadVisible: false,
+      excelUploadVisible: false,
+    });
 
     const familyphonerechargeamount = ref(false);
 
@@ -110,30 +113,34 @@ export default {
 
     // store ywt_admin账号
     const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
-    
-    const $componentsVisible = computed(() => {
-      return Object.entries(componentsVisible.value).reduce((accumulator, [key, value]) => {
-        accumulator[key] = value
 
-        return accumulator
-      } , {
-        // 默认 ywt_admin下面没有导入和模版
-        excelUploadVisible: $isSuperAdmin.value,
-        excelDownloadVisible: $isSuperAdmin.value,
-        excelExportVisible:  true // 默认都有导出功能
-      })
-    })
+    const $componentsVisible = computed(() => {
+      return Object.entries(componentsVisible.value).reduce(
+        (accumulator, [key, value]) => {
+          accumulator[key] = value;
+
+          return accumulator;
+        },
+        {
+          // 默认 ywt_admin下面没有导入和模版
+          excelUploadVisible: $isSuperAdmin.value,
+          excelDownloadVisible: $isSuperAdmin.value,
+          excelExportVisible: true, // 默认都有导出功能
+        }
+      );
+    });
 
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce(
         (accumulator, [key, value]) => {
           let temp = value;
 
-          if (["excelDownloadRequest"].includes(key)) temp = value[$tabs.value];
+          if (["excelDownloadRequest", 'pagedRequest','excelExportRequest'].includes(key)) temp = value[$tabs.value];
 
           accumulator[key] = {
             ...accumulator[key],
             ...temp,
+            aa:false
           };
 
           return accumulator;
@@ -178,7 +185,7 @@ export default {
       else if (val === "1") searchItems.value.types.miss = true;
       $callRechargeParent.value && $callRechargeParent.value.initData();
       // if ( $isSuperAdmin) componentsVisible1.excelDownloadVisible = true;
-      // else componentsVisible1.excelDownloadVisible = false;
+      //  else componentsVisible1.excelDownloadVisible = false;
     });
 
     return {
@@ -198,7 +205,7 @@ export default {
       onCloseFamilyInformationDialog,
       $isSuperAdmin,
       componentsVisible1,
-      $componentsVisible
+      $componentsVisible,
     };
   },
 };
