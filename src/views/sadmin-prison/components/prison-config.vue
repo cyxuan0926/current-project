@@ -23,10 +23,7 @@
 
         <template v-if="!!slotFormData.abnormalCalldurationSwitch">
           <el-col :span="21">
-            <el-form-item
-              prop="abnormalCallduration"
-              :rules="slotFormRules.abnormalCallduration"
-            >
+            <el-form-item prop="abnormalCallduration" :rules="slotFormRules.abnormalCallduration">
               <el-input-number
                 type="number"
                 style="width: 150px; margin-left: 20px"
@@ -40,9 +37,11 @@
               >
                 <template slot="append">秒</template>
               </el-input-number>
-              <span style="margin-left: 10px"> 秒</span>
-              <font color="#C0C4CC" style="margin-left: 20px"
-                >说明: 每次通话时长不超过该时长时，该次通话不计入通话次数
+
+              <span style="margin-left: 10px;"> 秒</span>
+
+              <font color="#C0C4CC" style="margin-left: 20px;">
+                说明: 每次通话时长不超过该时长时，该次通话不计入通话次数
               </font>
             </el-form-item>
           </el-col>
@@ -65,16 +64,14 @@
             prop="afrIOSSetValue"
             label-width="65px"
           >
-            <el-select
-              v-model="slotFormData.afrIOSSetValue"
-              placeholder="请选择IOS阈值配置"
-            >
-              <el-option
-                v-for="configs in faceRecognitionValues"
-                :key="configs"
-                :label="configs"
-                :value="configs"
-              />
+            <el-select v-model="slotFormData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
+              <template v-for="configs in faceRecognitionValues">
+                <el-option
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </template>
             </el-select>
           </el-form-item>
         </el-col>
@@ -85,43 +82,42 @@
             prop="afrAndroidSetValue"
             label-width="65px"
           >
-            <el-select
-              v-model="slotFormData.afrAndroidSetValue"
-              placeholder="请选择安卓阈值配置"
-            >
-              <el-option
-                v-for="configs in faceRecognitionValues"
-                :key="configs"
-                :label="configs"
-                :value="configs"
-              />
+            <el-select v-model="slotFormData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
+              <template v-for="configs in faceRecognitionValues">
+                <el-option
+                  :key="configs"
+                  :label="configs"
+                  :value="configs"
+                />
+              </template>
             </el-select>
           </el-form-item>
         </el-col>
       </template>
-       <template #relationshipTemplate>
-          <div style="display: flex">
-            <div
-              style="
-                border: 1px solid #dcdfe6;
-                min-height: 42px;
-                min-width: 300px;
-                width: 500px;
-                margin-right: 20px;
-              "
-            >
+
+      <template #relationshipTemplate>
+        <div style="display: flex">
+          <div
+            style="
+              border: 1px solid #dcdfe6;
+              min-height: 42px;
+              min-width: 300px;
+              width: 500px;
+              margin-right: 20px;
+            "
+          >
+            <template v-for="(item, index) in relationship">
               <span
                 style="
                   border: 1px solid #dcdfe6;
                   padding: 5px 10px;
                   margin-left: 20px;
-                "
-                v-for="(item, index) in relationship"
+                "          
                 :key="index"
-                >{{ item }}</span
-              >
-            </div>
+              >{{ item }}</span>
+            </template>
           </div>
+        </div>
       </template>
     </m-form>
     <!-- <template #basicConfigs>
@@ -282,6 +278,7 @@ export default {
         callback(new Error("请输入10-600之间正整数"));
       else callback();
     };
+
     return {
       faceRecognitionValues,
 
@@ -380,6 +377,7 @@ export default {
             disabled,
             value: 0,
           },
+
           familyPhone: {
             type: "switch",
             label: "显示家属电话",
@@ -418,6 +416,7 @@ export default {
             rules: ["required"],
             value: 1,
           },
+
           shopping: {
             type: "switch",
             label: "电子商务模块开放",
@@ -432,6 +431,7 @@ export default {
             rules: ["required"],
             value: 1,
           },
+
           faceRecognition: {
             type: "switch",
             label: "人脸识别模块开放",
@@ -439,6 +439,7 @@ export default {
             rules: ["required"],
             value: 1,
           },
+
           remittance: {
             type: "input",
             label: "汇款限制",
@@ -447,6 +448,7 @@ export default {
             append: "/元",
             value: 0,
           },
+
           consumption: {
             type: "input",
             label: "消费限制",
@@ -501,12 +503,14 @@ export default {
             setValueConfigs: [{ setValue: 0 }],
             func: this.onMultistageExamineSwitch,
           },
+
           userDefinedDuration: {
             label: "审核时可指定通话时长",
             type: "switch",
             disabled,
             value: 0,
           },
+
           abnormalCalldurationSwitch: {
             slotName: "abnormalCalldurationSwitch",
             attrs: {
@@ -515,6 +519,7 @@ export default {
               required: true,
             },
           },
+
           useMeetingFloor: {
             label: "会见楼开关",
             type: "switch",
@@ -523,6 +528,7 @@ export default {
             setValueConfigs: [{ setValue: 1 }],
             func: this.onMeetingRoomSwitch,
           },
+
           gkMessage: {
             type: "switch",
             label: "国科短信模块开放",
@@ -530,6 +536,7 @@ export default {
             rules: ["required"],
             value: 0,
           },
+
           sunJail: {
             type: "switch",
             label: "阳光监狱模块开放",
@@ -540,9 +547,7 @@ export default {
 
           thresholdConfigs: {
             slotName: "thresholdConfigs",
-
             customClass: "threshold__configs",
-
             attrs: {
               label: "人脸识别阈值设置",
             },
@@ -550,21 +555,15 @@ export default {
 
           afrInterval: {
             label: "人脸检索间隔时间",
-
             type: "input",
-
             rules: ["required", "isPositiveIntegers", "numberRange10-3600"],
-
             append: "秒",
-
             value: "60",
           },
 
           familyPhoneScope: {
             label: "亲情电话通话范围",
-
             type: "checkboxgroup",
-
             group: [
               {
                 label: "认证家属",
@@ -576,22 +575,17 @@ export default {
                 value: 2,
               },
             ],
-
             attrs: {
               min: 1,
             },
-
             value: [],
           },
+
           accessTimes: {
             label: "可视电话免费剩余次数",
-
             type: "input",
-
             rules: ["required", "isPositiveNumber"],
-
             append: "次",
-
             value: "1",
           },
 
@@ -628,6 +622,7 @@ export default {
             ],
             value: [0, 1],
           },
+
           meetingEnabled: {
             type: "switch",
             label: "狱警通话开关",
@@ -642,12 +637,14 @@ export default {
             disabled,
             value: 0,
           },
+
           regAutoAudit: {
             type: "switch",
             label: "家属认证自动审核开关",
             disabled,
             value: 0,
           },
+
           loginAuthCode: {
             type: "switch",
             label: "快捷登录验证码",
@@ -657,40 +654,46 @@ export default {
 
           visiblePhonePeopleNumber: {
             label: "可视电话通话人数上限",
-
             type: "input",
-
             rules: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }],
-
             append: "次",
-
             value: "6",
-
             customClass: ['el-form-item-people_number']
           },
+
           relationshipTemplate: {
             slotName: "relationshipTemplate",
-
             customClass: "threshold__configs",
-
             attrs: {
               label: "家属关系",
             },
-          },   
+          },
+
+          familySendMsgType: {
+            label: "家属短信发送内容",
+            type: "checkboxgroup",
+            group: this.$store.state.familySendMsgTypeOptions,
+            value: [1]
+          },
+
+          prisonerSendMsgType: {
+            label: "服刑人员发送内容",
+            type: "checkboxgroup",
+            group: this.$store.state.prisonerSendMsgTypeOptions,
+            value: [1, 2]
+          }
         },
         formButton
       ),
+
       values: {},
       relationship:[],
       permission,
 
       slotFormData: {
         abnormalCalldurationSwitch: 0,
-
         abnormalCallduration: 10,
-
         afrIOSSetValue: "0.2",
-
         afrAndroidSetValue: "0.4",
       },
 
@@ -735,7 +738,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(["prison", "branchStatus", "haveMeetingFloorTerminals"]),
+    ...mapState([
+      "prison",
+      "branchStatus",
+      "haveMeetingFloorTerminals"
+    ]),
 
     ...mapState("account", ["isHaveAdvancedAuditor"]),
 
@@ -867,7 +874,7 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-        this.updatePrison(params).then(async (res) => {
+        this.updatePrison(params).then(async res => {
           if (!res) return;
 
           await this.onInitPrisonConfigDetails();
@@ -947,9 +954,7 @@ export default {
         `调整监区结构后，原来所有的可视电话预约将全部取消，确认调整吗？调整监区结构后，为了避免预约问题，请及时调整该监狱的终端管理和会见楼配置。`,
         {
           closeOnClickModal: false,
-
           closeOnPressEscape: false,
-
           callback: (action) => {
             if (action === "cancel")
               this.$refs["prison-config_form"].setFieldValue(
@@ -970,16 +975,13 @@ export default {
 
       const options = {
         closeOnClickModal: false,
-
         closeOnPressEscape: false,
-
         customClass: "multistage_examine__message_box",
       };
 
       const have_automatic_audit = {
         message:
           "监狱配置已开启自动审核，当开启多级审核后，自动审核将失效，确认开启多级审核吗？",
-
         options: {
           ...options,
 
@@ -995,11 +997,8 @@ export default {
 
         options: {
           ...options,
-
           closeOnClickModal: true,
-
           showCancelButton: false,
-
           callback: (action) => {
             this.$refs["prison-config_form"].setFieldValue(value, prop, item);
           },
@@ -1015,7 +1014,6 @@ export default {
           configs: {
             // 这个地方要和公共服务的角色名保存一致
             userRoles: ["高级审核人员"],
-
             mutationName: "setIsHaveAdvancedAuditor",
           },
         });
@@ -1043,17 +1041,13 @@ export default {
         await this.getMeetingFloorTerminals(jailId);
 
         Message.closeAll();
-
         if (this.haveMeetingFloorTerminals) {
           this.$confirm(
             "该监狱配置了会见楼配置，请先移除会见楼的终端，再关闭会见楼开关！",
             {
               showCancelButton: false,
-
               closeOnClickModal: false,
-
               closeOnPressEscape: false,
-
               callback: (action) => {
                 this.$refs["prison-config_form"].setFieldValue(
                   value,
@@ -1069,9 +1063,9 @@ export default {
 
     async onInitPrisonConfigDetails() {
       const res = await this.getPrisonDetail({ id: this.$route.params.id });
-       if(this.prison.relationshipTemplate){
-            this.relationship=this.prison.relationshipTemplate.split(",")
-        }
+
+      if (this.prison.relationshipTemplate) this.relationship = this.prison.relationshipTemplate.split(",")
+
       if (!res) return;
 
       const {

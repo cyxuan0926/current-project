@@ -406,7 +406,22 @@ let switches = {
       label: '退款',
       value: 1
     }
-  ]  
+  ],
+
+  prisonerSendMsgTypeOptions: [
+    {
+      label: '文字',
+      value: 1,
+      attrs: {
+        disabled: true
+      }
+    },
+
+    {
+      label: '图片',
+      value: 2
+    }
+  ]
 }
 
 // 多级审批
@@ -419,6 +434,24 @@ const multistageExamineRegistStatus = [
   }
 ]
 
-switches = { ...switches, multistageExamineRegistStatus }
+const familySendMsgTypeOptions = [
+  ...switches['prisonerSendMsgTypeOptions'],
+
+  {
+    label: "语音",
+    value: 5,
+  },
+
+  {
+    label: "视频",
+    value: 6,
+  }
+]
+
+switches = {
+  ...switches,
+  multistageExamineRegistStatus,
+  familySendMsgTypeOptions
+}
 
 export default switches
