@@ -35,7 +35,7 @@
           width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" >
+              <el-input  type="number"  :onKeypress="$_limitInputPositiveInteger" :min="0"  @blur="changeTimes(scope.row)"  v-model="scope.row.duration" size="mini" >
                <template slot="append">/分钟</template>
               </el-input>
             </span>
@@ -47,7 +47,7 @@
           label="通话次数(次/月)">
            <template slot-scope="scope">
             <span v-if="scope.row.isEditPropertyShow">
-              <el-input  type="number" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
+              <el-input  type="number" :onKeypress="$_limitInputPositiveInteger" :min="0"  @blur="changeTimes(scope.row)" v-model="scope.row.number" size="mini">
               <template slot="append">/次</template>
                 </el-input>
             </span>
@@ -157,7 +157,7 @@
                 <el-form-item label="语音电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVoice">
-                       <el-input  type="number"   onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVoice',2)" v-model="ruleForm.startMinutesVoice">
+                       <el-input  type="number" :onKeypress="$_limitInputPositiveInteger" :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVoice',2)" v-model="ruleForm.startMinutesVoice">
                             <template slot="append">/分钟</template>
                        </el-input>
                       </el-form-item>
@@ -185,7 +185,7 @@
                 <el-form-item label="可视电话基础费用" label-width="160px" >
                     <el-col :span="10">
                       <el-form-item   prop="startMinutesVisual">
-                       <el-input  type="number"   placeholder="分钟" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVisual',2)"  v-model="ruleForm.startMinutesVisual">
+                       <el-input  type="number" placeholder="分钟" :onKeypress="$_limitInputPositiveInteger"  :min="0" :max="maxDuration"  @blur="changeTimes('startMinutesVisual',2)"  v-model="ruleForm.startMinutesVisual">
                             <template slot="append">/分钟</template>
                        </el-input>
                       </el-form-item>

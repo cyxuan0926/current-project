@@ -6,7 +6,8 @@
       :items="formItems"
       @submit="onSubmit"
       @back="onBack"
-      :values="values" />
+      :values="values"
+    />
   </div>
 </template>
 

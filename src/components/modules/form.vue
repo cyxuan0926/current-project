@@ -301,7 +301,7 @@ export default {
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
         return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate, ruleMessages)
       }
-      let plea = ['input', 'editor', 'jaileditor', 'textarea'].indexOf(type) > -1 ? '请输入' : '请选择'
+      let plea = [...this.$_elInputTypes, 'editor', 'jaileditor'].indexOf(type) > -1 ? '请输入' : '请选择'
       switch (rule) {
         case 'required':
           return { message: `${ plea }${ placeholder || label }`, required: true, validator: validator.required }

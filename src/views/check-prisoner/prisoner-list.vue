@@ -1,20 +1,18 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-excel-export
-      v-if="hasAllPrisonQueryAuth && selectPrisoners.length > 0"
-      :filename="prisonerExcelConfig.filename"
-      :jsonData="selectPrisoners"
-      :header="prisonerExcelConfig.header"
-      :filterFields="prisonerExcelConfig.filterFields"
+  <el-row class="row-container" :gutter="0">
+    <template v-if="hasAllPrisonQueryAuth && selectPrisoners.length > 0">
+      <m-excel-export
+        :filename="prisonerExcelConfig.filename"
+        :jsonData="selectPrisoners"
+        :header="prisonerExcelConfig.header"
+        :filterFields="prisonerExcelConfig.filterFields"
       />
+    </template>
 
-    <m-excel-download
-      v-if="hasAllPrisonQueryAuth && selectPrisoners.length === 0 && filter.jailId"
-      path="/download/exportPrisoners"
-      :params="filter"
-    />
+    <template v-if="hasAllPrisonQueryAuth && selectPrisoners.length === 0 && filter.jailId">
+      <m-excel-download path="/download/exportPrisoners" :params="filter" />
+    </template>
+
     <m-search
       ref="search"
       :items="searchItems"
@@ -40,23 +38,40 @@
 
     <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
-         <m-excel-download
-            path="/download/downloadfile"
-            :params='{ filepath:"prisoner__leave_import_template.xls"}'
-            text="离监模板" style="margin-left: 10px"
-          />
-          <m-excel-upload ref="mExcelUpload" text='导入离监数据'  @click.native="one(true)" :configs="excelUploadConfigs" style="margin-left: 10px" />
-          <m-excel-download
-            path="/download/downloadfile"
-            :params='{ filepath:"prisoner__transfer_import_template.xls"}'
-            text="转监模板" style="margin-left: 10px"
-          />
-            <m-excel-upload ref="mExcelUploadConfig" text='导入转监数据' @click.native="one(false)"  :configs="excelUploadConfigs" style="margin-left: 10px" />
-        <span style="margin-left:10px">
-        <el-button  type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
-        <el-button type="primary" @click="showDelPrionser">离监</el-button>
-        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
-        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+        <m-excel-download
+          path="/download/downloadfile"
+          :params='{ filepath:"prisoner__leave_import_template.xls" }'
+          text="离监模板" style="margin-left: 10px;"
+        />
+
+        <m-excel-upload
+          ref="mExcelUpload"
+          text='导入离监数据'
+          @click.native="one(true)"
+          :configs="excelUploadConfigs"
+          style="margin-left: 10px;"
+        />
+
+        <m-excel-download
+          path="/download/downloadfile"
+          :params='{ filepath:"prisoner__transfer_import_template.xls" }'
+          text="转监模板"
+          style="margin-left: 10px;"
+        />
+
+        <m-excel-upload
+          ref="mExcelUploadConfig"
+          text='导入转监数据'
+          @click.native="one(false)"
+          :configs="excelUploadConfigs"
+          style="margin-left: 10px;"
+        />
+
+        <span style="margin-left: 10px;">
+          <el-button type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
+          <el-button type="primary" @click="showDelPrionser">离监</el-button>
+          <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+          <el-button type="primary" @click="showAddPrisoner">新增</el-button>
         </span>
       </template>
     </el-row>
@@ -100,14 +115,15 @@
         <template #accessTime="{ row }">
           <div>
             {{ row.accessTime }}
-            <el-button
-              v-if="!hasAllPrisonQueryAuth"
-              :disabled="!row.sysFlag"
-              size="small"
-              type="text"
-              style="margin-left: 5px;"
-              @click="onTimeEdit(row, 'accessTime')"
-            >修改</el-button>
+            <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                :disabled="!row.sysFlag"
+                size="small"
+                type="text"
+                style="margin-left: 5px;"
+                @click="onTimeEdit(row, 'accessTime')"
+              >修改</el-button>
+            </template>
           </div>
         </template>
 
@@ -115,14 +131,15 @@
           <div>
             <span>{{ row.smsNum }}</span>
 
-            <el-button
-              v-if="!hasAllPrisonQueryAuth"
-              :disabled="!row.sysFlag"
-              size="small"
-              type="text"
-              style="margin-left: 5px;"
-              @click="onTimeEdit(row, 'smsNum')"
-            >修改</el-button>
+            <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                :disabled="!row.sysFlag"
+                size="small"
+                type="text"
+                style="margin-left: 5px;"
+                @click="onTimeEdit(row, 'smsNum')"
+              >修改</el-button>
+            </template>
           </div>
         </template>
         
@@ -137,9 +154,13 @@
         </template>
 
         <template #prisonerStatus="{ row }">
-          <span v-if="!row.sysFlag">删除原因：{{ row.deleteReason }}</span>
+          <template v-if="!row.sysFlag">
+            <span>删除原因：{{ row.deleteReason }}</span>
+          </template>
 
-          <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
+          <template v-else-if="row.isBlacklist">
+            <span>黑名单原因：{{ row.reason }}</span>
+          </template>
         </template>
 
         <template #families="{ item }">
@@ -172,39 +193,37 @@
         <template #operations="{ row }">
           <template v-if="isPrisonerTabVal">
             <template v-if="!hasAllPrisonQueryAuth">
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-if="!row.isBlacklist"
-                @click="showPrisonerDet(row)"
-              >详情
-              </el-button>
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-if="!row.isBlacklist"
-                @click="showBlackList(row)"
-              >加入黑名单
-              </el-button>
+              <template v-if="!row.isBlacklist">
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag"
+                  @click="showPrisonerDet(row)"
+                >详情</el-button>
 
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-else
-                @click="removeBlackList(row)"
-              >移出黑名单
-              </el-button>
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag"
+                  @click="showBlackList(row)"
+                >加入黑名单</el-button>
+              </template>
+
+              <template v-else>
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag" 
+                  @click="removeBlackList(row)"
+                >移出黑名单</el-button>
+              </template>
 
               <el-button
                 type="text"
                 size="small"
                 :disabled="!row.sysFlag"
                 @click="onShowPrisonConfig(row, 2)"
-              >更换监区
-              </el-button>
+              >更换监区</el-button>
             </template>
 
             <template v-else>
@@ -213,8 +232,7 @@
                 size="small"
                 :disabled="!row.sysFlag"
                 @click="onShowPrisonConfig(row, 6)"
-              >更换监狱
-              </el-button>
+              >更换监狱</el-button>
             </template>
           </template>
 
@@ -224,16 +242,14 @@
               type="text"
               size="small"
               @click="onAbortChangePrisoners(row.prisonerId)"
-            >取消
-            </el-button>
+            >取消</el-button>
 
             <el-button
               v-else
               type="text"
               size="small"
               @click="onSingleAccept(9, row)"
-            >接收
-            </el-button>
+            >接收</el-button>
           </template>
         </template>
       </m-table-new>
@@ -510,7 +526,8 @@
 
       <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
-  <el-dialog
+
+    <el-dialog
       class="authorize-dialog upload-dialog"
       ref="uploadDialog"
       title="信息数据导入中"
@@ -576,7 +593,12 @@
         </div>        
       </el-dialog>
     </el-dialog>
-    <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData" />
+
+    <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData">
+      <template #dialogFooter>
+        <el-button type="primary" @click="onReSubmit">重新提交</el-button>
+      </template>
+    </prisoner-detail-modal>
   </el-row>
 </template>
 
@@ -2709,6 +2731,23 @@ export default {
       if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
 
       else await this.getDatas()
+    },
+
+    // 重新提交
+    onReSubmit() {
+      this.$confirm('确认驳回该人脸信息吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        closeOnClickModal: false,
+        callback: async action => {
+          if (action === 'confirm') {
+            setTimeout(() => {
+              this.detailDetVisible = false
+            }, 500)
+          }
+        }
+      })
     }
 
     // 自定义的全选操作 不要删除

@@ -289,3 +289,9 @@ export const _prisonerDataExcelDownloadConsts = {
 
 // 亲情电话家属 全量审核 审核上限
 export const familyPhoneFamiliesAllPendingReviewUpperLimit = 1000
+
+// 限制只能输入正整数
+export const limitInputPositiveInteger = 'return /[\\d]/.test(String.fromCharCode(event.keyCode))'
+
+// input 原生类型
+export const elInputTypes = ['input', 'text', 'textarea', 'number']
