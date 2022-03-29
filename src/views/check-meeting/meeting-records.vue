@@ -32,12 +32,12 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
-import prisons from '@/common/constants/prisons'
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
-import { DateFormat } from '@/utils/helper'
-import { tokenExcel } from '@/utils/token-excel'
-import Moment from 'moment'
+import { mapActions, mapState, mapGetters } from "vuex";
+import prisons from "@/common/constants/prisons";
+import prisonFilterCreator from "@/mixins/prison-filter-creator";
+import { DateFormat } from "@/utils/helper";
+import { tokenExcel } from "@/utils/token-excel";
+import Moment from "moment";
 export default {
   mixins: [prisonFilterCreator],
   data() {
@@ -57,7 +57,7 @@ export default {
           label: "家属姓名",
           miss: false,
         },
-       
+
         prisonerNumber: {
           type: "input",
           label: "罪犯编号",
@@ -85,7 +85,7 @@ export default {
           options: this.$store.state.type,
           miss: true,
         },
-         applicationDate: {
+        applicationDate: {
           type: "dateRange",
           unlinkPanels: true,
           start: "startDate",
@@ -96,7 +96,7 @@ export default {
             max: Moment().format("YYYY-MM"),
             maxMonthRange: 24,
           },
-          value: [this.$_dateNow, this.$_dateNow]
+          value: [this.$_dateNow, this.$_dateNow],
         },
       },
       filter: {},
@@ -104,7 +104,7 @@ export default {
   },
   computed: {
     ...mapState(["freeMeetings"]),
-    ...mapGetters(['isSuperAdmin']),
+    ...mapGetters(["isSuperAdmin"]),
 
     tableCols() {
       const jailerFamilyFreeMeetingsTableCols = [
@@ -113,7 +113,7 @@ export default {
           prop: "familyName",
           // ...$likeName,
         },
-      
+
         {
           label: "警员姓名",
           prop: "policeName",
@@ -127,7 +127,7 @@ export default {
         {
           type: "input",
           label: "通话类型",
-          miss: false
+          miss: false,
         },
 
         {
@@ -155,8 +155,8 @@ export default {
           showOverflowTooltip: true,
         },
       ];
-      const familyFreeMeetings =[
-          {
+      const familyFreeMeetings = [
+        {
           label: "省份",
           prop: "provincesName",
         },
@@ -165,8 +165,7 @@ export default {
           label: "监狱名称",
           prop: "jailName",
         },
-        
-      ]
+      ];
       const familyFreeMeetingstableCols = [
         {
           label: "家属姓名",
@@ -217,7 +216,8 @@ export default {
           showOverflowTooltip: true,
         },
       ];
-   if (this.isSuperAdmin) return [...familyFreeMeetings, ...familyFreeMeetingstableCols];
+      if (this.isSuperAdmin)
+        return [...familyFreeMeetings, ...familyFreeMeetingstableCols];
 
       if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS)
         return familyFreeMeetingstableCols;
@@ -252,13 +252,13 @@ export default {
       this.onSearch();
     },
   },
-  
+
   methods: {
     ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
     // 导出excel
     async onDownloadExcel() {
       this.downloading = true;
-      const times = DateFormat (Date.now(), "YYYYMMDDHHmmss"),
+      const times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
         actionName = "familyPhone/exportFamilyPhone",
         params = {
           url: "/download/exportVideoTelRecords",
@@ -271,7 +271,6 @@ export default {
         actionName,
         menuName: `免费通话记录表-${times}`,
       });
- 
     },
 
     getDatas() {
@@ -291,7 +290,7 @@ export default {
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1);
     },
-  
+
     // 重置搜索组件的filter
     resetSearchFilters(filters = []) {
       filters.map((filter) => {

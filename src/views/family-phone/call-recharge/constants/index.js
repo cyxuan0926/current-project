@@ -62,6 +62,7 @@ export const _searchItems = {
 }
 
 export const httpRequests = {
+  // 查询
   pagedRequest: {
     '0': {
       url: '/infoRecipe/page',
@@ -73,6 +74,7 @@ export const httpRequests = {
       params: { isYgPrison: true }
     }
   },
+  // 导出
   excelExportRequest: {
     '0': {
       url: '/infoRecipe/export',
@@ -85,11 +87,11 @@ export const httpRequests = {
       methods: 'get'
     }
   },
-
+  // 模板
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: '/template/info_education_template.xls'
+        fileName: '/template/info_recipe_template.xls'
       }
     },
     '1': {
@@ -98,7 +100,7 @@ export const httpRequests = {
       }
     }
   },
-
+  // 导入
   excelUploadRequest: {
     url: '/infoEducation/import'
   }

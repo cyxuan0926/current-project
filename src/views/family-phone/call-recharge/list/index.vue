@@ -30,7 +30,7 @@
         ref="familyInformationDialogForm"
         :items="familyInformationDialogFormItems"
         :values="familyInformationDialogFormValues"
-        @cancel="familyInformationVisible = false"
+        @cancel="familyphonerechargeamount = false"
         @submit="onFamilyInformationDialogFormSubmit"
       />
     </el-dialog>
@@ -102,10 +102,7 @@ export default {
 
     const familyInformationDialogFormValues = ref({});
 
-    const componentsVisible1 = ref({
-      excelDownloadVisible: false,
-      excelUploadVisible: false,
-    });
+  
 
     const familyphonerechargeamount = ref(false);
 
@@ -113,21 +110,12 @@ export default {
 
     // store ywt_admin账号
     const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
-
-    const $componentsVisible = computed(() => {
-      return Object.entries(componentsVisible.value).reduce(
-        (accumulator, [key, value]) => {
-          accumulator[key] = value;
-
-          return accumulator;
-        },
-        {
-          // 默认 ywt_admin下面没有导入和模版
-          excelUploadVisible: $isSuperAdmin.value,
-          excelDownloadVisible: $isSuperAdmin.value,
-          excelExportVisible: true, // 默认都有导出功能
-        }
-      );
+    const componentsVisible1 = computed(() =>{
+        return  {
+        // 设置 ywt_admin下面有导入和模版
+        excelUploadVisible: $isSuperAdmin.value,
+        excelDownloadVisible: $isSuperAdmin.value
+      }
     });
 
     const $httpRequests = computed(() => {
@@ -139,8 +127,7 @@ export default {
 
           accumulator[key] = {
             ...accumulator[key],
-            ...temp,
-            aa:false
+            ...temp
           };
 
           return accumulator;
@@ -156,7 +143,7 @@ export default {
     async function onNewFamily() {
       familyphonerechargeamount.value = true;
     }
-
+    // 新增接口
     async function onFamilyInformationDialogFormSubmit(data) {
       if (data) {
         let res = await http.familyforAdd(data);
@@ -184,8 +171,6 @@ export default {
       if (val === "0") searchItems.value.types.miss = false;
       else if (val === "1") searchItems.value.types.miss = true;
       $callRechargeParent.value && $callRechargeParent.value.initData();
-      // if ( $isSuperAdmin) componentsVisible1.excelDownloadVisible = true;
-      //  else componentsVisible1.excelDownloadVisible = false;
     });
 
     return {
@@ -205,7 +190,6 @@ export default {
       onCloseFamilyInformationDialog,
       $isSuperAdmin,
       componentsVisible1,
-      $componentsVisible,
     };
   },
 };

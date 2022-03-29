@@ -43,6 +43,6 @@ export default {
     // 查询亲情电话通话费用管理ywt-admin
     familytelephonecallcostmanagement: ({ params, url }) => service.get( url, params),
 
-    // 亲情电话通话费用管理 --导入excel
+    // 亲情电话通话费用管理 --导出excel
     familytelephoneexcel: ({ params, url, methods = 'post' }) => service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data),
 }
