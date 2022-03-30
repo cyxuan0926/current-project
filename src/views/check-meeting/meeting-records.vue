@@ -107,7 +107,8 @@ export default {
     ...mapGetters(["isSuperAdmin"]),
 
     tableCols() {
-      const jailerFamilyFreeMeetingsTableCols = [
+      // 警员家属免费通话记录
+      const jailerFamilyFreeMeetingstableCols = [
         {
           label: "家属姓名",
           prop: "familyName",
@@ -155,6 +156,7 @@ export default {
           showOverflowTooltip: true,
         },
       ];
+
       const familyFreeMeetings = [
         {
           label: "省份",
@@ -166,6 +168,7 @@ export default {
           prop: "jailName",
         },
       ];
+      // 家属免费通话记录
       const familyFreeMeetingstableCols = [
         {
           label: "家属姓名",
@@ -216,12 +219,21 @@ export default {
           showOverflowTooltip: true,
         },
       ];
-      if (this.isSuperAdmin)
-        return [...familyFreeMeetings, ...familyFreeMeetingstableCols];
-
-      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS)
-        return familyFreeMeetingstableCols;
-      else return jailerFamilyFreeMeetingsTableCols;
+      if (this.tabs === this.tabOptions.FAMILY_FREE_MEETINGS) {
+        if (this.isSuperAdmin) {
+          // 家属列表
+          return [...familyFreeMeetings, ...familyFreeMeetingstableCols];
+        } else {
+          return familyFreeMeetingstableCols;
+        }
+      } else {
+        //  预警列表
+        if (this.isSuperAdmin) {
+          return [...familyFreeMeetings, ...jailerFamilyFreeMeetingstableCols];
+        } else {
+          return jailerFamilyFreeMeetingstableCols;
+        }
+      }
     },
   },
 
