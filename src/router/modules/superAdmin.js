@@ -630,11 +630,20 @@ superAdmin = [{
     },
     {
       path: '/prison-message/meeting-criminalList',
-      component: 'family-sms/sms-criminal-List',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      component: 'family-sms/sms-list',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, isPrisonerSend: 1 },
       meta: {
         permission: 'visit.prison-message.visit-criminalList.search',
         breadcrumbName: '服刑人员发送短信申请列表'
+      }
+    },
+    {
+      path: '/prison-message/group-message',
+      component: 'v3/group-message/list',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.prison-message.visit-group-message.search',
+        breadcrumbName: '群发短信数据'
       }
     }]
     }, {
