@@ -170,15 +170,50 @@
             </el-checkbox-group>
           </el-form-item>
 
-          <!-- <el-form-item
+          <el-form-item
             label="可视电话通话前提示"
-            prop="prisonerSendMsgType"
+            prop="ksdhthpz"
             class="el-form-item_people-number"
           >
-            <el-switch v-model="abnormalCallDurationSwitch" active-color="#13ce66" />
+            <el-switch
+              v-model="formData.ksdhthpz"
+              :active-value="1"
+              :inactive-value="0"
+              active-color="#13ce66"
+            />
 
-            <el-row>
-              <el-input type="textarea" placeholder="请输入通话注意事项" />
+            <el-row class="el-row_preConfig">
+              <template>
+                <el-input
+                  v-model="formData.kstext"
+                  class="el-row_preConfig-contents"
+                  type="textarea"
+                  placeholder="请输入通话注意事项"
+                  :autosize="{ minRows: 5 }"
+                  maxlength="500"
+                  show-word-limit
+                  :disabled="!formData.ksdhthpz"
+                />
+              </template>
+
+              <template>
+                <m-v-new-audio
+                  v-model="test"
+                  ref="audio"
+                  :sizeLimit="5"
+                  :triggerButtonAttrs="a"
+                />
+              </template>
+
+              <el-row class="el-row_preConfig-buttons">
+                <template>
+                  <el-button type="primary" :disabled="!formData.ksdhthpz" @click="onChangeNoticeType(formData.ksdhthpz)">文字提示</el-button>
+                </template>
+
+                <template>
+                  <el-button type="primary" :disabled="!formData.ksdhthpz" @click="onChangeNoticeType(formData.ksdhthpz)">语音提示</el-button>
+                </template>
+              </el-row>
             </el-row>
             
           </el-form-item>
@@ -187,7 +222,7 @@
             label="亲情电话通话前提示"
             prop="prisonerSendMsgType"
             class="el-form-item_people-number"
-          ></el-form-item> -->
+          ></el-form-item>
 
           <el-form-item />
           <el-form-item />
@@ -514,7 +549,9 @@ export default {
 
         visiblePhonePeopleNumber: "6",
         familySendMsgType: [1],
-        prisonerSendMsgType: [1, 2]
+        prisonerSendMsgType: [1, 2],
+        ksdhthpz: 0,
+        kstext: ''
       },
 
       faceRecognitionValues,
@@ -551,7 +588,9 @@ export default {
         inspectNum: 100,
         strictNum: 100,
         otherNum: 100
-      }
+      },
+
+      test: ''
     };
   },
 
@@ -598,6 +637,13 @@ export default {
           label: "其他级别",
           ...messageFormInputs
         }
+      })
+    },
+
+    a() {
+      return ({
+        disabled: !this.formData.ksdhthpz,
+        type: 'danger'
       })
     }
   },
@@ -791,7 +837,7 @@ export default {
 
       this.$refs.form.validate(valid => {
         if (valid) {
-          http.getMeetDeployUpdate(params).then((res) => {
+          http.getMeetDeployUpdate(params).then(res => {
             this.getDeploy();
           });
         }
@@ -814,7 +860,10 @@ export default {
       Object.entries(params).forEach(([key, value]) => {
         params[key] = +value
       })
-    }
+    },
+
+    // 切换提示类型
+    onChangeNoticeType() {}
   }
 };
 </script>
@@ -844,6 +893,18 @@ export default {
   /deep/ .el-form-item_people-number {
     .el-input {
       width: 20%;
+    }
+  }
+
+  .el-row_preConfig {
+    display: flex;
+    align-items: flex-start;
+    &-contents {
+      width: 45%;
+    }
+
+    &-buttons {
+      margin-left: 10px;
     }
   }
 }
