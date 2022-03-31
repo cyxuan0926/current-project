@@ -34,8 +34,8 @@ let _minTime = null, _maxTime = null
 const dateMonth = {
   type: 'dateRange',
   unlinkPanels: true,
-  start: 'applicationStartDate',
-  end: 'applicationEndDate',
+  start: 'startDate',
+  end: 'endDate',
   startPlaceholder: '通话开始时间',
   endPlaceholder: '通话结束时间',
   value: [_dateNow, _oneMonthAgo],
@@ -62,11 +62,11 @@ export const _searchItems = {
 }
 
 export const httpRequests = {
-  // 查询
+  // 分页查询
   pagedRequest: {
     '0': {
-      url: '/infoRecipe/page',
-      params: {}
+      url: '/callChargeManage/page',
+      params: { isYgPrison: true }
     },
     '1': {
       url: '/callChargeManage/managePage',
@@ -77,12 +77,12 @@ export const httpRequests = {
   // 导出
   excelExportRequest: {
     '0': {
-      url: '/infoRecipe/export',
-      params: {},
+      url: '/callChargeManage/export',
+      params: { isYgPrison: true },
       methods: 'get'
     },
     '1': {
-      url: '/callChargeManag/exportManage',
+      url: '/callChargeManage/exportManage',
       params: { isYgPrison: true },
       methods: 'get'
     }
@@ -91,18 +91,17 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: '/template/info_recipe_template.xls'
-      }
-    },
-    '1': {
-      params: {
-        fileName: '/template/info_education_template.xls'
+        fileName: '/template/call_charge_recharge_template.xls'
       }
     }
   },
   // 导入
   excelUploadRequest: {
-    url: '/infoEducation/import'
+    '0': {
+      url: '/callChargeManage/importCallChargeManage',
+      params:{ isYgPrison: true },
+      methods: 'post'
+    },
   }
 }
 
@@ -140,7 +139,7 @@ const _commonCols = [
 
 const _rechargeAmount = {
   label: '亲情电话充值金额(元)',
-  prop: 'vocationalResult',
+  prop: 'rechargeAmount',
 }
 
 const _remark = {
@@ -176,13 +175,14 @@ export const _tableCols = {
 
     {
       label: '亲情电话充值金额(元)',
-      prop: 'systemAmount',
+      prop: 'rechargeAmount',
       showOverflowTooltip: true
     },
 
     {
       label: '可视电话消费金额(元)',
-      prop: 'systemAmount',
+      prop: 'videophoneAmount',
+      slotName: 'videophoneAmount',
       showOverflowTooltip: true
     },
     {
@@ -190,10 +190,15 @@ export const _tableCols = {
       prop: 'systemAmount',
       showOverflowTooltip: true
     },
+    {
+      label: '退款金额(元)',
+      prop: 'refundAmount',
+      showOverflowTooltip: true
+    },
 
     {
       label: '亲情电话余额(元)',
-      prop: 'systemAmount',
+      prop: 'balanceAmount',
       showOverflowTooltip: true
     },
 

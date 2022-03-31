@@ -36,6 +36,8 @@ export const responseURLWhiteLists = [
   '/meetingCallDetail/export',
   '/prisoner_visits/exportPrisonerVisits',
   '/prisoner_visits/exportAdminPrisonerVisits',
+  '/callChargeManage/exportManage',
+  '/callChargeManage/export',
   ..._ygPrisonExportExcelUrls
 ]
 
