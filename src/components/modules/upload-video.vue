@@ -20,11 +20,8 @@
         </video>
       </template>
 
-      <span
-        slot="tip"
-        class="el-upload__tip"
-        style="line-height: 40px;"
-      >只能上传<span class="red">mp4/webm/ogg</span>文件
+      <span class="el-upload__tip" style="line-height: 40px;">
+        只能上传<span class="red">mp4/webm/ogg</span>文件
       </span>
     </div>
 
@@ -44,13 +41,15 @@
         :limit="1"
         :disabled="loading || Boolean(value)"
         :on-exceed="handleExceed"
-        :on-remove="handleRemove">
-        <el-button
-          slot="trigger"
-          size="small"
-          :disabled="loading || Boolean(value)"
-          type="primary"
-        >上传视频</el-button>
+        :on-remove="handleRemove"
+      >
+        <template #trigger>
+          <el-button
+            size="small"
+            :disabled="loading || Boolean(value)"
+            type="primary"
+          >上传视频</el-button>
+        </template>
       </el-upload>
 
       <el-button
@@ -102,6 +101,7 @@ export default {
 
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
+
     handleSuccess(res, file, fileList) {
       this.loading = false
       switch (res.code) {

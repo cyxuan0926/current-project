@@ -1,13 +1,13 @@
 <template>
-  <el-row class="row-container" :gutter="0"> 
+  <el-row class="row-container" :gutter="0">
     <m-search
       ref="search"
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
     >
-      <template v-if="!isSuperAdmin">
-        <template slot="append">
+      <template #append>
+        <template v-if="!isSuperAdmin">
           <el-button
             v-permission="$_operationAuthorizations['_familyPhoneFamiliesSubPrisonAreaAuth']"
             type="primary"
@@ -30,12 +30,12 @@
             ref="mExcelUpload"
             :configs="excelUploadConfigs"
           >
-            <el-button type="primary" @click.stop="onExportWarnning">导入</el-button>
+            <template #default>
+              <el-button type="primary" @click.stop="onExportWarnning">导入</el-button>
+            </template>
           </m-excel-upload>
         </template>
-      </template>
 
-      <template slot="append">
         <template v-if="!isSuperAdmin && tabs === '1' && familiesPaged.isCancel">
           <el-button type="primary" @click="onInvalid">作废</el-button>
         </template>

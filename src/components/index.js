@@ -24,6 +24,8 @@ import excelUpload from './modules/excel-upload'
 import multistageRecords from './multistage_examine-records'
 
 import YgPrisonContent from './yg-prison'
+
+import vNewAudio from './v3-modules/v3-audio'
 export default {
   audio,
   Form,
@@ -49,5 +51,6 @@ export default {
   Draggable,
   excelUpload,
   multistageRecords,
-  YgPrisonContent
+  YgPrisonContent,
+  vNewAudio
 }

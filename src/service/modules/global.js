@@ -10,7 +10,7 @@ export default {
         return true
       }
     }).catch(error => {
-      console.log(error)
+      Promise.reject(error)
     })
   },
   // 修改用户名密码执行的方法

@@ -11,8 +11,9 @@
     multiple
     :on-exceed="handleExceed"
     :file-list="fileList"
-    :on-remove="handleRemove">
-    <i class="mce-ico mce-i-media"/>
+    :on-remove="handleRemove"
+  >
+    <i class="mce-ico mce-i-media" />
   </el-upload>
 
 </template>
@@ -25,11 +26,13 @@ export default {
       type: String,
       default: 'video'
     },
+
     accept: {
       type: String,
       default: 'video/mp4,video/webm,video/ogg'
     }
   },
+
   data() {
     return {
       fileList: [],
@@ -39,12 +42,15 @@ export default {
       notification: null
     }
   },
+
   destroyed() {
     if (this.notification) this.notification.close()
     this.notification = null
   },
+
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
+
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
@@ -59,6 +65,7 @@ export default {
           this.$message.error(`上传视频失败:${ res.message }`)
       }
     },
+
     beforUpload(file) {
       let fileType = this.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
@@ -77,13 +84,16 @@ export default {
       })
       return true
     },
+
     handleExceed() {
       this.$message.error('视频数量超出限制')
     },
+
     handleError(e) {
       this.$message.error(`上传视频失败`)
       this.notification.close()
     },
+
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
     }

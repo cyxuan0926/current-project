@@ -179,7 +179,7 @@ const filterRoutes = (filterResult, routes) => {
  * 为了修复动态添加路由之后重复挂载frame组件
  */
 // eslint-disable-next-line
-const mapLoadComponet = (routes) => {
+const mapLoadComponet = routes => {
   return routes.map(childRouter => {
     if (childRouter.component) childRouter.component = helper.loadView(childRouter.component)
     if (childRouter.children) return mapLoadComponet(childRouter.children)

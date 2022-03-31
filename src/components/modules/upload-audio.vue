@@ -30,12 +30,13 @@
         :on-exceed="handleExceed"
         :on-remove="handleRemove"
       >
-        <el-button
-          slot="trigger"
-          size="small"
-          :disabled="loading || Boolean(value)"
-          type="primary"
-        >上传音频</el-button>
+        <template #trigger>
+          <el-button
+            size="small"
+            :disabled="loading || Boolean(value)"
+            type="primary"
+          >上传音频</el-button>
+        </template>
       </el-upload>
 
       <el-button
@@ -89,10 +90,6 @@ export default {
     }
   },
 
-  mounted() {
-    this.$refs.audio && this.getTotalDuration()
-  },
-
   destroyed() {
     if (this.notification) this.notification.close()
     this.notification = null
@@ -133,47 +130,12 @@ export default {
       return true
     },
 
-    handleTimeUpdate() {
-      if (!this.$refs.audio) return
-      let totalTime = parseInt(this.$refs.audio.duration),
-        currentTime = parseInt(this.$refs.audio.currentTime)
-      this.leastTime = helper.timeNew(totalTime - currentTime)
-      if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
-        this.progressBarVal = 0
-        this.leastTime = helper.timeNew(totalTime)
-      }
-      else {
-        this.progressBarVal = (currentTime / totalTime * 100)
-      }
-    },
-
     handleDelete() {
       this.$refs.uploadAudio.clearFiles()
       this.handleRemove('', [])
       clearInterval(this.interval)
       this.audioImg = AudioThree
       this.progressBarVal = 0
-    },
-
-    handleAudio() {
-      if (this.$refs.audio.paused) {
-        this.$refs.audio.play()
-        let index = 0
-        this.interval = setInterval(() => {
-          this.audioImg = this.audioImgs[index]
-          index++
-          if (index > 2) index = 0
-        }, 1000)
-      }
-      else {
-        this.$refs.audio.pause()
-        clearInterval(this.interval)
-        this.audioImg = AudioThree
-      }
-    },
-
-    getTotalDuration() {
-      this.leastTime = helper.timeNew(parseInt(this.$refs.audio.duration))
     },
 
     handleExceed() {
@@ -196,11 +158,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .el-upload__tip{
+  .el-upload__tip {
     margin-top: 0;
     line-height: 20px;
   }
-  .red{
+
+  .red {
     color: #f00;
   }
   .audio-box{

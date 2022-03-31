@@ -108,9 +108,11 @@ export default {
       permission
     }
   },
+
   computed: {
     ...mapState(['prison'])
   },
+
   activated() {
     if ((this.permission === 'edit' && this.$route.query.tag === 'prisonBase') || (this.permission === 'edit' && !this.$route.query.tag)) {
       this.getPrisonDetail({ id: this.$route.params.id }).then(res => {
@@ -122,14 +124,24 @@ export default {
     }
     this.show = true
   },
+
   deactivated() {
     if (this.permission === 'edit') this.show = false
   },
+
   destroyed() {
     this.removeUrlStorage()
   },
+
   methods: {
-    ...mapActions(['getCities', 'getPrisonDetail', 'updatePrison', 'removeUrlStorage', 'setUrlStorage']),
+    ...mapActions([
+      'getCities',
+      'getPrisonDetail',
+      'updatePrison',
+      'removeUrlStorage',
+      'setUrlStorage'
+    ]),
+
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')
@@ -154,6 +166,7 @@ export default {
         })
       }
     },
+
     onProvinceChange(e, init) {
       if (init !== 'init') this.values = { citysId: '' }
       this.formItems.citysId.loading = true
@@ -163,6 +176,7 @@ export default {
         this.formItems.citysId = Object.assign({}, this.formItems.citysId, { options: res.options, props: { label: res.label, value: res.value }, loading: false, value: '', disabled: true })
       })
     },
+
     onBack() {
       if (this.$store.getters.role === roles.SUPER_ADMIN) this.$router.push({ path: '/prison/list' })
       else this.$router.push({ path: '/jails/detail' })
@@ -170,6 +184,3 @@ export default {
   }
 }
 </script>
-
-<style lang="css">
-</style>
