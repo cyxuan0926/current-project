@@ -13,31 +13,14 @@
     </div>
 
     <div class="audio-upload__buttons">
-      <el-upload
-        ref="$uploadRef"
-        :action="actionUrl"
-        :data="$uploadData"
-        :headers="$headers"
-        :accept="$accpet"
-        :multiple="false"
-        :show-file-list="false"
-        :on-exceed="onExceed"
-        :on-error="onError"
-        :before-upload="onBeforeUpload"
-        :on-success="onSuccess"
-        :disabled="loading"
-        v-bind="elUploadAttrs"
-      >
+      <el-upload ref="$uploadRef" v-bind="$elUploadAttrs">
         <slot name="default">
           <!-- 默认就是 触发文件选择框的内容 的插槽 -->
           <!-- loading: 这个是按钮禁用状态 el-upload 才是真正的禁用 -->
           <el-button
             class="el-button_trigger"
             slot="trigger"
-            size="small"
-            type="primary"
-            :disabled="loading"
-            v-bind="triggerButtonAttrs"
+            v-bind="$triggerButtonAttrs"
           >上传音频</el-button>
         </slot>
       </el-upload>
@@ -49,7 +32,7 @@
 </template>
 
 <script>
-import { ref, onUnmounted, watchEffect } from '@vue/composition-api'
+import { ref, onUnmounted } from '@vue/composition-api'
 
 import composableUpload from '@/common/composables/upload'
 export default {
@@ -74,6 +57,11 @@ export default {
     triggerButtonAttrs: {
       type: Object,
       default: () => ({})
+    },
+
+    'on-control-parent-loading': {
+      type: Function,
+      default: () => () => {}
     }
   },
 
@@ -81,19 +69,12 @@ export default {
     // data
     const uploadType = ref('音频')
     const $accpet = ref('audio/*')
-    // const $uploadRef = ref(null)
+
     const {
-      loading,
-      onExceed,
-      onError,
-      onControlLoading,
+      $elUploadAttrs,
       $uploadRef,
-      actionUrl,
-      $headers,
-      $uploadData,
       unmountedMethod,
-      onBeforeUpload,
-      onSuccess
+      $triggerButtonAttrs
     } = composableUpload(props, { emit }, { uploadType, $accpet })
 
     // Lifecycle
@@ -102,17 +83,9 @@ export default {
     })
 
     return {
-      loading,
-      onExceed,
-      onError,
-      onControlLoading,
       $uploadRef,
-      actionUrl,
-      $headers,
-      $uploadData,
-      onBeforeUpload,
-      $accpet,
-      onSuccess
+      $elUploadAttrs,
+      $triggerButtonAttrs
     }
   }
 }

@@ -9,13 +9,14 @@
       @response="onBasicFormSyncData"
     >
       <template #pre>
-        <el-button
-          v-if="localChargeType === 2"
-          class="el-button_float-right"
-          size="small"
-          type="primary"
-          @click="onNewDuration"
-        >新增通话时长</el-button>
+        <template v-if="localChargeType === 2 && !disabled">
+          <el-button
+            class="el-button_float-right"
+            size="small"
+            type="primary"
+            @click="onNewDuration"
+          >新增通话时长</el-button>
+        </template>
       </template>
 
       <template #elTableSlot>
@@ -23,11 +24,13 @@
           <template #selectElement="{ row }">
             <el-radio-group v-model="radio" @change="onShowChargeConfigsItems">
               <template v-for="item in tableData">
-                <el-radio
-                  v-if="item.duration === row.duration"
-                  :key="item.duration"
-                  :label="item.duration"
-                >&nbsp;</el-radio>
+                <template v-if="item.duration === row.duration">
+                  <el-radio
+                    :key="item.duration"
+                    :label="item.duration"
+                    disabled
+                  >&nbsp;</el-radio>
+                </template>
               </template>            
             </el-radio-group>
           </template>
@@ -40,7 +43,7 @@
             <el-input
               v-model.trim.number="basicFormData.startMinutes"
               placeholder="请输入基础时间"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">分钟</template>
             </el-input>
@@ -52,7 +55,7 @@
             <el-input
               v-model.trim="basicFormData.startMoney"
               placeholder="请输入基础费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -66,7 +69,7 @@
             <el-input
               v-model.trim="basicFormData.fixedMoney"
               placeholder="请输入基础时长后每分钟费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -116,7 +119,7 @@
             <el-input
               v-model.trim.number="diplomaticConsulOfficialFormData.startMinutes"
               placeholder="请输入基础时间"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
 
               <template slot="append">分钟</template>
@@ -129,7 +132,7 @@
             <el-input
               v-model.trim="diplomaticConsulOfficialFormData.startMoney"
               placeholder="请输入基础费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -143,7 +146,7 @@
             <el-input
               v-model.trim="diplomaticConsulOfficialFormData.fixedMoney"
               placeholder="请输入基础时长后每分钟费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -157,7 +160,7 @@
             <el-input
               v-model.trim.number="diplomaticConsulOfficialFormData.familyPhoneStartMinutes"
               placeholder="请输入基础时间"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">分钟</template>
             </el-input>
@@ -169,7 +172,7 @@
             <el-input
               v-model.trim="diplomaticConsulOfficialFormData.familyPhoneStartMoney"
               placeholder="请输入基础费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -183,7 +186,7 @@
             <el-input
               v-model.trim="diplomaticConsulOfficialFormData.familyPhoneFixedMoney"
               placeholder="请输入基础时长后每分钟费用"
-              :disabled="$route.meta.role === '3'"
+              disabled
             >
               <template slot="append">/元</template>
             </el-input>
@@ -208,21 +211,21 @@
 
     <!-- 操作 -->
     <el-row class="prison-charge-config-button_box">
-      <el-button
-        :disabled="!!isShowSave"
-        size="small"
-        type="primary"
-        @click="onPrediplomaticConsulOfficialFormCheck">更新</el-button>
+      <template v-if="!disabled">
+        <el-button
+          :disabled="!!isShowSave"
+          size="small"
+          type="primary"
+          @click="onPrediplomaticConsulOfficialFormCheck"
+        >更新</el-button>
+      </template>
 
-      <el-button
-        size="small"
-        @click="onGoBack">返回</el-button>
+      <el-button size="small" @click="onGoBack">返回</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
-
 import roles from '@/common/constants/roles'
 
 import { mapActions, mapState } from 'vuex'
@@ -735,7 +738,8 @@ export default {
 
       isNewStatus: false,
 
-      minutesTypeOriginalTableLength: 4
+      minutesTypeOriginalTableLength: 4,
+      disabled
     }
   },
 
@@ -834,7 +838,7 @@ export default {
     },
 
     isShowSave() {
-      return this.radio || (this.localChargeType === 2 && this.isNewStatus)
+      return !this.disabled && (this.radio || (this.localChargeType === 2 && this.isNewStatus))
     }
   },
 

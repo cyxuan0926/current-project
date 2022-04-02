@@ -1,124 +1,147 @@
 <template>
   <div class="yt-form">
-    <el-form
-      v-if="flag"
-      ref="form"
-      :label-position="items.formConfigs ? items.formConfigs.labelPosition : ''"
-      :inline="items.formConfigs ? items.formConfigs.inline : false"
-      :label-width="items.formConfigs ? items.formConfigs.labelWidth : ''"
-      :model="fields"
-      :rules="rules"
-      :inline-message="items.formConfigs && items.formConfigs.inlineMessage"
-      :hide-required-asterisk="items.formConfigs && items.formConfigs.hideRequiredAsterisk"
-    >
-      <slot name="pre" />
+    <template v-if="flag">
+      <el-form
+        ref="form"
+        :label-position="items.formConfigs ? items.formConfigs.labelPosition : ''"
+        :inline="items.formConfigs ? items.formConfigs.inline : false"
+        :label-width="items.formConfigs ? items.formConfigs.labelWidth : ''"
+        :model="fields"
+        :rules="rules"
+        :inline-message="items.formConfigs && items.formConfigs.inlineMessage"
+        :hide-required-asterisk="items.formConfigs && items.formConfigs.hideRequiredAsterisk"
+      >
+        <slot name="pre" />
 
-      <template v-for="(item, key) in items">
-        <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
-          <slot :name="key">
-            <form-item
-              :ref="key"
+        <template v-for="(item, key) in items">
+          <template v-if="dismiss.indexOf(key) < 0 && !item.slotName && key !== 'dissMissConfigs'">
+            <slot :name="key">
+              <form-item
+                :ref="key"
+                :key="key"
+                :prop="key"
+                :rule="item.rule"
+                :miss='items.miss'
+                :item="item"
+                :fields="fields"
+                :select-change-event="selectChangeEvent"
+                :radio-change-event="radioChangeEvent"
+                :reset-field-value="resetFieldValue"
+                :set-field-value="setFieldValue"
+                @validateField="validateField"
+              />
+            </slot>
+          </template>
+
+          <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
+            <el-form-item 
               :key="key"
-              :prop="key"
-              :rule="item.rule"
-              :miss='items.miss'
-              :item="item"
-              :fields="fields"
-              :select-change-event="selectChangeEvent"
-              :radio-change-event="radioChangeEvent"
-              :reset-field-value="resetFieldValue"
-              :set-field-value="setFieldValue"
-              @validateField="validateField"
-            />
-          </slot>
+              :class="item.customClass"
+              v-bind="item.attrs"
+              v-on="item.events"    
+            >
+              <slot :name="item.slotName" :fields="fields" />
+            </el-form-item>
+          </template>
         </template>
 
-        <template v-if="dismiss.indexOf(key) < 0 && item.slotName && key !== 'dissMissConfigs'">
-          <el-form-item 
-            :key="key"
-            v-bind="item.attrs"
-            v-on="item.events"
-            :class="item.customClass"
-          >
-            <slot :name="item.slotName" :fields="fields" />
-          </el-form-item>
+        <slot name="append" />
+      </el-form>
+    </template>
+
+    <template v-if="items.buttons && Object.keys(items.buttons).length">
+      <div class="button-box">
+        <template v-for="(button, index) in items.buttons">
+          <template v-if="button.attrs">
+            <el-button
+              :key="index"
+              :class="button.className"
+              v-bind="button.attrs"
+              v-on="button.events"
+            >{{ button.text }}</el-button>
+          </template>
+
+          <template v-if="button === 'prev' || button.prev">
+            <el-button         
+              :key="index"
+              :class="button.className"
+              size="small"
+              type="primary"
+              v-bind="button.attrs" 
+              @click="button.func && button.func() || onPrevClick"
+            >上一步</el-button>
+          </template>
+
+          <template v-if="button === 'next' || button.next">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"
+              type="primary" 
+              v-bind="button.attrs"
+              @click="onSubmit"
+            >下一步</el-button>
+          </template>
+
+          <template v-if="button === 'update' || button.update">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"
+              type="primary"  
+              :loading="button.update && button.update.loading"
+              v-bind="button.attrs"
+              @click="onSubmit"
+            >更新</el-button>
+          </template>
+
+          <template v-if="button === 'add' || button.add">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"
+              type="primary"   
+              :loading="button.add && button.add.loading"
+              v-bind="button.attrs"
+              @click="onSubmit"
+            >{{ button.text || '新增'}}</el-button>
+          </template>
+
+          <template v-if="button === 'preview' || button.preview">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"
+              type="primary" 
+              :loading="button.preview && button.preview.loading"
+              v-bind="button.attrs"
+              @click="onPreview"
+            >{{ button.text || '预览'}}</el-button>
+          </template>
+
+          <template v-if="button === 'cancel' || button.cancel">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"
+              :type="button.type || 'primary'"
+              v-bind="button.attrs"
+              @click="onCancel"
+            >取消</el-button>  
+          </template>
+
+          <template v-if="button === 'back'">
+            <el-button
+              :key="index"
+              :class="button.className"
+              size="small"   
+              v-bind="button.attrs"
+              @click="onGoBack"
+            >返回</el-button>
+          </template>
         </template>
-      </template>
-
-      <slot name="append" />
-    </el-form>
-
-    <div
-      v-if="items.buttons && Object.keys(items.buttons).length"
-      class="button-box">
-      <template v-for="(button, index) in items.buttons">
-        <el-button
-          v-if="button.attrs"
-          :key="index"
-          v-bind="button.attrs"
-          :class="button.className"
-          v-on="button.events">{{ button.text }}</el-button>
-        <el-button
-          v-if="button === 'prev' || button.prev"
-          :key="index"
-          size="small"
-          type="primary"
-          v-bind="button.attrs"
-          :class="button.className"
-          @click="button.func && button.func() || onPrevClick">上一步</el-button>
-        <el-button
-          v-if="button === 'next' || button.next"
-          :key="index"
-          size="small"
-          type="primary"
-          :class="button.className"
-          v-bind="button.attrs"
-          @click="onSubmit">下一步</el-button>
-        <el-button
-          v-if="button === 'update' || button.update"
-          :key="index"
-          size="small"
-          type="primary"
-          :class="button.className"
-          :loading="button.update && button.update.loading"
-          v-bind="button.attrs"
-          @click="onSubmit">更新</el-button>
-        <el-button
-          v-if="button === 'add' || button.add"
-          :key="index"
-          size="small"
-          type="primary"
-          :class="button.className"
-          :loading="button.add && button.add.loading"
-          v-bind="button.attrs"
-          @click="onSubmit">{{ button.text || '新增'}}</el-button>
-        <el-button
-          v-if="button === 'preview' || button.preview"
-          :key="index"
-          size="small"
-          type="primary"
-          :class="button.className"
-          :loading="button.preview && button.preview.loading"
-          v-bind="button.attrs"
-          @click="onPreview">{{ button.text || '预览'}}</el-button>
-          
-        <el-button
-          v-if="button === 'cancel' || button.cancel"
-          :key="index"
-          size="small"
-          @click="onCancel"
-          :class="button.className"
-          :type="button.type || 'primary'"
-          v-bind="button.attrs">取消</el-button>  
-        <el-button
-          v-if="button === 'back'"
-          :key="index"
-          @click="onGoBack"
-          size="small"
-          :class="button.className"
-          v-bind="button.attrs">返回</el-button>
-      </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 

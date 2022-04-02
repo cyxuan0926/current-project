@@ -11,8 +11,10 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   const {
     elUploadAttrs,
     sizeLimit,
-    parentLoading = false
+    triggerButtonAttrs,
+    onControlParentLoading
   } = toRefs(props)
+  const { headers = {}, data = {} } = elUploadAttrs.value
 
   // data
   const vueInstance = new Vue()
@@ -25,8 +27,8 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   const actionUrl = computed(() => `${ vueInstance.$urls.publicApiHost }/files`)
 
   const $headers = computed(() => {
-    const { headers = {} } = elUploadAttrs.value,
-      { access_token, token_type } = store.state.account.accountInfo
+    const { access_token, token_type } = store.state.account.accountInfo
+
     return {
       Authorization: `${ token_type } ${ access_token }`,
       ...headers
@@ -34,29 +36,53 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   })
 
   const $uploadData = computed(() => {
-    const { data = {} } = elUploadAttrs.value
     return {
       type: 'PUBLIC',
       ...data
     }
   })
 
+  const $elUploadAttrs = computed(() => {
+    return Object.assign({}, {
+      multiple: false,
+      showFileList: false,
+      action: actionUrl.value,
+      onExceed,
+      onError,
+      onSuccess,
+      beforeUpload: onBeforeUpload,
+      disabled: loading.value,
+      headers: $headers.value,
+      data: $uploadData.value,
+      accept: $accpet.value
+    }, elUploadAttrs.value)
+  })
+  
+  const $triggerButtonAttrs = computed(() => {
+    return Object.assign({}, {
+      size: 'small',
+      type: 'primary',
+      disabled: loading.value
+    }, triggerButtonAttrs.value)
+  })
+
   // methods
   const onControlLoading = (val = false) => {
-    loading.value = val
-    parentLoading.value = val
+    if (onControlParentLoading.value) onControlParentLoading.value(val)
+    else loading.value = val
   }
 
   const onExceed = () => {
     onControlLoading()
     vueInstance.$message.error(`${uploadType.value}数量超出限制`)
+    notification.value && notification.value.close()
   }
 
   const onError = ({ message } = err) => {
     const msg = JSON.parse(message)
     vueInstance.$message.error(msg || `上传${uploadType.value}失败`)
     onControlLoading()
-    $uploadRef.value.clearFiles()
+    $uploadRef.value && $uploadRef.value.clearFiles()
     notification.value && notification.value.close()
   }
 
@@ -96,6 +122,16 @@ export default function(props, { emit }, { uploadType, $accpet }) {
       }
     }
 
+    onControlLoading(true)
+
+    notification.value = vueInstance.$notify({
+      title: '提示',
+      message: `正在上传${uploadType.value}文件，请耐心等待`,
+      type: 'warning',
+      duration: 0,
+      showClose: false
+    })
+
     return true
   }
 
@@ -106,19 +142,15 @@ export default function(props, { emit }, { uploadType, $accpet }) {
 
       emit('input', url || `${ vueInstance.$urls.publicApiHost }/files/${filename}`)
     }
+
+    onControlLoading()
+    notification.value && notification.value.close()
   }
 
   return {
-    actionUrl,
-    $headers,
-    $uploadData,
-    loading,
-    onControlLoading,
-    onExceed,
-    onError,
-    notification,
     unmountedMethod,
-    onBeforeUpload,
-    onSuccess
+    $elUploadAttrs,
+    $uploadRef,
+    $triggerButtonAttrs
   }
 }
