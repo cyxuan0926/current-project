@@ -38,7 +38,6 @@ export default {
 
     const $tabItems = reactive(tabItems);
 
-
     const isSearchLimit = ref(true);
     // store ywt_admin账号
     const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
@@ -48,7 +47,6 @@ export default {
       excelUploadVisible: $isSuperAdmin.value,
       excelDownloadVisible: $isSuperAdmin.value,
     });
-
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce(
         (accumulator, [key, value]) => {

@@ -89,7 +89,6 @@ export default {
 
   async exportYgPrisonExcel(_, inputs) {
     try {
-      console.log(inputs)
       let response;
       if (inputs.params.isYgPrison) {
         response = await api.familytelephoneexcel(inputs)
