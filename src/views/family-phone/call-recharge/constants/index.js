@@ -71,7 +71,7 @@ export const httpRequests = {
     '1': {
       url: '/callChargeManage/managePage',
       //非阳光监狱传true
-      params: { isYgPrison: true }
+      params: { isYgPrison: 'familyInfoImportList' }
     }
   },
   // 导出

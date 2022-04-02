@@ -723,6 +723,10 @@ export default {
             { label: "是", value: "1" },
           ],
         },
+        msgContent: {
+          type: "input",
+          label: "短信关键字",
+        },
       },
       show: {
         dialog: false,

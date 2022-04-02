@@ -47,13 +47,11 @@ export default {
       if (!response || !response.data) return
 
       if (inputs.params.isYgPrison) {
-        list = response.data['familyInfoImportList'] && Array.isArray(response.data['familyInfoImportList']) ? response.data['familyInfoImportList'] : []
+        list = response.data[inputs.params.isYgPrison] && Array.isArray(response.data[inputs.params.isYgPrison]) ? response.data[inputs.params.isYgPrison] : []
 
-        totalCount = response.data['familyInfoImportList'] && Array.isArray(response.data['familyInfoImportList']) ? response.data['total'] : 0
+        totalCount = response.data[inputs.params.isYgPrison] && Array.isArray(response.data[inputs.params.isYgPrison]) ? response.data['total'] : 0
       } else {
-
         list = response.data['list'] && Array.isArray(response.data['list']) ? response.data['list'] : []
-
         totalCount = response.data['list'] && Array.isArray(response.data['list']) ? response.data['totalCount'] : 0
       }
 

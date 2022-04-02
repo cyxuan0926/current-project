@@ -6,6 +6,7 @@ export default {
     state.prisonAllWithBranchPrison = params.jails
   },
   getProvincesAll(state, params) {
+    console.log('getProvincesAll===', params.provinces)
     state.provincesAll = params.provinces
   },
   getCities(state, params) {
