@@ -101,15 +101,9 @@ export default {
 
     const $tabItems = reactive(tabItems);
 
-<<<<<<< HEAD
     const familyInformationDialogFormValues = ref({});
 
     const familyphonerechargeamount = ref(false);
-=======
-    // const familyInformationDialogFormValues = ref({});
-
-    // const familyphonerechargeamount = ref(false);
->>>>>>> 57973a33586dab7f3c86b1bcdcf372f537f44d1c
 
     // const familyInformationVisible = ref(false);
 
