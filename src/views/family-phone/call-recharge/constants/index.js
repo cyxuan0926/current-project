@@ -34,8 +34,8 @@ let _minTime = null, _maxTime = null
 const dateMonth = {
   type: 'dateRange',
   unlinkPanels: true,
-  start: 'applicationStartDate',
-  end: 'applicationEndDate',
+  start: 'startDate',
+  end: 'endDate',
   startPlaceholder: '通话开始时间',
   endPlaceholder: '通话结束时间',
   value: [_dateNow, _oneMonthAgo],
@@ -62,26 +62,47 @@ export const _searchItems = {
 }
 
 export const httpRequests = {
+  // 分页查询
   pagedRequest: {
-    url: '/infoEducation/page'
+    '0': {
+      url: '/callChargeManage/page',
+      params: { isYgPrison: 'familyInfoImportList' }
+    },
+    '1': {
+      url: '/callChargeManage/managePage',
+      //非阳光监狱传true
+      params: { isYgPrison: 'familyInfoImportList' }
+    }
   },
-
+  // 导出
   excelExportRequest: {
-    url: '/infoEducation/export',
-
-    methods: 'get'
+    '0': {
+      url: '/callChargeManage/export',
+      params: { isYgPrison: true },
+      methods: 'get'
+    },
+    '1': {
+      url: '/callChargeManage/exportManage',
+      params: { isYgPrison: true },
+      methods: 'get'
+    }
   },
-
+  // 模板
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: '/template/info_education_template.xls'
+        fileName: '/template/call_charge_recharge_template.xls',
+        isYgPrison: true
       }
     }
   },
-
+  // 导入
   excelUploadRequest: {
-    url: '/infoEducation/import'
+    '0': {
+      url: '/callChargeManage/importCallChargeManage',
+      params:{ isYgPrison: true },
+      methods: 'post'
+    },
   }
 }
 
@@ -89,7 +110,7 @@ export const httpRequests = {
 const _commonCols = [
   {
     label: '省份',
-    prop: 'provincesName',
+    prop: 'provinceName',
     showOverflowTooltip: true
   },
 
@@ -104,22 +125,22 @@ const _commonCols = [
     slotName: 'prisonArea',
     showOverflowTooltip: true
   },
-    {
-      label: '罪犯姓名',
-      prop: 'prisonerName'
-      // ...$likeName
-    },
+  {
+    label: '罪犯姓名',
+    prop: 'prisonerName'
+    // ...$likeName
+  },
 
-    {
-      label: '罪犯编号',
-      prop: 'prisonerNumber'
-      // ...$likePrisonerNumber
-    }
+  {
+    label: '罪犯编号',
+    prop: 'prisonerNumber'
+    // ...$likePrisonerNumber
+  }
 ]
 
 const _rechargeAmount = {
   label: '亲情电话充值金额(元)',
-  prop: 'vocationalResult',
+  prop: 'rechargeAmount',
 }
 
 const _remark = {
@@ -137,7 +158,7 @@ export const _tableCols = {
 
     {
       label: '充值账号',
-      prop: 'ideologyResult',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     },
 
@@ -145,7 +166,7 @@ export const _tableCols = {
 
     {
       label: '充值时间',
-      prop: 'createTime',
+      prop: 'systemAmount',
       showOverflowTooltip: true
     }
   ],
@@ -155,24 +176,30 @@ export const _tableCols = {
 
     {
       label: '亲情电话充值金额(元)',
-      prop: 'vocationalResult',
+      prop: 'rechargeAmount',
       showOverflowTooltip: true
     },
-    
+
     {
       label: '可视电话消费金额(元)',
-      prop: 'cultureEducation',
+      prop: 'videophoneAmount',
+      slotName: 'videophoneAmount',
       showOverflowTooltip: true
     },
     {
       label: '系统电话消费金额(元)',
-      prop: 'cultureEducation',
+      prop: 'systemAmount',
+      showOverflowTooltip: true
+    },
+    {
+      label: '退款金额(元)',
+      prop: 'refundAmount',
       showOverflowTooltip: true
     },
 
     {
       label: '亲情电话余额(元)',
-      prop: 'cultureEducation',
+      prop: 'balanceAmount',
       showOverflowTooltip: true
     },
 
