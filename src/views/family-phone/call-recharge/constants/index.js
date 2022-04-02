@@ -66,7 +66,7 @@ export const httpRequests = {
   pagedRequest: {
     '0': {
       url: '/callChargeManage/page',
-      params: { isYgPrison: true }
+      params: { isYgPrison: 'familyInfoImportList' }
     },
     '1': {
       url: '/callChargeManage/managePage',
@@ -91,7 +91,8 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: '/template/call_charge_recharge_template.xls'
+        fileName: '/template/call_charge_recharge_template.xls',
+        isYgPrison: true
       }
     }
   },

@@ -21,7 +21,15 @@
 
         <!-- 模版 -->
         <template v-if="$componentsVisible['excelDownloadVisible']">
+          
+           <m-excel-download
+           v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+            path="/download/downloadfile"
+            :params="httpRequests['excelDownloadRequest']['params']"
+            text="模板"
+          />
           <m-excel-download
+            v-else
             path="/download/common/download"
             :params="httpRequests['excelDownloadRequest']['params']"
             text="模板"

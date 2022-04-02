@@ -2,7 +2,6 @@ import api from '@/service/modules/prison-yangguang/yangguang-api'
 
 export default {
   async ygUploadFile({ commit }, file) {
-    console.log(file)
     try {
       let formData = new FormData()
 
@@ -40,7 +39,6 @@ export default {
   },
   async validateUploadYgCommon({ commit }, inputs) {
     try {
-      console.log(inputs)
       let response;
       if (inputs.params.isYgPrison) {
         response = await api.familyphonerechargeyanzheng(inputs)
@@ -95,7 +93,6 @@ export default {
       } else {
         response = await api.exportYgPrisonExcel(inputs)
       }
-      // const response = await api.exportYgPrisonExcel(inputs)
 
       if (!response) return
 
