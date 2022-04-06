@@ -184,8 +184,8 @@ export default {
     watch($tabs, (val) => {
       if (val == "0") {
         searchItems.value.types.miss = false;
-        omponentpublic.value.excelUploadVisible = true;
-        omponentpublic.value.excelDownloadVisible = true;
+        omponentpublic.value.excelUploadVisible =  $isSuperAdmin.value?false:true;
+        omponentpublic.value.excelDownloadVisible =  $isSuperAdmin.value?false:true;
       } else if (val == "1") {
         omponentpublic.value.excelUploadVisible = false;
         omponentpublic.value.excelDownloadVisible = false;

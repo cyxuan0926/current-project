@@ -1,4 +1,3 @@
-import { _ygPrisonCommonTableCols } from '@/common/constants/yg-prisons'
 import { _dateNow, _oneMonthAgo } from '@/common/constants/const'
 
 import Moment from 'moment'
@@ -51,27 +50,13 @@ export const httpRequests = {
   pagedRequest: {
     '0': {
       url: '/batchNotify/page',
-      params: { isYgPrison: true, role: 0 }
+      params: { isYgPrison: 'batchNotifyList', role: 0 }
     },
     '1': {
       url: '/batchNotify/page',
-      params: { isYgPrison: true, role: 1 }
+      params: { isYgPrison: 'batchNotifyList', role: 1 }
     }
   }
-}
-
-const _commonCols = _ygPrisonCommonTableCols()
-
-const _createTime = {
-  label: '导入时间',
-  prop: 'createTime',
-  width: 120
-}
-
-const _remark = {
-  label: '备注',
-  prop: 'remark',
-  showOverflowTooltip: true
 }
 
 export const _tableCols = {
@@ -81,66 +66,69 @@ export const _tableCols = {
       type: 'index'
     },
     {
+      label: '短信内容',
+      prop: 'content',
+      slotName: 'content'
+    },
+
+    {
+      label: '发送时间',
+      prop: 'createTime'
+    },
+    {
+      label: '发送范围(省份)',
+      prop: 'provincesName'
+    },
+    {
+      label: '发送范围(监狱)',
+      prop: 'jailName'
+    },
+    {
+      label: '短信发送状态',
+      prop: 'status'
+    },
+    {
+      label: '短信发送人',
+      prop: 'sender'
+    }
+  ],
+
+  '1': [
+    {
+      label: '序号',
+      type: 'index'
+    },
+    {
       label: '省份',
       prop: 'provincesName',
       showOverflowTooltip: true
     },
-
     {
       label: '监狱名称',
       prop: 'jailName',
       showOverflowTooltip: true
     },
-
     {
-      // 以防需要自定义
-      label: '年份',
-      prop: 'yearNum',
-      slotName: 'infoRecipeYearNum'
+      label: '短信内容',
+      prop: 'content',
+      slotName: 'content'
     },
 
     {
-      // 以防需要自定义
-      label: '月份',
-      prop: 'monthNum',
-      slotName: 'infoRecipeMonthNum'
-    },
-
-    {
-      // 以防需要自定义
-      label: '星期',
-      prop: 'week'
+      label: '发送时间',
+      prop: 'createTime'
     },
     {
-      // 以防需要自定义
-      label: '早餐',
+      label: '发送范围',
       prop: 'breakfast'
     },
     {
-      label: '中餐',
-      prop: 'lunch'
+      label: '短信发送状态',
+      prop: 'status'
     },
     {
-      // 以防需要自定义
-      label: '晚餐',
-      prop: 'dinner'
-    },
-    _remark,
-
-    _createTime
-  ],
-
-  '1': [
-    ..._commonCols,
-    {
-      label: '食物名称',
-      prop: 'foodName'
-    },
-    {
-      label: '用量',
-      prop: 'quantity'
-    },
-    _remark,
-    _createTime
+      label: '短信发送人',
+      prop: 'sender'
+    }
   ]
 }
