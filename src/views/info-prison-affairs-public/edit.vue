@@ -5,7 +5,8 @@
         ref="form"
         :items="formItems"
         @submit="onSubmit"
-        :values="values"/>
+        :values="values"
+      />
     </div>
   </div>
 </template>
@@ -54,12 +55,15 @@ export default {
       ]
     }
   },
+
   computed: {
     ...mapState(['news'])
   },
+
   destroyed() {
     this.removeUrlStorage()
   },
+
   mounted() {
     this.getNewsDetail(this.$route.params.id).then(res => {
       if (!res) return
@@ -67,8 +71,15 @@ export default {
       this.values = this.news
     })
   },
+
   methods: {
-    ...mapActions(['getNewsDetail', 'editNews', 'setUrlStorage', 'removeUrlStorage']),
+    ...mapActions([
+      'getNewsDetail',
+      'editNews',
+      'setUrlStorage',
+      'removeUrlStorage'
+    ]),
+
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')

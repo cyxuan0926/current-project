@@ -38,6 +38,7 @@ export const responseURLWhiteLists = [
   '/prisoner_visits/exportAdminPrisonerVisits',
   '/callChargeManage/exportManage',
   '/callChargeManage/export',
+  '/callChargeManage/importCallChargeManage',
   ..._ygPrisonExportExcelUrls
 ]
 
@@ -254,7 +255,6 @@ export const terminalUsersBasicAuths = [
   'terminal.terminal-to-termianl',
   'terminal.police-meeting'
 ]
-
 
 export const smsSendTemplate = [
   {

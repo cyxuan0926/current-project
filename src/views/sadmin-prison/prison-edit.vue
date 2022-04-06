@@ -44,10 +44,11 @@ export default {
   },
 
   data() {
-    let _isAdmin = this.$store.state.global.user.role == '0'
+    const _isAdmin = this.$store.state.global.user.role == '0'
+
     return {
       activeName: '',
-      isAdmin:_isAdmin,
+      isAdmin: _isAdmin,
       tabMapOptions: [
         {
           label: '基本信息',
@@ -64,21 +65,26 @@ export default {
       ]
     }
   },
+
   watch: {
     '$route': 'render'
   },
+
   mounted() {
-       if( this.isAdmin ) {
-          this.tabMapOptions.push({label: '亲情电话收费配置',key: 'prisonFamilyChargeConfig'})
-          this.tabMapOptions.push({label: '亲情短信收费配置',key: 'prisonMessageChargeConfig'})
-          this.tabMapOptions.push({label: '会见次数配置',key: 'prisonmeetingconfiguration'})
-         }
+    if (this.isAdmin) {
+      this.tabMapOptions.push({label: '亲情电话收费配置',key: 'prisonFamilyChargeConfig'})
+      this.tabMapOptions.push({label: '亲情短信收费配置',key: 'prisonMessageChargeConfig'})
+      this.tabMapOptions.push({label: '会见次数配置',key: 'prisonmeetingconfiguration'})
+    }
+
     this.render()
   },
+
   methods: {
     handleClick() {
       this.$router.push({ query: { tag: this.activeName } })
     },
+
     render() {
       if (!this.$route.query.tag) this.$router.push({ query: { tag: this.tabMapOptions[0].key } })
       if (this.$route.query.tag !== this.activeName) {

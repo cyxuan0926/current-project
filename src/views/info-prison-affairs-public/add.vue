@@ -54,11 +54,14 @@ export default {
       ]
     }
   },
+
   destroyed() {
     this.removeUrlStorage()
   },
+
   methods: {
     ...mapActions(['addNews', 'removeUrlStorage']),
+
     onSubmit(e) {
       if (this.$refs.form.$refs.audioPath[0].$refs.audio.loading || this.$refs.form.$refs.videoPath[0].$refs.video.loading) {
         this.$message.warning('正在上传文件')

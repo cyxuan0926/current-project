@@ -349,7 +349,7 @@ let check = [{
       name: 'sms-criminalList',
       props: { hasPrisonAreaAuth: true , isPrisonerSend: 1 },
       meta: { permission: 'visit.family-sms.criminalList', breadcrumbName: '服刑人员发送短信申请管理' },
-      component: 'family-sms/sms-list'
+      component: 'family-sms/sms-list/sms-criminal-List'
     }
   ]
 }]

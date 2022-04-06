@@ -34,6 +34,8 @@
                 controls-position="right"
                 clearable
                 placeholder="输入秒数"
+                :min="10"
+                :max="600"
               >
                 <template slot="append">秒</template>
               </el-input-number>
@@ -64,7 +66,11 @@
             prop="afrIOSSetValue"
             label-width="65px"
           >
-            <el-select v-model="slotFormData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
+            <el-select
+              v-model="slotFormData.afrIOSSetValue"
+              placeholder="请选择IOS阈值配置"
+              :disabled="isDisabled"
+            >
               <template v-for="configs in faceRecognitionValues">
                 <el-option
                   :key="configs"
@@ -82,7 +88,11 @@
             prop="afrAndroidSetValue"
             label-width="65px"
           >
-            <el-select v-model="slotFormData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
+            <el-select
+              v-model="slotFormData.afrAndroidSetValue"
+              placeholder="请选择安卓阈值配置"
+              :disabled="isDisabled"
+            >
               <template v-for="configs in faceRecognitionValues">
                 <el-option
                   :key="configs"
@@ -118,6 +128,114 @@
             </template>
           </div>
         </div>
+      </template>
+
+      <template #ksdhSlot>
+        <el-switch
+          v-model="slotFormData.ksdhthpz"
+          :active-value="1"
+          :inactive-value="0"
+          active-color="#13ce66"
+          :disabled="isDisabled"
+        />
+
+        <el-row class="el-row_preConfig">
+          <template v-if="showPreConfig.isShowViewPhoneText">
+            <el-input
+              v-model="slotFormData.kstext"
+              class="el-row_preConfig-contents"
+              type="textarea"
+              placeholder="请输入通话注意事项"
+              :autosize="{ minRows: 5 }"
+              maxlength="500"
+              show-word-limit
+              :disabled="!slotFormData.ksdhthpz || isDisabled"
+            />
+          </template>
+
+          <template v-else>
+            <m-v-new-audio
+              v-model="test"
+              ref="viewAudio"
+              :sizeLimit="5"
+              :elUploadAttrs="viewPhoneAttrs"
+              :triggerButtonAttrs="viewPhoneAttrs"
+              :on-control-parent-loading="onControlViewPhoneParentLoading"
+            />
+          </template>
+
+          <el-row class="el-row_preConfig-buttons">
+            <template v-if="!showPreConfig.isShowViewPhoneText">
+              <el-button
+                type="primary"
+                :disabled="!slotFormData.ksdhthpz || isDisabled"
+                @click="onChangeNoticeType('ViewPhone')"
+              >文字提示</el-button>
+            </template>
+
+            <template v-else>
+              <el-button
+                type="primary"
+                :disabled="!slotFormData.ksdhthpz || isDisabled"
+                @click="onChangeNoticeType('ViewPhone')"
+              >语音提示</el-button>
+            </template>
+          </el-row>
+        </el-row>
+      </template>
+
+      <template #qqdhSlot>
+        <el-switch
+          v-model="slotFormData.qqdhthpz"
+          :active-value="1"
+          :inactive-value="0"
+          active-color="#13ce66"
+          :disabled="isDisabled"
+        />
+
+        <el-row class="el-row_preConfig">
+          <template v-if="showPreConfig.isShowFamilyPhoneText">
+            <el-input
+              v-model="slotFormData.qqtext"
+              class="el-row_preConfig-contents"
+              type="textarea"
+              placeholder="请输入通话注意事项"
+              :autosize="{ minRows: 5 }"
+              maxlength="500"
+              show-word-limit
+              :disabled="!slotFormData.qqdhthpz || isDisabled"
+            />
+          </template>
+
+          <template v-else>
+            <m-v-new-audio
+              v-model="testFamilyPhone"
+              ref="familyAudio"
+              :sizeLimit="5"
+              :elUploadAttrs="familyPhoneAttrs"
+              :triggerButtonAttrs="familyPhoneAttrs"
+              :on-control-parent-loading="onControlFamilyPhoneParentLoading"
+            />
+          </template>
+
+          <el-row class="el-row_preConfig-buttons">
+            <template v-if="!showPreConfig.isShowFamilyPhoneText">
+              <el-button
+                type="primary"
+                :disabled="!slotFormData.qqdhthpz || isDisabled"
+                @click="onChangeNoticeType('FamilyPhone')"
+              >文字提示</el-button>
+            </template>
+
+            <template v-else>
+              <el-button
+                type="primary"
+                :disabled="!slotFormData.qqdhthpz || isDisabled"
+                @click="onChangeNoticeType('FamilyPhone')"
+              >语音提示</el-button>
+            </template>
+          </el-row>
+        </el-row>
       </template>
     </m-form>
     <!-- <template #basicConfigs>
@@ -424,6 +542,7 @@ export default {
             rules: ["required"],
             value: 1,
           },
+
           prisonTerm: {
             type: "switch",
             label: "监狱条款模块开放",
@@ -515,8 +634,7 @@ export default {
             slotName: "abnormalCalldurationSwitch",
             attrs: {
               label: "异常可视电话时长配置",
-              disabled,
-              required: true,
+              required: true
             },
           },
 
@@ -525,7 +643,9 @@ export default {
             type: "switch",
             disabled,
             value: 0,
-            setValueConfigs: [{ setValue: 1 }],
+            setValueConfigs: [
+              { setValue: 1 }
+            ],
             func: this.onMeetingRoomSwitch,
           },
 
@@ -556,9 +676,14 @@ export default {
           afrInterval: {
             label: "人脸检索间隔时间",
             type: "input",
-            rules: ["required", "isPositiveIntegers", "numberRange10-3600"],
+            rules: [
+              "required",
+              "isPositiveIntegers",
+              "numberRange10-3600"
+            ],
             append: "秒",
             value: "60",
+            disabled
           },
 
           familyPhoneScope: {
@@ -577,8 +702,9 @@ export default {
             ],
             attrs: {
               min: 1,
+              disabled
             },
-            value: [],
+            value: []
           },
 
           accessTimes: {
@@ -587,6 +713,7 @@ export default {
             rules: ["required", "isPositiveNumber"],
             append: "次",
             value: "1",
+            disabled
           },
 
           familyMsgScope: {
@@ -604,6 +731,9 @@ export default {
               },
             ],
             value: [1],
+            attrs: {
+              disabled
+            }
           },
 
           familyMsgCheckConf: {
@@ -621,6 +751,9 @@ export default {
               },
             ],
             value: [0, 1],
+            attrs: {
+              disabled
+            }
           },
 
           meetingEnabled: {
@@ -655,17 +788,20 @@ export default {
           visiblePhonePeopleNumber: {
             label: "可视电话通话人数上限",
             type: "input",
-            rules: [{ validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }],
+            rules: [
+              { validator: validator.isPositiveIntegers, ownMessage: '请输入可视电话通话人数上限' }
+            ],
             append: "次",
             value: "6",
-            customClass: ['el-form-item-people_number']
+            customClass: ['el-form-item-people_number'],
+            disabled
           },
 
           relationshipTemplate: {
             slotName: "relationshipTemplate",
             customClass: "threshold__configs",
             attrs: {
-              label: "家属关系",
+              label: "家属关系"
             },
           },
 
@@ -673,14 +809,34 @@ export default {
             label: "家属短信发送内容",
             type: "checkboxgroup",
             group: this.$store.state.familySendMsgTypeOptions,
-            value: [1]
+            value: [1],
+            attrs: {
+              disabled
+            }
           },
 
           prisonerSendMsgType: {
             label: "服刑人员发送内容",
             type: "checkboxgroup",
             group: this.$store.state.prisonerSendMsgTypeOptions,
-            value: [1, 2]
+            value: [1, 2],
+            attrs: {
+              disabled
+            }
+          },
+
+          ksdh: {
+            slotName: 'ksdhSlot',
+            attrs: {
+              label: '可视电话通话前提示'
+            }
+          },
+
+          qqdh: {
+            slotName: 'qqdhSlot',
+            attrs: {
+              label: '亲情电话通话前提示'
+            }
           }
         },
         formButton
@@ -695,6 +851,10 @@ export default {
         abnormalCallduration: 10,
         afrIOSSetValue: "0.2",
         afrAndroidSetValue: "0.4",
+        ksdhthpz: 0,
+        kstext: '',
+        qqdhthpz: 0,
+        qqtext: ''
       },
 
       slotFormRules: {
@@ -704,6 +864,18 @@ export default {
       },
 
       isDisabled: disabled,
+
+      test: '',
+      testFamilyPhone: '',
+
+      // 可视电话/亲情电话通话前配置显示类型
+      showPreConfig: {
+        isShowViewPhoneText: false,
+        isShowFamilyPhoneText: false
+      },
+
+      viewPhoneParentLoading: false,
+      familyPhoneParentLoading: false
       // formData: {
       //   startMinutes: 5,
       //   startMoney: 15,
@@ -745,6 +917,18 @@ export default {
     ]),
 
     ...mapState("account", ["isHaveAdvancedAuditor"]),
+
+    viewPhoneAttrs() {
+      return {
+        disabled: !this.slotFormData.ksdhthpz || this.viewPhoneParentLoading || this.isDisabled
+      }
+    },
+
+    familyPhoneAttrs() {
+      return {
+        disabled: !this.slotFormData.qqdhthpz || this.viewPhoneParentLoading || this.isDisabled
+      }
+    }
 
     // typeTotalCost() {
     //   const { normalQueue } = this.values
@@ -802,42 +986,60 @@ export default {
         // }
         // else e.prisonAreaList = []
 
-        const { familyPhoneScope } = e;
+        if (
+          (!this.slotFormData.ksdhthpz && !this.slotFormData.qqdhthpz) ||
+          (this.slotFormData.ksdhthpz && (this.slotFormData.kstext || this.test)) ||
+          (this.slotFormData.qqdhthpz && (this.slotFormData.qqtext || this.testFamilyPhone))
+        ) {
+          const { familyPhoneScope } = e;
 
-        if (_.isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
+          if (_.isEqual([1], familyPhoneScope)) e.familyPhoneScope = 1;
+          if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
+          if (!_.difference([1, 2], familyPhoneScope).length)
+            e.familyPhoneScope = 2;
 
-        if (_.isEqual([2], familyPhoneScope)) e.familyPhoneScope = 0;
+          let params = Object.assign({}, e, {
+            changed: 0,
+            weekendChanged: 0,
+            specialChanged: 0,
+          });
 
-        if (!_.difference([1, 2], familyPhoneScope).length)
-          e.familyPhoneScope = 2;
+          const {
+            abnormalCalldurationSwitch,
+            abnormalCallduration,
+            afrIOSSetValue,
+            afrAndroidSetValue,
+          } = this.slotFormData;
 
-        let params = Object.assign({}, e, {
-          changed: 0,
-          weekendChanged: 0,
-          specialChanged: 0,
-        });
-
-        const {
-          abnormalCalldurationSwitch,
-          abnormalCallduration,
-          afrIOSSetValue,
-          afrAndroidSetValue,
-        } = this.slotFormData;
-
-        params = {
-          ...params,
-          abnormalCalldurationSwitch,
-          afrAndroidSetValue,
-          afrIOSSetValue,
-        };
-
-        if (abnormalCalldurationSwitch) {
           params = {
             ...params,
-            abnormalCallduration,
+            abnormalCalldurationSwitch,
+            afrAndroidSetValue,
+            afrIOSSetValue,
           };
-        }
 
+          if (abnormalCalldurationSwitch) {
+            params = {
+              ...params,
+              abnormalCallduration,
+            };
+          }
+
+          this.updatePrison(params).then(async res => {
+            if (!res) return;
+            await this.onInitPrisonConfigDetails();
+            this.$forceUpdate();
+            // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
+            // else this.$router.push('/jails/detail')
+          });
+        } else {
+          this.$confirm('请上传通话前的提示语音或文字！', '提示', {
+            type: 'warning',
+            confirmButtonText: '确定',
+            closeOnClickModal: false,
+            showCancelButton: false
+          })
+        }
         // if (chargeType === 2) {
         //   const {
         //     startMinutes,
@@ -874,15 +1076,6 @@ export default {
         // }
         // if (params.hasOwnProperty('totalCost')) delete params.totalCost
         // if (params.hasOwnProperty('diplomaticConsulOfficialFixedMoney')) delete params.diplomaticConsulOfficialFixedMoney
-        this.updatePrison(params).then(async res => {
-          if (!res) return;
-
-          await this.onInitPrisonConfigDetails();
-
-          this.$forceUpdate();
-          // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
-          // else this.$router.push('/jails/detail')
-        });
       }
     },
 
@@ -1093,6 +1286,20 @@ export default {
 
       this.$set(this.slotFormData, "afrAndroidSetValue", +afrAndroidSetValue);
     },
+
+    // 切换提示类型
+    onChangeNoticeType(type) {
+      const current = this.showPreConfig[`isShow${type}Text`]
+      this.$set(this.showPreConfig, `isShow${type}Text`, !current)
+    },
+
+    onControlViewPhoneParentLoading(val) {
+      this.viewPhoneParentLoading = val
+    },
+
+    onControlFamilyPhoneParentLoading(val) {
+      this.familyPhoneParentLoading = val
+    }
   },
 };
 </script>
@@ -1104,6 +1311,18 @@ export default {
       .el-input {
         width: 260px;
       }
+    }
+  }
+
+  .el-row_preConfig {
+    display: flex;
+    align-items: flex-start;
+    &-contents {
+      width: 56%;
+    }
+
+    &-buttons {
+      margin-left: 10px;
     }
   }
 }

@@ -45,8 +45,8 @@ export default {
       } else {
        response = await api.validateUploadYgCommon(inputs)
       }
+      console.log(response)
       if (!response) return
-
       commit('setValidateExcelResult', response)
 
       return true
@@ -93,7 +93,6 @@ export default {
       } else {
         response = await api.exportYgPrisonExcel(inputs)
       }
-      // const response = await api.exportYgPrisonExcel(inputs)
 
       if (!response) return
 

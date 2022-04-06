@@ -38,7 +38,7 @@ instance.interceptors.request.use(
     if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
     state = history.state
     if (access_token) {
-      config.headers.Authorization = config.url.includes('/image-server/avatars') ? urls.token : `${ token_type } ${ access_token }`
+      config.headers.Authorization = config.url.includes('/image-server') ? urls.token : `${ token_type } ${ access_token }`
     }
     return config
   },
