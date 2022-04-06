@@ -630,8 +630,12 @@ superAdmin = [{
     },
     {
       path: '/prison-message/meeting-criminalList',
-      component: 'family-sms/sms-list',
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, isPrisonerSend: 1 },
+      component: 'family-sms/sms-list/sms-criminal-List',
+      props: {
+        hasAllPrisonQueryAuth: true,
+        hasProvinceQueryAuth: true,
+        isPrisonerSend: 1
+      },
       meta: {
         permission: 'visit.prison-message.visit-criminalList.search',
         breadcrumbName: '服刑人员发送短信申请列表'

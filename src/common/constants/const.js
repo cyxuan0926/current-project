@@ -256,7 +256,6 @@ export const terminalUsersBasicAuths = [
   'terminal.police-meeting'
 ]
 
-
 export const smsSendTemplate = [
   {
     template: '尊敬的用户，湖南省女子监狱（$prisonerName）正在给您发送亲情短信，系统检测显示您的亲情短信服务功能还未开通。请您打开国科服务APP，点击服务-更多-亲情短信，开通亲情短信服务业务。',

@@ -170,24 +170,119 @@
             </el-checkbox-group>
           </el-form-item>
 
-          <!-- <el-form-item
+          <el-form-item
             label="可视电话通话前提示"
-            prop="prisonerSendMsgType"
+            prop="ksdhthpz"
             class="el-form-item_people-number"
           >
-            <el-switch v-model="abnormalCallDurationSwitch" active-color="#13ce66" />
+            <el-switch
+              v-model="formData.ksdhthpz"
+              :active-value="1"
+              :inactive-value="0"
+              active-color="#13ce66"
+            />
 
-            <el-row>
-              <el-input type="textarea" placeholder="请输入通话注意事项" />
+            <el-row class="el-row_preConfig">
+              <template v-if="showPreConfig.isShowViewPhoneText">
+                <el-input
+                  v-model="formData.kstext"
+                  class="el-row_preConfig-contents"
+                  type="textarea"
+                  placeholder="请输入通话注意事项"
+                  :autosize="{ minRows: 5 }"
+                  maxlength="500"
+                  show-word-limit
+                  :disabled="!formData.ksdhthpz"
+                />
+              </template>
+
+              <template v-else>
+                <m-v-new-audio
+                  v-model="test"
+                  ref="viewAudio"
+                  :sizeLimit="5"
+                  :elUploadAttrs="viewPhoneAttrs"
+                  :triggerButtonAttrs="viewPhoneAttrs"
+                  :on-control-parent-loading="onControlViewPhoneParentLoading"
+                />
+              </template>
+
+              <el-row class="el-row_preConfig-buttons">
+                <template v-if="!showPreConfig.isShowViewPhoneText">
+                  <el-button
+                    type="primary"
+                    :disabled="!formData.ksdhthpz"
+                    @click="onChangeNoticeType('ViewPhone')"
+                  >文字提示</el-button>
+                </template>
+
+                <template v-else>
+                  <el-button
+                    type="primary"
+                    :disabled="!formData.ksdhthpz"
+                    @click="onChangeNoticeType('ViewPhone')"
+                  >语音提示</el-button>
+                </template>
+              </el-row>
             </el-row>
-            
           </el-form-item>
 
           <el-form-item
             label="亲情电话通话前提示"
-            prop="prisonerSendMsgType"
+            prop="qqdhthpz"
             class="el-form-item_people-number"
-          ></el-form-item> -->
+          >
+            <el-switch
+              v-model="formData.qqdhthpz"
+              :active-value="1"
+              :inactive-value="0"
+              active-color="#13ce66"
+            />
+
+            <el-row class="el-row_preConfig">
+              <template v-if="showPreConfig.isShowFamilyPhoneText">
+                <el-input
+                  v-model="formData.qqtext"
+                  class="el-row_preConfig-contents"
+                  type="textarea"
+                  placeholder="请输入通话注意事项"
+                  :autosize="{ minRows: 5 }"
+                  maxlength="500"
+                  show-word-limit
+                  :disabled="!formData.qqdhthpz"
+                />
+              </template>
+
+              <template v-else>
+                <m-v-new-audio
+                  v-model="testFamilyPhone"
+                  ref="familyAudio"
+                  :sizeLimit="5"
+                  :elUploadAttrs="familyPhoneAttrs"
+                  :triggerButtonAttrs="familyPhoneAttrs"
+                  :on-control-parent-loading="onControlFamilyPhoneParentLoading"
+                />
+              </template>
+
+              <el-row class="el-row_preConfig-buttons">
+                <template v-if="!showPreConfig.isShowFamilyPhoneText">
+                  <el-button
+                    type="primary"
+                    :disabled="!formData.qqdhthpz"
+                    @click="onChangeNoticeType('FamilyPhone')"
+                  >文字提示</el-button>
+                </template>
+
+                <template v-else>
+                  <el-button
+                    type="primary"
+                    :disabled="!formData.qqdhthpz"
+                    @click="onChangeNoticeType('FamilyPhone')"
+                  >语音提示</el-button>
+                </template>
+              </el-row>
+            </el-row>
+          </el-form-item>
 
           <el-form-item />
           <el-form-item />
@@ -514,7 +609,11 @@ export default {
 
         visiblePhonePeopleNumber: "6",
         familySendMsgType: [1],
-        prisonerSendMsgType: [1, 2]
+        prisonerSendMsgType: [1, 2],
+        ksdhthpz: 0,
+        kstext: '',
+        qqdhthpz: 0,
+        qqtext: ''
       },
 
       faceRecognitionValues,
@@ -551,7 +650,19 @@ export default {
         inspectNum: 100,
         strictNum: 100,
         otherNum: 100
-      }
+      },
+
+      test: '',
+      testFamilyPhone: '',
+
+      // 可视电话/亲情电话通话前配置显示类型
+      showPreConfig: {
+        isShowViewPhoneText: false,
+        isShowFamilyPhoneText: false
+      },
+
+      viewPhoneParentLoading: false,
+      familyPhoneParentLoading: false
     };
   },
 
@@ -599,11 +710,27 @@ export default {
           ...messageFormInputs
         }
       })
+    },
+
+    viewPhoneAttrs() {
+      return {
+        disabled: !this.formData.ksdhthpz || this.viewPhoneParentLoading
+      }
+    },
+
+    familyPhoneAttrs() {
+      return {
+        disabled: !this.formData.qqdhthpz || this.viewPhoneParentLoading
+      }
     }
   },
 
   async mounted() {
-    await Promise.all([this.getDeploy(), this.getdata(), this.getcall()]);
+    await Promise.all([
+      this.getDeploy(),
+      this.getdata(),
+      this.getcall()
+    ]);
   },
 
   methods: {
@@ -773,8 +900,21 @@ export default {
 
     submitTit() {
       //判断
-      if (this.autoAuthorizeMeeting == true && this.multistageExamine == true) this.dialogVisible = true;
-      else this.submitDeploy();
+      if (
+        (!this.formData.ksdhthpz && !this.formData.qqdhthpz) ||
+        (this.formData.ksdhthpz && (this.formData.kstext || this.test)) ||
+        (this.formData.qqdhthpz && (this.formData.qqtext || this.testFamilyPhone))
+      ) {
+        if (this.autoAuthorizeMeeting && this.multistageExamine) this.dialogVisible = true;
+        else this.submitDeploy();
+      } else {
+        this.$confirm('请上传通话前的提示语音或文字！', '提示', {
+          type: 'warning',
+          confirmButtonText: '确定',
+          closeOnClickModal: false,
+          showCancelButton: false
+        })
+      }      
     },
 
     closeDeploy() {
@@ -791,7 +931,7 @@ export default {
 
       this.$refs.form.validate(valid => {
         if (valid) {
-          http.getMeetDeployUpdate(params).then((res) => {
+          http.getMeetDeployUpdate(params).then(res => {
             this.getDeploy();
           });
         }
@@ -814,6 +954,20 @@ export default {
       Object.entries(params).forEach(([key, value]) => {
         params[key] = +value
       })
+    },
+
+    // 切换提示类型
+    onChangeNoticeType(type) {
+      const current = this.showPreConfig[`isShow${type}Text`]
+      this.$set(this.showPreConfig, `isShow${type}Text`, !current)
+    },
+
+    onControlViewPhoneParentLoading(val) {
+      this.viewPhoneParentLoading = val
+    },
+
+    onControlFamilyPhoneParentLoading(val) {
+      this.familyPhoneParentLoading = val
     }
   }
 };
@@ -844,6 +998,18 @@ export default {
   /deep/ .el-form-item_people-number {
     .el-input {
       width: 20%;
+    }
+  }
+
+  .el-row_preConfig {
+    display: flex;
+    align-items: flex-start;
+    &-contents {
+      width: 45%;
+    }
+
+    &-buttons {
+      margin-left: 10px;
     }
   }
 }

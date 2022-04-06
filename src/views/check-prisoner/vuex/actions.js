@@ -4,21 +4,24 @@ export default {
   getPrisoners({ commit }, params) {
     return http.getPrisoners(params).then(res => res && commit('getPrisoners', res))
   },
+
   getPrisonersAll({ commit }, params) {
     http.getPrisonersAll(params).then(res => res && commit('getPrisoners', res))
   },
-  updatePrisonerTime({ commit }, params) {
+
+  updatePrisonerTime(_, params) {
     return http.updatePrisonerTime(params).then(res => res)
   },
-  addPrisonerBlacklist({ commit }, params) {
+
+  addPrisonerBlacklist(_, params) {
     return http.addPrisonerBlacklist(params).then(res => res)
   },
+
   getNotification({ commit, dispatch }, params) {
     return http.getNotification(params).then(async res => {
       if (!res) return
 
       const { notify } = res
-
       const { meetingNotificationUrl } = notify
 
       if (meetingNotificationUrl) res['notify']['meetingNotificationUrl'] = await dispatch('files/downloadPublicServiceFile', { url: meetingNotificationUrl })
@@ -28,41 +31,53 @@ export default {
       return true
     })
   },
-  updateNotification({ commit }, params) {
+
+  updateNotification(_, params) {
     return http.updateNotification(params).then(res => res)
   },
-  addNotification({ commit }, params) {
+
+  addNotification(_, params) {
     return http.addNotification(params).then(res => res)
   },
+
   getNotificationFamilies({ commit }, params) {
     return http.getNotificationFamilies(params).then(res => {
       if (!res) return
+
       commit('getNotificationFamilies', res)
+
       return true
     })
   },
+
   getPrisonConfigs({ commit }, params) {
     return http.getPrisonConfigs(params).then(res => {
       if (!res) return
+
       commit('getPrisonConfigs', res)
+
       return true
     })
   },
-  changePrisonArea({ commit }, params) {
+
+  changePrisonArea(_, params) {
     return http.changePrisonArea(params).then(res => res)
   },
-  removePrisonerBlacklist({ commit }, params) {
+
+  removePrisonerBlacklist(_, params) {
     return http.removePrisonerBlacklist(params).then(res => res)
   },
-  deletePrisonerData({ commit }, params) {
+
+  deletePrisonerData(_, params) {
     return http.deletePrisoners(params).then(res => res)
   },
-  addPrionser({ commit }, params) {
+
+  addPrionser(_, params) {
     return http.addPrionser(params).then(res => res)
   },
 
   // 批量更换监区
-  async changePrisonAreaBatch({ commit }, params) {
+  async changePrisonAreaBatch(_, params) {
     try {
       const { code } = await http.changePrisonAreaBatch(params)
 
@@ -77,7 +92,6 @@ export default {
   async acceptPrisoners(_, params) {
     try {
       const response = await http.acceptPrisoners(params)
-
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
@@ -91,7 +105,6 @@ export default {
   async abortChangePrisoners(_, params) {
     try {
       const response = await http.abortChangePrisoners(params)
-
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
@@ -113,6 +126,19 @@ export default {
       commit('getPrisoners', data)
 
       return true
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
+  },
+
+  // 服刑人员 - 驳回人脸
+  async rejectPrisonerFaceUrl(_, prisonerId) {
+    try {
+      const response = await http.rejectPrisonerFaceUrl(prisonerId)
+      const isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
     }
     catch (err) {
       Promise.reject(err)

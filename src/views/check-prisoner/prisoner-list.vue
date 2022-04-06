@@ -109,7 +109,7 @@
         :data="prisoners.contents"
         @selection-change="handleSelectionChange"
         :cols="tableCols"
-        :cell-style="cellred"
+        :cell-style="cellRed"
         @sort-change="sortChange"
       >
         <template #accessTime="{ row }">
@@ -596,7 +596,11 @@
 
     <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData">
       <template #dialogFooter>
-        <el-button type="primary" @click="onReSubmit">重新提交</el-button>
+        <el-button
+          v-if="!!prisonerDetData.faceUrl"
+          type="primary"
+          @click="onReSubmit"
+        >重新提交</el-button>
       </template>
     </prisoner-detail-modal>
   </el-row>
@@ -1687,45 +1691,54 @@ export default {
       'acceptPrisoners',
       'abortChangePrisoners',
       'getTransferOutPrisonersPagedData',
-      'getJailPrisonAreas'
+      'getJailPrisonAreas',
+      'rejectPrisonerFaceUrl'
     ]),
-    sortChange({ column, prop, order }) {
-          this.sortObj = {}
-          delete this.filter.sortDirection
-          delete this.filter.orderField
-          this.sortObj.orderField = "accessTime"
-          if (order === 'descending') this.sortObj.sortDirection = 'desc'
-          else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
-          this.filter = Object.assign(this.filter, this.sortObj)
-          this.getDatas('sortChange')
-      },
+
     ...mapActions(["uploadFile", "resetState"]),
-     ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
-     one(type){
-       this.UploadType=type
-     },
-      // 重制上传的参数关闭对话框
+
+    ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
+
+    sortChange({ column, prop, order }) {
+      this.sortObj = {}
+
+      delete this.filter.sortDirection
+      delete this.filter.orderField
+
+      this.sortObj.orderField = "accessTime"
+      if (order === 'descending') this.sortObj.sortDirection = 'desc'
+      else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+
+      this.filter = Object.assign(this.filter, this.sortObj)
+      this.getDatas('sortChange')
+    },
+
+    one(type){
+      this.UploadType = type
+    },
+
+    // 重制上传的参数关闭对话框
     onResetAndcloseUploadDialog() {
       this.spendTime = 0;
-
       this.percent = 0;
-
       this.status = 0;
-
       this.uploadDialogVisible = false;
     },
+
       // 内层提示对话框关闭的回调方法
     onUploadInnerDialogClose() {
       setTimeout(() => {
         this.onResetAndcloseUploadDialog();
       }, 1000);
     },
+
      onOpenUploadDialog() {
       this.$nextTick(() => {
         this.$refs.mExcelUpload.onManualUpload();
         this.$refs.mExcelUploadConfig.onManualUpload();
       });
     },
+
     beforeUpload(file) {
       this.resetState({ validatePrisonerLeaveResult: {
         successTotal: 0,
@@ -1739,9 +1752,7 @@ export default {
       // 上次文件的定时器
       const uploadInterver = setInterval(async () => {
         this.status += 1
-
         this.percent += 15
-
         this.spendTime += .5
 
         if (this.status === 4) {
@@ -1780,18 +1791,15 @@ export default {
 
                 if (index === 1) {
                   this.percent += 20
-
                   this.spendTime += 1
-
                   this.status = this.status + 1
 
                   clearInterval(processInterver)
 
                   this.spendTime += 1
-
                   this.status += 1
-
                   this.percent = 100
+
                   setTimeout(() => {
                     this.uploadInnerDialogVisible = true
                   }, 1500)
@@ -1812,13 +1820,15 @@ export default {
         this.uploadDialogVisible = true
       }
     },
-    cellred({row, column, rowIndex, columnIndex}){
-      if(!(row.address&&row.address.includes("中国"))){
-        if(row.address){
-           return 'color:red'
+
+    cellRed({row, column, rowIndex, columnIndex}){
+      if (!(row.address&&row.address.includes("中国"))) {
+        if (row.address) {
+          return 'color:red'
         }
       }
     },
+
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
@@ -1831,29 +1841,24 @@ export default {
 
       if (this.hasAllPrisonQueryAuth) {
         if (this.isPrisonerTabVal) await this.getPrisonersAll(params)
-
         else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPages', params })
       } else {
         if (this.isPrisonerTabVal) await this.getPrisoners(params)
-
         else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPage', params })
       }
     },
 
     onSearch(isCurrent) {
-          delete this.filter.sortDirection
-          delete this.filter.orderField
+      delete this.filter.sortDirection
+      delete this.filter.orderField
       this.$refs.pagination.handleCurrentChange(!!isCurrent ? this.pagination.page : 1)
       // this.$refs.pagination.handleCurrentChange(1)
     },
 
     onTimeEdit(e, type) {
       this.prisoner = Object.assign({}, e)
-
       this.thePrisoner = e
-
       this.timesDialogType = type
-
       this.isEditTime = true
     },
 
@@ -1881,9 +1886,7 @@ export default {
         if (!valid) return
 
         const { id } = this.prisoner
-
         const params = { id, [this.timesDialogType]: this.prisoner[this.timesDialogType] }
-
         const urls = {
           accessTime: '/prisoners/updateAccessTime',
           smsNum: '/prisoners/updateSmsNum'
@@ -1921,7 +1924,6 @@ export default {
       }
 
       const _key = `familyId_${ family.familyId }`
-
       const URLS = await batchDownloadPublicImageURL(urls, _key)
 
       this.family = {
@@ -1935,12 +1937,15 @@ export default {
     // 打开详情弹窗
     async showPrisonerDet(data) {
       let { faceUrl, id } = data
+
       if (faceUrl) {
         const URLS = await batchDownloadPublicImageURL({
           faceUrl
         }, `prisonId_${ id }`)
+
         data.faceUrl = URLS.faceUrl
       }
+
       this.prisonerDetData = Object.assign({}, data)
       this.detailDetVisible = true
     },
@@ -1977,17 +1982,11 @@ export default {
         this.notificationForm = Object.assign({}, e, { signDate: initSignDate})
       } else {
         this.notificationForm.familyId = ''
-
         this.notificationForm.familyName = ''
-
         this.notificationForm.familyRelationship = ''
-
         this.notificationForm.familyUuid = ''
-
         this.notificationForm.meetingNotificationUrl = ''
-
         this.notificationForm.protoNum = ''
-
         this.notificationForm.signDate = ''
       }
 
@@ -2012,14 +2011,11 @@ export default {
           if (!res) return
           // 表单组件初始化的数值
           this.notificationForm = this.notification
-
           this.notificationFamily = Object.assign({}, this.notification)
-
           this.notificationShow = true
         })
       } else {
         this.notificationForm = {}
-
         this.notificationShow = true
 
         this.$refs.notification && this.$refs.notification.onClearValidate()
@@ -2044,7 +2040,9 @@ export default {
         }, e)
         this.addNotification(params).then(res => {
           this.submitting = false
+
           if (!res) return
+
           this.notificationPrisoner.notifyId = res.id
           this.notificationShow = false
         })
@@ -2146,7 +2144,6 @@ export default {
         let params = new FormData()
 
         params.append('prisonerId', this.prisoner.id)
-
         params.append('reason', val.reason)
 
         this.addPrisonerBlacklist(params).then(res => {
@@ -2172,10 +2169,9 @@ export default {
 
         let prisonArea, temp = { jailId }
 
-        if(JSON.parse(localStorage.getItem('user')).branch_prison) {
+        if (JSON.parse(localStorage.getItem('user')).branch_prison) {
           // 暂时默认租户管理员
           if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonAreaId))[0].name
-
           // 其他角色就是本身
           else prisonArea = (this.jailPrisonAreas.filter(value => value.id === val.prisonAreaId))[0].name
 
@@ -2227,9 +2223,7 @@ export default {
         },
 
         prisonAreaId: otherStoresParams,
-
         prisonBranchId: otherStoresParams,
-
         prisonBuildingId: otherStoresParams
       }
 
@@ -2285,7 +2279,6 @@ export default {
 
         // 筛选监狱数据
         if (prop === 'provincesId') data = _.cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
-
         // 监区数据
         if (prop === 'jailId') data = _.cloneDeep(this.prisonConfigs)
 
@@ -2339,11 +2332,9 @@ export default {
 
         // 当前元素的配置
         this.$set(this.dialogContent['items'][prop], 'configs', configs)
-
         this.$set(this.dialogContent['items'][prop], 'setValueConfigs', setValueConfigs)
 
         this.$refs['dialogForm'].radioChangeEvent(parentId, prop, item)
-
         this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
 
         if (!data || (Array.isArray(data) && !data.length)) {
@@ -2361,7 +2352,6 @@ export default {
           })
 
           this.$refs['dialogForm'].radioChangeEvent(parentId, prop, item)
-
           this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
         }
 
@@ -2405,7 +2395,6 @@ export default {
 
           if (this.operationType === 5) {
             const temp = this.selectPrisoners.map(prisoner => prisoner.id)
-
             const prisonerIds = temp.join(',')
 
             params = {
@@ -2618,7 +2607,6 @@ export default {
 
     onCloseDialogAndRefreshen() {
       this.handleCloseDialog()
-
       this.onSearch(true)
     },
 
@@ -2656,7 +2644,6 @@ export default {
 
     // 单个接收
     async onSingleAccept(type, row) {
-
       this.prisoner = Object.assign({}, row)
 
       await this.onhandlerAccept(type)
@@ -2684,9 +2671,7 @@ export default {
 
     async onAcceptPrisoners() {
       const currentDialogFormResponseValues = _.cloneDeep(this.dialogFormResponseValues)
-
       const { jailId } = this.user
-
       let params = {
         jailId
       }
@@ -2729,7 +2714,6 @@ export default {
 
     async _mixinsInitMethods() {
       if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
-
       else await this.getDatas()
     },
 
@@ -2742,9 +2726,17 @@ export default {
         closeOnClickModal: false,
         callback: async action => {
           if (action === 'confirm') {
-            setTimeout(() => {
-              this.detailDetVisible = false
-            }, 500)
+            const { id } = this.prisonerDetData
+
+            const result = await this.rejectPrisonerFaceUrl(id)
+
+            if (result) {
+              setTimeout(() => {
+                this.detailDetVisible = false
+
+                this.onSearch(true)
+              }, 500)
+            }
           }
         }
       })

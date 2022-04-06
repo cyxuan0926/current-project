@@ -27,22 +27,26 @@ export default {
   setUser({ commit }, params) {
     commit('setUser', params)
   },
+
   resetState: ({ commit }, params) => {
     if (!params) return
     commit('resetState', params)
   },
+
   setUrlStorage({ commit }, params) {
     let urls = getUrls(params),
       urlStorage = localStorage.getItem('urls') ? JSON.parse(localStorage.getItem('urls')) : [],
       u = Array.from(new Set([...urls, ...urlStorage]))
     localStorage.setItem('urls', JSON.stringify(u))
   },
-  setNewUrlStorage({ commit }, params) {
+
+  setNewUrlStorage(_, params) {
     let urls = getUrls(params),
       urlStorage = localStorage.getItem('newUrls') ? JSON.parse(localStorage.getItem('newUrls')) : [],
       u = Array.from(new Set([...urls, ...urlStorage]))
     localStorage.setItem('newUrls', JSON.stringify(u))
   },
+
   removeUrlStorage({ state, dispatch }) {
     if (state.urlStorage && localStorage.getItem('newUrls')) {
       localStorage.removeItem('newUrls')
@@ -55,6 +59,7 @@ export default {
       localStorage.removeItem('save')
     }
   },
+
   deleteUrls({ commit, state }, params) {
     let deleteUrls, urls, urlStorage = JSON.parse(localStorage.getItem('urls')) || JSON.parse(localStorage.getItem('save')) || []
     if (JSON.parse(localStorage.getItem('save'))) {
@@ -93,6 +98,7 @@ export default {
     }
     if (params.save) localStorage.setItem('save', JSON.stringify(urls))
   },
+
   // 上传文件
   uploadFile({ commit }, params) {
     let formData = new FormData()

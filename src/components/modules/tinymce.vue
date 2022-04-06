@@ -1,18 +1,24 @@
 <template>
   <div>
     <div :id="tinymceId"/>
+
     <tinymce-image
       ref="uploadImage"
       style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-      @success="onImageSuccess" />
-      <tinymce-video
+      @success="onImageSuccess"
+    />
+
+    <tinymce-video
       ref="uploadVideo"
       style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-      @success="onVideoSuccess" />
+      @success="onVideoSuccess"
+    />
+
     <tinymce-audio
       ref="uploadAudio"
       style="visibility: hidden; height: 0; width: 0; overflow: hidden;"
-      @success="onAudioSuccess" />
+      @success="onAudioSuccess"
+    />
   </div>
 </template>
 
@@ -23,18 +29,25 @@ import tinymceAudio from './tinymce/tinymceAudio'
 import urls from '@/service/urls'
 
 export default {
-  components: { tinymceImage, tinymceVideo, tinymceAudio },
+  components: {
+    tinymceImage,
+    tinymceVideo,
+    tinymceAudio
+  },
   // components: { tinymceImage },
+
   props: {
     value: {
       type: String,
       default: ''
     },
+
     tools: {
       type: String,
       default: 'onlyImage'
     }
   },
+
   data() {
     return {
       hasChanged: false,
@@ -42,6 +55,7 @@ export default {
       tinymceId: this.id || `vue-tinymce-${ +new Date() }`
     }
   },
+
   watch: {
     value(val) {
       if (!this.hasChange && this.hasInit && val) {
@@ -50,6 +64,7 @@ export default {
       }
     }
   },
+
   mounted() {
     window.tinymce.init({
       selector: `#${ this.tinymceId }`,
@@ -107,14 +122,17 @@ export default {
       }
     })
   },
+
   destroyed() {
     window.tinymce.get(this.tinymceId).destroy()
   },
+
   methods: {
     onImageSuccess(e) {
       if (!e) return
       window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
+
     onVideoSuccess(e) {
       if (!e) return
       // let htmlString = `<video controls poster="/static/images/video-cover.png" style="max-width: 100%;">
@@ -133,6 +151,7 @@ export default {
       // window.tinymce.get(this.tinymceId).insertContent(htmlString)
       tinymce.activeEditor.selection.setContent(tinymce.activeEditor.dom.createHTML('video', { src: e, controls: 'controls', poster: `${ urls.apiHost }/static/images/video-cover.png` }))
     },
+
     onAudioSuccess(e) {
       if (!e) return
       let htmlString = `<audio controls>
@@ -148,6 +167,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

@@ -607,7 +607,7 @@ export default {
     },
   },
   data() {
-     let _isAdmin = this.$store.state.global.user.role == '0'
+    const _isAdmin = this.$store.state.global.user.role === '0'
     const stateAll = [
       {
         label: "未审核",
