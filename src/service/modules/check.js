@@ -194,7 +194,11 @@ export default {
   familyfreecall: params => service.get('/freeMeetings/export', params, { responseType: 'blob' }).then(res => res && res.data),
   // 狱警免费通话记录-导出
   freecallsfromprisonguards: params => service.get('/freeMeetings/police/export', params, { responseType: 'blob' }).then(res => res && res.data),
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 556353b80575b0dabfd9fd3d48f51477fae111a0
   // 数据管理-上传并解析
   uploadAnalyticExcel: params => service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type })),
 

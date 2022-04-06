@@ -41,7 +41,6 @@ export default {
     const isSearchLimit = ref(true);
     // store ywt_admin账号
     const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
- 
     const omponentpublic = ref({
       // 设置 ywt_admin下面有导入和模版
       excelUploadVisible: $isSuperAdmin.value,
@@ -76,9 +75,6 @@ export default {
     const $tableCols = computed(() => _tableCols[$tabs["value"]]);
 
     const { routeProps } = useRouteProps();
-
-   
-
     watch($tabs, (val) => {
       if (val == "0") {
         searchItems.value.types.miss = false;
