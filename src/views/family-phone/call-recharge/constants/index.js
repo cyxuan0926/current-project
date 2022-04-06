@@ -91,7 +91,7 @@ export const httpRequests = {
   excelDownloadRequest: {
     '0': {
       params: {
-        fileName: '/template/call_charge_recharge_template.xls',
+        filepath: '/call_charge_recharge_template.xls',
         isYgPrison: true
       }
     }

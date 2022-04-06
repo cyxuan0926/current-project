@@ -27,35 +27,24 @@ export default {
     validatePrisonerScorelist: params => service.get(service.getYgUrl('/prisoner_score/validate'), params),
     // 数据导入uploadFile
     uploadFileYangGuangHost: params => service.postFormData(service.getYgUrl('/upload/uploadfile'), { file: params }),
-
     // 阳光监狱 - 上传文件
     ygUploadFile: file => service.postFile(service.getYgUrl('/upload/uploadfile'), file).then(res => res && res.data),
-
     // 阳光监狱 - 查询列表
     getPaged: ({ params, url }) => service.get(service.getYgUrl(url), params),
-
     // 阳光监狱 - 验证excel
     validateUploadYgCommon: ({ params, url, methods = 'post' }) => service[methods](service.getYgUrl(url), params).then(response => response && response.data),
-
     // 阳光监狱 - 导出excel
     exportYgPrisonExcel: ({ params, url, methods = 'post' }) => service[methods](service.getYgUrl(url), params, { responseType: 'blob' }).then(response => response && response.data),
-
     // 查询亲情电话通话费用管理ywt-admin
     familytelephonecallcostmanagement: ({ params, url }) => service.get(url, params),
-
     // 亲情电话通话费用管理 --导出excel
     familytelephoneexcel: ({ params, url, methods = 'post' }) => service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data),
-
     // 查询亲情电话充值管理ywt-admin
     familyphonerechargefeemanagement: ({ params, url }) => service.get(url, params),
-
     // 亲情电话通话充值管理 --导出excel
     callchargerecharge: ({ params, url, methods = 'post' }) => service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data),
-
     // 亲情电话费用充值 - 导入文件
     familyphonerechargeimport: file => service.postFile('/upload/uploadfile', file).then(res => res && res.data),
-
      // 亲情电话费用充值 - 验证excel
-    familyphonerechargeyanzheng: ({ params, url, methods = 'post' }) => service[methods](url, params, { responseType: 'blob' }).then(response => response && response.data),
-     
+    familyphonerechargeyanzheng: ({ params, url, methods = 'post' }) => service[methods](url, params).then(response =>response && response.data.data)
 }

@@ -246,7 +246,11 @@ export default {
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
   },
-
+  // 家属免费通话记录-导出
+  familyfreecall: params => service.get('/freeMeetings/police/export', params, { responseType: 'blob' }).then(res => res && res.data),
+  // 狱警免费通话记录-导出
+  freecallsfromprisonguards: params => service.get('/freeMeetings/export', params, { responseType: 'blob' }).then(res => res && res.data),
+  
   // 数据管理-上传并解析
   uploadAnalyticExcel: params => {
     return service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type }))

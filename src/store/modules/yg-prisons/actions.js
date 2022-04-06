@@ -45,8 +45,8 @@ export default {
       } else {
        response = await api.validateUploadYgCommon(inputs)
       }
+      console.log(response)
       if (!response) return
-
       commit('setValidateExcelResult', response)
 
       return true

@@ -21,9 +21,8 @@
 
         <!-- 模版 -->
         <template v-if="$componentsVisible['excelDownloadVisible']">
-          
-           <m-excel-download
-           v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+          <m-excel-download
+            v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
             path="/download/downloadfile"
             :params="httpRequests['excelDownloadRequest']['params']"
             text="模板"
@@ -170,6 +169,14 @@
                 v-bind="$ygPrisonValidateUploadResult"
               >
                 <m-excel-download
+                  v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+                  path="/download/localfile"
+                  :params="{ filepath: $ygPrisonValidateUploadResult.filePath }"
+                  :buttonsProps="excelExportButtonProps"
+                  text="导入失败的数据.xls"
+                />
+                <m-excel-download
+                  v-else
                   path="/download/common/download"
                   :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
                   :buttonsProps="excelExportButtonProps"
@@ -472,7 +479,10 @@ export default {
           const { excelUploadRequest = {} } = httpRequests.value;
           let isSuccess = null;
           if (excelUploadRequest.params.isYgPrison) {
-            isSuccess = await store.dispatch("ygPrisons/familyphonerechargeimport", file);
+            isSuccess = await store.dispatch(
+              "ygPrisons/familyphonerechargeimport",
+              file
+            );
           } else {
             isSuccess = await store.dispatch("ygPrisons/ygUploadFile", file);
           }
