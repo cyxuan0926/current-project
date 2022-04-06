@@ -286,12 +286,13 @@ export default {
     then(res => res.data),
 
   // 监狱操作指引下线
-  businessOffLine: id => {
-    return service.post(`/business/guide/offline/${ id }`).then(res => res.data)
-  },
+  businessOffLine: id => service.
+    post(`/business/guide/offline/${ id }`).
+    then(res => res.data),
+
    // 监狱操作指引下线
-   addBatchNotify: data => {
-    return service.postObj(`/batchNotify/admin?content=${ data.content }&&jailIds=${ data.jailIds }&&provincesIds=${ data.provincesIds }`, data).then(res => res && res.data)
-  }
+   addBatchNotify: data => service.
+    postObj(`/batchNotify/admin?content=${ data.content }&&jailIds=${ data.jailIds }&&provincesIds=${ data.provincesIds }`, data).
+    then(res => res && res.data)
 }
 

@@ -172,11 +172,11 @@
 
           <el-form-item
             label="可视电话通话前提示"
-            prop="ksdhthpz"
+            prop="visiblePhonePrompt"
             class="el-form-item_people-number"
           >
             <el-switch
-              v-model="formData.ksdhthpz"
+              v-model="formData.visiblePhonePrompt"
               :active-value="1"
               :inactive-value="0"
               active-color="#13ce66"
@@ -185,20 +185,20 @@
             <el-row class="el-row_preConfig">
               <template v-if="showPreConfig.isShowViewPhoneText">
                 <el-input
-                  v-model="formData.kstext"
+                  v-model="formData.visiblePhoneTextPrompt"
                   class="el-row_preConfig-contents"
                   type="textarea"
                   placeholder="请输入通话注意事项"
                   :autosize="{ minRows: 5 }"
                   maxlength="500"
                   show-word-limit
-                  :disabled="!formData.ksdhthpz"
+                  :disabled="!formData.visiblePhonePrompt"
                 />
               </template>
 
               <template v-else>
                 <m-v-new-audio
-                  v-model="test"
+                  v-model="formData.visiblePhoneVoicePrompt"
                   ref="viewAudio"
                   :sizeLimit="5"
                   :elUploadAttrs="viewPhoneAttrs"
@@ -211,7 +211,7 @@
                 <template v-if="!showPreConfig.isShowViewPhoneText">
                   <el-button
                     type="primary"
-                    :disabled="!formData.ksdhthpz"
+                    :disabled="!formData.visiblePhonePrompt"
                     @click="onChangeNoticeType('ViewPhone')"
                   >文字提示</el-button>
                 </template>
@@ -219,7 +219,7 @@
                 <template v-else>
                   <el-button
                     type="primary"
-                    :disabled="!formData.ksdhthpz"
+                    :disabled="!formData.visiblePhonePrompt"
                     @click="onChangeNoticeType('ViewPhone')"
                   >语音提示</el-button>
                 </template>
@@ -229,11 +229,11 @@
 
           <el-form-item
             label="亲情电话通话前提示"
-            prop="qqdhthpz"
+            prop="familyPhonePrompt"
             class="el-form-item_people-number"
           >
             <el-switch
-              v-model="formData.qqdhthpz"
+              v-model="formData.familyPhonePrompt"
               :active-value="1"
               :inactive-value="0"
               active-color="#13ce66"
@@ -242,20 +242,20 @@
             <el-row class="el-row_preConfig">
               <template v-if="showPreConfig.isShowFamilyPhoneText">
                 <el-input
-                  v-model="formData.qqtext"
+                  v-model="formData.familyPhoneTextPrompt"
                   class="el-row_preConfig-contents"
                   type="textarea"
                   placeholder="请输入通话注意事项"
                   :autosize="{ minRows: 5 }"
                   maxlength="500"
                   show-word-limit
-                  :disabled="!formData.qqdhthpz"
+                  :disabled="!formData.familyPhonePrompt"
                 />
               </template>
 
               <template v-else>
                 <m-v-new-audio
-                  v-model="testFamilyPhone"
+                  v-model="formData.familyPhoneVoicePrompt"
                   ref="familyAudio"
                   :sizeLimit="5"
                   :elUploadAttrs="familyPhoneAttrs"
@@ -268,7 +268,7 @@
                 <template v-if="!showPreConfig.isShowFamilyPhoneText">
                   <el-button
                     type="primary"
-                    :disabled="!formData.qqdhthpz"
+                    :disabled="!formData.familyPhonePrompt"
                     @click="onChangeNoticeType('FamilyPhone')"
                   >文字提示</el-button>
                 </template>
@@ -276,7 +276,7 @@
                 <template v-else>
                   <el-button
                     type="primary"
-                    :disabled="!formData.qqdhthpz"
+                    :disabled="!formData.familyPhonePrompt"
                     @click="onChangeNoticeType('FamilyPhone')"
                   >语音提示</el-button>
                 </template>
@@ -610,10 +610,12 @@ export default {
         visiblePhonePeopleNumber: "6",
         familySendMsgType: [1],
         prisonerSendMsgType: [1, 2],
-        ksdhthpz: 0,
-        kstext: '',
-        qqdhthpz: 0,
-        qqtext: ''
+        visiblePhonePrompt: 0,
+        visiblePhoneTextPrompt: '',
+        familyPhonePrompt: 0,
+        familyPhoneTextPrompt: '',
+        visiblePhoneVoicePrompt: '',
+        familyPhoneVoicePrompt: ''
       },
 
       faceRecognitionValues,
@@ -651,9 +653,6 @@ export default {
         strictNum: 100,
         otherNum: 100
       },
-
-      test: '',
-      testFamilyPhone: '',
 
       // 可视电话/亲情电话通话前配置显示类型
       showPreConfig: {
@@ -714,13 +713,13 @@ export default {
 
     viewPhoneAttrs() {
       return {
-        disabled: !this.formData.ksdhthpz || this.viewPhoneParentLoading
+        disabled: !this.formData.visiblePhonePrompt || this.viewPhoneParentLoading
       }
     },
 
     familyPhoneAttrs() {
       return {
-        disabled: !this.formData.qqdhthpz || this.viewPhoneParentLoading
+        disabled: !this.formData.familyPhonePrompt || this.viewPhoneParentLoading
       }
     }
   },
@@ -838,25 +837,45 @@ export default {
     },
 
     getDeploy() {
-      http.getMeetDeploy().then((res) => {
+      http.getMeetDeploy().then(res => {
+        const { visiblePhonePrompt, familyPhonePrompt, callPrompt } = res.data
         this.dialogVisible = false;
-        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting
-          ? true
-          : false;
+        this.autoAuthorizeMeeting = res.data.autoAuthorizeMeeting ? true : false;
         this.regAutoAudit = res.data.regAutoAudit ? true : false;
         this.multistageExamine = res.data.multistageExamine ? true : false;
-        this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch
-          ? true
-          : false;
+        this.abnormalCallDurationSwitch = res.data.abnormalCallDurationSwitch ? true : false;
         this.abnormalCallDuration = res.data.abnormalCallDuration;
         this.formData = Object.assign({}, this.formData, res.data);
-        this.content =  res.data.relationshipTemplate.split(",")
-        this.familylist = [...res.data.relationshipTemplate.split(",")] 
+
+        if ((visiblePhonePrompt || familyPhonePrompt) && callPrompt && Object.prototype.toString.call(callPrompt) === '[object Object]') {
+          const {
+            familyPhoneTextPrompt,
+            familyPhoneVoicePrompt,
+            visiblePhoneTextPrompt,
+            visiblePhoneVoicePrompt
+          } = callPrompt
+
+          this.formData = Object.assign({}, this.formData, {
+            familyPhoneTextPrompt,
+            familyPhoneVoicePrompt,
+            visiblePhoneTextPrompt,
+            visiblePhoneVoicePrompt
+          })
+
+          this.$set(this.showPreConfig, 'isShowViewPhoneText', !!visiblePhoneTextPrompt)
+          this.$set(this.showPreConfig, 'isShowFamilyPhoneText', !!familyPhoneTextPrompt)
+        } else {
+          this.$set(this.showPreConfig, 'isShowViewPhoneText', false)
+          this.$set(this.showPreConfig, 'isShowFamilyPhoneText', false)
+        }
+
+        this.content =  res.data.relationshipTemplate.split(",");
+        this.familylist = [...res.data.relationshipTemplate.split(",")];
       });
     },
 
     addReject() {
-      this.content.push("");
+      this.content.push('');
     },
 
     removeReject(index) {
@@ -894,16 +913,15 @@ export default {
 
     changeDate() {
       if (this.abnormalCallDuration > 600) this.abnormalCallDuration = 600;
-
       if (this.abnormalCallDuration < 10) this.abnormalCallDuration = 10;
     },
 
     submitTit() {
       //判断
       if (
-        (!this.formData.ksdhthpz && !this.formData.qqdhthpz) ||
-        (this.formData.ksdhthpz && (this.formData.kstext || this.test)) ||
-        (this.formData.qqdhthpz && (this.formData.qqtext || this.testFamilyPhone))
+        (!this.formData.visiblePhonePrompt && !this.formData.familyPhonePrompt) ||
+        (this.formData.visiblePhonePrompt && (this.formData.visiblePhoneTextPrompt || this.formData.visiblePhoneVoicePrompt)) ||
+        (this.formData.familyPhonePrompt && (this.formData.familyPhoneTextPrompt || this.formData.familyPhoneVoicePrompt))
       ) {
         if (this.autoAuthorizeMeeting && this.multistageExamine) this.dialogVisible = true;
         else this.submitDeploy();
@@ -922,12 +940,38 @@ export default {
     },
 
     submitDeploy() {
-      const params = Object.assign({}, this.formData, {
+      let params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
         regAutoAudit: this.regAutoAudit ? 1 : 0,
         abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
+        familySendMsgType: JSON.stringify(this.formData.familySendMsgType),
+        prisonerSendMsgType: JSON.stringify(this.formData.prisonerSendMsgType)
       });
+
+      if (this.formData.visiblePhonePrompt) {
+        if (this.showPreConfig.isShowViewPhoneText) {
+          params['visiblePhoneTextPrompt'] = this.formData.visiblePhoneTextPrompt.replace(/\s/g, '')
+          delete params['visiblePhoneVoicePrompt']
+        }
+        else delete params['visiblePhoneTextPrompt']
+      } else {
+        delete params['visiblePhoneVoicePrompt']
+        delete params['visiblePhoneTextPrompt']
+      }
+
+      if (this.formData.familyPhonePrompt) {
+        if (this.showPreConfig.isShowFamilyPhoneText) {
+          params['familyPhoneTextPrompt'] = this.formData.familyPhoneTextPrompt.replace(/\s/g, '')
+          delete params['familyPhoneVoicePrompt']
+        }
+        else delete params['familyPhoneTextPrompt']
+      }
+      else {
+        delete params['familyPhoneVoicePrompt']
+        delete params['familyPhoneTextPrompt']
+      }
+      delete params['callPrompt']
 
       this.$refs.form.validate(valid => {
         if (valid) {
