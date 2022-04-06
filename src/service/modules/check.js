@@ -187,19 +187,14 @@ export default {
   importPrisonTerm: params => service.get('/prison_terms/processing', params).then(res => res && res.data),
 
   // 会见统计-远程免费会见纪录
-<<<<<<< HEAD
   getFreeMeetings: params => {
     return service.get('/freeMeetings/page', params).then(res => res && res.data)
   },
   // 家属免费通话记录-导出
-  familyfreecall: params => service.get('/freeMeetings/police/export', params, { responseType: 'blob' }).then(res => res && res.data),
+  familyfreecall: params => service.get('/freeMeetings/export', params, { responseType: 'blob' }).then(res => res && res.data),
   // 狱警免费通话记录-导出
-  freecallsfromprisonguards: params => service.get('/freeMeetings/export', params, { responseType: 'blob' }).then(res => res && res.data),
+  freecallsfromprisonguards: params => service.get('/freeMeetings/police/export', params, { responseType: 'blob' }).then(res => res && res.data),
   
-=======
-  getFreeMeetings: params => service.get('/freeMeetings/page', params).then(res => res && res.data),
-
->>>>>>> a36112efee365cb54716a1c8c53f48064f1ef276
   // 数据管理-上传并解析
   uploadAnalyticExcel: params => service.postFile(params.url, params.values).then(res => res && Object.assign(res.data, { type: params.type })),
 

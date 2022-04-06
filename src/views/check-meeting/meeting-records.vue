@@ -1,16 +1,12 @@
 <template>
   <el-row class="row-container" :gutter="0">
-    <m-search
-      ref="search"
-      :items="searchItems"
-      @search="onSearch"
-    >
-      <el-button
-        slot="append"
-        type="primary"
-        :loading="downloading"
-        @click="onDownloadExcel"
-      >导出 Excel</el-button>
+    <m-search ref="search" :items="searchItems" @search="onSearch">
+      <el-button slot="append" v-if="show.call" type="primary" @click="onDownloadExcel(1)"
+        >导出 Excel</el-button
+      >
+      <el-button slot="append" v-if="show.freecall" type="primary" @click="onDownloadExcel(2)"
+        >导出 Excel</el-button
+      >
     </m-search>
     <el-col :span="24">
       <el-tabs v-model="tabs" type="card">
@@ -54,6 +50,10 @@ export default {
       tabOptions,
       downloading: false,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
+      show:{
+        call:true,
+        freecall:false
+      },
       searchItems: {
         name: {
           type: "input",
@@ -242,6 +242,8 @@ export default {
 
   watch: {
     tabs(val) {
+      this.show.call=false
+      this.show.freecall=false
       if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.resetSearchFilters(["familyName", "policeName", "policeNumber"]);
         this.$set(this.searchItems.name, "miss", false);
@@ -251,6 +253,7 @@ export default {
         this.$set(this.searchItems.familyName, "miss", true);
         this.$set(this.searchItems.policeName, "miss", true);
         this.$set(this.searchItems.policeNumber, "miss", true);
+        this.show.call=true
       } else {
         this.resetSearchFilters(["name", "prisonerNumber", "prisonArea"]);
         this.$set(this.searchItems.name, "miss", true);
@@ -260,6 +263,7 @@ export default {
         this.$set(this.searchItems.policeName, "miss", false);
         this.$set(this.searchItems.policeNumber, "miss", false);
         this.$set(this.searchItems.type, "miss", false);
+        this.show.freecall=true
       }
 
       this.$refs.search.onGetFilter();
@@ -271,12 +275,13 @@ export default {
   methods: {
     ...mapActions(["getFreeMeetings", "getPoliceFamilyFreeMeetings"]),
     // 导出excel
-    async onDownloadExcel() {
+    async onDownloadExcel(type) {
       this.downloading = true;
       const times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
         actionName = "familyPhone/exportFamilyPhone",
         params = {
-          url: "/download/exportVideoTelRecords",
+          url:
+            type == 1 ? "/freeMeetings/export" : "/freeMeetings/police/export",
           methods: "get",
           params: { ...this.filter },
           isPrisonInternetGetUrlWay: "getHyUrl",
@@ -284,7 +289,7 @@ export default {
       await tokenExcel({
         params,
         actionName,
-        menuName: `免费通话记录表-${times}`,
+        menuName: type == 1 ? "家属免费通话记录-" : "狱警免费通话记录-"+times,
       });
     },
 
