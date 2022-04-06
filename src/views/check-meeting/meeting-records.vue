@@ -1,10 +1,18 @@
 <template>
   <el-row class="row-container" :gutter="0">
     <m-search ref="search" :items="searchItems" @search="onSearch">
-      <el-button slot="append" v-if="show.call" type="primary" @click="onDownloadExcel(1)"
+      <el-button
+        slot="append"
+        v-if="show.call"
+        type="primary"
+        @click="onDownloadExcel(1)"
         >导出 Excel</el-button
       >
-      <el-button slot="append" v-if="show.freecall" type="primary" @click="onDownloadExcel(2)"
+      <el-button
+        slot="append"
+        v-if="show.freecall"
+        type="primary"
+        @click="onDownloadExcel(2)"
         >导出 Excel</el-button
       >
     </m-search>
@@ -50,9 +58,9 @@ export default {
       tabOptions,
       downloading: false,
       tabs: tabOptions.FAMILY_FREE_MEETINGS,
-      show:{
-        call:true,
-        freecall:false
+      show: {
+        call: true,
+        freecall: false,
       },
       searchItems: {
         name: {
@@ -91,16 +99,16 @@ export default {
         applicationDate: {
           type: "dateRange",
           unlinkPanels: true,
-          start: "startDate",
-          canNotClear: true,
-          startKey: "startDate",
-          endKey: "endDate",
+          start: "startTime",
+          end: "endTime",
+          startPlaceholder: "申请开始时间",
+          endPlaceholder: "申请结束时间",
           range: {
             max: Moment().format("YYYY-MM"),
             maxMonthRange: 24,
           },
           value: [this.$_dateNow, this.$_dateNow],
-        },
+        }
       },
       filter: {},
     };
@@ -242,8 +250,8 @@ export default {
 
   watch: {
     tabs(val) {
-      this.show.call=false
-      this.show.freecall=false
+      this.show.call = false;
+      this.show.freecall = false;
       if (val === this.tabOptions.FAMILY_FREE_MEETINGS) {
         this.resetSearchFilters(["familyName", "policeName", "policeNumber"]);
         this.$set(this.searchItems.name, "miss", false);
@@ -253,7 +261,7 @@ export default {
         this.$set(this.searchItems.familyName, "miss", true);
         this.$set(this.searchItems.policeName, "miss", true);
         this.$set(this.searchItems.policeNumber, "miss", true);
-        this.show.call=true
+        this.show.call = true;
       } else {
         this.resetSearchFilters(["name", "prisonerNumber", "prisonArea"]);
         this.$set(this.searchItems.name, "miss", true);
@@ -263,7 +271,7 @@ export default {
         this.$set(this.searchItems.policeName, "miss", false);
         this.$set(this.searchItems.policeNumber, "miss", false);
         this.$set(this.searchItems.type, "miss", false);
-        this.show.freecall=true
+        this.show.freecall = true;
       }
 
       this.$refs.search.onGetFilter();
@@ -289,7 +297,7 @@ export default {
       await tokenExcel({
         params,
         actionName,
-        menuName: type == 1 ? "家属免费通话记录-" : "狱警免费通话记录-"+times,
+        menuName: type == 1 ? "家属免费通话记录-" : "狱警免费通话记录-" + times,
       });
     },
 
