@@ -2733,6 +2733,8 @@ export default {
             if (result) {
               setTimeout(() => {
                 this.detailDetVisible = false
+
+                this.onSearch(true)
               }, 500)
             }
           }
