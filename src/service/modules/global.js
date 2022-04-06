@@ -17,7 +17,5 @@ export default {
   // modifyPassword: userInfo =>
   //   service.post('/users/resetPwd', userInfo).then(res => res).catch(err => err),
   // 上传文件
-  uploadFile: file => {
-    return service.postFile('/upload/uploadfile', file).then(res => res && res.data)
-  }
+  uploadFile: file => service.postFile('/upload/uploadfile', file).then(res => res && res.data)
 }
