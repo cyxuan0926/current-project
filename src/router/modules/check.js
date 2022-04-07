@@ -338,6 +338,12 @@ let check = [{
       component: 'family-sms/sms-send'
     },
     {
+      path: '/family-sms/send-group',
+      name: 'sms-send-group',
+      meta: { permission: 'visit.family-sms.send-group', breadcrumbName: '群发短信管理' },
+      component: 'family-sms/sms-group'
+    },
+    {
       path: '/family-sms/list',
       name: 'sms-list',
       props: { hasPrisonAreaAuth: true },

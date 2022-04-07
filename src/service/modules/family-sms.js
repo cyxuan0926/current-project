@@ -8,5 +8,11 @@ export default {
     sendMessageFile: data => service.postFormData(urls.imageUrl, data),
 
     // 发送短信
-    sendMessage: data => service.post('/msg/saveMsg', data)
+    sendMessage: data => service.post('/msg/saveMsg', data),
+
+    // 获取群发短信列表-监狱
+    getSendMessageGroupList: params => service.get('/batchNotify/page', params),
+
+    // 群发短信-监狱
+    sendMessageGroup: data => service.post('/batchNotify/jail', data)
 }
