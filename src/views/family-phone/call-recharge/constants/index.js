@@ -34,11 +34,11 @@ let _minTime = null, _maxTime = null
 const dateMonth = {
   type: 'dateRange',
   unlinkPanels: true,
-  start: 'startDate',
   end: 'endDate',
+  start: 'startDate',
   startPlaceholder: '通话开始时间',
   endPlaceholder: '通话结束时间',
-  value: [_dateNow, _oneMonthAgo],
+  value: [ _oneMonthAgo,_dateNow],
   pickerOptions: {
     onPick: ({ minDate, maxDate }) => {
       if (!maxDate) {
@@ -158,7 +158,7 @@ export const _tableCols = {
 
     {
       label: '充值账号',
-      prop: 'systemAmount',
+      prop: 'rechargeAccount',
       showOverflowTooltip: true
     },
 
@@ -166,7 +166,7 @@ export const _tableCols = {
 
     {
       label: '充值时间',
-      prop: 'systemAmount',
+      prop: 'createTime',
       showOverflowTooltip: true
     }
   ],
