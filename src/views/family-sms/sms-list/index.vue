@@ -41,24 +41,28 @@
         :cols="tableCols"
       >
         <template #message="{ row }">
-          <!-- <span
-            style="color: #409eff; cursor: pointer"
-            @click="messageDetail(row)"
-            >短信内容</span
-          > -->
           <span v-if="row.messageType == 2">
-            <el-popover placement="right" trigger="click">
-              <el-image
-                slot="reference"
-                :src="row.message"
-                :alt="row.message"
-                style="max-height: 100px; max-width: 150px"
-              ></el-image>
-              <el-image :src="row.message"></el-image>
-            </el-popover>
+             <m-img-viewer
+            isRequired
+            :url="row.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+          />
           </span>
-          <span v-if="row.messageType == 1">
+          <span v-html="row.message" v-if="row.messageType == 1 ||row.messageType == 3 ||row.messageType == 4">
             {{ row.message }}
+          </span>
+          <span  v-if="row.messageType == 5">
+             <m-audio :value="`${ row.message }?token=${ $urls.token }`" />
+          </span>
+          <span  v-if="row.messageType == 6">
+                 <video
+                    controls
+                    style="width: 192px; height: 108px;"
+                  >
+                    <source :src="row.message" type='video/mp4'>
+                    <source :src="row.message" type='video/webm'>
+                    <source :src="row.message" type='video/ogg'>
+                    您的浏览器不支持Video标签。
+                  </video>
           </span>
         </template>
 
@@ -92,7 +96,7 @@
             </template>
           </template>
 
-          <template v-if="row.state === 1 && !row.isPrisonerSend">
+          <template v-if="row.state === 1 && !row.isPrisonerSend&&row.messageType==1">
             <span
               style="color: #409eff; cursor: pointer; margin-left: 15px"
               @click="messageDetail(row)"
@@ -100,7 +104,7 @@
             >
           </template>
 
-          <template v-if="row.state === 6 && !row.isPrisonerSend">
+          <template v-if="row.state === 6 && !row.isPrisonerSend&&row.messageType==1">
             <span
               style="color: #409eff; cursor: pointer; margin-left: 15px"
               @click="messageDetail(row)"
@@ -139,20 +143,31 @@
             border: 1px solid;
           "
         >
-          <template v-if="toAuthorize.messageType !== 2">
-            <p>{{ toAuthorize.message }}</p>
-          </template>
-
-          <template v-else>
-            <m-img-viewer
-              :url="
-                toAuthorize.message +
-                `?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`
-              "
-              :isLazy="false"
-              :toolbar="{ prev: 1, next: 1 }"
-            />
-          </template>
+          <template >
+          <span v-if="toAuthorize.messageType == 2">
+             <m-img-viewer
+            isRequired
+            :url="toAuthorize.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+          />
+          </span>
+          <span v-html="toAuthorize.message" v-if="toAuthorize.messageType == 1 ||toAuthorize.messageType == 3 ||toAuthorize.messageType == 4">
+            {{ toAuthorize.message }}
+          </span>
+          <span  v-if="toAuthorize.messageType == 5">
+             <m-audio :value="`${ toAuthorize.message }?token=${ $urls.token }`" />
+          </span>
+          <span  v-if="toAuthorize.messageType == 6">
+                 <video
+                    controls
+                    style="width: 192px; height: 108px;"
+                  >
+                    <source :src="toAuthorize.message" type='video/mp4'>
+                    <source :src="toAuthorize.message" type='video/webm'>
+                    <source :src="toAuthorize.message" type='video/ogg'>
+                    您的浏览器不支持Video标签。
+                  </video>
+          </span>
+        </template>
         </div>
       </div>
 
@@ -278,20 +293,32 @@
         <p class="textcontent">信息：</p>
 
         <div class="infinite-list messageText">
-          <template v-if="messageContent.messageType !== 2">
-            <p v-html="messageContent.message">{{ messageContent.message }}</p>
-          </template>
-
-          <template v-else>
-            <m-img-viewer
-              :url="
-                messageContent.message +
-                `?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`
-              "
-              :isLazy="false"
-              :toolbar="{ prev: 1, next: 1 }"
-            />
-          </template>
+           <template >
+          <span v-if="messageContent.messageType == 2">
+             <m-img-viewer
+            isRequired
+            :url="messageContent.message+`?token=523b87c4419da5f9186dbe8aa90f37a3876b95e448fe2a`"
+          />
+          </span>
+          <span v-html="messageContent.message" v-if="messageContent.messageType == 1 ||messageContent.messageType == 3 ||messageContent.messageType == 4">
+            {{ messageContent.message }}
+          </span>
+          <span  v-if="messageContent.messageType == 5">
+             <m-audio :value="`${ messageContent.message }?token=${ $urls.token }`" />
+          </span>
+          <span  v-if="messageContent.messageType == 6">
+                 <video
+                    controls
+                    style="width: 192px; height: 108px;"
+                  >
+                    <source :src="messageContent.message" type='video/mp4'>
+                    <source :src="messageContent.message" type='video/webm'>
+                    <source :src="messageContent.message" type='video/ogg'>
+                    您的浏览器不支持Video标签。
+                  </video>
+          </span>
+        </template>
+           
         </div>
 
         <p />
@@ -307,8 +334,8 @@
         <!-- v-if="messageContent.state == '1' && !messageContent.isPrisonerSend" -->
         <template
           v-if="
-            (messageContent.state === 1 || messageContent.state === 6) &&
-            !messageContent.isPrisonerSend
+            (messageContent.state === 1  || messageContent.state === 6) &&
+            !messageContent.isPrisonerSend &&messageContent.messageType == 1
           "
         >
           <el-button
@@ -812,12 +839,12 @@ export default {
         {
           label: "关系",
           prop: "relationship",
-          width: 136,
+          width: 100,
         },
         {
           label: "短信内容",
           slotName: "message",
-          width: 136,
+          width: 220,
         },
         {
           label: "是否有敏感词",
@@ -967,7 +994,7 @@ export default {
     },
     // 筛选不可打印的数据
     handleControlSelect(row) {
-      return (row.state == 1 || row.state == 6) && !row.isPrisonerSend
+      return (row.state == 1 || row.state == 6) && !row.isPrisonerSend && row.messageType==1
         ? true
         : false;
     },

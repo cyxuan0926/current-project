@@ -630,7 +630,7 @@ superAdmin = [{
     },
     {
       path: '/prison-message/meeting-criminalList',
-      component: 'family-sms/sms-list/sms-criminal-List',
+      component: 'family-sms/sms-list',
       props: {
         hasAllPrisonQueryAuth: true,
         hasProvinceQueryAuth: true,
