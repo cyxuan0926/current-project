@@ -254,5 +254,8 @@ export default {
   getMeetDeploy: params => service.get('/jails/getAutoAuthorizeMeeting', params).then(res => res && res),
 
   // 监狱配置管理更新
-  getMeetDeployUpdate: params => service.post('/jails/updateAutoAuthorizeMeeting', params).then(res => res && res.data)
+  getMeetDeployUpdate: params => service.post('/jails/updateAutoAuthorizeMeeting', params).then(res => res && res.data),
+
+  // 监狱配置 - 更新亲情短信次数
+  updateFamilyMessageLevelNum: params => service.postObj('/configurationsFamilyMessage/updateLevelNum', params)
 }

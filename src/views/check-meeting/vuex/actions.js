@@ -348,5 +348,17 @@ export default {
     catch (err) {
       Promise.reject(err)
     }
+  },
+
+  async updateFamilyMessageLevelNum(_, params) {
+    try {
+      const response = await http.updateFamilyMessageLevelNum(params),
+        isSucess = response ? response['code'] === 200 : response
+
+      return isSucess
+    }
+    catch (err) {
+      Promise.reject(err)
+    }
   }
 }

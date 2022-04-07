@@ -577,7 +577,7 @@ import Moment from "moment";
 import { faceRecognitionValues } from "@/common/constants/const";
 
 import validator from "@/utils";
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     const oneTimeDay = Moment().add(1, "day").format("YYYY-MM-DD");
@@ -661,7 +661,9 @@ export default {
       },
 
       viewPhoneParentLoading: false,
-      familyPhoneParentLoading: false
+      familyPhoneParentLoading: false,
+
+      jailId: JSON.parse(localStorage.getItem("user")).jailId
     };
   },
 
@@ -728,11 +730,14 @@ export default {
     await Promise.all([
       this.getDeploy(),
       this.getdata(),
-      this.getcall()
+      this.getcall(),
+      this.getFamilyMessageLevelNum()
     ]);
   },
 
   methods: {
+    ...mapActions(['updateFamilyMessageLevelNum']),
+
     changeTimes(row, type) {
       if (type == 2) {
         if (parseFloat(this.ruleForm[row]) < 0) this.$set(this.ruleForm, row, 0);
@@ -771,7 +776,7 @@ export default {
         this.$set(this.tableData[index], "isEditPropertyShow", false);
 
         let data = {
-          jailId: JSON.parse(localStorage.getItem("user")).jailId,
+          jailId: this.jailId,
           level: row.level,
           accessTime: row.accessTime,
         };
@@ -812,7 +817,7 @@ export default {
 
     async getcall() {
       let res = await http.getConfiguractionAndtemplate({
-        jailId: JSON.parse(localStorage.getItem("user")).jailId,
+        jailId: this.jailId,
       });
 
       if (!res) return;
@@ -825,7 +830,7 @@ export default {
 
     async getdata() {
       let res = await http.getConfigurationsFamilyMeeting({
-        jailId: JSON.parse(localStorage.getItem("user")).jailId,
+        jailId: this.jailId,
       });
 
       if (!res) return;
@@ -894,7 +899,7 @@ export default {
         return false;
       } else {
         let params = {
-          jailId:JSON.parse(localStorage.getItem("user")).jailId,
+          jailId: this.jailId,
           relationshipTemplate: relationship.toString()
         };
 
@@ -940,18 +945,27 @@ export default {
     },
 
     submitDeploy() {
+      const {
+        familySendMsgType,
+        prisonerSendMsgType,
+        visiblePhonePrompt,
+        visiblePhoneTextPrompt,
+        familyPhonePrompt,
+        familyPhoneTextPrompt
+      } = this.formData, { isShowViewPhoneText, isShowFamilyPhoneText } = this.showPreConfig
+
       let params = Object.assign({}, this.formData, {
         autoAuthorizeMeeting: this.autoAuthorizeMeeting ? 1 : 0,
         abnormalCallDuration: this.abnormalCallDuration,
         regAutoAudit: this.regAutoAudit ? 1 : 0,
         abnormalCallDurationSwitch: this.abnormalCallDurationSwitch ? 1 : 0,
-        familySendMsgType: JSON.stringify(this.formData.familySendMsgType),
-        prisonerSendMsgType: JSON.stringify(this.formData.prisonerSendMsgType)
+        familySendMsgType: JSON.stringify(familySendMsgType),
+        prisonerSendMsgType: JSON.stringify(prisonerSendMsgType)
       });
 
-      if (this.formData.visiblePhonePrompt) {
-        if (this.showPreConfig.isShowViewPhoneText) {
-          params['visiblePhoneTextPrompt'] = this.formData.visiblePhoneTextPrompt.replace(/\s/g, '')
+      if (visiblePhonePrompt) {
+        if (isShowViewPhoneText) {
+          params['visiblePhoneTextPrompt'] = visiblePhoneTextPrompt.replace(/\s/g, '')
           delete params['visiblePhoneVoicePrompt']
         }
         else delete params['visiblePhoneTextPrompt']
@@ -960,9 +974,9 @@ export default {
         delete params['visiblePhoneTextPrompt']
       }
 
-      if (this.formData.familyPhonePrompt) {
-        if (this.showPreConfig.isShowFamilyPhoneText) {
-          params['familyPhoneTextPrompt'] = this.formData.familyPhoneTextPrompt.replace(/\s/g, '')
+      if (familyPhonePrompt) {
+        if (isShowFamilyPhoneText) {
+          params['familyPhoneTextPrompt'] = familyPhoneTextPrompt.replace(/\s/g, '')
           delete params['familyPhoneVoicePrompt']
         }
         else delete params['familyPhoneTextPrompt']
@@ -998,6 +1012,13 @@ export default {
       Object.entries(params).forEach(([key, value]) => {
         params[key] = +value
       })
+
+      const result = await this.updateFamilyMessageLevelNum(params)
+
+      if (result) {
+        await this.getFamilyMessageLevelNum()
+        this.onMessageFormCancel()
+      }
     },
 
     // 切换提示类型
@@ -1012,6 +1033,27 @@ export default {
 
     onControlFamilyPhoneParentLoading(val) {
       this.familyPhoneParentLoading = val
+    },
+
+    async getFamilyMessageLevelNum() {
+      const res = await http.getConfigMessageList({ jailId: this.jailId }),
+        {
+          broadNum,
+          commonNum,
+          inspectNum,
+          otherNum,
+          strictNum,
+          id
+        } = res[0]
+
+      this.messageFormData = Object.assign({}, this.messageFormData, {
+        broadNum,
+        commonNum,
+        inspectNum,
+        otherNum,
+        strictNum,
+        id
+      })
     }
   }
 };

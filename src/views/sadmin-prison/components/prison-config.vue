@@ -130,9 +130,9 @@
         </div>
       </template>
 
-      <template #ksdhSlot>
+      <template #visiblePhoneSlot>
         <el-switch
-          v-model="slotFormData.ksdhthpz"
+          v-model="slotFormData.visiblePhonePrompt"
           :active-value="1"
           :inactive-value="0"
           active-color="#13ce66"
@@ -142,20 +142,20 @@
         <el-row class="el-row_preConfig">
           <template v-if="showPreConfig.isShowViewPhoneText">
             <el-input
-              v-model="slotFormData.kstext"
+              v-model="slotFormData.visiblePhoneTextPrompt"
               class="el-row_preConfig-contents"
               type="textarea"
               placeholder="请输入通话注意事项"
               :autosize="{ minRows: 5 }"
               maxlength="500"
               show-word-limit
-              :disabled="!slotFormData.ksdhthpz || isDisabled"
+              :disabled="!slotFormData.visiblePhonePrompt || isDisabled"
             />
           </template>
 
           <template v-else>
             <m-v-new-audio
-              v-model="test"
+              v-model="slotFormData.visiblePhoneVoicePrompt"
               ref="viewAudio"
               :sizeLimit="5"
               :elUploadAttrs="viewPhoneAttrs"
@@ -168,7 +168,7 @@
             <template v-if="!showPreConfig.isShowViewPhoneText">
               <el-button
                 type="primary"
-                :disabled="!slotFormData.ksdhthpz || isDisabled"
+                :disabled="!slotFormData.visiblePhonePrompt || isDisabled"
                 @click="onChangeNoticeType('ViewPhone')"
               >文字提示</el-button>
             </template>
@@ -176,7 +176,7 @@
             <template v-else>
               <el-button
                 type="primary"
-                :disabled="!slotFormData.ksdhthpz || isDisabled"
+                :disabled="!slotFormData.visiblePhonePrompt || isDisabled"
                 @click="onChangeNoticeType('ViewPhone')"
               >语音提示</el-button>
             </template>
@@ -184,9 +184,9 @@
         </el-row>
       </template>
 
-      <template #qqdhSlot>
+      <template #familyPhonePreSlot>
         <el-switch
-          v-model="slotFormData.qqdhthpz"
+          v-model="slotFormData.familyPhonePrompt"
           :active-value="1"
           :inactive-value="0"
           active-color="#13ce66"
@@ -196,20 +196,20 @@
         <el-row class="el-row_preConfig">
           <template v-if="showPreConfig.isShowFamilyPhoneText">
             <el-input
-              v-model="slotFormData.qqtext"
+              v-model="slotFormData.familyPhoneTextPrompt"
               class="el-row_preConfig-contents"
               type="textarea"
               placeholder="请输入通话注意事项"
               :autosize="{ minRows: 5 }"
               maxlength="500"
               show-word-limit
-              :disabled="!slotFormData.qqdhthpz || isDisabled"
+              :disabled="!slotFormData.familyPhonePrompt || isDisabled"
             />
           </template>
 
           <template v-else>
             <m-v-new-audio
-              v-model="testFamilyPhone"
+              v-model="slotFormData.familyPhoneVoicePrompt"
               ref="familyAudio"
               :sizeLimit="5"
               :elUploadAttrs="familyPhoneAttrs"
@@ -222,7 +222,7 @@
             <template v-if="!showPreConfig.isShowFamilyPhoneText">
               <el-button
                 type="primary"
-                :disabled="!slotFormData.qqdhthpz || isDisabled"
+                :disabled="!slotFormData.familyPhonePrompt || isDisabled"
                 @click="onChangeNoticeType('FamilyPhone')"
               >文字提示</el-button>
             </template>
@@ -230,7 +230,7 @@
             <template v-else>
               <el-button
                 type="primary"
-                :disabled="!slotFormData.qqdhthpz || isDisabled"
+                :disabled="!slotFormData.familyPhonePrompt || isDisabled"
                 @click="onChangeNoticeType('FamilyPhone')"
               >语音提示</el-button>
             </template>
@@ -335,7 +335,6 @@ import roles from "@/common/constants/roles";
 import { Message } from "element-ui";
 
 import { faceRecognitionValues } from "@/common/constants/const";
-
 // import Moment from 'moment'
 // import BigNumber from 'bignumber.js'
 // import { Message } from 'element-ui'
@@ -825,15 +824,15 @@ export default {
             }
           },
 
-          ksdh: {
-            slotName: 'ksdhSlot',
+          visiblePhone: {
+            slotName: 'visiblePhoneSlot',
             attrs: {
               label: '可视电话通话前提示'
             }
           },
 
-          qqdh: {
-            slotName: 'qqdhSlot',
+          familyPhonePre: {
+            slotName: 'familyPhonePreSlot',
             attrs: {
               label: '亲情电话通话前提示'
             }
@@ -851,10 +850,12 @@ export default {
         abnormalCallduration: 10,
         afrIOSSetValue: "0.2",
         afrAndroidSetValue: "0.4",
-        ksdhthpz: 0,
-        kstext: '',
-        qqdhthpz: 0,
-        qqtext: ''
+        visiblePhonePrompt: 0,
+        visiblePhoneTextPrompt: '',
+        familyPhonePrompt: 0,
+        familyPhoneTextPrompt: '',
+        visiblePhoneVoicePrompt: '',
+        familyPhoneVoicePrompt: ''
       },
 
       slotFormRules: {
@@ -864,9 +865,6 @@ export default {
       },
 
       isDisabled: disabled,
-
-      test: '',
-      testFamilyPhone: '',
 
       // 可视电话/亲情电话通话前配置显示类型
       showPreConfig: {
@@ -920,13 +918,13 @@ export default {
 
     viewPhoneAttrs() {
       return {
-        disabled: !this.slotFormData.ksdhthpz || this.viewPhoneParentLoading || this.isDisabled
+        disabled: !this.slotFormData.visiblePhonePrompt || this.viewPhoneParentLoading || this.isDisabled
       }
     },
 
     familyPhoneAttrs() {
       return {
-        disabled: !this.slotFormData.qqdhthpz || this.viewPhoneParentLoading || this.isDisabled
+        disabled: !this.slotFormData.familyPhonePrompt || this.viewPhoneParentLoading || this.isDisabled
       }
     }
 
@@ -987,9 +985,9 @@ export default {
         // else e.prisonAreaList = []
 
         if (
-          (!this.slotFormData.ksdhthpz && !this.slotFormData.qqdhthpz) ||
-          (this.slotFormData.ksdhthpz && (this.slotFormData.kstext || this.test)) ||
-          (this.slotFormData.qqdhthpz && (this.slotFormData.qqtext || this.testFamilyPhone))
+          (!this.slotFormData.visiblePhonePrompt && !this.slotFormData.familyPhonePrompt) ||
+          (this.slotFormData.visiblePhonePrompt && (this.slotFormData.visiblePhoneTextPrompt || this.slotFormData.visiblePhoneVoicePrompt)) ||
+          (this.slotFormData.familyPhonePrompt && (this.slotFormData.familyPhoneTextPrompt || this.slotFormData.familyPhoneVoicePrompt))
         ) {
           const { familyPhoneScope } = e;
 
@@ -1001,7 +999,7 @@ export default {
           let params = Object.assign({}, e, {
             changed: 0,
             weekendChanged: 0,
-            specialChanged: 0,
+            specialChanged: 0
           });
 
           const {
@@ -1009,25 +1007,79 @@ export default {
             abnormalCallduration,
             afrIOSSetValue,
             afrAndroidSetValue,
-          } = this.slotFormData;
+            visiblePhonePrompt,
+            familyPhonePrompt,
+            visiblePhoneVoicePrompt,
+            visiblePhoneTextPrompt,
+            familyPhoneVoicePrompt,
+            familyPhoneTextPrompt
+          } = this.slotFormData, { isShowViewPhoneText, isShowFamilyPhoneText } = this.showPreConfig;
 
           params = {
             ...params,
             abnormalCalldurationSwitch,
             afrAndroidSetValue,
             afrIOSSetValue,
+            visiblePhonePrompt,
+            familyPhonePrompt
           };
 
           if (abnormalCalldurationSwitch) {
             params = {
               ...params,
-              abnormalCallduration,
+              abnormalCallduration
             };
           }
 
+          if (visiblePhonePrompt || familyPhonePrompt) {
+            let callPrompt = {}
+
+            if (visiblePhonePrompt) {
+              if (isShowViewPhoneText) {
+                callPrompt = Object.assign({}, callPrompt, {
+                  visiblePhoneTextPrompt: visiblePhoneTextPrompt.replace(/\s/g, '')
+                })
+
+                delete callPrompt['visiblePhoneVoicePrompt']
+              } else {
+                callPrompt = Object.assign({}, callPrompt, {
+                  visiblePhoneVoicePrompt
+                })
+
+                delete callPrompt['visiblePhoneTextPrompt']
+              }
+            } else {
+              delete callPrompt['visiblePhoneVoicePrompt']
+              delete callPrompt['visiblePhoneTextPrompt']
+            }
+
+            if (familyPhonePrompt) {
+              if (isShowFamilyPhoneText) {
+                callPrompt = Object.assign({}, callPrompt, {
+                  familyPhoneTextPrompt: familyPhoneTextPrompt.replace(/\s/g, '')
+                })
+
+                delete callPrompt['familyPhoneVoicePrompt']
+              } else {
+                callPrompt = Object.assign({}, callPrompt, {
+                  familyPhoneVoicePrompt
+                })
+
+                delete callPrompt['familyPhoneTextPrompt']
+              }
+            } else {
+              delete callPrompt['familyPhoneVoicePrompt']
+              delete callPrompt['familyPhoneTextPrompt']
+            }
+
+            params = Object.assign({}, params, { callPrompt })
+          } else delete params['callPrompt']
+
           this.updatePrison(params).then(async res => {
             if (!res) return;
+
             await this.onInitPrisonConfigDetails();
+
             this.$forceUpdate();
             // if (this.$route.meta.role !== '3') this.$router.push('/prison/list')
             // else this.$router.push('/jails/detail')
@@ -1258,32 +1310,51 @@ export default {
       const res = await this.getPrisonDetail({ id: this.$route.params.id });
 
       if (this.prison.relationshipTemplate) this.relationship = this.prison.relationshipTemplate.split(",")
-
       if (!res) return;
-
+  
       const {
         abnormalCallduration,
         abnormalCalldurationSwitch,
         afrIOSSetValue,
         afrAndroidSetValue,
+        visiblePhonePrompt,
+        familyPhonePrompt,
+        visiblePhoneVoicePrompt,
+        visiblePhoneTextPrompt,
+        familyPhoneVoicePrompt,
+        familyPhoneTextPrompt,
+        callPrompt
       } = _.cloneDeep(this.prison);
 
       this.values = _.cloneDeep(this.prison);
 
-      this.$set(
-        this.slotFormData,
-        "abnormalCalldurationSwitch",
-        abnormalCalldurationSwitch
-      );
+      if ((visiblePhonePrompt || familyPhonePrompt) && callPrompt && Object.prototype.toString.call(callPrompt) === '[object Object]') {
+        const {
+          familyPhoneTextPrompt,
+          familyPhoneVoicePrompt,
+          visiblePhoneTextPrompt,
+          visiblePhoneVoicePrompt
+        } = callPrompt
 
-      this.$set(
-        this.slotFormData,
-        "abnormalCallduration",
-        abnormalCallduration
-      );
+        this.slotFormData = Object.assign({}, this.slotFormData, {
+          visiblePhonePrompt,
+          familyPhonePrompt,
+          familyPhoneTextPrompt,
+          familyPhoneVoicePrompt,
+          visiblePhoneTextPrompt,
+          visiblePhoneVoicePrompt
+        })
 
+        this.$set(this.showPreConfig, 'isShowViewPhoneText', !!visiblePhoneTextPrompt)
+        this.$set(this.showPreConfig, 'isShowFamilyPhoneText', !!familyPhoneTextPrompt)
+      } else {
+        this.$set(this.showPreConfig, 'isShowViewPhoneText', false)
+        this.$set(this.showPreConfig, 'isShowFamilyPhoneText', false)
+      }
+
+      this.$set(this.slotFormData, "abnormalCalldurationSwitch", abnormalCalldurationSwitch);
+      this.$set(this.slotFormData, "abnormalCallduration", abnormalCallduration);
       this.$set(this.slotFormData, "afrIOSSetValue", +afrIOSSetValue);
-
       this.$set(this.slotFormData, "afrAndroidSetValue", +afrAndroidSetValue);
     },
 

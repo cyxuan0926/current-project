@@ -214,20 +214,23 @@ export default {
         });
       },
     async getdata(){
-       let res=  await  http.getConfigMessageList({jailId: this.$route.params.id})
-       if(res.length==2){
-          this.ruleForm=res[1]
-          this.newForm=res[0]
-          this.show.editData=true
-       }else{
-         this.ruleForm=res[0]
-         this.show.editData=false
-       }
-      this.newForm.effectTime=Moment(res[0].effectTime).format("YYYY-MM-DD")
+      let res = await http.getConfigMessageList({ jailId: this.$route.params.id })
+
+      if (res.length === 2) {
+        this.ruleForm = res[1]
+        this.newForm = res[0]
+        this.show.editData = true
+      } else {
+        this.ruleForm = res[0]
+        this.show.editData = false
+      }
+
+      this.newForm.effectTime = Moment(res[0].effectTime).format("YYYY-MM-DD")
     }
 },
- async mounted() {
-    this.getdata()
+
+  async mounted() {
+    await this.getdata()
   }
 }
 </script>

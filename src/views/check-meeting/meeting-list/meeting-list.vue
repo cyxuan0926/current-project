@@ -1354,12 +1354,14 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-      setRemarks(row){
-        this.show.setRemarks=true
-         this.getMeetingId=row.id
+
+      setRemarks(row) {
+        this.show.setRemarks = true
+         this.getMeetingId = row.id
       },
-      submitRemarks(){
-        if(this.getRemarks){
+
+      submitRemarks() {
+        if(this.getRemarks) {
            http.addUnusualRemark({
             id: this.getMeetingId,
             unusualRemark: this.getRemarks
