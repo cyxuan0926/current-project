@@ -1,6 +1,7 @@
 <template>
   <div class="m-pagination showTotal-pagination" v-if="total > 0">
     <span>共{{ total }}条记录</span>
+
     <el-pagination
       background
       layout="sizes, prev, pager, next, jumper, slot"

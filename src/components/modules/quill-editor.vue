@@ -1,10 +1,12 @@
 <template>
   <el-row id="quill-editor">
     <quill-editor
-      :content="contents"
       ref="myQuillEditor"
+      :content="contents"
       :options="editorOption"
-      @change="editorChange($event)"/>
+      @change="editorChange($event)"
+    />
+
     <el-upload
       v-show="false"
       :action="$urls.imageUrl"
@@ -19,7 +21,8 @@
         class="custom-input"
         size="normal"
         type="primary"
-        plain>添加富文本图片</el-button>
+        plain
+      >添加富文本图片</el-button>
     </el-upload>
   </el-row>
 </template>
@@ -28,6 +31,7 @@
 import { quillEditor } from 'vue-quill-editor'
 export default {
   components: { quillEditor },
+
   props: {
     contents: {
       type: String,
@@ -35,6 +39,7 @@ export default {
       default: ''
     } // 初始化富文本的内容
   },
+
   data() {
     const _this = this
     return {
@@ -71,16 +76,19 @@ export default {
       }
     }
   },
+
   computed: {
     editor() {
       return this.$refs.myQuillEditor.quill
     }
   },
+
   methods: {
     // 当富文本的内容发生改变的时候传给父组件
     editorChange({ editor, html, text }) {
       this.$emit('editorChange', html, text.substr(0, 100))
     },
+
     // 上传图片成功执行的方法
     handleSuccess(res) {
       switch (res.code) {
@@ -92,9 +100,11 @@ export default {
           this.$message.error(`上传图片失败:${ res.message }`)
       }
     },
+
     handleError(err, file) {
       console.log('富文本图片上传失败', err)
     },
+
     beforUpload(file) {
       let fileType = 'image/jpeg,image/jpg'.split(',')
       const isAccept = fileType.indexOf(file.type) > -1

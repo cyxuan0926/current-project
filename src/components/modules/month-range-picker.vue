@@ -15,7 +15,9 @@
       @change="onChange"
       :picker-options="startObj"
     />
+
     <span class="aa-span">-</span>
+
     <el-date-picker
       v-model="endDate"
       :clearable="false"
@@ -46,11 +48,13 @@ export default {
       startDate: null,
       endDate: null,
       closeShow: false,
+
       startObj: {
         disabledDate: (time) => {
           if (this.endDate) return Moment(this.endDate).valueOf() < time.getTime()
         }
       },
+
       endObj: {
         disabledDate: (time) => {
           if (this.startDate) return Moment(this.startDate).valueOf() > time.getTime()
@@ -58,43 +62,52 @@ export default {
       }
     }
   },
+
   props: {
     startDateValue: {
       type: String,
       default: null
     },
+
     endDateValue: {
       type: String,
       default: null
     }
   },
+
   methods: {
     onChange(e) {
       this.startDate = e
       this.$emit('update:startDateValue', this.startDate)
     },
+
     close() {
       this.startDate = null
       this.endDate = null
       this.$emit('update:startDateValue', this.startDate)
       this.$emit('update:endDateValue', this.endDate)
     },
+
     onChangeEnd(e) {
       this.endDate = e
       this.$emit('update:endDateValue', this.endDate)
     },
+
     showClose() {
       this.closeShow = this.isClose
     },
+
     hideClose() {
       this.closeShow = false
     }
   },
+
   computed: {
     isClose() {
       if (this.startDate && this.endDate) return true
       else return false
     },
+
     endClear() {
       if (this.startDate && this.endDate) return false
       else return true
