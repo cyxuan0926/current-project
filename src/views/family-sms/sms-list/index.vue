@@ -81,8 +81,8 @@
 
         <template #lastCoiumn="{ row }">
           <template>
-            <template v-if="row.state === 0">
-              <el-button size="mini" @click="handleAuthorization(row)"
+            <template v-if="row.state === 0&&row.isCheck=='1'">
+              <el-button  v-if="!$store.getters.isSuperAdmin"  size="mini" @click="handleAuthorization(row)"
                 >审核</el-button
               >
             </template>
@@ -126,7 +126,7 @@
       class="authorize-dialog"
       @close="closeAuthorize"
       title="审核"
-      width="530px"
+      width="780px"
     >
       <div
         class="infinite-list"
@@ -170,10 +170,10 @@
         </template>
         </div>
       </div>
-
+<span slot="footer" class="dialog-footer">
       <template v-if="!show.agree && !show.disagree">
         <div style="margin-top: 10px" class="button-box">
-          <el-button plain @click="show.agree = true">同意</el-button>
+          <el-button plain @click="onAgreeAuthorize(toAuthorize)">同意</el-button>
 
           <el-button plain @click="show.disagree = true">不同意</el-button>
 
@@ -184,6 +184,7 @@
       </template>
 
       <template v-if="show.agree">
+         <template v-if="!show.process"> 
         <div style="margin-top: 10px" class="button-box">
           <el-button plain @click="onAuthorization('1')"
             >确定申请通过？</el-button
@@ -195,7 +196,56 @@
             >关闭</el-button
           >
         </div>
+         </template>
+            <!--    判断是否是最后一岗位 如果不是最后一岗位 在判断是否有通过结束权限 -->
+            <template v-if="show.process">
+              <el-form ref="form" :model="authApplePhone" label-width="20px">
+                 <el-form-item  style="text-align:left;font-size:16px">
+                 <el-link :underline="false" style="text-align:left;font-size:15px">审核意见</el-link>
+                </el-form-item>
+                <el-form-item>
+                   <el-input type="textarea" v-model="authApplePhone.remarks"></el-input>
+                </el-form-item>
+      
+              </el-form>
+               <label style="display: inline-block;float: left; padding-left: 20px;">
+                  <span style="padding-right: 12px;">选择流程节点:</span>
+                    <el-select v-model="authApplePhone.nextCheckCode" @change="selectTask" placeholder="请选择流程节点">
+                    <el-option
+                      v-for="item in selectProcessOption"
+                      :key="item.taskCode"
+                      :label="item.taskName"
+                      :value="item.taskCode">
+                    </el-option>
+                  </el-select>
+                </label>
+                  <el-button
+                    size="mini"
+                    plain
+                    @click="submitNext()">提交审核？</el-button>
+                  <el-button
+                    size="mini"
+                    plain
+                    @click="goBackAuth()">返回</el-button>
+                  <el-button
+                    type="danger"
+                    size="mini"
+                    plain
+                    @click="show.authorize = false">关闭</el-button>
+          </template>
       </template>
+</span>
+
+
+
+
+
+
+
+
+
+
+
 
       <!-- 不同意的情况 -->
       <template v-if="show.disagree">
@@ -695,8 +745,26 @@ export default {
         name: "3",
       },
     ];
+     const authApplePhoneInfo={
+        applyId:"",
+        processInstanceId:"",
+        checkState:"",
+        remarks:"同意！呈上审批。",
+        nextCheckRole:"",
+        nextCheckCode:'',
+      };
     return {
+      authApplePhoneInfo,
+      authApplePhone:{
+        applyId:"",
+        processInstanceId:"",
+        checkState:"",
+        remarks:"同意！呈上审批。",
+        nextCheckRole:"",
+        nextCheckCode:''
+      },
       printPlugin: null,
+      prisonerSend:this.isPrisonerSend,
       tabs: "3",
       _isAdmin,
       stateAll,
@@ -740,6 +808,7 @@ export default {
         auditTime: {
           type: "date",
           label: "审核时间",
+          miss: true,
           value: "",
         },
         isSensitive: {
@@ -762,6 +831,7 @@ export default {
         disagree: false,
         rejectEdit: false,
         editRebut: true,
+        process:false,
         message: false,
         isMessageList: false,
         withdraw: false,
@@ -798,12 +868,20 @@ export default {
       disArgeeRemarks: "",
       tabPanes,
       mediaQueryList: null,
-      tabledate: {},
-      tableCols: [
-        {
-          type: "selection",
-          selectable: this.handleControlSelect,
-        },
+      tabledate: {}
+    };
+  },
+  computed: {
+    ...mapState({
+      visits: (state) => state.visits,
+      frontRemarks: (state) => [
+        ...state.frontRemarks.slice(0, state.frontRemarks.length - 1),
+        "当月会见次数已达上限，请下月再申请",
+        "其他",
+      ],
+    }),
+    tableCols() {
+      const basicCols = [
         {
           label: "监区",
           prop: "prisonAreaName",
@@ -862,22 +940,39 @@ export default {
           slotName: "lastCoiumn",
           showOverflowTooltip: true,
         },
-      ],
-    };
-  },
-  computed: {
-    ...mapState({
-      visits: (state) => state.visits,
-      frontRemarks: (state) => [
-        ...state.frontRemarks.slice(0, state.frontRemarks.length - 1),
-        "当月会见次数已达上限，请下月再申请",
-        "其他",
-      ],
-    }),
+      ]
+        if (this.$store.getters.isSuperAdmin) {
+          return [
+            {
+              type: "selection",
+              selectable: this.handleControlSelect,
+            },
+            {
+              label: '省份',
+              prop: 'provinceName'
+            },
+              {
+              label: '监狱',
+              prop: 'jailName'
+            },
+            ...basicCols
+          ]
+        }
+        else {
+          return  [
+            {
+              type: "selection",
+              selectable: this.handleControlSelect,
+            },
+            ...basicCols
+          ]
+        }
+    },
   },
   watch: {
     $route: {
       handler: function (val, oldVal) {
+      this.prisonerSend=this.isPrisonerSend
       this.filter = Object.assign( {},this._isAdmin?{tab: "3",provincesId: "1"}:{tab: "3"} );
        Object.keys(this.searchItems).forEach((item) => {
           if (item == "provincesId") {
@@ -902,8 +997,11 @@ export default {
         this.isSearchLimit && this.$set(this.searchItems.applicationDate, 'miss', val == '3')
         let _res = this.$refs.search.onSearch('tabs')
       delete this.filter.state;
+      this.searchItems.auditTime.miss = false;
+      this.prisonerSend=this.isPrisonerSend
       if (val == "3") {
         this.searchItems.state.miss = true;
+        this.searchItems.auditTime.miss = true;
       } else if (val == "1") {
         this.searchItems.state.miss = false;
         this.searchItems.state.value = "";
@@ -912,6 +1010,7 @@ export default {
         this.searchItems.state.miss = false;
         this.searchItems.state.value = "";
         this.searchItems.state.options = this.stateAll;
+        this.prisonerSend=2
       } else {
         this.searchItems.state.miss = false;
         this.searchItems.state.value = "";
@@ -968,7 +1067,31 @@ export default {
       await this.getDatas();
     },
   },
-
+ mounted() {
+     window.addEventListener("message",  e => {
+      if(!e.data.type){
+               this.$confirm('确认打印机是否正常工作, 正常出票?', '提示', {
+                confirmButtonText: '正常出票',
+                cancelButtonText: '没有出票',
+                type: 'warning'
+              }).then(async () => {
+                let gkMessageIdList=[]
+                //判断是单独打印还是批量打印
+                if(this.show.isMessageList){
+                  this.messagePrintList.forEach(item=>gkMessageIdList.push(item.uid))
+                }else{
+                  gkMessageIdList.push(this.messageContent.uid)
+                }
+                 let res = await http.messagePrint({gkMessageIdList:gkMessageIdList})
+                  if(res){
+                   this.show.message=false
+                   this.messageContent={}
+                   this.getDatas()
+                  }
+              })
+      }
+     })
+    },
   methods: {
     ...mapActions([
       "getVisits",
@@ -976,6 +1099,37 @@ export default {
       "authorizeVisit",
       "withdrawVisit",
     ]),
+      //覆盖mixin 授权对话框的同意操作
+      onAgreeAuthorize(row) {
+        this.show.agree = true
+        this.getSubtask(row)
+        this.buttonLoading = false
+      },
+      goBackAuth(){
+      this.show.agree = false
+      this.show.disagree = false
+      this.remarks=''
+      this.authApplePhone=Object.assign( {} ,this.authApplePhone,  this.authApplePhoneInfo)
+       this.refuseForm.anotherRemarks=""
+       this.refuseForm.selectRemark=""
+       },
+        selectTask(select){
+        let obj= this.selectProcessOption.filter(item=>item.taskCode==select)
+        this.authApplePhone.nextCheckRole=obj[0].taskName
+      },
+       async getSubtask ( e ) {
+       this.toShow = e
+        let res= await http.getSubtaskPhone({processInstanceId: e.processInstanceId})
+          if (!res) return
+          this.selectProcessOption = res
+          if (this.selectProcessOption.length) {
+            this.show.process = true
+            this.authApplePhone.nextCheckCode = this.selectProcessOption[0].taskCode
+            this.authApplePhone.nextCheckRole = this.selectProcessOption[0].taskCode
+          } else {
+             this.show.process=false
+          }
+      },
     // 选择要打印的批量数据
     handleSelectionChange(val) {
       this.messagePrintList = val;
@@ -1098,13 +1252,13 @@ export default {
         params = {
           url: "/export/exportSmsManage",
           methods: "get",
-          params: { ...this.filter, tab: this.tabs },
+          params: { ...this.filter, tab: this.tabs ,isPrisonerSend:this.prisonerSend},
           isPrisonInternetGetUrlWay: "getHyUrl",
         };
       await tokenExcel({
         params,
         actionName,
-        menuName: `短信申请管理-${TABName}-${times}`,
+        menuName: `${this.prisonerSend==1?"服刑人员发送短信申请列表":"家属发送短信申请列表"}-${TABName}-${times}`,
       });
 
       setTimeout(() => {
@@ -1114,7 +1268,7 @@ export default {
     async getDatas() {
       this.filter.tab = this.tabs;
       let res = await http.getIntraMessagelist({
-        isPrisonerSend:this.isPrisonerSend,
+        isPrisonerSend:this.prisonerSend,
         ...this.filter,
         ...this.pagination,
       });
@@ -1149,6 +1303,28 @@ export default {
         });
         if (params.remarks) this.handleSubmit(params);
       } else this.handleSubmit(params);
+    },
+    submitNext(){
+        if(this.authApplePhone.nextCheckCode =='visit.approve.end'){
+            this.authApplePhone.checkState=1
+        }else{
+           if(this.show.process){
+             this.authApplePhone.checkState=3
+              if(!this.authApplePhone.nextCheckCode){
+                  this.$message({
+                    showClose: true,
+                    message: '请选择流程节点',
+                    duration: 2000,
+                    type: 'error'
+                  })
+                return false
+                }
+            }else{
+                 this.authApplePhone.checkState=1
+            }
+        }
+        let params ={uid:this.toAuthorize.uid.toString(), state: 1, remarks: this.authApplePhone.remarks }
+       this.handleSubmit(params)
     },
     async handleSubmit(params) {
       let res = await http.dealIntraMessage(params);

@@ -537,7 +537,6 @@ export default {
       this.onSearch()
     }
   },
-
   methods: {
     ...mapActions([
       'getFamilies',
@@ -569,7 +568,7 @@ export default {
         })
       }
     },
-
+  
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
