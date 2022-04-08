@@ -27,7 +27,6 @@ export const _ygPrisonCommonSearchItems = () => {
       miss: false,
       value: ''
     },
-
     // 服刑人员姓名
     prisonerName: {
       type: 'input',

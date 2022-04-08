@@ -222,13 +222,14 @@ let switches = {
   ],
   type: [
     {
-      label: '系统电话',
-      value: 0
-    },
-    {
       label: '可视电话',
       value: 1
+    },
+    {
+      label: '系统电话',
+      value: 2
     }
+    
   ],
 
   familyPhoneCheckType: [

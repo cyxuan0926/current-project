@@ -66,12 +66,12 @@ export const httpRequests = {
   pagedRequest: {
     '0': {
       url: '/callChargeManage/page',
-      params: { isYgPrison: 'familyInfoImportList' }
+      //非阳光监狱传true
+      params: { isYgPrison: 'callChargeManageList'}
     },
     '1': {
       url: '/callChargeManage/managePage',
-      //非阳光监狱传true
-      params: { isYgPrison: 'familyInfoImportList' }
+      params: { isYgPrison: 'callChargeManageList'}
     }
   },
   // 导出
@@ -117,7 +117,7 @@ const _commonCols = [
   {
     label: '监狱名称',
     prop: 'jailName',
-    showOverflowTooltip: true
+    showOverflowTooltip: true,
   },
   {
     label: '监区',

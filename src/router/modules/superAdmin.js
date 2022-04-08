@@ -587,10 +587,8 @@ superAdmin = [{
     {
       path: '/prison-data/meeting-records',
       name: 'MeetingRecordsAll',
-      // component: helper.loadView('check-meeting/meeting-records'),
       component: 'check-meeting/meeting-records',
-      // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
-      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, },
       meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
     },
      {
