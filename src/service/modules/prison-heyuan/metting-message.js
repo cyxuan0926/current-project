@@ -5,7 +5,10 @@ export default {
       getIntraMessagelist: params => service.
             get(service.getHyUrl('/msg/terminal/selectMessage'), params).
             then(res => res && res.data),
-
+      // 短信详情
+      getIntragetMsgDetail: params => service.
+      get(service.getHyUrl('/msg/terminal/getMsgDetail'), params).
+      then(res => res && res.data),
       // 短信授权
       dealIntraMessage: params => service.
             postObj(service.getHyUrl('/msg/terminal/dealMessage'), params).

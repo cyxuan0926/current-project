@@ -89,6 +89,7 @@
 
             <template v-else>
               <span
+               v-if="row.state"
                 style="color: #409eff; cursor: pointer"
                 @click="onDetail(row)"
                 >详情</span
@@ -96,7 +97,7 @@
             </template>
           </template>
 
-          <template v-if="row.state === 1 && !row.isPrisonerSend&&row.messageType==1">
+          <template v-if="row.state === 1 && !row.isPrisonerSend&&row.messageType==1&&!$store.getters.isSuperAdmin">
             <span
               style="color: #409eff; cursor: pointer; margin-left: 15px"
               @click="messageDetail(row)"
@@ -104,7 +105,7 @@
             >
           </template>
 
-          <template v-if="row.state === 6 && !row.isPrisonerSend&&row.messageType==1">
+          <template v-if="row.state === 6 && !row.isPrisonerSend&&row.messageType==1&&!$store.getters.isSuperAdmin">
             <span
               style="color: #409eff; cursor: pointer; margin-left: 15px"
               @click="messageDetail(row)"
@@ -235,18 +236,6 @@
           </template>
       </template>
 </span>
-
-
-
-
-
-
-
-
-
-
-
-
       <!-- 不同意的情况 -->
       <template v-if="show.disagree">
         <div class="button-box logMgCls">
@@ -530,94 +519,68 @@
             </p>
           </div>
         </div>
-
-        <div style="display: flex; border: 1px solid #e4e7ed; border-top: none">
-          <div class="family-detail">1</div>
-
-          <div class="detail-message">
-            <template v-if="toShow.state == '5'">
-              <p class="detail-message-family">
-                <span class="family-name">取消人姓名</span>
-                <span class="family-nameDetail">{{ toShow.updateUser }}</span>
-              </p>
-              <p class="detail-message-family" style="border: none">
-                <span class="family-name">取消时间</span>
-                <span class="family-nameDetail">{{ toShow.updateTime }}</span>
-              </p>
-            </template>
-            <template v-else>
-              <p class="detail-message-family">
-                <span class="family-name">审核人员账号</span>
-                <span class="family-nameDetail">{{ toShow.auditId }}</span>
-              </p>
-
-              <p class="detail-message-family" style="border: none">
-                <span class="family-name">审核时间</span>
-                <span class="family-nameDetail">{{ toShow.auditTime }}</span>
-              </p>
-              <p
-                v-if="toShow.state == '2'"
-                class="detail-message-family"
-                style="
-                  border-top: 1px solid #e4e7ed;
-                  border-bottom: none;
-                  text-align: justify;
-                  line-height: 18px;
-                "
-              >
-                <span class="family-name" style="line-height: 40px"
-                  >拒绝原因</span
-                >
-
-                <span
-                  class="family-nameDetail"
-                  style="padding: 10px; text-align: justify; line-height: 15px"
-                  >{{ toShow.remarks }}</span
-                >
-              </p>
-            </template>
-          </div>
-
-          <div class="detail-content">
-            <p class="detail-message-family" v-if="toShow.state != '5'">
-              <span class="family-name">审核人姓名</span>
-              <span class="family-nameDetail">{{ toShow.auditName }}</span>
-            </p>
-
-            <p class="detail-message-family">
-              <span class="family-name">申请状态</span>
-              <span class="family-nameDetail">
-                <span v-if="toShow.state == '1' || toShow.state == '6'"
-                  >已发送</span
-                >
-                <span v-if="toShow.state == '2'">已拒绝</span>
-                <span v-if="toShow.state == '5'">已取消</span>
-              </span>
-            </p>
-          </div>
-        </div>
-        <template v-if="toShow.printLogs">
+         <template v-if="toShow.logs">
           <div
-            v-for="(item, index) in toShow.printLogs"
+            v-for="(item, index) in toShow.logs"
             :key="index"
             style="display: flex; border: 1px solid #e4e7ed; border-top: none"
           >
-            <div class="family-detail">{{ index + 2 }}</div>
+            <div class="family-detail">{{ index + 1 }}</div>
+            <div class="detail-message">
+              <p class="detail-message-family">
+                <span class="family-name">审核人员账号</span>
+                <span class="family-nameDetail">{{ item.operateAccount }}</span>
+              </p>
+              <p class="detail-message-family" >
+                <span class="family-name">审核时间</span>
+                <span class="family-nameDetail">{{ item.operateTime }}</span>
+              </p>
+              <p class="detail-message-family" style="border: none" v-if="item.remark">
+                <span class="family-name">备注原因</span>
+                <span class="family-nameDetail">{{ item.remark }}</span>
+              </p>
+            </div>
+
+            <div class="detail-content">
+              <p class="detail-message-family">
+                <span class="family-name">审核人姓名</span>
+                <span class="family-nameDetail">{{ item.operateName }}</span>
+              </p>
+
+              <p class="detail-message-family">
+                <span class="family-name">申请状态</span>
+                <span class="family-nameDetail">
+                  <span v-if="item.status==1">审核通过</span>
+                  <span v-if="item.status==2">已拒绝</span>
+                </span>
+              </p>
+            </div>
+          </div>
+        </template>
+        <template v-if="toShow.printLogs">
+          <div
+            v-for="(item, index) in toShow.printLogs"
+            :key="item.operateTime"
+            style="display: flex; border: 1px solid #e4e7ed; border-top: none"
+          >
+          <template v-if="toShow.logs&&toShow.logs.length>0"  >
+            <div class="family-detail" >{{ (toShow.logs.length+1) + index }}</div>
+          </template>
             <div class="detail-message">
               <p class="detail-message-family">
                 <span class="family-name">打印账号</span>
                 <span class="family-nameDetail">{{ item.printAccount }}</span>
               </p>
               <p class="detail-message-family" style="border: none">
-                <span class="family-name">打印姓名</span>
-                <span class="family-nameDetail">{{ item.printName }}</span>
+                <span class="family-name">打印时间</span>
+                <span class="family-nameDetail">{{ item.printTime }}</span>
               </p>
             </div>
 
             <div class="detail-content">
               <p class="detail-message-family">
-                <span class="family-name">打印时间</span>
-                <span class="family-nameDetail">{{ item.printTime }}</span>
+                <span class="family-name">打印姓名</span>
+                <span class="family-nameDetail">{{ item.printName }}</span>
               </p>
 
               <p class="detail-message-family">
@@ -1163,8 +1126,14 @@ export default {
       this.show.isMessageList = false;
       this.$print(this.$refs.print, { isUseTemplate: true });
     },
-    onDetail(row) {
+   async onDetail(row) {
       this.toShow = row;
+      let res = await http.getIntragetMsgDetail({
+        uid:row.uid
+      });
+      if(res.logs.length>0){
+        this.toShow.logs=res.logs
+      }
       this.show.dialog = true;
     },
     messageDetail(row) {
