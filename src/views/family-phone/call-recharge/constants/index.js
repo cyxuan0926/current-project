@@ -155,14 +155,13 @@ export const _tableCols = {
     ..._commonCols,
 
     _rechargeAmount,
+    
     {
       label: '充值类型',
       prop: 'type',
       showOverflowTooltip: true
     },
 
-
-    
     {
       label: '充值账号',
       prop: 'rechargeAccount',
