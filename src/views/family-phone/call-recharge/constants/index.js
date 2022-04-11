@@ -38,7 +38,7 @@ const dateMonth = {
   start: 'startDate',
   startPlaceholder: '通话开始时间',
   endPlaceholder: '通话结束时间',
-  value: [ _oneMonthAgo,_dateNow],
+  value: [_oneMonthAgo, _dateNow],
   pickerOptions: {
     onPick: ({ minDate, maxDate }) => {
       if (!maxDate) {
@@ -67,11 +67,11 @@ export const httpRequests = {
     '0': {
       url: '/callChargeManage/page',
       //非阳光监狱传true
-      params: { isYgPrison: 'callChargeManageList'}
+      params: { isYgPrison: 'callChargeManageList' }
     },
     '1': {
       url: '/callChargeManage/managePage',
-      params: { isYgPrison: 'callChargeManageList'}
+      params: { isYgPrison: 'callChargeManageList' }
     }
   },
   // 导出
@@ -100,7 +100,7 @@ export const httpRequests = {
   excelUploadRequest: {
     '0': {
       url: '/callChargeManage/importCallChargeManage',
-      params:{ isYgPrison: true },
+      params: { isYgPrison: true },
       methods: 'post'
     },
   }
@@ -156,11 +156,13 @@ export const _tableCols = {
 
     _rechargeAmount,
 
+    
     {
       label: '充值账号',
       prop: 'rechargeAccount',
       showOverflowTooltip: true
     },
+
 
     _remark,
 
