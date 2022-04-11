@@ -105,8 +105,8 @@ export default {
           applicationDate: {
           type: "dateRange",
           unlinkPanels: true,
-          start: "startTime",
-          end: "endTime",
+          start: "startDate",
+          end: "endDate",
           startPlaceholder: "申请开始时间",
           endPlaceholder: "申请结束时间",
            range: {
