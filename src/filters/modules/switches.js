@@ -399,13 +399,22 @@ let switches = {
   ],
 
   familyPhoneCallRechargeTypeOptions: [
+    // 1充值2退款3可视电话消费4系统消费
     {
       label: '充值',
-      value: 0
+      value: 1
     },
     {
       label: '退款',
-      value: 1
+      value: 2
+    },
+    {
+      label: '可视电话消费',
+      value: 3
+    },
+    {
+      label: '系统消费',
+      value: 4
     }
   ],
 
