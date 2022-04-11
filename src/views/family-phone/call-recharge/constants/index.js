@@ -155,6 +155,12 @@ export const _tableCols = {
     ..._commonCols,
 
     _rechargeAmount,
+    {
+      label: '充值类型',
+      prop: 'type',
+      showOverflowTooltip: true
+    },
+
 
     
     {
