@@ -77,13 +77,13 @@ export default {
     const { routeProps } = useRouteProps();
     watch($tabs, (val) => {
       if (val == "0") {
-        searchItems.value.types.miss = false;
+        // searchItems.value.types.miss = false;
         omponentpublic.value.excelUploadVisible = $isSuperAdmin.value?true:false;
         omponentpublic.value.excelDownloadVisible = $isSuperAdmin.value?true:false;
       } else if (val == "1") {
+        // searchItems.value.types.miss = true;
         omponentpublic.value.excelUploadVisible = false;
         omponentpublic.value.excelDownloadVisible = false;
-        searchItems.value.types.miss = true;
       }
       $callRechargeParent.value && $callRechargeParent.value.initData();
     });

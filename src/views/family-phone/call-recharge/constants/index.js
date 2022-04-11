@@ -20,7 +20,7 @@ export const tabItems = [
 
 const { prisonArea, ...others } = _ygPrisonCommonSearchItems()
 
-const types = {
+const type = {
   label: '类型',
   type: 'select',
   options: switches['familyPhoneCallRechargeTypeOptions'],
@@ -56,7 +56,7 @@ const dateMonth = {
 
 export const _searchItems = {
   prisonArea,
-  types,
+  type,
   ...others,
   dateMonth
 }
