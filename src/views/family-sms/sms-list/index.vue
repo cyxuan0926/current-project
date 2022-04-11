@@ -669,7 +669,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import prisons from "@/common/constants/prisons";
 import prisonFilterCreator from "@/mixins/prison-filter-creator";
 import http from "@/service";
 import { DateFormat } from "@/utils/helper";
@@ -810,6 +809,12 @@ export default {
           label: "审核时间",
           miss: true,
           value: "",
+        },
+        isPrisonerSend: {
+          type: 'select',
+          label: '短信发送人',
+          options: [{label:"家属",value:"0"},{label:"罪犯",value:"1"}],
+          miss: true,
         },
         isSensitive: {
           type: "select",
@@ -998,6 +1003,7 @@ export default {
         let _res = this.$refs.search.onSearch('tabs')
       delete this.filter.state;
       this.searchItems.auditTime.miss = false;
+      this.searchItems.isPrisonerSend.miss=true
       this.prisonerSend=this.isPrisonerSend
       if (val == "3") {
         this.searchItems.state.miss = true;
@@ -1010,7 +1016,8 @@ export default {
         this.searchItems.state.miss = false;
         this.searchItems.state.value = "";
         this.searchItems.state.options = this.stateAll;
-        this.prisonerSend=2
+        delete this.prisonerSend
+        this.searchItems.isPrisonerSend.miss=false
       } else {
         this.searchItems.state.miss = false;
         this.searchItems.state.value = "";
@@ -1252,13 +1259,13 @@ export default {
         params = {
           url: "/export/exportSmsManage",
           methods: "get",
-          params: { ...this.filter, tab: this.tabs ,isPrisonerSend:this.prisonerSend},
+          params: {isPrisonerSend:this.prisonerSend, ...this.filter, tab: this.tabs},
           isPrisonInternetGetUrlWay: "getHyUrl",
         };
       await tokenExcel({
         params,
         actionName,
-        menuName: `${this.prisonerSend==1?"服刑人员发送短信申请列表":"家属发送短信申请列表"}-${TABName}-${times}`,
+        menuName: `${this.isPrisonerSend==1?"服刑人员发送短信申请列表":"家属发送短信申请列表"}-${TABName}-${times}`,
       });
 
       setTimeout(() => {
