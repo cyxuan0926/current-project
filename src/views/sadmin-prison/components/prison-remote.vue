@@ -118,7 +118,7 @@ export default {
   padding-left: 20px;
 }
 .tips{
-  color: #f56c6c;
+  color: $red;
   font-weight: normal;
   font-size: 12px;
   margin-left: 10px;

@@ -22,12 +22,19 @@
         <!-- 模版 -->
         <template v-if="$componentsVisible['excelDownloadVisible']">
           <m-excel-download
+            v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+            path="/download/downloadfile"
+            :params="httpRequests['excelDownloadRequest']['params']"
+            text="模板"
+          />
+          <m-excel-download
+            v-else
             path="/download/common/download"
             :params="httpRequests['excelDownloadRequest']['params']"
             text="模板"
             :apiConfigs="{
               apiHostKey: 'ygApiHost',
-              apiPathKey: 'temp'
+              apiPathKey: 'temp',
             }"
           />
         </template>
@@ -43,7 +50,8 @@
             type="primary"
             :loading="ygPrisonDownloading"
             @click="onYGPrisonDownloadExcel"
-          >导出 Excel</el-button>
+            >导出 Excel</el-button
+          >
         </template>
 
         <!-- 后置插槽的 后置部分 -->
@@ -57,11 +65,7 @@
       <template v-if="!!tabItems.length">
         <el-tabs v-model="$tabs" type="card">
           <template v-for="tab in tabItems">
-            <el-tab-pane
-              :key="tab.name"
-              :label="tab.label"
-              :name="tab.name"
-            />
+            <el-tab-pane :key="tab.name" :label="tab.label" :name="tab.name" />
           </template>
         </el-tabs>
       </template>
@@ -77,7 +81,9 @@
       >
         <template v-for="col in $tableCols" #[col.slotName]="scope">
           <!-- 默认是为了 不可控的插槽的显示本身值 -->
-          <slot :name="col.slotName" v-bind="scope">{{ scope.row[col['prop']] }}</slot>
+          <slot :name="col.slotName" v-bind="scope">{{
+            scope.row[col["prop"]]
+          }}</slot>
         </template>
       </m-table-new>
     </el-col>
@@ -114,7 +120,9 @@
         </el-col>
 
         <el-col class="process-col_tips">
-          <span>准备导入数据总计：{{ $ygPrisonValidateUploadResult.total }}条</span>
+          <span
+            >准备导入数据总计：{{ $ygPrisonValidateUploadResult.total }}条</span
+          >
 
           <span>已用时：{{ spendTime }}秒</span>
 
@@ -135,25 +143,47 @@
         :close-on-press-escape="false"
         @close="onUploadInnerDialogClose"
       >
-        <div style="line-height: 30px; margin-top: 10px;">
-          <i class="el-icon-success green" style="font-size: 20px;margin-right: 10px;"></i>成功：{{ $ygPrisonValidateUploadResult.successTotal }}条<br>
+        <div style="line-height: 30px; margin-top: 10px">
+          <i
+            class="el-icon-success green"
+            style="font-size: 20px; margin-right: 10px"
+          ></i
+          >成功：{{ $ygPrisonValidateUploadResult.successTotal }}条<br />
 
           <template v-if="!!$ygPrisonValidateUploadResult.failTotal">
-            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px;"></i>失败：{{ $ygPrisonValidateUploadResult.failTotal }}条
+            <i
+              class="el-icon-error red"
+              style="font-size: 20px; margin-right: 10px"
+            ></i
+            >失败：{{ $ygPrisonValidateUploadResult.failTotal }}条
 
-            <p style="padding-left: 30px;">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
+            <p style="padding-left: 30px">
+              原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。
+            </p>
 
-            <p style="padding-left: 30px;">导入失败数据：
+            <p style="padding-left: 30px">
+              导入失败数据：
               <!-- 为了扩展处理下载的处理 -->
-              <slot name="elDialogExcelDownloadSlot" v-bind="$ygPrisonValidateUploadResult"> 
+              <slot
+                name="elDialogExcelDownloadSlot"
+                v-bind="$ygPrisonValidateUploadResult"
+              >
                 <m-excel-download
+                  v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+                  path="/download/localfile"
+                  :params="{ filepath: $ygPrisonValidateUploadResult.filePath }"
+                  :buttonsProps="excelExportButtonProps"
+                  text="导入失败的数据.xls"
+                />
+                <m-excel-download
+                  v-else
                   path="/download/common/download"
                   :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
                   :buttonsProps="excelExportButtonProps"
                   text="导入失败的数据.xls"
                   :apiConfigs="{
                     apiHostKey: 'ygApiHost',
-                    apiPathKey: 'temp'
+                    apiPathKey: 'temp',
                   }"
                 />
               </slot>
@@ -162,8 +192,10 @@
         </div>
 
         <div slot="footer">
-          <el-button type="primary" @click="uploadInnerDialogVisible = false">确 定</el-button>
-        </div>        
+          <el-button type="primary" @click="uploadInnerDialogVisible = false"
+            >确 定</el-button
+          >
+        </div>
       </el-dialog>
     </el-dialog>
   </el-row>
@@ -176,25 +208,25 @@ import {
   computed,
   toRefs,
   watch,
-  toRef
-} from '@vue/composition-api'
+  toRef,
+} from "@vue/composition-api";
 
-import prisonFilterCreator from '@/mixins/prison-filter-creator'
+import prisonFilterCreator from "@/mixins/prison-filter-creator";
 
-import router from '@/router'
+import router from "@/router";
 
-import store from '@/store'
+import store from "@/store";
 
-import Vue from 'vue'
+import Vue from "vue";
 
-import { arrayRemove, DateFormat } from '@/utils/helper'
+import { arrayRemove, DateFormat } from "@/utils/helper";
 
-import { tokenExcel } from '@/utils/token-excel'
+import { tokenExcel } from "@/utils/token-excel";
 
 // 为了重载一些内部方法
-import ygPrisonPerch from '@/mixins/yg-prison-perch'
+import ygPrisonPerch from "@/mixins/yg-prison-perch";
 export default {
-  name: 'YgPrisonContent',
+  name: "YgPrisonContent",
 
   mixins: [prisonFilterCreator, ygPrisonPerch],
 
@@ -202,19 +234,23 @@ export default {
     // 标签页的初始值 传递过来需要 加上 .sync修饰符
     tabs: {
       type: String,
-      default: ''
+      default: "",
     },
 
     // 标签页的选项
     tabItems: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
 
     // 列表选项
     tableCols: {
       type: Array,
-      default: () => []
+      default: () => [],
+    },
+    isSearchLimit: {
+      type: Boolean,
+      default: false,
     },
 
     // 查询选项
@@ -223,7 +259,7 @@ export default {
     // 或者传props 进来
     ygSearchItems: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
 
     // http请求的
@@ -241,10 +277,10 @@ export default {
       default: () => ({
         excelDownloadRequest: {
           params: {
-            fileName: ''
-          }
-        }
-      })
+            fileName: "",
+          },
+        },
+      }),
     },
 
     // 自定义显示组件的
@@ -253,7 +289,7 @@ export default {
     // 导出组件：excelExportVisible
     componentsVisible: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
 
     // m-table
@@ -262,10 +298,10 @@ export default {
       default: () => {
         return {
           _$attrs: {}, // el-table的属性
-          _$listeners: {} // el-table的事件
-        }
-      }
-    }
+          _$listeners: {}, // el-table的事件
+        };
+      },
+    },
   },
 
   setup(props, { emit }) {
@@ -275,226 +311,254 @@ export default {
       tableCols,
       tabItems,
       tabs,
-      ygSearchItems
-    } = toRefs(props)
+      ygSearchItems,
+    } = toRefs(props);
 
     // data
     // 导入数据的外层弹框的显示控制
-    const uploadDialogVisible = ref(false)
+    const uploadDialogVisible = ref(false);
 
     // 上传进度条的当前步骤值
-    const status = ref(0)
+    const status = ref(0);
 
     // 上传进度的已用时
-    const spendTime = ref(0)
+    const spendTime = ref(0);
 
     // 上传进度的进度比
-    const percent = ref(0)
+    const percent = ref(0);
 
     // 导入数据的内层弹框的显示控制
-    const uploadInnerDialogVisible = ref(false)
+    const uploadInnerDialogVisible = ref(false);
 
     // 失败数据excel导出按钮属性
     const excelExportButtonProps = reactive({
       attrs: {
-        type: 'text'
-      }
-    })
+        type: "text",
+      },
+    });
 
     // 上传外层弹框的元素
-    const $mExcelUpload = ref(null)
+    const $mExcelUpload = ref(null);
 
     // 查询组件的元素
-    const $ygSearch = ref(null)
+    const $ygSearch = ref(null);
 
     // 表单的元素
-    const $ygTable = ref(null)
+    const $ygTable = ref(null);
 
     // 分页的元素
-    const $ygPagination = ref(null)
+    const $ygPagination = ref(null);
 
     // filter
-    const filter = ref({})
+    const filter = ref({});
 
     // pagination
-    const pagination = ref({})
+    const pagination = ref({});
 
     // 导出的loading
-    const ygPrisonDownloading = ref(false)
+    const ygPrisonDownloading = ref(false);
 
     // el-tabs 的value
-    const $tabs = ref('')
+    const $tabs = ref("");
 
     // 搜索组件
-    const searchItems = ref(Object.assign({}, ygSearchItems.value))
+    const searchItems = ref(Object.assign({}, ygSearchItems.value));
 
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
-    const $pagedYgPrisonsDataCommon = computed(() => store.state.ygPrisons.pagedYgPrisonsDataCommon)
+    const $pagedYgPrisonsDataCommon = computed(
+      () => store.state.ygPrisons.pagedYgPrisonsDataCommon
+    );
 
     // store excel 验证结果 在内部引用 是个包装对象 .value
-    const $ygPrisonValidateUploadResult = computed(() => store.state.ygPrisons.ygPrisonValidateUploadResult)
+    const $ygPrisonValidateUploadResult = computed(
+      () => store.state.ygPrisons.ygPrisonValidateUploadResult
+    );
 
     // store ywt_admin账号
-    const $isSuperAdmin = computed(() => store.getters.isSuperAdmin)
+    const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
 
     // 非ywt_admin下面就不显示省份/监狱名称
     const $tableCols = computed(() => {
-      let _temp = _.cloneDeep(tableCols.value)
+      let _temp = _.cloneDeep(tableCols.value);
 
       if (!$isSuperAdmin.value) {
-        arrayRemove(_temp, '省份', 'label')
-        arrayRemove(_temp, '监狱名称', 'label')
+        arrayRemove(_temp, "省份", "label");
+        arrayRemove(_temp, "监狱名称", "label");
       }
 
-      return _temp
-    })
+      return _temp;
+    });
 
     const $componentsVisible = computed(() => {
-      return Object.entries(componentsVisible.value).reduce((accumulator, [key, value]) => {
-        accumulator[key] = value
+      return Object.entries(componentsVisible.value).reduce(
+        (accumulator, [key, value]) => {
+          accumulator[key] = value;
 
-        return accumulator
-      } , {
-        // 默认 ywt_admin下面没有导入和模版
-        excelUploadVisible: !$isSuperAdmin.value,
-        excelDownloadVisible: !$isSuperAdmin.value,
-        excelExportVisible:  true // 默认都有导出功能
-      })
-    })
+          return accumulator;
+        },
+        {
+          // 默认 ywt_admin下面没有导入和模版
+          excelUploadVisible: !$isSuperAdmin.value,
+          excelDownloadVisible: !$isSuperAdmin.value,
+          excelExportVisible: true, // 默认都有导出功能
+        }
+      );
+    });
 
     // 导入弹框的文案
     const dialogTitle = computed(() => {
-      const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-        text = (tabItem[0] && tabItem[0]['label']) || router.currentRoute.meta.breadcrumbName
+      const tabItem = tabItems.value.filter(
+          (tabItem) => tabItem.name === $tabs.value
+        ),
+        text =
+          (tabItem[0] && tabItem[0]["label"]) ||
+          router.currentRoute.meta.breadcrumbName;
 
-      return `${ text }导入`
-    })
+      return `${text}导入`;
+    });
 
     // watch
-    watch(tabs, async val => {
-      if (val) $tabs.value = val
-    }, {
-      immediate: true
-    })
+    watch(
+      tabs,
+      async (val) => {
+        if (val) $tabs.value = val;
+      },
+      {
+        immediate: true,
+      }
+    );
 
-    watch($tabs, val => {
-      if (val) emit('update:tabs', val)
-    })
+    watch($tabs, (val) => {
+      if (val) emit("update:tabs", val);
+    });
 
-    watch(searchItems, val => {
-      if (val) emit('update:ygSearchItems', val)
-    })
+    watch(searchItems, (val) => {
+      if (val) emit("update:ygSearchItems", val);
+    });
 
     // methods
     // 重制上传的参数关闭对话框
-    const onResetAndcloseUploadDialog = async isSuccess => {
-      spendTime.value = 0
+    const onResetAndcloseUploadDialog = async (isSuccess) => {
+      spendTime.value = 0;
 
-      percent.value = 0
+      percent.value = 0;
 
-      status.value = 0
+      status.value = 0;
 
-      uploadDialogVisible.value = false
+      uploadDialogVisible.value = false;
 
-      if (isSuccess) await getData()
-    }
+      if (isSuccess) await getData();
+    };
 
     // el-upload 上传文件前的钩子函数
-    const beforeUpload = file => {
-      store.commit('ygPrisons/setValidateExcelResult', {
+    const beforeUpload = (file) => {
+      store.commit("ygPrisons/setValidateExcelResult", {
         successTotal: 0,
         failTotal: 0,
-        filepath: '',
-        total: 0
-      })
+        filepath: "",
+        total: 0,
+      });
 
-      let count = 0, index = 0
+      let count = 0,
+        index = 0;
 
       // 上次文件的定时器
       const uploadInterver = setInterval(async () => {
-        status.value += 1
+        status.value += 1;
 
-        percent.value += 15
+        percent.value += 15;
 
-        spendTime.value += .5
+        spendTime.value += 0.5;
 
         if (status.value === 4) {
-          clearInterval(uploadInterver)
+          clearInterval(uploadInterver);
 
           // 上次文件到服务器
-          const isSuccess = await store.dispatch('ygPrisons/ygUploadFile', file)
 
+          const { excelUploadRequest = {} } = httpRequests.value;
+          let isSuccess = null;
+          if (excelUploadRequest.params.isYgPrison) {
+            isSuccess = await store.dispatch(
+              "ygPrisons/familyphonerechargeimport",
+              file
+            );
+          } else {
+            isSuccess = await store.dispatch("ygPrisons/ygUploadFile", file);
+          }
           if (!isSuccess) {
-            onResetAndcloseUploadDialog()
+            onResetAndcloseUploadDialog();
 
-            return
+            return;
           }
 
           // 验证excel的定时器
           const validateInterver = setInterval(async () => {
-            count ++
+            count++;
 
             if (count === 1) {
-              spendTime.value += 1
+              spendTime.value += 1;
 
               // 验证excel
-              const { excelUploadRequest = {} } = httpRequests.value
+              const { excelUploadRequest = {} } = httpRequests.value;
 
-              const isSuccess = await store.dispatch('ygPrisons/validateUploadYgCommon', {
-                url: excelUploadRequest['url'],
-                params: {
-                  filepath: store.state.ygPrisons.ygUploadResult.path,
-                  ...excelUploadRequest['params']
-                },
-                methods: excelUploadRequest['methods']
-              })
+              const isSuccess = await store.dispatch(
+                "ygPrisons/validateUploadYgCommon",
+                {
+                  url: excelUploadRequest["url"],
+                  params: {
+                    filepath: store.state.ygPrisons.ygUploadResult.path,
+                    ...excelUploadRequest["params"],
+                  },
+                  methods: excelUploadRequest["methods"],
+                }
+              );
 
-              clearInterval(validateInterver)
+              clearInterval(validateInterver);
 
               if (!isSuccess) {
-                onResetAndcloseUploadDialog()
+                onResetAndcloseUploadDialog();
 
-                return
+                return;
               }
 
               // 模拟完成最后两步
               const processInterver = setInterval(() => {
-                index ++
+                index++;
 
                 if (index === 1) {
-                  percent.value += 20
+                  percent.value += 20;
 
-                  spendTime.value += 1
+                  spendTime.value += 1;
 
-                  status.value = status.value + 1
+                  status.value = status.value + 1;
 
-                  clearInterval(processInterver)
+                  clearInterval(processInterver);
 
-                  spendTime.value += 1
+                  spendTime.value += 1;
 
-                  status.value += 1
+                  status.value += 1;
 
-                  percent.value = 100
+                  percent.value = 100;
 
                   setTimeout(() => {
-                    uploadInnerDialogVisible.value = true
-                  }, 1500)
-                } else spendTime.value += 1
-              }, 1000)
-            } else spendTime.value += 1
-          }, 1000)
-        } else spendTime.value += 1
-      }, 500)
+                    uploadInnerDialogVisible.value = true;
+                  }, 1500);
+                } else spendTime.value += 1;
+              }, 1000);
+            } else spendTime.value += 1;
+          }, 1000);
+        } else spendTime.value += 1;
+      }, 500);
 
-      return false
-    }
+      return false;
+    };
 
-    const onChange = file => {
-      if (uploadDialogVisible.value) return
+    const onChange = (file) => {
+      if (uploadDialogVisible.value) return;
 
-      if (file) uploadDialogVisible.value = true
-    }
+      if (file) uploadDialogVisible.value = true;
+    };
 
     // excel导入的配置
     const excelUploadConfigs = reactive({
@@ -502,93 +566,98 @@ export default {
         autoUpload: false,
         limit: 1,
         beforeUpload: beforeUpload,
-        onChange: onChange
-      }
-    })
+        onChange: onChange,
+      },
+    });
 
     // 打开上传外层弹框的回调的函数
     const onOpenUploadDialog = () => {
       Vue.nextTick(() => {
-        $mExcelUpload.value.onManualUpload()
-      })
-    }
+        $mExcelUpload.value.onManualUpload();
+      });
+    };
 
     // 关闭上传内层弹框的回调函数
     const onUploadInnerDialogClose = () => {
       setTimeout(() => {
-        const _temp = !!$ygPrisonValidateUploadResult.value.successTotal
+        const _temp = !!$ygPrisonValidateUploadResult.value.successTotal;
 
-        onResetAndcloseUploadDialog(_temp)
-      }, 1000)
-    }
+        onResetAndcloseUploadDialog(_temp);
+      }, 1000);
+    };
 
     // 查询
     const onSearch = () => {
-      $ygPagination.value.handleCurrentChange(1)
-    }
+      $ygPagination.value.handleCurrentChange(1);
+    };
 
     // 获取列表数据
     const getData = () => {
       Vue.nextTick(async () => {
-        const { pagedRequest } = httpRequests.value
+        const { pagedRequest } = httpRequests.value;
 
-        const { url, params = {} } = pagedRequest
+        const { url, params = {} } = pagedRequest;
 
         const allParams = {
           ...filter.value,
           ...pagination.value,
-          ...params
-        }
+          ...params,
+        };
 
-        await store.dispatch('ygPrisons/getPagedYgPrisonsDataCommon', {
+        await store.dispatch("ygPrisons/getPagedYgPrisonsDataCommon", {
           url,
-          params: allParams
-        })
-      })
-    }
+          params: allParams,
+        });
+      });
+    };
 
     // 导出excel
     const onYGPrisonDownloadExcel = () => {
       Vue.nextTick(async () => {
-        ygPrisonDownloading.value = true
+        ygPrisonDownloading.value = true;
 
         const { excelExportRequest = {} } = httpRequests.value,
-          times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
-          tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-          TABName = tabItem[0] && tabItem[0]['label'] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]['label'] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
-          actionName = 'ygPrisons/exportYgPrisonExcel',
+          times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
+          tabItem = tabItems.value.filter(
+            (tabItem) => tabItem.name === $tabs.value
+          ),
+          TABName =
+            tabItem[0] && tabItem[0]["label"]
+              ? `${router.currentRoute.meta.breadcrumbName}-${tabItem[0]["label"]}`
+              : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
+          actionName = "ygPrisons/exportYgPrisonExcel",
           params = {
-            url: excelExportRequest['url'],
+            url: excelExportRequest["url"],
             params: {
               ...filter.value,
-              ...excelExportRequest['params']
+              ...excelExportRequest["params"],
             },
 
-            methods: excelExportRequest['methods']
-          }
+            methods: excelExportRequest["methods"],
+          };
 
         await tokenExcel({
-          menuName: `${ TABName }-${ times }`,
+          menuName: `${TABName}-${times}`,
           actionName,
-          params
-        })
+          params,
+        });
 
         setTimeout(() => {
-          ygPrisonDownloading.value = false
-        }, 300)
-      })
-    }
+          ygPrisonDownloading.value = false;
+        }, 300);
+      });
+    };
 
     const initData = async () => {
-      store.commit('ygPrisons/setPagedYgPrisonsDataCommon', {
+      store.commit("ygPrisons/setPagedYgPrisonsDataCommon", {
         list: [],
-        totalCount: 0
-      })
+        totalCount: 0,
+      });
 
-      $ygSearch.value.onGetFilter()
+      $ygSearch.value.onGetFilter();
 
-      await getData()
-    }
+      await getData();
+    };
 
     return {
       uploadDialogVisible,
@@ -617,8 +686,8 @@ export default {
       dialogTitle,
       $tabs,
       initData,
-      searchItems
-    }
-  }
-}
+      searchItems,
+    };
+  },
+};
 </script>

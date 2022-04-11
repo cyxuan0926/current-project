@@ -203,10 +203,11 @@ export default {
 .row-container {
   line-height: 40px;
   .red {
-    color: #F56C6C;
+    color: $red;
     font-weight: bold;
   }
 }
+
 .button-group{
   padding-bottom: 20px;
   display: flex;
@@ -214,17 +215,20 @@ export default {
   align-items: center;
   clear: both;
 }
-.tips-title{
+
+.tips-title {
   display: block;
   text-align: center;
   font-weight: bold;
 }
-.tips{
-  color: #f56c6c;
+
+.tips {
+  color: $red;
   font-weight: bold;
   text-align: center;
   // font-size: 12px;
 }
+
 .table-box{
   margin-left: 20px;
   margin-right: 20px;

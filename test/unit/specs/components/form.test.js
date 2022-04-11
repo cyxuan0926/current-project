@@ -73,7 +73,6 @@ describe('components-form', () => {
       // }
       done()
     }, 300)
-    console.log(wrapper.text())
     // setTimeout(() => {
     //   let button = wrapper.find('button')
     //   button.trigger('click')

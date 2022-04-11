@@ -88,6 +88,14 @@ export default {
     special
   },
 
+  provide() {
+    return {
+      onParentSubimt: this.onParentSubimt,
+
+      errorMsg: this.errorMsg
+    }
+  },
+
   data() {
     const remoteVisitDayNames = ['usual']
 
@@ -404,11 +412,11 @@ export default {
     }
 
     .form-meeting_windowSize {
-      width: calc(100% - 153px);
+      width: calc(#{$absolutely-measure} - 153px);
       position: relative;
 
       .tips {
-        color: #F56C6C;
+        color: $red;
         position: absolute;
         left: 0;
         top: 32px;

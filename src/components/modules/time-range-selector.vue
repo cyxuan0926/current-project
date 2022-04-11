@@ -3,7 +3,8 @@
   <div
     class="m-range-selector"
     :class="[{ 'm-disabled-range': next.length > 0 || disabled }]"
-    @click="onClick">
+    @click="onClick"
+  >
     <el-time-picker
       v-model.trim="startTime"
       ref="start"
@@ -17,8 +18,11 @@
       :picker-options="startPickerOptions"
       placeholder="开始时间"
       @blur="onStartBlur"
-      @change="onStartChange" />
+      @change="onStartChange"
+    />
+
     <span>至</span>
+
     <el-time-picker
       v-model.trim="endTime"
       ref="end"
@@ -31,7 +35,8 @@
       size="mini"
       :picker-options="endPickerOptions"
       placeholder="结束时间"
-      @blur="onEndBlur" />
+      @blur="onEndBlur"
+    />
   </div>
 </template>
 
@@ -40,6 +45,7 @@ import Moment from 'moment'
 // import Clickoutside from '@/utils/clickoutside'
 export default {
   inheritAttrs: false,
+
   props: {
     configs: {
       type: Object,
@@ -56,37 +62,44 @@ export default {
         }
       )
     },
+
     // 前一个时间段
     prev: {
       type: Array,
       default: function() { return [] }
     },
+
     // 当前的时间段
     val: {
       type: Array,
       default: function() { return [] }
     },
+
     // 下一个时间段
     next: {
       type: Array,
       default: function() { return [] }
     },
+
     // 类型
     type: {
       type: String,
       default: 'usu'
     },
+
     // 是否可修改
     disabled: {
       type: Boolean,
       default: false
     },
+
     // 当前常规配置时间段的索引
     index: {
       type: Number,
       default: 0
     }
   },
+
   // directives: { Clickoutside },
   data() {
     return {
@@ -106,17 +119,18 @@ export default {
       value: ''
     }
   },
+
   watch: {
     endTime(val) {
       if (!val) this.startTime = null
     },
+
     // 当前的时间段
     val(value) {
       if (!value) {
         this.startTime = null
         this.endTime = null
-      }
-      else {
+      } else {
         this.startTime = this.val[0]
         this.endTime = this.val[1]
         // 结束时间的可选时间是在开始时间 + 1分钟 到 23：59：59
@@ -129,6 +143,7 @@ export default {
       }
     }
   },
+
   mounted() {
     // 初始化 开始时间/结束时间 开始时间的可选时间范围 结束时间的可选时间范围
     if (this.val && this.val.length) {
@@ -137,34 +152,31 @@ export default {
       let start = Moment(new Date(2000, 0, 1, this.val[0].split(':')[0], this.val[0].split(':')[1])).add(1, 'm').format('HH:mm')
       this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
     }
-    if (this.prev.length) {
-      this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
-    }
+    if (this.prev.length) this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
   },
+
   methods: {
     // 开始时间变化后
     onStartChange(e) {
-      if (!e) {
-        this.endPickerOptions = {}
-      }
+      if (!e) this.endPickerOptions = {}
       else {
         let start = Moment(new Date(2000, 0, 1, e.split(':')[0], e.split(':')[1])).add(1, 'm').format('HH:mm')
         this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
-        if (start > this.endTime || !this.endTime) {
-          this.endTime = start
-        }
+
+        if (start > this.endTime || !this.endTime) this.endTime = start
       }
     },
+
     onClick() {
-      if (!this.endTime) {
-        this.$refs.start.focus()
-      }
+      if (!this.endTime) this.$refs.start.focus()
     },
+
     // '开始时间'失去焦点之后
     onStartBlur(e) {
       // 结束时间 获得焦点
       this.$refs.end.focus()
     },
+
     // '结尾时间'失去焦点操作
     onEndBlur(e) {
       // if (this.startTime === this.endTime) {
@@ -179,7 +191,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.m-range-selector{
+.m-range-selector {
   width: 180px;
   height: 28px;
   margin-bottom: 10px;
@@ -191,7 +203,7 @@ export default {
   border: 1px solid #dcdfe6;
   box-sizing: border-box;
   margin-right: 10px;
-  &.m-disabled-range{
+  &.m-disabled-range {
     background-color: #f5f7fa;
     border-color: #e4e7ed;
     color: #c0c4cc;

@@ -117,8 +117,8 @@ let check = [{
     // component: resolve => require(['@/views/meeting-report/prison-area-report'], resolve),
     meta: { permission: 'visit.visit-statistic.prison-area.search', breadcrumbName: '监区统计' }
   }, {
-    path: '/meeting/records',
-    name: 'meeting-records',
+    path: '/meeting-report/records',
+    name: 'MeetingRecordsJail',
     // component: helper.loadView('check-meeting/meeting-records'),
     component: 'check-meeting/meeting-records',
     // component: resolve => require(['@/views/check-meeting/meeting-records'], resolve),
@@ -338,10 +338,23 @@ let check = [{
       component: 'family-sms/sms-send'
     },
     {
+      path: '/family-sms/send-group',
+      name: 'sms-send-group',
+      meta: { permission: 'visit.family-sms.send-group', breadcrumbName: '群发短信管理' },
+      component: 'family-sms/sms-group'
+    },
+    {
       path: '/family-sms/list',
       name: 'sms-list',
       props: { hasPrisonAreaAuth: true },
-      meta: { permission: 'visit.family-sms.list', breadcrumbName: '亲情短信申请管理' },
+      meta: { permission: 'visit.family-sms.list', breadcrumbName: '家属发送短信申请管理' },
+      component: 'family-sms/sms-list'
+    },
+    {
+      path: '/family-sms/criminalList',
+      name: 'sms-criminalList',
+      props: { hasPrisonAreaAuth: true , isPrisonerSend: 1 },
+      meta: { permission: 'visit.family-sms.criminalList', breadcrumbName: '服刑人员发送短信申请管理' },
       component: 'family-sms/sms-list'
     }
   ]

@@ -36,6 +36,11 @@ export const responseURLWhiteLists = [
   '/meetingCallDetail/export',
   '/prisoner_visits/exportPrisonerVisits',
   '/prisoner_visits/exportAdminPrisonerVisits',
+  '/callChargeManage/exportManage',
+  '/callChargeManage/export',
+  '/callChargeManage/importCallChargeManage',
+  '/freeMeetings/police/export',
+  '/freeMeetings/export',
   ..._ygPrisonExportExcelUrls
 ]
 
@@ -253,7 +258,6 @@ export const terminalUsersBasicAuths = [
   'terminal.police-meeting'
 ]
 
-
 export const smsSendTemplate = [
   {
     template: '尊敬的用户，湖南省女子监狱（$prisonerName）正在给您发送亲情短信，系统检测显示您的亲情短信服务功能还未开通。请您打开国科服务APP，点击服务-更多-亲情短信，开通亲情短信服务业务。',
@@ -289,3 +293,9 @@ export const _prisonerDataExcelDownloadConsts = {
 
 // 亲情电话家属 全量审核 审核上限
 export const familyPhoneFamiliesAllPendingReviewUpperLimit = 1000
+
+// 限制只能输入正整数
+export const limitInputPositiveInteger = 'return /[\\d]/.test(String.fromCharCode(event.keyCode))'
+
+// input 原生类型
+export const elInputTypes = ['input', 'text', 'textarea', 'number']

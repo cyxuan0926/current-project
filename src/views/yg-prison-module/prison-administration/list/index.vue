@@ -34,7 +34,7 @@ export default {
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
 
-    const searchItems = reactive(_.cloneDeep(_searchItems))
+    const searchItems = ref(_.cloneDeep(_searchItems))
 
     const $tabs = ref('0')
 
@@ -66,8 +66,9 @@ export default {
     const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
-      $ygPrisonAdminstrationParent.value.initData()
+      $ygPrisonAdminstrationParent.value && $ygPrisonAdminstrationParent.value.initData()
     })
+
 
     return {
       $ygPrisonAdminstrationParent,

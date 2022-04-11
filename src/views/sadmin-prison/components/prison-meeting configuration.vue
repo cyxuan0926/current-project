@@ -15,7 +15,7 @@
                 <span v-if="scope.row.isEditPropertyShow">
                   <el-input
                     type="number"
-                    onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
+                    :onKeypress="$_limitInputPositiveInteger"
                     :min="0"
                     @blur="changeTimes(scope.row)"
                     v-model="scope.row.accessTime"

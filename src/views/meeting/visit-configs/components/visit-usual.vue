@@ -266,6 +266,8 @@ export default {
 
   mixins: [normalMixins],
 
+  inject: ['onParentSubimt'],
+
   data() {
     const validateDay = (rule, value, callback) => {
       const {
@@ -592,7 +594,7 @@ export default {
         ]
       }
 
-      const result = await this.$parent.$parent.$parent.onParentSubimt(windowSizes)
+      const result = await this.onParentSubimt(windowSizes)
 
       if (result) {
         let hasNoChanged = false
@@ -884,7 +886,7 @@ export default {
     /deep/ .el-form-item {
       margin-bottom: 13px;
 
-      .el-form-item__content {
+      &__content {
         width: 30% !important;
       }
 
@@ -892,7 +894,7 @@ export default {
         line-height: 36px;
       }
 
-      .el-form-item__error {
+      &__error {
         padding-top: 0px;
         top: 95%
       }
@@ -915,7 +917,7 @@ export default {
 
       .m-range-selector {
         float: none;
-        width: 100%;
+        width: $absolutely-measure;
         height: 36px;
         margin-bottom: 13px;
       }
@@ -927,7 +929,7 @@ export default {
 
     /deep/ .error-status {
       .m-range-selector {
-        border-color: #F56C6C;
+        border-color: $red;
         margin-bottom: 4px;
       }
       & ~ button {
@@ -952,7 +954,7 @@ export default {
   }
 
   .error__tip {
-    color: #F56C6C;
+    color: $red;
     font-size: 12px;
     line-height: 1;
   }
@@ -967,7 +969,7 @@ export default {
     }
 
     .form-meeting_cycle {
-      width: calc(100% - 150px);
+      width: calc(#{$absolutely-measure} - 150px);
       /deep/ .el-switch {
         height: 28px;
       }
@@ -1005,7 +1007,7 @@ export default {
     }
 
     .form-days-prison-area_configs {
-      width: calc(100% - 150px);
+      width: calc(#{$absolutely-measure} - 150px);
       .button-box {
         margin-top: 10px;
         justify-content: flex-start;
@@ -1045,7 +1047,7 @@ export default {
 
     &-configs {
       overflow: hidden;
-      width: calc(100% - 94px);
+      width: calc(#{$absolutely-measure} - 94px);
     }
   }
 }

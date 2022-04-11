@@ -32,7 +32,9 @@ import {
   _operationAuthorizations,
   uploadStepsTabOptions,
   _oneMonthAgo,
-  _prisonerDataExcelDownloadConsts
+  _prisonerDataExcelDownloadConsts,
+  limitInputPositiveInteger,
+  elInputTypes
 } from '@/common/constants/const'
 
 // 打印机
@@ -67,6 +69,10 @@ Vue.prototype.$_uploadStepsTabOptions = uploadStepsTabOptions
 Vue.prototype.$_oneMonthAgo = _oneMonthAgo
 
 Vue.prototype.$_prisonerDataExcelDownloadConsts = _prisonerDataExcelDownloadConsts
+
+Vue.prototype.$_limitInputPositiveInteger = limitInputPositiveInteger
+
+Vue.prototype.$_elInputTypes = elInputTypes
 // 只在生产环境启用等保
 if (BUILD_ENV === 'production') {
   new ActiveMonitor().start()

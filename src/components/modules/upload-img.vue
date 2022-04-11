@@ -166,6 +166,7 @@ export default {
 
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
+
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
@@ -247,7 +248,7 @@ export default {
     margin-top: 0;
     line-height: 20px;
   }
-  .red{
+  .red {
     color: #f00;
   }
   .component-img__box{
@@ -285,7 +286,7 @@ export default {
   }
   .text {
     font-size: 12px;
-    color: #fff;
+    color: var(--white-css);
     background-color: #409EFF;
     border-color: #409EFF;
     border-radius: 3px;

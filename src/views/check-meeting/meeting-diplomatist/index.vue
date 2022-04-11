@@ -705,7 +705,7 @@ export default {
   mounted() {
     // if (this.hasAllPrisonQueryAuth || this.hasProvinceQueryAuth) {
     //   this.$set(this.searchItems.applicationDate, 'miss', true)
-    //   this.$set(this.searchItems.applicationDateAdmin, 'miss', false)
+    //   this.$set(this.searchItems.Admin, 'miss', false)
     // } else {
     //   this.$set(this.searchItems.applicationDate, 'miss', false)
     //   this.$set(this.searchItems.applicationDateAdmin, 'miss', true)

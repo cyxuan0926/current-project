@@ -22,7 +22,7 @@
           </el-radio-group>
 
           <el-button
-            v-if="(config.enabledMeeting === 0 || (config.queue.length && config.prisonConfigIds.length && !$parent.$parent.$parent.errorMsg(config.window_size)))"
+            v-if="(config.enabledMeeting === 0 || (config.queue.length && config.prisonConfigIds.length && !errorMsg(config.window_size)))"
             plain
             type="danger"
             size="mini"
@@ -144,7 +144,7 @@
                     index === configs.length - 1 &&
                     config.queue.length > 0 &&
                     config.prisonConfigIds.length &&
-                    !$parent.$parent.$parent.errorMsg(config.window_size)
+                    !errorMsg(config.window_size)
                   "
                   class="button-float"
                   size="mini"
@@ -180,6 +180,8 @@ export default {
   },
 
   mixins: [normalMixins],
+
+  inject: ['errorMsg'],
 
   data() {
     return {
@@ -490,7 +492,7 @@ export default {
 
       else if (!config.prisonConfigIds.length) return false
 
-      else if (this.$parent.$parent.$parent.errorMsg(config.window_size)) return false
+      else if (this.errorMsg(config.window_size)) return false
 
       // 新增的特殊日期配置 或者 是新增了通话时间段 或者是更换了新的配置日期
       else if (
@@ -569,7 +571,7 @@ export default {
   /deep/ .el-form-item {
     margin-bottom: 13px;
 
-    .el-form-item__content {
+    &__content {
       width: 30%;
     }
 
@@ -577,7 +579,7 @@ export default {
       line-height: 36px;
     }
 
-    .el-form-item__error {
+    &__error {
       padding-top: 0px;
       top: 95%
     }
@@ -600,7 +602,7 @@ export default {
 
     .m-range-selector {
       float: none;
-      width: 100%;
+      width: $absolutely-measure;
       height: 36px;
       margin-bottom: 13px;
     }
@@ -612,7 +614,7 @@ export default {
 
   /deep/ .error-status {
     .m-range-selector {
-      border-color: #F56C6C;
+      border-color: $red;
       margin-bottom: 4px;
     }
     & ~ button {
@@ -633,12 +635,12 @@ export default {
 
   &-configs {
     overflow: hidden;
-    width: calc(100% - 98px);
+    width: calc(#{$absolutely-measure} - 98px);
   }
 }
 
 .error__tip {
-  color: #F56C6C;
+  color: $red;
   font-size: 12px;
   line-height: 1;
 }

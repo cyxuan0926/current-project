@@ -295,7 +295,7 @@
       </template>
 
       <div slot="footer" class="dialog-footer">
-        <div class="process-select-block clearfix" v-if="!show.agree && !show.disagree">
+        <div class="process-select-block" v-if="!show.agree && !show.disagree">
         <!-- 审批流 -->
         <label v-if="show.subTask && show.process" style="float: left; padding-left: 20px;">
           <span style="padding-right: 12px;">选择流程节点:</span>
@@ -843,29 +843,33 @@
             value: [this.$_dateNow, Moment().add(10, 'days').format('YYYY-MM-DD')],
             miss: !_isAdmin
           },
+
           area: {
             type: 'select',
             label: '通话区域',
             options: this.$store.state.areaOptions,
             value: ''
           },
+
           prisonerName: {
             type: 'input',
             label: '罪犯姓名',
             miss: false,
             value: ''
           },
-           level:{
-          type: 'select',
-          label: '管教级别',
-          options: [
-            { label: '宽管级', value: 1 },
-            { label: '普管级', value: 2 },
-            { label: '考察级', value: 3 },
-            { label: '严管级', value: 4 }
-          ],
-          value: ''
-        },
+
+          level:{
+            type: 'select',
+            label: '管教级别',
+            options: [
+              { label: '宽管级', value: 1 },
+              { label: '普管级', value: 2 },
+              { label: '考察级', value: 3 },
+              { label: '严管级', value: 4 }
+            ],
+            value: ''
+          },
+
           status: {
             type: 'select',
             label: '申请状态',
@@ -1350,12 +1354,14 @@
       ]),
 
       ...mapMutations(['setIsRefreshMultistageExamineMessageBell']),
-      setRemarks(row){
-        this.show.setRemarks=true
-         this.getMeetingId=row.id
+
+      setRemarks(row) {
+        this.show.setRemarks = true
+         this.getMeetingId = row.id
       },
-      submitRemarks(){
-        if(this.getRemarks){
+
+      submitRemarks() {
+        if(this.getRemarks) {
            http.addUnusualRemark({
             id: this.getMeetingId,
             unusualRemark: this.getRemarks
@@ -2171,6 +2177,7 @@
     font-size: 12px;
   }
   .process-select-block {
+    @include clearfix;
     padding: 20px 0 10px;
   }
 </style>

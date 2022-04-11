@@ -1,7 +1,6 @@
 <template>
   <!-- <div> -->
   <!-- <p v-if="label">{{title}}</p> -->
-
   <el-image
     :src="url || joinUrl + `?token=${ this.$urls.token }`"
     :fit="fit"
@@ -37,6 +36,7 @@ export default {
       type: String,
       default: ''
     },
+
     // label:{
     //   type: Boolean,
     //   default: false
@@ -45,21 +45,25 @@ export default {
       type: String,
       default: ''
     },
+
     // 狱务通的图片 需要拼接 node的token
     joinUrl: {
       type: String,
       default: ''
     },
+
     // 工具条
     toolbar: {
       type: Object,
       default: () => ({})
     },
+
     // 是否懒加载图片
     isLazy: {
       type: Boolean,
       default: true
     },
+
     fit: {
       type: String,
       default: 'fill'

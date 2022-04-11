@@ -47,28 +47,32 @@
           <el-col :span="24">
             <el-form-item label="IOS配置" prop="afrIOSSetValue">
               <el-select v-model="formData.afrIOSSetValue" placeholder="请选择IOS阈值配置">
-                <el-option 
-                  v-for="configs in faceRecognitionValues"
-                  :key="configs"
-                  :label="configs"
-                  :value="configs"
-                />
+                <template v-for="configs in faceRecognitionValues">
+                  <el-option 
+                    :key="configs"
+                    :label="configs"
+                    :value="configs"
+                  />
+                </template>
               </el-select>
             </el-form-item>
           </el-col>
+
           <el-col :span="24">
             <el-form-item label="安卓配置" prop="afrAndroidSetValue">
               <el-select v-model="formData.afrAndroidSetValue" placeholder="请选择安卓阈值配置">
-                <el-option 
-                  v-for="configs in faceRecognitionValues"
-                  :key="configs"
-                  :label="configs"
-                  :value="configs"
-                />
+                <template v-for="configs in faceRecognitionValues">
+                  <el-option 
+                    :key="configs"
+                    :label="configs"
+                    :value="configs"
+                  />
+                </template>
               </el-select>
             </el-form-item>
           </el-col>
         </template>
+
         <template #smscode>
           <el-col :span="24">
             <el-switch
@@ -77,9 +81,12 @@
               inactive-color="#dddddd"
               :active-value="1"
               :inactive-value="0"
-              :width="60">
-            </el-switch>
-            <span style="margin-left: 8px; color: #999;">该开关打开后，监狱配置中“快捷登录验证码”也打开的状态，监狱的用户点击获取验证码时，不获取真实的验证码，直接用替代验证码登录即可</span>
+              :width="60"
+            />
+
+            <span style="margin-left: 8px; color: #999;">
+              该开关打开后，监狱配置中“快捷登录验证码”也打开的状态，监狱的用户点击获取验证码时，不获取真实的验证码，直接用替代验证码登录即可
+            </span>
           </el-col>
         </template>
       </m-form>
@@ -115,15 +122,12 @@ export default {
       return {
         formConfigs: {
           labelWidth: '120px',
-
           hideRequiredAsterisk: true
         },
 
         thresholdConfigs: {
           slotName: 'test',
-
           customClass: 'threshold__configs',
-
           attrs: {
             label: '人脸识别阈值设置'
           }
@@ -131,13 +135,13 @@ export default {
 
         afrInterval: {
           label: '人脸检索间隔时间',
-
           type: 'input',
-
-          rules: ['required', 'isPositiveIntegers', 'numberRange10-3600'],
-
+          rules: [
+            'required',
+            'isPositiveIntegers',
+            'numberRange10-3600'
+          ],
           append: '秒',
-
           value: '1500'
         },
 
@@ -164,7 +168,6 @@ export default {
     // 更新
     async onUpdate(params) {
       this.updateLoading = true
-
       this.values = { ...params }
 
       await this.updateFaceRecognitionConfigs({ ...params, ...this.formData })
@@ -184,16 +187,12 @@ export default {
         } = val
 
         this.$set(this.formData, 'afrAndroidSetValue', afrAndroidSetValue)
-
         this.$set(this.formData, 'afrIOSSetValue', afrIOSSetValue)
-
         this.$set(this.formData, 'verificationCodeSwitch', verificationCodeSwitch)
 
         this.values = _.cloneDeep(val)
       },
-
       immediate: true,
-
       deep: true
     }
   }
@@ -205,13 +204,9 @@ export default {
 .face-recognition-configs {
   &__main {
     display: flex;
-
     justify-content: center;
-
-    width: 100%;
-
+    width: $absolutely-measure;
     padding: 0px 5px;
-
     border: 1px solid #DCDFE6;
     .cofigs__form {
       /deep/ .el-form-item__content {
@@ -222,14 +217,13 @@ export default {
 
       /deep/ .threshold__configs {
         display: flex;
-
         flex-direction: column;
         & > .el-form-item__content {
           margin-left: 0px !important;
         }
 
         .el-input {
-          width: 100%;
+          width: $absolutely-measure;
         }
 
         .el-select {

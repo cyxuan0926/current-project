@@ -15,16 +15,21 @@
 export default {
   props: {
     jsonData: Array,
+
     header: Array,
+
     filterFields: Array,
+
     filename: {
       type: Object,
       default: () => ({ value: '导出 Excel' })
     },
+
     bookType: {
       type: String,
       default: 'xlsx'
     },
+
     autoWidth: {
       type: Boolean,
       default: true
@@ -40,11 +45,13 @@ export default {
       })
     }
   },
-  data () {
+
+  data() {
     return {
       loading: false
     }
   },
+
   methods: {
     onDownload() {
       this.loading = true
@@ -70,6 +77,7 @@ export default {
         this.loading = false
       })
     },
+
     formatData(jsonData, filterFields) {
       return jsonData.map(item => {
         return filterFields.map(field => {
@@ -85,6 +93,7 @@ export default {
         })
       })
     },
+
     getValues(obj, keys) {
       const values = []
 

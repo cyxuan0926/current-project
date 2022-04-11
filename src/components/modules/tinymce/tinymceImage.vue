@@ -11,8 +11,9 @@
     multiple
     :on-exceed="handleExceed"
     :file-list="fileList"
-    :on-remove="handleRemove">
-    <i class="mce-ico mce-i-image"/>
+    :on-remove="handleRemove"
+  >
+    <i class="mce-ico mce-i-image" />
   </el-upload>
 
 </template>
@@ -25,11 +26,13 @@ export default {
       type: String,
       default: 'avatar'
     },
+
     accept: {
       type: String,
       default: 'image/jpeg,image/jpg'
     }
   },
+
   data() {
     return {
       fileList: [],
@@ -38,8 +41,10 @@ export default {
       }
     }
   },
+
   methods: {
     ...mapActions(['setUrlStorage', 'setNewUrlStorage']),
+
     handleSuccess(res, file, fileList) {
       switch (res.code) {
         case 200:
@@ -53,6 +58,7 @@ export default {
           this.$message.error(`上传图片失败:${ res.message }`)
       }
     },
+
     beforUpload(file) {
       let fileType = this.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
@@ -69,12 +75,15 @@ export default {
       }
       return true
     },
+
     handleExceed() {
       this.$message.error('图片数量超出限制')
     },
+
     handleError(e) {
       console.log(e)
     },
+
     handleRemove(file, fileList) {
       this.$emit('success', fileList.length ? fileList : '')
     }

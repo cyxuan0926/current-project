@@ -1,20 +1,18 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
-    <m-excel-export
-      v-if="hasAllPrisonQueryAuth && selectPrisoners.length > 0"
-      :filename="prisonerExcelConfig.filename"
-      :jsonData="selectPrisoners"
-      :header="prisonerExcelConfig.header"
-      :filterFields="prisonerExcelConfig.filterFields"
+  <el-row class="row-container" :gutter="0">
+    <template v-if="hasAllPrisonQueryAuth && selectPrisoners.length > 0">
+      <m-excel-export
+        :filename="prisonerExcelConfig.filename"
+        :jsonData="selectPrisoners"
+        :header="prisonerExcelConfig.header"
+        :filterFields="prisonerExcelConfig.filterFields"
       />
+    </template>
 
-    <m-excel-download
-      v-if="hasAllPrisonQueryAuth && selectPrisoners.length === 0 && filter.jailId"
-      path="/download/exportPrisoners"
-      :params="filter"
-    />
+    <template v-if="hasAllPrisonQueryAuth && selectPrisoners.length === 0 && filter.jailId">
+      <m-excel-download path="/download/exportPrisoners" :params="filter" />
+    </template>
+
     <m-search
       ref="search"
       :items="searchItems"
@@ -40,24 +38,40 @@
 
     <el-row type="flex" style="margin-bottom: 10px">
       <template v-if="!hasAllPrisonQueryAuth && isPrisonerTabVal">
-         <m-excel-download
-            path="/download/downloadfile"
-            :params='{ filepath:"prisoner__leave_import_template.xls"}'
-            text="离监模板" style="margin-left: 10px"
-          />
-          <m-excel-upload ref="mExcelUpload" text='导入离监数据'  @click.native="one(true)" :configs="excelUploadConfigs" style="margin-left: 10px" />
-          <m-excel-download
-            path="/download/downloadfile"
-            :params='{ filepath:"prisoner__transfer_import_template.xls"}'
-            text="转监模板" style="margin-left: 10px"
-          />
-            <m-excel-upload ref="mExcelUploadConfig" text='导入转监数据' @click.native="one(false)"  :configs="excelUploadConfigs" style="margin-left: 10px" />
-        <span style="margin-left:10px">
-        <el-button  type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
-        <el-button type="primary" @click="showDelPrionser">离监</el-button>
-        <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
-        <el-button type="primary" @click="showModifyLevel(12)">调整管教级别</el-button>
-        <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+        <m-excel-download
+          path="/download/downloadfile"
+          :params='{ filepath:"prisoner__leave_import_template.xls" }'
+          text="离监模板" style="margin-left: 10px;"
+        />
+
+        <m-excel-upload
+          ref="mExcelUpload"
+          text='导入离监数据'
+          @click.native="one(true)"
+          :configs="excelUploadConfigs"
+          style="margin-left: 10px;"
+        />
+
+        <m-excel-download
+          path="/download/downloadfile"
+          :params='{ filepath:"prisoner__transfer_import_template.xls" }'
+          text="转监模板"
+          style="margin-left: 10px;"
+        />
+
+        <m-excel-upload
+          ref="mExcelUploadConfig"
+          text='导入转监数据'
+          @click.native="one(false)"
+          :configs="excelUploadConfigs"
+          style="margin-left: 10px;"
+        />
+
+        <span style="margin-left: 10px;">
+          <el-button type="primary" @click="onPreChangePrisonConfigs(10)">转监</el-button>
+          <el-button type="primary" @click="showDelPrionser">离监</el-button>
+          <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
+          <el-button type="primary" @click="showAddPrisoner">新增</el-button>
         </span>
       </template>
     </el-row>
@@ -95,20 +109,21 @@
         :data="prisoners.contents"
         @selection-change="handleSelectionChange"
         :cols="tableCols"
-        :cell-style="cellred"
+        :cell-style="cellRed"
         @sort-change="sortChange"
       >
         <template #accessTime="{ row }">
           <div>
             {{ row.accessTime }}
-            <el-button
-              v-if="!hasAllPrisonQueryAuth"
-              :disabled="!row.sysFlag"
-              size="small"
-              type="text"
-              style="margin-left: 5px;"
-              @click="onTimeEdit(row, 'accessTime')"
-            >修改</el-button>
+            <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                :disabled="!row.sysFlag"
+                size="small"
+                type="text"
+                style="margin-left: 5px;"
+                @click="onTimeEdit(row, 'accessTime')"
+              >修改</el-button>
+            </template>
           </div>
         </template>
 
@@ -116,14 +131,15 @@
           <div>
             <span>{{ row.smsNum }}</span>
 
-            <el-button
-              v-if="!hasAllPrisonQueryAuth"
-              :disabled="!row.sysFlag"
-              size="small"
-              type="text"
-              style="margin-left: 5px;"
-              @click="onTimeEdit(row, 'smsNum')"
-            >修改</el-button>
+            <template v-if="!hasAllPrisonQueryAuth">
+              <el-button
+                :disabled="!row.sysFlag"
+                size="small"
+                type="text"
+                style="margin-left: 5px;"
+                @click="onTimeEdit(row, 'smsNum')"
+              >修改</el-button>
+            </template>
           </div>
         </template>
         
@@ -148,9 +164,13 @@
         </template>
 
         <template #prisonerStatus="{ row }">
-          <span v-if="!row.sysFlag">删除原因：{{ row.deleteReason }}</span>
+          <template v-if="!row.sysFlag">
+            <span>删除原因：{{ row.deleteReason }}</span>
+          </template>
 
-          <span v-else-if="row.isBlacklist">黑名单原因：{{ row.reason }}</span>
+          <template v-else-if="row.isBlacklist">
+            <span>黑名单原因：{{ row.reason }}</span>
+          </template>
         </template>
 
         <template #families="{ item }">
@@ -183,39 +203,37 @@
         <template #operations="{ row }">
           <template v-if="isPrisonerTabVal">
             <template v-if="!hasAllPrisonQueryAuth">
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-if="!row.isBlacklist"
-                @click="showPrisonerDet(row)"
-              >详情
-              </el-button>
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-if="!row.isBlacklist"
-                @click="showBlackList(row)"
-              >加入黑名单
-              </el-button>
+              <template v-if="!row.isBlacklist">
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag"
+                  @click="showPrisonerDet(row)"
+                >详情</el-button>
 
-              <el-button
-                type="text"
-                size="small"
-                :disabled="!row.sysFlag"
-                v-else
-                @click="removeBlackList(row)"
-              >移出黑名单
-              </el-button>
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag"
+                  @click="showBlackList(row)"
+                >加入黑名单</el-button>
+              </template>
+
+              <template v-else>
+                <el-button
+                  type="text"
+                  size="small"
+                  :disabled="!row.sysFlag" 
+                  @click="removeBlackList(row)"
+                >移出黑名单</el-button>
+              </template>
 
               <el-button
                 type="text"
                 size="small"
                 :disabled="!row.sysFlag"
                 @click="onShowPrisonConfig(row, 2)"
-              >更换监区
-              </el-button>
+              >更换监区</el-button>
             </template>
 
             <template v-else>
@@ -224,8 +242,7 @@
                 size="small"
                 :disabled="!row.sysFlag"
                 @click="onShowPrisonConfig(row, 6)"
-              >更换监狱
-              </el-button>
+              >更换监狱</el-button>
             </template>
           </template>
 
@@ -235,16 +252,14 @@
               type="text"
               size="small"
               @click="onAbortChangePrisoners(row.prisonerId)"
-            >取消
-            </el-button>
+            >取消</el-button>
 
             <el-button
               v-else
               type="text"
               size="small"
               @click="onSingleAccept(9, row)"
-            >接收
-            </el-button>
+            >接收</el-button>
           </template>
         </template>
       </m-table-new>
@@ -523,7 +538,8 @@
 
       <div v-else style="text-align: center;color: red;font-size: 16px">没有可更换的监区</div>
     </el-dialog>
-  <el-dialog
+
+    <el-dialog
       class="authorize-dialog upload-dialog"
       ref="uploadDialog"
       title="信息数据导入中"
@@ -589,7 +605,16 @@
         </div>        
       </el-dialog>
     </el-dialog>
-    <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData" />
+
+    <prisoner-detail-modal v-model="detailDetVisible" :prisonerDetData="prisonerDetData">
+      <template #dialogFooter>
+        <el-button
+          v-if="!!prisonerDetData.faceUrl"
+          type="primary"
+          @click="onReSubmit"
+        >重新提交</el-button>
+      </template>
+    </prisoner-detail-modal>
   </el-row>
 </template>
 
@@ -700,7 +725,6 @@ export default {
           options: prisonerStatus,
           value: 1,
           miss: false,
-          
         },
         isNotify: {
           type: 'select',
@@ -969,7 +993,6 @@ export default {
               func: this.onGetNextLevelPrisonConfigsData,
               filterable
             },
-
             prisonLayerId: {
               type: 'select',
               noLabel: true,
@@ -982,7 +1005,6 @@ export default {
             }
           }, { dissMissConfigs }, formButton)
           break
-        
         case 3:
           title = '新增服刑人员'
           formButton.buttons = [
@@ -1704,45 +1726,54 @@ export default {
       'acceptPrisoners',
       'abortChangePrisoners',
       'getTransferOutPrisonersPagedData',
-      'getJailPrisonAreas'
+      'getJailPrisonAreas',
+      'rejectPrisonerFaceUrl'
     ]),
-    sortChange({ column, prop, order }) {
-          this.sortObj = {}
-          delete this.filter.sortDirection
-          delete this.filter.orderField
-          this.sortObj.orderField = "accessTime"
-          if (order === 'descending') this.sortObj.sortDirection = 'desc'
-          else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
-          this.filter = Object.assign(this.filter, this.sortObj)
-          this.getDatas('sortChange')
-      },
+
     ...mapActions(["uploadFile", "resetState"]),
-     ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
-     one(type){
-       this.UploadType=type
-     },
-      // 重制上传的参数关闭对话框
+
+    ...mapActions('familyPhone', ['validateUploadPrisonerLeave']),
+
+    sortChange({ column, prop, order }) {
+      this.sortObj = {}
+
+      delete this.filter.sortDirection
+      delete this.filter.orderField
+
+      this.sortObj.orderField = "accessTime"
+      if (order === 'descending') this.sortObj.sortDirection = 'desc'
+      else if (order === 'ascending') this.sortObj.sortDirection = 'asc'
+
+      this.filter = Object.assign(this.filter, this.sortObj)
+      this.getDatas('sortChange')
+    },
+
+    one(type){
+      this.UploadType = type
+    },
+
+    // 重制上传的参数关闭对话框
     onResetAndcloseUploadDialog() {
       this.spendTime = 0;
-
       this.percent = 0;
-
       this.status = 0;
-
       this.uploadDialogVisible = false;
     },
+
       // 内层提示对话框关闭的回调方法
     onUploadInnerDialogClose() {
       setTimeout(() => {
         this.onResetAndcloseUploadDialog();
       }, 1000);
     },
+
      onOpenUploadDialog() {
       this.$nextTick(() => {
         this.$refs.mExcelUpload.onManualUpload();
         this.$refs.mExcelUploadConfig.onManualUpload();
       });
     },
+
     beforeUpload(file) {
       this.resetState({ validatePrisonerLeaveResult: {
         successTotal: 0,
@@ -1756,9 +1787,7 @@ export default {
       // 上次文件的定时器
       const uploadInterver = setInterval(async () => {
         this.status += 1
-
         this.percent += 15
-
         this.spendTime += .5
 
         if (this.status === 4) {
@@ -1797,18 +1826,15 @@ export default {
 
                 if (index === 1) {
                   this.percent += 20
-
                   this.spendTime += 1
-
                   this.status = this.status + 1
 
                   clearInterval(processInterver)
 
                   this.spendTime += 1
-
                   this.status += 1
-
                   this.percent = 100
+
                   setTimeout(() => {
                     this.uploadInnerDialogVisible = true
                   }, 1500)
@@ -1829,13 +1855,15 @@ export default {
         this.uploadDialogVisible = true
       }
     },
-    cellred({row, column, rowIndex, columnIndex}){
-      if(!(row.address&&row.address.includes("中国"))){
-        if(row.address){
-           return 'color:red'
+
+    cellRed({row, column, rowIndex, columnIndex}){
+      if (!(row.address&&row.address.includes("中国"))) {
+        if (row.address) {
+          return 'color:red'
         }
       }
     },
+
     async getDatas() {
       // this.allSelectionvalue = false // 不要删除
       // await this.getPrisoners({ ...this.filter, ...this.pagination })
@@ -1848,29 +1876,24 @@ export default {
 
       if (this.hasAllPrisonQueryAuth) {
         if (this.isPrisonerTabVal) await this.getPrisonersAll(params)
-
         else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPages', params })
       } else {
         if (this.isPrisonerTabVal) await this.getPrisoners(params)
-
         else await this.getTransferOutPrisonersPagedData({ url: '/prisoners/change/findPage', params })
       }
     },
 
     onSearch(isCurrent) {
-          delete this.filter.sortDirection
-          delete this.filter.orderField
+      delete this.filter.sortDirection
+      delete this.filter.orderField
       this.$refs.pagination.handleCurrentChange(!!isCurrent ? this.pagination.page : 1)
       // this.$refs.pagination.handleCurrentChange(1)
     },
 
     onTimeEdit(e, type) {
       this.prisoner = Object.assign({}, e)
-
       this.thePrisoner = e
-
       this.timesDialogType = type
-
       this.isEditTime = true
     },
 
@@ -1898,9 +1921,7 @@ export default {
         if (!valid) return
 
         const { id } = this.prisoner
-
         const params = { id, [this.timesDialogType]: this.prisoner[this.timesDialogType] }
-
         const urls = {
           accessTime: '/prisoners/updateAccessTime',
           smsNum: '/prisoners/updateSmsNum'
@@ -1938,7 +1959,6 @@ export default {
       }
 
       const _key = `familyId_${ family.familyId }`
-
       const URLS = await batchDownloadPublicImageURL(urls, _key)
 
       this.family = {
@@ -1952,12 +1972,15 @@ export default {
     // 打开详情弹窗
     async showPrisonerDet(data) {
       let { faceUrl, id } = data
+
       if (faceUrl) {
         const URLS = await batchDownloadPublicImageURL({
           faceUrl
         }, `prisonId_${ id }`)
+
         data.faceUrl = URLS.faceUrl
       }
+
       this.prisonerDetData = Object.assign({}, data)
       this.detailDetVisible = true
     },
@@ -1994,17 +2017,11 @@ export default {
         this.notificationForm = Object.assign({}, e, { signDate: initSignDate})
       } else {
         this.notificationForm.familyId = ''
-
         this.notificationForm.familyName = ''
-
         this.notificationForm.familyRelationship = ''
-
         this.notificationForm.familyUuid = ''
-
         this.notificationForm.meetingNotificationUrl = ''
-
         this.notificationForm.protoNum = ''
-
         this.notificationForm.signDate = ''
       }
 
@@ -2029,14 +2046,11 @@ export default {
           if (!res) return
           // 表单组件初始化的数值
           this.notificationForm = this.notification
-
           this.notificationFamily = Object.assign({}, this.notification)
-
           this.notificationShow = true
         })
       } else {
         this.notificationForm = {}
-
         this.notificationShow = true
 
         this.$refs.notification && this.$refs.notification.onClearValidate()
@@ -2061,7 +2075,9 @@ export default {
         }, e)
         this.addNotification(params).then(res => {
           this.submitting = false
+
           if (!res) return
+
           this.notificationPrisoner.notifyId = res.id
           this.notificationShow = false
         })
@@ -2184,7 +2200,6 @@ export default {
         let params = new FormData()
 
         params.append('prisonerId', this.prisoner.id)
-
         params.append('reason', val.reason)
 
         this.addPrisonerBlacklist(params).then(res => {
@@ -2209,14 +2224,11 @@ export default {
         const { jailId } = this.user
 
         let prisonArea, temp = { jailId }
-
-        if(this.user.branch_prison) {
+        if (JSON.parse(localStorage.getItem('user')).branch_prison) {
           // 暂时默认租户管理员
           if (this.user.role === '-1') prisonArea = (this.prisonConfigs.filter(prisonArea => prisonArea.id === val.prisonAreaId))[0].name
-
-          // 其他角色就是本身
+// 其他角色就是本身
           else prisonArea = (this.jailPrisonAreas.filter(value => value.id === val.prisonAreaId))[0].name
-
           temp = { jailId, prisonArea }
         }
 
@@ -2275,9 +2287,7 @@ export default {
         },
 
         prisonAreaId: otherStoresParams,
-
         prisonBranchId: otherStoresParams,
-
         prisonBuildingId: otherStoresParams
       }
 
@@ -2333,7 +2343,6 @@ export default {
 
         // 筛选监狱数据
         if (prop === 'provincesId') data = _.cloneDeep(this.$store.state.prisonAll).filter(val => val.id !== this.currentJailId)
-
         // 监区数据
         if (prop === 'jailId') data = _.cloneDeep(this.prisonConfigs)
 
@@ -2387,11 +2396,9 @@ export default {
 
         // 当前元素的配置
         this.$set(this.dialogContent['items'][prop], 'configs', configs)
-
         this.$set(this.dialogContent['items'][prop], 'setValueConfigs', setValueConfigs)
 
         this.$refs['dialogForm'].radioChangeEvent(parentId, prop, item)
-
         this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
 
         if (!data || (Array.isArray(data) && !data.length)) {
@@ -2409,7 +2416,6 @@ export default {
           })
 
           this.$refs['dialogForm'].radioChangeEvent(parentId, prop, item)
-
           this.$refs['dialogForm'].setFieldValue(parentId, prop, item)
         }
 
@@ -2453,7 +2459,6 @@ export default {
 
           if (this.operationType === 5) {
             const temp = this.selectPrisoners.map(prisoner => prisoner.id)
-
             const prisonerIds = temp.join(',')
 
             params = {
@@ -2666,7 +2671,6 @@ export default {
 
     onCloseDialogAndRefreshen() {
       this.handleCloseDialog()
-
       this.onSearch(true)
     },
 
@@ -2704,7 +2708,6 @@ export default {
 
     // 单个接收
     async onSingleAccept(type, row) {
-
       this.prisoner = Object.assign({}, row)
 
       await this.onhandlerAccept(type)
@@ -2732,9 +2735,7 @@ export default {
 
     async onAcceptPrisoners() {
       const currentDialogFormResponseValues = _.cloneDeep(this.dialogFormResponseValues)
-
       const { jailId } = this.user
-
       let params = {
         jailId
       }
@@ -2777,8 +2778,32 @@ export default {
 
     async _mixinsInitMethods() {
       if (this.$store.state.global.loginHavePrisonerIn) this.tabs = 'change'
-
       else await this.getDatas()
+    },
+
+    // 重新提交
+    onReSubmit() {
+      this.$confirm('确认驳回该人脸信息吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        closeOnClickModal: false,
+        callback: async action => {
+          if (action === 'confirm') {
+            const { id } = this.prisonerDetData
+
+            const result = await this.rejectPrisonerFaceUrl(id)
+
+            if (result) {
+              setTimeout(() => {
+                this.detailDetVisible = false
+
+                this.onSearch(true)
+              }, 500)
+            }
+          }
+        }
+      })
     }
 
     // 自定义的全选操作 不要删除
@@ -2804,7 +2829,6 @@ export default {
     //   this.isIndeterminate = this.deletePrisoners.length > 0 && this.deletePrisoners.length < this.prisoners.contents.length
     // }
   },
-  
 }
 </script>
 

@@ -453,7 +453,7 @@
 <style scoped>
 .scoped{
     padding: 50px 24px 0;
-    background-color: #fff;
+    background-color: var(--white-css);
 }
 .scoped .el-form-item {
     margin-bottom: 75px;

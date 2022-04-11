@@ -1,14 +1,14 @@
-.center{
+.center {
   background: url('../../assets/images/bg-login.jpg') 0 60% no-repeat;
   background-size: cover;
   min-height: calc(100vh - 36px);
 }
-.login-container{
+
+.login-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
   background: rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   width: 460px;
@@ -17,18 +17,20 @@
   // max-width: 500px;
   overflow: hidden;
   // margin: 20px;
-  h1{
+
+  h1 {
     background: rgba(0, 0, 0, 0.05);
-    color: #ffffff;
+    color: $white;
     text-align: center;
     padding: 20px;
     font-size: 22px;
   }
-  .login-form{
+
+  .login-form {
     width: 70%;
     margin: auto;
     padding: 25px 0;
-    &>.white{
+    & > .white {
       margin-bottom: 10px;
     }
 
@@ -36,15 +38,19 @@
       margin-top: -6px;
     }
   }
-  .white{
-    color: #ffffff;
+  
+  .white {
+    color: $white;
   }
-  .prepend{
+
+  .prepend {
     width: 56px;
     display: block;
     text-align: center;
   }
-  .width100{
+
+  .btn-login {
+    width: $absolutely-measure;
     vertical-align: top;
   }
 }

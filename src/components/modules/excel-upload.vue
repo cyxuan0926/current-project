@@ -66,11 +66,9 @@ export default {
 
   computed: {
     actionsUrl() {
-      const { apiHostKey, apiPathKey } = this.apiConfigs
-
-      const apiHost = this.$urls[apiHostKey]
-
-      const apiPath = this.$urls[apiPathKey] || ''
+      const { apiHostKey, apiPathKey } = this.apiConfigs,
+        apiHost = this.$urls[apiHostKey],
+        apiPath = this.$urls[apiPathKey] || ''
 
       return `${ apiHost }${ apiPath }${ this.url }`
     }

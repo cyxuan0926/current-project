@@ -27,7 +27,6 @@ export const _ygPrisonCommonSearchItems = () => {
       miss: false,
       value: ''
     },
-
     // 服刑人员姓名
     prisonerName: {
       type: 'input',
@@ -37,17 +36,17 @@ export const _ygPrisonCommonSearchItems = () => {
     },
 
     // 开始时间-结束时间
-    dateMonth: {
-      type: 'monthRangeSelector',
-      canNotClear: true,
-      startKey: 'startDate',
-      endKey: 'endDate',
-      range: {
-        max: formatTime(new Date(), 'yyyy-MM'),
-        maxMonthRange: 24
-      },
-      value: [startDate, endDate]
-    }
+    // dateMonth: {
+    //   type: 'monthRangeSelector',
+    //   canNotClear: true,
+    //   startKey: 'startDate',
+    //   endKey: 'endDate',
+    //   range: {
+    //     max: formatTime(new Date(), 'yyyy-MM'),
+    //     maxMonthRange: 24
+    //   },
+    //   value: [startDate, endDate]
+    // }
   }
 }
 
@@ -76,7 +75,8 @@ export const _ygPrisonCommonTableCols = () => {
       label: '年份',
       prop: 'yearNum',
       slotName: 'yearNum',
-      width: 50
+      width: 50,
+      showOverflowTooltip: true
     },
 
     {
@@ -123,5 +123,5 @@ export const _ygPrisonExportExcelUrls = [
   '/infoLaborTrain/exportList',
   '/infoMedicalExpense/exportMedicalExpense',
   // 为了处理baseURL 不是狱物通的
-  '/download/common/download'
+  '/download/common/download',
 ]

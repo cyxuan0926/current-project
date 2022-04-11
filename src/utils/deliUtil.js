@@ -84,7 +84,6 @@ export default class {
     // 响应ws请求
     handleWSMessage(str) {
         let { FuncName, result } = JSON.parse(str)
-        console.log(str)
         // 初始化
         if (FuncName === 'camInitCameraLib') {
             this.openDev()

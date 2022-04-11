@@ -4,147 +4,163 @@
     :rules="(rule && rule.length) ? rule : (((item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? [] : item.changeRules))"
     :class="[(item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false) ? 'unused-form__item' : '', (item.customClass ? item.customClass : '')]"
     :label="item.noLabel ? '' : item.label"
-    :prop="prop">
+    :prop="prop"
+  >
     <slot :name="prop">
-      <el-input
-        v-if="(item.type === 'input' || item.type === 'textarea') && !item.isTrim"
-        :ref="prop + item.type"
-        :type="item.type"
-        :rows="item.rows"
-        :maxlength="item.maxlength"
-        :clearable="item.clearable"
-        :autosize="item.autosize"
-        :show-word-limit="item.type === 'textarea' && item.showWordLimit"
-        v-model="fields[prop]"
-        :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
-        :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)">
-        <template
-          v-if="item.append"
-          slot="append">{{ item.append }}</template>
-      </el-input>
+      <template v-if="$_elInputTypes.includes(item.type) && !item.isTrim">
+        <el-input
+          v-model="fields[prop]"
+          :ref="prop + item.type"
+          :type="item.type"
+          :rows="item.rows"
+          :maxlength="item.maxlength"
+          :clearable="item.clearable"
+          :autosize="item.autosize"
+          :show-word-limit="item.type === 'textarea' && item.showWordLimit"
+          :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
+          :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)"
+          :onKeypress="item.keypress"
+          v-bind="item.attrs || {}"
+          v-on="item.events || {}"
+        >
+          <template v-if="item.append" #append>{{ item.append }}</template>
+        </el-input>
+      </template>
 
-      <el-input
-        v-if="(item.type === 'input' || item.type === 'textarea') && item.isTrim"
-        :ref="prop + item.type"
-        :type="item.type"
-        :maxlength="item.maxlength"
-        :clearable="item.clearable"
-        :autosize="item.autosize"
-        :show-word-limit="item.type === 'textarea' && item.showWordLimit"
-        v-model.trim="fields[prop]"
-        :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
-        :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)">
-        <template
-          v-if="item.append"
-          slot="append">{{ item.append }}</template>
-      </el-input>
+      <template v-if="$_elInputTypes.includes(item.type) && item.isTrim">
+        <el-input
+          v-model.trim="fields[prop]"
+          :ref="prop + item.type"
+          :type="item.type"
+          :maxlength="item.maxlength"
+          :clearable="item.clearable"
+          :autosize="item.autosize"
+          :show-word-limit="item.type === 'textarea' && item.showWordLimit"
+          :disabled="item.disabled || (item.disableDependingProp ? (item.dependingRelation ? !!fields[item.disableDependingProp] : !fields[item.disableDependingProp] ) : false)"  
+          :placeholder="item.noPlaceholder ? '' : (item.placeholder || '请输入' + item.label)"
+          v-bind="item.attrs || {}"
+          v-on="item.events || {}"
+        >
+          <template v-if="item.append" #append>{{ item.append }}</template>
+        </el-input>
+      </template>
 
-      <el-select
-        v-if="item.type === 'select'"
-        :ref="prop + item.type"
-        :placeholder="item.placeholder || '请选择' + item.label"
-        v-model="fields[prop]"
-        :loading="item.loading"
-        :filterable="!!item.filterable"
-        :disabled="item.disabled"
-        :collapse-tags="!!item.collapseTags"
-        :multiple="!!item.multiple"
-        @change="selectChangeEvent($event, prop, item)">
-        <el-option
-          v-for="option in item.options"
-          :key="item.props ? option[item.props.value] : option.value"
-          :label="item.props && item.props.label ? option[item.props.label] : option.label"
-          :value="item.props && item.props.value ? option[item.props.value] : option.value"
+      <template v-if="item.type === 'select'">
+        <el-select
+          v-model="fields[prop]"
+          :ref="prop + item.type"
+          :placeholder="item.placeholder || '请选择' + item.label"
+          :loading="item.loading"
+          :filterable="!!item.filterable"
+          :disabled="item.disabled"
+          :collapse-tags="!!item.collapseTags"
+          :multiple="!!item.multiple"
+          @change="selectChangeEvent($event, prop, item)"
+        >
+          <template v-for="option in item.options">
+            <el-option
+              :key="item.props ? option[item.props.value] : option.value"
+              :label="item.props && item.props.label ? option[item.props.label] : option.label"
+              :value="item.props && item.props.value ? option[item.props.value] : option.value"
+            />
+          </template>
+        </el-select>
+      </template>
+
+      <template v-if="item.type === 'radio'">
+        <el-radio-group
+          v-model="fields[prop]"
+          :ref="prop + item.type"
+          :disabled="item.disabled"
+          @change="item.func ? item.func($event, prop, item) : radioChangeEvent($event, prop, item)"
+        >
+          <template v-for="option in item.options">
+            <el-radio 
+              :key="item.props ? option[item.props.value] : option.value"
+              :label="item.props.label ? option[item.props.label] : option.label"
+            >{{ item.props.value ? option[item.props.value] : option.value }}</el-radio>
+          </template>
+        </el-radio-group>
+      </template>
+
+      <template v-if="item.type === 'date'">
+        <el-date-picker
+          v-model="fields[prop]"
+          :ref="prop + item.type"
+          type="date"
+          :disabled="item.disabled"
+          value-format="yyyy-MM-dd"
+          :picker-options="item.pickerOptions"
+          :placeholder="'请选择' + item.label"
         />
-      </el-select>
+      </template>
 
-      <el-radio-group
-        :ref="prop + item.type"
-        v-if="item.type === 'radio'"
-        v-model="fields[prop]"
-        :disabled="item.disabled"
-        @change="item.func ? item.func($event, prop, item) : radioChangeEvent($event, prop, item)"
-      >
-        <el-radio 
-          v-for="option in item.options"
-          :key="item.props ? option[item.props.value] : option.value"
-          :label="item.props.label ? option[item.props.label] : option.label">
-          {{ item.props.value ? option[item.props.value] : option.value }}
-        </el-radio>
-      </el-radio-group>
+      <template v-if="item.type === 'switch'">
+        <el-switch
+          v-model="fields[prop]"
+          :ref="prop"
+          active-color="#13ce66"
+          inactive-color="#dddddd"
+          :active-value="1"
+          :inactive-value="0"
+          :disabled="item.disabled"
+          @change="(item.func && item.func($event, prop, item)) || resetFieldValue($event, prop, item) "
+          :width="60"
+        />
+      </template>
 
-      <el-date-picker
-        v-if="item.type === 'date'"
-        :ref="prop + item.type"
-        v-model="fields[prop]"
-        type="date"
-        :disabled="item.disabled"
-        value-format="yyyy-MM-dd"
-        :picker-options="item.pickerOptions"
-        :placeholder="'请选择' + item.label"
-      />
+      <template v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'">
+        <el-checkbox-group
+          v-model="fields[prop]"
+          :ref="prop + item.type"
+          v-bind="item.attrs || {}"
+          v-on="item.events || {}"
+        >
+          <template v-for="box in item.group">
+            <el-checkbox
+              :key="box.value"
+              :label="box.value"
+              v-bind="box.attrs || {}"
+              v-on="box.events || {}"
+            >{{ box.label }}</el-checkbox>
+          </template>
+        </el-checkbox-group>
+      </template>
 
-      <el-switch
-        v-if="item.type === 'switch'"
-        :ref="prop"
-        v-model="fields[prop]"
-        active-color="#13ce66"
-        inactive-color="#dddddd"
-        :active-value="1"
-        :inactive-value="0"
-        :disabled="item.disabled"
-        @change="(item.func && item.func($event, prop, item)) || resetFieldValue($event, prop, item) "
-        :width="60"
-      />
+      <template v-if="item.type === 'switch' && item.tips && fields[prop]">
+        <span style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
+      </template>
 
-      <el-checkbox-group
-        v-if="item.type === 'checkbox' || item.type === 'checkboxgroup'"
-        :ref="prop + item.type"
-        v-model="fields[prop]"
-        v-bind="item.attrs || {}"
-        v-on="item.events || {}"
-      >
-        <el-checkbox
-          v-for="box in item.group"
-          :key="box.value"
-          :label="box.value"
-        >{{ box.label }}</el-checkbox>
-      </el-checkbox-group>
+      <template v-if="item.type === 'uploadImg'">
+        <m-upload-img v-model="fields[prop]" @success="onSuccess" />
+      </template>
 
-      <span
-        v-if="item.type === 'switch' && item.tips && fields[prop]"
-        style="margin-left: 10px; color: #999; vertical-align: middle;">{{ item.tips }}</span>
+      <template v-if="item.type === 'uploadAudio'">
+        <m-upload-audio
+          v-model="fields[prop]"
+          ref="audio"
+          @success="onSuccess"
+        />
+      </template>
 
-      <m-upload-img
-        v-if="item.type === 'uploadImg'"
-        v-model="fields[prop]"
-        @success="onSuccess"
-      />
-
-      <m-upload-audio
-        v-if="item.type === 'uploadAudio'"
-        ref="audio"
-        v-model="fields[prop]"
-        @success="onSuccess"
-      />
-
-      <m-upload-video
-        v-if="item.type === 'uploadVideo'"
-        ref="video"
-        v-model="fields[prop]"
-        @success="onSuccess"
-      />
-
+      <template v-if="item.type === 'uploadVideo'">
+        <m-upload-video
+          v-model="fields[prop]"
+          ref="video"
+          @success="onSuccess"
+        />
+      </template>
       <!-- <m-quill-editor
         v-if="item.type === 'editor'"
         :contents="fields[prop]"
         @editorChange="editorChange" /> -->
-      <m-tinymce
-        v-if="item.type === 'jaileditor'"
-        :value="fields[prop]"
-        tools="allTools"
-        @editorChange="tinymceChange"
-      />
+      <template v-if="item.type === 'jaileditor'">
+        <m-tinymce
+          :value="fields[prop]"
+          tools="allTools"
+          @editorChange="tinymceChange"
+        />
+      </template>
     </slot>
   </el-form-item>
 </template>

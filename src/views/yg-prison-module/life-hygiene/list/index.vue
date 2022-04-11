@@ -39,7 +39,7 @@ export default {
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
 
-    const searchItems = reactive(_.cloneDeep(_searchItems))
+    const searchItems = ref(_.cloneDeep(_searchItems))
 
     const $tabs = ref('1')
 
@@ -95,32 +95,22 @@ export default {
     const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
-       if(val === '0') {
-        searchItems.prisonArea.miss= true
-        searchItems.prisonerNumber.miss = true
-        searchItems.prisonerName.miss = true
-        searchItems.dateMonth.miss = false
-      } else if(val === '1') {
-        searchItems.prisonArea.miss= false
-        searchItems.prisonerNumber.miss = false
-        searchItems.prisonerName.miss = false
-        searchItems.dateMonth.miss = false
-      } else if(val === '2'){
-            searchItems.prisonArea.miss= false
-            searchItems.prisonerNumber.miss = false
-            searchItems.prisonerName.miss = false
-            searchItems.dateMonth.miss = false
-      } else if(val === '3'){
-            searchItems.prisonArea.miss= false
-            searchItems.prisonerNumber.miss = false
-            searchItems.prisonerName.miss = false
-            searchItems.dateMonth.miss = true
-      } else if(val === '4'){
-            searchItems.prisonArea.miss= false
-            searchItems.prisonerNumber.miss = false
-            searchItems.prisonerName.miss = false
-            searchItems.dateMonth.miss = false
-      }
+      searchItems.value.prisonArea.miss= false
+
+      searchItems.value.prisonerNumber.miss = false
+
+      searchItems.value.prisonerName.miss = false
+
+      searchItems.value.dateMonth.miss = false
+
+      if (val === '0') {
+        searchItems.value.prisonArea.miss= true
+
+        searchItems.value.prisonerNumber.miss = true
+
+        searchItems.value.prisonerName.miss = true
+      } else if (val === '3') searchItems.value.dateMonth.miss = true
+
       $ygPrisonAdminstrationParent.value && $ygPrisonAdminstrationParent.value.initData()
     }, {
       immediate: true

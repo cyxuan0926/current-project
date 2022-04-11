@@ -42,7 +42,7 @@
                 position: absolute;
                 top: 22px;
                 bottom: 22px;
-                width: 100%;
+                width: $absolutely-measure;
                 left: 0;
                 overflow: hidden;
                 border-left: 1px solid #366C9D;
@@ -52,7 +52,7 @@
             &-empty {
                 position: absolute;
                 bottom: 40%;
-                width: 100%;
+                width: $absolutely-measure;
                 left: 0;
                 overflow: hidden;
                 z-index: 9;
@@ -86,7 +86,7 @@
             &__bottom__border {
                 position: absolute;
                 left: 0;
-                width: 100%;
+                width: $absolutely-measure;
                 height: 22px;
                 overflow: hidden;
 

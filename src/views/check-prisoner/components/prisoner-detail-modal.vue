@@ -28,6 +28,11 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
     </span> -->
+    <template #footer>
+        <span class="dialog-footer">
+            <slot name="dialogFooter" />
+        </span>
+    </template>
     </el-dialog>
 </template>
 

@@ -297,7 +297,7 @@ export default {
     position: absolute;
     right: 0;
     bottom: 0;
-    background: #fff;
+    background: $white;
     padding-left: 5px;
   }
 }

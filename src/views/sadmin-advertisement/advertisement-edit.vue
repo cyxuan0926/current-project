@@ -1,10 +1,6 @@
 <template>
-  <el-row
-    class="page-edit"
-    :gutter="0">
-    <el-col
-      :span="13"
-      :offset="5">
+  <el-row class="page-edit" :gutter="0">
+    <el-col :span="13" :offset="5">
       <el-form
         ref="form"
         :model="advertisement"
@@ -107,9 +103,15 @@ export default {
       imageRatio: ''
     }
   },
+
   computed: {
-    ...mapState(['advertisement', 'advertisementTypes', 'provincesAll'])
+    ...mapState([
+      'advertisement',
+      'advertisementTypes',
+      'provincesAll'
+    ])
   },
+
   mounted() {
     this.getAdvertisementDetail({ id: this.$route.params.id }).then(res => {
       if (!res) return
@@ -127,11 +129,21 @@ export default {
       this.gettingProvince = false
     })
   },
+
   destroyed() {
     this.removeUrlStorage()
   },
+
   methods: {
-    ...mapActions(['getAdvertisementDetail', 'updateAdvertisement', 'getAdvertisementTypes', 'getProvincesAll', 'setUrlStorage', 'removeUrlStorage']),
+    ...mapActions([
+      'getAdvertisementDetail',
+      'updateAdvertisement',
+      'getAdvertisementTypes',
+      'getProvincesAll',
+      'setUrlStorage',
+      'removeUrlStorage'
+    ]),
+
     onSubmit(e) {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -146,6 +158,7 @@ export default {
         }
       })
     },
+
     onTypeChange(e) {
       switch (e) {
         case 2:
@@ -160,6 +173,7 @@ export default {
           this.imageRatio = ''
       }
     },
+
     onTimeRangeChange(e) {
       if (e) {
         this.advertisement.startDate = e[0]
@@ -170,13 +184,10 @@ export default {
         this.advertisement.endDate = ''
       }
     },
+
     onSuccess(e) {
       this.advertisement.imageUrl = e
     }
   }
 }
 </script>
-
-<style type="text/stylus" lang="stylus">
-
-</style>

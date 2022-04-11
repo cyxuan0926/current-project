@@ -5,15 +5,13 @@
     v-on="$data.$_listeners"
   >
     <template v-for="col in elTableCols">
-      <el-table-column
-        v-if="col.slotName"
-        v-bind="col"
-        :key="`${col.label}-${col.prop}-${col.slotName}`"
-      >
-        <template slot-scope="scope">
-          <slot :name="col.slotName" v-bind="scope" />
-        </template>
-      </el-table-column>
+      <template v-if="col.slotName">
+        <el-table-column :key="`${col.label}-${col.prop}-${col.slotName}`" v-bind="col">
+          <template #default="scope">
+            <slot :name="col.slotName" v-bind="scope" />
+          </template>
+        </el-table-column>
+      </template>
 
       <!-- 脱敏的特殊列 -->
       <template v-else-if="col.isDesensitizationCol">
@@ -101,13 +99,10 @@ export default {
     elTableCols() {
       // 服刑人员编号之类似的规则
       const regPrisonerNumber = /^(?!phone|terminal|room).*number$/i
-
       // 姓名之类的规则 这些因为有交集 所以需要主动添加
       const regName = /^(?!province|jail|diplomats|org|account|real|position|sourceJail|targetJail|prisonConfig|prisonArea|user|full|city|county|terminal|adservices|type).*name$/i // 这些因为有冲突 重复 不能统一处理
-
       // uuid
       const regIdCard = /.*uuid$/i
-
       // 电话号码
       const rePhone = /.*phone.*/i
 
@@ -116,11 +111,8 @@ export default {
 
         if (_type) {
           if (regPrisonerNumber.test(_type)) col = Object.assign({}, $likePrisonerNumber, col)
-
           if (regName.test(_type)) col = Object.assign({}, $likeName, col)
-
           if (regIdCard.test(_type)) col = Object.assign({}, $likeIdCard, col)
-
           if (rePhone.test(_type)) col = Object.assign({}, $likePhone, col)
         }
 

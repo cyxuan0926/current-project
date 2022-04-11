@@ -32,7 +32,7 @@ const routes = [
  * @param {*} routes:当前的路由数组
  * 为了修复动态添加路由之后重复挂载frame组件
  */
-const mapLoadComponet = (routes) => {
+const mapLoadComponet = routes => {
   return routes.map(route => {
     if (route.component) route.component = helper.loadView(route.component)
 

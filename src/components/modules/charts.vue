@@ -5,15 +5,20 @@
       v-show="visible"
       :id="id"
       :style="{ width, height }"
-    >
-  </div>
+    />
+
     <div v-if="cnt" class="legend" >
 
     <ul>
+      <template v-for="(item,index) in pienum">
+        <li :key="index">
+          <span>&nbsp;&nbsp;{{ item.value }}</span>(次)
+        </li>
+      </template>
 
-      <li v-for="(item,index) in pienum" :key="index" > <span>&nbsp;&nbsp;{{item.value}}</span>(次)  </li>
-      <li style="font-size:14px;color: #0f0f0f;"> 总次数合计 <span>&nbsp;&nbsp;{{  cnt }}</span>（次） </li>
-
+      <li style="font-size:14px; color: #0f0f0f;">
+        总次数合计<span>&nbsp;&nbsp;{{  cnt }}</span>(次)
+      </li>
     </ul>
     </div>
   </div>
@@ -34,10 +39,12 @@ export default {
       type: Boolean,
       default: false
     },
+
     cnt:{
       type:Number,
       default:0
     },
+
     options: {
       type: Object,
       default: () => ({})
@@ -66,19 +73,18 @@ export default {
     ...mapState({
       isCollapsed: state => state.layout.isCollapsed
     }),
+
     pienum(){
-      let arr=this.options.series[0].data
+      let arr = this.options.series[0].data
 
       return arr
     },
   },
+
   watch: {
     loading(val) {
-      if (val) {
-        this.instance.showLoading()
-      } else {
-        this.instance.hideLoading()
-      }
+      if (val) this.instance.showLoading()
+      else this.instance.hideLoading()
     },
 
     visible(val) {
@@ -106,18 +112,21 @@ export default {
 
   mounted() {
     this.init()
-    this.instance.on('legendselectchanged', ({selected,name}) => {
+
+    this.instance.on('legendselectchanged', ({ selected,name }) => {
       selected[name] = true
-      this.instance.setOption({ legend:  {selected}})
+      this.instance.setOption({ legend:  { selected }})
     })
+
     var option =  this.instance.getOption()
   },
+
   beforeDestroy() {
     this.instance.dispose()
     this.instance = null
+
     window.removeEventListener('resize', this.resizeHandler)
   },
-
 
   methods: {
     init() {
@@ -125,12 +134,11 @@ export default {
       this.instance.setOption(this.options)
       this.resizeHandler = _.debounce(this.resize, 300)
 
-      if (this.loading) {
-        this.instance.showLoading()
-      }
+      if (this.loading) this.instance.showLoading()
 
       window.addEventListener('resize', this.resizeHandler)
     },
+
     resize() {
       this.instance && this.instance.resize()
     }
@@ -138,21 +146,23 @@ export default {
 }
 </script>
 <style scoped>
-  .legend{
-    position: absolute;
-    width: 177px;
-    height: 157px;
-    right: 145px;
-    top: 46px;
-    text-align: right;
-    font-size: 12px;
-    z-index: 10;
-    pointer-events:none;
-  }
-  li{
-    height: 24px;
-  }
-  span{
-    color: rgb(0, 82, 204);
-  }
+.legend {
+  position: absolute;
+  width: 177px;
+  height: 157px;
+  right: 145px;
+  top: 46px;
+  text-align: right;
+  font-size: 12px;
+  z-index: 10;
+  pointer-events:none;
+}
+
+li {
+  height: 24px;
+}
+
+span {
+  color: rgb(0, 82, 204);
+}
 </style>

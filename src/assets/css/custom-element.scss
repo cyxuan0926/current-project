@@ -78,19 +78,21 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 @import "~element-ui/packages/theme-chalk/src/index";
 
 #body {
-  .el-button--small {
-    padding: 8px 12px;
+  .el-button {
+    &--small {
+      padding: 8px 12px;
+    }
+
+    &--mini {
+      padding: 7px 11px;
+    }
+
+    &--text {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
 
-  .el-button--mini {
-    padding: 7px 11px;
-  }
-
-  .el-button--text {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  
   .el-menu-item,
   .aside-top .bold1 {
     font-size: 12px;
@@ -104,13 +106,15 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
     font-size: $--font-size-base;
   }
 
-  .el-tabs__header {
-    margin-bottom: 20px;
-  }
+  .el-tabs {
+    &__header {
+      margin-bottom: 20px;
+    }
 
-  .el-tabs__item {
-    height: $form-height-base;
-    line-height: $form-height-base;
+    &__item {
+      height: $form-height-base;
+      line-height: $form-height-base;
+    }
   }
 
   .el-table {
@@ -161,7 +165,6 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
   // }
 
   .el-date-editor {
-    
     .el-range__icon,
     .el-range-separator {
       line-height: 24px;

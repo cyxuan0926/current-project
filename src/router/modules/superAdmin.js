@@ -584,6 +584,13 @@ superAdmin = [{
       },
       component: 'check-meeting/meeting-family-statistics'
     },
+    {
+      path: '/prison-data/meeting-records',
+      name: 'MeetingRecordsAll',
+      component: 'check-meeting/meeting-records',
+      props: { hasOnlyAllPrisonQueryAuth: true, hasProvinceQueryAuth: true, },
+      meta: { permission: 'visit.visit-statistic.admin.remote-free-visit.search', breadcrumbName: '免费通话记录表' }
+    },
      {
       path: '/meeting-report/meeting-sadmin-island-list',
       component: 'gd-admin/gd-meeting/sadmin-island-meeting-list',
@@ -612,11 +619,33 @@ superAdmin = [{
     },
     children: [{
       path: '/prison-message/meeting-list',
-      component: 'check-message/message-list',
+      component: 'family-sms/sms-list',
       props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
       meta: {
         permission: 'visit.prison-message.visit-message.search',
-        breadcrumbName: '短信申请管理列表'
+        breadcrumbName: '家属发送短信申请列表'
+      }
+    },
+    {
+      path: '/prison-message/meeting-criminalList',
+      component: 'family-sms/sms-list',
+      props: {
+        hasAllPrisonQueryAuth: true,
+        hasProvinceQueryAuth: true,
+        isPrisonerSend: 1
+      },
+      meta: {
+        permission: 'visit.prison-message.visit-criminalList.search',
+        breadcrumbName: '服刑人员发送短信申请列表'
+      }
+    },
+    {
+      path: '/prison-message/group-message',
+      component: 'v3/group-message/list',
+      props: { hasAllPrisonQueryAuth: true, hasProvinceQueryAuth: true },
+      meta: {
+        permission: 'visit.prison-message.visit-group-message.search',
+        breadcrumbName: '群发短信数据'
       }
     }]
     }, {
@@ -716,6 +745,18 @@ superAdmin = [{
         permission: 'visit.family-phone.admin-cost.search'
       },
       component: 'family-phone/phone/phone-admin-cost-list'
+    }, {
+      path: '/family-phone/call-recharge/list',
+      name: 'FamilyPhoneCallRechargeList',
+      props: {
+        hasProvinceQueryAuth: true,
+        hasOnlyAllPrisonQueryAuth: true
+      },
+      meta: {
+        breadcrumbName: '亲情电话通话费用管理',
+        permission: 'visit.family-phone.call-recharge-all.search'
+      },
+      component: 'family-phone/call-recharge/list'
     }]
   }, {
     path: '/family-information',

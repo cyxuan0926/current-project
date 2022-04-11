@@ -1,7 +1,7 @@
-.no-login{
-  &>.main-container{
-    height: 100%;
-    .el-main{
+.no-login {
+  & > .main-container {
+    height: $absolutely-measure;
+    .el-main {
       padding: 0;
     }
   }

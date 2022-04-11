@@ -537,7 +537,6 @@ export default {
       this.onSearch()
     }
   },
-
   methods: {
     ...mapActions([
       'getFamilies',
@@ -569,7 +568,7 @@ export default {
         })
       }
     },
-
+  
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
@@ -750,7 +749,7 @@ export default {
   float: left;
 }
 .detail-container .detail-item span{
-  width: calc(100% - 100px);
+  width: calc(#{$absolutely-measure} - 100px);
   float: right;
 }
 
@@ -761,8 +760,8 @@ export default {
       height: 110px;
       margin-bottom: 5px;
         img {
-          width: 100%;
-          height: 100%;
+          width: $absolutely-measure;
+          height: $absolutely-measure;
           cursor: pointer;
         }
     }

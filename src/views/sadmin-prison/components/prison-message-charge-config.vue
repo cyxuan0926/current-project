@@ -24,27 +24,27 @@
                 <el-form-item  label="每月发短信上限条数" >
                   <p class="fontMargin">
                       <el-form-item  label="宽管级别" label-width="110px"   prop="broadNum">
-                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('broadNum')"  v-model="ruleForm.broadNum" size="mini">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" :onKeypress="$_limitInputPositiveInteger"  :min="0"   @blur="changeTimes('broadNum')"  v-model="ruleForm.broadNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
                      </el-form-item>
                       <el-form-item  label="普管级别" label-width="110px" prop="commonNum">
-                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('commonNum')"  v-model="ruleForm.commonNum" size="mini">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" :onKeypress="$_limitInputPositiveInteger"  :min="0"   @blur="changeTimes('commonNum')"  v-model="ruleForm.commonNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
                      </el-form-item>
                       <el-form-item  label="考察级别" label-width="110px" prop="inspectNum">
-                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('inspectNum')"  v-model="ruleForm.inspectNum" size="mini">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" :onKeypress="$_limitInputPositiveInteger"  :min="0"   @blur="changeTimes('inspectNum')"  v-model="ruleForm.inspectNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
                      </el-form-item>
                       <el-form-item  label="严管级别" label-width="110px" prop="strictNum">
-                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('strictNum')"  v-model="ruleForm.strictNum" size="mini">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" :onKeypress="$_limitInputPositiveInteger"  :min="0"   @blur="changeTimes('strictNum')"  v-model="ruleForm.strictNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
                      </el-form-item>
                      <el-form-item  label="其他级别" label-width="110px" prop="otherNum">
-                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"  :min="0"   @blur="changeTimes('otherNum')"  v-model="ruleForm.otherNum" size="mini">
+                        <el-input  type="number" :disabled="show.editDisabled"  placeholder="条" :onKeypress="$_limitInputPositiveInteger"  :min="0"   @blur="changeTimes('otherNum')"  v-model="ruleForm.otherNum" size="mini">
                             <template slot="append">/条</template>
                        </el-input>
                      </el-form-item>
@@ -214,20 +214,23 @@ export default {
         });
       },
     async getdata(){
-       let res=  await  http.getConfigMessageList({jailId: this.$route.params.id})
-       if(res.length==2){
-          this.ruleForm=res[1]
-          this.newForm=res[0]
-          this.show.editData=true
-       }else{
-         this.ruleForm=res[0]
-         this.show.editData=false
-       }
-      this.newForm.effectTime=Moment(res[0].effectTime).format("YYYY-MM-DD")
+      let res = await http.getConfigMessageList({ jailId: this.$route.params.id })
+
+      if (res.length === 2) {
+        this.ruleForm = res[1]
+        this.newForm = res[0]
+        this.show.editData = true
+      } else {
+        this.ruleForm = res[0]
+        this.show.editData = false
+      }
+
+      this.newForm.effectTime = Moment(res[0].effectTime).format("YYYY-MM-DD")
     }
 },
- async mounted() {
-    this.getdata()
+
+  async mounted() {
+    await this.getdata()
   }
 }
 </script>

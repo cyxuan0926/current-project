@@ -2,13 +2,19 @@
   <div class="filter-container">
     <div class="filter-right">
       <template v-for="(item, index) in items">
-        <template v-if="item.type === 'input' && !item.miss">
+        <template v-if="$_elInputTypes.includes(item.type) && !item.miss">
           <el-input
             v-model.trim="item.value"
+            :class="{'inputHeight': item.type === 'number'}"
             :key="index"
+            :type="item.type"
             clearable
             :disabled="item.disabled"
             :placeholder="item.noPlaceholder ? item.label : '请输入' + item.label"
+            v-bind="item.attrs || item.type === 'number' ?  {
+              min: 0,
+              onKeypress: $_limitInputPositiveInteger
+            } : {}"
           />
         </template>
 
@@ -151,19 +157,6 @@
             :range="item.range"
             :start-key="item.startKey"
             :end-key="item.endKey" 
-          />
-        </template>
-         <template v-if="item.type === 'number' && !item.miss">
-           <el-input
-           type="number"
-           class="inputHeight"
-            v-model.trim="item.value"
-            :key="index"
-            :min="0"
-            onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" 
-            clearable
-            :disabled="item.disabled"
-            :placeholder="item.noPlaceholder ? item.label : '请输入' + item.label"
           />
         </template>
 

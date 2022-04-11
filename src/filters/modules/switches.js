@@ -220,6 +220,17 @@ let switches = {
       value: 1
     }
   ],
+  type: [
+    {
+      label: '可视电话',
+      value: 1
+    },
+    {
+      label: '系统电话',
+      value: 2
+    }
+    
+  ],
 
   familyPhoneCheckType: [
     {
@@ -385,6 +396,41 @@ let switches = {
       label: '已加入黑名单',
       value: 5
     }
+  ],
+
+  familyPhoneCallRechargeTypeOptions: [
+    // 1充值2退款3可视电话消费4系统消费
+    {
+      label: '充值',
+      value: 1
+    },
+    {
+      label: '退款',
+      value: 2
+    },
+    {
+      label: '可视电话消费',
+      value: 3
+    },
+    {
+      label: '系统消费',
+      value: 4
+    }
+  ],
+
+  prisonerSendMsgTypeOptions: [
+    {
+      label: '文字',
+      value: 1,
+      attrs: {
+        disabled: true
+      }
+    },
+
+    {
+      label: '图片',
+      value: 2
+    }
   ]
 }
 
@@ -398,6 +444,24 @@ const multistageExamineRegistStatus = [
   }
 ]
 
-switches = { ...switches, multistageExamineRegistStatus }
+const familySendMsgTypeOptions = [
+  ...switches['prisonerSendMsgTypeOptions'],
+
+  {
+    label: "语音",
+    value: 5,
+  },
+
+  {
+    label: "视频",
+    value: 6,
+  }
+]
+
+switches = {
+  ...switches,
+  multistageExamineRegistStatus,
+  familySendMsgTypeOptions
+}
 
 export default switches

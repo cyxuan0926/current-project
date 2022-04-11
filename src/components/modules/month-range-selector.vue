@@ -1,89 +1,105 @@
 <template>
   <el-popover
+    v-model="visible"
     placement="bottom"
     width="400"
     trigger="manual"
-    v-model="visible"
-    popper-class="el-picker-panel month-panel-popover">
-    <div
-      :class="[
-        'el-date-editor',
-        'el-range-editor',
-        'el-input__inner',
-        'el-date-editor--daterange',
-        {'can-clear' : clear}]"
-      @click="handleClick"
-      slot="reference">
-      <i class="el-input__icon el-range__icon el-icon-date" />
-      <input
-        v-model="_values[0]"
-        readonly
-        autocomplete="off"
-        placeholder="开始月份"
-        class="el-range-input">
-      <span class="el-range-separator">-</span>
-      <input
-        v-model="_values[1]"
-        readonly
-        autocomplete="off"
-        placeholder="结束月份"
-        class="el-range-input">
-      <i
-        v-if="clear"
+    popper-class="el-picker-panel month-panel-popover"
+  >
+    <template #reference>
+      <div
         :class="[
-          'el-input__icon',
-          'el-range__close-icon',
-          {'el-icon-circle-close' : clear && _values[0] && _values[1]}]"
-        @click="handleClear"/>
-    </div>
-    <div
-      v-clickoutside="{ func: 'handleBlur', ignoreEle: '.el-date-editor--daterange' }"
-      class="picker-panel">
+          'el-date-editor',
+          'el-range-editor',
+          'el-input__inner',
+          'el-date-editor--daterange',
+          { 'can-clear' : clear }
+        ]"
+        @click="handleClick"
+      >
+        <i class="el-input__icon el-range__icon el-icon-date" />
+
+        <input
+          v-model="_values[0]"
+          class="el-range-input"
+          readonly
+          autocomplete="off"
+          placeholder="开始月份"
+        >
+
+        <span class="el-range-separator">-</span>
+
+        <input
+          v-model="_values[1]"
+          class="el-range-input"
+          readonly
+          autocomplete="off"
+          placeholder="结束月份"
+        >
+
+        <template v-if="clear">
+          <i
+            :class="[
+              'el-input__icon',
+              'el-range__close-icon',
+              { 'el-icon-circle-close' : clear && _values[0] && _values[1] }
+            ]"
+            @click="handleClear"
+          />
+        </template>
+      </div>
+    </template>
+
+    <div class="picker-panel" v-clickoutside="{ func: 'handleBlur', ignoreEle: '.el-date-editor--daterange' }">
       <div class="show-picked">
         <div>
           <span>开始月份</span>
           <span class="pre-content">{{ pickedPreYear }}-{{ fillPre(pickedPreMonth) }}</span>
         </div>
+
         <div>
           <span>结束月份</span>
           <span class="next-content">{{ pickedNextYear }}-{{ fillPre(pickedNextMonth) }}</span>
         </div>
       </div>
+
       <div class="el-picker-panel__content el-date-range-picker__content is-left">
-        <div
-          class="el-date-range-picker__header">
+        <div class="el-date-range-picker__header">
           <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-left"
             :class="{'is-disabled' : (minYear && preYear <= minYear) || (minRangeYear && preYear <= minRangeYear)}"
-            @click="handlePreYear('pre', (minYear && preYear <= minYear) || (minRangeYear && preYear <= minRangeYear))" />
+            @click="handlePreYear('pre', (minYear && preYear <= minYear) || (minRangeYear && preYear <= minRangeYear))"
+          />
           <!-- <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-right"
             :class="{'is-disabled' : preYear >= nextYear - 1}"
             @click="handleNextYear('pre', preYear >= nextYear - 1)" /> -->
           <div>{{ preYear }}年</div>
         </div>
-        <table
-          class="el-month-table table-month">
-          <tr
-            v-for="row in 3"
-            :key="row">
-            <td
-              v-for="col in 4"
-              :key="col">
-              <span
-                class="cell"
-                :class="[
-                  {'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === preYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === preYear)},
-                  {'in-range' : inRange(preYear, (row - 1) * 4 + col)},
-                  {'is-disabled' : isDisabled(preYear, (row - 1) * 4 + col)}]"
-                @click="handlePick(preYear, (row - 1) * 4 + col, isDisabled(preYear, (row - 1) * 4 + col))">{{ (row - 1) * 4 + col }}月</span>
-            </td>
-          </tr>
+
+        <table class="el-month-table table-month">
+          <template v-for="row in 3">
+            <tr :key="row">
+              <template v-for="col in 4">
+                <td :key="col">
+                  <span
+                    class="cell"
+                    :class="[
+                      { 'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === preYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === preYear) },
+                      { 'in-range' : inRange(preYear, (row - 1) * 4 + col) },
+                      { 'is-disabled' : isDisabled(preYear, (row - 1) * 4 + col) }
+                    ]"
+                    @click="handlePick(preYear, (row - 1) * 4 + col, isDisabled(preYear, (row - 1) * 4 + col))"
+                  >{{ (row - 1) * 4 + col }}月</span>
+                </td>
+              </template>
+            </tr>
+          </template>
         </table>
       </div>
+
       <div class="el-picker-panel__content el-date-range-picker__content is-right">
-        <div
-          class="el-date-range-picker__header">
+        <div class="el-date-range-picker__header">
           <!-- <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-left"
             :class="{'is-disabled' : nextYear <= preYear + 1}"
@@ -91,36 +107,41 @@
           <i
             class="el-picker-panel__icon-btn el-icon-d-arrow-right"
             :class="{'is-disabled' : (maxYear && nextYear >= maxYear) || (maxRangeYear && nextYear >= maxRangeYear)}"
-            @click="handleNextYear('next', (maxYear && nextYear >= maxYear) || (maxRangeYear && nextYear >= maxRangeYear))"/>
+            @click="handleNextYear('next', (maxYear && nextYear >= maxYear) || (maxRangeYear && nextYear >= maxRangeYear))"
+          />
+
           <div>{{ nextYear }}年</div>
         </div>
-        <table
-          class="el-month-table table-month">
-          <tr
-            v-for="row in 3"
-            :key="row">
-            <td
-              v-for="col in 4"
-              :key="col">
-              <span
-                class="cell"
-                :class="[
-                  {'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === nextYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === nextYear)},
-                  {'in-range' : inRange(nextYear, (row - 1) * 4 + col)},
-                  {'is-disabled' : isDisabled(nextYear, (row - 1) * 4 + col)}]"
-                @click="handlePick(nextYear, (row - 1) * 4 + col, isDisabled(nextYear, (row - 1) * 4 + col))">{{ (row - 1) * 4 + col }}月</span>
-            </td>
-          </tr>
+
+        <table class="el-month-table table-month">
+          <template v-for="row in 3">
+            <tr :key="row">
+              <template v-for="col in 4">
+                <td :key="col">
+                  <span
+                    class="cell"
+                    :class="[
+                      { 'picked' : (pickedPreMonth === (row - 1) * 4 + col && pickedPreYear === nextYear) || (pickedNextMonth == (row - 1) * 4 + col && pickedNextYear === nextYear) },
+                      { 'in-range' : inRange(nextYear, (row - 1) * 4 + col) },
+                      { 'is-disabled' : isDisabled(nextYear, (row - 1) * 4 + col) }
+                    ]"
+                    @click="handlePick(nextYear, (row - 1) * 4 + col, isDisabled(nextYear, (row - 1) * 4 + col))"
+                  >{{ (row - 1) * 4 + col }}月</span>
+                </td>
+              </template>
+            </tr>
+          </template>
         </table>
       </div>
+
       <div class="el-picker-panel__footer">
         <el-button
           size="mini"
           type="text"
           class="el-picker-panel__link-btn"
-          @click="handleClearPicked(0)">
-          清空
-        </el-button>
+          @click="handleClearPicked(0)"
+        >清空</el-button>
+
         <!-- <el-button
           size="mini"
           type="primary"
@@ -134,9 +155,8 @@
           size="mini"
           class="el-picker-panel__link-btn"
           :disabled="!pickedPreMonth || !pickedNextMonth"
-          @click="handleEnsure('picked')">
-          确定
-        </el-button>
+          @click="handleEnsure('picked')"
+        >确定</el-button>
       </div>
     </div>
   </el-popover>
@@ -273,26 +293,30 @@ export default {
     handlePick(year, month, disabled) {
       if (disabled) return
       if (this.count >= 2) this.count = 0
+
       this.count++
+
       if (this.count === 1) {
         this.handleClearPicked(this.count)
+
         this.pickedPreYear = year
         this.pickedPreMonth = month
+
         if (this.range.maxMonthRange) this.handleRange(year, month, this.range.maxMonthRange - 1)
-      }
-      else if (this.count === 2) {
+      } else if (this.count === 2) {
         let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`,
           pickedNext = `${ year }-${ this.fillPre(month) }`
+
         if (pickedNext < pickedPre) {
           this.pickedNextYear = this.pickedPreYear
           this.pickedNextMonth = this.pickedPreMonth
           this.pickedPreYear = year
           this.pickedPreMonth = month
-        }
-        else {
+        } else {
           this.pickedNextYear = year
           this.pickedNextMonth = month
         }
+
         if (this.range.maxMonthRange) this.clearRange()
       }
     },
@@ -316,8 +340,7 @@ export default {
       if (e === 'pre') {
         this.nextYear = this.preYear
         this.preYear = parseInt(this.preYear) - 1
-      }
-      else if (e === 'next') {
+      } else if (e === 'next') {
         this.preYear = this.nextYear
         this.nextYear = parseInt(this.nextYear) - 1
       }
@@ -328,8 +351,7 @@ export default {
       if (e === 'pre') {
         this.nextYear = this.preYear
         this.preYear = parseInt(this.preYear) + 1
-      }
-      else if (e === 'next') {
+      } else if (e === 'next') {
         this.preYear = this.nextYear
         this.nextYear = parseInt(this.nextYear) + 1
       }
@@ -341,6 +363,7 @@ export default {
       this.pickedNextYear = null
       this.pickedPreMonth = null
       this.pickedNextMonth = null
+
       if (this.range.maxMonthRange) this.clearRange()
     },
 
@@ -360,9 +383,7 @@ export default {
         end = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
 
         this.count = 0
-      }
-
-      else end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+      } else end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
 
       this._values = [start, end]
 
@@ -388,39 +409,47 @@ export default {
 }
 </script>
 <style scoped>
-.el-date-editor .el-range-separator{
+.el-date-editor .el-range-separator {
   padding: 0;
   width: 20px;
 }
-.el-date-editor--daterange .el-icon-circle-close{
+
+.el-date-editor--daterange .el-icon-circle-close {
   color: transparent;
 }
-.el-date-editor--daterange:hover .el-icon-circle-close{
+
+.el-date-editor--daterange:hover .el-icon-circle-close {
   color: #c0c4cc;
 }
-.is-left{
+
+.is-left {
   margin: 0;
   padding: 0 15px 0 0;
 }
-.is-right{
+
+.is-right {
   margin: 0;
   padding: 0 0 0 15px;
 }
-.el-date-range-picker__header{
+
+.el-date-range-picker__header {
   border-bottom: 1px solid #ebeef5;
 }
-.show-picked{
+
+.show-picked {
   border-bottom: 1px solid #ebeef5;
   display: table;
-  width: 100%;
+  width: var(--absolutely-measure);
   padding-bottom: 4px;
 }
-.show-picked>div{
+
+.show-picked > div {
   display: table-cell;
   line-height: 30px;
   text-align: center;
 }
-.show-picked .pre-content, .show-picked .next-content{
+
+.show-picked .pre-content, .show-picked .next-content {
   border: 1px solid #ebeef5;
   text-align: center;
   border-radius: 4px;
@@ -429,36 +458,44 @@ export default {
   display: inline-block;
   padding: 0 20px;
 }
-.el-date-range-picker__header div{
+
+.el-date-range-picker__header div {
   margin-right: 0;
   line-height: 28px;
 }
-.table-month td{
+
+.table-month td {
   padding: 10px 3px;
   cursor: default;
 }
-.table-month td .cell{
+
+.table-month td .cell {
   width: 37px;
   cursor: pointer;
 }
-.table-month .cell.in-range{
+
+.table-month .cell.in-range {
   background: #f2f6fc;
 }
-.table-month .cell.picked{
+
+.table-month .cell.picked {
   background: #409EFF;
-  color: #fff;
+  color: var(--white-css);
 }
-.table-month .cell.is-disabled{
+
+.table-month .cell.is-disabled {
   background-color: #f5f7fa;
   opacity: 1;
   cursor: not-allowed;
   color: #c0c4cc;
 }
-.picker-panel{
+
+.picker-panel {
   padding: 12px;
   overflow: hidden;
 }
-.el-picker-panel__footer{
+
+.el-picker-panel__footer {
   clear: both;
 }
 </style>

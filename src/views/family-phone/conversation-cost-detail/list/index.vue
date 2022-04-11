@@ -821,7 +821,7 @@ $border-style: 1px solid #E4E7ED;
 
   .multistage_examine-item {
     display: flex;
-    width: 100%;
+    width: $absolutely-measure;
   }
 
   .detail-content {

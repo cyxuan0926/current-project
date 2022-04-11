@@ -62,7 +62,7 @@
         </el-form>
 
         <el-button
-          class="width100"
+          class="btn-login"
           type="primary"
           :loading="loading"
           @click="handleLogin">登录</el-button>
@@ -436,12 +436,12 @@ export default {
     position: fixed;
     left: 0;
     bottom: 0;
-    width: 100%;
+    width: $absolutely-measure;
     height: 36px;
     line-height: 36px;
     border-top: 1px solid #d2d6de;
     text-align: center;
-    background: #fff;
+    background: $white;
     color: #444;
 
     a {
@@ -454,7 +454,7 @@ export default {
   }
 
   /deep/ .el-input {
-    width: 100% !important;
+    width: $absolutely-measure !important;
   }
 
   .forget-password {

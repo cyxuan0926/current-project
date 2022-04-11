@@ -1,53 +1,66 @@
-.over-hidden{
+.over-hidden {
   overflow: hidden;
 }
-.height100{
-  height: 100%;
+
+// 百分百
+.absolutely {
+  &-height {
+    height: $absolutely-measure;
+  }
+
+  &-width {
+    width: $absolutely-measure;
+  }
 }
-.width100{
-  width: 100%;
-}
-.transition{
+
+.transition {
   transition: all .3s ease-in-out;
 }
-.circle{
+
+.circle {
   border-radius: 50%;
 }
-.ellipsis{
+
+.ellipsis {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.disappear{
+
+.disappear {
   height: 0;
   width: 0;
   overflow: hidden;
 }
-.ml-10{
+
+.ml-10 {
   margin-left: 10px;
 }
-.center{
+
+.center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.pull-left {
-  float: left;
+
+.pull {
+  &-left {
+    float: left;
+  }
+
+  &-right {
+    float: right;
+  }
 }
-.pull-right {
-  float: right;
-}
-.clearfix:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-.min-height-400{
+
+.min-height-400 {
   min-height: 400px;
 }
+
 .img-viewer__overflow-unset {
   overflow: unset !important;
 }
+
 .el-image__no-box_shadow {
   box-shadow: none !important;
   img {

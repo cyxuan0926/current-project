@@ -1,7 +1,5 @@
 import { getFinance } from '@/service-public/request'
 
 export default {
-  getPageData: (url, params) => {
-    return getFinance(url, params)
-  }
+  getPageData: (url, params) => getFinance(url, params)
 }
