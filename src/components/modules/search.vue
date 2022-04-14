@@ -271,6 +271,8 @@ export default {
         }
         if (_dateKey ) {
           let _start = this.$parent.$parent.filter[_dateKey.start]
+          
+          console.log(_start)
           _start = _start && moment(_start, 'YYYY-MM-DD')
           let _end = this.$parent.$parent.filter[_dateKey.end]
           _end = _end && moment(_end, 'YYYY-MM-DD')
