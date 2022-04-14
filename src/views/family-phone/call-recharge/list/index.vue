@@ -20,7 +20,7 @@
 <script>
 import store from "@/store";
 
-import { ref, reactive, computed, watch } from "@vue/composition-api";
+import { ref, reactive, computed, watch, onMounted } from "@vue/composition-api";
 
 import { tabItems, _searchItems, httpRequests, _tableCols } from "../constants";
 
@@ -76,18 +76,21 @@ export default {
 
     const { routeProps } = useRouteProps();
     watch($tabs, (val) => {
+      
       if (val == "0") {
-        // searchItems.value.types.miss = false;
+        searchItems.value.type.miss = false;
         omponentpublic.value.excelUploadVisible = $isSuperAdmin.value?true:false;
         omponentpublic.value.excelDownloadVisible = $isSuperAdmin.value?true:false;
       } else if (val == "1") {
-        // searchItems.value.types.miss = true;
+        searchItems.value.type.miss = true;
         omponentpublic.value.excelUploadVisible = false;
         omponentpublic.value.excelDownloadVisible = false;
       }
       $callRechargeParent.value && $callRechargeParent.value.initData();
-    });
-
+    });  
+      onMounted(() => {
+      searchItems.value.dateMonth.canNotClear = $isSuperAdmin.value?true:false;
+    })
     return {
       $callRechargeParent,
       searchItems,

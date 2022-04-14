@@ -34,6 +34,8 @@ let _minTime = null, _maxTime = null
 const dateMonth = {
   type: 'dateRange',
   unlinkPanels: true,
+  // 清空时间
+  canNotClear: false,
   end: 'endDate',
   start: 'startDate',
   startPlaceholder: '通话开始时间',
