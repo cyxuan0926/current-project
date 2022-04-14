@@ -59,7 +59,7 @@
             type="date"
             value-format="yyyy-MM-dd"
             :placeholder="item.label"
-            :clearable="false"
+            clearable
           />
         </template>
 
@@ -261,10 +261,10 @@ export default {
       this.onGetFilter()
       // search组件 添加判断逻辑 家属姓名、罪犯姓名、罪犯编号和日期选择 不可同时为空  日期选择范围不可大于1年
       // 父组件如果定义了是否添加此限制 isSearchLimit true
-      let { isSearchLimit, filter: { name, prisonerName, prisonerNumber } } = this.$parent.$parent
+      let { isSearchLimit, filter: { name, prisonerName, prisonerNumber, familyName, criminalNumber, criminalName} } = this.$parent.$parent
       if (isSearchLimit) {
         let _dateKey = Object.values(this.items).find(v => !v.miss && v.type == 'dateRange')
-        if (_dateKey && !this.$parent.$parent.filter[_dateKey.start] && !name && !prisonerName && !prisonerNumber) {
+        if (_dateKey && !this.$parent.$parent.filter[_dateKey.start] && !name && !familyName&& !criminalNumber && !prisonerName && !criminalName && !prisonerNumber) {
           // tab切换时候不提示
           e !== 'tabs' && this.$message.warning('请输入家属姓名、罪犯姓名、罪犯编号或申请时间')
           return false

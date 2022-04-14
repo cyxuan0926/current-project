@@ -596,6 +596,16 @@
 
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="show.messageConfirm"
+      width="420px">
+       <div><span class="el-message-box__status el-icon-warning"></span><span style="padding-left:40px;display:inline-block;margin-top: 6px;"> 确认打印机是否正常工作, 正常出票?</span></div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="show.messageConfirm = false">取 消</el-button>
+        <el-button type="primary" @click="_mixinsInitMethods()">确 定</el-button>
+      </span>
+    </el-dialog>
     <span ref="printList" class="messageNone">
       <hr />
       <div
@@ -772,6 +782,7 @@ export default {
           label: "审核时间",
           miss: true,
           value: "",
+          clearable:true
         },
         isPrisonerSend: {
           type: 'select',
@@ -803,6 +814,7 @@ export default {
         message: false,
         isMessageList: false,
         withdraw: false,
+        messageConfirm:false
       },
       toAuthorize: {},
       btnDisable: false, // 按钮禁用与启用
@@ -999,66 +1011,12 @@ export default {
         this.$refs["refuseForm"].resetFields();
     },
 
-    async _mixinsInitMethods() {
-      window.addEventListener(
-        "message",
-        (e) => {
-          if (!e.data.type) {
-            this.$confirm("确认打印机是否正常工作, 正常出票?", "提示", {
-              confirmButtonText: "正常出票",
-              cancelButtonText: "没有出票",
-              type: "warning",
-            }).then(async () => {
-              let gkMessageIdList = [];
-              //判断是单独打印还是批量打印
-              if (this.show.isMessageList)
-                this.messagePrintList.forEach((item) =>
-                  gkMessageIdList.push(item.uid)
-                );
-              else gkMessageIdList.push(this.messageContent.uid);
-
-              let res = await http.messagePrint({
-                gkMessageIdList: gkMessageIdList,
-              });
-
-              if (res) {
-                this.show.message = false;
-
-                this.messageContent = {};
-
-                await this.getDatas();
-              }
-            });
-          }
-        },
-        false
-      );
-
-      await this.getDatas();
-    },
   },
  mounted() {
-     window.addEventListener("message",  e => {
+     window.addEventListener("message", async e => {
       if(!e.data.type){
-               this.$confirm('确认打印机是否正常工作, 正常出票?', '提示', {
-                confirmButtonText: '正常出票',
-                cancelButtonText: '没有出票',
-                type: 'warning'
-              }).then(async () => {
-                let gkMessageIdList=[]
-                //判断是单独打印还是批量打印
-                if(this.show.isMessageList){
-                  this.messagePrintList.forEach(item=>gkMessageIdList.push(item.uid))
-                }else{
-                  gkMessageIdList.push(this.messageContent.uid)
-                }
-                 let res = await http.messagePrint({gkMessageIdList:gkMessageIdList})
-                  if(res){
-                   this.show.message=false
-                   this.messageContent={}
-                   this.getDatas()
-                  }
-              })
+        console.log(this)
+        this.show.messageConfirm=true
       }
      })
     },
@@ -1249,6 +1207,33 @@ export default {
         ...this.pagination,
       });
       this.tabledate = res;
+    },
+    async _mixinsInitMethods(showList=this.show.isMessageList,uid=this.messageContent.uid, PrintList = this.messagePrintList) {
+              let gkMessageIdList = [];
+              //判断是单独打印还是批量打印
+              console.log(showList)
+              if (showList)
+               PrintList.forEach((item) =>
+                  gkMessageIdList.push(item.uid)
+                )
+              else {
+                if(this.messageContent.uid){
+                  gkMessageIdList.push(uid)
+                }else{
+                return false
+                }
+                }
+
+              let res = await http.messagePrint({
+                gkMessageIdList: gkMessageIdList,
+              });
+
+              if (res) {
+                this.show.messageConfirm = false;
+                this.show.message = false;
+                this.messageContent = {};
+                await this.getDatas();
+              }
     },
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1);
