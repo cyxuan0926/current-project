@@ -90,6 +90,7 @@ export default {
     });  
       onMounted(() => {
       searchItems.value.dateMonth.canNotClear = $isSuperAdmin.value?true:false;
+      searchItems.value.dateMonth.pickerOptions = $isSuperAdmin.value?true:false;
     })
     return {
       $callRechargeParent,

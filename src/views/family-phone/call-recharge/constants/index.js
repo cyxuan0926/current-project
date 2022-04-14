@@ -41,19 +41,19 @@ const dateMonth = {
   startPlaceholder: '通话开始时间',
   endPlaceholder: '通话结束时间',
   value: [_oneMonthAgo, _dateNow],
-  pickerOptions: {
-    onPick: ({ minDate, maxDate }) => {
-      if (!maxDate) {
-        _minTime = Moment(minDate).subtract(0.5, 'years').format('x')
+  // pickerOptions: {
+  //   onPick: ({ minDate, maxDate }) => {
+  //     if (!maxDate) {
+  //       _minTime = Moment(minDate).subtract(1, 'years').format('x')
 
-        _maxTime = Moment(minDate).add(0.5, 'years').format('x')
-      } else _minTime = _maxTime = null
-    },
+  //       _maxTime = Moment(minDate).add(1, 'years').format('x')
+  //     } else _minTime = _maxTime = null
+  //   },
 
-    disabledDate: t => {
-      if (_minTime && _maxTime) return t.getTime() < _minTime || t.getTime() > _maxTime
-    }
-  }
+  //   disabledDate: t => {
+  //     if (_minTime && _maxTime) return t.getTime() < _minTime || t.getTime() > _maxTime
+  //   }
+  // }
 }
 
 export const _searchItems = {
