@@ -499,18 +499,36 @@
 
             <p class="detail-message-family" style="border: none" >
               <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'&&item.status!='CALL'">审核时间</span>
-
               <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
-
               <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
-              <span class="family-name" v-if="item.status=='CALL'">呼叫时间</span>
               <template  v-if="item.status=='CALL'">
-                 <span class="family-nameDetail">{{ item.createdAt | Date }}</span>
+                <span class="family-name" v-if="item.callType==0">呼叫时间</span>
+                   <template  v-if="item.callType==1">
+                <span class="family-name" v-if="item.updatedAt">系统电话通话时间</span>
+                <span class="family-name" v-else>系统电话呼叫时间</span>
+                   </template>
+              </template>
+             
+              <template  v-if="item.status=='CALL'">
+                    <template  v-if="item.status=='CALL'&&item.updatedAt&&item.callType=='1'">
+                    <span class="family-nameDetail">{{ item.updatedAt | String }}</span>
+                    </template>
+                    <template  v-else>
+                    <span class="family-nameDetail">{{ item.createdAt | Date }}</span>
+                    </template>
               </template>
               <template  v-else>
                 <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
               </template>
-               </p>
+            </p>
+             <!-- v-if="item.status=='CALL'&&item.updatedAt&&item.callType=='1'" -->
+              <p 
+                 v-if="item.status=='CALL'&&item.updatedAt&&item.callType=='1'"
+               class="detail-message-family" style="border-top:  1px solid #E4E7ED;border-bottom: none;" >
+               <span class="family-name" style="line-height: 40px">结束原因</span>
+               <span class="family-nameDetail">{{ item.endReason}}</span>
+              </p>
+           
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
@@ -592,14 +610,24 @@
               <template v-if="item.status=='CALL'">
                 <span class="family-name">呼叫状态</span>
                 <span class="family-nameDetail">{{ item.statusName }}</span>
+                
               </template>
+                
             </p>
+             <!-- v-if="item.status=='CALL'&&item.updatedAt&&item.callType=='1'" -->
+            <p class="detail-message-family" v-if="item.status=='CALL'&&item.updatedAt&&item.callType=='1'">
+                <span class="family-name">通话时长</span>
+                <span class="family-nameDetail">{{ item.callDuration }}</span>
+            </p>
+         
+            
           </div>
         </div>
       </div>
 
       <span slot="footer" class="dialog-footer"></span>
     </el-dialog>
+
     <el-dialog
       title="家属信息"
       class="family-dialog"
@@ -1778,6 +1806,7 @@
               label: '审核时间',
               slotName: 'auditAt'
             },
+            
             {
               label: '申请状态',
               slotName: 'status'
@@ -2175,10 +2204,12 @@
     padding-left: 120px;
     color: red;
     font-size: 12px;
+    
   }
   .process-select-block {
     @include clearfix;
     padding: 20px 0 10px;
+    
   }
 </style>
 
@@ -2192,6 +2223,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  
 }
 .logMgCls .el-select .el-tag__close.el-icon-close {
   top: -7px;
