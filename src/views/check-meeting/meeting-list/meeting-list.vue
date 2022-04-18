@@ -499,9 +499,7 @@
 
             <p class="detail-message-family" style="border: none" >
               <span class="family-name" v-if="item.status!='CANCELED'&&item.status!='EXPIRED'&&item.status!='FINISHED'&&item.status!='MEETING_ON'&&item.status!='CALL'">审核时间</span>
-
               <span class="family-name" v-if="item.status=='CANCELED'">取消时间</span>
-
               <span class="family-name" v-if="item.status=='EXPIRED'">过期时间</span>
               <span class="family-name" v-if="item.status=='CALL'">呼叫时间</span>
               <template  v-if="item.status=='CALL'">
@@ -510,7 +508,8 @@
               <template  v-else>
                 <span class="family-nameDetail" v-if="!item.meetingCalls ||item.status=='EXPIRED'">{{ item.operateTime | Date }}</span>
               </template>
-               </p>
+            </p>
+           
             <p
               v-if="item.remark && item.status=='DENIED'"
               class="detail-message-family"
@@ -593,7 +592,10 @@
                 <span class="family-name">呼叫状态</span>
                 <span class="family-nameDetail">{{ item.statusName }}</span>
               </template>
+                
             </p>
+         
+            
           </div>
         </div>
       </div>
@@ -1778,6 +1780,7 @@
               label: '审核时间',
               slotName: 'auditAt'
             },
+            
             {
               label: '申请状态',
               slotName: 'status'
