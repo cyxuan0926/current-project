@@ -10,30 +10,35 @@ export default {
       return true
     })
   },
-  setCookie: ({ commit }, params) => {
+
+  setCookie: (_, params) => {
     let expires = new Date()
     expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000)
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=${ params[key] };expires=${ expires.toUTCString() };path=/`
     })
   },
-  getCookie: ({ commit }, params) => {
+
+  getCookie: () => {
     let cookie = {}
     if (document.cookie) {
       document.cookie.replace(/\s/g, '').split(';').forEach(cook => {
         cookie[cook.split('=')[0]] = cook.split('=')[1]
       })
     }
+
     return cookie
   },
-  removeCookie: ({ commit }, params) => {
+
+  removeCookie: (_, params) => {
     let time = new Date()
     time.setTime(time.getTime() - 1000)
     Object.keys(params).forEach(key => {
       document.cookie = `${ key }=; expires=${ time.toGMTString() }`
     })
   },
-  getBaseInfo: ({ commit, dispatch }) => {
+
+  getBaseInfo: ({ dispatch }) => {
     return api.getBaseInfo().then(res => {
       if (!res) return false
       dispatch('setUser', res.user)

@@ -12,9 +12,9 @@ export default {
 
       attrs: {
         plain: true,
-
         type: 'danger'
       },
+
       events: {
         click: this.onCloseAuthorize
       }
@@ -41,25 +41,17 @@ export default {
             minRows: 2
           },
 
-          rules: [
-            'required',
-            'lengthRange-200'
-          ],
+          rules: ['required', 'lengthRange-200'],
 
           maxlength: 200,
-
           showWordLimit: true,
-
           noLabel: true,
-
           label: '驳回原因'
         }
       },
 
       buttonLoading: false,
-
       remarks: '身份信息错误',
-
       closeButton,
 
       // 初级审批时候初审意见表单组件
@@ -71,17 +63,11 @@ export default {
             minRows: 2
           },
 
-          rules: [
-            'required',
-            'lengthRange-50'
-          ],
+          rules: ['required', 'lengthRange-50'],
 
           maxlength: 50,
-
           showWordLimit: true,
-
           noLabel: true,
-
           label: '初审意见'
         }
       },
@@ -127,6 +113,7 @@ export default {
         }
       }
     },
+
     // 家属详细信息组件
     'family-detail-information': {
       template:
@@ -169,6 +156,7 @@ export default {
         }
       }
     },
+
     // 多次复用的el-button组件
     'repetition-el-buttons': {
       template:
@@ -249,7 +237,8 @@ export default {
           }
         },
 
-        { ...this.goBackButton,
+        {
+          ...this.goBackButton,
           events: {
             click: this.onAgreeAuthorizeGoBack
           }
@@ -294,7 +283,6 @@ export default {
 
           attrs: {
             plain: true,
-
             loading: this.buttonLoading
           },
 
@@ -369,14 +357,20 @@ export default {
         this.closeButton
       ]
       // 高级审核人员 or 多级审批开关关闭 or 现场探视 or 有审批流 则无需提交按钮
-      if (this.isAdvancedAuditor || !this.haveMultistageExamine || this.visitsFlag || (this.toShow && this.toShow.processInstanceId)) arrayRemove(items, '提交', 'text')
+      if (this.isAdvancedAuditor || !this.haveMultistageExamine || this.visitsFlag || (this.toShow && this.toShow.processInstanceId)) {
+        arrayRemove(items, '提交', 'text')
+      }
 
       // 有流程审批的情况
-      if (this.toShow && this.toShow.processInstanceId) items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
+      if (this.toShow && this.toShow.processInstanceId) {
+        items[0].text = `${ this.show && this.show.subTask && this.nextCheckCode ? '提交审核' : '同意' }`
+      }
 
       // 批量审批并且审批数据不是同一个审批流 显示
       // detailOrAuthDialogType 定义在亲情电话家属 2 为批量审批
-      if (!(!this.isSameProcessDefinition && this.detailOrAuthDialogType === 2)) arrayRemove(items, '同意并结束流程', 'text')
+      if (!(!this.isSameProcessDefinition && this.detailOrAuthDialogType === 2)) {
+        arrayRemove(items, '同意并结束流程', 'text')
+      }
 
       return items
      }

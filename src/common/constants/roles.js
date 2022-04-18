@@ -37,6 +37,7 @@ export default {
       titleUrl: gdAdminUrl,
       adname: 'guangdong'
     },
+
     'gs_admin': {
       adcode: 620000,
       label: '甘肃省',

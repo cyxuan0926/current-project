@@ -110,12 +110,22 @@ export default {
         const _type = col['prop'] || col['slotName']
 
         if (_type) {
-          if (regPrisonerNumber.test(_type)) col = Object.assign({}, $likePrisonerNumber, col)
-          if (regName.test(_type)) col = Object.assign({}, $likeName, col)
-          if (regIdCard.test(_type)) col = Object.assign({}, $likeIdCard, col)
-          if (rePhone.test(_type)) col = Object.assign({}, $likePhone, col)
-        }
+          if (regPrisonerNumber.test(_type)) {
+            col = Object.assign({}, $likePrisonerNumber, col)
+          }
 
+          if (regName.test(_type)) {
+            col = Object.assign({}, $likeName, col)
+          }
+
+          if (regIdCard.test(_type)) {
+            col = Object.assign({}, $likeIdCard, col)
+          }
+
+          if (rePhone.test(_type)) {
+            col = Object.assign({}, $likePhone, col)
+          }
+        }
         accumulator.push(col)
 
         return accumulator

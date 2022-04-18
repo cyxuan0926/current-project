@@ -10,35 +10,40 @@
           ref="form"
           :model="formData"
           :rules="rules"
-          @keyup.enter.native="handleLogin">
+          @keyup.enter.native="handleLogin"
+        >
           <el-form-item prop="username" ref="usernameItem">
             <el-input
-              clearable
               v-model.trim="formData.username"
+              clearable
               placeholder="用户名"
             />
           </el-form-item>
 
           <el-form-item prop="password">
             <el-input
+              v-model.trim="formData.password"
               clearable
               type="password"
-              show-password
-              v-model.trim="formData.password"
+              show-password 
               placeholder="密码"
             />
           </el-form-item>
 
           <el-form-item prop="code">
             <el-input
-              clearable
               v-model.trim="formData.code"
+              clearable  
               :maxlength="4"
-              placeholder="请输入验证码">
-              <el-button slot="append" @click="handleSmscode" :disabled="isGetSmscode">{{ smsCodeText }}</el-button>
+              placeholder="请输入验证码"
+            >
+              <template #append>
+                <el-button @click="handleSmscode" :disabled="isGetSmscode">
+                  {{ smsCodeText }}
+                </el-button>
+              </template>
             </el-input>
-        </el-form-item>
-
+          </el-form-item>
           <!-- <el-form-item class="el-form__code" prop="code">
             <el-input
               clearable
@@ -57,7 +62,8 @@
             <el-button
               type="text"
               class="white forget-password"
-              @click="handleGoPasswordRetrieve">忘记密码</el-button>  
+              @click="handleGoPasswordRetrieve"
+            >忘记密码</el-button>  
           </el-form-item>
         </el-form>
 
@@ -65,15 +71,18 @@
           class="btn-login"
           type="primary"
           :loading="loading"
-          @click="handleLogin">登录</el-button>
+          @click="handleLogin"
+        >登录</el-button>
       </div>
     </div>
+
     <div class="copyright">
       {{ 'Copyright © 2006-' + year }}
       <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
       <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
     </div>
-    <bind-phone-modal v-model="showBindModal" :username="formData.username"/>
+
+    <bind-phone-modal v-model="showBindModal" :username="formData.username" />
   </div>
 </template>
 
@@ -90,6 +99,7 @@ export default {
   components: {
     bindPhoneModal
   },
+
   data() {
     return {
       showBindModal: false,
@@ -143,10 +153,9 @@ export default {
           {
             required: true,
             validator(rule, value, callback) {
-              if ( /^\d{4}$/.test(value) ) {
+              if ( /^\d{4}$/.test(value)) {
                 callback()
-              }
-              else {
+              } else {
                 callback(new Error('请输入正确验证码'))
               }
             },
@@ -167,11 +176,16 @@ export default {
       authorities: state => state.authorities
       // captchaConfigs: state => state.captchaConfigs
     }),
+
     ...mapState({
       user: state => state.global.user
     }),
 
-    ...mapGetters(['isAdvancedAuditor', 'isTenantAdmin', 'isAuditor']),
+    ...mapGetters([
+      'isAdvancedAuditor',
+      'isTenantAdmin',
+      'isAuditor'
+    ]),
 
     // 倒计时文本
     smsCodeText() {
@@ -183,7 +197,6 @@ export default {
     // await this.getCaptcha()
     if (localStorage.getItem('accountInfo')) {
       if (this.$route.query.redirect) this.$router.replace(this.$route.query.redirect)
-
       else this.$router.replace('/login')
 
       return
@@ -195,14 +208,18 @@ export default {
   destroyed() {
     if (this.smsInterval) {
       clearInterval(this.smsInterval)
+
       this.smsInterval = null
     }
   },
 
   methods: {
     ...mapMutations(['setUser', 'setLoginHavePrisonerIn']),
+
     ...mapMutations('account', ['setFindPasswordUsername', 'setIsStep']),
+
     ...mapActions(['getWebsocketResult']),
+
     ...mapActions('account', ['login']), // 'getCaptcha'
 
     handlePasswordTips(title) {
@@ -235,9 +252,8 @@ export default {
 
     // 获取验证码
     handleSmscode() {
-      if (this.isGetSmscode) {
-        return
-      }
+      if (this.isGetSmscode) return
+
       this.$message.closeAll();
       let valid = true
       let count = 0
@@ -247,7 +263,9 @@ export default {
         }
         if (++count == 2 && valid) {
           this.isGetSmscode = true
+
           let res = await sendSmsByAccount(this.formData.username, this.formData.password)
+
           if (res) {
             let { code } = res
             // 发送短信验证码失败 用户名不存在 ｜ 密码不正确 | 操作频繁 ｜ 短信次数达上限
@@ -274,7 +292,9 @@ export default {
 
     handleLogin() {
       if (this.loading) return
+
       this.$message.closeAll();
+
       this.$refs.form.validate(async valid => {
         if (!valid) return
 
@@ -285,45 +305,44 @@ export default {
 
         try {
           // const { key } = this.captchaConfigs
+          this.loading = true
+
           const {
             username,
             password,
             code
-          } = this.formData
-          this.loading = true
-          const res = await this.login({
+          } = this.formData,
+          res = await this.login({
             username,
             password,
             code,
             codeKey: username
           })
 
-          if( res.code === 'user.PasswordNotMatched' ) {
+          if (res.code === 'user.PasswordNotMatched') {
             this.loading = false
-            if( parseInt(res.passWordErrorCount) >= 3 ) {
-              this.handlePasswordTips(`很抱歉，连续多次密码输入错误，账户已被锁定，请${res.lockTime}分钟后再登录`)
-            }
+
+            if (parseInt(res.passWordErrorCount) >= 3) this.handlePasswordTips(`很抱歉，连续多次密码输入错误，账户已被锁定，请${res.lockTime}分钟后再登录`)
+
             return
           }
 
-          if(res) {
+          if (res) {
             localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo))
             localStorage.setItem('authorities', JSON.stringify(this.authorities || []))
             localStorage.setItem('publicUserInfo', JSON.stringify(this.publicUserInfo))
             localStorage.setItem('menus', JSON.stringify(this.menus || []))
+
             this.setUser(Object.assign({}, this.user, {...helper.transitionRoleId(this.publicUserInfo.userRoles)}))
+
             localStorage.setItem('user', JSON.stringify(this.user || {}))
 
             const { role, jailId } = this.user
-            if ([1, -1].includes(parseInt(role))) {
-              this.getWebsocketResult(jailId)
-            }
 
-            if ( this.isRememberAccount ) {
-              this.storeAccount(username, password)
-            } else {
-              this.removeAccount()
-            }
+            if ([1, -1].includes(parseInt(role))) this.getWebsocketResult(jailId)
+
+            if (this.isRememberAccount) this.storeAccount(username, password)
+            else this.removeAccount()
 
             if (this.publicUserInfo && this.publicUserInfo.firstLogin) {
               this.loading = false
@@ -332,14 +351,11 @@ export default {
             }
 
             const passWordStatus = this.publicUserInfo && this.publicUserInfo.passWordStatus
-
             const passWordDays = this.publicUserInfo && this.publicUserInfo.days
 
             if (passWordStatus === 'UP') {
               const { hasPrisonerIn } = this.user
-
               const isPrisonerIn = hasPrisonerIn && (this.isAuditor || this.isTenantAdmin || this.isAdvancedAuditor)
-
               const redirectPath = this.$route.query.redirect
 
               redirectPath && !redirectPath.includes('login') && !isPrisonerIn ?
@@ -361,11 +377,14 @@ export default {
               const title = passWordStatus === 'DOWN' ?
                 '密码已过期，请修改密码！' :
                 `密码将在${ passWordDays < 90 ? 90 - passWordDays : 1}天后过期，为了不影响系统正常使用，请及时修改密码！`
+
               this.handlePasswordTips(title)
             }
           }
         } catch (err) {
+          Promise.reject(err)
         }
+
         this.loading = false
       })
     },
@@ -382,13 +401,11 @@ export default {
 
     resolveAccount() {
       const username = Cookies.get('username')
-
       const password = Cookies.get('password')
 
       if (!username || !password) return
 
       this.formData = { username, password: Base64.decode(password) }
-
       this.isRememberAccount = true
     },
 

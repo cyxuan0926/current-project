@@ -7,6 +7,7 @@ export const tabItems = [
     label: '食谱表',
     name: '0'
   },
+
   {
     label: '伙食供应量表',
     name: '1'
@@ -21,6 +22,7 @@ export const tabItems = [
     label: '被服发放标准表',
     name: '3'
   },
+
   {
     label: '零花钱详情表',
     name: '4'

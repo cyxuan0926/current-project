@@ -693,6 +693,7 @@ export default {
         value: 0
       }
     ]
+ 
     const { belong } = prisons.PRISONAREA
     return {
       detailDetVisible: false, // 详情弹窗
@@ -731,6 +732,7 @@ export default {
           options: notifyOptions,
           miss: false
         },
+          
         familyName: {
           type: 'input',
           label: '家属姓名',
@@ -1668,7 +1670,7 @@ export default {
         'address',
         'status',
         'isNotify',
-        'familyName'
+        'familyName',
       ]
 
       let minReactInChainKey = 'jailId'

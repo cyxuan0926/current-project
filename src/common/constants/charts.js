@@ -7,6 +7,7 @@ export default {
             bottom: 0,
             containLabel: true
         },
+
         xAxis: {
             type: 'value',
             axisLabel: {
@@ -19,6 +20,7 @@ export default {
                 show: false
             }
         },
+
         yAxis: {
             type: 'category',
             axisLabel: {
@@ -32,6 +34,7 @@ export default {
                 show: false
             }
         },
+
         series: [
             {
                 type: 'bar',

@@ -4,30 +4,27 @@ export default {
   async ygUploadFile({ commit }, file) {
     try {
       let formData = new FormData()
-
       file && formData.append('file', file)
-
       const filesResult = await api.ygUploadFile(formData)
-
-      if (!filesResult) return
-
+      if (!filesResult) {
+        return
+      }
       commit('ygUploadFile', filesResult)
-
       return true
     }
     catch (err) {
       Promise.reject(err)
     }
   },
+
   async familyphonerechargeimport({ commit }, file) {
     try {
       let formData = new FormData()
-
       file && formData.append('file', file)
-
       const filesResult = await api.familyphonerechargeimport(formData)
-
-      if (!filesResult) return
+      if (!filesResult) {
+        return
+      }
 
       commit('ygUploadFile', filesResult)
 
@@ -37,6 +34,7 @@ export default {
       Promise.reject(err)
     }
   },
+
   async validateUploadYgCommon({ commit }, inputs) {
     try {
       let response;
@@ -45,8 +43,9 @@ export default {
       } else {
        response = await api.validateUploadYgCommon(inputs)
       }
-      console.log(response)
-      if (!response) return
+      if (!response) {
+        return
+      }
       commit('setValidateExcelResult', response)
 
       return true
@@ -55,6 +54,7 @@ export default {
       Promise.reject(err)
     }
   },
+
   async getPagedYgPrisonsDataCommon({ commit }, inputs) {
     try {
       let response, list, totalCount;
@@ -64,10 +64,13 @@ export default {
         response = await api.getPaged(inputs)
       }
 
-      if (!response || !response.data) return
+      if (!response || !response.data) {
+
+        return
+      }
+
       if (inputs.params.isYgPrison) {
         list = response.data[inputs.params.isYgPrison] && Array.isArray(response.data[inputs.params.isYgPrison]) ? response.data[inputs.params.isYgPrison] : []
-
         totalCount = response.data[inputs.params.isYgPrison] && Array.isArray(response.data[inputs.params.isYgPrison]) ? response.data['total'] : 0
       } else {
         list = response.data['list'] && Array.isArray(response.data['list']) ? response.data['list'] : []

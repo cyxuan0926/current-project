@@ -199,10 +199,12 @@ export default {
       type: Object,
       default: () => {}
     },
+
     buttonText: {
       type: String,
       default: ''
     },
+
     clearable: Boolean
   },
 
@@ -243,9 +245,7 @@ export default {
         // 是否显示查询的按钮
         this.showSearchIcon = val && !Object.values(val).every(item => item && item.miss)
       },
-
       deep: true,
-
       immediate: true
     }
   },
@@ -283,7 +283,10 @@ export default {
         }
       }
 
-      if (e !== 'tabs') this.$emit('search')
+      if (e !== 'tabs') {
+        this.$emit('search')
+      }
+
       return true
     },
 
@@ -302,7 +305,9 @@ export default {
 
     onClear() {
       Object.keys(this.items).forEach(key => {
-        if (this.items[key].miss) return
+        if (this.items[key].miss) {
+          return
+        }
         // if (this.items[key].type === 'monthRangeSelector') {
         //   this.items[key][this.items[key].startKey] = this.items[key].startValue || ''
         //   // params[this.items[key].startKey] = this.items[key][this.items[key].startKey] || this.items[key].startValue
@@ -335,11 +340,12 @@ export default {
         let params = {}
 
         Object.keys(this.items).forEach(key => {
-          if (this.items[key].miss || this.items[key].slotName) return
+          if (this.items[key].miss || this.items[key].slotName) {
+            return
+          }
 
           if (this.items[key].type === 'monthRangeSelector') {
             params[this.items[key].startKey] = this.items[key].value[0]
-
             params[this.items[key].endKey] = this.items[key].value[1]
 
             return
@@ -347,19 +353,21 @@ export default {
 
           if (this.items[key].type === 'monthrange') {
             params[this.items[key].start] = this.startValue
-
             params[this.items[key].end] = this.endValue
 
             return
           }
 
-          if (!this.items[key].value && parseInt(this.items[key].value) !== 0) return
+          if (!this.items[key].value && parseInt(this.items[key].value) !== 0) {
+            return
+          }
 
           if (['datetimerange', 'daterange', 'dateRange'].indexOf(this.items[key].type) > -1) {
             params[this.items[key].start] = this.items[key].value[0]
-
             params[this.items[key].end] = this.items[key].value[1]
-          } else params[key] = this.items[key].value
+          } else {
+            params[key] = this.items[key].value
+          }
         })
 
         const _prisonConfigId = params.prisonFloor || params.prisonHouse || params.prisonSubArea || params.prisonArea || ''
@@ -367,13 +375,21 @@ export default {
         if (_prisonConfigId) {
           params.prisonConfigId = _prisonConfigId
 
-          if (params.prisonArea) delete params.prisonArea
+          if (params.prisonArea) {
+            delete params.prisonArea
+          }
 
-          if (params.prisonSubArea) delete params.prisonSubArea
+          if (params.prisonSubArea) {
+            delete params.prisonSubArea
+          }
 
-          if (params.prisonHouse) delete params.prisonHouse
+          if (params.prisonHouse) {
+            delete params.prisonHouse
+          }
 
-          if (params.prisonFloor) delete params.prisonFloor
+          if (params.prisonFloor) {
+            delete params.prisonFloor
+          }
         }
         // 如果当前实例没有父实例，此实例将会是其自己
         this.$parent.$parent.filter = helper.trimObject(params) || params

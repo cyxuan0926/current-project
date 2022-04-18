@@ -13,14 +13,19 @@ export const agency = urls.apiPath
 
 // 获取异步请求的url 默认ygfw互联网
 export const getUrl = (url, path) => /^(http|https).*/.test(url) ? url : `${ !path ? agency : urls[path] }${ url }`
+
 // 公共服务
 export const getPublicUrl = url => getUrl(url, 'publicApiHost')
+
 // bpmn
 export const getBpmnUrl = url => getUrl(url, 'bpmnApiHost')
+
 // 阳光监狱
 export const getYgUrl = url => getUrl(url, 'ygApiHost')
+
 // 河源监狱
 export const getHyUrl = url => getUrl(url, 'jailApiHost')
+
 // 终端设备升级表
 export const getTerminalUrl = url => getUrl(url, 'monitoringApiHost')
 
@@ -52,6 +57,7 @@ instance.interceptors.request.use(
 //   },
 //   error => Promise.reject(error)
 // )
+
 // http response 拦截器
 instance.interceptors.response.use(
   response => {
@@ -116,6 +122,7 @@ export const postObj = (url, data = {}, config = {}) => {
   config.headers = { 'Content-Type': 'application/json' }
   return instance.post(getUrl(url), data, config).then(res => res)
 }
+
 /**
  * 封装post文件请求
  * @param url
@@ -130,26 +137,30 @@ export const postFile = (url, data = {}) => {
     }
   }).then(res => res)
 }
+
 export function postFormData(url = '', data = {}, config = {}) {
   const formData = new FormData()
-    Object.keys(data).forEach(key => {
-      if (data[key]) {
-          if (key === 'file' && Array.isArray(data.file)) {
-              data.file.forEach(f => formData.append('file', f))
-          }
-          else {
-              formData.append(key, data[key])
-          }
+
+  Object.keys(data).forEach(key => {
+    if (data[key]) {
+      if (key === 'file' && Array.isArray(data.file)) {
+        data.file.forEach(f => formData.append('file', f))
       }
-    })
+      else {
+        formData.append(key, data[key])
+      }
+    }
+  })
+
   return instance.request({
-    url,
+    url: getUrl(url),
     data: formData,
     method: 'POST',
     headers: { 'content-type': 'multipart/form-data' },
     ...config
   })
 }
+
 /**
  * 封装patch文件请求
  * @param url
@@ -164,6 +175,7 @@ export const patchFile = (url, data = {}) => {
     }
   }).then(res => res)
 }
+
 /**
  * 封装patch请求
  * @param url
@@ -174,6 +186,7 @@ export const patchFile = (url, data = {}) => {
 export const patch = (url, data = {}, config = {}) =>
   instance.patch(getUrl(url), qs.stringify(data), config).then(res => res)
 // instance.patch(url, qs.stringify(data), config).then(res => res)
+
 /**
  * 封装put请求
  * @param url
@@ -188,6 +201,7 @@ export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
     'Content-Type': 'application/json'
   }
 })
+
 /**
  * 封装delete请求
  * @param url
@@ -196,6 +210,7 @@ export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
  */
 export const remove = (url, config = {}) =>
   instance.delete(getUrl(url), config).then(res => res)
+
 /**
  * 封装all请求
  * @param urls

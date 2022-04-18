@@ -225,13 +225,18 @@ export default {
     tinymceChange(contents, text, content) {
       if (!content) {
         this.fields[this.prop] = ''
-        if (this.item.summary) this.fields[this.item.summary] = ''
+        if (this.item.summary) {
+          this.fields[this.item.summary] = ''
+        }
       }
       else {
         let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = contents.replace(pattern, `src="${ this.$urls.imageUrl }`)
         this.fields[this.prop] = c
-        if (this.item.summary) this.fields[this.item.summary] = text
+        if (this.item.summary) {
+          this.fields[this.item.summary] = text
+        }
       }
+
       this.$emit('validateField', this.prop)
     },
 

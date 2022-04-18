@@ -4,11 +4,8 @@ export default {
   handleCollapse({ commit }, params) {
     commit('handleCollapse', params)
   },
-  logout: ({ commit }) => {
-    return api.logout().then(res => {
-      return res
-    })
-  },
+
+  logout: () => api.logout().then(res => res),
 
   // 获取多级审批数目配置
   getMultistageExamineCountConfigs: async({ rootState, state, commit }) => {

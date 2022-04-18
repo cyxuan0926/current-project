@@ -39,16 +39,12 @@ superAdmin = [{
       // component: helper.loadView('sadmin-prison/tenant-list')
     }, {
       path: '/face-recognition/configs',
-
       name: 'face-recognition-configs',
-
       meta: {
         // 人脸检索间隔时间 visit.remote-visit-application.face-retrieval.interval-time
         // 人脸识别阈值配置  visit.remote-visit-application.face-recognition.threshold-set
         permission: 'visit.remote-visit-application.face-recognition.threshold-set',
-
         breadcrumbName: '人脸识别配置',
-
         activeMenu: '/prison/list'
       },
 

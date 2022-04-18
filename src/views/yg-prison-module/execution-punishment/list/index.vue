@@ -44,11 +44,13 @@ export default {
       return Object.entries(httpRequests).reduce((accumulator, [key, value]) => {
         let temp = value
 
-        if (['excelDownloadRequest'].includes(key)) temp = value[$tabs.value]
+        if (['excelDownloadRequest'].includes(key)) {
+          temp = value[$tabs.value]
+        }
 
-        accumulator[key] = {
-          ...accumulator[key],
-          ...temp
+        accumulator = {
+          ...accumulator,
+          [key]: temp
         }
 
         return accumulator

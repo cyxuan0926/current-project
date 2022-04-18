@@ -8,19 +8,23 @@ export default {
     if (typeof money === 'number' || typeof money === 'string') {
       if (typeof money === 'number') money = money.toString()
       if (money.toString().includes(',')) money = money.replace(/,/g, '')
+
       money = Number(money)
+
       if (money) {
         if (money < 0) {
           money = -money
           temp = 0
         }
+
         result = money.toFixed(2)
+
         if (temp === 0) result = `-${ result }`
-      }
-      else result = money
-    }
-    else result = 0
+      } else result = money
+    } else result = 0
+
     result = result.toString().replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, '$&,')
+
     return result
   }
 }

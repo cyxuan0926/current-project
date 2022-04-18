@@ -46,17 +46,16 @@ export default {
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce((accumulator, [key, value]) => {
         let temp = value
-        // if (['excelExportRequest', ].includes(key)) {
-        //   temp['params'] = {
-        //     ...value['params'],
-        //     tab: $tabs.value
-        //   }
-        // }
-        if (['pagedRequest','excelExportRequest','excelUploadRequest','excelDownloadRequest'].includes(key)) temp = value[$tabs.value]
-        accumulator[key] = {
-          ...accumulator[key],
-          ...temp
+
+        if (['pagedRequest','excelExportRequest','excelUploadRequest','excelDownloadRequest'].includes(key)) {
+          temp = value[$tabs.value]
         }
+
+        accumulator = {
+          ...accumulator,
+          [key]: temp
+        }
+
         return accumulator
       }, {})
     })

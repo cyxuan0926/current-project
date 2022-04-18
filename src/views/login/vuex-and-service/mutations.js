@@ -4,7 +4,7 @@ import check from '@/router/modules/check'
 import common from '@/router/modules/common'
 import information from '@/router/modules/information'
 
-let addPath = (arr, routes = []) => {
+const addPath = (arr, routes = []) => {
   arr.forEach(item => {
     if (item.children) {
       addPath(item.children, routes)
@@ -13,12 +13,14 @@ let addPath = (arr, routes = []) => {
       routes.push(item.path)
     }
   })
+
   return routes
 }
 
 export default {
-  login(state, params) {
+  login(_, params) {
     localStorage.setItem('user', JSON.stringify(params.users))
+
     switch (params.users.role) {
       case '0':
         localStorage.setItem('routes', JSON.stringify(addPath([...common, ...superAdmin])))
