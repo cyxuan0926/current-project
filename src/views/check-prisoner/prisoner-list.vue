@@ -625,8 +625,6 @@ import {
   mapGetters
 } from 'vuex'
 import prisonerDetailModal from './components/prisoner-detail-modal.vue'
-import validator from '@/utils'
-
 import { prisonerExcelConfig } from '@/common/excel-config'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
@@ -746,6 +744,15 @@ export default {
             { label: '普管级', value: 2 },
             { label: '考察级', value: 3 },
             { label: '严管级', value: 4 }
+          ],
+          value: ''
+        },
+        faceUrl:{
+          type: 'select',
+          label: '是否录入人脸',
+          options: [
+            { label: '无', value: 0 },
+            { label: '有', value: 1 }
           ],
           value: ''
         },

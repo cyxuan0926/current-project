@@ -15,7 +15,7 @@
         >
 
         <template v-if="[0, 1].includes(+tabs)">
-          <el-button type="primary" class="button-add" @click="printList"
+          <el-button  v-if="!$store.getters.isSuperAdmin"  type="primary" class="button-add" @click="printList"
             >批量打印</el-button
           >
         </template>
@@ -89,7 +89,7 @@
 
             <template v-else>
               <span
-               v-if="row.state"
+              
                 style="color: #409eff; cursor: pointer"
                 @click="onDetail(row)"
                 >详情</span
