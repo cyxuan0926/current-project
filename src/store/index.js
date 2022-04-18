@@ -46,6 +46,8 @@ import files from './modules/file'
 
 import ygPrisons from './modules/yg-prisons'
 
+import v3Component from './modules/v3-component'
+
 import 'babel-polyfill'
 
 Vue.use(Vuex)
@@ -107,6 +109,7 @@ export default new Vuex.Store({
     diplomaticConsulOfficial,
     familyPhone,
     files,
-    ygPrisons
+    ygPrisons,
+    v3Component
   }
 })

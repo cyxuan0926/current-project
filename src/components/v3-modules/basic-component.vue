@@ -22,20 +22,10 @@
         <!-- 模版 -->
         <template v-if="$componentsVisible['excelDownloadVisible']">
           <m-excel-download
-            v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
-            path="/download/downloadfile"
-            :params="httpRequests['excelDownloadRequest']['params']"
-            text="模板"
-          />
-          <m-excel-download
-            v-else
-            path="/download/common/download"
-            :params="httpRequests['excelDownloadRequest']['params']"
-            text="模板"
-            :apiConfigs="{
-              apiHostKey: 'ygApiHost',
-              apiPathKey: 'temp',
-            }"
+            :path="$httpRequests['excelDownloadRequest']['path']"
+            :params="$httpRequests['excelDownloadRequest']['params']"
+            :text="$httpRequests['excelDownloadRequest']['text']"
+            :apiConfigs="$httpRequests['excelDownloadRequest']['apiConfigs']"
           />
         </template>
 
@@ -154,22 +144,11 @@
               <!-- 为了扩展处理下载的处理 -->
               <slot name="elDialogExcelDownloadSlot" v-bind="$ygPrisonValidateUploadResult">
                 <m-excel-download
-                  v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
-                  path="/download/localfile"
-                  :params="{ filepath: $ygPrisonValidateUploadResult.filePath }"
-                  :buttonsProps="excelExportButtonProps"
-                  text="导入失败的数据.xls"
-                />
-                <m-excel-download
-                  v-else
-                  path="/download/common/download"
+                  :path="$httpRequests['dialogExcelDownloadRequest']['path']"
                   :params="{ fileName: $ygPrisonValidateUploadResult.filepath }"
                   :buttonsProps="excelExportButtonProps"
-                  text="导入失败的数据.xls"
-                  :apiConfigs="{
-                    apiHostKey: 'ygApiHost',
-                    apiPathKey: 'temp',
-                  }"
+                  :text="$httpRequests['dialogExcelDownloadRequest']['text']"
+                  :apiConfigs="$httpRequests['dialogExcelDownloadRequest']['apiConfigs']"
                 />
               </slot>
             </p>
@@ -177,7 +156,7 @@
         </div>
 
         <template #footer>
-          <div>
+          <div class="inner-dialog__footer">
             <el-button type="primary" @click="uploadInnerDialogVisible = false">确 定</el-button>
           </div>
         </template>
@@ -253,6 +232,7 @@ export default {
     //     url: '',
     //     params: {}
     //   }
+    // dialogExcelDownloadRequest：dialog 导出的模版地址
     httpRequests: {
       type: Object,
       default: () => ({
@@ -383,11 +363,57 @@ export default {
 
     // 导入弹框的文案
     const dialogTitle = computed(() => {
-      const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-        text = (tabItem[0] && tabItem[0]["label"]) || router.currentRoute.meta.breadcrumbName;
+      const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value)
+      const text = (tabItem[0] && tabItem[0]["label"]) || router.currentRoute.meta.breadcrumbName
 
       return `${text}导入`;
     });
+
+    // 接口
+    const $httpRequests = computed(() => {
+      return Object.entries(httpRequests.value).reduce((accumulator, [key, value]) => {
+        const defaultValue = {
+          excelDownloadRequest: {
+            path: '/download/common/download',
+
+            params: {
+              fileName: ''
+            },
+
+            text: '模版',
+
+            apiConfigs: {
+              apiHostKey: 'ygApiHost',
+              apiPathKey: 'temp'
+            }
+          },
+
+          dialogExcelDownloadRequest: {
+            path: '/download/common/download',
+
+            apiConfigs: {
+              apiHostKey: 'ygApiHost',
+              apiPathKey: 'temp'
+            },
+
+            text: '导入失败的数据.xls'
+          }
+        }
+
+        let temp = value
+
+        if (defaultValue[key]) {
+          temp = Object.assign({}, defaultValue[key], value)
+        }
+
+        accumulator = {
+          ...accumulator,
+          [key]: temp
+        }
+
+        return accumulator
+      }, {})
+    })
 
     // watch
     watch(tabs, async val => {
@@ -398,13 +424,13 @@ export default {
       immediate: true,
     });
 
-    watch($tabs, (val) => {
+    watch($tabs, val => {
       if (val) {
         emit("update:tabs", val);
       }
     });
 
-    watch(searchItems, (val) => {
+    watch(searchItems, val => {
       if (val) {
         emit("update:ygSearchItems", val);
       }
@@ -447,10 +473,7 @@ export default {
           const { excelUploadRequest = {} } = httpRequests.value;
           let isSuccess = null;
           if (excelUploadRequest.params.isYgPrison) {
-            isSuccess = await store.dispatch(
-              "ygPrisons/familyphonerechargeimport",
-              file
-            );
+            isSuccess = await store.dispatch("ygPrisons/familyphonerechargeimport", file);
           } else {
             isSuccess = await store.dispatch("ygPrisons/ygUploadFile", file);
           }
@@ -508,20 +531,30 @@ export default {
                   setTimeout(() => {
                     uploadInnerDialogVisible.value = true;
                   }, 1500);
-                } else spendTime.value += 1;
+                } else {
+                  spendTime.value += 1;
+                }
               }, 1000);
-            } else spendTime.value += 1;
+            } else {
+              spendTime.value += 1;
+            }
           }, 1000);
-        } else spendTime.value += 1;
+        } else {
+          spendTime.value += 1;
+        }
       }, 500);
 
       return false;
     };
 
-    const onChange = (file) => {
-      if (uploadDialogVisible.value) return;
+    const onChange = file => {
+      if (uploadDialogVisible.value) {
+        return;
+      }
 
-      if (file) uploadDialogVisible.value = true;
+      if (file) {
+        uploadDialogVisible.value = true;
+      }
     };
 
     // excel导入的配置
@@ -531,7 +564,7 @@ export default {
         limit: 1,
         beforeUpload: beforeUpload,
         onChange: onChange,
-      },
+      }
     });
 
     // 打开上传外层弹框的回调的函数
@@ -579,21 +612,25 @@ export default {
     const onYGPrisonDownloadExcel = () => {
       Vue.nextTick(async () => {
         ygPrisonDownloading.value = true;
+        const { excelExportRequest = {} } = httpRequests.value
 
-        const { excelExportRequest = {} } = httpRequests.value,
-          times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
-          tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-          TABName = tabItem[0] && tabItem[0]["label"] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]["label"] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
-          actionName = "ygPrisons/exportYgPrisonExcel",
-          params = {
-            url: excelExportRequest["url"],
-            params: {
-              ...filter.value,
-              ...excelExportRequest["params"],
-            },
+        const times = DateFormat(Date.now(), "YYYYMMDDHHmmss")
 
-            methods: excelExportRequest["methods"],
-          };
+        const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value)
+
+        const TABName = tabItem[0] && tabItem[0]["label"] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]["label"] }` : router.currentRoute.meta.breadcrumbName // 如果没有标签也 那么就是菜单名
+
+        const actionName = "ygPrisons/exportYgPrisonExcel"
+
+        const params = {
+          url: excelExportRequest["url"],
+          params: {
+            ...filter.value,
+            ...excelExportRequest["params"],
+          },
+
+          methods: excelExportRequest["methods"],
+        };
 
         await tokenExcel({
           menuName: `${ TABName }-${ times }`,
@@ -646,6 +683,7 @@ export default {
       $tabs,
       initData,
       searchItems,
+      $httpRequests
     };
   },
 };

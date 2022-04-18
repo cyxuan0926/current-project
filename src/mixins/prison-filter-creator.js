@@ -99,18 +99,16 @@ export default {
     }
 
     await Promise.all(_promise)
-
     const $search = this.$refs.search || this.$refs.$search || this.$refs.$ygSearch
-
     $search && $search.onGetFilter()
-
     await this._initData()
-
     this.$_prisonFilterCreatorMounting = false
   },
 
   async activated() {
-    if (this.$_prisonFilterCreatorMounting) return
+    if (this.$_prisonFilterCreatorMounting) {
+      return
+    }
 
     await this._activedMethods()
   },
@@ -137,7 +135,6 @@ export default {
       }))
 
       this.searchItems.orgName.options = data
-
       this.searchItems.orgName.getting = false
 
       Message.closeAll()
@@ -165,12 +162,13 @@ export default {
         Message.closeAll()
 
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
-
         this.$set(this.searchItems['jailId'], 'value',  this.$_jailId)
 
         this.searchItems.jailId.getting = false
 
-        if (this.hasAllPrisonQueryAuth) await this.searchSelectChange('jailId', this.$_jailId)
+        if (this.hasAllPrisonQueryAuth) {
+          await this.searchSelectChange('jailId', this.$_jailId)
+        }
       }
     },
 
@@ -193,12 +191,12 @@ export default {
       Message.closeAll()
 
       this.$set(this.searchItems['provincesId'], 'options', this.$store.state.provincesAll)
-
       this.$set(this.searchItems['provincesId'], 'value', this.$_provincesId)
-
       this.$set(this.searchItems['provincesId'], 'getting', false)
 
-      if (this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth) await this.searchSelectChange('provincesId', this.$_provincesId)
+      if (this.hasAllPrisonQueryAuth || this.hasOnlyAllPrisonQueryAuth) {
+        await this.searchSelectChange('provincesId', this.$_provincesId)
+      }
     },
 
     createPrisonSubArea() {
@@ -207,7 +205,12 @@ export default {
         label: '分监区'
       })
 
-      const { provincesId = {}, jailId = {}, prisonArea, ...ret } = this.searchItems
+      const {
+        provincesId = {},
+        jailId = {},
+        prisonArea,
+        ...ret
+      } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,
@@ -223,7 +226,13 @@ export default {
         label: '楼栋'
       })
 
-      const { provincesId = {}, jailId = {}, prisonArea, prisonSubArea, ...ret } = this.searchItems
+      const {
+        provincesId = {},
+        jailId = {},
+        prisonArea,
+        prisonSubArea,
+        ...ret
+      } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,
@@ -240,7 +249,14 @@ export default {
         label: '楼层'
       })
 
-      const { provincesId = {}, jailId = {}, prisonArea, prisonSubArea, prisonHouse, ...ret } = this.searchItems
+      const {
+        provincesId = {},
+        jailId = {},
+        prisonArea,
+        prisonSubArea,
+        prisonHouse,
+        ...ret
+      } = this.searchItems
 
       this.searchItems = Object.assign({}, {
         provincesId,
@@ -307,7 +323,6 @@ export default {
             this.createPrisonSubArea()
 
             this.$set(this.searchItems['prisonSubArea'], 'value', '')
-
             this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
           }
         }
@@ -325,7 +340,6 @@ export default {
             this.createPrisonHouseItem()
 
             this.$set(this.searchItems['prisonHouse'], 'value', '')
-
             this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
           }
         }
@@ -343,7 +357,6 @@ export default {
             this.createPrisonFloorItem()
 
             this.$set(this.searchItems['prisonFloor'], 'value', '')
-
             this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
           }
         }
@@ -357,14 +370,12 @@ export default {
           // 柏鑫说 ywt_admin和租户管理员都是查当前监狱所有的监区 其余监狱角色都是查当前用户管理的监区
           if (value) {
             if (this.$store.getters.isSuperAdmin || this.$store.getters.isTenantAdmin) await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
-
             else await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
 
             Message.closeAll()
           }
 
           this.$set(this.searchItems['prisonArea'], 'value', '')
-
           this.$set(this.searchItems['prisonArea'], 'options', value ? this.$store.state.jailPrisonAreas : [])
         }
       }
@@ -376,7 +387,6 @@ export default {
 
           if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
             this.$set(this.searchItems['prisonArea'], 'value', '')
-
             this.$set(this.searchItems['prisonArea'], 'options', [])
           }
         }
@@ -388,15 +398,11 @@ export default {
             await this.$store.dispatch('getPrisonAll', { provincesId: value })
 
             this.$set(this.searchItems['jailId'], 'value', '')
-          }
-
-          else await this.$store.dispatch('getPrisonAll')
+          } else await this.$store.dispatch('getPrisonAll')
 
           Message.closeAll()
 
-          
           this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
-
           this.$set(this.searchItems['jailId'], 'getting', false)
         }
       }
@@ -405,16 +411,15 @@ export default {
         if (this.searchItems.changerType) {
           if (value === 'CANCELED') {
             if (this.toShow && this.toShow.changerType === true) this.searchItems.changerType.miss = true
-
             else {
               this.searchItems.changerType.miss = false
+              this.searchItems.changerType.value = ''
 
               delete this.filter.changerType
-
-              this.searchItems.changerType.value = ''
             }
+          } else {
+            this.searchItems.changerType.miss = true
           }
-          else this.searchItems.changerType.miss = true
         }
       }
 

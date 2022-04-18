@@ -230,13 +230,17 @@ export default {
 
     onSubmit(e) {
       this.$refs.form.validate(valid => {
-        if (valid) this.$emit('submit', helper.trimObject(this.fields))
+        if (valid) {
+          this.$emit('submit', helper.trimObject(this.fields))
+        }
       })
     },
 
     onPreview(e) {
       this.$refs.form.validate(valid => {
-        if (valid) this.$emit('preview', helper.trimObject(this.fields))
+        if (valid) {
+          this.$emit('preview', helper.trimObject(this.fields))
+        }
       })
     },
 
@@ -256,14 +260,26 @@ export default {
     render() {
       let fields = {}
       this.dismiss = ['buttons', 'formConfigs']
-      if (this.items.dissMissConfigs && Array.isArray(this.items.dissMissConfigs) && this.items.dissMissConfigs.length) this.dismiss = [...this.dismiss, ...this.items.dissMissConfigs]
+      if (this.items.dissMissConfigs && Array.isArray(this.items.dissMissConfigs) && this.items.dissMissConfigs.length) {
+        this.dismiss = [...this.dismiss, ...this.items.dissMissConfigs]
+      }
+
       Object.keys(this.items).forEach(key => {
-        if (this.dismiss.indexOf(key) >= 0 || key === 'dissMissConfigs' || this.items[key].slotName) return
+        if (this.dismiss.indexOf(key) >= 0 || key === 'dissMissConfigs' || this.items[key].slotName) {
+          return
+        }
+
         fields[key] = this.items[key].value
         this.initRules(this.items[key])
         this.items[key].rule && (this.rules[key] = this.items[key].rule)
-        if (this.items[key].type === 'select') this.initSelect(this.items[key], key)
-        if (this.items[key].type === 'date' && this.items[key].pickerOptions) this.initDate(this.items[key], this.items[key].pickerOptions)
+
+        if (this.items[key].type === 'select') {
+          this.initSelect(this.items[key], key)
+        }
+
+        if (this.items[key].type === 'date' && this.items[key].pickerOptions) {
+          this.initDate(this.items[key], this.items[key].pickerOptions)
+        }
       })
 
       this.fields = helper.isEmptyObject(this.values) ? Object.assign({}, this.values) : { ...fields, ...this.initFields }
@@ -272,7 +288,10 @@ export default {
     },
 
     validateField(e) {
-      if (this.destroyed) return
+      if (this.destroyed) {
+        return
+      }
+
       this.$refs.form.validateField(e)
     },
 
@@ -282,7 +301,11 @@ export default {
         const actionArgs = item.actionArgs || {}
         const action = item.namespaced ? `${item.namespaced}/${item.action}` : item.action
         const res = await this.$store.dispatch(action, actionArgs)
-        if (!res) return
+
+        if (!res) {
+          return
+        }
+
         this.$set(item, 'options', res.options)
         this.$set(item, 'props', { label: res.label, value: res.value })
         this.$set(item, 'loading', false)
@@ -290,26 +313,37 @@ export default {
     },
 
     initRules(item) {
-      if (!item.rules || !item.rules.length) return
+      if (!item.rules || !item.rules.length) {
+        return
+      }
+
       item.rules.forEach((rule, index) => {
         if (index === 0) item.rule = []
         item.rule.push(this.ruleSwitch(rule, item.label, item.type, item.ruleMessages, item.placeholder))
       })
+
       delete item.rules
     },
 
     // 暂时就只初始化禁用日期
     initDate(item, pickerOptions) {
       let disabledDate
-      if(pickerOptions.disabledDate && Object.prototype.toString.call(pickerOptions.disabledDate) === "[object Object]") {
-        disabledDate = (time) => {
-          if(pickerOptions.disabledDate.name === 'start') {
-            if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() < time.getTime()
+
+      if (pickerOptions.disabledDate && Object.prototype.toString.call(pickerOptions.disabledDate) === "[object Object]") {
+        disabledDate = time => {
+          if (pickerOptions.disabledDate.name === 'start') {
+            if (this.fields[pickerOptions.disabledDate.prop]) {
+              return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() < time.getTime()
+            }
           }
-          if(pickerOptions.disabledDate.name === 'end') {
-            if(this.fields[pickerOptions.disabledDate.prop]) return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() > time.getTime()
+
+          if (pickerOptions.disabledDate.name === 'end') {
+            if (this.fields[pickerOptions.disabledDate.prop]) {
+              return Monent(this.fields[pickerOptions.disabledDate.prop]).valueOf() > time.getTime()
+            }
           }
         }
+
         item['pickerOptions'] = { disabledDate }
       }
     },
@@ -318,16 +352,23 @@ export default {
       if( typeof rule == 'object' ) {
         return rule
       }
+
       if (rule.indexOf('numberRange') > -1 || rule.indexOf('lengthRange') > -1) {
         var range = rule.replace(/^numberRange|lengthRange/, '').split('-'), validate = {}
         if ([undefined, null, ''].indexOf(range[0]) < 0) validate.min = parseInt(range[0])
         if ([undefined, null, ''].indexOf(range[1]) < 0) validate.max = parseInt(range[1])
         return Object.assign({}, { validator: validator[rule.match(/^numberRange|lengthRange/)[0]] }, validate, ruleMessages)
       }
+
       let plea = [...this.$_elInputTypes, 'editor', 'jaileditor'].indexOf(type) > -1 ? '请输入' : '请选择'
+
       switch (rule) {
         case 'required':
-          return { message: `${ plea }${ placeholder || label }`, required: true, validator: validator.required }
+          return {
+            message: `${ plea }${ placeholder || label }`,
+            required: true,
+            validator: validator.required
+          }
         case 'isNumber':
           return { validator: validator.isNumber }
         case 'isFee':
@@ -350,12 +391,16 @@ export default {
     resetFieldValue(...arg) {
       const [status, prop, { controlTheOther }] = arg
 
-      if (!controlTheOther) return
+      if (!controlTheOther) {
+        return
+      }
 
       const fields = this.$refs.form.fields
 
       for(let [key, value] of Object.entries(this.items)) {
-        if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.resetField())
+        if(value.disableDependingProp === prop) {
+          fields.map(field => field.prop === key && field.resetField())
+        }
       }
     },
 
@@ -365,7 +410,9 @@ export default {
       if (Array.isArray(controlProps)) {
         this.$nextTick(function() {
           controlProps.map(prop => {
-            if (this.fields[prop]) this.$set(this.fields, prop, '')
+            if (this.fields[prop]) {
+              this.$set(this.fields, prop, '')
+            }
           })
         })
       }
@@ -375,7 +422,6 @@ export default {
 
     radioChangeEvent(e, prop, item) {
       const { relativeProps = [] } = item
-
       const props = [ prop, ...relativeProps ]
 
       this.dismiss = ['buttons', 'formConfigs']
@@ -384,17 +430,24 @@ export default {
         props.forEach(propItem => {
           const item = this.items[propItem]
           const { configs = [] } = item
+
           if (item && configs && Array.isArray(configs) && configs.length) {
             this.$nextTick(function() {
               configs.forEach(item => {
                 if (this.fields[propItem] === item.value) {
-                  if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') this.$set(this.fields, 'onceMoney', 0)
+                  if (item.value === 1 && !this.fields['onceMoney'] && propItem === 'chargeType') {
+                    this.$set(this.fields, 'onceMoney', 0)
+                  }
 
                   if (item.itemConfigs && Object.prototype.toString.call(item.itemConfigs) === '[object Object]') {
                     for (let [key, value] of Object.entries(item.itemConfigs)) {
                       this.dismiss.push(key)
-                      if (this.items[key] && this.items[key].func && !this.items[key].invokeFuncAuto) this.items[key].func(e, prop, item)
-                      else this.$set(this.fields, key, value)
+                      if (this.items[key] && this.items[key].func && !this.items[key].invokeFuncAuto) {
+                        this.items[key].func(e, prop, item)
+                      }
+                      else {
+                        this.$set(this.fields, key, value)
+                      }
                     }
                   }
                 }
@@ -430,12 +483,16 @@ export default {
     reclearValidate(...arg) {
       const [status, prop, { controlTheOther }] = arg
 
-      if (!controlTheOther) return
+      if (!controlTheOther) {
+        return
+      }
 
       const fields = this.$refs.form.fields
 
       for(let [key, value] of Object.entries(this.items)) {
-        if(value.disableDependingProp === prop) fields.map(field => field.prop === key && field.clearValidate())
+        if(value.disableDependingProp === prop) {
+          fields.map(field => field.prop === key && field.clearValidate())
+        }
       }
     }
   }

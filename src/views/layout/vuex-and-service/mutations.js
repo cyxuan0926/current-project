@@ -7,9 +7,11 @@ export default {
       state.isCollapsed = !state.isCollapsed
     }
   },
+
   showLoading: state => {
     state.loading = true
   },
+
   hideLoading: state => {
     state.loading = false
   },

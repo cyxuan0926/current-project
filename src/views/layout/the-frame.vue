@@ -1,30 +1,34 @@
 <template>
   <el-container :class="['absolutely-height', { 'no-login': $route.meta.notLogin }]">
-    <el-header
-      v-if="!$route.meta.notLogin"
-      height="46px"><the-header /></el-header>
+    <template v-if="!$route.meta.notLogin">
+      <el-header height="46px">
+        <the-header />
+      </el-header>
+    </template>
+
     <el-container class="main-container">
-      <el-aside
-        v-if="!$route.meta.notLogin"
-        :width="isCollapsed ? (hidden ? '0px' : '50px') : '230px'"
-        :class="['transition', { 'collapsed': isCollapsed }]">
-        <the-sidebar />
-      </el-aside>
-      <el-container
-        v-loading="loading"
-        element-loading-background="rgba(255, 255, 255, 0.5)"
-      >
-        <the-breadcrumb v-if="!$route.meta.notLogin" />
+      <template v-if="!$route.meta.notLogin">
+        <el-aside :width="isCollapsed ? (hidden ? '0px' : '50px') : '230px'" :class="['transition', { 'collapsed': isCollapsed }]">
+          <the-sidebar />
+        </el-aside>
+      </template>
+
+      <el-container v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.5)">
+        <template v-if="!$route.meta.notLogin">
+          <the-breadcrumb />
+        </template>
+        
         <el-main>
-          <transition
-            name="router-fade"
-            mode="out-in">
+          <transition name="router-fade" mode="out-in">
             <keep-alive :include="$store.state.global.componentsKeepAlive">
               <router-view />
             </keep-alive>
           </transition>
         </el-main>
-        <el-footer height="36px"><the-footer /></el-footer>
+
+        <el-footer height="36px">
+          <the-footer />
+        </el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -38,7 +42,12 @@ import TheBreadcrumb from './the-breadcrumb'
 import TheFooter from './the-footer'
 
 export default {
-  components: { TheHeader, TheSidebar, TheBreadcrumb, TheFooter },
+  components: {
+    TheHeader,
+    TheSidebar,
+    TheBreadcrumb,
+    TheFooter
+  },
 
   data() {
     return {
@@ -55,10 +64,12 @@ export default {
 
   mounted() {
     this.handleResize()
+
     window.onresize = () => {
       this.handleResize()
     }
   },
+
   methods: {
     ...mapActions(['handleCollapse']),
 
@@ -68,8 +79,7 @@ export default {
           this.handleCollapse(true)
           this.hidden = true
         }
-      }
-      else {
+      } else {
         this.hidden = false
       }
     }

@@ -6,15 +6,16 @@ import { mapState } from 'vuex'
 
 export default {
   data() {
-    const checkAreaId = (rule, value, callback) => {
+    const checkAreaId = (_, value, callback) => {
       if (!value && value !== null) {
         callback(new Error('请选择监区'))
-      } else callback()
+      } else {
+        callback()
+      }
     }
 
     return {
       localPrisonAreaLevelObject: _.cloneDeep(prisonAreaLevelObject),
-
       prisonConfigIdKey: '',
 
       rule: {
@@ -64,7 +65,12 @@ export default {
 
   methods: {
     clearSubPrisonArea(target, budingObject) {
-      let _list = ['prisonArea', 'prisonBranch', 'prisonBuilding', 'prisonLayer']
+      let _list = [
+        'prisonArea',
+        'prisonBranch',
+        'prisonBuilding',
+        'prisonLayer'
+      ]
 
       _list = _list.slice(_list.findIndex(l => l === target))
 
@@ -88,9 +94,7 @@ export default {
       this.prisonConfigIdKey = key
 
       const childNode = this.localPrisonAreaLevelObject[key]['childNode']
-
       const { level } = this.localPrisonAreaLevelObject[key]
-
       const isLast = level === Object.keys(this.localPrisonAreaLevelObject).length
 
       if (childNode) this.clearSubPrisonArea(childNode, budingObject)
@@ -104,15 +108,18 @@ export default {
         buildingId,
         branchId
       } = budingObject
-
       const prisonConfigId = layerId || buildingId || branchId || areaId || ''
 
       await this.onGetPrisonAreaUsersData({ jailId, prisonConfigId }, budingObject)
       // }
 
-      if (isLast) return
+      if (isLast) {
+        return
+      }
 
-      if (!(parentId < 0 || !parentId)) await this.onInitPrisonAreaLevelData({ parentId, childNode })
+      if (!(parentId < 0 || !parentId)) {
+        await this.onInitPrisonAreaLevelData({ parentId, childNode })
+      }
     },
 
     // 监区-用户数据
@@ -121,11 +128,17 @@ export default {
     async onGetPrisonAreaUsersData(params = {}, modelValue = this.terminal, inputPermission = []) {
       const permission = ([...inputPermission, ...terminalUsersBasicAuths]).join(',')
 
-      if (!params['prisonConfigId'] || params['prisonConfigId'] < 0) delete params['prisonConfigId']
+      if (!params['prisonConfigId'] || params['prisonConfigId'] < 0) {
+        delete params['prisonConfigId']
+      }
 
-      if (this.$store.state.terminalUserListsByPrisonConfigId.length) this.$store.commit('setTerminalUsersByPrisonConfigId', [])
+      if (this.$store.state.terminalUserListsByPrisonConfigId.length) {
+        this.$store.commit('setTerminalUsersByPrisonConfigId', [])
+      }
 
-      if (modelValue['username']) this.$set(modelValue, 'username', '')
+      if (modelValue['username']) {
+        this.$set(modelValue, 'username', '')
+      }
 
       await this.$store.dispatch('getTerminalUsersByPrisonConfigId', { permission, ...params })
     }

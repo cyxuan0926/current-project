@@ -51,12 +51,15 @@ export default {
           }
         }
 
-        if (['excelDownloadRequest'].includes(key)) temp = value[$tabs.value]
-
-        accumulator[key] = {
-          ...accumulator[key],
-          ...temp
+        if (['excelDownloadRequest'].includes(key)) {
+          temp = value[$tabs.value]
         }
+
+        accumulator = {
+          ...accumulator,
+          [key]: temp
+        }
+
         return accumulator
       }, {})
     })

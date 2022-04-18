@@ -143,13 +143,17 @@ export function postFormData(url = '', data = {}, config = {}) {
 
   Object.keys(data).forEach(key => {
     if (data[key]) {
-      if (key === 'file' && Array.isArray(data.file)) data.file.forEach(f => formData.append('file', f))
-      else formData.append(key, data[key])
+      if (key === 'file' && Array.isArray(data.file)) {
+        data.file.forEach(f => formData.append('file', f))
+      }
+      else {
+        formData.append(key, data[key])
+      }
     }
   })
 
   return instance.request({
-    url,
+    url: getUrl(url),
     data: formData,
     method: 'POST',
     headers: { 'content-type': 'multipart/form-data' },

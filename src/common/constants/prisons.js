@@ -1,47 +1,60 @@
 // 监狱范围内的常量
 export default {
   PRISONAREA: {
-    belong: { value: 'name', label: 'name' }
+    belong: {
+      value: 'name',
+      label: 'name'
+    }
   },
+
   auditorRoles: [
     {
       label: '监区审核人员',
       value: 'visit.approve.examine'
     },
+
     {
       label: '狱政科',
       value: 'visit.approve.prisonofficial'
     },
+
     {
       label: '教育科',
       value: 'visit.approve.education'
     },
+
     {
       label: '狱政科领导',
       value: 'visit.approve.prisonofficialleader'
     }
   ],
+
   bpmnList: [
     {
       label: '家属注册认证审核',
       value: 'familyregister'
     },
+
     {
       label: '现场探视审核',
       value: 'prisonervisit'
     },
+
     {
       label: '可视电话审核',
       value: 'meeting'
     },
+
     {
       label: '亲情短信审核',
       value: 'familymessage'
     },
+
     {
       label: '亲情电话家属审核',
       value: 'phonefamily'
     },
+
     {
       label: '亲情电话申请审核',
       value: 'phonenumber'
@@ -59,9 +72,11 @@ export const initStore = {
       seq: 0
     }
   },
+
   APP_AFFAIRS_MODULE_DATA() {
     return []
   },
+
   APP_GUIDE_DATA() {
     return {
       content: '',

@@ -13,7 +13,6 @@ export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => 
   const filterValue = value.replace(/\s*/g, '')
   // 强制字符串
   const stringValue = filterValue.toString()
-
   const stringLength = stringValue.length
 
   const params = {
@@ -31,7 +30,6 @@ export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => 
     end = stringLength - actualAsteriskCount - start < 0 ? 0 : stringLength - actualAsteriskCount - start
 
   const regString = `(.{${ start }}).{${ actualAsteriskCount }}(.{${ end }})`
-
   const dynamicReg = new RegExp(regString, 'g')
 
   Array.apply(null, { length: actualAsteriskCount - 1 }).forEach(() => {

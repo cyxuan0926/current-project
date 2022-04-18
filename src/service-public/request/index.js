@@ -29,15 +29,16 @@ export function postForm(url = '', data = {}, config = {}) {
     ...config
   })
 }
+
 export function postFormData(url = '', data = {}, config = {}) {
   const formData = new FormData()
     Object.keys(data).forEach(key => {
       if (data[key]) {
           if (key === 'file' && Array.isArray(data.file)) {
-              data.file.forEach(f => formData.append('file', f))
+            data.file.forEach(f => formData.append('file', f))
           }
           else {
-              formData.append(key, data[key])
+            formData.append(key, data[key])
           }
       }
     })

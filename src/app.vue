@@ -1,9 +1,13 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 <script>
 import { mapActions } from 'vuex'
 export default {
+  methods: {
+    ...mapActions(['getWebsocketResult'])
+  },
+
   mounted() {
     if (localStorage.getItem('user')) {
       const role = JSON.parse(localStorage.getItem('user')).role
@@ -12,9 +16,6 @@ export default {
         this.getWebsocketResult(JSON.parse(localStorage.getItem('user')).jailId)
       }
     }
-  },
-  methods: {
-    ...mapActions(['getWebsocketResult'])
   }
 }
 </script>

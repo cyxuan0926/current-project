@@ -41,42 +41,27 @@ import {
 import Print from '@/common/constants/print'
 // import Print from 'vue-print-nb'
 Vue.use(Print) // 注册
-
 Vue.use(VueCompositionAPI)
-
 Vue.use(ElementUI)
-
 Vue.use(fullscreen)
-
 Vue.use(directives)
 
 Vue.config.productionTip = false
 
 Vue.prototype.$urls = urls
-
 Vue.prototype.$_dateNow = _dateNow
-
 Vue.prototype.$_dateOneWeekAgo = _dateOneWeekAgo
-
 Vue.prototype.$_timeNow = _timeNow
-
 Vue.prototype.$_timeOneWeekAgo = _timeOneWeekAgo
-
 Vue.prototype.$_operationAuthorizations = _operationAuthorizations
-
 Vue.prototype.$_uploadStepsTabOptions = uploadStepsTabOptions
-
 Vue.prototype.$_oneMonthAgo = _oneMonthAgo
-
 Vue.prototype.$_prisonerDataExcelDownloadConsts = _prisonerDataExcelDownloadConsts
-
 Vue.prototype.$_limitInputPositiveInteger = limitInputPositiveInteger
-
 Vue.prototype.$_elInputTypes = elInputTypes
+
 // 只在生产环境启用等保
-if (BUILD_ENV === 'production') {
-  new ActiveMonitor().start()
-}
+if (BUILD_ENV === 'production') new ActiveMonitor().start()
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))

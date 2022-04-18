@@ -35,15 +35,13 @@ export default function(props, { emit }, { uploadType, $accpet }) {
     }
   })
 
-  const $uploadData = computed(() => {
-    return {
-      type: 'PUBLIC',
-      ...data
-    }
-  })
+  const $uploadData = computed(() => ({
+    type: 'PUBLIC',
+    ...data
+  }))
 
-  const $elUploadAttrs = computed(() => {
-    return Object.assign({}, {
+  const $elUploadAttrs = computed(() =>
+    Object.assign({}, {
       multiple: false,
       showFileList: false,
       action: actionUrl.value,
@@ -56,19 +54,21 @@ export default function(props, { emit }, { uploadType, $accpet }) {
       data: $uploadData.value,
       accept: $accpet.value
     }, elUploadAttrs.value)
-  })
+  )
   
-  const $triggerButtonAttrs = computed(() => {
-    return Object.assign({}, {
+  const $triggerButtonAttrs = computed(() =>
+    Object.assign({}, {
       size: 'small',
       type: 'primary',
       disabled: loading.value
     }, triggerButtonAttrs.value)
-  })
+  )
 
   // methods
   const onControlLoading = (val = false) => {
-    if (onControlParentLoading.value) onControlParentLoading.value(val)
+    if (onControlParentLoading.value) {
+      onControlParentLoading.value(val)
+    }
     else loading.value = val
   }
 
@@ -87,7 +87,9 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   }
 
   const unmountedMethod = () => {
-    if (notification.value) notification.value.close()
+    if (notification.value) {
+      notification.value.close()
+    }
     notification.value = null
   }
 

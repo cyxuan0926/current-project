@@ -4,9 +4,7 @@
     @click="onDownloadExcel"
     v-bind="buttonsProps['attrs']"
     v-on="buttonsProps['listeners']"
-  >
-    {{ text }}
-  </el-button>
+  >{{ text }}</el-button>
 </template>
 
 <script>
@@ -38,7 +36,8 @@ export default {
     },
 
     apiConfigs: {
-      type: Object,
+      // 不定义类型 为了处理传了 undefined 的情况
+      // type: Object,
       default: () => ({
         apiHostKey: 'apiHost',
         apiPathKey: 'apiPath'
@@ -49,22 +48,19 @@ export default {
   methods: {
     async onDownloadExcel() {
       const { apiHostKey, apiPathKey } = this.apiConfigs
-
       const apiHost = urls[apiHostKey]
-
       const apiPath = urls[apiPathKey] || ''
 
-      const params = this.params
-
-      const query = qs.stringify(params)
-      
+      const query = qs.stringify(this.params)
+  
       const res = await getFile(apiHost + apiPath + this.path + (query && '?' + query))
-      
-      const { headers } = res || {}
 
+      const { headers } = res || {}
       const originFileName = headers['content-disposition'] && decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
 
-      if (res && res.data) saveAs(res.data, originFileName || `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+      if (res && res.data) {
+        saveAs(res.data, originFileName || `${ this.$route.meta && this.$route.meta.breadcrumbName }-${ helper.DateFormat(Date.now(),'YYYYMMDDHHmmss') }.xls`)
+      }
     }
   }
 }

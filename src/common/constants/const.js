@@ -59,33 +59,25 @@ export const faceRecognitionValues = [ '0', '0.1', '0.2', '0.3', '0.4', '0.5', '
 export const multistageExamineDropdownItems = [
   {
     menuName: '家属注册管理',
-
     path: { path: '/registration/list' },
-
     paramsKey: 'regTotal'
   },
 
   {
     menuName: '外交领事官员注册管理',
-
     path: { path: '/diplomatic-consul-official/list' },
-
     paramsKey: 'regDiplomatsTotal'
   },
 
   {
     menuName: '可视电话申请列表',
-
     path: { path: '/meeting/list' },
-
     paramsKey: 'meetingTotal'
   },
 
   {
     menuName: '外交领事官员可视电话申请列表',
-
     path: { path: '/meeting/diplomatist' },
-
     paramsKey: 'meetingDiplomatsTotal'
   }
 ]
@@ -109,58 +101,39 @@ export const prisonAreaLevelObject = {
   // 监区
   prisonArea: {
     label: '监区',
-
     prop: 'areaId',
-
     gettingData: false,
-
     options: [],
-
     childNode: 'prisonBranch',
-
     level: 1
   },
 
   // 分监区
   prisonBranch: {
     label: '分监区',
-
     prop: 'branchId',
-
     gettingData: false,
-
     options: [],
-
     childNode: 'prisonBuilding',
-
     level: 2
   },
 
   // 楼栋
   prisonBuilding: {
     label: '楼栋',
-
     prop: 'buildingId',
-
     gettingData: false,
-
     options: [],
-
     childNode: 'prisonLayer',
-
     level: 3
   },
 
   // 楼层
   prisonLayer: {
     label: '楼层',
-
     prop: 'layerId',
-
     gettingData: false,
-
     options: [],
-
     level: 4
   }
 }
