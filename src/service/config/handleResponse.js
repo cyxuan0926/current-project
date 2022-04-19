@@ -174,6 +174,7 @@ const handleErrorMessage = (message) => {
   })
   return word ? enToZh[word] : message
 }
+
 export default params => {
   const requestUrl = params.config.url.replace(`${ params.config.baseURL + agency }`, '')
   if (responseURLWhiteLists.includes(requestUrl) || responseURLWhiteLists.some(url => params.config.url.includes(url)) || /^\/download.*/.test(requestUrl)) {

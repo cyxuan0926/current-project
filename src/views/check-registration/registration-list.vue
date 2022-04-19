@@ -12,19 +12,17 @@
       @search="onSearch"
     >
       <template #append>
-        <el-button
-          v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)"
-          type="primary"
-          @click="onDownload('all')"
-          >下载关系证明</el-button
-        >
-        <el-button
-          v-if="!isSuperAdmin"
-          type="primary"
-          :loading="downloading"
-          @click="handleExportExcel"
-          >导出 Excel</el-button
-        >
+        <template v-if="!hasAllPrisonQueryAuth && ['first', 'PASSED'].includes(tabs)">
+          <el-button type="primary" @click="onDownload('all')">下载关系证明</el-button>
+        </template>
+
+        <template v-if="!isSuperAdmin">
+          <el-button
+            type="primary"
+            :loading="downloading"
+            @click="handleExportExcel"
+          >导出 Excel</el-button>
+        </template>
       </template>
     </m-search>
 
