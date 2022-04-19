@@ -7,5 +7,10 @@ export default {
     failTotal: 0,
     filepath: '',
     total: 0
+  },
+
+  pagedBasis: {
+    list: [],
+    totalCount: 0
   }
 }

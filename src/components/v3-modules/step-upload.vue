@@ -1,6 +1,8 @@
 <template>
   <div class="step-upload">
-    <m-excel-upload ref="$stepUpload" :configs="excelUploadConfigs" />
+    <m-excel-upload ref="$stepUpload" :configs="excelUploadConfigs">
+      <slot name="stepUploadDefault" />
+    </m-excel-upload>
 
     <el-dialog
       class="authorize-dialog upload-dialog"
@@ -81,12 +83,7 @@
 </template>
 
 <script>
-import {
-  ref,
-  reactive,
-  computed,
-  toRefs
-} from "@vue/composition-api"
+import { ref, reactive, computed, toRefs } from "@vue/composition-api"
 import router from "@/router"
 import Vue from "vue"
 import composableStepUpload from '@/common/composables/step-upload'
@@ -330,7 +327,7 @@ export default {
       spendTime,
       percent,
       onUploadInnerDialogClose,
-      stepUploadInnerDialog,
+      $stepUploadInnerDialog,
       uploadInnerDialogVisible,
       $stepUploadValidateUploadResult,
       $dialogExcelDownloadRequest,
@@ -339,3 +336,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.step-upload {
+  margin-bottom: 0px !important;
+}
+</style>

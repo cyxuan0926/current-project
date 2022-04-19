@@ -1,12 +1,7 @@
-import {
-  ref,
-  computed,
-  toRefs
-} from '@vue/composition-api'
-
+import { ref, computed, toRefs } from '@vue/composition-api'
 import store from '@/store'
-
 import Vue from 'vue'
+
 export default function(props, { emit }, { uploadType, $accpet }) {
   const {
     elUploadAttrs,

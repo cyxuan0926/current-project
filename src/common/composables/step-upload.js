@@ -1,4 +1,4 @@
-import { ref, toRefs } from '@vue/composition-api'
+import { ref, toRefs, computed } from '@vue/composition-api'
 
 export default function(props) {
   const { httpRequests, excelExportButtonProps, dialogExcelDownloadRequest } = toRefs(props)
@@ -9,7 +9,7 @@ export default function(props) {
 
   const objectReduce = (objectValue, defaultValue) => {
     return Object.entries(objectValue).reduce((accumulator, [key, value]) => {
-      let temp = value
+      let temp = value || {}
 
       if (defaultValue[key]) {
         temp = Object.assign({}, defaultValue[key], value)

@@ -22,10 +22,11 @@ import ChartBlock from './modules/chart-block'
 import Draggable from './modules/draggable'
 import excelUpload from './modules/excel-upload'
 import multistageRecords from './multistage_examine-records'
-
 import YgPrisonContent from './yg-prison'
-
 import vNewAudio from './v3-modules/v3-audio'
+import stepUpload from './v3-modules/step-upload.vue'
+import basicComponent from './v3-modules/basic-component.vue'
+
 export default {
   audio,
   Form,
@@ -52,5 +53,7 @@ export default {
   excelUpload,
   multistageRecords,
   YgPrisonContent,
-  vNewAudio
+  vNewAudio,
+  stepUpload,
+  basicComponent
 }
