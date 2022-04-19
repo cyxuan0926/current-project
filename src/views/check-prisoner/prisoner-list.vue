@@ -72,6 +72,7 @@
           <el-button type="primary" @click="showDelPrionser">离监</el-button>
           <el-button type="primary" @click="onPreChangePrisonConfigs(5)">更换监区</el-button>
           <el-button type="primary" @click="showAddPrisoner">新增</el-button>
+         <el-button type="primary" :loading="downloading" @click="onDownloadExcel">导出 Excel</el-button>
         </span>
       </template>
     </el-row>
@@ -629,7 +630,10 @@ import { prisonerExcelConfig } from '@/common/excel-config'
 
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
 
+import { DateFormat } from '@/utils/helper'
 import prisons from '@/common/constants/prisons'
+
+import { tokenExcel } from '@/utils/token-excel'
 import http from '@/service'
 
 import {
@@ -696,6 +700,7 @@ export default {
  
     const { belong } = prisons.PRISONAREA
     return {
+      downloading: false,
       detailDetVisible: false, // 详情弹窗
       prisonerDetData: {},
       uploadDialogVisible: false,// 导入数据弹窗
@@ -2015,6 +2020,25 @@ export default {
           this.onSearch(true)
         })
       })
+    },
+     async onDownloadExcel() {
+     this.downloading = true;
+        const times = DateFormat(Date.now(),'YYYYMMDDHHmmss'),
+        actionName = 'familyPhone/exportFamilyPhone',
+        params = {
+          url: "/prisoners/export",
+          methods:'get',
+          params: { ...this.filter},
+          isPrisonInternetGetUrlWay: false
+        }
+      await tokenExcel({
+        params,
+        actionName,
+        menuName: `服刑人员信息统计表-${ times }`,
+      })
+      setTimeout(() => {
+        this.downloading = false
+      }, 300)
     },
 
     onSelectChange(e) {

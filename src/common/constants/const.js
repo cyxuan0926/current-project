@@ -41,6 +41,7 @@ export const responseURLWhiteLists = [
   '/callChargeManage/importCallChargeManage',
   '/freeMeetings/police/export',
   '/freeMeetings/export',
+  '/prisoners/export',
   ..._ygPrisonExportExcelUrls
 ]
 
