@@ -7,6 +7,7 @@
       :items="searchItems"
       @searchSelectChange="searchSelectChange"
       @search="onSearch"
+      :isSearchLimit="isSearchLimit"
     >
       <!-- 查询组件 前插槽 -->
       <template #pre>
@@ -50,7 +51,8 @@
             type="primary"
             :loading="ygPrisonDownloading"
             @click="onYGPrisonDownloadExcel"
-          >导出 Excel</el-button>
+            >导出 Excel</el-button
+          >
         </template>
 
         <!-- 后置插槽的 后置部分 -->
@@ -64,11 +66,7 @@
       <template v-if="!!tabItems.length">
         <el-tabs v-model="$tabs" type="card">
           <template v-for="tab in tabItems">
-            <el-tab-pane
-              :key="tab.name"
-              :label="tab.label"
-              :name="tab.name"
-            />
+            <el-tab-pane :key="tab.name" :label="tab.label" :name="tab.name" />
           </template>
         </el-tabs>
       </template>
@@ -84,7 +82,9 @@
       >
         <template v-for="col in $tableCols" #[col.slotName]="scope">
           <!-- 默认是为了 不可控的插槽的显示本身值 -->
-          <slot :name="col.slotName" v-bind="scope">{{ scope.row[col["prop"]] }}</slot>
+          <slot :name="col.slotName" v-bind="scope">{{
+            scope.row[col["prop"]]
+          }}</slot>
         </template>
       </m-table-new>
     </el-col>
@@ -121,7 +121,9 @@
         </el-col>
 
         <el-col class="process-col_tips">
-          <span>准备导入数据总计：{{ $ygPrisonValidateUploadResult.total }}条</span>
+          <span
+            >准备导入数据总计：{{ $ygPrisonValidateUploadResult.total }}条</span
+          >
 
           <span>已用时：{{ spendTime }}秒</span>
 
@@ -143,18 +145,34 @@
         @close="onUploadInnerDialogClose"
       >
         <div style="line-height: 30px; margin-top: 10px">
-          <i class="el-icon-success green" style="font-size: 20px; margin-right: 10px"></i>成功：{{ $ygPrisonValidateUploadResult.successTotal }}条<br />
+          <i
+            class="el-icon-success green"
+            style="font-size: 20px; margin-right: 10px"
+          ></i
+          >成功：{{ $ygPrisonValidateUploadResult.successTotal }}条<br />
 
           <template v-if="!!$ygPrisonValidateUploadResult.failTotal">
-            <i class="el-icon-error red" style="font-size: 20px; margin-right: 10px"></i>失败：{{ $ygPrisonValidateUploadResult.failTotal }}条
+            <i
+              class="el-icon-error red"
+              style="font-size: 20px; margin-right: 10px"
+            ></i
+            >失败：{{ $ygPrisonValidateUploadResult.failTotal }}条
 
-            <p style="padding-left: 30px">原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。</p>
+            <p style="padding-left: 30px">
+              原因：上传的Excel文件内容格式有误，请检查文件内容，仔细对照下载的模版数据。
+            </p>
 
-            <p style="padding-left: 30px">导入失败数据：
+            <p style="padding-left: 30px">
+              导入失败数据：
               <!-- 为了扩展处理下载的处理 -->
-              <slot name="elDialogExcelDownloadSlot" v-bind="$ygPrisonValidateUploadResult">
+              <slot
+                name="elDialogExcelDownloadSlot"
+                v-bind="$ygPrisonValidateUploadResult"
+              >
                 <m-excel-download
-                  v-if="httpRequests['excelDownloadRequest']['params'].isYgPrison"
+                  v-if="
+                    httpRequests['excelDownloadRequest']['params'].isYgPrison
+                  "
                   path="/download/localfile"
                   :params="{ filepath: $ygPrisonValidateUploadResult.filePath }"
                   :buttonsProps="excelExportButtonProps"
@@ -178,7 +196,9 @@
 
         <template #footer>
           <div>
-            <el-button type="primary" @click="uploadInnerDialogVisible = false">确 定</el-button>
+            <el-button type="primary" @click="uploadInnerDialogVisible = false"
+              >确 定</el-button
+            >
           </div>
         </template>
       </el-dialog>
@@ -221,6 +241,11 @@ export default {
       type: String,
       default: "",
     },
+    // 标签页的搜索条件必选
+    isSearchLimit: {
+      type: Boolean,
+      default: false,
+    },
 
     // 标签页的选项
     tabItems: {
@@ -259,7 +284,7 @@ export default {
         excelDownloadRequest: {
           params: {
             fileName: "",
-          }
+          },
         },
       }),
     },
@@ -347,10 +372,14 @@ export default {
 
     // computed
     // store 列表数据选项 在内部引用 是个包装对象 .value
-    const $pagedYgPrisonsDataCommon = computed(() => store.state.ygPrisons.pagedYgPrisonsDataCommon);
+    const $pagedYgPrisonsDataCommon = computed(
+      () => store.state.ygPrisons.pagedYgPrisonsDataCommon
+    );
 
     // store excel 验证结果 在内部引用 是个包装对象 .value
-    const $ygPrisonValidateUploadResult = computed(() => store.state.ygPrisons.ygPrisonValidateUploadResult);
+    const $ygPrisonValidateUploadResult = computed(
+      () => store.state.ygPrisons.ygPrisonValidateUploadResult
+    );
 
     // store ywt_admin账号
     const $isSuperAdmin = computed(() => store.getters.isSuperAdmin);
@@ -368,11 +397,13 @@ export default {
     });
 
     const $componentsVisible = computed(() => {
-      return Object.entries(componentsVisible.value).reduce((accumulator, [key, value]) => {
+      return Object.entries(componentsVisible.value).reduce(
+        (accumulator, [key, value]) => {
           accumulator[key] = value;
 
           return accumulator;
-        }, {
+        },
+        {
           // 默认 ywt_admin下面没有导入和模版
           excelUploadVisible: !$isSuperAdmin.value,
           excelDownloadVisible: !$isSuperAdmin.value,
@@ -383,20 +414,28 @@ export default {
 
     // 导入弹框的文案
     const dialogTitle = computed(() => {
-      const tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-        text = (tabItem[0] && tabItem[0]["label"]) || router.currentRoute.meta.breadcrumbName;
+      const tabItem = tabItems.value.filter(
+          (tabItem) => tabItem.name === $tabs.value
+        ),
+        text =
+          (tabItem[0] && tabItem[0]["label"]) ||
+          router.currentRoute.meta.breadcrumbName;
 
       return `${text}导入`;
     });
 
     // watch
-    watch(tabs, async val => {
-      if (val) {
-        $tabs.value = val;
+    watch(
+      tabs,
+      async (val) => {
+        if (val) {
+          $tabs.value = val;
+        }
+      },
+      {
+        immediate: true,
       }
-    }, {
-      immediate: true,
-    });
+    );
 
     watch($tabs, (val) => {
       if (val) {
@@ -412,7 +451,7 @@ export default {
 
     // methods
     // 重制上传的参数关闭对话框
-    const onResetAndcloseUploadDialog = async isSuccess => {
+    const onResetAndcloseUploadDialog = async (isSuccess) => {
       spendTime.value = 0;
       percent.value = 0;
       status.value = 0;
@@ -424,7 +463,7 @@ export default {
     };
 
     // el-upload 上传文件前的钩子函数
-    const beforeUpload = file => {
+    const beforeUpload = (file) => {
       store.commit("ygPrisons/setValidateExcelResult", {
         successTotal: 0,
         failTotal: 0,
@@ -432,7 +471,8 @@ export default {
         total: 0,
       });
 
-      let count = 0, index = 0;
+      let count = 0,
+        index = 0;
 
       // 上次文件的定时器
       const uploadInterver = setInterval(async () => {
@@ -582,8 +622,13 @@ export default {
 
         const { excelExportRequest = {} } = httpRequests.value,
           times = DateFormat(Date.now(), "YYYYMMDDHHmmss"),
-          tabItem = tabItems.value.filter(tabItem => tabItem.name === $tabs.value),
-          TABName = tabItem[0] && tabItem[0]["label"] ? `${ router.currentRoute.meta.breadcrumbName }-${ tabItem[0]["label"] }` : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
+          tabItem = tabItems.value.filter(
+            (tabItem) => tabItem.name === $tabs.value
+          ),
+          TABName =
+            tabItem[0] && tabItem[0]["label"]
+              ? `${router.currentRoute.meta.breadcrumbName}-${tabItem[0]["label"]}`
+              : router.currentRoute.meta.breadcrumbName, // 如果没有标签也 那么就是菜单名
           actionName = "ygPrisons/exportYgPrisonExcel",
           params = {
             url: excelExportRequest["url"],
@@ -596,7 +641,7 @@ export default {
           };
 
         await tokenExcel({
-          menuName: `${ TABName }-${ times }`,
+          menuName: `${TABName}-${times}`,
           actionName,
           params,
         });
