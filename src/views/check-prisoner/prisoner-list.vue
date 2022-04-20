@@ -758,8 +758,8 @@ export default {
           type: 'select',
           label: '是否录入人脸',
           options: [
-            { label: '无', value: 0 },
-            { label: '有', value: 1 }
+            { label: '否', value: 0 },
+            { label: '是', value: 1 }
           ],
           value: ''
         },
