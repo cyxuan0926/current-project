@@ -1013,9 +1013,10 @@ export default {
 
   },
  mounted() {
+  //  this.onSearch();
+  this.getDatas();
      window.addEventListener("message", async e => {
       if(!e.data.type){
-        console.log(this)
         this.show.messageConfirm=true
       }
      })

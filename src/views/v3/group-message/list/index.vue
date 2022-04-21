@@ -77,13 +77,16 @@ export default {
         multiple:true,
         options: [],
         value: '',
+        controlProps: ['jailIds'],
         func:async (e, prop, item)=>{
           messageConfigItem.value.jailIds.options =[]
+          messageConfigItem.value.jailIds.value=""
           if(e.length==1){
             if(e[0]===9999){
               messageConfigItem.value.jailIds.disabled = true
             }else{
               messageConfigItem.value.jailIds.disabled = false
+              
             }
            let res= await http.getJailByProvincesNoAuth( {provincesId:e[0]})
             messageConfigItem.value.jailIds.options = res.data.jails
@@ -177,7 +180,10 @@ export default {
         }
         if(obj.jailIds.length>0){
           data.provincesIds=[]
+        }else{
+          delete data.jailIds
         }
+        data.provincesIds=data.provincesIds.map(Number)
         let res = await http.addBatchNotify(data);
         if (res === undefined) return;
         setTimeout(() => {

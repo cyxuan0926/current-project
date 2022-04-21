@@ -688,16 +688,6 @@ let switches = {
       label: '退款',
       value: 2
     },
-
-    {
-      label: '可视电话消费',
-      value: 3
-    },
-
-    {
-      label: '系统消费',
-      value: 4
-    }
   ],
 
   prisonerSendMsgTypeOptions: [

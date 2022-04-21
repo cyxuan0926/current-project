@@ -57,7 +57,10 @@ const dateMonth = {
 }
 
 export const _searchItems = {
-  prisonArea,
+  prisonArea: {
+    ...prisonArea,
+    selectKey: 'prisonAreaId'
+  },
   type,
   ...others,
   dateMonth
