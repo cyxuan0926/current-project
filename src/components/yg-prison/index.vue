@@ -217,23 +217,16 @@ import {
 } from "@vue/composition-api";
 
 import prisonFilterCreator from "@/mixins/prison-filter-creator";
-
 import router from "@/router";
-
 import store from "@/store";
-
 import Vue from "vue";
-
 import { arrayRemove, DateFormat } from "@/utils/helper";
-
 import { tokenExcel } from "@/utils/token-excel";
 
-// 为了重载一些内部方法
-import ygPrisonPerch from "@/mixins/yg-prison-perch";
 export default {
   name: "YgPrisonContent",
 
-  mixins: [prisonFilterCreator, ygPrisonPerch],
+  mixins: [prisonFilterCreator],
 
   props: {
     // 标签页的初始值 传递过来需要 加上 .sync修饰符

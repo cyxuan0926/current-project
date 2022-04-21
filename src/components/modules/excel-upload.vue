@@ -88,7 +88,9 @@ export default {
         showCancelButton: false,
         customClass: 'el-upload__confirm',
         callback: action => {
-          if (action === 'confirm') this.$refs['upload'].$refs['upload-inner'].handleClick()
+          if (action === 'confirm') {
+            this.$refs['upload'].$refs['upload-inner'].handleClick()
+          }
         },
         ...configs
       })

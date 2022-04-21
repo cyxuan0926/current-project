@@ -132,6 +132,11 @@ export default {
     excelUploadRequest: {
       type: Object,
       default: () => ({})
+    },
+
+    uploadFileRequest: {
+      type: Object,
+      default: () => ({})
     }
   },
 
@@ -141,7 +146,8 @@ export default {
       tabItems,
       onInitData,
       $uploadStepsTabOptions,
-      excelUploadRequest
+      excelUploadRequest,
+      uploadFileRequest
     } = toRefs(props)
 
     // data
@@ -206,6 +212,81 @@ export default {
     }
 
     // el-upload 上传文件前的钩子函数
+    // 拆分成两个部分：上传文件/验证文件
+    // 处理步骤状态的方法
+    // 时间/步骤/进度
+    // 步骤为主 时间累加 进度随机增加
+    const handleStepStatus = (mStauts = $uploadStepsTabOptions.value.length, cb, mPercent, mSecond = 500) => {
+      let mInterval = setInterval(() => {
+        let p = parseInt(Math.random() * 10)
+        spendTime.value += mSecond / 1000
+        status.value += 1
+        p = p ? 5 : p
+        percent.value += p
+
+        if (status.value >= mStauts) {
+          status.value = mStauts
+          if (mPercent) {
+            percent.value = mPercent
+          }
+          clearInterval(mInterval)
+          mInterval = null
+          cb && cb()
+        }
+      }, mSecond)
+    }
+
+    const insideInterval = cb => {
+      let localInterval = setInterval(async () => {
+        spendTime.value += .5
+        clearInterval(localInterval)
+        localInterval = null
+        cb && cb()
+      }, 500)
+    }
+
+    // 开启验证文件的定时器
+    // 成功：走下一步流程 导入数据 自动随机模拟
+    // 失败：onResetAndcloseUploadDialog
+    const startValidateInterval = () => {
+      handleStepStatus(3, () => {
+        insideInterval(async () => {
+          const { params, ...others } = excelUploadRequest.value
+          const { path } = $stepUploadResult.value
+          const isSuccess = await store.dispatch('v3Component/commonValidateUpload', { params: { filepath: path, ...params }, ...others })
+
+          if (!isSuccess) {
+            onResetAndcloseUploadDialog()
+            return
+          } else {
+            await handleStepStatus(undefined, _, 100)
+
+            setTimeout(() => {
+              uploadInnerDialogVisible.value = true
+            }, 1500)
+          }
+        })
+      })
+    }
+
+    // 开启上传文件的定时器
+    // 成功：就进入到验证文件的步骤
+    // 失败：onResetAndcloseUploadDialog
+    const startUploadInterval = file => {
+      handleStepStatus(1, () => {
+        insideInterval(async () => {
+          const isSuccess = await store.dispatch('v3Component/commonUploadFile', { ...uploadFileRequest.value, file })
+
+          if (!isSuccess) {
+            onResetAndcloseUploadDialog()
+            return
+          } else {
+            await startValidateInterval()
+          }
+        })
+      })
+    }
+
     const beforeUpload = file => {
       spendTime.value = 0
       percent.value = 0
@@ -218,94 +299,111 @@ export default {
         total: 0,
       })
 
-      let count = 0, index = 0
-
-      // 上次文件的定时器
-      const uploadInterver = setInterval(async () => {
-        status.value += 1
-        percent.value += 15
-        spendTime.value += 0.5
-
-        if (status.value === 4) {
-          clearInterval(uploadInterver)
-
-          // 上次文件到服务器
-          const isSuccess = await store.dispatch('v3Component/commonUploadFile', file)
-
-          if (!isSuccess) {
-            onResetAndcloseUploadDialog()
-
-            return
-          }
-
-          // 验证excel的定时器
-          const validateInterver = setInterval(async () => {
-            count++
-
-            if (count === 1) {
-              spendTime.value += 1
-
-              // 验证excel
-              const {
-                url,
-                methods,
-                params,
-                module
-              } = excelUploadRequest.value
-
-              const { path } = $stepUploadResult.value
-
-              const isSuccess = await store.dispatch('v3Component/commonValidateUpload', {
-                url,
-                params: {
-                  filepath: path,
-                  ...params
-                },
-                methods,
-                module
-              })
-
-              clearInterval(validateInterver)
-
-              if (!isSuccess) {
-                onResetAndcloseUploadDialog()
-
-                return
-              }
-
-              // 模拟完成最后两步
-              const processInterver = setInterval(() => {
-                index++
-
-                if (index === 1) {
-                  percent.value += 20
-                  spendTime.value += 1
-                  status.value = status.value + 1
-
-                  clearInterval(processInterver)
-
-                  spendTime.value += 1
-                  status.value += 1
-                  percent.value = 100
-
-                  setTimeout(() => {
-                    uploadInnerDialogVisible.value = true
-                  }, 1500)
-                } else {
-                  spendTime.value += 1
-                }
-              }, 1000)
-            } else {
-              spendTime.value += 1
-            }
-          }, 1000)
-        } else {
-          spendTime.value += 1
-        }
-      }, 500)
+      startUploadInterval(file)
 
       return false
     }
+
+    // const beforeUpload = file => {
+    //   spendTime.value = 0
+    //   percent.value = 0
+    //   status.value = 0
+
+    //   store.commit("v3Component/setValidateExcelResult", {
+    //     successTotal: 0,
+    //     failTotal: 0,
+    //     filepath: "",
+    //     total: 0,
+    //   })
+
+    //   let count = 0, index = 0
+
+    //   // 上次文件的定时器
+    //   const uploadInterver = setInterval(async () => {
+    //     status.value += 1
+    //     percent.value += 15
+    //     spendTime.value += 0.5
+
+    //     if (status.value === 4) {
+    //       clearInterval(uploadInterver)
+
+    //       // 上次文件到服务器
+    //       const isSuccess = await store.dispatch('v3Component/commonUploadFile', { ...uploadFileRequest.value, file })
+
+    //       if (!isSuccess) {
+    //         onResetAndcloseUploadDialog()
+
+    //         return
+    //       }
+
+    //       // 验证excel的定时器
+    //       const validateInterver = setInterval(async () => {
+    //         count++
+
+    //         if (count === 1) {
+    //           spendTime.value += 1
+
+    //           // 验证excel
+    //           const {
+    //             url,
+    //             methods,
+    //             params,
+    //             module
+    //           } = excelUploadRequest.value
+
+    //           const { path } = $stepUploadResult.value
+
+    //           const isSuccess = await store.dispatch('v3Component/commonValidateUpload', {
+    //             url,
+    //             params: {
+    //               filepath: path,
+    //               ...params
+    //             },
+    //             methods,
+    //             module
+    //           })
+
+    //           clearInterval(validateInterver)
+
+    //           if (!isSuccess) {
+    //             onResetAndcloseUploadDialog()
+
+    //             return
+    //           }
+
+    //           // 模拟完成最后两步
+    //           const processInterver = setInterval(() => {
+    //             index++
+
+    //             if (index === 1) {
+    //               percent.value += 20
+    //               spendTime.value += 1
+    //               status.value = status.value + 1
+
+    //               clearInterval(processInterver)
+
+    //               spendTime.value += 1
+    //               status.value += 1
+    //               percent.value = 100
+
+    //               setTimeout(() => {
+    //                 uploadInnerDialogVisible.value = true
+    //               }, 1500)
+    //             } else {
+    //               spendTime.value += 1
+    //             }
+    //           }, 1000)
+    //         } else {
+    //           spendTime.value += 1
+    //         }
+    //       }, 1000)
+    //     } else {
+    //       spendTime.value += 1
+    //     }
+    //   }, 500)
+
+    //   return false
+    // }
 
     const excelUploadConfigs = reactive({
       attrs: {
@@ -315,6 +413,11 @@ export default {
         onChange: onChange,
       }
     })
+
+    // m-excel-upload 方法
+    const opPreExcelClick = (agrs = {}) => {
+      $stepUpload.value.onHandleClick(...agrs)
+    }
 
     return {
       $stepUpload,
@@ -331,7 +434,8 @@ export default {
       uploadInnerDialogVisible,
       $stepUploadValidateUploadResult,
       $dialogExcelDownloadRequest,
-      $excelExportButtonProps
+      $excelExportButtonProps,
+      opPreExcelClick
     }
   }
 }

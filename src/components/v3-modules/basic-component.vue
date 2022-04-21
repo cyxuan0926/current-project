@@ -38,6 +38,7 @@
             :dialogExcelDownloadRequest="$httpRequests['dialogExcelDownloadRequest']"
             :excelExportButtonProps="excelExportButtonProps"
             :excelUploadRequest="$httpRequests['excelUploadRequest']"
+            :uploadFileRequest="$httpRequests['uploadFileRequest'] || {}"
           >
             <template #stepUploadDefault>
               <slot name="stepDefault" />
@@ -358,6 +359,21 @@ export default {
       await getData()
     }
 
+    // m-search组件的方法
+    const onCompontentSearch = search => {
+      $basicSearch.value.onSearch(search)
+    }
+
+    // m-table-new组件的方法
+    const onElTableClearSort = () => {
+      $table.value.elTableClearSort()
+    }
+
+    // m-step-upload组件的方法
+    const onStepPreExcelClick = (args = {}) => {
+      $mStepUpload.value.opPreExcelClick(...agrs)
+    }
+
     return {
       onOpenUploadDialog,
       onUploadInnerDialogClose,
@@ -376,7 +392,10 @@ export default {
       $tabs,
       initData,
       searchItems,
-      $httpRequests
+      $httpRequests,
+      onCompontentSearch,
+      onElTableClearSort,
+      onStepPreExcelClick
     }
   }
 }

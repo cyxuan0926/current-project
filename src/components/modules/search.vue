@@ -262,7 +262,7 @@ export default {
       // search组件 添加判断逻辑 家属姓名、罪犯姓名、罪犯编号和日期选择 不可同时为空  日期选择范围不可大于1年
       // 父组件如果定义了是否添加此限制 isSearchLimit true
       let { isSearchLimit, filter: { name, prisonerName, prisonerNumber, familyName, criminalNumber, criminalName} } = this.$parent.$parent
-      console.log(isSearchLimit)
+
       if (isSearchLimit) {
         let _dateKey = Object.values(this.items).find(v => !v.miss && v.type == 'dateRange')
         if (_dateKey && !this.$parent.$parent.filter[_dateKey.start] && !name && !familyName&& !criminalNumber && !prisonerName && !criminalName && !prisonerNumber) {
@@ -272,8 +272,6 @@ export default {
         }
         if (_dateKey ) {
           let _start = this.$parent.$parent.filter[_dateKey.start]
-          
-          console.log(_start)
           _start = _start && moment(_start, 'YYYY-MM-DD')
           let _end = this.$parent.$parent.filter[_dateKey.end]
           _end = _end && moment(_end, 'YYYY-MM-DD')

@@ -33,7 +33,7 @@ export default {
       const { data } = await http.downloadRelationshipFile(params)
 
       // 后端暴露了文件名字段 然后自己拿到直接使用
-      //  headers console.log(decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, '')))
+      //  headers decodeURIComponent(headers['content-disposition'].replace(/^attachment;filename=/g, ''))
       return data
     }
     catch (err) {
