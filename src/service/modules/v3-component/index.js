@@ -2,7 +2,7 @@ import * as service from '@/service/config/service'
 
 export default {
   // 上传文件
-  commonUploadFile:  ({ url, module, file }) => service.postFormData(module ? service[module](url) : url, { file }),
+  commonUploadFile:  ({ url = '/upload/uploadfile', module, file }) => service.postFormData(module ? service[module](url) : url, { file }),
 
   // 验证文件格式
   commonValidateUpload: (

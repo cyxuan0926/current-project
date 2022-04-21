@@ -10,10 +10,7 @@
       :componentsVisible="omponentpublic"
       v-bind="routeProps"
       :isSearchLimit="isSearchLimit"
-    >
-     
-    </m-yg-prison-content>
-  
+    /> 
   </el-row>
 </template>
 
