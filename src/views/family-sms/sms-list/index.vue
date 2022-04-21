@@ -1015,7 +1015,6 @@ export default {
  mounted() {
      window.addEventListener("message", async e => {
       if(!e.data.type){
-        console.log(this)
         this.show.messageConfirm=true
       }
      })
@@ -1211,7 +1210,6 @@ export default {
     async _mixinsInitMethods(showList=this.show.isMessageList,uid=this.messageContent.uid, PrintList = this.messagePrintList) {
               let gkMessageIdList = [];
               //判断是单独打印还是批量打印
-              console.log(showList)
               if (showList)
                PrintList.forEach((item) =>
                   gkMessageIdList.push(item.uid)
