@@ -178,9 +178,6 @@ export default {
         if(obj.provincesIds.includes(9999)){
           data.provincesIds=messageConfigItem.value.provincesIds.options.map(item=>item.id).slice(1)
         }
-        if(obj.jailIds.length>0){
-          data.provincesIds=[]
-        }
         data.provincesIds=data.provincesIds.map(Number)
         let res = await http.addBatchNotify(data);
         if (res === undefined) return;
