@@ -3,7 +3,10 @@ import http from '@/service'
 export default {
   getPrisonAll: ({ commit }, params) => {
     return http.getPrisonAll(params).then(res => {
-      if (!res) return
+      if (!res) {
+        return
+      }
+
       commit('getPrisonAll', res)
       return true
     })
@@ -15,23 +18,40 @@ export default {
 
   getProvincesAll: ({ commit }) => {
     return http.getProvincesAll().then(res => {
-      if (!res) return
+      if (!res) {
+        return
+      }
+
       commit('getProvincesAll', res)
-      return { options: res.provinces, label: 'name', value: 'id' }
+      return {
+        options: res.provinces,
+        label: 'name',
+        value: 'id'
+      }
     })
   },
 
   getCities: ({ commit }, params) => {
     return http.getCities(params).then(res => {
-      if (!res) return
+      if (!res) {
+        return
+      }
+
       commit('getCities', res)
-      return { options: res.citys, label: 'name', value: 'id' }
+      return {
+        options: res.citys,
+        label: 'name',
+        value: 'id'
+      }
     })
   },
 
   getJailPrisonAreas: ({ commit }, args) => {
     return http.getJailPrisonAreas(args).then(res => {
-      if (!res) return
+      if (!res) {
+        return
+      }
+
       commit('getJailPrisonAreas', res)
       return true
     })
@@ -39,9 +59,8 @@ export default {
 
   async getOrgName({ commit }, params) {
     try {
-      const { data } = await http.getOrgName(params)
-
       let organization = []
+      const { data } = await http.getOrgName(params)
 
       if (data && Array.isArray(data)) {
         organization = data.map(orgName => (
@@ -51,13 +70,11 @@ export default {
           }
         ))
       }
-
       commit('getOrgName', organization)
 
       return data
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
 
@@ -66,63 +83,56 @@ export default {
       const data = await http.exportMeetingStatistics(params)
 
       return data
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
 
   async getPrisonAreaMaxLevel({ commit }) {
     try {
       const { data } = await http.getPrisonAreaMaxLevel()
-
       const { maxLevel } = data
-
       commit('setPrisonConfigsMaxLevel', maxLevel)
 
       return true
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
 
   async getAllChildPrisonConfigs({ commit }) {
     try {
       const { data } = await http.getAllChildPrisonConfigs()
-
-      const filterData = (inputs) => {
+      const filterData = inputs => {
         return inputs.map(item => {
-          if (item.children && item.children.length) filterData(item.children)
-          else delete item.children
+          if (item.children && item.children.length) {
+            filterData(item.children)
+          } else {
+            delete item.children
+          }
+
           return item
         })
       }
 
       const { prisonConfigs } = data
-
       const temp = filterData(prisonConfigs)
-
       commit('setAllChildPrisonConfigs', temp)
 
       return temp
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
 
   async getDetailMany({ commit }, params) {
     try {
       const { data } = await http.getDetailMany(params)
-
       const { prisonConfigs = {} } = data
-
       commit('setDetailManyConfigs', prisonConfigs)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -130,12 +140,10 @@ export default {
   async changePrisonJailOrBatch(_, params) {
     try {
       const response = await http.changePrisonJailOrBatch(params)
-
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -143,14 +151,11 @@ export default {
   async getMeetingFloorTerminals({ commit }, jailId) {
     try {
       const { data } = await http.getMeetingFloorTerminals(jailId)
-
       const haveMeetingFloorTerminals = data && Array.isArray(data) && data.length
-
       commit('setIsHaveMeetingFloorTerminals', haveMeetingFloorTerminals)
 
       return haveMeetingFloorTerminals
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -158,12 +163,10 @@ export default {
   async getJailByProvincesNoAuth({ commit }, params) {
     try {
       const { data } = await http.getJailByProvincesNoAuth(params)
-
       commit('getPrisonAll', data)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -172,11 +175,12 @@ export default {
     try {
       const response = await http.exportVisitExcel(inputs)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       return response
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   }

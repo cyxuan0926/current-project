@@ -9,6 +9,7 @@ import components from '@/components'
 import urls from '@/service/urls'
 import fullscreen from 'vue-fullscreen'
 import dragDialog from '@/components/modules/dialog'
+
 // 原来的icons丢失
 import '@/assets/fonts/iconfont.css'
 // 项目新增的icon
@@ -19,9 +20,7 @@ import 'viewerjs/dist/viewer.css'
 import '@/assets/css/main.scss'
 import '@/assets/css/index.scss'
 
-
 import ActiveMonitor from '@/utils/ActiveMonitor'
-
 import directives from '@/plugin/directives'
 
 import {
@@ -61,14 +60,17 @@ Vue.prototype.$_limitInputPositiveInteger = limitInputPositiveInteger
 Vue.prototype.$_elInputTypes = elInputTypes
 
 // 只在生产环境启用等保
-if (BUILD_ENV === 'production') new ActiveMonitor().start()
+if (BUILD_ENV === 'production') {
+  new ActiveMonitor().start()
+}
 
 // 声明过滤器
 Object.keys(filters).forEach((key) => Vue.filter(key, filters[key]))
 
 // 声明公共功能组件
 Object.keys(components).forEach((key) => {
-  let name = key.replace(/(\w)/, (v) => v.toUpperCase())
+  const name = key.replace(/(\w)/, (v) => v.toUpperCase())
+
   Vue.component(`m${ name }`, components[key])
 })
 

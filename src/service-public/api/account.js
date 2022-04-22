@@ -1,5 +1,4 @@
 import { get, postForm, put, post } from '../request'
-
 import { JSEncryptEncrypt } from '@/common/constants/rsa'
 
 export function login({
@@ -101,6 +100,5 @@ export const userBindByPhone = data => post('/users/updatephone', data)
 // 根据短信验证码重置我的密码
 export const modifyMyPasswordByCode = params => {
   const { newPassword } = params
-
   return post('/users/password/username/by-code', Object.assign({}, params, { newPassword: JSEncryptEncrypt(newPassword) }))
 }

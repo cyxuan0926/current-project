@@ -5,9 +5,15 @@ export default {
     // 兼容格式化之后的数据
     // 兼容负数
     let result, temp = 1
+
     if (typeof money === 'number' || typeof money === 'string') {
-      if (typeof money === 'number') money = money.toString()
-      if (money.toString().includes(',')) money = money.replace(/,/g, '')
+      if (typeof money === 'number') {
+        money = money.toString()
+      }
+
+      if (money.toString().includes(',')) {
+        money = money.replace(/,/g, '')
+      }
 
       money = Number(money)
 
@@ -19,12 +25,17 @@ export default {
 
         result = money.toFixed(2)
 
-        if (temp === 0) result = `-${ result }`
-      } else result = money
-    } else result = 0
+        if (temp === 0) {
+          result = `-${ result }`
+        }
+      } else {
+        result = money
+      }
+    } else {
+      result = 0
+    }
 
     result = result.toString().replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, '$&,')
-
     return result
   }
 }

@@ -1,18 +1,19 @@
 <template>
   <div>
     <div class="detail-container">
-      <div
-        class="detail-item"
-        v-for="(item, index) in detailItems"
-        :key="`id-family-detail-item-${ index }`">
-        <label>{{ item.label }}：</label>
-        <span>{{ family[item['prop']] }}</span>
-      </div>
+      <template v-for="(item, index) in detailItems">
+        <div class="detail-item" :key="`id-family-detail-item-${ index }`">
+          <label>{{ item.label }}：</label>
+          <span>{{ family[item['prop']] }}</span>
+        </div>
+      </template>
+
       <div class="button-box">
         <el-button
           type="primary"
           size="small"
-          @click="goBack">返回</el-button>
+          @click="goBack"
+        >返回</el-button>
       </div>
     </div>
   </div>
@@ -42,20 +43,20 @@ export default {
       detailItems
     }
   },
+
   computed: {
     ...mapState(['family'])
   },
+
   mounted() {
-    this.getFamilyDetail({
-      id: this.$route.params.id
-    })
+    this.getFamilyDetail({ id: this.$route.params.id })
   },
+
   methods: {
     ...mapActions(['getFamilyDetail']),
+
     goBack() {
-      this.$router.push({
-        path: '/family/list'
-      })
+      this.$router.push({ path: '/family/list' })
     }
   }
 }

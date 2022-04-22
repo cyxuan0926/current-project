@@ -47,6 +47,7 @@ import { durationFormat } from '@/utils/helper'
 import AudioThree from '@/assets/images/audio-icon.png'
 import AudioOne from '@/assets/images/audio-no.png'
 import audioTwo from '@/assets/images/audio-one.png'
+
 export default {
   props: {
     value: {
@@ -72,23 +73,30 @@ export default {
 
   watch:{
     value(val) {
-      if (val) this.reStartAudio()
+      if (val) {
+        this.reStartAudio()
+      }
     }
   },
 
   methods: {
     handleTimeUpdate() {
-      if (!this.$refs.audio) return
-      let totalTime = parseInt(this.$refs.audio.duration),
-        currentTime = parseInt(this.$refs.audio.currentTime)
+      if (!this.$refs.audio) {
+        return
+      }
+
+      let totalTime = parseInt(this.$refs.audio.duration)
+      let currentTime = parseInt(this.$refs.audio.currentTime)
+
       this.leastTime = durationFormat(totalTime - currentTime, { format: 'mm:ss' })
       if (this.$refs.audio.currentTime / this.$refs.audio.duration === 1 || this.$refs.audio.ended) {
         this.progressBarVal = 0
         this.interval && clearInterval(this.interval)
         this.audioImg = 3
         this.leastTime = durationFormat(totalTime, { format: 'mm:ss' })
+      } else {
+        this.progressBarVal = (currentTime / totalTime * 100)
       }
-      else this.progressBarVal = (currentTime / totalTime * 100)
     },
 
     handlePlay() {
@@ -98,10 +106,12 @@ export default {
         this.interval = setInterval(() => {
           this.audioImg = index + 1
           index++
-          if (index > 2) index = 0
+
+          if (index > 2) {
+            index = 0
+          }
         }, 1000)
-      }
-      else {
+      } else {
         this.$refs.audio.pause()
         clearInterval(this.interval)
         this.audioImg = 3
@@ -113,7 +123,9 @@ export default {
         this.$refs.audio &&
         this.$refs.audio.duration &&
         !isNaN(this.$refs.audio.duration)
-      ) this.leastTime = durationFormat(parseInt(this.$refs.audio.duration), { format: 'mm:ss' })
+      ) {
+        this.leastTime = durationFormat(parseInt(this.$refs.audio.duration), { format: 'mm:ss' })
+      }
     },
 
     reStartAudio() {
@@ -122,8 +134,12 @@ export default {
       this.audioImg = 3
       clearInterval(this.interval)
       this.interval = null
+
       if (this.$refs.audio) {
-        if (this.$refs.audio.played) this.$refs.audio.pause()
+        if (this.$refs.audio.played) {
+          this.$refs.audio.pause()
+        }
+
         this.$refs.audio.load()
       }
     }

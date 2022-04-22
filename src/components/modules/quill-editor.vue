@@ -42,6 +42,7 @@ export default {
 
   data() {
     const _this = this
+
     return {
       authorization: { 'Authorization': this.$urls.token },
       fileListForEditor: [], // 富文本上传图片列表
@@ -119,6 +120,7 @@ export default {
         this.$message.error('文件大小不能超过1MB!')
         return false
       }
+
       return true
     }
   }

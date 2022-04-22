@@ -34,13 +34,11 @@ export default {
         try {
           if (socket && socket.readyState !== 3) {
             socket.close()
-          }
-          else {
+          } else {
             socket = new WebSocket(wsUrl(params))
             initWS()
           }
-        }
-        catch (e) {
+        } catch (e) {
           console.log(e)
           reconnect()
         }
@@ -58,9 +56,9 @@ export default {
 
           let res = JSON.parse(response.data)
 
-
           if (res.code === 200 && res.data && res.data.meetings) {
             dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
+
             Notification({
               title: res.data.meetings.name,
               type: 'success',
@@ -76,8 +74,10 @@ export default {
               const value = element['k']
               return `<p>${ value }</p>`
             })).join('\n')
+
             // dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
             dispatch('meetingApplyDealing', params)
+
             Notification({
               dangerouslyUseHTMLString: true,
               title: '处理成功',
@@ -85,19 +85,19 @@ export default {
               message: htmlStrings,
               duration: 8000
             })
-          }
-          else if (res.code !== 200) {
+          } else if (res.code !== 200) {
             if (res.data && res.data.meetings) {
               dispatch('meetingAdjustDealing', res.data.meetings.meetingTime.split(' ')[0])
+
               Notification({
                 title: `${ res.data.meetings.name }调整失败`,
                 type: 'error',
                 message: `申请通话时间：${ res.data.meetings.meetingTime }，终端号：${ res.data.meetings.terminalNumber }，失败原因：${ res.msg }`,
                 duration: 8000
               })
-            }
-            else if (res.data && res.data.meetingId) {
+            } else if (res.data && res.data.meetingId) {
               dispatch('meetingApplyDealing', parseInt(res.data.meetingId))
+
               Notification({
                 title: `处理失败`,
                 type: 'error',
@@ -108,15 +108,21 @@ export default {
           }
         }
         socket.onclose = function(e, r) {
-          if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
+          if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') {
+            reconnect()
+          }
         }
-        socket.onerror = (event) => {
+        socket.onerror = event => {
           console.log('Socket发生了错误', event)
-          if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') reconnect()
+          if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === '1') {
+            reconnect()
+          }
         }
       },
       reconnect = _.throttle(() => {
-        if (lockReconnect) return
+        if (lockReconnect) {
+          return
+        }
         lockReconnect = true
         createWS()
         lockReconnect = false

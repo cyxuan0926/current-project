@@ -74,6 +74,7 @@ export default {
           bookType,
           autoWidth
         })
+
         this.loading = false
       })
     },
@@ -96,8 +97,8 @@ export default {
 
     getValues(obj, keys) {
       const values = []
-
       keys.forEach(key => values.push(obj[key]))
+
       return values
     }
   }

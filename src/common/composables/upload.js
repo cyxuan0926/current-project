@@ -63,8 +63,9 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   const onControlLoading = (val = false) => {
     if (onControlParentLoading.value) {
       onControlParentLoading.value(val)
+    } else {
+      loading.value = val
     }
-    else loading.value = val
   }
 
   const onExceed = () => {
@@ -75,8 +76,10 @@ export default function(props, { emit }, { uploadType, $accpet }) {
 
   const onError = ({ message } = err) => {
     const msg = JSON.parse(message)
+
     vueInstance.$message.error(msg || `上传${uploadType.value}失败`)
     onControlLoading()
+
     $uploadRef.value && $uploadRef.value.clearFiles()
     notification.value && notification.value.close()
   }
@@ -85,6 +88,7 @@ export default function(props, { emit }, { uploadType, $accpet }) {
     if (notification.value) {
       notification.value.close()
     }
+
     notification.value = null
   }
 
@@ -105,8 +109,8 @@ export default function(props, { emit }, { uploadType, $accpet }) {
           accumulator.push(type)
           return accumulator
         }, [])
-
         vueInstance.$message.error(`请上传${ accept.join('或') }格式的文件`)
+
         return false
       }
     }
@@ -115,6 +119,7 @@ export default function(props, { emit }, { uploadType, $accpet }) {
       const isOK = file.size / 1024 / 1024 < sizeLimit.value
       if (!isOK) {
         vueInstance.$message.error(`上传${uploadType.value}大小不能超过${sizeLimit.value}MB`)
+
         return false
       }
     }
@@ -135,8 +140,8 @@ export default function(props, { emit }, { uploadType, $accpet }) {
   const onSuccess = res => {
     if (res) {
       const { filename, url } = res
-      vueInstance.$message.success(`${uploadType.value}上传成功`)
 
+      vueInstance.$message.success(`${uploadType.value}上传成功`)
       emit('input', url || `${ vueInstance.$urls.publicApiHost }/files/${filename}`)
     }
 

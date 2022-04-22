@@ -73,7 +73,6 @@ export default {
       ]
 
       _list = _list.slice(_list.findIndex(l => l === target))
-
       _list.forEach(t => {
         this.$set(this.localPrisonAreaLevelObject[t], 'options', [])
         this.$set(budingObject, this.localPrisonAreaLevelObject[t]['prop'], '')
@@ -84,20 +83,19 @@ export default {
       await this.$store.dispatch('getChildPrisonConfigs', { parentId })
 
       Message.closeAll()
-
       this.$set(this.localPrisonAreaLevelObject[childNode], 'options', this.$store.state.multiPrisonConfigs)
     },
 
     async onPrisonAreaLevelDataChange(params = {}) {
       const { key, parentId = '', budingObject = {} } = params
-
       this.prisonConfigIdKey = key
-
       const childNode = this.localPrisonAreaLevelObject[key]['childNode']
       const { level } = this.localPrisonAreaLevelObject[key]
       const isLast = level === Object.keys(this.localPrisonAreaLevelObject).length
 
-      if (childNode) this.clearSubPrisonArea(childNode, budingObject)
+      if (childNode) {
+        this.clearSubPrisonArea(childNode, budingObject)
+      }
 
       // 监区-用户权限（最底层用户权限）
       // if (['prisonArea'].includes(key)) {

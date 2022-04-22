@@ -63,16 +63,19 @@ export default {
       let fileType = this.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
       const isSize = file.size / 1024 / 1024 < 1
+
       if (!isAccept) {
         let accept = []
         fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
         this.$message.error(`请上传${ accept.join('或') }格式的文件`)
         return false
       }
+
       if (!isSize) {
         this.$message.error('文件大小不能超过1MB!')
         return false
       }
+
       return true
     },
 

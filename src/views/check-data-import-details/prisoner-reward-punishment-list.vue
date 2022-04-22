@@ -1,12 +1,11 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       ref="search"
       :items="searchItems"
       @search="onSearch"
     />
+
     <el-col :span="24">
       <el-table
         class="border el-table__has__border-bottom"
@@ -55,72 +54,65 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-            label="行政奖励">
-                  <el-table-column
-                    prop="praiseTimes"
-                    label="表扬数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="materialAwardTimes"
-                    label="物质奖励数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="meritTimes"
-                    label="立功个数">
-                  </el-table-column>
-                  <el-table-column
-                    prop="greatMeritTimes"
-                    label="重大立功数">
-                  </el-table-column>
-            </el-table-column>
-            <el-table-column
-            label="行政处罚">
-                  <el-table-column
-                    prop="warnTimes"
-                    label="警告个数"
-                    width="120">
-                  </el-table-column>
-                  <el-table-column
-                    prop="mistakeTimes"
-                    label="记过个数"
-                    width="120">
-                  </el-table-column>
-                  <el-table-column
-                    prop="confinementTimes"
-                    label="禁闭个数"
-                    width="100">
-                  </el-table-column>
-            </el-table-column>
+        <el-table-column label="行政奖励">
+          <el-table-column label="表扬数" prop="praiseTimes" />
+          <el-table-column label="物质奖励数" prop="materialAwardTimes" />
+          <el-table-column label="立功个数" prop="meritTimes" />
+          <el-table-column label="重大立功数" prop="greatMeritTimes" />
+        </el-table-column>
+
+        <el-table-column label="行政处罚">
+          <el-table-column
+            label="警告个数"
+            prop="warnTimes"        
+            width="120"
+          />
+
+          <el-table-column
+            label="记过个数"
+            prop="mistakeTimes"        
+            width="120"
+          />        
+          <el-table-column
+            label="禁闭个数"
+            prop="confinementTimes"
+            width="100"
+          />
+        </el-table-column>
       </el-table>
     </el-col>
+
     <m-pagination
       ref="pagination"
       :total="tabledata.totalCount"
-      @onPageChange="getDatas" />
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
 <script>
 import http from '@/service'
 import Moment from 'moment'
+
 export default {
   data() {
     const MonthDate = Moment().format('YYYY-MM')
+
     return {
       tabledata:{},
       MonthDate,
       filterInit:{},
       searchItems: {
-         date: {
-          type: 'month',
+        date: {
           label: '时间',
+          type: 'month',
           canNotClear: true,
           value: MonthDate
         },
+
         name:  {
-          type: 'input',
-          label: '罪犯姓名'
+          label: '罪犯姓名',
+          type: 'input'
         }
       }
     }
@@ -128,7 +120,6 @@ export default {
 
   async mounted() {
     this.$refs.search.onGetFilter()
-
     await this.getDatas()
   },
 

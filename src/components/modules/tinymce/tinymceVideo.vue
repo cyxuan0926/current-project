@@ -44,7 +44,10 @@ export default {
   },
 
   destroyed() {
-    if (this.notification) this.notification.close()
+    if (this.notification) {
+      this.notification.close()
+    }
+
     this.notification = null
   },
 
@@ -69,12 +72,15 @@ export default {
     beforUpload(file) {
       let fileType = this.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
+
       if (!isAccept) {
         let accept = []
+
         fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
         this.$message.error(`请上传${ accept.join('或') }格式的文件`)
         return false
       }
+
       this.notification = this.$notify({
         title: '提示',
         message: '正在上传视频文件，请耐心等待',
@@ -82,6 +88,7 @@ export default {
         duration: 0,
         showClose: false
       })
+
       return true
     },
 

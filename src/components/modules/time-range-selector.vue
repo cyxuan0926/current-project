@@ -122,7 +122,9 @@ export default {
 
   watch: {
     endTime(val) {
-      if (!val) this.startTime = null
+      if (!val) {
+        this.startTime = null
+      }
     },
 
     // 当前的时间段
@@ -149,26 +151,34 @@ export default {
     if (this.val && this.val.length) {
       this.startTime = this.val[0]
       this.endTime = this.val[1]
+
       let start = Moment(new Date(2000, 0, 1, this.val[0].split(':')[0], this.val[0].split(':')[1])).add(1, 'm').format('HH:mm')
       this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
     }
-    if (this.prev.length) this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
+    if (this.prev.length) {
+      this.startPickerOptions = { selectableRange: `${ this.prev[1] }:00 - 23:58:59` }
+    }
   },
 
   methods: {
     // 开始时间变化后
     onStartChange(e) {
-      if (!e) this.endPickerOptions = {}
-      else {
+      if (!e) {
+        this.endPickerOptions = {}
+      } else {
         let start = Moment(new Date(2000, 0, 1, e.split(':')[0], e.split(':')[1])).add(1, 'm').format('HH:mm')
         this.endPickerOptions = { selectableRange: `${ start }:00 - 23:59:59` }
 
-        if (start > this.endTime || !this.endTime) this.endTime = start
+        if (start > this.endTime || !this.endTime) {
+          this.endTime = start
+        }
       }
     },
 
     onClick() {
-      if (!this.endTime) this.$refs.start.focus()
+      if (!this.endTime) {
+        this.$refs.start.focus()
+      }
     },
 
     // '开始时间'失去焦点之后

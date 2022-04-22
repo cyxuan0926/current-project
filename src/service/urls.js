@@ -15,16 +15,6 @@ const nodeUrl = env === 'test' ? 'http://qa-ywgk.yuwugongkai.com' : 'http://192.
 // socketUrl: websocket地址
 
 const config = {
-  development: {
-    apiHost: 'http://192.168.0.41:8085',
-    apiPath: '/ywgk-auth',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.41:8085/ywgk-auth/websocket',
-    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
-  },
   test: {
     bpmnApiHost: 'http://qa-activiti-api.yuwugongkai.com',
     ygApiHost: 'http://qa-sunjail-api.yuwugongkai.com/sunjail',
@@ -43,18 +33,7 @@ const config = {
     // socketUrl: 'ws://8.129.14.169:8098/ywgk/websocket',
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
   },
-  auth: {
-    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://192.168.0.182:8088',
-    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
-    apiPath: '/ywgk-auth',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`,
-    socketUrl: 'ws://192.168.0.182:8088/ywgk-auth/websocket',
-    mapKey: '9415fa5f5fd07290d579f5de39ace82f'
-  },
+
   production: {
     bpmnApiHost: 'https://activiti-api.yuwugongkai.com',
     publicApiHost: 'https://auth-api.yuwugongkai.com',
@@ -75,40 +54,6 @@ const config = {
     videoUrl: 'https://www.yuwugongkai.com/video-server/videos',
     socketUrl: 'wss://www.yuwugongkai.com/ws',
     mapKey: '9415fa5f5fd07290d579f5de39ace82f'
-  },
-  ybDevelopment: {
-    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://47.107.245.151:8080',
-    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
-    apiPath: '/ywgk',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`,
-    // socketUrl: 'ws://47.107.245.151:8030/ws'
-    socketUrl: 'ws://47.107.245.151:8080/ywgk/websocket'
-  },
-  xzyDev: {
-    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://192.168.0.108:8088',
-    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
-    apiPath: '',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`
-    // socketUrl: 'ws://192.168.0.54:8083/websocket'
-  },
-  phl: {
-    publicApiHost: 'http://qa-auth-api.yuwugongkai.com',
-    apiHost: 'http://192.168.0.110:8021',
-    financeApiHost: 'http://qa-finance-api.yuwugongkai.com',
-    apiPath: '',
-    audioUrl: `${ nodeUrl }/audio-server/audios`,
-    imageUrl: `${ nodeUrl }/image-server/avatars`,
-    // fileUrl: `${ nodeUrl }/image-server`,
-    videoUrl: `${ nodeUrl }/video-server/videos`
-    // socketUrl: 'ws://192.168.0.54:8083/websocket'
   }
 }
 

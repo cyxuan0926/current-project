@@ -11,6 +11,7 @@ export default {
     filePath: '',
     total: 0
   },
+
   validateInformationResult: {
     successTotal: 0,
     failTotal: 0,
@@ -24,6 +25,7 @@ export default {
     filePath: '',
     total: 0
   },
+
   validatePrisonerLeaveResult: {
     successTotal: 0,
     failTotal: 0,
@@ -33,7 +35,11 @@ export default {
 
   familyPhoneFamiliesDetail: {},
 
-  settleAccountsPaged: { content: [], totalCount: 0, configs: {} },
+  settleAccountsPaged: {
+    content: [],
+    totalCount: 0,
+    configs: {}
+  },
 
   familyPhoneSettleAccountsDetail: [],
 

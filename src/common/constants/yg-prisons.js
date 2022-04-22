@@ -2,7 +2,6 @@
 import { formatTime } from '@/utils/helper'
 
 const startDate = formatTime(new Date(), 'yyyy-MM')
-
 const endDate = formatTime(new Date(), 'yyyy-MM')
 
 // search选项 适用绝大部分时间
@@ -37,17 +36,17 @@ export const _ygPrisonCommonSearchItems = () => {
     },
 
     // 开始时间-结束时间
-    // dateMonth: {
-    //   type: 'monthRangeSelector',
-    //   canNotClear: true,
-    //   startKey: 'startDate',
-    //   endKey: 'endDate',
-    //   range: {
-    //     max: formatTime(new Date(), 'yyyy-MM'),
-    //     maxMonthRange: 24
-    //   },
-    //   value: [startDate, endDate]
-    // }
+    dateMonth: {
+      type: 'monthRangeSelector',
+      canNotClear: true,
+      startKey: 'startDate',
+      endKey: 'endDate',
+      range: {
+        max: formatTime(new Date(), 'yyyy-MM'),
+        maxMonthRange: 24
+      },
+      value: [startDate, endDate]
+    }
   }
 }
 

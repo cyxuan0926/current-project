@@ -9,16 +9,20 @@
   <script src="/static/js/bowser@1.9.4.min.js"></script>
   <script>
     /* eslint-disable */
-    if (bowser.name === 'Internet Explorer' && parseInt(bowser.version) < 11) location.href = '/static/browser.html';
+    if (bowser.name === 'Internet Explorer' && parseInt(bowser.version) < 11) {
+      location.href = '/static/browser.html'
+    }
   </script>
 </head>
 <body id="body">
   <div id="layout" class="wrapper">加载中...</div>
+
   <div class="copyright" style="visibility: hidden;">
     Copyright © 2006-2021
     <a href="http://www.sinog2c.com">国科政信科技(北京)股份有限公司</a>
     <a href="http://www.beian.miit.gov.cn">湘ICP备18008171号-2</a>
   </div>
+
   <script src='/static/tinymce/tinymce.min.js'></script>
   <script src="/static/js/echarts@4.3.0.min.js"></script>
   <!-- <script src="https://cdn.bootcss.com/jsencrypt/3.0.0-beta.1/jsencrypt.js"></script> -->

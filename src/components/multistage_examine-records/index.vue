@@ -103,46 +103,36 @@ export default {
 
     values: {
       type: Array,
-
       default: () => []
     },
 
     title: {
       type: String,
-
       default: '审核纪录:'
     },
 
     keys: {
       type: Object,
-
       default: () => ({
         userName: 'userName',
-
         reamrks: 'reamrks',
-
         createAt: 'createAt',
-
         status: 'status'
       })
     },
 
     recordContentItems: {
       type: Array,
-
       default: () => ([
         {
           className: [],
-
           pItem: {
             className: [],
-
             items: [
               {
                 label: '审核员账号',
                 key: 'userName'
               },
-
               {
                 label: '审核意见',
                 key: 'reamrks'
@@ -153,16 +143,13 @@ export default {
 
         {
           className: [],
-
           pItem: {
             className: [],
-
             items: [
               {
                 label: '审核时间',
                 key: 'createAt'
               },
-
               {
                 label: '申请状态',
                 key: 'status',
@@ -176,40 +163,31 @@ export default {
 
     basicKeys: {
       type: Object,
-
       default: () => ({
         familyName: 'familyName',
-
         remarks: 'remarks',
-
         relationship: 'relationship',
-
         criminalName: 'criminalName'
       })
     },
 
     basicTitle: {
       type: String,
-
       default: '基本信息'
     },
 
     basicContentItems: {
       type: Array,
-
       default: () => ([
         {
           className: [],
-
           pItem: {
             className: [],
-
             items: [
               {
                 label: '家属姓名',
                 key: 'familyName'
               },
-
               {
                 label: '审核内容',
                 key: 'remarks'
@@ -217,19 +195,15 @@ export default {
             ]
           }
         },
-
         {
           className: [],
-
           pItem: {
             className: [],
-
             items: [
               {
                 label: '罪犯姓名',
                 key: 'criminalName'
               },
-
               {
                 label: '关系',
                 key: 'relationship'
@@ -242,7 +216,6 @@ export default {
 
     basicValues: {
       type: Array,
-
       default: () => ([])
     }
   },

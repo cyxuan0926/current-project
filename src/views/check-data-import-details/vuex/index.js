@@ -1,7 +1,7 @@
 import actions from './actions'
 import mutations from './mutations'
 
-let state = {
+const state = {
   prisonersPocketMoney: { contents: [], total: 0 },
   prisonersInsideJailsCosts: { contents: [], total: 0 },
   prisonerRewardPunishments: { contents: [], total: 0 },

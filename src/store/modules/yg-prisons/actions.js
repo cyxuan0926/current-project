@@ -6,13 +6,14 @@ export default {
       let formData = new FormData()
       file && formData.append('file', file)
       const filesResult = await api.ygUploadFile(formData)
+
       if (!filesResult) {
         return
       }
+
       commit('ygUploadFile', filesResult)
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -22,15 +23,14 @@ export default {
       let formData = new FormData()
       file && formData.append('file', file)
       const filesResult = await api.familyphonerechargeimport(formData)
+
       if (!filesResult) {
         return
       }
 
       commit('ygUploadFile', filesResult)
-
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -43,14 +43,14 @@ export default {
       } else {
        response = await api.validateUploadYgCommon(inputs)
       }
+
       if (!response) {
         return
       }
-      commit('setValidateExcelResult', response)
 
+      commit('setValidateExcelResult', response)
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -65,7 +65,6 @@ export default {
       }
 
       if (!response || !response.data) {
-
         return
       }
 
@@ -76,14 +75,10 @@ export default {
         list = response.data['list'] && Array.isArray(response.data['list']) ? response.data['list'] : []
         totalCount = response.data['list'] && Array.isArray(response.data['list']) ? response.data['totalCount'] : 0
       }
-      commit('setPagedYgPrisonsDataCommon', {
-        list,
-        totalCount
-      })
 
+      commit('setPagedYgPrisonsDataCommon', { list, totalCount })
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -97,11 +92,12 @@ export default {
         response = await api.exportYgPrisonExcel(inputs)
       }
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       return response
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   }

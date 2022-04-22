@@ -13,34 +13,54 @@ let fillPre = (val) => {
 }
 
 export const isEmptyObject = (options, query = []) => {
-  if (!options) return false
   let result = {}
+
+  if (!options) {
+    return false
+  }
+
   Object.keys(options).forEach(k => {
     if (options[k] && !query.find(n => n === k)) {
       result[k] = options[k]
     }
   })
-  if (!Object.keys(result).length) return false
+
+  if (!Object.keys(result).length) {
+    return false
+  }
+
   return result
 }
 
 export const trimObject = (options, query = []) => {
-  if (!options || !Object.keys(options).length) return false
+  if (!options || !Object.keys(options).length) {
+    return false
+  }
+
   let result = Object.assign({}, options)
+
   Object.keys(options).forEach(k => {
     if (options[k] && typeof options[k] === 'string' && !query.find((n) => n === k)) {
       let reSpace = /^\s*(.*?)\s*$/
       result[k] = options[k].replace(reSpace, '$1')
     }
   })
-  if (!Object.keys(result).length) return false
+
+  if (!Object.keys(result).length) {
+    return false
+  }
+
   return result
 }
 
 export const trimString = (str) => {
-  if ([undefined, null].indexOf(str) > -1) return str
-  else if (String.prototype.trim) return str.trim()
-  else return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
+  if ([undefined, null].indexOf(str) > -1) {
+    return str
+  } else if (String.prototype.trim) {
+    return str.trim()
+  } else {
+    return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
+  }
 }
 
 export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) => {
@@ -50,8 +70,9 @@ export const durationFormat = (duration, { format = 'HH:mm:ss', unit = 's' }) =>
   if (unit !== 's') {
     return 'unkown-unit'
   }
-  duration = _.parseInt(duration)
+
   let ss, mm, hh
+  duration = _.parseInt(duration)  
   ss = duration % 60
   if (unit === 's' && format === 'HH:mm:ss') {
     mm = _.parseInt(duration / 60) % 60
@@ -78,8 +99,12 @@ export const transitionRolesList = val => {
         return true
       }
     })
-  if (isOwn) result = Object.assign(result, data)
-  else result = Object.assign(result, { label: name, role: '-1' }) // 以后别的角色需要
+  if (isOwn) {
+    result = Object.assign(result, data)
+  } else {
+    // 以后别的角色需要
+    result = Object.assign(result, { label: name, role: '-1' })
+  }
   return result
 }
 
@@ -112,15 +137,16 @@ export const transitionRoleId = val => {
         return true
       }
     })
-    if (isOwn) arr.push(Number(roleId))
+    if (isOwn) {
+      arr.push(Number(roleId))
+    }
   }
   arr = Array.from(new Set(arr))
   for (let index in roles) {
     if (roles[index].roleList.length !== arr.length) {
       controlArg = false
       continue
-    }
-    else {
+    } else {
       controlArg = true
       for (let value of roles[index].roleList) {
         if (arr.some(item => +value === +item)) continue
@@ -134,7 +160,10 @@ export const transitionRoleId = val => {
       result = { role: roles[index].role }
       break
     }
-    else result = { role: '-9999' } // 没有对应的角色列表 暂时的角色id
+    else {
+      // 没有对应的角色列表 暂时的角色id
+      result = { role: '-9999' }
+    }
   }
   return result
 }
@@ -152,13 +181,18 @@ export const loadView = path => () => import(`@/views/${ path }`)
 
 // 日期格式化
 export function DateFormat(date, format = 'YYYY-MM-DD HH:mm:ss') {
-  if (!date) return ''
+  if (!date) {
+    return ''
+  }
+
   return Moment(date).format(format)
 }
+
 // 兼容URL
 export function createObjectURL(object) {
   return window.URL ? window.URL.createObjectURL(object) : window.webkitURL.createObjectURL(object)
 }
+
 /**
  * 格式化日期
  * @param {Number || Object || String} time 时间戳或者标准格式的时间对象 || 字符串
@@ -186,7 +220,9 @@ export function formatTime(
   format = 'yyyy-MM-dd hh:mm:ss',
   isFillZero = true
 ) {
-  if (!time) return ''
+  if (!time) {
+    return ''
+  }
 
   const date = new Date(time)
   const cell = {
@@ -217,24 +253,34 @@ export function formatTime(
  * @param { Boolean } isPublic isIdentify是有标识符的时候 公共服务图片的标识
 */
 export const filterImages = ({ images, isIdentify = false, cutSymbol = ';', isPublic } = {}) => {
-  if (!images || !images.length) return
+  if (!images || !images.length) {
+    return
+  }
+
   let imageUrls = images
   if (Object.prototype.toString.call(images) === '[object String]') {
     imageUrls = new Set(images.split(cutSymbol))
-    if (imageUrls.has('')) imageUrls.delete('')
+    if (imageUrls.has('')) {
+      imageUrls.delete('')
+    }
   }
   if (!isIdentify) {
     return [ ...imageUrls ].map(url => {
-      if (url.includes('https://') || url.includes('http://')) return ` ${ url }?token=${ urls.token } `
-      else return `${ urls.publicApiHost }/files/${ url }`
+      if (url.includes('https://') || url.includes('http://')) {
+        return ` ${ url }?token=${ urls.token } `
+      } else {
+        return `${ urls.publicApiHost }/files/${ url }`
+      }
     })
   }
   if (isIdentify) {
-    if (isPublic) return [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
-    else return [ ...imageUrls ]
+    if (isPublic) {
+      return [ ...imageUrls ].map(item => `${ urls.publicApiHost }/files/${ item }`)
+    } else {
+      return [ ...imageUrls ]
+    }
   }
 }
-
 
 /**
  * 判断是否有值
@@ -294,8 +340,7 @@ export function toCurrencyString(amount, decimalDigit = 2) {
 
   if (isNaN(n)) {
     return n
-  }
-  else {
+  } else {
     return n
       .toFixed(decimalDigit)
       .replace(/^(-)?(\d+)(\.\d+)*$/, (m, $1, $2, $3) => {
@@ -319,13 +364,9 @@ export function uuId() {
  */
 export function countTimes(totalTime, duration, interval) {
   const oneFullTime = (+duration) + (+interval)
-
   const maxParams = (+totalTime) + (+interval)
-
   const minParams = totalTime - duration
-
   const minValue = Math.ceil(minParams / oneFullTime)
-
   const maxValue = Math.floor(maxParams / oneFullTime)
 
   return Math.max(minValue, maxValue)
@@ -333,15 +374,10 @@ export function countTimes(totalTime, duration, interval) {
 
 export function countNextQueue(queue, duration, interver) {
   const prev = queue[queue.length - 1]
-
   const oneTimes = (+duration) + (+interver)
-
   const prevSt = prev[0]
-
   const prevEd = prev[1]
-
   const nextTimeSt = Moment(prevSt, 'HH:mm').add(oneTimes, 'minutes').format('HH:mm')
-
   const nextTimeEnd = Moment(prevEd, 'HH:mm').add(oneTimes, 'minutes').format('HH:mm')
 
   return [...queue, [nextTimeSt, nextTimeEnd]]
@@ -360,46 +396,43 @@ export function getNextQueue(queue = [], duration = 25, interval = 5, times = 1,
   Array.apply(null, { length: times }).map((_, index) => {
     if (index === 0) {
       const timeQueueStart = queue[0]
-
       const endTime = Moment(timeQueueStart, 'HH:mm').add(duration, 'minutes').format('HH:mm')
 
       result = [[timeQueueStart, endTime]]
-    }
-    else {
+    } else {
       result = countNextQueue(result, duration, interval)
     }
   })
+
   return result
 }
 
 export function convertToChinaNum(num) {
-    const arr1 = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
-    const arr2 = ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿']
-    if (!num || isNaN(num)) {
-      return '零'
-    }
-    const english = num.toString().split('')
-    let result = ''
-    for (var i = 0; i < english.length; i++) {
-        let des = english.length - 1 - i,
-          arrIndex = english[des]
-        result = arr2[i] + result
-        result = arr1[arrIndex] + result
-    }
+  let result = ''
+  const arr1 = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+  const arr2 = ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿']
 
-    result = result.replace(/零(千|百|十)/g, '零').replace(/十零/g, '十')
+  if (!num || isNaN(num)) {
+    return '零'
+  }
+  
+  const english = num.toString().split('')
+    
+  for (let i = 0; i < english.length; i++) {
+    let des = english.length - 1 - i
+    let arrIndex = english[des]
+    result = arr2[i] + result
+    result = arr1[arrIndex] + result
+  }
 
-    result = result.replace(/零+/g, '零')
+  result = result.replace(/零(千|百|十)/g, '零').replace(/十零/g, '十')
+  result = result.replace(/零+/g, '零')
+  result = result.replace(/零亿/g, '亿').replace(/零万/g, '万')
+  result = result.replace(/亿万/g, '亿')
+  result = result.replace(/零+$/, '')
+  result = result.replace(/^一十/g, '十')
 
-    result = result.replace(/零亿/g, '亿').replace(/零万/g, '万')
-
-    result = result.replace(/亿万/g, '亿')
-
-    result = result.replace(/零+$/, '')
-
-    result = result.replace(/^一十/g, '十')
-
-    return result
+  return result
 }
 
 export const getMonthTime = m => {

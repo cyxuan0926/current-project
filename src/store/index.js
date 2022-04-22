@@ -5,7 +5,6 @@ import quillEditor from './modules/quill-editor'
 import literature from './modules/literature'
 import coopertivePartner from './modules/coopertive-partner'
 import diplomaticConsulOfficial from './modules/diplomatic-consul-official'
-
 import adminAdvertisement from '@/views/sadmin-advertisement/vuex'
 import adminFeedback from '@/views/sadmin-feedback/vuex'
 import adminLog from '@/views/sadmin-log/vuex'
@@ -37,17 +36,11 @@ import trade from '@/views/trade/vuex-and-service'
 import global from './modules/global'
 // import checkPrisonerInsideJailsCosts from '@/views/check-prisoner-inside-jails-costs/vuex'
 import checkDataImportDetails from '@/views/check-data-import-details/vuex'
-
 import filter from './modules/filter'
-
 import familyPhone from './modules/family-phone'
-
 import files from './modules/file'
-
 import ygPrisons from './modules/yg-prisons'
-
 import v3Component from './modules/v3-component'
-
 import 'babel-polyfill'
 
 Vue.use(Vuex)
@@ -92,6 +85,7 @@ merge(
   // checkPrisonerInsideJailsCosts,
   checkDataImportDetails
 )
+
 export default new Vuex.Store({
   actions,
   mutations,

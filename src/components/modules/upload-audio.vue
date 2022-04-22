@@ -82,16 +82,21 @@ export default {
   computed: {
     fileList() {
       let files = [], name = ''
+  
       if (this.value) {
         name = this.value.replace(`${ this.$urls.audioUrl }/`, '').replace(/-[0-9]+\./, '.')
         files.push({ name: name, url: this.value })
       }
+
       return files
     }
   },
 
   destroyed() {
-    if (this.notification) this.notification.close()
+    if (this.notification) {
+      this.notification.close()
+    }
+
     this.notification = null
   },
 
@@ -100,6 +105,7 @@ export default {
 
     handleSuccess(res, file, fileList) {
       this.loading = false
+
       switch (res.code) {
         case 200:
           this.$message.success('音频上传成功')
@@ -119,6 +125,7 @@ export default {
         this.$message.error(`请上传音频文件`)
         return false
       }
+
       this.loading = true
       this.notification = this.$notify({
         title: '提示',
@@ -127,6 +134,7 @@ export default {
         duration: 0,
         showClose: false
       })
+
       return true
     },
 

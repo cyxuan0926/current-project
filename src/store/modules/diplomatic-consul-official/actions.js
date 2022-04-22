@@ -4,15 +4,12 @@ export default {
   async getPageData({ commit }, configs) {
     try {
       const { url, params } = configs
-
       const response = await diplomaticConsulOfficialAPI.getPageData(url, params)
 
       if (response && response['data']) {
         const { data } = response
         const { registrations = [], total = 0 } = data
-
         const urlsParams = ['idCardFront', 'idCardBack', 'avatarUrl']
-
         const titles = {
           0: '身份证正面',
           1: '身份证反面',
@@ -36,22 +33,19 @@ export default {
       }
 
       return response
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
 
-  async registrationAuthorize({ commit }, params) {
+  async registrationAuthorize(_, params) {
     try {
       const response = await diplomaticConsulOfficialAPI.registrationAuthorize(params)
-
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   }
 }
