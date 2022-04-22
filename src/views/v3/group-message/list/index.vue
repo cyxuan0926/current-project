@@ -180,8 +180,6 @@ export default {
         }
         if(obj.jailIds.length>0){
           data.provincesIds=[]
-        }else{
-          delete data.jailIds
         }
         data.provincesIds=data.provincesIds.map(Number)
         let res = await http.addBatchNotify(data);
