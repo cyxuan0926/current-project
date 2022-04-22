@@ -60,6 +60,7 @@ export default {
     value(val) {
       if (!this.hasChange && this.hasInit && val) {
         let pattern = /src="(\.\.\/)+(image-server\/avatars)/g, c = val.replace(pattern, `src="${ this.$urls.imageUrl }`)
+
         this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(c))
       }
     }
@@ -88,7 +89,7 @@ export default {
           tinymce.activeEditor.setContent(this.value, { format: 'html' });
           // editor.setContent(this.value)
         }
-        editor.on('NodeChange Change KeyUp', (data) => {
+        editor.on('NodeChange Change KeyUp', data => {
           this.hasChange = true
           this.$emit('editorChange', editor.getContent({ format: 'row' }), editor.getContent({ format: 'text' }).substr(0, 500), editor.getContent({ format: 'html' }).replace(/\s*(&nbsp;)*/g, '').replace(/\n/g, '').replace(/<p><\/p>/g, ''))
         })
@@ -100,22 +101,26 @@ export default {
         editor.addButton('imageUpload', {
           icon: 'image',
           tooltip: '选择图片',
-          onclick: (data) => {
+          onclick: data => {
             this.$refs.uploadImage.$refs.uploadImg.$refs['upload-inner'].$refs.input.click()
           }
         })
-        if (this.tools === 'onlyImage') return
+
+        if (this.tools === 'onlyImage') {
+          return
+        }
+
         editor.addButton('videoUpload', {
           icon: 'media',
           tooltip: '插入视频(支持格式:mp4/webm/ogg)',
-          onclick: (data) => {
+          onclick: data => {
             this.$refs.uploadVideo.$refs.uploadVd.$refs['upload-inner'].$refs.input.click()
           }
         })
         editor.addButton('audioUpload', {
           icon: 'i iconfont icon-yinpin',
           tooltip: '插入音频',
-          onclick: (data) => {
+          onclick: data => {
             this.$refs.uploadAudio.$refs.uploadAudio.$refs['upload-inner'].$refs.input.click()
           }
         })
@@ -129,7 +134,10 @@ export default {
 
   methods: {
     onImageSuccess(e) {
-      if (!e) return
+      if (!e) {
+        return
+      }
+
       window.tinymce.get(this.tinymceId).insertContent(`<img class='wscnph' src='${ e }' style="max-width: 100%;">`)
     },
 
@@ -153,7 +161,10 @@ export default {
     },
 
     onAudioSuccess(e) {
-      if (!e) return
+      if (!e) {
+        return
+      }
+
       let htmlString = `<audio controls>
         <source
           src='${ e }'
@@ -162,6 +173,7 @@ export default {
           src='${ e }'
           type='audio/ogg'>您的浏览器不支持Audio标签。
       </audio>`
+
       window.tinymce.get(this.tinymceId).insertContent(htmlString)
     }
   }

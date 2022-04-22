@@ -4,11 +4,8 @@ export default {
   async getFamiliesPaged({ commit }, inputs) {
     try {
       const response = await familyPhoneApi.getFamilyPhoneFamilies(inputs)
-
       const list = response ? response['list'] : []
-
       const size = response ? response['size'] : 0
-
       const isCancel = response ? response['isCancel'] : false
 
       commit('setFamiliesPaged', {
@@ -18,8 +15,7 @@ export default {
       })
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -27,12 +23,10 @@ export default {
   async operateFamilyPhoneFamilies(_, params) {
     try {
       const response = await familyPhoneApi.operateFamilyPhoneFamilies(params)
-
       const isSucess = response && response['code'] === 200
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -41,60 +35,69 @@ export default {
     try {
       const response = await familyPhoneApi.validateUploadFamilies(filepath)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       commit('setValidateFamiliesResult', response)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
+
   async validateImportFamilyInformation({ commit }, filepath) {
     try {
-       let obj={jailId:JSON.parse(localStorage.getItem('user')).jailId,filepath:filepath}
+      let obj={ jailId: JSON.parse(localStorage.getItem('user')).jailId, filepath: filepath }
       const response = await familyPhoneApi.validateImportFamilyInformation(obj).then(res => res && res.data)
     
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       commit('setImportFamilyInformationResult', response)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
+
   async validateUploadPhone({ commit }, filepath) {
     try {
       const response = await familyPhoneApi.validateUploaPhone(filepath)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       commit('setValidatePhoneResult', response)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
+
   async validateUploadPrisonerLeave({ commit }, {filepath,type}) {
     try {
       let response = null
 
-      if(type) response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
-
-      else response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
+      if (type) {
+        response = await familyPhoneApi.validateImportPrisonerLeave(filepath)
+      } else {
+        response = await familyPhoneApi.validateImportPrisonerTransfer(filepath)
+      }
      
-      if (!response) return
+      if (!response) {
+        return
+      }
      
       commit('setValidatePrisonerLeaveResult', response)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -103,11 +106,12 @@ export default {
     try {
       const response = await familyPhoneApi.exportFamilyPhone(inputs)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       return response
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -119,8 +123,7 @@ export default {
       commit('setFamilyPhoneFamiliesDetail', (data['data'] ? (data['data'] || { logs: [] }) : data) || { logs: [] })
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -128,12 +131,10 @@ export default {
   async authFamilyPhoneFamilies(_, params) {
     try {
       const response = await familyPhoneApi.authFamilyPhoneFamilies(params)
-
       const isSucess = response ? response['code'] === 200 : response
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -141,17 +142,14 @@ export default {
   async getFamilyPhoneSettleAccounts({ commit }, inputs) {
     try {
       const response = await familyPhoneApi.getFamilyPhoneSettleAccounts(inputs)
-
       const list = response ? response['list'].map(item => {
         item['settleAccounts'] = +item['settleAccounts'] || 0
-
         item['releaseType'] = +item['releaseType'] || 0
 
         return item
       }) : []
 
       const size = response ? response['size'] : 0
-
       const configs = response ? {
         number: response['number'] || 0,
         expenseAll: response['expenseAll'] || 0,
@@ -163,11 +161,14 @@ export default {
         meetingStartDate: response['meetingStartDate'] || ''
       } : {}
 
-      commit('setSettleAccountsPaged', { content: list, totalCount: size, configs })
+      commit('setSettleAccountsPaged', {
+        content: list,
+        totalCount: size,
+        configs
+      })
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -179,8 +180,7 @@ export default {
       commit('setFamilyPhoneSettleAccountsDetail', data || [])
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -188,12 +188,10 @@ export default {
   async editFamilyPhoneSettleAccountsRelease(_, params) {
     try {
       const response = await familyPhoneApi.editFamilyPhoneSettleAccountsRelease(params)
-
       const isSucess = response && response['code'] === 200
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -202,11 +200,12 @@ export default {
     try {
       const response = await familyPhoneApi.settleFamilyPhoneSettleAccounts(params)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       return response
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -215,11 +214,12 @@ export default {
     try {
       const response = await familyPhoneApi.exportFamilyPhoneSettleAccounts(inputs)
 
-      if (!response) return
+      if (!response) {
+        return
+      }
 
       return response
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -227,12 +227,10 @@ export default {
   async batchAuthFamilyPhone(_, params) {
     try {
       const response = await familyPhoneApi.batchAuthFamilyPhone(params)
-
       const isSucess = response && response['code'] === 200
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -240,12 +238,10 @@ export default {
   async batchInvalidFamilyPhone(_, params) {
     try {
       const response = await familyPhoneApi.batchInvalidFamilyPhone(params)
-
       const isSucess = response && response['code'] === 200
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -253,7 +249,6 @@ export default {
   async getFamilyPhoneFamiliesAllPendingReview({ commit }, params) {
     try {
       const response = await familyPhoneApi.getFamilyPhoneFamiliesAllPendingReview(params)
-
       let _data = {
         size: 0,
         list: [],
@@ -262,9 +257,7 @@ export default {
 
       if (response && response['data']) {
         const { data } = response
-
         const { size, list = [], processInstanceIds } = data
-
         _data = Object.assign({}, {
           size,
           list: list || [],
@@ -275,8 +268,7 @@ export default {
       commit('setFamilyPhoneFamiliesAllPendingReviewData',  _data)
 
       return true
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -284,12 +276,10 @@ export default {
   async allAuthFamilyPhoneFamilies(_, params) {
     try {
       const response = await familyPhoneApi.allAuthFamilyPhoneFamilies(params)
-
       const isSucess = response && response['code'] === 200
 
       return isSucess
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   }

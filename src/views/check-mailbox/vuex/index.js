@@ -1,7 +1,7 @@
 import actions from './actions'
 import mutations from './mutations'
 
-let state = {
+const state = {
   mailboxes: { contents: [], total: 0 },
   mailboxTypes: []
 }

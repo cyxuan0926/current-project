@@ -40,11 +40,16 @@ instance.interceptors.request.use(
       // config.headers['appVersion'] = '9999'
       config.headers['appVersion'] = '312'
     }
-    if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) store.commit('showLoading')
+    if (config.url && !config.url.includes('/prisoners/processing') && !config.url.includes('/prisoners/validate') && !config.url.includes('/upload/uploadfile') && !config.url.includes('/ywgk/homepage/queryjailstatus') && !config.url.includes('/ywgk/homepage/queryTerminalList')) {
+      store.commit('showLoading')
+    }
+
     state = history.state
+
     if (access_token) {
       config.headers.Authorization = config.url.includes('/image-server') ? urls.token : `${ token_type } ${ access_token }`
     }
+
     return config
   },
   error => Promise.reject(error)
@@ -62,7 +67,11 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     store.commit('hideLoading')
-    if (state && history.state.key !== state.key) return
+
+    if (state && history.state.key !== state.key) {
+      return
+    }
+
     // 这是公共服务的请求 做特别的响应处理
     if (
       response.config &&
@@ -71,13 +80,18 @@ instance.interceptors.response.use(
     ) {
       return publicHandleResponse(response)
     }
+
     return handleResponse(response)
   },
   error => {
     // store.commit('setLoginState')
     store.commit('hideLoading')
+
     if (error.response) {
-      if (state && history.state.key !== state.key) return
+      if (state && history.state.key !== state.key) {
+        return
+      }
+
       // 公共服务错误码处理 不一定是错误
       if (
         error.response.config &&
@@ -86,8 +100,10 @@ instance.interceptors.response.use(
       ) {
         return publicHandleResponse(error.response)
       }
+
       return handleResponse(error.response)
     }
+
     return handleResponse(error)
   }
 )
@@ -99,12 +115,11 @@ instance.interceptors.response.use(
  */
 export const get = (url, params = {}, config = {}) => {
   params.t = new Date().getTime()
+
   return instance.get(getUrl(url), { params, ...config }).then(res => res)
 }
 
-export const getFile = url => {
-  return get(url, {}, { responseType: 'blob' })
-}
+export const getFile = url => get(url, {}, { responseType: 'blob' })
 
 /**
  * 封装post请求
@@ -113,13 +128,13 @@ export const getFile = url => {
  * @param config
  * @returns {Promise}
  */
-export const post = (url, data = {}, config = {}) =>
+export const post = (url, data = {}, config = {}) => instance.post(getUrl(url), qs.stringify(data), config).then(res => res)
   // instance.post(getUrl(url), data, config).then(res => res)
-  instance.post(getUrl(url), qs.stringify(data), config).then(res => res)
-// instance.post(url, qs.stringify(data), config).then(res => res)
+  // instance.post(url, qs.stringify(data), config).then(res => res)
 
 export const postObj = (url, data = {}, config = {}) => {
   config.headers = { 'Content-Type': 'application/json' }
+
   return instance.post(getUrl(url), data, config).then(res => res)
 }
 
@@ -145,8 +160,7 @@ export function postFormData(url = '', data = {}, config = {}) {
     if (data[key]) {
       if (key === 'file' && Array.isArray(data.file)) {
         data.file.forEach(f => formData.append('file', f))
-      }
-      else {
+      } else {
         formData.append(key, data[key])
       }
     }
@@ -183,8 +197,7 @@ export const patchFile = (url, data = {}) => {
  * @param config
  * @returns {Promise}
  */
-export const patch = (url, data = {}, config = {}) =>
-  instance.patch(getUrl(url), qs.stringify(data), config).then(res => res)
+export const patch = (url, data = {}, config = {}) => instance.patch(getUrl(url), qs.stringify(data), config).then(res => res)
 // instance.patch(url, qs.stringify(data), config).then(res => res)
 
 /**
@@ -193,8 +206,7 @@ export const patch = (url, data = {}, config = {}) =>
  * @param data
  * @returns {Promise}
  */
-export const put = (url, data = {}, config = {}) =>
-  instance.put(getUrl(url), qs.stringify(data), config).then(res => res)
+export const put = (url, data = {}, config = {}) => instance.put(getUrl(url), qs.stringify(data), config).then(res => res)
 
 export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
   headers: {
@@ -208,13 +220,11 @@ export const putObj = (url, data = {}) => instance.put(getUrl(url), data, {
  * @param data
  * @returns {Promise}
  */
-export const remove = (url, config = {}) =>
-  instance.delete(getUrl(url), config).then(res => res)
+export const remove = (url, config = {}) => instance.delete(getUrl(url), config).then(res => res)
 
 /**
  * 封装all请求
  * @param urls
  * @returns {Promise}
  */
-export const all = (urls = []) =>
-  axios.all(urls.map(url => instance.get(getUrl(url)))).then(axios.spread((...res) => res.map(res => res)))
+export const all = (urls = []) => axios.all(urls.map(url => instance.get(getUrl(url)))).then(axios.spread((...res) => res.map(res => res)))

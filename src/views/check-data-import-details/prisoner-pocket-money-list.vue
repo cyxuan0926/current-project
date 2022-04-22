@@ -1,35 +1,40 @@
 <template>
-  <el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       ref="search"
       :items="searchItems"
       @search="onSearch"
     />
+
     <el-col :span="24">
       <m-table-new
         stripe
         :data="prisonersPocketMoney.contents"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #balance="{ row }">
           {{ row.balance | fixedNumber }}
         </template>
+
         <template #income="{ row }">
           {{ row.income | fixedNumber }}
         </template>
+
         <template #expenditure="{ row }">
           {{ row.expenditure | fixedNumber }}
         </template>
+
         <template #createdAt="{ row }">
           {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
-      :total="prisonersPocketMoney.total"
       ref="pagination"
-      @onPageChange="getDatas" />
+      :total="prisonersPocketMoney.total"
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 
@@ -42,6 +47,7 @@ export default {
   data() {
     const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
+
     return {
       selfOwnSearchItems: {
         time: {
@@ -50,6 +56,7 @@ export default {
           end: 'end',
           canNotClear: true,
         },
+
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1
           ? {
               label: '监区',
@@ -67,9 +74,12 @@ export default {
       filterInit: {},
     }
   },
+
   methods: {
     getDatas() {
-      if (JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
+      if (JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1) {
+        this.filter = { prisonArea : `${ JSON.parse(localStorage.getItem('user')).prisonConfigList[0].prisonConfigName }` }
+      }
 
       this.getPrisonersPocketMoney({
           ...this.filter,
@@ -77,6 +87,7 @@ export default {
       })
     }
   },
+
    created() {
       this.filterInit = Object.assign({}, this.filterInit, {
         start:  this.$_dateOneWeekAgo,

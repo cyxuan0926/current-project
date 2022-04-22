@@ -106,8 +106,7 @@
             size="small"
             @click="onExcelSure"
             type="primary"
-          >确定
-          </el-button>
+          >确定</el-button>
         </el-col>
       </el-row>
 
@@ -118,9 +117,14 @@
               <el-col :span="12" :key="`id-dialog-child-${ i }`">
                 <label>{{ children.label }}：</label>
 
-                <span v-if="children['prop'] === 'gender'">{{ prisoner.gender | gender }}</span>
+                <template v-if="children['prop'] === 'gender'">
+                  <span>{{ prisoner.gender | gender }}</span>
+                </template>
 
-                <span v-else>{{ prisoner[children['prop']] }}</span>
+                <template v-else>
+                  <span>{{ prisoner[children['prop']] }}</span>
+                </template>
+                
               </el-col>
             </template>
           </el-row>
@@ -143,15 +147,13 @@
       @close="onCloseInformation"
     >
       <div class="detail-container">
-        <div
-          class="detail-item"
-          v-for="(item, index) in detailItems"
-          :key="`id-family-detail-item-${ index }`"
-        >
-          <label>{{ item.label }}：</label>
+        <template v-for="(item, index) in detailItems">
+          <div class="detail-item" :key="`id-family-detail-item-${ index }`">
+            <label>{{ item.label }}：</label>
 
-          <span>{{ familyInformationDetails[item['prop']] }}</span>
-        </div>
+            <span>{{ familyInformationDetails[item['prop']] }}</span>
+          </div>
+        </template>
 
         <div class="detail-item" style="margin-bottom: 10px;font-weight: bold;">请核对家属信息:</div>
 
@@ -187,19 +189,11 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
 import validator from '@/utils'
-
 import prisons from '@/common/constants/prisons'
-
 import prisonFilterCreator from '@/mixins/prison-filter-creator'
-
-import {
-  $likeName,
-  // $likePhone,
-  // $likePrisonerNumber
-} from '@/common/constants/const'
-
+// $likePhone $likePrisonerNumber
+import { $likeName } from '@/common/constants/const'
 import { batchDownloadPublicImageURL } from '@/utils/helper'
 
 const prisonerDetailRows = [
@@ -277,6 +271,7 @@ export default {
         value: 0
       }
     ]
+
     return {
       prisoner: {},
       family: {},
@@ -341,9 +336,7 @@ export default {
       },
       filter: {},
       excelReason: '',
-
       informationVisible: false,
-
       detailItems
     }
   },
@@ -352,9 +345,10 @@ export default {
     ...mapState(['families', 'familyInformationDetails']),
 
     dialogContent() {
-      let title,
-        items = {},
-        formButton = { buttons: [] }
+      let title
+      let items = {}
+      let formButton = { buttons: [] }
+
       switch(this.operationType) {
         case 'detail':
           title = '囚犯信息'
@@ -389,10 +383,8 @@ export default {
         default:
           break
       }
-      return {
-        title,
-        items
-      }
+
+      return { title, items }
     },
 
     tableCols() {
@@ -499,17 +491,11 @@ export default {
     tabs(val) {
       if (val === this.tabOptions.FAMILY) {
         this.resetSearchFilters(['familyName', 'policeName'])
-
         this.$set(this.searchItems.name, 'miss', false)
-
         this.$set(this.searchItems.isBlacklist, 'miss', false)
-
         this.$set(this.searchItems.prisonerName, 'miss', false)
-
         this.$set(this.searchItems.isMsg, 'miss', false)
-
         this.$set(this.searchItems.familyName, 'miss', true)
-
         this.$set(this.searchItems.policeName, 'miss', true)
       } else {
         this.resetSearchFilters([
@@ -520,20 +506,14 @@ export default {
         ])
 
         this.$set(this.searchItems.name, 'miss', true)
-
         this.$set(this.searchItems.isBlacklist, 'miss', true)
-
         this.$set(this.searchItems.prisonerName, 'miss', true)
-
         this.$set(this.searchItems.isMsg, 'miss', true)
-
         this.$set(this.searchItems.familyName, 'miss', false)
-
         this.$set(this.searchItems.policeName, 'miss', false)
       }
 
       this.$refs.search.onGetFilter()
-
       this.onSearch()
     }
   },
@@ -575,18 +555,14 @@ export default {
 
     async onShowFamilyDetail(row) {
       const { id, idCardBack, idCardFront } = row
-
       const URLS = { idCardBack, idCardFront }, _key = `familyId_${ id }`
-
       const result = await Promise.all([this.getFamilyDetail({ id }), batchDownloadPublicImageURL(URLS, _key)])
-
       const families = {
         ...this.familyInformationDetails,
         ...result[1]
       }
 
       this.$store.commit('getFamilyDetail', { families })
-
       this.informationVisible = true
     },
 
@@ -607,7 +583,10 @@ export default {
       params.append('familyId', this.family.id)
       params.append('reason', val.blackListReason)
       this.addFamilyBlacklist(params).then(res => {
-        if (!res) return
+        if (!res) {
+          return
+        }
+
         this.onSearch()
         this.handleCloseDialog()
       })
@@ -621,11 +600,15 @@ export default {
       }).then(() => {
         let params = new FormData()
         params.append('familyId', e.id)
+
         this.removeFamilyBlacklist(params).then(res => {
-          if (!res) return
+          if (!res) {
+            return
+          }
+
           this.onSearch()
         })
-      }).catch(() => {})
+      })
     },
 
     handleCloseDialog() {
@@ -639,15 +622,18 @@ export default {
         duration: 3000,
         type: response.code === 200 ? 'success' : 'error'
       })
+
       if (response.code === 200) {
         setTimeout(() => {
           this.visible = true
           this.operationType = this.dialogTypes.UPLOADING
           this.uploadResults = response.data
+
           if (Array.isArray(this.uploadResults['errors_prisoner']) && this.uploadResults['errors_prisoner'].length) {
             const phoneList = this.uploadResults['errors_prisoner'].map(errorPrisoner => {
               return errorPrisoner.phone
             })
+
             if (phoneList.length > 3) {
               const phoneString = phoneList.slice(0, 3).join('、')
               this.excelReason = `${phoneString}等电话号码与服刑人员家属电话号码相同，请更换其他号码；`
@@ -655,6 +641,7 @@ export default {
               const phoneString = phoneList.join('、')
               this.excelReason = `${phoneString}与服刑人员家属电话号码相同，请更换其他号码；`
             }
+
             if (Array.isArray(this.uploadResults['errors']) && this.uploadResults['errors'].length) {
               this.excelReason = `${this.excelReason}所有信息均为必填项，请检查文件内容，仔细对照下载的模版数据；`
             }
@@ -667,7 +654,10 @@ export default {
 
     onExcelSure() {
       this.visible = false
-      if(this.uploadResults.success_total) this.onSearch()
+
+      if (this.uploadResults.success_total) {
+        this.onSearch()
+      }
     },
 
     // 重置搜索组件的filter
@@ -686,7 +676,9 @@ export default {
         callback: async () => {
           const result = await this.deletePoliceFamily(phone)
 
-          if (result) await this.getDatas()
+          if (result) {
+            await this.getDatas()
+          }
         }
       })
     },
@@ -694,7 +686,6 @@ export default {
     // 关闭账号信息弹框
     onCloseInformation() {
       this.informationVisible = false
-
       this.$store.commit('getFamilyDetail', {})
     }
   }

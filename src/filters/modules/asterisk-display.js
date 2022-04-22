@@ -8,26 +8,28 @@ import { asteriskDisplayConst } from '@/common/constants/const'
 // 如果*数目小于剩下的规定的 那么就剩下的全部*
 // 如果*数目正常 则剩下来的正常显示
 export const asteriskDisplay = (value, common = 'asterisk_idCard', own = {}) => {
-  if (!value) return
+  if (!value) {
+    return
+  }
 
   const filterValue = value.replace(/\s*/g, '')
   // 强制字符串
   const stringValue = filterValue.toString()
   const stringLength = stringValue.length
-
   const params = {
     ...asteriskDisplayConst[common],
     ...own
   }
-
   const { start, asteriskCount } = params
 
   // 如果小于初始位置 则不做处理
-  if (stringLength <= start) return filterValue
+  if (stringLength <= start) {
+    return filterValue
+  }
 
-  let actualAsteriskCount = asteriskCount ? (stringLength - start - asteriskCount < 0 ? stringLength - start : asteriskCount) : stringLength - start,
-    asterisks = '*',
-    end = stringLength - actualAsteriskCount - start < 0 ? 0 : stringLength - actualAsteriskCount - start
+  let actualAsteriskCount = asteriskCount ? (stringLength - start - asteriskCount < 0 ? stringLength - start : asteriskCount) : stringLength - start
+  let asterisks = '*'
+  let end = stringLength - actualAsteriskCount - start < 0 ? 0 : stringLength - actualAsteriskCount - start
 
   const regString = `(.{${ start }}).{${ actualAsteriskCount }}(.{${ end }})`
   const dynamicReg = new RegExp(regString, 'g')

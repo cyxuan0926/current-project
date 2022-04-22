@@ -3,9 +3,7 @@ import {
   getUserSecurityQuestions, setUserSecurityQuestionAnswers, getUserSecurityQuestionAnswers, verificateSecurityQuestionAnswers,
   modifyMyPasswordByToken, getPublicUsers, getCaptcha, sendSmsByModifypassword, modifyMyPasswordByCode
 } from '@/service-public/api/account'
-
 import { helper } from '@/utils'
-
 import jwtDecode from 'jwt-decode'
 
 const state = {
@@ -29,17 +27,49 @@ const state = {
 }
 
 const mutations = {
-  setAccountInfo: (state, accountInfo) => { state.accountInfo = accountInfo },
-  setModifyMyPasswordResult: (state, modifyPasswordResult) => { state.modifyMyPasswordResult = modifyPasswordResult },
-  setMenus: (state, menus) => { state.menus = menus },
-  setPublicUserInfo: (state, publicUserInfo) => { state.publicUserInfo = publicUserInfo },
-  setRolesList: (state, rolesList) => { state.rolesList = rolesList },
-  setAllTenants: (state, allTenants) => { state.allTenants = allTenants },
-  setAuthorities: (state, authorities) => { state.authorities = authorities },
-  setSecurityQuestions: (state, securityQuestions) => { state.securityQuestions = securityQuestions },
-  setPasswordToken: (state, passwordToken) => { state.passwordToken = passwordToken },
-  setFindPasswordUsername: (state, findPasswordUsername) => { state.findPasswordUsername = findPasswordUsername },
-  setIsStep: (state, isStep) => { state.isStep = isStep },
+  setAccountInfo: (state, accountInfo) => {
+    state.accountInfo = accountInfo
+  },
+
+  setModifyMyPasswordResult: (state, modifyPasswordResult) => {
+    state.modifyMyPasswordResult = modifyPasswordResult
+  },
+
+  setMenus: (state, menus) => {
+    state.menus = menus
+  },
+
+  setPublicUserInfo: (state, publicUserInfo) => {
+    state.publicUserInfo = publicUserInfo
+  },
+
+  setRolesList: (state, rolesList) => {
+    state.rolesList = rolesList
+  },
+
+  setAllTenants: (state, allTenants) => {
+    state.allTenants = allTenants
+  },
+
+  setAuthorities: (state, authorities) => {
+    state.authorities = authorities
+  },
+
+  setSecurityQuestions: (state, securityQuestions) => {
+    state.securityQuestions = securityQuestions
+  },
+
+  setPasswordToken: (state, passwordToken) => {
+    state.passwordToken = passwordToken
+  },
+
+  setFindPasswordUsername: (state, findPasswordUsername) => {
+    state.findPasswordUsername = findPasswordUsername
+  },
+
+  setIsStep: (state, isStep) => {
+    state.isStep = isStep
+  },
 
   // 设置是否配置了高级审批人员
   setIsHaveAdvancedAuditor: (state, isHaveAdvancedAuditor) => {
@@ -62,12 +92,13 @@ const actions = {
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })
       }
+
       return accountInfo && userInfoRes && MenusRes && baseInfoRes
-    }
-    catch (err) {
-      throw err
+    } catch (err) {
+      Promise.reject(err)
     }
   },
+
   async login({ commit, dispatch }, {
     username,
     password,
@@ -75,47 +106,41 @@ const actions = {
     codeKey
   }) {
     try {
-      let loginRes = await login({
-        username,
-        password,
-        code,
-        codeKey
-      }),
-
-      userInfoRes = false,
-
-      MenusRes = false,
-
-      baseInfoRes = false
+      let loginRes = await login({ username, password, code, codeKey })
+      let userInfoRes = false
+      let MenusRes = false
+      let baseInfoRes = false
 
       if (loginRes.code === 'user.PasswordNotMatched') {
         return loginRes
-      }
-      else {
+      } else {
         const { authorities = [] } = jwtDecode(loginRes.access_token)
 
         commit('setAccountInfo', loginRes)
         commit('setAuthorities', (authorities || []))
+
         userInfoRes = await dispatch('getPublicUserInfo')
         MenusRes = await dispatch('getMenus')
         baseInfoRes = await dispatch('getBaseInfo', null, { root: true })
+
         return loginRes && userInfoRes && MenusRes && baseInfoRes
       }
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
+
   // 获取用户信息
   async getPublicUserInfo({ commit }) {
     try {
       const res = await getPublicUserInfo()
 
-      if (res) commit('setPublicUserInfo', res)
+      if (res) {
+        commit('setPublicUserInfo', res)
+      }
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -125,11 +150,12 @@ const actions = {
     try {
       const res = await getMenus()
 
-      if (res) commit('setMenus', res)
+      if (res) {
+        commit('setMenus', res)
+      }
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -139,11 +165,12 @@ const actions = {
     try {
       const res = await modifyMyPassword({ oldPassword, newPassword })
 
-      if (res) commit('setModifyMyPasswordResult', res)
+      if (res) {
+        commit('setModifyMyPasswordResult', res)
+      }
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -164,8 +191,7 @@ const actions = {
       commit('setRolesList', result)
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -176,8 +202,7 @@ const actions = {
       const res = await estimateUsername({ username })
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -187,11 +212,12 @@ const actions = {
     try {
       const res = await getAllTenants()
 
-      if (res && res.content) commit('setAllTenants', res.content)
+      if (res && res.content) {
+        commit('setAllTenants', res.content)
+      }
 
       return res && res.content && res.content.length
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -200,14 +226,14 @@ const actions = {
   async getSecurityQuestions({ commit }) {
     try {
       const res = await getSecurityQuestions()
-
       res.unshift({ name: '请选择', id: '' })
 
-      if (res) commit('setSecurityQuestions', res)
+      if (res) {
+        commit('setSecurityQuestions', res)
+      }
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -218,8 +244,7 @@ const actions = {
       const res = await getUserSecurityQuestions({ username })
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -230,8 +255,7 @@ const actions = {
       const res = await setUserSecurityQuestionAnswers(questionAnswers)
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -242,8 +266,7 @@ const actions = {
       const res = await getUserSecurityQuestionAnswers()
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -255,13 +278,11 @@ const actions = {
 
       if (res && res.token) {
         commit('setPasswordToken', res.token)
-
         localStorage.setItem('passwordToken', JSON.stringify(res.token))
       }
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -272,8 +293,7 @@ const actions = {
       const res = await modifyMyPasswordByToken({ token, newPassword })
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -282,11 +302,8 @@ const actions = {
   async judgeAssignUsers({ commit }, arg) {
     try {
       const { params, configs } = arg
-
       const { userRoles, mutationName } = configs
-
       const { content } = await getPublicUsers(params)
-
       const isHaveAssignUsers = content.some(item => {
         return item.status === 'ENABLED' && item.userRoles.some(user => {
           return userRoles.includes(user.roleName)
@@ -296,8 +313,7 @@ const actions = {
       commit(mutationName, isHaveAssignUsers)
 
       return isHaveAssignUsers
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -306,13 +322,14 @@ const actions = {
     try {
       let res = await getCaptcha()
 
-      if (res) res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
+      if (res) {
+        res.imageCode = `data:image/jpeg;base64,${ res.imageCode }`
+      }
 
       commit('setCaptchaConfigs', res)
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -323,8 +340,7 @@ const actions = {
       const res = await sendSmsByModifypassword(username)
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   },
@@ -335,8 +351,7 @@ const actions = {
       const res = await modifyMyPasswordByCode(params)
 
       return res
-    }
-    catch (err) {
+    } catch (err) {
       Promise.reject(err)
     }
   }

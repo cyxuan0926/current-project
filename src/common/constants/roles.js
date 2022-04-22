@@ -1,5 +1,4 @@
 import gdAdminUrl from '../../assets/images/gd-admin-title.png'
-
 import gsAdminUrl from '../../assets/images/gs-admin-title.png'
 
 export default {

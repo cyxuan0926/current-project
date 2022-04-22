@@ -175,6 +175,7 @@ import prisonFilterCreator from '@/mixins/prison-filter-creator'
 // import { wardenMailboxExcelConfig } from '@/common/excel-config'
 export default {
   mixins: [prisonFilterCreator],
+
   data() {
     const isReplyOptions = [
       {
@@ -186,6 +187,7 @@ export default {
         label: '否'
       }
     ]
+
     return {
       searchItems: {
         time: {
@@ -193,9 +195,10 @@ export default {
           start: 'startTime',
           end: 'endTime'
         },
+
         type: {
-          type: 'select',
           label: '信件类别',
+          type: 'select',
           options: [],
           getting: true,
           belong: {
@@ -203,11 +206,13 @@ export default {
             label: 'name'
           }
         },
+
         isReply: {
           type: 'select',
           label: '是否回复',
           options: isReplyOptions
         },
+
         name: {
           type: 'input',
           label: '用户名'
@@ -224,11 +229,10 @@ export default {
       }
     }
   },
+
   computed: {
-    ...mapState([
-      'mailboxes',
-      'mailboxTypes'
-    ]),
+    ...mapState(['mailboxes', 'mailboxTypes']),
+
     tableCols() {
       const commonCols = [
         {
@@ -287,6 +291,7 @@ export default {
         ...commonCols,
         ...onlyWardenEndCols
       ]
+
       if (this.hasOnlyAllPrisonQueryAuth || this.hasProvinceQueryAuth) cols = [
         {
           label: '省份',
@@ -297,30 +302,35 @@ export default {
         ...commonCols,
         ...onlyHasAllPrisonQueryAuthEndCols
       ]
+
       return cols
     },
+
     disabled() {
       let pattern = /^\s*(.*?)\s*$/
       return this.answer.replace(pattern, '$1').length > 300 || this.answer.replace(pattern, '$1').length === 0
     },
+
     tips() {
       let pattern = /^\s*(.*?)\s*$/
       return this.answer.replace(pattern, '$1').length > 300
     }
   },
+
   mounted() {
     this.$set(this.searchItems['time'], 'value', [this.$_timeOneWeekAgo, this.$_timeNow])
-
     this.$refs.search.onGetFilter()
-
     this.getDatas()
-
     this.getMailboxTypes().then(res => {
-      if (!res) return
+      if (!res) {
+        return
+      }
+
       this.searchItems.type.options = this.mailboxTypes
       this.searchItems.type.getting = false
     })
   },
+
   methods: {
     ...mapActions([
       'getMailboxes',
@@ -329,23 +339,28 @@ export default {
       'replyMailbox',
       'getMailboxDetail'
     ]),
+
     getDatas() {
       this.getMailboxes({
         ...this.filter,
         ...this.pagination
       })
     },
+
     onSearch() {
       this.$refs.pagination.handleCurrentChange(1)
     },
+
     handleReply(e) {
       this.mailbox = e
       this.answer = ''
       this.visible = true
+
       setTimeout(() => {
         document.querySelector('#answer textarea').focus()
       }, 300)
     },
+
     onReply(e) {
       const params = {
         contents: this.answer.replace(/^\s*(.*?)\s*$/, '$1'),
@@ -354,13 +369,18 @@ export default {
       this.replying = true
       this.replyMailbox(params).then(res => {
         this.replying = false
-        if (!res) return
+
+        if (!res) {
+          return
+        }
+
         this.getDatas()
         this.visible = false
         this.mailbox = {}
         this.answer = ''
       })
     },
+
     onDelete(id) {
       this.$confirm('确定删除？', '提示', {
         confirmButtonText: '确定',
@@ -368,16 +388,27 @@ export default {
         type: 'warning'
       }).then(() => {
         this.deleteMailbox({ id: id }).then(res => {
-          if (!res) return
-          if (this.mailboxes.contents.length === 1) this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
-          else this.getDatas()
+          if (!res) {
+            return
+          }
+
+          if (this.mailboxes.contents.length === 1) {
+            this.$refs.pagination.handleCurrentChange(this.pagination.page - 1 || 1)
+          } else {
+            this.getDatas()
+          }
         })
-      }).catch(() => {})
+      })
     },
+
     getDetail(e) {
       const { id } = e
+
       this.getMailboxDetail({ id }).then(res => {
-        if (!res) return
+        if (!res) {
+          return
+        }
+
         this.mailbox = res
         this.answer = ''
         this.visible = true
@@ -391,16 +422,19 @@ export default {
 .button-column{
   width: 30%;
 }
+
 .tips-title{
   display: block;
   text-align: center;
   font-weight: bold;
 }
+
 .authorize-dialog{
   .dialog-container{
     max-height: 500px;
     overflow-y: auto;
   }
+
   label{
     width: 100px;
     text-align: right;
@@ -409,10 +443,12 @@ export default {
     padding-right: 10px;
     margin-bottom: 0;
   }
+
   img, video{
     max-width: 400px;
     display: block;
   }
+
   .detail-item{
     overflow: hidden;
     margin-bottom: 10px;
@@ -422,6 +458,7 @@ export default {
       width: 400px;
       word-break: break-all;
     }
+
     .img-box{
       width: 400px;
       /deep/ .el-image{
@@ -431,6 +468,7 @@ export default {
         }
       }
     }
+
     button{
       width: $absolutely-measure;
     }

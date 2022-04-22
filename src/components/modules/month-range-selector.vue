@@ -164,6 +164,7 @@
 <script>
 import Clickoutside from '@/utils/clickoutside'
 import Moment from 'moment'
+
 export default {
   props: {
     value: {
@@ -173,11 +174,13 @@ export default {
         if (Array.isArray(value)) {
           const [startValue, endValue] = value
 
-          if (!startValue || !endValue) return true
-
-          else if (!(/^[0-9]{4}-[0-9]{2}$/).test(startValue) || !(/^[0-9]{4}-[0-9]{2}$/).test(endValue)) return false
-
-          else return true
+          if (!startValue || !endValue) {
+            return true
+          } else if (!(/^[0-9]{4}-[0-9]{2}$/).test(startValue) || !(/^[0-9]{4}-[0-9]{2}$/).test(endValue)) {
+            return false
+          } else {
+            return true
+          }
         }
 
         return false
@@ -258,41 +261,58 @@ export default {
         this.pickedNextMonth = parseInt(this._values[1].split('-')[1])
       }
 
-      if (this.preYear === this.nextYear) this.preYear = this.preYear - 1
+      if (this.preYear === this.nextYear) {
+        this.preYear = this.preYear - 1
+      }
     },
 
     handleClick(e) {
-      if (e.target.className.indexOf('el-icon-circle-close') > -1 || this.visible) return false
+      if (e.target.className.indexOf('el-icon-circle-close') > -1 || this.visible) {
+        return false
+      }
 
       this.render()
-
       this.visible = true
     },
 
     inRange(year, month) {
-      if (!this.pickedPreMonth || !this.pickedNextMonth) return false
-      let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`,
-        pickedNext = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`,
-        now = `${ year }-${ this.fillPre(month) }`
+      if (!this.pickedPreMonth || !this.pickedNextMonth) {
+        return false
+      }
+
+      const pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+      const pickedNext = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+      const now = `${ year }-${ this.fillPre(month) }`
+
       return now > pickedPre && now < pickedNext
     },
 
     isDisabled(year, month) {
-      let now = `${ year }-${ this.fillPre(month) }`
+      const now = `${ year }-${ this.fillPre(month) }`
+
       if ((this.range.min && now < this.range.min) || (this.range.max && now > this.range.max) || (this.range.maxMonthRange && this.minRangeYear && this.minRangeMonth && now < `${ this.minRangeYear }-${ this.minRangeMonth }`) || (this.range.maxMonthRange && this.maxRangeYear && this.maxRangeMonth && now > `${ this.maxRangeYear }-${ this.maxRangeMonth }`)) {
         return true
       }
+
       return false
     },
 
     fillPre(num) {
-      if (!num) return ''
+      if (!num) {
+        return ''
+      }
+
       return `00${ num }`.slice(-2)
     },
 
     handlePick(year, month, disabled) {
-      if (disabled) return
-      if (this.count >= 2) this.count = 0
+      if (disabled) {
+        return
+      }
+
+      if (this.count >= 2) {
+        this.count = 0
+      }
 
       this.count++
 
@@ -302,10 +322,12 @@ export default {
         this.pickedPreYear = year
         this.pickedPreMonth = month
 
-        if (this.range.maxMonthRange) this.handleRange(year, month, this.range.maxMonthRange - 1)
+        if (this.range.maxMonthRange) {
+          this.handleRange(year, month, this.range.maxMonthRange - 1)
+        }
       } else if (this.count === 2) {
-        let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`,
-          pickedNext = `${ year }-${ this.fillPre(month) }`
+        let pickedPre = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
+        let pickedNext = `${ year }-${ this.fillPre(month) }`
 
         if (pickedNext < pickedPre) {
           this.pickedNextYear = this.pickedPreYear
@@ -317,12 +339,16 @@ export default {
           this.pickedNextMonth = month
         }
 
-        if (this.range.maxMonthRange) this.clearRange()
+        if (this.range.maxMonthRange) {
+          this.clearRange()
+        }
       }
     },
 
     handleRange(year, month, dur) {
-      let minRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).subtract(dur, 'months').format('YYYY-MM').split('-'), maxRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).add(dur, 'months').format('YYYY-MM').split('-')
+      let minRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).subtract(dur, 'months').format('YYYY-MM').split('-')
+      let maxRangeMonth = Moment(`${ year }-${ month }-01 01:01:01`).add(dur, 'months').format('YYYY-MM').split('-')
+
       this.minRangeYear = minRangeMonth[0]
       this.minRangeMonth = minRangeMonth[1]
       this.maxRangeYear = maxRangeMonth[0]
@@ -330,13 +356,18 @@ export default {
     },
 
     handleBlur(e) {
-      if (!this.visible) return
+      if (!this.visible) {
+        return
+      }
 
       this.visible = false
     },
 
     handlePreYear(e, disabled) {
-      if (disabled) return
+      if (disabled) {
+        return
+      }
+
       if (e === 'pre') {
         this.nextYear = this.preYear
         this.preYear = parseInt(this.preYear) - 1
@@ -347,7 +378,10 @@ export default {
     },
 
     handleNextYear(e, disabled) {
-      if (disabled) return
+      if (disabled) {
+        return
+      }
+
       if (e === 'pre') {
         this.nextYear = this.preYear
         this.preYear = parseInt(this.preYear) + 1
@@ -364,7 +398,9 @@ export default {
       this.pickedPreMonth = null
       this.pickedNextMonth = null
 
-      if (this.range.maxMonthRange) this.clearRange()
+      if (this.range.maxMonthRange) {
+        this.clearRange()
+      }
     },
 
     clearRange() {
@@ -376,25 +412,22 @@ export default {
 
     handleEnsure(e) {
       let end
-
       const start = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
 
       if (e === 'single') {
         end = `${ this.pickedPreYear }-${ this.fillPre(this.pickedPreMonth) }`
-
         this.count = 0
-      } else end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+      } else {
+        end = `${ this.pickedNextYear }-${ this.fillPre(this.pickedNextMonth) }`
+      }
 
       this._values = [start, end]
-
       this.$emit('input', this._values)
-
       this.visible = false
     },
 
     handleClear(e) {
       this._values = []
-
       this.$emit('input', this._values)
     }
   },
@@ -402,9 +435,13 @@ export default {
   mounted() {
     this.render()
 
-    if (this.range.min) this.minYear = parseInt(this.range.min.split('-')[0])
+    if (this.range.min) {
+      this.minYear = parseInt(this.range.min.split('-')[0])
+    }
 
-    if (this.range.max) this.maxYear = parseInt(this.range.max.split('-')[0])
+    if (this.range.max) {
+      this.maxYear = parseInt(this.range.max.split('-')[0])
+    }
   }
 }
 </script>

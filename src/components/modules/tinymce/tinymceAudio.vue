@@ -71,6 +71,7 @@ export default {
         this.$message.error(`请上传音频文件`)
         return false
       }
+
       this.notification = this.$notify({
         title: '提示',
         message: '正在上传音频文件，请耐心等待',
@@ -78,6 +79,7 @@ export default {
         duration: 0,
         showClose: false
       })
+
       return true
     },
 

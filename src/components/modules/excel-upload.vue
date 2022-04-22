@@ -42,6 +42,7 @@ export default {
       type: Object,
       default: function() {
         const { access_token, token_type } = this.$store.state.account.accountInfo
+
         return {
           Authorization: `${ token_type } ${ access_token }`
         }

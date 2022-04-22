@@ -1,37 +1,40 @@
 <template>
-<el-row
-    class="row-container"
-    :gutter="0">
+  <el-row class="row-container" :gutter="0">
     <m-search
       ref="search"
       :items="searchItems"
       @search="onSearch"
     />
-    <el-col
-      :span="24"
-      class="el-col__no-tabs__margin">
+
+    <el-col class="el-col__no-tabs__margin" :span="24">
       <m-table-new
         stripe
         :data="prisonersInsideJailsCosts.contents"
-        :cols="tableCols">
+        :cols="tableCols"
+      >
         <template #consume="{ row }">
           {{ row.consume | fixedNumber }}
         </template>
+
         <template #balance="{ row }">
           {{ row.balance | fixedNumber }}
         </template>
+
         <template #consumeAt="{ row }">
           {{ row.consumeAt | Date }}
         </template>
+
         <template #createdAt="{ row }">
           {{ row.createdAt | Date }}
         </template>
       </m-table-new>
     </el-col>
+
     <m-pagination
-      :total="prisonersInsideJailsCosts.total"
       ref="pagination" 
-      @onPageChange="getDatas"/>
+      :total="prisonersInsideJailsCosts.total"
+      @onPageChange="getDatas"
+    />
   </el-row>
 </template>
 <script>
@@ -40,10 +43,11 @@ import prisons from '@/common/constants/prisons'
 
 export default {
   mixins: [commonTableColsMixins],
-  data () {
-    const { belong } = prisons.PRISONAREA
 
+  data() {
+    const { belong } = prisons.PRISONAREA
     const { options } = this.$store.getters.prisonAreaOptions
+
     return {
       selfOwnSearchItems: {
         time: {
@@ -53,6 +57,7 @@ export default {
           canNotClear: true,
           unlinkPanels: true
         },
+
         prisonArea: JSON.parse(localStorage.getItem('user')).prisonConfigList && JSON.parse(localStorage.getItem('user')).prisonConfigList.length === 1
           ? {
               label: '监区',
@@ -69,6 +74,7 @@ export default {
       }
     }
   },
+
   methods: {
     getDatas() {
       this.getPrisonersInsideJailsCosts({
@@ -80,6 +86,6 @@ export default {
         ...this.pagination
       })
     }
-  },
+  }
 }
 </script>

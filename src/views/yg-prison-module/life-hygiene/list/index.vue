@@ -33,18 +33,15 @@ import {
 } from '../constants'
 
 import useRouteProps from '@/common/composables/useRouteProps'
+
 export default {
   name: 'PrisonAdminstrationList',
 
   setup() {
     const $ygPrisonAdminstrationParent = ref(null)
-
     const searchItems = ref(_.cloneDeep(_searchItems))
-
     const $tabs = ref('1')
-
     const $tabItems = reactive(tabItems)
-
     const $httpRequests = computed(() => {
       return Object.entries(httpRequests).reduce((accumulator, [key, value]) => {
         let temp = value
@@ -61,16 +58,14 @@ export default {
         return accumulator
       }, {})
     })
-
     const $tableCols = computed(() => _tableCols[$tabs['value']])
-
     const onTableSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
-      if ($tabs.value !== '0') return {
-        rowspan: 1,
-        colspan: 1
-      }
-
-      else {
+      if ($tabs.value !== '0') {
+        return {
+          rowspan: 1,
+          colspan: 1
+        }
+      } else {
         if (['monthNum'].includes(column.property)) {
           return {
             rowspan: 1,
@@ -83,31 +78,26 @@ export default {
         }
       }
     }
-
     const elTableConfigs = reactive({
       _$attrs: {
         spanMethod: onTableSpanMethod
       }
     })
-
     const { routeProps } = useRouteProps()
 
     watch($tabs, val => {
       searchItems.value.prisonArea.miss= false
-
       searchItems.value.prisonerNumber.miss = false
-
       searchItems.value.prisonerName.miss = false
-
       searchItems.value.dateMonth.miss = false
 
       if (val === '0') {
         searchItems.value.prisonArea.miss= true
-
         searchItems.value.prisonerNumber.miss = true
-
         searchItems.value.prisonerName.miss = true
-      } else if (val === '3') searchItems.value.dateMonth.miss = true
+      } else if (val === '3') {
+        searchItems.value.dateMonth.miss = true
+      }
 
       $ygPrisonAdminstrationParent.value && $ygPrisonAdminstrationParent.value.initData()
     }, {

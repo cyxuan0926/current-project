@@ -156,10 +156,12 @@ export default {
   computed: {
     fileList() {
       let files = []
+
       if (this.value) {
         const name = this.value.replace(`${ this.$urls.imageUrl }/`, '').replace(/-[0-9]+\./, '.')
         files.push({ name, url: this.value })
       }
+
       return files
     }
   },
@@ -188,31 +190,45 @@ export default {
       const fileType = this.uploadAttrs.accept.split(',')
       const isAccept = fileType.indexOf(file.type) > -1
       const isSize = file.size / 1024 / 1024 < 1
+
       if (!isAccept) {
         let accept = []
         fileType.forEach(type => { accept.push(type.substr(type.lastIndexOf('/') + 1)) })
         this.$message.error(`请上传${ accept.join('或') }格式的文件`)
         return false
       }
+
       if (!isSize) {
         this.$message.error('文件大小不能超过1MB!')
         return false
       }
-      if (!this.ratio) return true
+
+      if (!this.ratio) {
+        return true
+      }
+
       const ratio = this.ratio.split(':')
+
       return new Promise((resolve, reject) => {
         let reader = new FileReader()
-        reader.onload = (e) => {
-          let data = e.target.result, image = new Image()
+
+        reader.onload = e => {
+          let data = e.target.result
+          let image = new Image()
+
           image.onload = () => {
             if (image.width / image.height !== ratio[0] / ratio[1]) {
               this.$message.error(`请上传宽高比为${ this.ratio }的图片`)
+
               reject(false)
+            } else {
+              resolve(true)
             }
-            else resolve(true)
           }
+
           image.src = data
         }
+
         reader.readAsDataURL(file)
       })
     },

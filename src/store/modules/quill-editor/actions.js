@@ -6,6 +6,7 @@ export default {
   uploadImageFromEditor({ commit }, regs) {
     let formData = new FormData()
     formData.append('file', regs)
-    http.uploadImageFromEditor(formData).then(res => commit('uploadImageFromEditor', res)).catch(err => console.log(err))
+
+    http.uploadImageFromEditor(formData).then(res => commit('uploadImageFromEditor', res)).catch(err => Promise.reject(err))
   }
 }

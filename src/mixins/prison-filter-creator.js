@@ -126,9 +126,7 @@ export default {
       }
 
       this.searchItems = Object.assign({}, { orgName: orgSearchItem }, this.searchItems)
-
       let { data } = await http.getDiplomatist()
-
       data = data.map(d => ({
         label: d,
         value: d
@@ -156,14 +154,12 @@ export default {
 
       if (!this.hasProvinceQueryAuth) {
         const provincesId = this.isChartQuery ? this.chartRole.provincesId : this.provincesId
-
         await this.$store.dispatch('getPrisonAll', provincesId ? { provincesId } : {})
 
         Message.closeAll()
 
         this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll)
         this.$set(this.searchItems['jailId'], 'value',  this.$_jailId)
-
         this.searchItems.jailId.getting = false
 
         if (this.hasAllPrisonQueryAuth) {
@@ -301,7 +297,6 @@ export default {
 
     clearSubPrisonArea(target) {
       const max = _filterLists.length
-
       let _list = this.findFilterLists(undefined, target, undefined, max)
 
       _list.forEach(t => {
@@ -318,10 +313,8 @@ export default {
           const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
 
           Message.closeAll()
-
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonSubArea()
-
             this.$set(this.searchItems['prisonSubArea'], 'value', '')
             this.$set(this.searchItems['prisonSubArea'], 'options', prisonConfigs)
           }
@@ -335,10 +328,8 @@ export default {
           const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value })
 
           Message.closeAll()
-
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonHouseItem()
-
             this.$set(this.searchItems['prisonHouse'], 'value', '')
             this.$set(this.searchItems['prisonHouse'], 'options', prisonConfigs)
           }
@@ -352,10 +343,8 @@ export default {
           const { prisonConfigs } = await http[this.$store.getters.prisonChildApi]({ parentId: value }) || {}
 
           Message.closeAll()
-
           if (prisonConfigs && prisonConfigs.length) {
             this.createPrisonFloorItem()
-
             this.$set(this.searchItems['prisonFloor'], 'value', '')
             this.$set(this.searchItems['prisonFloor'], 'options', prisonConfigs)
           }
@@ -369,8 +358,11 @@ export default {
         if (this.searchItems['prisonArea'] && !this.searchItems['prisonArea'].miss) {
           // 柏鑫说 ywt_admin和租户管理员都是查当前监狱所有的监区 其余监狱角色都是查当前用户管理的监区
           if (value) {
-            if (this.$store.getters.isSuperAdmin || this.$store.getters.isTenantAdmin) await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
-            else await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
+            if (this.$store.getters.isSuperAdmin || this.$store.getters.isTenantAdmin) {
+              await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getPrisonConfigs', params: { jailId: value } })
+            } else {
+              await this.$store.dispatch('getJailPrisonAreas', { url: '/prison_config/getAuthChildPrisonConfigs' })
+            }
 
             Message.closeAll()
           }
@@ -398,10 +390,11 @@ export default {
             await this.$store.dispatch('getPrisonAll', { provincesId: value })
 
             this.$set(this.searchItems['jailId'], 'value', '')
-          } else await this.$store.dispatch('getPrisonAll')
+          } else {
+            await this.$store.dispatch('getPrisonAll')
+          }
 
           Message.closeAll()
-
           this.$set(this.searchItems['jailId'], 'options', this.$store.state.prisonAll || [])
           this.$set(this.searchItems['jailId'], 'getting', false)
         }
@@ -410,11 +403,11 @@ export default {
       if (selectKey === 'status') {
         if (this.searchItems.changerType) {
           if (value === 'CANCELED') {
-            if (this.toShow && this.toShow.changerType === true) this.searchItems.changerType.miss = true
-            else {
+            if (this.toShow && this.toShow.changerType === true) {
+              this.searchItems.changerType.miss = true
+            } else {
               this.searchItems.changerType.miss = false
               this.searchItems.changerType.value = ''
-
               delete this.filter.changerType
             }
           } else {

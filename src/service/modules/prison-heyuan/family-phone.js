@@ -65,7 +65,5 @@ export default {
     then(res => res && res.data),
 
   // 亲情电话通话费用结算表列表查询
-  phoneSettleAccountsList: params => service.
-    get(service.getHyUrl('/msg/settleAccounts/findPage'), params).
-    then(res => res && res.data)
+  phoneSettleAccountsList: params => service.get(service.getHyUrl('/msg/settleAccounts/findPage'), params).then(res => res && res.data)
 }

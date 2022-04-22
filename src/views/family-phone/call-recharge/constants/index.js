@@ -124,12 +124,14 @@ const _commonCols = [
     prop: 'jailName',
     showOverflowTooltip: true,
   },
+
   {
     label: '监区',
     prop: 'prisonArea',
     slotName: 'prisonArea',
     showOverflowTooltip: true
   },
+
   {
     label: '罪犯姓名',
     prop: 'prisonerName'
@@ -158,7 +160,6 @@ const _remark = {
 export const _tableCols = {
   '0': [
     ..._commonCols,
-
     _rechargeAmount,
     
     {
@@ -172,7 +173,6 @@ export const _tableCols = {
       prop: 'rechargeAccount',
       showOverflowTooltip: true
     },
-
 
     _remark,
 
@@ -198,11 +198,13 @@ export const _tableCols = {
       slotName: 'videophoneAmount',
       showOverflowTooltip: true
     },
+
     {
       label: '系统电话消费金额(元)',
       prop: 'systemAmount',
       showOverflowTooltip: true
     },
+
     {
       label: '退款金额(元)',
       prop: 'refundAmount',

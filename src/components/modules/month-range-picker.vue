@@ -2,7 +2,8 @@
   <div
     class="m-range-picker"
     @mouseenter="showClose"
-    @mouseleave="hideClose">
+    @mouseleave="hideClose"
+  >
     <el-date-picker
       v-model="startDate"
       :clearable="false"
@@ -42,27 +43,8 @@
 
 <script>
 import Moment from 'moment'
+
 export default {
-  data() {
-    return {
-      startDate: null,
-      endDate: null,
-      closeShow: false,
-
-      startObj: {
-        disabledDate: (time) => {
-          if (this.endDate) return Moment(this.endDate).valueOf() < time.getTime()
-        }
-      },
-
-      endObj: {
-        disabledDate: (time) => {
-          if (this.startDate) return Moment(this.startDate).valueOf() > time.getTime()
-        }
-      }
-    }
-  },
-
   props: {
     startDateValue: {
       type: String,
@@ -75,21 +57,48 @@ export default {
     }
   },
 
+  data() {
+    return {
+      startDate: null,
+      endDate: null,
+      closeShow: false,
+
+      startObj: {
+        disabledDate: time => {
+          if (this.endDate) {
+            return Moment(this.endDate).valueOf() < time.getTime()
+          }
+        }
+      },
+
+      endObj: {
+        disabledDate: time => {
+          if (this.startDate) {
+            return Moment(this.startDate).valueOf() > time.getTime()
+          }
+        }
+      }
+    }
+  },
+
   methods: {
     onChange(e) {
       this.startDate = e
+
       this.$emit('update:startDateValue', this.startDate)
     },
 
     close() {
       this.startDate = null
       this.endDate = null
+
       this.$emit('update:startDateValue', this.startDate)
       this.$emit('update:endDateValue', this.endDate)
     },
 
     onChangeEnd(e) {
       this.endDate = e
+
       this.$emit('update:endDateValue', this.endDate)
     },
 
@@ -104,13 +113,19 @@ export default {
 
   computed: {
     isClose() {
-      if (this.startDate && this.endDate) return true
-      else return false
+      if (this.startDate && this.endDate) {
+        return true
+      } else {
+        return false
+      }
     },
 
     endClear() {
-      if (this.startDate && this.endDate) return false
-      else return true
+      if (this.startDate && this.endDate) {
+        return false
+      } else {
+        return true
+      }
     }
   }
 }
