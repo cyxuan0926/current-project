@@ -15,7 +15,7 @@
         >
 
         <template v-if="[0, 1].includes(+tabs)">
-          <el-button  v-if="!$store.getters.isSuperAdmin"  type="primary" class="button-add" @click="printList"
+          <el-button  v-if="!$store.getters.isSuperAdmin&&!isPrisonerSend"  type="primary" class="button-add" @click="printList"
             >批量打印</el-button
           >
         </template>
