@@ -3,75 +3,113 @@
     <div class="meeting-list" v-show="hasTerminal && hasQueue">
       <div class="meeting-list-deviceNo">
         <h3 class="meeting-list-cell meeting-list-th">终端号</h3>
-        <div class="meeting-list-cell meeting-list-th" v-for="t in terminals" :key="t.id">{{ t.terminalNumber }}</div>
+
+        <template v-for="t in terminals">
+          <div class="meeting-list-cell meeting-list-th" :key="t.id">{{ t.terminalNumber }}</div>
+        </template>
       </div>
+
       <div class="meeting-list-deviceName">
         <h3 class="meeting-list-cell meeting-list-th">终端别名</h3>
-        <div class="meeting-list-cell meeting-list-cell__tername" v-for="t in terminals" :key="t.id">
-          <template v-if="!t.isEdit">
-            <span class="meeting-list-cell__tername__flex">{{ t.terminalName }}</span>
-            <el-button class="meeting-list-cell__tername__edit" type="text" icon="el-icon-edit-outline" @click="handleEditTername(t)"></el-button>
-          </template>
-          <template v-else>
-            <el-input
-              maxlength="10"
-              class="meeting-list-cell__tername__flex meeting-list-cell__tername__inp"
-              placeholder="请输入终端别名"
-              v-model="t.terminalName"
-              clearable>
-            </el-input>
-            <el-button class="meeting-list-cell__tername__btn" type="text" @click="handleSaveTername(t)">保存</el-button>
-          </template>
-        </div>
+
+        <template v-for="t in terminals">
+          <div class="meeting-list-cell meeting-list-cell__tername" :key="t.id">
+            <template v-if="!t.isEdit">
+              <span class="meeting-list-cell__tername__flex">{{ t.terminalName }}</span>
+
+              <el-button
+                class="meeting-list-cell__tername__edit"
+                type="text" icon="el-icon-edit-outline"
+                @click="handleEditTername(t)"
+              />
+            </template>
+
+            <template v-else>
+              <el-input
+                v-model="t.terminalName"
+                maxlength="10"
+                class="meeting-list-cell__tername__flex meeting-list-cell__tername__inp"
+                placeholder="请输入终端别名"     
+                clearable
+              />
+
+              <el-button
+                class="meeting-list-cell__tername__btn"
+                type="text"
+                @click="handleSaveTername(t)"
+              >保存</el-button>
+            </template>
+          </div>
+        </template>   
       </div>
+
       <div class="meeting-list-jailArea">
         <h3 class="meeting-list-cell meeting-list-th">监区</h3>
-        <div class="meeting-list-cell ellipsis" v-for="t in terminals" :key="t.id">{{ t.fullname }}</div>
+
+        <template v-for="t in terminals">
+          <div class="meeting-list-cell ellipsis" :key="t.id">{{ t.fullname }}</div>
+        </template>
       </div>
+
       <div class="meeting-list-block">
-        <div class="meeting-list-block-scroller" style="width: 9000px">
-          <section class="meeting-list-block__wrap" v-for="(meetings, i) in meetingsData" 
-            :key="meetings.id || uuId()">
-            <div class="meeting-list-block__head">
-              <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
-            </div>
-            <m-draggable class="meeting-list-block__body meetings-col" :options="dragOptions">
-              <div class="meeting-list-cell meeting-list-cell__drag" 
-                v-for="m in meetings"
-                :key="m.id || uuId()"
-                :class="[ m.id ? 'draggable' : 'undraggable' ]"
-                :data-meeting-time="m.meetingTime"
-                :data-terminal-id="m.terminalId"
-                :data-terminal-number="m.terminalNumber"
-                :__MEETING__.prop="m">
-                  <template v-if="!!m.id">
-                    <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
-                    <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m)"></el-button>
-                  </template>
+        <div class="meeting-list-block-scroller" style="width: 9000px;">
+          <template v-for="(meetings, i) in meetingsData">
+            <section class="meeting-list-block__wrap" :key="meetings.id || uuId()">
+              <div class="meeting-list-block__head">
+                <div class="meeting-list-cell meeting-list-th">{{ meetingQueue[i] }}</div>
               </div>
-            </m-draggable>
-          </section>
-          <section class="meeting-list-block__wrap" v-for="(specials, i) in specialData" 
-            :key="specials.id || uuId()">
-            <div class="meeting-list-block__head">
-              <div class="meeting-list-cell meeting-list-th">{{ specialQueue[i] }}</div>
-            </div>
-            <div class="meeting-list-block__body">
-              <div class="meeting-list-cell meeting-list-cell__drag" 
-                v-for="m in specials"
-                :key="m.id || uuId()"
-                :class="[ m.id ? 'special' : '' ]"
-                :data-meeting-time="m.meetingTime"
-                :data-terminal-id="m.terminalId"
-                :data-terminal-number="m.terminalNumber"
-                :__MEETING__.prop="m">
-                  <template v-if="!!m.id">
-                    <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
-                    <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m, true)"></el-button>
-                  </template>
+
+              <m-draggable class="meeting-list-block__body meetings-col" :options="dragOptions">
+                <template v-for="m in meetings">
+                  <div
+                    :class="['meeting-list-cell', 'meeting-list-cell__drag', m.id ? 'draggable' : 'undraggable']"
+                    :key="m.id || uuId()"
+                    :data-meeting-time="m.meetingTime"
+                    :data-terminal-id="m.terminalId"
+                    :data-terminal-number="m.terminalNumber"
+                    :__MEETING__.prop="m"
+                  >
+                    <template v-if="!!m.id">
+                      <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
+
+                      <el-button
+                        class="meeting-list-cell__acrossdate"
+                        type="text"
+                        icon="el-icon-date"
+                        @click="handleShowacross(m)"
+                      />
+                    </template>
+                  </div>
+                </template>
+              </m-draggable>
+            </section>
+          </template>
+
+          <template v-for="(specials, i) in specialData">
+            <section class="meeting-list-block__wrap" :key="specials.id || uuId()">
+              <div class="meeting-list-block__head">
+                <div class="meeting-list-cell meeting-list-th">{{ specialQueue[i] }}</div>
               </div>
-            </div>
-          </section>
+
+              <div class="meeting-list-block__body">
+                <template v-for="m in specials">
+                  <div
+                    :class="['meeting-list-cell', 'meeting-list-cell__drag', m.id ? 'special' : '']"  
+                    :key="m.id || uuId()"
+                    :data-meeting-time="m.meetingTime"
+                    :data-terminal-id="m.terminalId"
+                    :data-terminal-number="m.terminalNumber"
+                    :__MEETING__.prop="m"
+                  >
+                    <template v-if="!!m.id">
+                      <div class="meeting-list-cell__names ellipsis">{{ m | getMeetingsName }}</div>
+                      <el-button class="meeting-list-cell__acrossdate" type="text" icon="el-icon-date" @click="handleShowacross(m, true)"></el-button>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </section>
+          </template>
         </div>  
       </div>
     </div>
@@ -80,9 +118,11 @@
       class="cross-meeting-dialog"
       title="可视电话申请调整"
       :visible.sync="meetingVisible"
-      width="802px">
+      width="802px"
+    >
       <div class="across-filter">
-        <label class="filter__label" :class="{'special': isSpecial}">调整日期</label>
+        <label class="filter__label" :class="{ 'special': isSpecial }">调整日期</label>
+
         <el-date-picker
           style="width: 200px; margin-right: 10px;"
           v-model="acrossAdjustDate"
@@ -95,123 +135,168 @@
         />
         <!-- <el-button type="primary" size="mini" @click="handleGetConfigs">查询</el-button> -->
       </div>
+
       <template v-if="isSpecial">
         <section>
-          <div class="across-filter" v-if="isSeparateByArea || isUseMeetingFloor">
-            <label class="filter__label special">选择区域</label>
-            <el-select style="width: 200px" v-model="tableAreaType" placeholder="请选择区域">
-              <el-option
-                v-for="item in areaOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
+          <template v-if="isSeparateByArea || isUseMeetingFloor">
+            <div class="across-filter">
+              <label class="filter__label special">选择区域</label>
+
+              <el-select
+                style="width: 200px;"
+                v-model="tableAreaType"
+                placeholder="请选择区域"
+              >
+                <template v-for="item in areaOptions">
+                  <el-option
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </template>
+              </el-select>
+            </div>
+          </template>
+
           <div class="across-filter">
             <label class="filter__label special">通话时长</label>
-            <el-input style="width: 200px" v-model="crossDuration" disabled></el-input>
+
+            <el-input style="width: 200px;" v-model="crossDuration" disabled></el-input>
           </div>
+
           <div class="across-filter">
             <label class="filter__label special">可视电话通话时间</label>
+
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeStart"
               format="HH:mm"
               :picker-options="selectRange"
               :clearable="false"
-              @change="handleTimepickerChange">
-            </el-time-picker>
+              @change="handleTimepickerChange"
+            />
+
             <label style="margin: 0 10px;">至</label>
+
             <el-time-picker
               style="width: 150px;"
               v-model="timeRangeEnd"
               format="HH:mm"
-              disabled>
-            </el-time-picker>
+              disabled
+            />
           </div>
         </section>
-        <p class="timerange-tips" v-show="isShowTips">{{showTips}}</p>
+
+        <p class="timerange-tips" v-show="isShowTips">{{ showTips }}</p>
       </template>
+
       <template v-else>
         <section>
-          <el-tabs
-            v-if="isSeparateByArea || isUseMeetingFloor"
-            v-model="tableAreaType"
-            type="card">
-            <el-tab-pane v-for="t in areaOptions"
-              :key="t.value"
-              :label="t.label"
-              :name="t.value" />
-          </el-tabs>
+          <template v-if="isSeparateByArea || isUseMeetingFloor">
+            <el-tabs v-model="tableAreaType" type="card">
+              <template v-for="t in areaOptions">
+                <el-tab-pane
+                  :key="t.value"
+                  :label="t.label"
+                  :name="t.value"
+                />
+              </template>
+            </el-tabs>
+          </template>
         </section>
-        <el-table
-          v-if="crossMeetingQueue && crossMeetingQueue.length"
-          class="across-table"
-          :data="crossMeetingData"
-          @cell-click="handleCellClick"
-          border>
-          <el-table-column
-            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-            fixed
-            prop="terminalNumber"
-            label="终端号"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            v-else
-            prop="terminalNumber"
-            label="终端号"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-            fixed
-            show-overflow-tooltip
-            prop="terminalName"
-            label="终端别名"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            v-else
-            show-overflow-tooltip
-            prop="terminalName"
-            label="终端别名"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            v-if="crossMeetingQueue && crossMeetingQueue.length > 4"
-            fixed
-            show-overflow-tooltip
-            prop="fullname"
-            label="监区"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            v-else
-            show-overflow-tooltip
-            prop="fullname"
-            label="监区"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            v-for="t in crossMeetingQueue"
-            align="center"
-            width="120"
-            :key="t"
-            :prop="t"
-            :label="t">
-            <template slot-scope="scope">
-              <span v-if="scope.row[t]">已申请</span>
-              <el-button class="acrosssel-btn" type="text" v-else @click="handleSelectAcross(scope.row.terminalNumber, t, scope.row.terminalId)">{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+
+        <template v-if="crossMeetingQueue && crossMeetingQueue.length">
+          <el-table
+            class="across-table"
+            :data="crossMeetingData"
+            @cell-click="handleCellClick"
+            border
+          >
+            <template v-if="crossMeetingQueue && crossMeetingQueue.length > 4">
+              <el-table-column
+                label="终端号"
+                prop="terminalNumber"
+                width="80"
+                fixed
+              />
+
+              <el-table-column
+                label="终端别名"
+                prop="terminalName"
+                width="100"
+                fixed
+                show-overflow-tooltip 
+              />
+
+              <el-table-column
+                label="监区"
+                prop="fullname"
+                width="100"
+                fixed
+                show-overflow-tooltip
+              />
             </template>
-          </el-table-column>
-        </el-table>
+
+            <template v-else>
+              <el-table-column
+                label="终端号"
+                prop="terminalNumber"
+                width="80"
+              />
+
+              <el-table-column
+                label="终端别名"
+                prop="terminalName"
+                width="100"
+                show-overflow-tooltip
+              />
+
+              <el-table-column
+                label="监区"
+                prop="fullname"
+                width="100"
+                show-overflow-tooltip
+              />
+            </template>
+            
+            <template v-for="t in crossMeetingQueue">
+              <el-table-column
+                :key="t"
+                :label="t"
+                :prop="t"
+                align="center"
+                width="120" 
+              >
+                <template #default="{ row }">
+                  <template v-if="row[t]">
+                    <span>已申请</span>
+                  </template>
+
+                  <template v-else>
+                    <el-button
+                      class="acrosssel-btn"
+                      type="text" 
+                      @click="handleSelectAcross(row.terminalNumber, t, row.terminalId)"
+                    >{{ crossMeetingCurrent | getMeetingsName }}</el-button>
+                  </template>   
+                </template>
+              </el-table-column>
+            </template>
+          </el-table>
+        </template>
       </template>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelAcross">取 消</el-button>
-        <el-button type="primary" @click="handleSaveAcross" :disabled="!isSpecial && !crossDateSelect">确 定</el-button>
-      </span>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleCancelAcross">取 消</el-button>
+
+          <el-button
+            type="primary"
+            :disabled="!isSpecial && !crossDateSelect"
+            @click="handleSaveAcross"
+          >确 定</el-button>
+        </span>
+      </template>
     </el-dialog>
 
     <!-- <div>
@@ -272,6 +357,7 @@ import { uuId } from "@/utils/helper";
 import http from '@/service'
 import Moment from 'moment'
 import { mapActions, mapState } from "vuex";
+
 export default {
   props: {
     adjustDate: String,
@@ -317,14 +403,17 @@ export default {
       this.terminals = this.meetingAdjustment.terminals.map(t => Object.assign(t, {
         isEdit: false
       }))
+
       this.meetingsData = this.getMeetingsData()
       this.specialData = this.getMeetingsData('specialQueue')
+
       document.querySelector('.meeting-list-block-scroller').style.width = 188 * (this.meetingsData.length + this.specialData.length) + 'px'
     },
 
     tableAreaType() {
       this.crossDateSelect = ''
       this.removeSelClass()
+
       this.meetingVisible && this.handleGetConfigs()
     }
   },
@@ -390,12 +479,15 @@ export default {
   filters: {
     getMeetingsName(m) {
       let names = ''
+
       if (m.prisonerName) {
-        names += `${m.prisonerName} `
+        names += `${ m.prisonerName } `
       }
+
       if (m.name) {
-        names += `${m.name}`
+        names += `${ m.name }`
       }
+
       return names
     }
   },
@@ -404,11 +496,13 @@ export default {
     reSetMeetingsData() {
       this.meetingsData = this.getMeetingsData()
     },
+
     // 通话数据
     getMeetingsData(key = 'meetingQueue') {
       if (!this.hasQueue || !this.hasTerminal) {
         return [];
       }
+
       return this[key].map(timeCell => {
         return this.terminals.map(terminal => {
           let meeting = this.meetings.find(meeting => {
@@ -417,10 +511,12 @@ export default {
               meeting.terminalNumber === terminal.terminalNumber
             );
           });
+
           meeting = meeting || {
             terminalNumber: terminal.terminalNumber,
             meetingTime: this.meetingDate + " " + timeCell
           };
+
           return { ...meeting, terminalId: terminal.id };
         });
       });
@@ -428,20 +524,23 @@ export default {
 
     removeSelClass() {
       let els = document.querySelectorAll('.acrosssel-btn')
+
       els.forEach(el => el.classList.remove('selected'))
     },
 
     handleCellClick(row, column, cell, event) {
       this.removeSelClass()
       let elBtn = cell.querySelector('.acrosssel-btn')
-      if( elBtn ) {
+
+      if (elBtn) {
         elBtn.classList.add('selected')
       }
     },
 
     checkInmeetings() {
       return this.meetingQueue.some(m => {
-        let {sm, em} = this.getStartandEndTime(m)
+        let { sm, em } = this.getStartandEndTime(m)
+
         return this.timeRangeStart.diff(sm) > 0 && this.timeRangeStart.diff(em) < 0 || this.timeRangeEnd.diff(sm) > 0 && this.timeRangeEnd.diff(em) < 0
       })
     },
@@ -449,25 +548,26 @@ export default {
     getStartandEndTime(time) {
       let _timeRange = time.split('-')
       let sm = _timeRange[0].split(':')
-      sm = Moment({ hour: sm[0], minute: sm[1] })
       let em = _timeRange[1].split(':')
+
+      sm = Moment({ hour: sm[0], minute: sm[1] })      
       em = Moment({ hour: em[0], minute: em[1] })
-      return {
-        sm,
-        em
-      }
+
+      return { sm, em }
     },
 
     setTimeRange(dateObj) {
       let _start = Moment(dateObj)
       let _end = Moment(dateObj).add(this.crossDuration, 'm')
       let _last = Moment({ hour: '23', minute: '59' })
+
       this.timeRangeStart = _start
       this.timeRangeEnd = _last.diff(_end) > 0 ? _end : _last
     },
 
     setSelectRange() {
       let _now = new Date()
+
       this.selectRange = {
         selectableRange: `${ this.acrossAdjustDate === Moment(_now).format('YYYY-MM-DD') ? Moment(_now).format('HH:mm') : '00:00'}:00 - 23:58:00`,
         format: 'HH:mm'
@@ -476,6 +576,7 @@ export default {
 
     async handlePickerChange() {
       await this.setSeparateArea()
+
       this.setSelectRange()
       this.handleGetConfigs()
     },
@@ -483,6 +584,7 @@ export default {
     async handleShowacross(m, flag) {
       let _this = this
       let _adjustDate = Moment(this.adjustDate)
+
       this.isSpecial = !!flag
       this.acrossAdjustDate =  (!_adjustDate.diff(Moment(this.dayinLimit)) ? _adjustDate.subtract(1, 'd') : _adjustDate.add(1, 'd')).format('YYYY-MM-DD')
       this.pickerOptions = {
@@ -491,16 +593,18 @@ export default {
           return time.getTime() < Date.now() - 24 * 3600 * 1000 || time.getTime() > Moment(_this.dayinLimit).valueOf()
         }
       }
+
       if (this.isSpecial) {
-        let {sm, em} = this.getStartandEndTime(m.meetingTime.split(' ')[1])
+        let { sm, em } = this.getStartandEndTime(m.meetingTime.split(' ')[1])
+
         this.crossDuration = em.diff(sm, 'm')
         this.setSelectRange()
         this.setTimeRange(new Date())
         this.showTips = ''
         this.isShowTips = false
       }
-      this.crossMeetingCurrent = m
 
+      this.crossMeetingCurrent = m
       await this.setSeparateArea()
       await this.handleGetConfigs()
       this.meetingVisible = true
@@ -521,6 +625,7 @@ export default {
         adjustStatus: 0
       }
     },
+
     async handleSaveAcross() {
       if (this.isSpecial) {
         if (this.checkInmeetings()) {
@@ -528,14 +633,16 @@ export default {
           this.isShowTips = true
           return
         }
+
         if ((this.showTips = this.checkCanMeetings())) {
           this.isShowTips = true
           return
         }
+
         this.crossDateSelect = {
           name: this.crossMeetingCurrent.name,
           id: this.crossMeetingCurrent.id,
-          meetingTime: `${this.acrossAdjustDate} ${Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm')}`,
+          meetingTime: `${this.acrossAdjustDate} ${ Moment(this.timeRangeStart).format('HH:mm')}-${Moment(this.timeRangeEnd).format('HH:mm') }`,
           terminalId: this.terminalId,
           terminalNumber: this.terminalNumber,
           adjustStatus: 0
@@ -547,11 +654,13 @@ export default {
       }
 
       await http.adjustMeeting([this.crossDateSelect])
+
       this.removeSelClass()
       this.crossDateSelect = ''
       this.meetingVisible = false
       this.$emit('on-across-submit')
     },
+
     handleCancelAcross() {
       this.removeSelClass()
       this.crossDateSelect = ''
@@ -570,16 +679,19 @@ export default {
       let { data } = await http.getMeetingSeparateArea({
         inputDate: this.acrossAdjustDate
       })
+
       // 是否分监舍区和生产区
       this.isSeparateByArea = data && data.separateByArea
       // 是否打开会见楼开关
       this.isUseMeetingFloor = data && !!data.useMeetingFloor
+
       // 分监舍区和生产区 关闭会见楼开关
-      if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
+      if (this.isSeparateByArea && !this.isUseMeetingFloor) {
         this.areaOptions = this.areaOptions.filter(item => item.value != '3')
       }
+
       // 不分监舍区和生产区 打开会见楼开关
-      if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+      if (!this.isSeparateByArea && this.isUseMeetingFloor) {
         this.areaOptions = this.areaOptions.filter(item => item.value != '2')
       }
     },
@@ -589,19 +701,22 @@ export default {
         inputDate: this.acrossAdjustDate,
         area: this.isSeparateByArea || this.isUseMeetingFloor ? this.tableAreaType : ''
       })
-      this.isShowTips = false
       let applyList = {}
+
+      this.isShowTips = false
       this.crossMeetings = data.meetings
       this.crossTerminals = data.terminals
       this.crossMeetingQueue = data.meetingQueue
-
       this.$message.closeAll()
+
       let message = this.checkCanMeetings()
+
       if (message) {
         this.$message.warning(message)
       }
 
       this.crossMeetingData = []
+
       if (this.crossMeetings) {
         this.crossMeetings.forEach(m => {
           applyList[m.terminalNumber + m.meetingTime.split(' ')[1]] = true
@@ -616,9 +731,11 @@ export default {
             terminalId: c.id,
             fullname: c.fullname
           }
+
           this.crossMeetingQueue.forEach(q => {
             m[q] = !!applyList[c.terminalNumber + q]
           })
+
           this.crossMeetingData.push(m)
         })
       }
@@ -626,10 +743,11 @@ export default {
 
     setTerStatus(ter, flag) {
       this.terminals = this.terminals.map(t => {
-        if( t.id === ter.id ) {
+        if (t.id === ter.id) {
           ter.isEdit = flag
           return ter
         }
+
         return t
       })
     },
@@ -640,7 +758,8 @@ export default {
 
     async handleSaveTername(ter) {
       let res = await http.updateTerminalName(ter)
-      if ( res ) {
+
+      if (res) {
         this.setTerStatus(ter, false)
       }
     },
@@ -683,11 +802,9 @@ export default {
           // 单元格
           const meetingCell = meetingCells[j];
 
-          if (
-            this.isMeeting(meetingCell) &&
-            this.hasMeetingChanged(meetingCell)
-          ) {
+          if (this.isMeeting(meetingCell) && this.hasMeetingChanged(meetingCell)) {
             const newMeetingParams = this.getMeetingParams(meetingCell);
+
             result.push({
               name: meetingCell.__MEETING__.name,
               id: meetingCell.__MEETING__.id,
@@ -709,6 +826,7 @@ export default {
     hasMeetingChanged(el) {
       const meetingParams = this.getMeetingParams(el);
       const { terminalNumber, meetingTime } = el.__MEETING__;
+
       // 通话时间段/终端号不同 就说明这个元素调整了会见
       return (
         terminalNumber !== meetingParams["data-terminal-number"] ||

@@ -1,7 +1,12 @@
 <template>
-  <el-row class="row-container" v-loading="loading" :gutter="0">
+  <el-row
+    v-loading="loading" 
+    class="row-container"
+    :gutter="0"
+  >
     <div class="filter">
       <label class="filter__label">调整日期</label>
+
       <el-date-picker
         v-model="adjustDate"
         type="date"
@@ -14,15 +19,19 @@
       <!-- <el-button type="primary" @click="getConfigs">确定</el-button> -->
       <!-- <label class="filter__tip">注：仅支持2天后的申请调整</label> -->
     </div>
-    <el-tabs
-      v-if="isSeparateByArea || isUseMeetingFloor"
-      v-model="areaTabs"
-      type="card">
-      <el-tab-pane v-for="t in areaOptions"
-        :key="t.value"
-        :label="t.label"
-        :name="t.value" />
-    </el-tabs>
+
+    <template v-if="isSeparateByArea || isUseMeetingFloor">
+      <el-tabs v-model="areaTabs" type="card">
+        <template v-for="t in areaOptions">
+          <el-tab-pane 
+            :key="t.value"
+            :label="t.label"
+            :name="t.value"
+          />
+        </template>
+      </el-tabs>
+    </template>
+
     <meeting-table
       ref="meetingTable"
       :areaType="areaTabs"
@@ -33,10 +42,17 @@
     />
 
     <div class="operates" v-show="hasMeetings">
-      <el-button type="warning" size="medium" @click="reset">重置</el-button>
-      <el-button type="primary" size="medium" @click="onSubmit">
-        确认调整
-      </el-button>
+      <el-button
+        type="warning"
+        size="medium"
+        @click="reset"
+      >重置</el-button>
+
+      <el-button
+        type="primary"
+        size="medium"
+        @click="onSubmit"
+      >确认调整</el-button>
     </div>
   </el-row>
 </template>
@@ -47,6 +63,7 @@ import { mapActions, mapState } from "vuex"
 import helper from "@/filters/modules/date"
 import Moment from 'moment'
 import http from '@/service'
+
 export default {
   name: "MeetingAjust",
 
@@ -132,11 +149,14 @@ export default {
 
   async created() {
     this.adjustDate = this.defaultDate()
+
     // this.areaOptions = Array.from(this.$store.state.areaOptions)
     await this.setSeparateArea()
     await this.getConfigs()
+
     let limitDay = this.meetingAdjustment.config && JSON.parse(this.meetingAdjustment.config.settings)
     limitDay = limitDay.day_in_limit && parseInt(limitDay.day_in_limit) || 15
+
     this.dayinLimit = Moment().add(limitDay, 'd').format('YYYY-MM-DD')
     this.pickerOptions = {
       disabledDate(time) {
@@ -168,6 +188,7 @@ export default {
 
     onAcrossSubmit() {
       this.loading = true;
+
       setTimeout(() => {
         this.loading = false;
         this.getConfigs()
@@ -185,11 +206,14 @@ export default {
             cancelButtonText: "取消",
             type: "warning"
           });
+
           this.loading = true;
           await this.adjustMeeting(meetings);
           this.removePageunloadListener();
+
           let _meetings = this.meetingAdjustment.meetings.map(om => {
             let res = meetings.find(nm => nm.id == om.id)
+
             if (res) {
               om.meetingTime = res.meetingTime
               om.terminalId = res.terminalId
@@ -197,13 +221,17 @@ export default {
             }
             return om
           })
+
           this.setMeetingsData(_meetings || [])
           this.$refs.meetingTable.reSetMeetingsData()
+
           setTimeout(() => {
             this.loading = false;
             // this.getConfigs()
           }, 300);
-        } catch (err) {}
+        } catch (err) {
+          Promise.reject(err)
+        }
       } else {
         this.$message.warning("请修改后再进行提交");
       }
@@ -224,16 +252,19 @@ export default {
       let { data } = await http.getMeetingSeparateArea({
         inputDate: this.adjustDate
       })
+
       // 是否分监舍区和生产区
       this.isSeparateByArea = data && data.separateByArea
       // 是否打开会见楼开关
       this.isUseMeetingFloor = data && !!data.useMeetingFloor
+
       // 分监舍区和生产区 关闭会见楼开关
-      if( this.isSeparateByArea && !this.isUseMeetingFloor ) {
+      if (this.isSeparateByArea && !this.isUseMeetingFloor) {
         this.areaOptions = this.areaOptions.filter(item => item.value != '3')
       }
+
       // 不分监舍区和生产区 打开会见楼开关
-      if( !this.isSeparateByArea && this.isUseMeetingFloor ) {
+      if (!this.isSeparateByArea && this.isUseMeetingFloor) {
         this.areaOptions = this.areaOptions.filter(item => item.value != '2')
       }
     },
@@ -250,16 +281,17 @@ export default {
         inputDate: this.adjustDate,
         area: this.isSeparateByArea || this.isUseMeetingFloor ? this.areaTabs : ''
       });
-      this.meetingAdjustDealing(false);
 
+      this.meetingAdjustDealing(false);
       let message = "";
       this.$message.closeAll();
 
-      if ( !this.hasMeetingQueue ) {
+      if (!this.hasMeetingQueue) {
         message = "该日不可申请可视电话";
       } else if (!this.hasTerminal) {
         message = "该日无可用终端";
       }
+
       if (message) {
         this.$message.warning(message);
       }
